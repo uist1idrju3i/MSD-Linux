@@ -62,7 +62,7 @@
 | 論点 | 選択肢・留保 | 状態 |
 |---|---|---|
 | 起動完了条件 | **A**：LCD のプロンプトとキー入力が使える時点。**B**：init（PID 1）が終点マーカーを書いた時点とし、LCD・キーボードは後から起動する。**C**：両方の時点を測る。 | 未決 |
-| 読み取り専用 rootfs | SquashFS（`-sort` で優先度の高いファイルを先に配置）と EROFS（`-z` で圧縮し、`--sort` は tar 入力向け）を実機で比較する案です。どちらが速いかは未測定です。 | 未決 |
+| 読み取り専用 rootfs | SquashFS（`-sort` で優先度の高いファイルを先に配置）と EROFS（`-z` を指定すれば圧縮でき、`--sort` は tar 入力向け）を実機で比較する案です。どちらが速いかは未測定です。 | 未決 |
 | init と libc | systemd 最小化 + glibc（M5 の udev ルール・unit を利用）、BusyBox init + eudev + musl 静的リンク（udev ルールの移植と NSS の制約を考慮）、自作 init を候補とします。起動時間は未測定です。[関連資料](userspace-and-security.md) | 未決 |
 | A/B 方式 | MBR + tryboot / autoboot.txt + RAUC custom、U-Boot 系、Rugix を候補とします。tryboot と watchdog が CM0 で動作するか未確認です。FAT の boot 領域が単一障害点となる可能性があります（推測）。 | 未決 |
 | カーネル版 | Linux 6.18.y、7.2.y、7.3.y を候補とします。7.2.y / 7.3.y の PREEMPT は LAZY / FULL のみです。7.1 で DRM API が変わり、7.3 の alias unmap 再適用後の CM0 起動は未確認です。 | 未決 |
@@ -95,7 +95,7 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | pi-gen の `01-run.sh` は M5 の `make … config_setup` を実行します。M5 の Makefile は `rpi-config.py --no-backup section-set all enable_uart 1` を実行し、ビルド時に `[all]` へ `enable_uart=1` を設定します。pi-gen の `02-run.sh` と `04-set-partuuid/00-run.sh` は cmdline から `console=serial0,115200` を除去し、`verify-image.sh` はその状態を検査します。最終 config.txt は未確認です。 | https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/01-run.sh<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/02-run.sh<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/export-image/04-set-partuuid/00-run.sh<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/tools/verify-image.sh#L158-L161<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile#L74 | 一次 |
 | pi-gen の `CARDPUTERZERO-IMAGE-DESIGN.md` は `console=serial0,115200` を保持すると説明しますが、公開スクリプトは cmdline から除去します。どちらが意図した状態かは未確認です。 | https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/docs/CARDPUTERZERO-IMAGE-DESIGN.md#L41<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/02-run.sh<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/export-image/04-set-partuuid/00-run.sh | 一次 |
 | Raspberry Pi documentation は、`ttyAMA0` が primary UART の場合に `enable_uart` が既定で 1、それ以外は 0 であること、`enable_uart=1` が `force_turbo=1` でない場合に `core_freq=250` を伴うこと、`cmdline.txt` の `console=serial0,115200` が GPIO14 / 15 のシリアルコンソールを要求することを説明しています。 | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/configuration/reference.adoc#L1408<br>https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L98 | 一次 |
-| 公式 DT と公開イメージ設定から、`serial0` は mini-UART を前提とし、pi-gen は cmdline からその console を外すことが分かります。GPIO14 / 15 の pinmux は DT だけでは断定できず、M5 overlay/config で未確認です。`enable_uart=1` と `core_freq` の関係は、コア周波数を上げる最適化に影響する可能性があります（推測）。開発用コンソールでは、HY2.0 が I2C1（G2 / G3）と共用で G4 の切替が必要なこと、3.3V ロジック、mini-UART の速度条件に注意します。 | 上記の公開出典 | Devin が 2026-10-18 に公開資料で確認。pinmux は未確認 |
+| 公式 DT と公開イメージ設定から、`serial0` は mini-UART を前提とし、pi-gen は cmdline からその console を外すことが分かります。GPIO14 / 15 の pinmux は DT だけでは断定できず、M5 overlay/config で未確認です。`enable_uart=1` は（`force_turbo=1` でない場合）`core_freq=250`（250MHz）を伴い、コア周波数を上げる最適化に影響する可能性があります（推測）。開発用コンソールでは、HY2.0 が I2C1（G2 / G3）と共用で G4 の切替が必要なこと、3.3V ロジック、mini-UART の速度条件に注意します。 | 上記の公開出典 | Devin が 2026-10-18 に公開資料で確認。pinmux は未確認 |
 
 #### EXT 2.54-14P と HY2.0-4P の UART 関連ピン（物理ピンと GPIO を別列）
 | コネクタ | 機能 | **物理ピン番号** | 列(左/右) | **GPIO 番号** | docs 表の行 |
@@ -116,7 +116,7 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | pstore / ramoops | RAM 上の予約領域にクラッシュログを残し、再起動後に読みます。`reserved-memory` または `mem=` で領域を指定します。 | https://docs.kernel.org/admin-guide/ramoops.html<br>https://docs.kernel.org/admin-guide/pstore-blk.html | 電源断後の RAM 保持、リセット再起動時の保持、RPi firmware が DT に付与するメモリとの競合は未確認です。公開カーネル文書と実機試験で確認します。 |
 | SD 専用領域への直書き | ファイルシステムを介さず、未使用パーティションまたは生セクターへ固定形式でログを書く方法です（自作）。 | — | 電断試験でもファイルシステムの破損を避けられる可能性がありますが（推測）、SD のページ書き込み中断リスクは残ります。ストレージ仕様と電断試験で確認します。実装は未着手です。 |
 | 開発中のみ ext4 にログ | 開発ビルドだけ RW パーティションに `data=ordered` の ext4 を置きます。 | https://docs.kernel.org/admin-guide/ext4.html | 量産ビルドには含めません。測定結果に I/O が混ざるため、起動時間測定時は無効化します。 |
-| sysrq | `s`（sync）/ `u`（remount ro）/ `b`（reboot）/ `o`（poweroff）を使えます。 | https://docs.kernel.org/admin-guide/sysrq.html | 電断試験のソフトな近似にのみ使用します。本物の電断とは別です。 |
+| sysrq | `s` (sync) / `u` (remount ro) / `b` (reboot) / `o` (poweroff) を使えます。 | https://docs.kernel.org/admin-guide/sysrq.html | 電断試験のソフトな近似にのみ使用します。本物の電断とは別です。 |
 
 ### 電源断試験時の切替方針（推測）
 - **起動時間測定モード**:ログ最小(quiet)、シリアル接続は固定、ext4 ログ無効。
