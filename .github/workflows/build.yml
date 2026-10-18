@@ -132,7 +132,8 @@ jobs:
             O="${GITHUB_WORKSPACE}/output" \
             msd_cardputerzero_defconfig
 
-      - name: Build image and legal information
+      - id: buildroot-build
+        name: Build image and legal information
         env:
           BR2_DL_DIR: ${{ github.workspace }}/dl
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -206,15 +207,21 @@ jobs:
         run: board/cardputerzero/qemu/test-boot.sh
 
       - name: Package artifacts
+        if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
         run: |
           xz -T0 -k output/images/sdcard.img
           tar -czf output/legal-info.tar.gz -C output legal-info
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
         with:
           name: msd-cardputerzero-build
           path: |
             output/images/sdcard.img.xz
+            output/images/Image
+            output/images/kernel8.img
+            output/images/bcm2710-rpi-3-b.dtb
+            output/images/bcm2710-rpi-cm0.dtb
             output/images/sbom.cdx.json
             output/legal-info.tar.gz
 

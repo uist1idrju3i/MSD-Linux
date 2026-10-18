@@ -33,5 +33,5 @@ exec "$QEMU" -M raspi3b -m 1G \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \
-	-append "console=ttyAMA0,115200 root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
+	-append "earlycon=pl011,mmio32,0x3f201000 console=ttyAMA0,115200 root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
 	-nographic -serial mon:stdio
