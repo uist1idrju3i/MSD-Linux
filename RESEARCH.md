@@ -190,7 +190,7 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 
 - Raspberry Pi の文書は全モデルが tryboot に対応すると記載する。`autoboot.txt`、`[tryboot]`、`tryboot_a_b=1` で起動パーティションを切り替え、`reboot "0 tryboot"` で一度だけ試行する仕組みが説明されている。CM0 実機での確認は未実施。
 - `PARTITION_WALK` は EEPROM 機能で Pi 4 以降のみ。CM0 の復旧策として使えない。
-- 人手の recovery menu は設けず、自動ロールバックを目標とする。設計案は非稼働スロットへ書き込み、tryboot で試行し、選択した終点とヘルスチェックを通ってから既定スロットを確定する。終点判定は LCD + keyboard と PID1 marker の両方を記録する案。失敗・再起動時の復帰動作、FAT 更新の原子性、試行回数カウンタは実機で確認する。
+- 人手の recovery menu は設けず、自動ロールバックを目標とする。設計案は非稼働スロットへ書き込み、tryboot で試行し、選択した終点とヘルスチェックを通ってから既定スロットを確定する。終点判定は LCD + keyboard と PID 1 marker の両方を記録する案。失敗・再起動時の復帰動作、FAT 更新の原子性、試行回数カウンタは実機で確認する。
 - ウォッチドッグの `kernel_watchdog_timeout` / `kernel_watchdog_partition`、BCM2835 WDT、systemd の watchdog 連携は候補だが、BCM2837 firmware でどの機能が有効か未確認。最初の実機試験は tryboot と watchdog の確認。
 - boot パーティション（FAT）と Raspberry Pi firmware 自体は A/B 化されず、単一障害点になり得る。試行中の電断・`autoboot.txt` 更新中の電断も検証が必要。
 
@@ -314,7 +314,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発拠点の�
 |---|---|
 | BCM2837 / CM0 の tryboot | 実機で `autoboot.txt` / `tryboot_a_b=1`、再起動時復帰を確認 |
 | watchdog | `kernel_watchdog_*` と BCM2835 WDT が firmware / CM0 で有効か実機試験 |
-| 起動速度 | 公式 image baseline、Buildroot baseline、LCD + keyboard の終点と PID1 marker を測定 |
+| 起動速度 | 公式 image baseline、Buildroot baseline、LCD + keyboard の終点と PID 1 marker を測定 |
 | rootfs / SD | microSD FTL の電断に関する一次資料と、複数カードでの実電断試験 |
 | Wi-Fi / Ethernet | Wi-Fi chip ID、firmware blob、SR9900A の USB ID / driver |
 | HDMI / UART / framebuffer | HDMI connector type、UART pinmux / console、FRAMEBUFFER_CONSOLE の最終 `.config` と LCD fbcon |
