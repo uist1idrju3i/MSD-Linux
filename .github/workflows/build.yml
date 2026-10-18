@@ -17,12 +17,14 @@ concurrency:
 jobs:
   changes:
     runs-on: ubuntu-26.04
+    timeout-minutes: 10
     outputs:
       build: ${{ steps.filter.outputs.build }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - id: filter
         name: Check whether the build is needed
@@ -78,8 +80,11 @@ jobs:
   msd-update-tests:
     name: msd-update host tests
     runs-on: ubuntu-26.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Run msd-update host tests
         run: tests/msd-update/run.sh
@@ -90,9 +95,10 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
+          persist-credentials: false
 
       - name: Install host dependencies
         run: |
@@ -103,14 +109,14 @@ jobs:
             qemu-system-arm rsync unzip wget xz-utils
 
       - id: dl-restore
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: dl
           key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
           restore-keys: buildroot-dl-${{ runner.os }}-
 
       - id: ccache-restore
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .ccache
           key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
@@ -135,6 +141,56 @@ jobs:
           make -C output -j"$(nproc)"
           make -C output legal-info
 
+      - name: Generate SBOM
+        run: |
+          set -o pipefail
+          make -s -C output show-info |
+            python3 vendor/buildroot/utils/generate-cyclonedx \
+              --project-name msd-linux \
+              --project-version "$GITHUB_SHA" \
+              > output/images/sbom.cdx.json
+
+      - name: Run kernel hardening checker
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          checker_dir="$RUNNER_TEMP/kernel-hardening-checker"
+          git clone --depth 1 --branch v0.6.17.1 \
+            https://github.com/a13xp0p0v/kernel-hardening-checker "$checker_dir"
+          test "$(git -C "$checker_dir" rev-parse HEAD)" = \
+            afc376f2a935994793343cfeb05953583cc30191
+          "$checker_dir/bin/kernel-hardening-checker" \
+            -c output/build/linux-custom/.config \
+            -l board/cardputerzero/cmdline_rootfs_a.txt \
+            -m json \
+            > output/images/kernel-hardening.json
+
+      - name: Summarize kernel hardening results
+        if: always()
+        continue-on-error: true
+        run: |
+          python3 - output/images/kernel-hardening.json >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          report = pathlib.Path(sys.argv[1])
+          if not report.is_file():
+              print("## Kernel hardening checker\n\nNo JSON report was produced.")
+              raise SystemExit(0)
+
+          checks = json.loads(report.read_text())
+          passed = [item for item in checks if item.get("check_result_bool")]
+          failed = [item for item in checks if not item.get("check_result_bool")]
+          print("## Kernel hardening checker")
+          print(f"\n- OK: {len(passed)}")
+          print(f"- FAIL: {len(failed)}")
+          if failed:
+              print("\n### FAIL")
+              for item in failed:
+                  print(f"- `{item['option_name']}`: {item['check_result']}")
+          PY
+
       - name: Show ccache statistics
         if: always()
         env:
@@ -154,28 +210,36 @@ jobs:
           xz -T0 -k output/images/sdcard.img
           tar -czf output/legal-info.tar.gz -C output legal-info
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: msd-cardputerzero-build
           path: |
             output/images/sdcard.img.xz
+            output/images/sbom.cdx.json
             output/legal-info.tar.gz
 
-      - uses: actions/cache/save@v6
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: always() && steps.dl-restore.outputs.cache-hit != 'true'
         with:
           path: dl
           key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
 
-      - uses: actions/cache/save@v6
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: always()
         with:
           path: .ccache
           key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: build-time-log
           path: output/build/build-time.log
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: kernel-hardening-report
+          path: output/images/kernel-hardening.json
           if-no-files-found: ignore

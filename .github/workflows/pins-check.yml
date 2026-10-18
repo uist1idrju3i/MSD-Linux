@@ -5,9 +5,13 @@ on:
     - cron: "23 5 * * 1"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-26.04
+    timeout-minutes: 10
     steps:
       - name: Compare the pinned kernel with rpi-6.18.y
         env:
