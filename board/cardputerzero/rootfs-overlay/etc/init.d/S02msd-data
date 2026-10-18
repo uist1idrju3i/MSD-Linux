@@ -1,0 +1,24 @@
+#!/bin/sh
+
+DATA_DEVICE="${MSD_DATA_DEVICE:-/dev/mmcblk0p7}"
+
+mkdir -p /data
+magic="$(dd if="$DATA_DEVICE" bs=1 skip=1080 count=2 2>/dev/null | od -An -v -tx1 | tr -d '[:space:]' || true)"
+if [ "$magic" != "53ef" ]; then
+	if cmp -n 67108864 "$DATA_DEVICE" /dev/zero >/dev/null 2>&1; then
+		mkfs.ext4 -F -L data "$DATA_DEVICE" || exit 1
+	else
+		printf '%s\n' 'Unrecognized non-empty data partition; refusing to format it.' >&2
+		exit 1
+	fi
+fi
+
+fsck.ext4 -p "$DATA_DEVICE"
+fsck_status=$?
+case "$fsck_status" in
+	0|1) ;;
+	*) exit "$fsck_status" ;;
+esac
+
+mount -t ext4 -o noatime,data=journal,errors=remount-ro "$DATA_DEVICE" /data
+mkdir -p /data/etc /data/msd-update

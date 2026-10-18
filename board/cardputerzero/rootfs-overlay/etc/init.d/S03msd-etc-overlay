@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mkdir -p /run/etc-overlay/upper /run/etc-overlay/work /run/etc-overlay/merged
+mount -t overlay overlay \
+	-o lowerdir=/data/etc:/etc,upperdir=/run/etc-overlay/upper,workdir=/run/etc-overlay/work \
+	/run/etc-overlay/merged
+mount -o bind /run/etc-overlay/merged /etc

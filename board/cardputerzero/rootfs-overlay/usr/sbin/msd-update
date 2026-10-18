@@ -1,0 +1,244 @@
+#!/bin/sh
+set -eu
+
+DT_DIR="${MSD_UPDATE_DT_DIR:-/proc/device-tree/chosen/bootloader}"
+P1_DEVICE="${MSD_UPDATE_P1_DEVICE:-/dev/mmcblk0p1}"
+P1_MOUNTPOINT="${MSD_UPDATE_P1_MOUNTPOINT:-/run/msd-bootsel}"
+P1_DIR_OVERRIDE="${MSD_UPDATE_P1_DIR:-}"
+STATE_DIR="${MSD_UPDATE_STATE_DIR:-/data/msd-update}"
+PARTITION_PREFIX="${MSD_UPDATE_PARTITION_PREFIX:-/dev/mmcblk0p}"
+WORK_DIR=
+P1_MOUNTED=0
+
+cleanup() {
+	if [ -n "$WORK_DIR" ]; then
+		rm -rf "$WORK_DIR"
+	fi
+	if [ "$P1_MOUNTED" -eq 1 ]; then
+		umount "$P1_MOUNT" || true
+	fi
+}
+trap cleanup 0
+trap 'exit 1' HUP INT TERM
+
+die() {
+	printf 'msd-update: %s\n' "$*" >&2
+	exit 1
+}
+
+read_be32() {
+	[ -r "$1" ] || die "cannot read $1"
+	hex="$(od -An -v -t x1 "$1" | tr -d '[:space:]')" || die "cannot decode $1"
+	[ "${#hex}" -eq 8 ] || die "expected a 32-bit value in $1"
+	case "$hex" in
+		*[!0123456789abcdefABCDEF]*) die "invalid 32-bit value in $1" ;;
+	esac
+	printf '%d\n' "0x$hex"
+}
+
+slot_name() {
+	case "$1" in
+		2) printf 'A\n' ;;
+		3) printf 'B\n' ;;
+		*) die "unsupported boot partition: $1" ;;
+	esac
+}
+
+read_autoboot() {
+	autoboot_file="$P1_MOUNT/autoboot.txt"
+	[ -f "$autoboot_file" ] || die "autoboot.txt is missing"
+	grep -Fxq 'tryboot_a_b=1' "$autoboot_file" || die "autoboot.txt has no tryboot_a_b=1"
+	DEFAULT_PARTITION="$(sed -n 's/^boot_partition=//p' "$autoboot_file" | sed -n '1p')"
+	TRYBOOT_PARTITION="$(sed -n '/^\[tryboot\]/,$s/^boot_partition=//p' "$autoboot_file" | sed -n '1p')"
+	case "$DEFAULT_PARTITION:$TRYBOOT_PARTITION" in
+		2:3|3:2) ;;
+		*) die "autoboot.txt does not define A/B partitions 2 and 3" ;;
+	esac
+}
+
+mount_p1() {
+	mode="$1"
+	if [ -n "$P1_DIR_OVERRIDE" ]; then
+		P1_MOUNT="$P1_DIR_OVERRIDE"
+		[ -d "$P1_MOUNT" ] || die "test boot selector directory is missing"
+		return
+	fi
+
+	P1_MOUNT="$P1_MOUNTPOINT"
+	mkdir -p "$P1_MOUNT"
+	mount -t vfat -o "$mode" "$P1_DEVICE" "$P1_MOUNT" || die "cannot mount $P1_DEVICE"
+	P1_MOUNTED=1
+}
+
+unmount_p1() {
+	if [ "$P1_MOUNTED" -eq 1 ]; then
+		umount "$P1_MOUNT" || die "cannot unmount $P1_MOUNT"
+		P1_MOUNTED=0
+	fi
+}
+
+status_command() {
+	partition="$(read_be32 "$DT_DIR/partition")"
+	tryboot="$(read_be32 "$DT_DIR/tryboot")"
+	case "$tryboot" in
+		0|1) ;;
+		*) die "unsupported tryboot value: $tryboot" ;;
+	esac
+	slot="$(slot_name "$partition")"
+	printf 'slot=%s partition=%s tryboot=%s\n' "$slot" "$partition" "$tryboot"
+}
+
+validate_bundle() {
+	bundle="$1"
+	[ -f "$bundle" ] || die "bundle not found: $bundle"
+	WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/msd-update.XXXXXX")" || die "cannot create temporary directory"
+	tar -tf "$bundle" > "$WORK_DIR/members" || die "cannot list bundle"
+	tar -tvf "$bundle" | awk '$1 !~ /^-/ { invalid = 1 } END { exit invalid }' ||
+		die "bundle entries must be regular files"
+	[ "$(wc -l < "$WORK_DIR/members" | tr -d '[:space:]')" -eq 3 ] || die "bundle must contain exactly three files"
+	while IFS= read -r member; do
+		case "$member" in
+			rootfs.squashfs|boot.vfat|manifest) ;;
+			*) die "unexpected bundle member: $member" ;;
+		esac
+	done < "$WORK_DIR/members"
+	for member in rootfs.squashfs boot.vfat manifest; do
+		grep -Fxq "$member" "$WORK_DIR/members" || die "bundle is missing $member"
+	done
+	tar -xf "$bundle" -C "$WORK_DIR" || die "cannot extract bundle"
+
+	root_hash=
+	boot_hash=
+	manifest_entries=0
+	while IFS=' ' read -r hash name; do
+		[ "${#hash}" -eq 64 ] || die "invalid hash in manifest"
+		case "$hash" in
+			*[!0123456789abcdefABCDEF]*) die "invalid hash in manifest" ;;
+		esac
+		case "$name" in
+			rootfs.squashfs)
+				[ -z "$root_hash" ] || die "duplicate rootfs.squashfs hash"
+				root_hash="$hash"
+				;;
+			boot.vfat)
+				[ -z "$boot_hash" ] || die "duplicate boot.vfat hash"
+				boot_hash="$hash"
+				;;
+			*) die "unexpected manifest entry: $name" ;;
+		esac
+		manifest_entries=$((manifest_entries + 1))
+	done < "$WORK_DIR/manifest"
+	[ "$manifest_entries" -eq 2 ] && [ -n "$root_hash" ] && [ -n "$boot_hash" ] ||
+		die "manifest must contain hashes for rootfs.squashfs and boot.vfat"
+
+	# TODO: verify a detached bundle signature before accepting updates.
+	(cd "$WORK_DIR" && sha256sum -c manifest) || die "bundle SHA-256 verification failed"
+	[ -f "$WORK_DIR/rootfs.squashfs" ] && [ -f "$WORK_DIR/boot.vfat" ] ||
+		die "bundle images are missing"
+}
+
+readback_hash() {
+	dd if="$1" bs=4M iflag=count_bytes count="$2" 2>/dev/null | sha256sum | sed 's/[[:space:]].*$//'
+}
+
+install_command() {
+	[ "$#" -eq 1 ] || die "usage: msd-update install <bundle.tar>"
+	tryboot="$(read_be32 "$DT_DIR/tryboot")"
+	[ "$tryboot" -eq 0 ] || die "cannot install during a tryboot"
+	current_partition="$(read_be32 "$DT_DIR/partition")"
+	case "$current_partition" in
+		2) boot_partition=3; root_partition=6 ;;
+		3) boot_partition=2; root_partition=5 ;;
+		*) die "unsupported boot partition: $current_partition" ;;
+	esac
+	root_device="${PARTITION_PREFIX}${root_partition}"
+	boot_device="${PARTITION_PREFIX}${boot_partition}"
+	for device in "$root_device" "$boot_device"; do
+		[ -b "$device" ] || [ -f "$device" ] || die "inactive slot device not found: $device"
+	done
+
+	validate_bundle "$1"
+	root_bytes="$(wc -c < "$WORK_DIR/rootfs.squashfs" | tr -d '[:space:]')"
+	boot_bytes="$(wc -c < "$WORK_DIR/boot.vfat" | tr -d '[:space:]')"
+	[ "$root_bytes" -gt 0 ] && [ "$root_bytes" -le 268435456 ] || die "rootfs image exceeds the 256 MiB slot"
+	[ "$boot_bytes" -gt 0 ] && [ "$boot_bytes" -le 67108864 ] || die "boot image exceeds the 64 MiB slot"
+	mkdir -p "$STATE_DIR" || die "cannot create update state directory"
+
+	dd if="$WORK_DIR/rootfs.squashfs" of="$root_device" bs=4M conv=fsync
+	dd if="$WORK_DIR/boot.vfat" of="$boot_device" bs=4M conv=fsync
+	[ "$(readback_hash "$root_device" "$root_bytes")" = "$root_hash" ] || die "rootfs read-back SHA-256 mismatch"
+	[ "$(readback_hash "$boot_device" "$boot_bytes")" = "$boot_hash" ] || die "boot read-back SHA-256 mismatch"
+	sync
+
+	printf '%s\n' "$boot_partition" > "$STATE_DIR/installed.new"
+	fsync "$STATE_DIR/installed.new"
+	mv -f "$STATE_DIR/installed.new" "$STATE_DIR/installed"
+	fsync "$STATE_DIR"
+	printf 'Installed slot %s (boot partition %s).\n' "$(slot_name "$boot_partition")" "$boot_partition"
+}
+
+try_command() {
+	[ "$#" -eq 0 ] || die "usage: msd-update try"
+	[ -f "$STATE_DIR/installed" ] || die "no verified update is ready to try"
+	target_partition="$(cat "$STATE_DIR/installed")"
+	slot_name "$target_partition" >/dev/null
+	current_partition="$(read_be32 "$DT_DIR/partition")"
+	tryboot="$(read_be32 "$DT_DIR/tryboot")"
+	[ "$tryboot" -eq 0 ] || die "already running in tryboot mode"
+	[ "$current_partition" != "$target_partition" ] || die "installed slot is already active"
+	mount_p1 ro
+	read_autoboot
+	unmount_p1
+	[ "$current_partition" = "$DEFAULT_PARTITION" ] || die "current slot is not autoboot.txt default"
+	[ "$target_partition" = "$TRYBOOT_PARTITION" ] || die "installed slot is not autoboot.txt tryboot target"
+	reboot '0 tryboot'
+}
+
+commit_command() {
+	[ "$#" -eq 0 ] || die "usage: msd-update commit"
+	tryboot="$(read_be32 "$DT_DIR/tryboot")"
+	[ "$tryboot" -eq 1 ] || die "commit requires tryboot=1"
+	current_partition="$(read_be32 "$DT_DIR/partition")"
+	slot_name "$current_partition" >/dev/null
+	[ -f "$STATE_DIR/installed" ] || die "no verified update is pending"
+	target_partition="$(cat "$STATE_DIR/installed")"
+	mount_p1 rw
+	read_autoboot
+	[ "$current_partition" = "$TRYBOOT_PARTITION" ] || die "current partition does not match autoboot.txt tryboot target"
+	[ "$target_partition" = "$current_partition" ] || die "current partition does not match the installed slot"
+
+	case "$DEFAULT_PARTITION:$TRYBOOT_PARTITION" in
+		2:3) new_default=3; new_tryboot=2 ;;
+		3:2) new_default=2; new_tryboot=3 ;;
+		*) die "cannot swap autoboot.txt partitions" ;;
+	esac
+
+	printf '[all]\ntryboot_a_b=1\nboot_partition=%s\n[tryboot]\nboot_partition=%s\n' \
+		"$new_default" "$new_tryboot" > "$P1_MOUNT/autoboot.txt.new"
+	fsync "$P1_MOUNT/autoboot.txt.new"
+	mv -f "$P1_MOUNT/autoboot.txt.new" "$P1_MOUNT/autoboot.txt"
+	fsync "$P1_MOUNT"
+	unmount_p1
+
+	mkdir -p "$STATE_DIR"
+	printf '%s\n' "$current_partition" > "$STATE_DIR/committed.new"
+	fsync "$STATE_DIR/committed.new"
+	mv -f "$STATE_DIR/committed.new" "$STATE_DIR/committed"
+	rm -f "$STATE_DIR/installed"
+	fsync "$STATE_DIR"
+	slot="$(slot_name "$current_partition")"
+	printf 'Committed slot %s (boot partition %s).\n' "$slot" "$current_partition"
+}
+
+command="${1:-}"
+if [ "$#" -gt 0 ]; then
+	shift
+fi
+
+case "$command" in
+	status) [ "$#" -eq 0 ] || die "usage: msd-update status"; status_command ;;
+	install) install_command "$@" ;;
+	try) try_command "$@" ;;
+	commit) commit_command "$@" ;;
+	*) die "usage: msd-update {status|install <bundle.tar>|try|commit}" ;;
+esac
