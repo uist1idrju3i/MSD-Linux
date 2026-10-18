@@ -20,12 +20,12 @@ MSD-Linux は、福岡県の室見川にちなんだ Muromi Software Distributio
 |---|---|
 | ビルド | Buildroot 2026.08 |
 | カーネル | Raspberry Pi `rpi-6.18.y` |
-| rootfs | 読み取り専用 SquashFS を第一候補とし、EROFS と比較予定 |
-| A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う方式を検証予定 |
+| rootfs | Zstandard 圧縮の読み取り専用 SquashFS。書き込み領域に ext4 の `/data` を使用 |
+| A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う構成を追加。実機での確認は未実施 |
 
-詳細な調査結果、出典、未確認事項は [RESEARCH.md](RESEARCH.md) を参照してください。作業規約は [AGENTS.md](AGENTS.md) にあります。
+現在の設定とスクリプトは追加済みですが、フルビルド、QEMU 起動、実機起動は未確認です。詳細な調査結果、出典、未確認事項は [RESEARCH.md](RESEARCH.md)、作業規約は [AGENTS.md](AGENTS.md) を参照してください。
 
-ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md) を参照してください。
+ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md)、更新手順と検証範囲は [docs/UPDATE.md](docs/UPDATE.md) を参照してください。
 
 ## 取得方法
 

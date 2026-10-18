@@ -1,7 +1,7 @@
 # Use the 64-bit Raspberry Pi firmware mode.
 arm_64bit=1
-# Load the uncompressed Buildroot kernel image.
-kernel=Image
+# Load the gzip-compressed 64-bit kernel image.
+kernel=kernel8.img
 # Skip the firmware startup delay.
 boot_delay=0
 # Hide the firmware splash screen.

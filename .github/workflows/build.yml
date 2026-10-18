@@ -5,6 +5,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  msd-update-tests:
+    name: msd-update host tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run msd-update host tests
+        run: tests/msd-update/run.sh
+
   build:
     runs-on: ubuntu-24.04
     steps:

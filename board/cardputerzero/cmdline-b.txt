@@ -1,0 +1,1 @@
+root=/dev/mmcblk0p6 rootwait ro rootfstype=squashfs console=tty1 console=serial0,115200 quiet

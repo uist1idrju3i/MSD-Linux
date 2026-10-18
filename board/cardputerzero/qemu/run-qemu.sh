@@ -8,6 +8,8 @@ IMAGE="${1:-${IMAGES_DIR}/sdcard.img}"
 KERNEL="${KERNEL_IMAGE:-${IMAGES_DIR}/Image}"
 DTB="${DTB_IMAGE:-${IMAGES_DIR}/bcm2710-rpi-3-b.dtb}"
 QEMU="${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}"
+ROOT_DEVICE="${ROOT_DEVICE:-/dev/mmcblk0p5}"
+ROOT_FSTYPE="${ROOT_FSTYPE:-squashfs}"
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
@@ -31,5 +33,5 @@ truncate -s "$padded_size" "$QEMU_IMAGE"
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \
-	-append "console=ttyAMA0,115200 root=/dev/mmcblk0p2 rootwait ro rootfstype=ext4" \
+	-append "console=ttyAMA0,115200 root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
 	-nographic -serial mon:stdio

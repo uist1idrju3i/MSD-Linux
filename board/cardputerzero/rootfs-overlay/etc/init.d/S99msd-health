@@ -1,0 +1,19 @@
+#!/bin/sh
+
+status="$(msd-update status 2>/dev/null)" || exit 0
+case "$status" in
+	*'tryboot=1'*) ;;
+	*) exit 0 ;;
+esac
+
+if ! awk '$2 == "/" && $3 == "squashfs" { found = 1 } END { exit !found }' /proc/mounts ||
+	! awk '$2 == "/data" && $3 == "ext4" { found = 1 } END { exit !found }' /proc/mounts ||
+	[ ! -f /run/msd-ready ]; then
+	reboot
+	exit 1
+fi
+
+if ! msd-update commit; then
+	reboot
+	exit 1
+fi
