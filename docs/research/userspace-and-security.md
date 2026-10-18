@@ -26,7 +26,7 @@
 
 **init 3 方式の比較（推測。起動時間はすべて未測定）**
 
-| 観点 | systemd(最小化) | BusyBox init(+mdev または eudev) | 自作 init(静的 PID1) |
+| 観点 | systemd(最小化) | BusyBox init(+mdev または eudev) | 自作 init(静的 PID 1) |
 |---|---|---|---|
 | M5 の udev/unit 前提との整合 | **高**(そのまま流用可) | 中(udev ルール移植 or eudev 併用) | 低(全て自作) |
 | 全機能維持の実装コスト | 低 | 中 | 高 |
