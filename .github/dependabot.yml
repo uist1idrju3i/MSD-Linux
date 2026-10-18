@@ -1,0 +1,18 @@
+# 依存関係の更新を Dependabot に任せる設定。
+# vendor/ の外部リポジトリ（git submodule）と GitHub Actions を週次で監視し、
+# 更新があれば Dependabot が Pull Request を開きます。
+version: 2
+updates:
+  # vendor/ 配下の git submodule を追跡
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # .github/workflows/ のアクションを追跡
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

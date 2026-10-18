@@ -1,0 +1,4 @@
+[submodule "yomiyasu"]
+	path = vendor/yomiyasu
+	url = https://github.com/nanaism/yomiyasu.git
+	shallow = true
