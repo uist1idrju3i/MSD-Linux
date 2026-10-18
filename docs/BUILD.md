@@ -30,7 +30,9 @@ board/cardputerzero/qemu/test-ab.sh
 
 ## カーネル設定の範囲
 
-`board/cardputerzero/linux.fragment` では、使わないメディア機能、Broadcom 以外の Wi-Fi ベンダー、XFS・Btrfs・OCFS2・GFS2・NILFS2・JFS・SMB クライアント・9P、CAN・アマチュア無線・ATM・IEEE 802.15.4・NFC・InfiniBand を無効にします。USB Wi-Fi ドングル、USB カメラ、TV チューナーは使えません。netfilter、md/dm、USB serial、HID/入力、サウンド、staging/fbtft は残します。
+`board/cardputerzero/linux.fragment` では、CardputerZero の基板と有効なオーバーレイで使わないサウンドカード／コーデック、RTC・hwmon、FB_TFT／DRM パネル、赤外線・入力、USB misc の周辺機器、Ethernet・Bluetooth ドングル、旧式 USB gadget、Pi 4/5・HAT 向けドライバーを無効にします。LCD（ST7789V）、TCA8418 キーボード、IIO センサー、電源・GPIO、DS1307 ドライバー経由の Epson RX8130 RTC、BCM 系 Wi-Fi/Bluetooth、必要な ASoC 機能など、製品の構成に使う機能は残します。
+
+netfilter、md/dm、暗号・スケジューリング、USB serial/NIC、USB_CONFIGFS、HID、NLS、ATA、joystick、IIO は今回の削減対象に含めません。
 
 QEMU では A/B の起動を確認しますが、このカーネル設定を実機で再確認する作業は未完了です。
 
