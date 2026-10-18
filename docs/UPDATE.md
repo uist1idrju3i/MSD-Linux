@@ -7,8 +7,8 @@ SD カードは MBR 形式です。p4 を拡張パーティションにし、p5 
 | 番号 | 用途 | 内容 |
 |---|---|---|
 | p1 | 起動選択、FAT 16 MiB | `autoboot.txt` と `bootcode.bin` |
-| p2 | ブート A、FAT 64 MiB | firmware、`kernel8.img`、DTB、overlay、A 用 `cmdline.txt` |
-| p3 | ブート B、FAT 64 MiB | firmware、`kernel8.img`、DTB、overlay、B 用 `cmdline.txt` |
+| p2 | ブート A、FAT 64 MiB | p3 と同一の boot image。`config.txt` が A 用 cmdline を選択 |
+| p3 | ブート B、FAT 64 MiB | p2 と同一の boot image。`config.txt` が B 用 cmdline を選択 |
 | p4 | 拡張パーティション | p5〜p7 を格納 |
 | p5 | rootfs A、SquashFS 256 MiB | A 用 rootfs |
 | p6 | rootfs B、SquashFS 256 MiB | 初期イメージでは A と同一 |
@@ -28,7 +28,7 @@ boot_partition=2
 boot_partition=3
 ```
 
-資料では `boot_partition` は 1 始まりで、`autoboot.txt` は初期ブートパーティションに置く仕様です。`tryboot_a_b=1` でも p2/p3 の `config.txt` と `kernel8.img` を使い、rootfs は各 `cmdline.txt` の `root=` で指定します。A は `/dev/mmcblk0p5`、B は `/dev/mmcblk0p6` を指す設定です。
+資料では `boot_partition` は 1 始まりで、`autoboot.txt` は初期ブートパーティションに置く仕様です。p2/p3 の共通 boot image に A/B 両方の cmdline を含め、`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件で選択します。A は `/dev/mmcblk0p5`、B は `/dev/mmcblk0p6` を指す設定です。Raspberry Pi の資料にも、同じ boot image を使い、`config.txt` の条件で cmdline ファイルを選ぶ例があります。
 
 参照資料は Raspberry Pi の [autoboot.txt と A/B 更新](https://www.raspberrypi.com/documentation/computers/configuration.html#autoboot-txt) と、リポジトリ外にある `documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc` です。後者は BCM2837 の ROM がブート元を調べて `bootcode.bin` を読み込む流れを説明していますが、「最初の FAT パーティション」と明記した記述は確認できませんでした。p1 への配置は、初期ブートパーティションを selector とし、SD の先頭に置く構成として採用しています。実機での起動確認が必要です。
 
@@ -36,7 +36,7 @@ boot_partition=3
 
 `msd-update status` は `/proc/device-tree/chosen/bootloader/partition` と `tryboot` を読み、現在の A/B スロットと試験起動中かどうかを表示します。値は 32 bit big-endian です。BusyBox の `od` には `--endian=big` がないため、`od -An -v -t x1` でバイト列を読み、16 進数として変換します。
 
-更新 bundle は、次の 3 ファイルをルートに含む tar アーカイブです。manifest は `sha256sum` と同じ形式で、各イメージの SHA-256 を記載します。
+post-image スクリプトは `output/images/msd-update-bundle.tar` を生成します。更新 bundle は次の 3 ファイルをルートに含む tar アーカイブです。manifest は `sha256sum` と同じ形式で、各イメージの SHA-256 を記載します。
 
 ```text
 rootfs.squashfs
@@ -44,7 +44,7 @@ boot.vfat
 manifest
 ```
 
-`boot.vfat` はインストール先スロット用に作成します。p2 に入れる場合は `cmdline.txt` の root を p5、p3 に入れる場合は p6 に指定してください。`install` はブートイメージの中身を書き換えず、イメージ全体を非アクティブパーティションへ転送します。
+同一の `boot.vfat` を p2 と p3 のどちらにも使います。両方の cmdline を含み、選択中の boot partition に応じて root を p5 または p6 に切り替えます。`install` はこの boot image を非アクティブなブートパーティションへそのまま転送するため、同じ bundle を A/B のどちらにも適用可能です。
 
 実行コマンドの例です。
 
@@ -58,7 +58,7 @@ msd-update try
 
 `try` は検証済み更新の状態ファイルと `autoboot.txt` のスロット指定が一致する場合だけ、`reboot '0 tryboot'` を実行します。firmware は p1 の `[tryboot]` で指定されたブート領域を一度だけ選びます。次回の通常起動では tryboot が解除されるため、試験中に再起動しても未コミットの更新へ固定されません。
 
-tryboot 中に rootfs が SquashFS、`/data` が ext4 でマウント済みか、`MSD-Linux ready` marker があるかを確認するのが `S99msd-health` の役割です。条件成立後は `msd-update commit` が p1 を読み書き可能でマウントし、`autoboot.txt.new` を書いてから `autoboot.txt` への rename を実行します。BusyBox の `fsync` applet で新しいファイルと p1 のディレクトリを同期し、rename 後に p1 と更新状態のディレクトリを同期します。確認に失敗すると設定を変えずに通常再起動し、旧スロットに戻る設計です。早期起動が停止した場合に備え、BusyBox watchdog を `-T 15 -t 5` で起動します。
+tryboot 中に rootfs が SquashFS、`/data` が ext4 でマウント済みか、`MSD/Linux ready` marker があるかを確認するのが `S99msd-health` の役割です。条件成立後は `msd-update commit` が p1 を読み書き可能でマウントし、`autoboot.txt.new` を書いてから `autoboot.txt` への rename を実行します。BusyBox の `fsync` applet で新しいファイルと p1 のディレクトリを同期し、rename 後に p1 と更新状態のディレクトリを同期します。確認に失敗すると設定を変えずに通常再起動し、旧スロットに戻る設計です。早期起動が停止した場合に備え、BusyBox watchdog を `-T 15 -t 5` で起動します。
 
 ## 書き込み可能な領域
 
@@ -73,7 +73,7 @@ p7 は初期イメージで 64 MiB です。初回起動時の自動拡張は未
 | 方法 | 確認する内容 | 制約 |
 |---|---|---|
 | `tests/msd-update/run.sh` | DT 値の読み取り、commit の拒否条件、2↔3 の切り替え、bundle の SHA-256 検証、非アクティブスロットへの書き込み | 一時ディレクトリ上のホストテスト。実デバイスの電源断耐性は確認しない |
-| `board/cardputerzero/qemu/test-ab.sh` | QEMU で p6 を rootfs として起動し marker を確認 | 追加したスクリプト。QEMU は Raspberry Pi GPU firmware の tryboot を実行しないため、firmware の A/B 選択や自動フォールバックを確認しない |
+| `board/cardputerzero/qemu/test-ab.sh` | QEMU で p6 を rootfs として起動し、marker と login prompt を確認 | 検出後に QEMU を停止する。GPU firmware の tryboot は実行されず、firmware の A/B 選択や自動フォールバックを確認しない |
 | CardputerZero 実機 | firmware tryboot、rootfs 起動、watchdog、更新中の電源断、LCD・キーボード | 実機での検証が必要 |
 
 ## 電源スイッチに関する未対応事項

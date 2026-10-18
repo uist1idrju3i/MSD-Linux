@@ -29,7 +29,7 @@ while [ "$padded_size" -lt "$image_size" ]; do
 done
 truncate -s "$padded_size" "$QEMU_IMAGE"
 
-"$QEMU" -M raspi3b -m 1G \
+exec "$QEMU" -M raspi3b -m 1G \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \

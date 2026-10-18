@@ -7,7 +7,7 @@ on:
 jobs:
   msd-update-tests:
     name: msd-update host tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -15,7 +15,7 @@ jobs:
         run: tests/msd-update/run.sh
 
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:

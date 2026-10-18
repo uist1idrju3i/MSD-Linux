@@ -1,8 +1,8 @@
-# MSD-Linux
+# MSD/Linux
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/uist1idrju3i/MSD-Linux)
 
-MSD-Linux は、福岡県の室見川にちなんだ Muromi Software Distribution Linux の略称です。M5Stack CardputerZero 向けの Linux OS を開発しています。
+MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero 向けの Linux OS を開発しています。
 
 ## 目的
 
@@ -55,6 +55,9 @@ GPL-2.0 の全文は [LICENSE](LICENSE) にあります。ソースコードや�
 |---|---|
 | `vendor/` submodule | 各 submodule 固有のライセンスを維持します。`vendor/yomiyasu` には MIT License と Unicode License V3（`UNICODE-LICENSE.txt`）が含まれています。 |
 | Linux kernel / M5 ドライバ | 各ソースのライセンス表記に従います。M5 の GitHub license metadata は NOASSERTION です。`COPYING` は Linux kernel の `GPL-2.0 WITH Linux-syscall-note` に関する案内で、個々のファイルには別のライセンスが適用される場合があります。 |
+| `cardputerzero,st7789v_lcd.bin` | **unknown**。vendor のファイルにライセンス表記がなく、README や確認した履歴にも由来・ライセンスの記載がありません。 |
+| `bmi270-init-data.fw` | **unknown**。vendor のファイルにライセンス表記がなく、linux-firmware の `WHENCE` にも BMI270 用 firmware の記載を確認できませんでした。別ファイルの BMI260 firmware に記載された BSD-3-Clause は、このファイルの根拠にはなりません。 |
+| `tca8418_keypad_m5stack_keymap.map` | **unknown**。vendor のファイルに著作権・ライセンス表記がなく、README や確認した履歴にも記載がありません。 |
 | Raspberry Pi GPU firmware | `boot/LICENCE.broadcom` に従います。Buildroot 2026.08 の `rpi-firmware.mk` は `BSD-3-Clause` と記載しますが、実際の同ファイルは Raspberry Pi または認定派生機器での利用を条件とするバイナリ再配布条件です。 |
 | Wi-Fi / Bluetooth firmware | Buildroot 2026.08 の `brcmfmac_sdio-firmware-rpi.mk` は `PROPRIETARY`、ライセンスファイル名を `LICENSE` としています。GPL のリポジトリライセンスとは別に、同梱バイナリ固有の条件が適用されます。 |
 | 配布イメージ | GPL 対象ソフトウェアに対応するソースコードを提供できるようにします。今後イメージを公開するときは、Buildroot の `make legal-info` の出力も各イメージに添付する方針です。出力と実際のソース提供要件を照合し、配布物ごとに確認します。 |
