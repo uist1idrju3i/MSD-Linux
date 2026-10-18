@@ -2,9 +2,79 @@ name: Buildroot build and QEMU smoke test
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  changes:
+    runs-on: ubuntu-26.04
+    outputs:
+      build: ${{ steps.filter.outputs.build }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        name: Check whether the build is needed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$EVENT_NAME" == "pull_request" ]] &&
+             ! git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null; then
+            if ! git fetch --no-tags origin \
+              "refs/pull/${PR_NUMBER}/head:refs/remotes/pull/${PR_NUMBER}/head"; then
+              echo "build=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          if [[ ! "$BASE_SHA" =~ ^0+$ ]] && git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null &&
+             git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null; then
+            if [[ "$EVENT_NAME" == "pull_request" ]]; then
+              diff_range="${BASE_SHA}...${HEAD_SHA}"
+            else
+              diff_range="${BASE_SHA}..${HEAD_SHA}"
+            fi
+            if ! git diff --name-only -z "$diff_range" > "$RUNNER_TEMP/changed-files"; then
+              echo "build=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          build=false
+          while IFS= read -r -d '' path; do
+            case "$path" in
+              *.md|docs/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE)
+                ;;
+              *)
+                build=true
+                break
+                ;;
+            esac
+          done < "$RUNNER_TEMP/changed-files"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+
   msd-update-tests:
     name: msd-update host tests
     runs-on: ubuntu-26.04
@@ -15,7 +85,10 @@ jobs:
         run: tests/msd-update/run.sh
 
   build:
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
     runs-on: ubuntu-26.04
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7
         with:
@@ -29,16 +102,18 @@ jobs:
             file flex git libelf-dev libncurses-dev libssl-dev perl python3 \
             qemu-system-arm rsync unzip wget xz-utils
 
-      - uses: actions/cache@v6
+      - id: dl-restore
+        uses: actions/cache/restore@v6
         with:
           path: dl
-          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig') }}
+          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
           restore-keys: buildroot-dl-${{ runner.os }}-
 
-      - uses: actions/cache@v6
+      - id: ccache-restore
+        uses: actions/cache/restore@v6
         with:
           path: .ccache
-          key: buildroot-ccache-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig') }}
+          key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
           restore-keys: buildroot-ccache-${{ runner.os }}-
 
       - name: Configure Buildroot
@@ -55,9 +130,21 @@ jobs:
         env:
           BR2_DL_DIR: ${{ github.workspace }}/dl
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
+          CCACHE_MAXSIZE: 3G
         run: |
           make -C output -j"$(nproc)"
           make -C output legal-info
+
+      - name: Show ccache statistics
+        if: always()
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          if [[ -x output/host/bin/ccache ]]; then
+            output/host/bin/ccache -s
+          else
+            echo "ccache binary is not available"
+          fi
 
       - name: QEMU smoke test
         run: board/cardputerzero/qemu/test-boot.sh
@@ -73,3 +160,22 @@ jobs:
           path: |
             output/images/sdcard.img.xz
             output/legal-info.tar.gz
+
+      - uses: actions/cache/save@v6
+        if: always() && steps.dl-restore.outputs.cache-hit != 'true'
+        with:
+          path: dl
+          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
+
+      - uses: actions/cache/save@v6
+        if: always()
+        with:
+          path: .ccache
+          key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: build-time-log
+          path: output/build/build-time.log
+          if-no-files-found: ignore
