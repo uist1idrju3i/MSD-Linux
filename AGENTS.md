@@ -2,10 +2,6 @@
 
 Devin / Codex / Claude Code など、このリポジトリで作業するすべての AI エージェントと人間が守るルールです。
 
-## このリポジトリについて
-
-MSD-Linux（Muromi Software Distribution / Linux）は、Muromi Software の Linux ディストリビューション関連の作業場です。
-
 ## 1. main ブランチの保護（最優先・例外なし）
 
 - **`main` への操作は一切禁止します。** 具体的には次のとおりです。
