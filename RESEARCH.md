@@ -4,7 +4,7 @@
 
 MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero（標準版・Lite 版の両方）向けに、再現可能な Linux イメージを作ることを目指します。
 
-本書では、計画書の §1・§2 に記載された一次情報を「一次情報で確認済み（Devin, 2026-10-18）」として扱います。それ以外は事前調査レポートの確認度を引き継いでいます。事前レポート由来の内容は本リポジトリでは試していないため、実機動作や性能を示すものではありません。外部資料の取得日時・対象コミット・条件が異なる場合は、数値を合算せず個別に記載します。
+外部の事前調査を出発点に公開資料で再確認し、確認度は各行の出典に基づいて示しています。
 
 ### 決定済みの方針
 
@@ -29,7 +29,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 
 ## ハードウェア
 
-以下の表は計画書 §1.1・§2 の一次情報確認結果です。確度は「一次情報で確認済み（Devin, 2026-10-18）」です。
+以下の表は公開資料で確認したハードウェア情報です。Devin が 2026-10-18 に公開資料で確認しました。
 
 | 項目 | 確認内容 |
 |---|---|
@@ -58,14 +58,14 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 | UI / アプリ | LVGL 9.5 の APPLaunch、LaunchWizard、PipeWire、ADB（既定 off）。アプリは `.deb` として配布 |
 | M5 ドライバ構成 | `m5stack-linux-dtoverlays` HEAD `7551854`（2026-09-23）。全て out-of-tree モジュール。LCD（ST7789V3）、M5IOE1、キーボード（TCA8418）、音声（ES8389）、電池計、IMU、RTC overlay、電源検出など |
 | 起動経路 | 公式 pi-gen は U-Boot を使わない。CardputerZero/u-boot と circle-boot-splash は実験用 |
-| 公式 config / cmdline | `vc4-kms-v3d,cma-64`、UART、`dwc2`、IMX219、IR 等の設定。pi-gen の cmdline は `quiet fbcon=map:off cfg80211.ieee80211_regdom=AE` との記録があり、日本向けの regdom は見直し対象 |
-| 更新 / 周辺 | apt の `.deb` 配布、launcher updater、M5 Imager がある。AppBuilder と LVGL / SDL3 template も確認。OS image / kernel の A/B OTA は追跡ファイルで見つからないとの調査 |
+| 公式 config / cmdline | `vc4-kms-v3d,cma-64`、UART、`dwc2`、IMX219、IR 等の設定。pi-gen の cmdline は `quiet fbcon=map:off cfg80211.ieee80211_regdom=AE` で、日本向けの regdom は見直し対象（[pi-gen](https://github.com/CardputerZero/pi-gen/tree/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)） |
+| 更新 / 周辺 | apt の `.deb` 配布、launcher updater、M5 Imager がある。AppBuilder と LVGL / SDL3 template も確認。OS image / kernel の A/B OTA は公開 tracked files で未確認（[pi-gen](https://github.com/CardputerZero/pi-gen/tree/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)） |
 
-公式イメージの追跡ファイルでは、read-only 化、overlayfs、tryboot、RAUC、Mender の設定は見つかっていません（事前レポートのローカル調査）。公式イメージに関するこの否定的な調査結果は本リポジトリでは試していないため、イメージの全バイナリ内容を保証するものではありません。
+公式イメージの追跡ファイルでは、read-only 化、overlayfs、tryboot、RAUC、Mender の設定は見つかっていないとの調査結果がありますが、公開ファイル全体を再確認できていないため未確認です。確認には [CardputerZero/pi-gen の公開ファイル](https://github.com/CardputerZero/pi-gen/tree/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc) と配布 image の内容を照合する必要があります。この否定的な記述はイメージの全バイナリ内容を保証するものではありません。
 
-`cardputer-zero-os` / `cardputer-zero-shell` の org URL は 404 との記録があります。Wayback の保存説明では OS image ではなく Raspberry Pi OS / Debian 向け system profile とされ、LCD は `panel-mipi-dbi-spi` + DRM / Wayland 系の構成でした。org から URL が消えた理由や保存版と現行版の一致は未確認です。
+`cardputer-zero-os` / `cardputer-zero-shell` の GitHub URL が 404 とされた情報は現在未確認です（[cardputer-zero-os](https://github.com/CardputerZero/cardputer-zero-os)、[cardputer-zero-shell](https://github.com/CardputerZero/cardputer-zero-shell)）。Wayback の保存説明では OS image ではなく Raspberry Pi OS / Debian 向け system profile とされ、LCD は `panel-mipi-dbi-spi` + DRM / Wayland 系の構成でしたが、保存説明と現行版の一致も未確認です（[Wayback archive](https://web.archive.org/web/*/https://github.com/CardputerZero/cardputer-zero-os)）。org から URL が消えた理由は未確認です。
 
-主な訂正点（計画書 §2）をまとめます。
+公開資料で確認した主な訂正点をまとめます。
 
 - Lite 版にないのは付属の microSD カードで、カードスロットはある。
 - Raspberry Pi の文書では tryboot は全モデル対応。ただし BCM2837 / CM0 実機での動作確認はまだない。
@@ -73,6 +73,32 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - ES8389 overlay の compatible は `everest,es8390`。
 - 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の一覧にもない。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとする。
 - M5 の `panel-mipi-dbi-m.c` は `<drm/clients/drm_client_setup.h>` を include する。このヘッダは rpi-6.18.y にはある。6.12 では同 include が解決しないが、6.13〜6.17 は未確認。
+
+### よくある誤解と正しい内容
+
+| 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |
+|---|---|---|---|
+| Lite 版の microSD | Lite 版にはカードスロットがない | microSD スロットはあるが、カードは付属しない | [M5Stack CardputerZero](https://docs.m5stack.com/en/CardputerZero) |
+| `PARTITION_WALK` | 全 Raspberry Pi で利用できる | EEPROM ブートローダー搭載機の機能で、Pi 4 以降が対象。CM0 では使えない | [Raspberry Pi bootflow](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc) |
+| tryboot | CM0 では非対応 | Raspberry Pi 文書では全モデル対応と記載。CM0 実機での動作は未確認 | [Raspberry Pi autoboot.txt docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc) |
+| `powerfail_suo` | SysRq-U のみを行う | SysRq-U に加え、バックライト制御と GPIO 操作を行う | [M5 `powerfail_suo.c`](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c) |
+| ES8389 | compatible は `everest,es8389` | compatible は `everest,es8390` | [M5 CardputerZero overlay](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts) |
+
+### 詳細な調査記録
+
+本文の条件、数値、確認度、根拠 URL を含む調査記録は、次の文書に分割しています。
+
+- [調査の前提・ハードウェア・候補](docs/research/scope-and-hardware.md)
+- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
+- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
+- [ユーザー空間・SSH/VPN 調査](docs/research/userspace-and-security.md)
+- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
+- [訂正済み事項](docs/research/corrections.md)
+- [出典一覧と URL 取得記録](docs/research/sources.md)
+
+### この記録に含めないもの
+
+特定の外部製品比較、商標の個別確認、レポートの版管理情報は収録対象外です。名称の由来は本書に残します。
 
 出典: [pi-gen commit](https://github.com/CardputerZero/pi-gen/commit/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)、[kernel pin](https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/files/kernel.pref#L3)、[M5 ドライバ](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20)、[Raspberry Pi bootflow](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc)。
 
@@ -82,12 +108,12 @@ CM0 の Buildroot / MSD/Linux 起動ベースラインはありません。下�
 
 | 数値 | 対象・条件 | 確認度と解釈 | 出典 |
 |---|---|---|---|
-| GPU firmware 2,112 ms、画面点灯 2.26 s | CardputerZero、M5 の独自 227 KB bare-metal splash。電源投入から ARM 開始まで | M5 自身のベンチマーク記載。Linux 全体の起動時間ではない。一次情報で確認済み（Devin, 2026-10-18） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
-| 約 7〜9 s | 同じ M5 資料の「Linux 可用」値 | 実測と概算の合算で終点定義がない。値の信頼性は低い。一次情報で確認済み（Devin, 2026-10-18） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
-| ARM 開始 約 6.79 s | Raspberry Pi 3B+。既定 firmware、11.7 MB initramfs、約 10.2 MB kernel8.img | Raspberry Pi の公式 white paper のログ。CM0 にそのまま当てはめられない。確認済み・一次（事前レポート） | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
-| 5.38 → 4.75 → 4.47 s | Zero 2 W + HQ camera。検出機能を無効化し、さらに initramfs を削除した個人ブログの自己申告 | 条件固有の二次情報。kernel 読込のログ差から約 1.54 s と算出した記載には、ログのタイミングが読込完了後である可能性がある。確認済み・二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| 3.5 s 未満 | Zero 2 W、Buildroot 2024.02.1、GPIO トグルまで。非圧縮 kernel、initramfs なし、USB / sound 等多数を無効、KASLR / Spectre 緩和も無効 | 個人ブログの自己申告。CardputerZero の機能を含まず、条件を同等に比較できない。確認済み・二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| 約 5.5 s | 古い buildroot-quickpi の README にある値 | 対象・条件が限られ、2018 年から更新停止。参考値のみ。確認済み・二次 | [README](https://github.com/johschmitz/buildroot-quickpi/blob/2f62ac8b7a1d2edb29aad7008f2c5f38aa5195a5/README.md#L15-L16) |
+| GPU firmware 2,112 ms、画面点灯 2.26 s | CardputerZero、M5 の独自 227 KB bare-metal splash。電源投入から ARM 開始まで | M5 自身のベンチマーク記載。Linux 全体の起動時間ではない。一次（Devin が 2026-10-18 に公開資料で確認） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
+| 約 7〜9 s | 同じ M5 資料の「Linux 可用」値 | 実測と概算の合算で終点定義がない。値の信頼性は低い。一次（Devin が 2026-10-18 に公開資料で確認） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
+| ARM 開始 約 6.79 s | Raspberry Pi 3B+。既定 firmware、11.7 MB initramfs、約 10.2 MB kernel8.img | Raspberry Pi の公式 white paper のログで、CM0 にそのまま当てはめられません。一次（Devin が 2026-10-18 に公開資料で確認） | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
+| 5.38 → 4.75 → 4.47 s | Zero 2 W + HQ camera。検出機能を無効化し、さらに initramfs を削除した個人ブログの自己申告 | 条件固有の二次情報。kernel 読込のログ差から約 1.54 s と算出した記載には、ログのタイミングが読込完了後である可能性がある。二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
+| 3.5 s 未満 | Zero 2 W、Buildroot 2024.02.1、GPIO トグルまで。非圧縮 kernel、initramfs なし、USB / sound 等多数を無効、KASLR / Spectre 緩和も無効 | 個人ブログの自己申告。CardputerZero の機能を含まず、条件を同等に比較できない。二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
+| 約 5.5 s | 古い buildroot-quickpi の README にある値 | 対象・条件が限られ、2018 年から更新停止。参考値のみ。二次 | [README](https://github.com/johschmitz/buildroot-quickpi/blob/2f62ac8b7a1d2edb29aad7008f2c5f38aa5195a5/README.md#L15-L16) |
 
 M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であり、通常の Linux kernel / initramfs 読込の下限ではありません。GPU 段が kernel サイズに比例するかは未確認です。Pi 3B+ と Zero 2 W の kernel 読込値は機材・ログ区間が違うため比例関係を推定できません。最初に公式イメージの同一個体で計測し、始点・終点・カーネル・SD を記録します。
 
@@ -102,36 +128,36 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 
 ## 高速化のアイデア一覧
 
-期待効果は CM0 実機で測定していません。下表の提案は検証優先度を決める材料であり、適用済み機能ではありません。計画書にある判断と追加案は明示し、それ以外は事前レポートの確度ラベルを保持しています。
+期待効果は CM0 実機で測定していません。下表の提案は検証優先度を決める材料であり、適用済み機能ではありません。設計上の判断と公開資料で確認できた事実を区別し、根拠を確認できない主張は未確認または推測として示します。
 
 | アイデア | 期待される効果 | リスク・条件 | 確度 | 出典 |
 |---|---|---|---|---|
 | `kernel8.img` を gzip 再圧縮 | zopfli または libdeflate `-12` の標準 deflate で、同一 kernel を約 3〜8% 小さくできる可能性 | firmware gunzip 互換を、展開後の `cmp` でビット一致確認する。無圧縮と gzip は実機で SD 読込時間と展開時間を比較して決める | 【案・未検証】 | [Raspberry Pi boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L26-L52) |
 | `start_cd.elf` / `fixup_cd.dat` の採用を比較 | 小さい firmware の可能性 | M5 ベンチで使用。GPU メモリ 16 MB（`gpu_mem=16`）で起動できるか、VC4 を起動時に使わない条件で確認 | 【案・未検証】 | [M5 benchmark](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
 | `boot_delay=0`、`disable_splash=1`、`avoid_warnings` | 不要な待機・表示・警告処理を減らす可能性 | BCM2837 での差分を個別に測る。`avoid_warnings` は警告を隠すため診断時は使わない | 【案・未検証】 | [config.txt boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc) |
-| 未使用 dtoverlay を削除 | 不要デバイスの probe や初期化を避ける可能性 | GPIO / I2C / USB の実使用と overlay の依存を確認する。M5 公式 config の overlay 名には不整合の報告がある | 【報告による】・【推測】 | [M5 config.txt](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/firmware/CardputerZero/config.txt#L12) |
+| 未使用 dtoverlay を削除 | 不要デバイスの probe や初期化を避ける可能性 | GPIO / I2C / USB の実使用と overlay の依存を確認します。M5 公式 config と Makefile の overlay 名に不整合があります | 【一次】 | [M5 config.txt](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/firmware/CardputerZero/config.txt#L12)、[M5 driver repository](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20) |
 | 起動必須機能を built-in、任意機能をモジュールに分ける | 不要な driver probe を終点後へ遅らせる | 起動時に必要な SD / FS / I2C1 / M5IOE1 / LCD / keyboard の依存順を保つ。Wi-Fi / BT / audio / camera / IMU / HDMI / Ethernet は後読み候補 | 【案・未検証】 | [M5 v5 overlay](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts) |
 | `quiet`、事前設定 `lpj=`、測定時 `initcall_debug` | 本番の printk 負荷を減らし、測定時は遅い initcall を特定 | `lpj=` の値は誤ると遅延精度に影響。測定ログ自体が時間に影響するため測定用 / 量産用を分ける | 【案・未検証】 | [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) |
 | ST7789 DRM panel 上で fbcon を CLI に使う | HDMI / GUI を起動せず内蔵 LCD を直接使う | `FRAMEBUFFER_CONSOLE` の実効値、DRM/fbcon 割当、`fbcon=map:off` の影響を実機確認する | 【推測】 | [RPi defconfig](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig#L1110-L1135) |
 | initramfs を使わない | initramfs 読込・展開と RAM 使用を削減 | 起動に必要なドライバと rootfs driver を built-in にする。外部モジュールの firmware 配布方法も設計する | 【案・未検証】 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| initramfs 非同期展開 (`initramfs_async=`) | 他の起動処理と展開を重ねられる可能性 | kernel parameter として存在する。initramfs なしとの比較が必要。古い資料の説明は最新 kernel で再検証する | 【確認済み・一次（parameter の存在）】・【推測（効果）】 | [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) |
+| initramfs 非同期展開 (`initramfs_async=`) | 他の起動処理と展開を重ねられる可能性 | kernel parameter として存在する。initramfs なしとの比較が必要。古い資料の説明は最新 kernel で再検証する | 【一次（parameter の存在）】・【推測（効果）】 | [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) |
 | SquashFS と EROFS を実機比較 | 読込・展開 CPU の差を見て最適化 | SquashFS は zstd / lz4、128〜256 KiB ブロックを候補に、EROFS は lz4・4 KiB クラスタを候補にする。同条件のサイズ・RAM・読込量も比較 | 【案・未検証】 | [SquashFS docs](https://docs.kernel.org/filesystems/squashfs.html)、[EROFS FAQ](https://erofs.docs.kernel.org/en/latest/faq.html)、[EROFS docs](https://docs.kernel.org/filesystems/erofs.html) |
 | BusyBox init + mdev | 小さい init / userland でサービス数と起動処理を減らす | M5 の udev ルールは `ID_PATH` や symlink を使い、systemd unit もある。mdev でそのまま置換できるとは限らず、eudev 併用またはルール移植が必要 | 【推測】 | [M5 udev rules](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules)、[BusyBox FAQ](https://busybox.net/FAQ.html) |
 | read-only SquashFS で preload / readahead を使わない | 起動時の余分な I/O と先読み処理を避ける | 効果は未測定。必要なら fanotify / blktrace で実アクセスを見てから再検討 | 【案・未検証】 | [readahead(2)](https://man7.org/linux/man-pages/man2/readahead.2.html)、[fanotify(7)](https://man7.org/linux/man-pages/man7/fanotify.7.html) |
 | `mksquashfs -sort` で起動ファイルを配置 | 初期アクセスを連続読込に近づける可能性 | open 順は物理 I/O 順と同じとは限らない。ファイル配置と SD 読込量、終点時間を実測する | 【推測】 | [SquashFS docs](https://docs.kernel.org/filesystems/squashfs.html) |
-| `fanotify` / `strace` / `blktrace` で起動時アクセスを観測 | 起動に必要なファイル・ブロック I/O を把握 | `strace` は ptrace overhead がある。`blktrace` には `CONFIG_BLK_DEV_IO_TRACE` が必要 | 【確認済み・一次（ツール機能）】・【推測（影響）】 | [strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html)、[blktrace(8)](https://man7.org/linux/man-pages/man8/blktrace.8.html) |
+| `fanotify` / `strace` / `blktrace` で起動時アクセスを観測 | 起動に必要なファイル・ブロック I/O を把握 | `strace` は ptrace overhead がある。`blktrace` には `CONFIG_BLK_DEV_IO_TRACE` が必要 | 【一次（ツール機能）】・【推測（影響）】 | [strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html)、[blktrace(8)](https://man7.org/linux/man-pages/man8/blktrace.8.html) |
 | 不要なカーネル機能と DTB を削る | kernel / DTB を小さくし初期化・読込を減らす | M5 必須ドライバとデバイス依存を落とすと起動不能になる。効果は実測が必要 | 【推測】 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| Wi-Fi / camera / display の自動検出を抑える | 不要な probe を省ける可能性 | Raspberry Pi の公開測定は別 SoC / 別条件。CardputerZero の LCD と周辺機器に必要なものは残す | 【報告による・未確認】 | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
-| `max_framebuffers=0`、`disable_fw_kms_setup=1` 等を比較 | HDMI EDID / firmware KMS 初期化を省く可能性 | white paper の該当記述は事前レポートで未再確認。LCD 表示や HDMI の要件と衝突する場合がある | 【報告による・未確認】 | [Raspberry Pi config docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc) |
-| `core_freq` / `initial_turbo` を比較 | kernel 読込短縮の可能性 | mini-UART 利用時の `enable_uart=1` が core frequency と干渉する可能性。温度・電力・再現性も記録する | 【報告による】・【推測】 | [Raspberry Pi config reference](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/reference.adoc) |
+| Wi-Fi / camera / display の自動検出を抑える | 不要な probe を省ける可能性 | Raspberry Pi の公開測定は別 SoC / 別条件です。CardputerZero の LCD と周辺機器に必要なものは残します。CardputerZero での効果は未確認です | 【未確認】 | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
+| `max_framebuffers=0`、`disable_fw_kms_setup=1` 等を比較 | HDMI EDID / firmware KMS 初期化を省く可能性 | white paper の該当記述は未確認です。LCD 表示や HDMI の要件と衝突する場合があります | 【未確認】 | [Raspberry Pi config docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc)、[RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
+| `core_freq` / `initial_turbo` を比較 | kernel 読込短縮の可能性 | mini-UART 利用時の `enable_uart=1` が core frequency と干渉する可能性があります。温度・電力・再現性も記録します | 【推測】 | [Raspberry Pi config reference](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/reference.adoc) |
 | BusyBox applet を最小化、外部 fork/exec を減らす | userland 実行数とサイズを減らす | CM0 の必要 applet は未調査。実利用を `strace` 等で採取してから除去する | 【推測】 | [BusyBox FAQ](https://busybox.net/FAQ.html)、[strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html) |
 | 静的リンク、LTO、UPX を比較 | 共有ライブラリ読込や配布サイズを抑える可能性 | 静的リンクはファイルサイズや更新対象を増やす場合がある。UPX は起動時の展開が追加されるため、起動速度向上を前提にせず実測する | 【推測】・【未確認】 | [BusyBox FAQ](https://busybox.net/FAQ.html) |
 | ネットワーク / SSH 等の常駐を終点後へ遅延 | 終点前の service / driver 初期化を減らす | 本プロジェクトでは SSH / VPN を実装しない。一般的なネットワークも必要になるまで起動しない案 | 【推測】 | [systemd.socket(5)](https://man7.org/linux/man-pages/man5/systemd.socket.5.html)、[systemd.service(5)](https://man7.org/linux/man-pages/man5/systemd.service.5.html) |
-| systemd を使う場合は unit を削り critical chain を短くする | 不要サービスを省き並列化を活かす | M5 の udev ルール・`fb_load.service` に systemd 前提がある。systemd は Buildroot で glibc が必要 | 【確認済み・一次（Buildroot 制約）】・【推測（効果）】 | [systemd-analyze(1)](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、[Buildroot systemd Config.in](https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in) |
-| libc / allocator を比較 | サイズ、RSS、exec の差を削減できる可能性 | 公開比較は Intel x86 等で、Cortex-A53 の現行版比較は見つからない。起動差は CM0 実測が必要 | 【確認済み・二次】・【未確認】 | [musl libc comparison](https://www.etalabs.net/compare_libcs.html)、[Buildroot toolchain options](https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in) |
+| systemd を使う場合は unit を削り critical chain を短くする | 不要サービスを省き並列化を活かす | M5 の udev ルール・`fb_load.service` に systemd 前提がある。systemd は Buildroot で glibc が必要 | 【一次（Buildroot 制約）】・【推測（効果）】 | [systemd-analyze(1)](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、[Buildroot systemd Config.in](https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in) |
+| libc / allocator を比較 | サイズ、RSS、exec の差を削減できる可能性 | 公開比較は Intel x86 等で、Cortex-A53 の現行版比較は見つからない。起動差は CM0 実測が必要 | 【二次】・【未確認】 | [musl libc comparison](https://www.etalabs.net/compare_libcs.html)、[Buildroot toolchain options](https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in) |
 | カーネル圧縮を gzip / 無圧縮で比較 | SD 読込時間と CPU 展開時間のトレードオフを最適化 | 標準 RPi arm64 起動で LZ4 / ZSTD / LZO を直接使える根拠なし。カスタム ARM stub / TF-A による展開は未確認 | 【推測】・【未確認】 | [Raspberry Pi boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L26-L52)、[rpi-eeprom issue #541](https://github.com/raspberrypi/rpi-eeprom/issues/541) |
-| GPU firmware 段を省略する bootloader 案 | 理論上 firmware 起動を短縮する可能性 | `rpi-open-firmware` / `lk-overlay` は実験的、対応 SoC・安定性が不明。U-Boot Falcon も GPU firmware 段をなくす方式ではない | 【未確認】・【報告による】 | [CardputerZero u-boot](https://github.com/CardputerZero/u-boot) |
-| PREEMPT 設定 / printk を測る | initcall / printk overhead の傾向を比較 | 起動時間差は未測定。RT の printk 変更は CM0 非 RT に適用できない可能性。量産は `quiet`、測定は `PRINTK=y` を分ける | 【確認済み・一次（Kconfig）】・【推測（性能）】 | [6.18 Kconfig.preempt](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/kernel/Kconfig.preempt)、[printk change](https://lkml.iu.edu/2512.0/00981.html) |
+| GPU firmware 段を省略する bootloader 案 | 理論上 firmware 起動を短縮する可能性 | `rpi-open-firmware` / `lk-overlay` は実験的とされています。対応 SoC・安定性は未確認です。U-Boot Falcon も GPU firmware 段をなくす方式ではありません | 【未確認】・【推測】 | [CardputerZero u-boot](https://github.com/CardputerZero/u-boot)、[rpi-open-firmware](https://github.com/librerpi/rpi-open-firmware)、[lk-overlay](https://github.com/raspberrypi/lk-overlay) |
+| PREEMPT 設定 / printk を測る | initcall / printk overhead の傾向を比較 | 起動時間差は未測定。RT の printk 変更は CM0 非 RT に適用できない可能性。量産は `quiet`、測定は `PRINTK=y` を分ける | 【一次（Kconfig）】・【推測（性能）】 | [6.18 Kconfig.preempt](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/kernel/Kconfig.preempt)、[printk change](https://lkml.iu.edu/2512.0/00981.html) |
 
 ## 電源断耐性
 
@@ -140,9 +166,9 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 - rootfs は SquashFS の読み取り専用領域を第一候補にする。設定・ログ等の書込みを分離し、必要なら overlayfs の upper を tmpfs / zram に置く。
 - 永続領域は小さく保つ。ext4 の `data=ordered`、`metadata_csum`、一時ファイルへの書込み後 `fsync` + `rename` を候補とし、ファイルシステムと SD の実電断試験で選ぶ。
 - `/boot` は通常読み取り専用とし、更新時だけ書き込む。FAT の `autoboot.txt` も単一障害点になり得る。
-- microSD の FTL が書込み中の電源断で無関係なデータを壊す可能性は、事前レポートでは個人意見のみで一次資料が未確認。未確認を前提に、更新中以外の書込みを減らす。A/B の非稼働スロットが常に無傷とは保証しない。
-- F2FS は Raspberry Pi の white paper が電断後の破損報告を警告しているため保留。btrfs は microSD 上での電断保証を確認できず保留。UBIFS は生 MTD 向け、microSD では対象外。ext3 は Linux 6.18 で独立候補ではなく ext4 に統合済みとの事前調査だが、当該 URL は未取得。
-- ext4 の `data=journal` は kernel 文書の最新ページと 7.3-rc7 で非推奨（2028 年 1 月に削除予定）とされた一方、6.18 / 7.2 の該当文書には記載がないとの報告。通常案は `data=ordered`。最新版の注意を過去 kernel に誤って当てはめない。
+- microSD の FTL が書込み中の電源断で無関係なデータを壊す可能性は、公開一次資料で確認できていません。未確認を前提に、更新中以外の書込みを減らします。A/B の非稼働スロットが常に無傷とは保証しません。
+- F2FS は Raspberry Pi の white paper が電断後の破損について警告しているため保留。btrfs は microSD 上での電断保証を確認できず保留。UBIFS は生 MTD 向け、microSD では対象外。ext3 が Linux 6.18 で独立候補ではなく ext4 に統合済みとの情報は未確認です。確認には Linux 6.18 の公開 source tree の `fs/ext3` と `fs/ext4` を照合します。
+- ext4 の `data=journal` は kernel 文書の最新版と 7.3-rc7 で非推奨（2028 年 1 月に削除予定）とされていますが、6.18 / 7.2 の該当文書には記載がありません。通常案は `data=ordered` です。最新版の注意を過去 kernel に誤って当てはめないよう、[最新版](https://docs.kernel.org/filesystems/ext4/journal.html)、[7.3-rc7](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v7.3-rc7)、[6.18](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v6.18)、[7.2](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v7.2) の記述を分けて確認します。
 - 電源喪失保護（PLP）付き SD の研究・ベンダー主張は microSD 製品で確認が必要。pSLC は eMMC 向けで microSD には適用できないとの調査。スーパーキャパシタは筐体上難しいとの見立て。
 - `dm-verity` は rootfs 検証の候補だが、BCM2837 に SHA 命令がない可能性があり、読み込み時のソフトウェア検証負荷は未測定。A/B 切替時のみ検証する案も未確認。
 - `powerfail_suo` は GPIO6 の立下り後 500 ms debounce し、実装上は SysRq `u`（read-only 再マウント）のみ実行する。`s` と poweroff はコメントアウトされ、バックライトを消し `disabled-gpios` も駆動する。したがって突然の電池抜けや枯渇を救う機能ではない。
@@ -154,7 +180,7 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 
 起動時間測定・電断試験・障害解析は別モードにし、記録方式で結果を汚さないようにする。起動測定時はログを最小化し、UART と ext4 ログを無効にする。電断試験では USB-UART 経由で給電が回り込まないようにし、pstore/ramoops（リセット時のみ）、専用領域への追記、または電断後の外部回収を比較する。SysRq `s` / `u` / `b` はソフトな近似で、本物の電断試験の代用ではない。試験回数、書込み中の電断、アイドル時の電断、起動不能数を記録する。
 
-電断時の block I/O 順序を評価する手段として、`dm-flakey`、`dm-log-writes`、CrashMonkey 等の障害注入案が事前レポートに挙がっています。これらは実カードの FTL を再現するものではなく、実物の電源遮断試験も別途必要です。
+電断時の block I/O 順序を評価する候補として、`dm-flakey`、`dm-log-writes`、CrashMonkey 等の障害注入があります。これらは実カードの FTL を再現するものではなく、実物の電源遮断試験も別途必要です。
 
 出典: [ramoops docs](https://docs.kernel.org/admin-guide/ramoops.html)、[pstore block docs](https://docs.kernel.org/admin-guide/pstore-blk.html)、[SysRq docs](https://docs.kernel.org/admin-guide/sysrq.html)。
 
@@ -164,7 +190,7 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 
 - Raspberry Pi の文書は全モデルが tryboot に対応すると記載する。`autoboot.txt`、`[tryboot]`、`tryboot_a_b=1` で起動パーティションを切り替え、`reboot "0 tryboot"` で一度だけ試行する仕組みが説明されている。CM0 実機での確認は未実施。
 - `PARTITION_WALK` は EEPROM 機能で Pi 4 以降のみ。CM0 の復旧策として使えない。
-- 人手の recovery menu は設けず、自動ロールバックを目標とする。設計案は非稼働スロットへ書き込み、tryboot で試行し、選択した終点とヘルスチェックを通ってから既定スロットを確定する。終点判定は LCD + keyboard と PID1 marker の両方を記録する案。失敗・再起動時の復帰動作、FAT 更新の原子性、試行回数カウンタは実機で確認する。
+- 人手の recovery menu は設けず、自動ロールバックを目標とする。設計案は非稼働スロットへ書き込み、tryboot で試行し、選択した終点とヘルスチェックを通ってから既定スロットを確定する。終点判定は LCD + keyboard と PID 1 marker の両方を記録する案。失敗・再起動時の復帰動作、FAT 更新の原子性、試行回数カウンタは実機で確認する。
 - ウォッチドッグの `kernel_watchdog_timeout` / `kernel_watchdog_partition`、BCM2835 WDT、systemd の watchdog 連携は候補だが、BCM2837 firmware でどの機能が有効か未確認。最初の実機試験は tryboot と watchdog の確認。
 - boot パーティション（FAT）と Raspberry Pi firmware 自体は A/B 化されず、単一障害点になり得る。試行中の電断・`autoboot.txt` 更新中の電断も検証が必要。
 
@@ -189,32 +215,32 @@ QEMU の `raspi3b` machine は BCM2837 SoC をエミュレートしますが、R
 
 ## OS ベース比較
 
-以下は事前レポートの比較です。値や互換性の確度を保持し、本リポジトリでは試していません。
+以下は公開資料で確認した OS 候補の比較です。値や互換性は出典に記載された条件とともに示し、本リポジトリでは試していません。
 
 | 候補 | 調査結果 | 起動 / 要件への評価 |
 |---|---|---|
-| Buildroot 2026.08 | `raspberrypizero2w_64_defconfig` と `raspberrypi3_64_defconfig` があり、CM0 専用 defconfig は見つからないとの報告。GCC 既定は 15.3.0 | 最小化・独自 A/B に適しそうとの見立て。Zero 2 W で <3.5 s の第三者値は条件が大きく異なる |
-| 公式 CardputerZero pi-gen | Debian trixie / systemd / labwc、kernel 6.18.39 固定。A/B / RO 設定は追跡ファイルで見つからないとの調査 | M5 の現行ベースラインとして有用。Linux 可用 7〜9 s は終点定義なし |
-| Yocto / meta-raspberrypi | `raspberrypi0-2w-64.conf` と `linux-raspberrypi_6.18.bb` がある。CM0 専用 machine は見つからないとの報告。read-only-rootfs は可能 | Buildroot の代替。有力だがビルド・学習負担が大きく起動時間の比較値なし |
+| Buildroot 2026.08 | `raspberrypizero2w_64_defconfig` と `raspberrypi3_64_defconfig` があります。CM0 専用 defconfig の有無は未確認です。GCC 既定は 15.3.0 | 最小化・独自 A/B に適しそうとの推測です。Zero 2 W で <3.5 s の第三者値は条件が大きく異なります |
+| 公式 CardputerZero pi-gen | Debian trixie / systemd / labwc、kernel 6.18.39 固定。追跡対象の公開ファイルでは A/B / RO 設定を確認できていません | M5 の現行ベースラインとして有用です。Linux 可用 7〜9 s は終点定義がありません |
+| Yocto / meta-raspberrypi | `raspberrypi0-2w-64.conf` と `linux-raspberrypi_6.18.bb` があります。CM0 専用 machine の有無は未確認です。read-only-rootfs は利用可能です | Buildroot の代替です。ビルド・学習負担が大きく、起動時間の比較値はありません |
 | Ubuntu Server / Minimal Ubuntu 26.04.1 | Imager 一覧に Pi 3 向け Server がある | 起動時間・A/B の根拠なし。systemd 標準 |
 | Ubuntu Core 26 | Imager 一覧で pi3-64bit 向けを確認。最小 RAM / ストレージや起動高速化資料は未確認 | snap の recovery / seed が A/B 相当か未確認、秒数もなし |
 | rpi-image-gen | Pi 3 / Zero 2 W の device 定義あり。`image-rota` は Pi 4 / 5 クラスのみ | CM0 の公式 A/B 構成には使えない |
-| Zephyr v4.4 / Canonical Zephyr 26.04 | v4.4 に `rpi_zero_2w` / `bcm2710` 定義なしとのローカル調査。Canonical fork は未確認 | upstream main には Pi Zero 2 W 定義があるとの報告だが、SDHCI 不対応との報告。CM0 対応は評価不能 |
-| Alpine 3.24.2 / piCore64 17.0 | cm0 対応、kernel 6.18 系という事前レポート記載。出典取得に制限あり | A/B と起動時間の根拠なし。RAM 展開型は 512 MB で厳しい可能性 |
+| Zephyr v4.4 / Canonical Zephyr 26.04 | v4.4 に `rpi_zero_2w` / `bcm2710` 定義がないとの記述がありますが、公開 tree で未確認です。Canonical fork も未確認です | upstream main の Pi Zero 2 W 定義と SDHCI 対応状況は未確認です。CM0 対応は評価できません |
+| Alpine 3.24.2 / piCore64 17.0 | CM0 対応、kernel 6.18 系との情報がありますが、公開資料の確認が未完了です | A/B と起動時間の根拠はありません。RAM 展開型は 512 MB で厳しい可能性があります |
 | BusyBox 単独 | OS ではなく userland。Buildroot の最小構成で利用できる | kernel / firmware は Buildroot と共通。独立した起動時間根拠なし |
 | Rugix Bakery / Ctrl | 対応表では Pi 3 は tryboot、Zero 2 W は U-Boot。CM0 自体は一覧にない | U-Boot は GPU firmware 後に起動し、CM0 の直接対応は未確認 |
-| Android / BSD / RTOS / OpenWrt | 512 MB / CLI、M5 Linux ドライバ非対応、または kernel 6.12 系という理由で優先外 | FreeBSD 15.1 の Zero 2 W 対応は報告あり。LCD / keyboard / M5IOE1 は未確認 |
+| Android / BSD / RTOS / OpenWrt | 512 MB / CLI、M5 Linux ドライバ非対応、または kernel 6.12 系という理由で優先外 | FreeBSD 15.1 の Zero 2 W 対応は未確認です。LCD / keyboard / M5IOE1 も未確認です |
 
 出典: [Buildroot 2026.08](https://github.com/buildroot/buildroot/commit/d5180309b1b66ef3b8eaccca70ad69be8e0729a1)、[Yocto meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi/blob/919588393f41b48cb6c5d832aa35e58a19b6762d/conf/machine/raspberrypi0-2w-64.conf)、[Raspberry Pi Imager OS list](https://downloads.raspberrypi.com/os_list_imagingutility_v4.json)、[Zephyr Pi Zero 2 W board](https://github.com/zephyrproject-rtos/zephyr/tree/a915b2f12675b48b16d56653ea145dcd8f20cbbf/boards/raspberrypi/rpi_zero_2w)、[Rugix devices](https://rugix.org/docs/bakery/devices/)。
 
 ## カーネル
 
 - `kernel8.img` は `pigz -11 -n` で作成し、gunzip 後に `Image` と一致することを検査する。実サイズはビルドログの `Kernel compression sizes` 行に記録する。この文書では未測定値を記載しない。
-- 基準は `rpi-6.18.y`。計画書で確認した時点の RPi kernel は 6.18.57、Buildroot 2026.08 は 2026-09-04 版。カーネルと M5 driver をコミット固定する。
-- 事前レポートでは 7.1 で M5 DRM panel API の削除、7.0 で ASoC API 変更を確認したと記載。M5 ドライバをそのままビルドできるかは未確認。6.18 を基準、7.2 は同一構成での比較候補とする。
+- 基準は `rpi-6.18.y` とします。RPi kernel 6.18.57、Buildroot 2026.08 の 2026-09-04 版を公開情報で確認しました。カーネルと M5 driver は commit 固定します。
+- M5 DRM panel API が 7.1 で削除され、7.0 で ASoC API が変更されたとの情報は未確認です。確認には M5 driver と Raspberry Pi kernel の公開 tree を版ごとに比較する必要があります。M5 driver をそのまま build できるかは未確認です。6.18 を基準、7.2 は同一構成での比較候補とします。
 - 6.18 から 7.2 で BCM2835 SD host / KASLR / 圧縮展開コードの変更がないとの調査。ただし BCM2837 の実測差はない。6.18 以降の起動時間に関係しそうな公開変更は条件付き、未マージ、または x86 / 大容量向けで、CM0 に適用できる証拠は乏しい。
 - 6.18 arm64 は PREEMPT_NONE が既定で VOLUNTARY 選択可能との調査。7.2 では arm64 の PREEMPT_LAZY 機能により NONE / VOLUNTARY を選べないとの調査。起動時間への影響は未測定。PREEMPT_RT は対象外。
-- 7.3 系で arm64 linear alias unmap の変更が再適用されたとの報告があり、再適用後の Raspberry Pi 3 / CM0 起動は未確認。7.x 比較時は起動可否を先に確認する。
+- 7.3 系で arm64 linear alias unmap の変更が再適用されたとの情報は、公開 commit history を確認できていないため未確認です。再適用後の Raspberry Pi 3 / CM0 起動も未確認です。確認先は [Raspberry Pi Linux 7.3.y source tree](https://github.com/raspberrypi/linux/tree/rpi-7.3.y/arch/arm64/mm) です。7.x 比較時は起動可否を先に確認します。
 - M5 の v5 overlay 依存では I2C1 → M5IOE1 → LCD backlight / SPI0 panel、および keyboard / input の鎖を考慮する。optional driver は終点後に modprobe する案。
 - arm64 kernel は firmware 起動で gzip または非圧縮を前提に評価する。LZ4 / ZSTD / LZO kernel 形式を標準起動で使う根拠は見つかっていない。カスタム ARM stub / TF-A は未確認。
 
@@ -247,9 +273,9 @@ BusyBox mdev は udev 形式のルールをそのまま使えない可能性が�
 | ライセンス | LGPL-2.1+ | MIT | LGPL-2.1+ |
 | CM0 起動比較 | 現行 aarch64 の比較値なし | 同左 | 同左 |
 
-事前レポート記載の Buildroot 2026.08 版は BusyBox 1.38.0、binutils 2.45.1、glibc 2.44、musl 1.2.6、uClibc-ng 1.0.59、systemd 258.7、RAUC 1.15.2、SWUpdate 2026.05.1。Yocto Wrynose 6.0 は glibc / musl を選べるとの記載。これらの版情報は事前レポート由来で、本リポジトリでは試していない。
+Buildroot 2026.08 の BusyBox 1.38.0、binutils 2.45.1、glibc 2.44、musl 1.2.6、uClibc-ng 1.0.59、systemd 258.7、RAUC 1.15.2、SWUpdate 2026.05.1 と、Yocto Wrynose 6.0 が glibc / musl を選べるとの情報は未確認です。確認先は [Buildroot 2026.08 package tree](https://github.com/buildroot/buildroot/tree/2026.08/package) と [Yocto release documentation](https://docs.yoctoproject.org/releases.html) です。
 
-公開 microbenchmark は Intel Atom N280 / x86 や x86_64 の値で、Cortex-A53 の比較にはできない。Zero 2 W の 3.5 秒事例はフル glibc であり、特定 libc が起動を速める証拠ではない。mimalloc は自社ベンチの主張と合成ベンチへの注意書きがあるが、CM0 の起動時間値なし。jemalloc は未調査。静的 BusyBox + musl は軽量案、systemd と全 M5 udev / unit の流用を優先するなら glibc 案という事前レポートの見立てにとどめる。
+公開 microbenchmark は Intel Atom N280 / x86 や x86_64 の値で、Cortex-A53 の比較にはできません。Zero 2 W の 3.5 秒事例は full glibc であり、特定 libc が起動を速める証拠ではありません。mimalloc は自社 benchmark の主張と合成 benchmark への注意書きがありますが、CM0 の起動時間値はありません。jemalloc は未調査です。静的 BusyBox + musl は軽量案、systemd と全 M5 udev / unit の流用を優先するなら glibc 案という設計案は推測です。
 
 出典: [Buildroot toolchain options](https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in)、[systemd Buildroot config](https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in)、[musl functional differences](https://wiki.musl-libc.org/functional-differences-from-glibc.html)、[musl comparison](https://www.etalabs.net/compare_libcs.html)、[uClibc-ng](https://uclibc-ng.org/)、[M5 udev / systemd files](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules)。
 
@@ -270,7 +296,7 @@ BusyBox mdev は udev 形式のルールをそのまま使えない可能性が�
 
 この節は技術調査の保存のみを目的とし、MSD/Linux に SSH / VPN を実装する計画ではありません。
 
-- Arm Cortex-A53 の Crypto Extension は optional とされる。BCM2837 に AES / SHA / PMULL 命令があるかはメーカー一次仕様で確認できず、個人報告と CPU feature の二次情報では AES / SHA なし、CRC32 あり。実機の `/proc/cpuinfo` で確認する必要がある。
+- Arm Cortex-A53 の Crypto Extension は optional です。BCM2837 に AES / SHA / PMULL 命令があるかはメーカー一次仕様で確認できていません。CPU feature の二次資料では AES / SHA なし、CRC32 ありとされていますが、実機の `/proc/cpuinfo` で確認する必要があります。
 - WireGuard は ChaCha20-Poly1305 / Curve25519 / BLAKE2s / HKDF を使い、AES を使わない。ARM NEON 実装がある。CM0 の throughput 公開値なし。OpenVPN は既定 data cipher が AES-GCM を先頭にするため、AES 拡張がない場合は ChaCha20-Poly1305 を先頭に設定する案があるが、実装・性能は未検証。
 - Buildroot 2026.08 の調査時点の版: OpenSSH 10.5p1、Dropbear 2026.94、OpenVPN 2.7.6、WireGuard tools 1.0.20260223。OpenSSH は ChaCha20-Poly1305 が既定順の先頭で、ML-KEM-768 + X25519 のハイブリッド鍵交換が既定で先頭。Dropbear は ChaCha20-Poly1305 と ML-KEM / sntrup ハイブリッドを有効、AES-GCM は既定無効との調査。OpenVPN の実効 PQ 鍵交換は OpenSSL 版依存で、接続確認なし。WireGuard 標準プロトコルに PQ hybrid はなく、PSK は任意の追加層。
 - Dropbear は小型 SSH 実装で静的 build に向くとの調査。OpenSSH は標準的だが依存が多い。OpenVPN は userspace + OpenSSL、WireGuard は kernel と tools の組み合わせ。全て起動時間・CM0 throughput 未測定。
@@ -288,7 +314,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発拠点の�
 |---|---|
 | BCM2837 / CM0 の tryboot | 実機で `autoboot.txt` / `tryboot_a_b=1`、再起動時復帰を確認 |
 | watchdog | `kernel_watchdog_*` と BCM2835 WDT が firmware / CM0 で有効か実機試験 |
-| 起動速度 | 公式 image baseline、Buildroot baseline、LCD + keyboard の終点と PID1 marker を測定 |
+| 起動速度 | 公式 image baseline、Buildroot baseline、LCD + keyboard の終点と PID 1 marker を測定 |
 | rootfs / SD | microSD FTL の電断に関する一次資料と、複数カードでの実電断試験 |
 | Wi-Fi / Ethernet | Wi-Fi chip ID、firmware blob、SR9900A の USB ID / driver |
 | HDMI / UART / framebuffer | HDMI connector type、UART pinmux / console、FRAMEBUFFER_CONSOLE の最終 `.config` と LCD fbcon |
@@ -301,7 +327,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発拠点の�
 
 ## 出典一覧
 
-本書の各節に主要な根拠を直接記載しました。以下は事前レポートと計画書で参照された主要一次資料・技術資料をまとめたものです。版・取得日時に関する詳細は各節を参照してください。
+本書の各節に主要な根拠を記載しました。以下は本文で引用した主要な一次資料・技術資料です。版・取得日時に関する詳細は各節を参照してください。
 
 ### 製品・M5 ドライバ
 
