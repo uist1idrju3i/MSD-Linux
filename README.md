@@ -12,7 +12,7 @@ MSD-Linux は、福岡県の室見川にちなんだ Muromi Software Distributio
 
 ## 開発状況
 
-開発中です。実機は来月発売予定で、まだ起動イメージはありません。ここに記載する構成は開発方針であり、実装済みの機能ではありません。
+開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig を追加しましたが、フルビルド・QEMU 起動・実機起動はいずれも未確認です。実機は来月発売予定で、まだ起動イメージはありません。
 
 ## 予定している構成
 
@@ -24,6 +24,8 @@ MSD-Linux は、福岡県の室見川にちなんだ Muromi Software Distributio
 | A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う方式を検証予定 |
 
 詳細な調査結果、出典、未確認事項は [RESEARCH.md](RESEARCH.md) を参照してください。作業規約は [AGENTS.md](AGENTS.md) にあります。
+
+ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md) を参照してください。
 
 ## 取得方法
 

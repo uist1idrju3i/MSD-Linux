@@ -1,0 +1,35 @@
+name: Check kernel source pin
+
+on:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Compare the pinned kernel with rpi-6.18.y
+        env:
+          KERNEL_PIN: 234188315037848e5b07d65b85d38edc64095caa
+        run: |
+          set -euo pipefail
+          if ! upstream="$(git ls-remote https://github.com/raspberrypi/linux.git refs/heads/rpi-6.18.y | cut -f1)"; then
+            echo "::warning title=Kernel pin check unavailable::Could not read rpi-6.18.y from upstream."
+            echo "Kernel pin check could not read the upstream branch." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ -z "$upstream" ]; then
+            echo "::warning title=Kernel pin check unavailable::Could not read rpi-6.18.y from upstream."
+            echo "Kernel pin check could not read the upstream branch." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$upstream" = "$KERNEL_PIN" ]; then
+            echo "Kernel pin matches rpi-6.18.y at $upstream." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning title=Kernel pin is outdated::Pinned $KERNEL_PIN; upstream rpi-6.18.y is $upstream."
+            {
+              echo "## Kernel pin update available"
+              echo
+              echo "- Pinned commit: \`$KERNEL_PIN\`"
+              echo "- \`rpi-6.18.y\` head: \`$upstream\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
