@@ -14,7 +14,7 @@
 
 `build.yml` の成果物には CycloneDX SBOM とビルド時間ログを含めます。`security.yml` の `buildroot-security-report` 成果物には SBOM と VEX JSON を保存します。VEX の `analysis.state` は `exploitable`、`resolved`、`resolved_with_pedigree` などの判定です。ジョブサマリーにはコンポーネント別の exploitable 件数、CVSS 上位の CVE、解決済み件数を表示します。
 
-`build.yml` のカーネル強化検査は、固定した kernel-hardening-checker でビルド後の `.config` と起動コマンドラインを調べます。結果は OK/FAIL 件数と FAIL 項目をジョブサマリーに出し、JSON も成果物として保存します。この検査は報告のみで、結果によってビルドを失敗させません。
+`build.yml` のカーネル強化検査は固定した kernel-hardening-checker でビルド後の `.config` と起動コマンドラインを調べます。結果は OK/FAIL 件数と FAIL 項目をジョブサマリーに出し、JSON も成果物として保存します。この検査は報告のみで、結果によってビルドを失敗させません。
 
 `lint.yml` の zizmor は `1.31.1` をハッシュ固定してインストールする監査ツールです。CI では `--offline` でワークフローを検査し、結果で合否を決めます。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
 
