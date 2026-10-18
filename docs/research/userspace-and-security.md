@@ -168,7 +168,7 @@
 - 電断耐性：鍵ファイルは「tmp に書く → fsync → rename」で更新する案です（[電源遮断耐性の調査](power-and-updates.md)）。RW パーティションが壊れても機器は起動できるよう分離し、破損時に鍵を再生成する運用を許容するか決める必要があります。
 - 権限は `0600` とします。microSD は取り外せるため、暗号化しなければ鍵を読み取れる可能性があります（個体の物理的脅威モデルは未検討）。dm-crypt は CM0 に AES 命令がなく遅いと推測されます。ChaCha20 系の Adiantum は RPi defconfig で `CRYPTO_ADIANTUM=m` ですが、CE 非搭載機向けとの説明は未確認です。https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig 【一次（設定） / 用途は未確認】
 - OTA ペイロードの署名検証は RAUC / SWUpdate の導入候補に含まれます（[電源・更新方式の調査](power-and-updates.md)）。**署名鍵・検証鍵の保管とローテーション**は未調査です。
-- Dropbear は `-r` でホスト鍵ファイルのパスを指定できる（`dropbear` の man / README で要確認、現時点では未確認です）。OpenSSH の `HostKey` も man を取得できておらず未確認です。
+- Dropbear は `-r` でホスト鍵ファイルのパスを指定できるとの記述がありますが、現時点では未確認です。確認先は [Dropbear README](https://github.com/mkj/dropbear/blob/main/README.md) です。OpenSSH の `HostKey` も man を取得できておらず未確認です。
 
 ### 21.5 ポスト量子（PQ）鍵交換と SSH / VPN の既定暗号
 
