@@ -71,7 +71,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - Raspberry Pi の文書では tryboot は全モデル対応。ただし BCM2837 / CM0 実機での動作確認はまだない。
 - `PARTITION_WALK` は EEPROM ブートローダー搭載機（Pi 4 以降）の機能で、CM0 では使えない。
 - ES8389 overlay の compatible は `everest,es8390`。
-- 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の公開一覧にもありません。公開一覧は 34 件という記録と API の 33 件という記録があり、数え方の差は未確認です。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとします。https://github.com/CardputerZero/cardputer-zero-os<br>https://github.com/orgs/CardputerZero/repositories<br>https://api.github.com/orgs/CardputerZero/repos?per_page=100
+- 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の公開一覧にもありません。公開一覧は 34 件という記録と API の 33 件という記録があり、数え方の差は未確認です。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとします。https://github.com/CardputerZero/cardputer-zero-os、https://github.com/orgs/CardputerZero/repositories、https://api.github.com/orgs/CardputerZero/repos?per_page=100
 - M5 の `panel-mipi-dbi-m.c` は `<drm/clients/drm_client_setup.h>` を include し、このヘッダーは rpi-6.18.y にあります。rpi-6.12.y の同じパスは 404 ですが、6.12 系全体でヘッダーがないかは未確認です。6.13〜6.17 も未確認。
 
 ### よくある誤解と正しい内容
