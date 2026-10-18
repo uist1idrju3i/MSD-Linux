@@ -108,7 +108,7 @@
 | 無圧縮 `kernel8.img` vs gzip | ファームウェアは 64bit カーネルとして「無圧縮イメージ」と「gzip アーカイブ」の両方を受け付け、先頭の署名バイトで判別する。`make Image.gz` が既定の arm64 ビルド対象、RPi 手順も `Image.gz` を `$KERNEL.img` にコピー | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L30-L40 / https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/linux_kernel/building.adoc#L160-L206 | 一次(受理形式)。**無圧縮が速いかは未測定=推測** |
 | 無圧縮 vs gzip のトレードオフ式 | 総時間 ≒ SD 読込（サイズ ÷ GPU ローダのスループット）+ gzip の場合の展開時間です。この線形モデルは未検証です。KittenLabs は Pi で 9.3 MB を約 1.54 秒（ブログは約 6 MiB/s、9,276,375 B ÷ 1.54 s の計算値は約 5.74 MiB/s）とします。Zero 2 W、Raspbian 標準 kernel8.img のログ時刻差で、ロード時間とは限りません。CM0 の A53 での gunzip 時間は未測定です。 | https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/ | 二次（単一ブログ）/ 推測（CM0 への当てはめ） |
 | 圧縮方式（lz4/zstd）を変更 | arm64 の Image 圧縮は Raspberry Pi 方式では gzip か無圧縮が受理形式として明記されています。lz4/zstd は明記されておらず、使えるとは確認できません。 | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L30-L40 | 一次（記載の範囲）/ 未確認（他形式） |
-| 判断基準 | 実機で「無圧縮」「gzip」を同一ビルドから作り、firmware 読込、展開、initcall の各区間を比較します。 | — | 推測 |
+| 判断基準 | 実機で「無圧縮」「gzip」を同一ビルドから作り、[1]firmware 読込 [2]展開 [3]initcall の各区間を比較します。 | — | 推測 |
 
 ### 14.3 モジュール（M5 ドライバ）の分類と依存関係
 
