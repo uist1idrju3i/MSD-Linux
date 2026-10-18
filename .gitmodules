@@ -2,3 +2,12 @@
 	path = vendor/yomiyasu
 	url = https://github.com/nanaism/yomiyasu.git
 	shallow = true
+[submodule "vendor/buildroot"]
+	path = vendor/buildroot
+	url = https://github.com/buildroot/buildroot.git
+	branch = 2026.08.x
+	shallow = true
+[submodule "vendor/m5stack-linux-dtoverlays"]
+	path = vendor/m5stack-linux-dtoverlays
+	url = https://github.com/m5stack/m5stack-linux-dtoverlays.git
+	shallow = true
