@@ -4,7 +4,8 @@ set -euo pipefail
 BOARD_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 STAGE_DIR="$(mktemp -d "${BINARIES_DIR}/cardputerzero-stage.XXXXXX")"
 GENIMAGE_TMP="$(mktemp -d "${BINARIES_DIR}/genimage.XXXXXX")"
-trap 'rm -rf "$STAGE_DIR" "$GENIMAGE_TMP"' EXIT
+ROOTPATH_TMP="$(mktemp -d "${BINARIES_DIR}/genimage-root.XXXXXX")"
+trap 'rm -rf "$STAGE_DIR" "$GENIMAGE_TMP" "$ROOTPATH_TMP"' EXIT
 
 BOOTSEL_DIR="${STAGE_DIR}/bootsel"
 BOOT_DIR="${STAGE_DIR}/boot"
@@ -36,6 +37,7 @@ if [ -d "${BINARIES_DIR}/overlays" ]; then
 fi
 
 genimage \
+	--rootpath "${ROOTPATH_TMP}" \
 	--tmppath "${GENIMAGE_TMP}" \
 	--inputpath "${STAGE_DIR}" \
 	--outputpath "${BINARIES_DIR}" \
