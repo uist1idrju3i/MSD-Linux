@@ -206,6 +206,9 @@ jobs:
       - name: QEMU smoke test
         run: board/cardputerzero/qemu/test-boot.sh
 
+      - name: QEMU B-slot smoke test
+        run: board/cardputerzero/qemu/test-ab.sh
+
       - name: Package artifacts
         if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
         run: |

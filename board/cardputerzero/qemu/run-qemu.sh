@@ -29,9 +29,11 @@ while [ "$padded_size" -lt "$image_size" ]; do
 done
 truncate -s "$padded_size" "$QEMU_IMAGE"
 
+# The Pi 3 DTB maps the PL011 to ttyAMA1; QEMU resets when bcm2835_wdt is armed.
+# Blacklist the watchdog only in QEMU; hardware watchdog behavior is unchanged.
 exec "$QEMU" -M raspi3b -m 1G \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \
-	-append "earlycon=pl011,mmio32,0x3f201000 console=ttyAMA0,115200 root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
+	-append "earlycon=pl011,mmio32,0x3f201000 console=ttyAMA1,115200 initcall_blacklist=bcm2835_wdt_driver_init root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
 	-nographic -serial mon:stdio
