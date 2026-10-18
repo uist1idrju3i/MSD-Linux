@@ -20,10 +20,10 @@ description: Review and update MSD-Linux dependencies, read their complete chang
 | GitHub-hosted runner | workflow の `runs-on`。現在は `ubuntu-26.04` | `actions/runner-images` のリリースと該当イメージの README。インストール済みツールの版も確認する |
 | apt ホスト依存 | `.github/workflows/build.yml` の `apt-get install` | Ubuntu のリリース情報と runner image の README。ビルドに必要なパッケージとその版を確認する |
 | yomiyasu | `git -C vendor/yomiyasu rev-parse HEAD` | nanaism/yomiyasu の release と変更履歴 |
-| actionlint / ShellCheck | Branch B の `.github/workflows/lint.yml` にある版と archive SHA-256。現在は actionlint `1.7.12`、ShellCheck `0.11.0` | 各 release と公開 checksum。Dependabot の対象外なので、版や hash は手動で更新する |
-| zizmor | Branch B の `.github/zizmor-requirements.txt` と `.github/dependabot.yml` の `/.github` pip entry。現在は `1.31.1` | PyPI の release metadata と wheel/sdist の hash。`--offline` 監査を維持し、受け入れる指摘は `.github/zizmor.yml` に理由を一行で記録する。pip Dependabot が週次で版を確認する |
-| kernel-hardening-checker | Branch B の `.github/workflows/build.yml` にある tag と commit SHA。現在は `v0.6.17.1` / `afc376f2a935994793343cfeb05953583cc30191` | upstream release と tag の commit。workflow の SHA assertion も更新する |
-| NVD mirror | Branch B の `.github/workflows/security.yml` と `support/scripts/cve-check` の呼び出し | mirror の更新方式。版ではなく週次データを ISO week cache に保存し、shallow fetch/reset と `--no-nvd-update` で追加 download を避ける動作を保つ |
+| actionlint / ShellCheck | `.github/workflows/lint.yml` にある版と archive SHA-256。現在は actionlint `1.7.12`、ShellCheck `0.11.0` | 各 release と公開 checksum。Dependabot の対象外なので、版や hash は手動で更新する |
+| zizmor | `.github/zizmor-requirements.txt` と `.github/dependabot.yml` の `/.github` pip entry。現在は `1.31.1` | PyPI の release metadata と wheel/sdist の hash。`--offline` 監査を維持し、受け入れる指摘は `.github/zizmor.yml` に理由を一行で記録する。pip Dependabot が週次で版を確認する |
+| kernel-hardening-checker | `.github/workflows/build.yml` にある tag と commit SHA。現在は `v0.6.17.1` / `afc376f2a935994793343cfeb05953583cc30191` | upstream release と tag の commit。workflow の SHA assertion も更新する |
+| NVD mirror | `.github/workflows/security.yml` と `support/scripts/cve-check` の呼び出し | mirror の更新方式。版ではなく週次データを ISO week cache に保存し、shallow fetch/reset と `--no-nvd-update` で追加 download を避ける動作を保つ |
 
 ## 更新手順
 
