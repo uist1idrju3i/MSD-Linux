@@ -70,5 +70,9 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 
 ```sh
 git submodule update --init             # submodule の取得
+make -C vendor/buildroot BR2_EXTERNAL="$PWD" O="$PWD/output" msd_cardputerzero_defconfig && make -C output  # defconfig とビルド
+tests/msd-update/run.sh                  # 更新処理のホストテスト
+board/cardputerzero/qemu/test-boot.sh    # A スロットの QEMU 起動確認
+board/cardputerzero/qemu/test-ab.sh      # B スロットの QEMU 起動確認
 python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py <file>  # 日本語文書の候補検査
 ```

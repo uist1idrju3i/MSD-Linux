@@ -1,3 +1,4 @@
+[all]
 # Use the 64-bit Raspberry Pi firmware mode.
 arm_64bit=1
 # Load the gzip-compressed 64-bit kernel image.
@@ -30,3 +31,9 @@ dtoverlay=cardputerzero-v5-overlay
 dtoverlay=bq27220_v5
 # Load the v5 IMU overlay.
 dtoverlay=bmi270_bmm150_overlay
+# Select the A root filesystem command line for boot partition 2.
+[boot_partition=2]
+cmdline=cmdline_rootfs_a.txt
+# Select the B root filesystem command line for boot partition 3.
+[boot_partition=3]
+cmdline=cmdline_rootfs_b.txt

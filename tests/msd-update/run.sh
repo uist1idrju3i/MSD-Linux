@@ -125,10 +125,22 @@ dd if="${PARTITION_PREFIX}3" bs=4M iflag=count_bytes count="$boot_bytes" 2>/dev/
 cmp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/root-readback" || fail "rootfs read-back differs"
 cmp "$TEST_DIR/good/boot.vfat" "$TEST_DIR/boot-readback" || fail "boot read-back differs"
 [ "$(cat "$STATE_DIR/installed")" = 3 ] || fail "verified install state was not recorded"
-printf 'ok - install writes and verifies the inactive slot\n'
+printf 'ok - the shared boot bundle installs and verifies slot B\n'
+
+printf 'old-rootfs-a\n' > "${PARTITION_PREFIX}5"
+printf 'old-boot-a\n' > "${PARTITION_PREFIX}2"
+set_dt 3 0
+run_update install "$TEST_DIR/good.tar" > "$LOG_FILE"
+dd if="${PARTITION_PREFIX}5" bs=4M iflag=count_bytes count="$root_bytes" 2>/dev/null > "$TEST_DIR/root-a-readback"
+dd if="${PARTITION_PREFIX}2" bs=4M iflag=count_bytes count="$boot_bytes" 2>/dev/null > "$TEST_DIR/boot-a-readback"
+cmp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/root-a-readback" || fail "slot A rootfs read-back differs"
+cmp "$TEST_DIR/good/boot.vfat" "$TEST_DIR/boot-a-readback" || fail "slot A boot read-back differs"
+[ "$(cat "$STATE_DIR/installed")" = 2 ] || fail "slot A install state was not recorded"
+printf 'ok - the same boot bundle installs and verifies slot A\n'
 
 printf '#!/bin/sh\nprintf "%%s\\n" "$*" >> "$MSD_TEST_REBOOT_LOG"\n' > "$TEST_DIR/bin/reboot"
 chmod +x "$TEST_DIR/bin/reboot"
+set_autoboot 3 2
 MSD_TEST_REBOOT_LOG="$TEST_DIR/reboot.log" \
 PATH="$TEST_DIR/bin:$PATH" \
 MSD_UPDATE_DT_DIR="$DT_DIR" \

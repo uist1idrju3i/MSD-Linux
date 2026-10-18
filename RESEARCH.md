@@ -1,8 +1,8 @@
-# CardputerZero 向け MSD-Linux 調査記録
+# CardputerZero 向け MSD/Linux 調査記録
 
 ## 目的と前提
 
-MSD-Linux は、福岡県の室見川にちなむ「Muromi Software Distribution Linux」です。M5Stack CardputerZero（標準版・Lite 版の両方）向けに、再現可能な Linux イメージを作ることを目指します。
+MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero（標準版・Lite 版の両方）向けに、再現可能な Linux イメージを作ることを目指します。
 
 本書では、計画書の §1・§2 に記載された一次情報を「一次情報で確認済み（Devin, 2026-10-18）」として扱います。それ以外は事前調査レポートの確認度を引き継いでいます。事前レポート由来の内容は本リポジトリでは試していないため、実機動作や性能を示すものではありません。外部資料の取得日時・対象コミット・条件が異なる場合は、数値を合算せず個別に記載します。
 
@@ -78,7 +78,7 @@ MSD-Linux は、福岡県の室見川にちなむ「Muromi Software Distribution
 
 ## 起動時間（実測値と分析）
 
-CM0 の Buildroot / MSD-Linux 起動ベースラインはありません。下表の時間は対象・条件・終点が異なるため、合算・平均しません。
+CM0 の Buildroot / MSD/Linux 起動ベースラインはありません。下表の時間は対象・条件・終点が異なるため、合算・平均しません。
 
 | 数値 | 対象・条件 | 確認度と解釈 | 出典 |
 |---|---|---|---|
@@ -183,6 +183,10 @@ GPT と MBR の CM0 での挙動は未確認。MBR は安全側との見立て�
 
 出典: [autoboot.txt docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc#L36-L83)、[watchdog config docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L242-L271)、[BCM2835 WDT driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/watchdog/bcm2835_wdt.c)、[rpi-image-gen A/B layer](https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.yaml#L2-L11)、[RAUC PR #1599](https://github.com/rauc/rauc/pull/1599)、[Rugix devices](https://rugix.org/docs/bakery/devices/)。
 
+## QEMU で検証できる範囲
+
+QEMU の `raspi3b` machine は BCM2837 SoC をエミュレートしますが、Raspberry Pi の GPU firmware と `tryboot`、CardputerZero の LCD・内蔵 keyboard・M5 I2C デバイスは再現しません。`test-boot.sh` と `test-ab.sh` では rootfs を p5 / p6 から起動し、`MSD/Linux ready` marker と login prompt を確認します。ホストテストでは更新ツールの slot 判定・切替ロジックを確認します。firmware による tryboot と自動 rollback、実機周辺機器は実機検証の対象です。
+
 ## OS ベース比較
 
 以下は事前レポートの比較です。値や互換性の確度を保持し、本リポジトリでは試していません。
@@ -205,6 +209,7 @@ GPT と MBR の CM0 での挙動は未確認。MBR は安全側との見立て�
 
 ## カーネル
 
+- `kernel8.img` は `pigz -11 -n` で作成し、gunzip 後に `Image` と一致することを検査する。実サイズはビルドログの `Kernel compression sizes` 行に記録する。この文書では未測定値を記載しない。
 - 基準は `rpi-6.18.y`。計画書で確認した時点の RPi kernel は 6.18.57、Buildroot 2026.08 は 2026-09-04 版。カーネルと M5 driver をコミット固定する。
 - 事前レポートでは 7.1 で M5 DRM panel API の削除、7.0 で ASoC API 変更を確認したと記載。M5 ドライバをそのままビルドできるかは未確認。6.18 を基準、7.2 は同一構成での比較候補とする。
 - 6.18 から 7.2 で BCM2835 SD host / KASLR / 圧縮展開コードの変更がないとの調査。ただし BCM2837 の実測差はない。6.18 以降の起動時間に関係しそうな公開変更は条件付き、未マージ、または x86 / 大容量向けで、CM0 に適用できる証拠は乏しい。
@@ -263,7 +268,7 @@ BusyBox mdev は udev 形式のルールをそのまま使えない可能性が�
 
 ## SSH・VPN（調査のみ・実装しない）
 
-この節は技術調査の保存のみを目的とし、MSD-Linux に SSH / VPN を実装する計画ではありません。
+この節は技術調査の保存のみを目的とし、MSD/Linux に SSH / VPN を実装する計画ではありません。
 
 - Arm Cortex-A53 の Crypto Extension は optional とされる。BCM2837 に AES / SHA / PMULL 命令があるかはメーカー一次仕様で確認できず、個人報告と CPU feature の二次情報では AES / SHA なし、CRC32 あり。実機の `/proc/cpuinfo` で確認する必要がある。
 - WireGuard は ChaCha20-Poly1305 / Curve25519 / BLAKE2s / HKDF を使い、AES を使わない。ARM NEON 実装がある。CM0 の throughput 公開値なし。OpenVPN は既定 data cipher が AES-GCM を先頭にするため、AES 拡張がない場合は ChaCha20-Poly1305 を先頭に設定する案があるが、実装・性能は未検証。
@@ -275,7 +280,7 @@ BusyBox mdev は udev 形式のルールをそのまま使えない可能性が�
 
 ## 名称
 
-MSD-Linux は **Muromi Software Distribution Linux** の略称です。開発拠点のある福岡県を流れる **室見川** にちなんでいます。
+MSD/Linux は Muromi Software Distribution / Linux の略で、開発拠点のある福岡県を流れる **室見川** にちなんでいます。
 
 ## 未確認事項
 

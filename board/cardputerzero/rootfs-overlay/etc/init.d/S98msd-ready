@@ -1,4 +1,4 @@
 #!/bin/sh
 
 touch /run/msd-ready
-printf '%s\n' 'MSD-Linux ready' > /dev/console
+printf '%s\n' 'MSD/Linux ready' > /dev/console
