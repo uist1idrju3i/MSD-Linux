@@ -1,5 +1,7 @@
 # MSD-Linux
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/uist1idrju3i/MSD-Linux)
+
 Muromi Software Distribution / Linux
 
 ## 開発規約
