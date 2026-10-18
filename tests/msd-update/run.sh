@@ -64,6 +64,7 @@ expect_failure() {
 
 mkdir -p "$DT_DIR" "$P1_DIR" "$STATE_DIR"
 mkdir -p "$TEST_DIR/bin"
+# shellcheck disable=SC2016 # The generated test command must retain its variable expansion.
 printf '#!/bin/sh\nprintf "%%s\\n" "$1" >> "$MSD_TEST_FSYNC_LOG"\n' > "$TEST_DIR/bin/fsync"
 chmod +x "$TEST_DIR/bin/fsync"
 set_dt 2 1
@@ -138,6 +139,7 @@ cmp "$TEST_DIR/good/boot.vfat" "$TEST_DIR/boot-a-readback" || fail "slot A boot 
 [ "$(cat "$STATE_DIR/installed")" = 2 ] || fail "slot A install state was not recorded"
 printf 'ok - the same boot bundle installs and verifies slot A\n'
 
+# shellcheck disable=SC2016 # The generated test command must retain its variable expansion.
 printf '#!/bin/sh\nprintf "%%s\\n" "$*" >> "$MSD_TEST_REBOOT_LOG"\n' > "$TEST_DIR/bin/reboot"
 chmod +x "$TEST_DIR/bin/reboot"
 set_autoboot 3 2

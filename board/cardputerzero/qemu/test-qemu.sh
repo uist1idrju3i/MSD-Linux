@@ -6,6 +6,7 @@ TIMEOUT_SECONDS="${QEMU_BOOT_TIMEOUT:-300}"
 LOG_FILE="$(mktemp)"
 QEMU_PID=
 
+# shellcheck disable=SC2329 # Invoked by the EXIT trap below.
 cleanup() {
 	if [ -n "$QEMU_PID" ]; then
 		kill "$QEMU_PID" 2>/dev/null || true
