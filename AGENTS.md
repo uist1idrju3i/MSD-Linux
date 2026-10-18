@@ -2,18 +2,14 @@
 
 Devin / Codex / Claude Code など、このリポジトリで作業するすべての AI エージェントと人間が守るルールです。
 
-## 1. main ブランチの保護（最優先・例外なし）
+## 1. main ブランチ
 
-- **`main` への操作は一切禁止します。** 具体的には次のとおりです。
-  - `main` への直接コミット、直接 push
-  - `main` への force push（`--force`、`--force-with-lease`、`+main` を含む）
-  - `main` の削除（`git push origin --delete main`、`:main`）
-  - `main` での rebase、reset、amend、履歴の書き換え
-  - ブランチ保護やルールセットの変更
-- **変更は必ず作業ブランチで行い、PR を作成します。** ブランチ名は `<agent>/<短い説明>` にします（例: `devin/add-docs`）。
-- PR のマージは人間が行います。エージェントは明示的に指示されない限りマージしません。
-- 作業を始める前に `git branch --show-current` を実行し、`main` でないことを確認してください。`main` にいたら、何かを変更する前に `git switch -c <branch>` で作業ブランチを作ります。
-- 誤って `main` にコミットしてしまった場合は、push せずに作業ブランチへ移し（`git branch <new>` → `git switch <new>`）、報告してください。`main` を reset して直そうとしないでください。
+- GitHub のルールセットにより、`main` への直接 push、force push、削除、PR なしのマージは拒否されます。
+- `<agent>/<short>` ブランチで作業し、PR を作成します。
+- ルールセットは承認 0 件でのマージを許可するため、エージェントは PR をマージしません。
+- ルールセットやブランチ保護を変更しません。
+- 作業前に `git branch --show-current` を確認し、`main` では作業しません。
+- 誤って `main` にコミットした場合は push も reset もせず、新しいブランチに移して報告します。
 
 ## 2. 言語と書式
 
@@ -23,22 +19,14 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 
 ## 3. 外部リポジトリ（vendor/）
 
-- 外部のコードやスキルは `vendor/` に git submodule の shallow clone として追加します。
-
-  ```sh
-  git submodule add --depth 1 https://github.com/<owner>/<repo>.git vendor/<name>
-  ```
-
-  `.gitmodules` には `shallow = true` を記録します。
-- `vendor/` 内のファイルは直接編集しません。修正が必要なら上流のリポジトリへ提案します。上流への書き込み（Issue・PR・push）は人間の承認を得てから行います。
-- 取得: `git clone --recurse-submodules`。取得済みの場合は `git submodule update --init`。CI は `actions/checkout` の `submodules: true` で取得します。
-- 更新: Dependabot が週次で更新の Pull Request を開きます。Dependabot の PR も、内容（変更履歴と影響）を確認してから人間がマージします。手動で更新する場合は `git submodule update --remote` を使い、動作確認してから PR にしてください。
+- `vendor/` の外部コードは shallow submodule として管理し、ファイルを直接編集しません。`.gitmodules` の `shallow = true` を維持します。
+- submodule やほかの依存を追加・更新するときは「vendor-update」スキルに従います。
+- 上流への Issue・PR・push は人間の承認を得てから行います。
 
 ## 4. 依存関係の管理
 
-- `.github/dependabot.yml` で `gitsubmodule` と `github-actions` を週次監視しています。
-- 新しい種類の依存（npm、pip、Docker など）を追加したときは、同じ PR で Dependabot の監視対象に加えてください。
-- 依存を更新するときは、更新される側の変更履歴を全部読み、使える新機能や注意点があれば PR に書きます。
+- `.github/dependabot.yml` で submodule と GitHub Actions を週次監視しています。pip などの依存を追加したら、同じ変更で監視対象にも加えます。
+- Dependabot の PR を含むすべての更新で「vendor-update」スキルの変更履歴確認と回帰テストを行います。マージは人間が行います。
 
 ## 5. エージェントスキル
 
@@ -49,6 +37,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 | スキル | 使う場面 |
 |---|---|
 | `yomiyasu` | 日本語文書の推敲（`vendor/yomiyasu` へのリンク） |
+| `vendor-update` | 依存関係の変更履歴、採否、ライセンス、回帰テストの確認 |
 
 ## 6. yomiyasu（日本語推敲スキル）
 
@@ -75,4 +64,9 @@ tests/msd-update/run.sh                  # 更新処理のホストテスト
 board/cardputerzero/qemu/test-boot.sh    # A スロットの QEMU 起動確認
 board/cardputerzero/qemu/test-ab.sh      # B スロットの QEMU 起動確認
 python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py <file>  # 日本語文書の候補検査
+actionlint .github/workflows/*.yml
+git ls-files -z -- '*.sh' | xargs -0 shellcheck
+python3 -m venv "$HOME/.cache/msd-linux-zizmor"
+"$HOME/.cache/msd-linux-zizmor/bin/pip" install --require-hashes -r .github/zizmor-requirements.txt
+"$HOME/.cache/msd-linux-zizmor/bin/zizmor" --offline --format=github .github/workflows/
 ```
