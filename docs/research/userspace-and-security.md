@@ -68,14 +68,14 @@
 #### (c) EROFS との比較(一次)
 | 観点 | EROFS | SquashFS | 出典URL |
 |---|---|---|---|
-| 既定圧縮 | **圧縮する場合は LZ4 が既定の性格（FAQ）。ただし mkfs.erofs は `-z` を指定しないと圧縮しません（man）。** | GZIP | https://erofs.docs.kernel.org/en/latest/faq.html<br>https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/tree/man/mkfs.erofs.1?h=v1.9.4<br>https://docs.kernel.org/filesystems/squashfs.html |
+| 既定圧縮 | **圧縮する場合は LZ4 が既定の性格（FAQ）。ただし mkfs.erofs は `-z` を指定しないと圧縮しません（man）。FAQ の「既定 LZ4」は圧縮時のみです。** | GZIP | https://erofs.docs.kernel.org/en/latest/faq.html<br>https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/tree/man/mkfs.erofs.1?h=v1.9.4<br>https://docs.kernel.org/filesystems/squashfs.html |
 | 圧縮単位 | 物理クラスタの既定は 4 KiB（ブロック単位）です。1 MiB などの大クラスタはランダム読込を大きく悪化させうると警告されています。 | 128 KiB | https://erofs.docs.kernel.org/en/latest/faq.html<br>https://docs.kernel.org/filesystems/squashfs.html |
 | 同条件比較の注意 | 比較時は圧縮アルゴリズム・クラスタ・レベル・`-Efragments` を揃えます。EROFS は既定でイメージが大きくなりうる（64 B inode、メタデータ非圧縮。ただし 6.17 以降は圧縮可能、ファイル重複排除なしのため `-Efragments` / `-Ededupe` を使用）。小さい圧縮単位（32 KiB 未満）では EROFS の方が小さくなることも多いとされます。 | — | https://erofs.docs.kernel.org/en/latest/faq.html<br>https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/tree/man/mkfs.erofs.1?h=v1.9.4 |
 | 公表ベンチ | Android 端末でアプリ起動が SquashFS 比で最大 22.9% 高速との報告です（条件固有の値です）。 | — | https://www.usenix.org/system/files/atc19-gao.pdf 【二次】 |
 | RPi ツリーでの有効性 | RPi の `bcm2711_defconfig` は `EROFS_FS_ZIP_ZSTD=y` です。SquashFS も有効です。 | — | https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig#L1671-L1685<br>https://docs.kernel.org/filesystems/squashfs.html 【一次】 |
 | カーネル文書 | 4 KiB ブロック整列、LZ4 / LZMA / DEFLATE / ZSTD などをサポートします。Direct I/O や FSDAX は非圧縮 inode が対象です。 | — | https://docs.kernel.org/filesystems/erofs.html 【一次】 |
 
-**EROFS の配置最適化（`--sort` など）:** erofs-utils v1.9.4 の man page では、`--sort` は tar 入力用で、ディレクトリ入力の配置最適化には使えません。圧縮は `-z` で指定し（例：`-zlz4hc`）、`-C` は物理クラスタの最大サイズ、`--MZ` はメタデータ / ディレクトリデータを別領域にまとめて高レイテンシ記憶装置向けにし、`-m#[:alg]` はメタデータを圧縮します（Linux 6.17 以降）。SquashFS の `-sort` に相当する EROFS の配置指定方法は未確認です。EROFS の「4 KiB クラスタ + LZ4」が SD の低レイテンシ・ランダム読みに有利かもしれませんが、CM0 + SD での実測はありません（推測）。https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/tree/man/mkfs.erofs.1?h=v1.9.4
+**EROFS の配置最適化（`--sort` など）:** erofs-utils v1.9.4 の man page では、`mkfs.erofs --sort` は tar 入力用で、ディレクトリ入力の配置最適化には使えません。圧縮方式は `-z` で指定(`-zlz4hc` など)します。`-C` は物理クラスタの最大サイズ、`--MZ` はメタデータ/ディレクトリデータを別領域にまとめて高レイテンシ記憶装置向けにします。`-m#[:alg]` はメタデータ圧縮(Linux 6.17+)の指定です。**EROFS には SquashFS の `-sort` に相当する配置指定の手段は未確認です。** EROFS の「4 KiB クラスタ + LZ4」が SD の低レイテンシ・ランダム読みに有利かもしれませんが、CM0 + SD での実測はありません（推測）。https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/tree/man/mkfs.erofs.1?h=v1.9.4
 
 【推測・未測定】読み取り専用 rootfs は、まず SquashFS（zstd または lz4、ブロック 128K〜256K）と EROFS（lz4、4 KiB）の 2 構成を実機で比較し、終点時間・SD 読込量・RAM 使用量を測ります。どちらが適するかは未確認です。
 
@@ -168,7 +168,7 @@
 - 電断耐性：鍵ファイルは「tmp に書く → fsync → rename」で更新する案です（[電源遮断耐性の調査](power-and-updates.md)）。RW パーティションが壊れても機器は起動できるよう分離し、破損時に鍵を再生成する運用を許容するか決める必要があります。
 - 権限は `0600` とします。microSD は取り外せるため、暗号化しなければ鍵を読み取れる可能性があります（個体の物理的脅威モデルは未検討）。dm-crypt は CM0 に AES 命令がなく遅いと推測されます。ChaCha20 系の Adiantum は RPi defconfig で `CRYPTO_ADIANTUM=m` ですが、CE 非搭載機向けとの説明は未確認です。https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig 【一次（設定） / 用途は未確認】
 - OTA ペイロードの署名検証は RAUC / SWUpdate の導入候補に含まれます（[電源・更新方式の調査](power-and-updates.md)）。**署名鍵・検証鍵の保管とローテーション**は未調査です。
-- Dropbear は `-r` でホスト鍵ファイルのパスを指定できるとの情報がありますが、man / README での確認は未実施です。OpenSSH の `HostKey` も man を取得できず未確認です。
+- Dropbear は `-r` でホスト鍵ファイルのパスを指定できる（`dropbear` の man / README で要確認、現時点では未確認です）。OpenSSH の `HostKey` も man を取得できておらず未確認です。
 
 ### 21.5 ポスト量子（PQ）鍵交換と SSH / VPN の既定暗号
 
