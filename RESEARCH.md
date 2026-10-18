@@ -74,6 +74,32 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の一覧にもない。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとする。
 - M5 の `panel-mipi-dbi-m.c` は `<drm/clients/drm_client_setup.h>` を include する。このヘッダは rpi-6.18.y にはある。6.12 では同 include が解決しないが、6.13〜6.17 は未確認。
 
+### 訂正済み事項
+
+| 項目 | 事前レポートの記述 | 訂正後 |
+|---|---|---|
+| Lite 版の microSD | Lite 版には microSD がない | microSD スロットはあるが、カードは付属しない |
+| `PARTITION_WALK` | 適用範囲の明記がない | EEPROM ブートローダー搭載機の機能で、Pi 4 以降が対象。CM0 では使えない |
+| tryboot | Raspberry Pi 文書は Pi 4 / 5 を主に扱い、CM0 では未検証 | Raspberry Pi 文書では全モデル対応と記載。CM0 実機での動作は未確認 |
+| `powerfail_suo` | 6.3 節の要約では `handle_sysrq('u')` のみ | SysRq-U に加え、バックライト制御と GPIO 操作を行う |
+| ES8389 | compatible 値の記載なし | compatible は `everest,es8390` |
+
+### 詳細な調査記録
+
+本文の条件、数値、確認度、根拠 URL を含む調査記録は、次の文書に分割しています。
+
+- [調査の前提・ハードウェア・候補](docs/research/scope-and-hardware.md)
+- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
+- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
+- [ユーザー空間・SSH/VPN 調査](docs/research/userspace-and-security.md)
+- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
+- [訂正済み事項](docs/research/corrections.md)
+- [出典一覧と URL 取得記録](docs/research/sources.md)
+
+### この記録に含めないもの
+
+特定の外部製品比較、商標の個別確認、レポートの版管理情報は収録対象外です。名称の由来は本書に残します。
+
 出典: [pi-gen commit](https://github.com/CardputerZero/pi-gen/commit/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)、[kernel pin](https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/files/kernel.pref#L3)、[M5 ドライバ](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20)、[Raspberry Pi bootflow](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc)。
 
 ## 起動時間（実測値と分析）
