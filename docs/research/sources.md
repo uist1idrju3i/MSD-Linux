@@ -133,7 +133,7 @@
 | https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/export-image/04-set-partuuid/00-run.sh | 200 | cmdline の整形で `console=serial0,115200` を除去 | 一次 |
 | https://raw.githubusercontent.com/raspberrypi/documentation/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/configuration/reference.adoc | 200 | L1408:`enable_uart=1` implies `core_freq=250`(`force_turbo=1` を除く) | 一次 |
 | https://raw.githubusercontent.com/raspberrypi/documentation/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc | 200 | L98:`enable_uart=1` と `console=serial0,115200` でシリアルコンソール(GPIO14/15) | 一次 |
-| https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.18.y/include/drm/clients/drm_client_setup.h | 200 | ヘッダが存在(rpi-6.12.y は同パスで HTTP 404=ヘッダ無し) | 一次 |
+| https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.18.y/include/drm/clients/drm_client_setup.h | 200 | ヘッダが存在。rpi-6.12.y の同じパスは HTTP 404 だが、6.12 系全体でヘッダがないかは未確認 | 一次 |
 | https://raw.githubusercontent.com/m5stack/m5stack-linux-dtoverlays/75518549a2640486f5d13ea72ca4935b198d7c20/modules/st7789v-1.0/panel-mipi-dbi-m.c | 200 | L18:`#include <drm/clients/drm_client_setup.h>` | 一次 |
 | https://raw.githubusercontent.com/m5stack/m5stack-linux-dtoverlays/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c | 200 | `handle_sysrq('i')`(L74)・`'s'`(L83)・`kernel_power_off()`(L106)はコメントアウト、`handle_sysrq('u')`(L93)は実行 | 一次 |
 | https://raw.githubusercontent.com/m5stack/m5stack-linux-dtoverlays/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts | 200 | L292-293:`irq-gpios = <&gpio 6 0>`(falling edge) | 一次 |

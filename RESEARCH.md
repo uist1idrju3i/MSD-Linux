@@ -63,7 +63,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 
 公式イメージの追跡ファイルでは、read-only 化、overlayfs、tryboot、RAUC、Mender の設定は見つかっていないとの調査結果がありますが、公開ファイル全体を再確認できていないため未確認です。確認には [CardputerZero/pi-gen の公開ファイル](https://github.com/CardputerZero/pi-gen/tree/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc) と配布 image の内容を照合する必要があります。この否定的な記述はイメージの全バイナリ内容を保証するものではありません。
 
-`cardputer-zero-os` / `cardputer-zero-shell` の GitHub URL が 404 とされた情報は現在未確認です（[cardputer-zero-os](https://github.com/CardputerZero/cardputer-zero-os)、[cardputer-zero-shell](https://github.com/CardputerZero/cardputer-zero-shell)）。Wayback の保存説明では OS image ではなく Raspberry Pi OS / Debian 向け system profile とされ、LCD は `panel-mipi-dbi-spi` + DRM / Wayland 系の構成でしたが、保存説明と現行版の一致も未確認です（[Wayback archive](https://web.archive.org/web/*/https://github.com/CardputerZero/cardputer-zero-os)）。org から URL が消えた理由は未確認です。
+`cardputer-zero-os` の GitHub URL は HTTP 404 でした。一次（Devin が 2026-10-18 に確認）。`cardputer-zero-shell` の URL 状態（404 かどうか）と、org の公開一覧への掲載有無は未確認です。確認先: https://github.com/CardputerZero/cardputer-zero-shell、https://github.com/orgs/CardputerZero/repositories。Wayback の保存説明では OS image ではなく Raspberry Pi OS / Debian 向け system profile とされ、LCD は `panel-mipi-dbi-spi` + DRM / Wayland 系の構成でしたが、保存説明と現行版の一致も未確認です（[Wayback archive](https://web.archive.org/web/*/https://github.com/CardputerZero/cardputer-zero-os)）。`cardputer-zero-os` は GitHub org の公開一覧にありません。
 
 公開資料で確認した主な訂正点をまとめます。
 
@@ -71,8 +71,8 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - Raspberry Pi の文書では tryboot は全モデル対応。ただし BCM2837 / CM0 実機での動作確認はまだない。
 - `PARTITION_WALK` は EEPROM ブートローダー搭載機（Pi 4 以降）の機能で、CM0 では使えない。
 - ES8389 overlay の compatible は `everest,es8390`。
-- 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の一覧にもない。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとする。
-- M5 の `panel-mipi-dbi-m.c` は `<drm/clients/drm_client_setup.h>` を include する。このヘッダは rpi-6.18.y にはある。6.12 では同 include が解決しないが、6.13〜6.17 は未確認。
+- 公式 `cardputer-zero-os` は GitHub の URL が 404 で、org の公開一覧にもありません。公開一覧は 34 件という記録と API の 33 件という記録があり、数え方の差は未確認です。比較対象の公式ソフトウェア基準は pi-gen と M5 ドライバとします。https://github.com/CardputerZero/cardputer-zero-os<br>https://github.com/orgs/CardputerZero/repositories<br>https://api.github.com/orgs/CardputerZero/repos?per_page=100
+- M5 の `panel-mipi-dbi-m.c` は `<drm/clients/drm_client_setup.h>` を include し、このヘッダーは rpi-6.18.y にあります。rpi-6.12.y の同じパスは 404 ですが、6.12 系全体でヘッダーがないかは未確認です。6.13〜6.17 も未確認。
 
 ### よくある誤解と正しい内容
 
@@ -171,7 +171,7 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 - ext4 の `data=journal` は kernel 文書の最新版と 7.3-rc7 で非推奨（2028 年 1 月に削除予定）とされていますが、6.18 / 7.2 の該当文書には記載がありません。通常案は `data=ordered` です。最新版の注意を過去 kernel に誤って当てはめないよう、[最新版](https://docs.kernel.org/filesystems/ext4/journal.html)、[7.3-rc7](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v7.3-rc7)、[6.18](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v6.18)、[7.2](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/ext4/journal.rst?id=v7.2) の記述を分けて確認します。
 - 電源喪失保護（PLP）付き SD の研究・ベンダー主張は microSD 製品で確認が必要。pSLC は eMMC 向けで microSD には適用できないとの調査。スーパーキャパシタは筐体上難しいとの見立て。
 - `dm-verity` は rootfs 検証の候補だが、BCM2837 に SHA 命令がない可能性があり、読み込み時のソフトウェア検証負荷は未測定。A/B 切替時のみ検証する案も未確認。
-- `powerfail_suo` は GPIO6 の立下り後 500 ms debounce し、実装上は SysRq `u`（read-only 再マウント）のみ実行する。`s` と poweroff はコメントアウトされ、バックライトを消し `disabled-gpios` も駆動する。したがって突然の電池抜けや枯渇を救う機能ではない。
+- `powerfail_suo` は GPIO6 の立下り後 500 ms debounce し、実装上は SysRq `u`（read-only 再マウント）のみ実行する。`s` と poweroff はコメントアウトされ、バックライトを消し `disabled-gpios` も駆動する。overlay に gpio-keys entry はなく、ユーザー空間へ電源断イベントを届けて正常停止する経路も未実装です。したがって突然の電池抜けや枯渇を救う機能ではない。
 - zram は RAM 上の block device なので read-only rootfs と併用できる見込み。zswap は swap 先を必要とし、SD swap を避けるなら zram swap と同時に有効化しない案。実機では未検証。
 
 出典: [overlayfs docs](https://docs.kernel.org/filesystems/overlayfs.html)、[ext4 docs](https://docs.kernel.org/admin-guide/ext4.html)、[Raspberry Pi resilient filesystem white paper](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-3-Making%20a%20more%20resilient%20file%20system.pdf)、[M5 powerfail driver](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115)。

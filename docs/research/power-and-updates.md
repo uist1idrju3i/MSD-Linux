@@ -27,7 +27,11 @@
 - F2FS は警告対象です。
 - `/boot`（FAT）を read-only にする推奨と、ファイル更新時の temp → fsync → rename は未確認です。
 
+【推測・設計案】MBR を候補にします。BCM2837 の boot ROM が GPT を読めない可能性を考慮しますが、CM0 での GPT 対応は未確認です。overlayfs の upper と `/etc` などの可変設定は tmpfs に置き、永続設定と開発ログは p7 に保存する案です。電源断試験ログには pstore/ramoops の利用を検討します。https://docs.kernel.org/filesystems/overlayfs.html<br>https://docs.kernel.org/admin-guide/ramoops.html
+
 ### 6.3 powerfail_suo
+overlay に `gpio-keys` ノードはなく、GPIO6 の電源断イベントをユーザー空間へ届けて正常停止させる経路もありません。SysRq-U は突然の電池取り外しや電池切れからデータを救う機能ではありません。
+
 【一次】M5 の `powerfail_suo.c` では `handle_sysrq('u')`（read-only 再マウント）のみが実行されます。`'i'` と `'s'` はコメントアウトされています。ファイル冒頭のコメントと MODULE_DESCRIPTION は「S→U→O」と記載しますが、実装は U のみです。Devin が 2026-10-18 に公開資料で確認しました。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L74-L115
 
 GPIO6 の立下りを 500 ms デバウンスして SysRq-U を実行します。バックライトを 0 にし、`disabled-gpios = <&m5ioe1 11 1>` も駆動します。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts#L289-L295<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L108-L115
@@ -138,5 +142,6 @@ Devin が 2026-10-18 に公開資料で確認しました。
 3. **失敗検知は 3 段です。** (a) カーネル panic は `panic=N` で再起動します（kernel-parameters に記載）。(b) hung にはウォッチドッグを使います。`kernel_watchdog_timeout` が CM0 で使えない場合に備え、init が `bcm2835_wdt` を直接 open して給餌する経路を用意する案です。(c) 起動後の機能不全は確定前の自己診断で検知します。判定条件が未決で、LCD / キー入力または PID 1 の完了マーカーを使う案があります。ヘッドレスでの判定は困難です。https://docs.kernel.org/admin-guide/kernel-parameters.html
 4. **boot counter:** RW の小領域（別パーティション）に連番と CRC を 2 面書きします。N 回連続で完了条件に到達しなければ旧スロットを既定に戻します。確定時だけ書き込み、SD への書き込み回数を最小化する案です。
 5. **電源断との整合:** 試行中の電断は未確定状態での再起動となり、最大 N 回の試行後に旧スロットへ戻す想定です。tryboot と再起動による復帰が BCM2837 で動くかは未確認で、必ず戻せるとは言えません。確定時に更新する FAT 上の autoboot.txt も電断で破損する可能性があります。
-6. **弱点:** A/B 用 boot パーティション（FAT）は単一障害点です。firmware（start.elf / bootcode.bin）は A/B 化されないとの情報がありますが、裏付ける公開資料は未確認です。CM0 で firmware を A/B 化する公式手段も未確認です。
+6. **弱点:** A/B 用 boot パーティション（FAT）は単一障害点です。更新を 1 セクター内に収める方法や検証用コピーを持つ方法は軽減案ですが、FAT 上での有効性は未検証です。firmware（start.elf / bootcode.bin）は A/B 化されないとの情報がありますが、裏付ける公開資料は未確認です。CM0 で firmware を A/B 化する公式手段も未確認です。
 7. CM0 向けの公式 A/B 構成は確認できておらず、tryboot は BCM2837 で未検証です。最初の実機試験では tryboot と `kernel_watchdog_*` の動作を確認します。動作しない場合は、段数が増える U-Boot または RAUC custom backend を代替案として検討します。
+8. **更新記録の原子性:** 更新物を一時ファイルへ書いて fsync し、rename 後に親ディレクトリも fsync する案です。tryboot=1、選択中のパーティション一致、インストール記録の検証がそろってから更新を確定します。FAT 上の更新動作と実装は未検証・未着手です。
