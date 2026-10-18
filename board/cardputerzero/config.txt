@@ -1,0 +1,32 @@
+# Use the 64-bit Raspberry Pi firmware mode.
+arm_64bit=1
+# Load the uncompressed Buildroot kernel image.
+kernel=Image
+# Skip the firmware startup delay.
+boot_delay=0
+# Hide the firmware splash screen.
+disable_splash=1
+# Enable the serial UART.
+enable_uart=1
+# Disable the overscan border.
+disable_overscan=1
+# Enable the Raspberry Pi 3 CPU boost mode.
+arm_boost=1
+# Select the cut-down GPU firmware binary.
+start_file=start_cd.elf
+# Select the matching cut-down firmware fixup.
+fixup_file=fixup_cd.dat
+# Use the CardputerZero Compute Module device tree.
+device_tree=bcm2710-rpi-cm0.dtb
+# Enable the I2C controller used by CardputerZero peripherals.
+dtparam=i2c_arm=on
+# Enable the I2S audio interface.
+dtparam=i2s=on
+# Enable the SPI controller used by the display.
+dtparam=spi=on
+# Load the CardputerZero v5 hardware overlay.
+dtoverlay=cardputerzero-v5-overlay
+# Load the v5 battery gauge overlay.
+dtoverlay=bq27220_v5
+# Load the v5 IMU overlay.
+dtoverlay=bmi270_bmm150_overlay

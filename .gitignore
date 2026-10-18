@@ -6,6 +6,11 @@ AGENTS.override.md
 # yomiyasu_check.py の検査記録（ツール側でも .gitignore を自動作成する）
 .yomiyasu/
 
+# Buildroot
+/output/
+/dl/
+/.ccache/
+
 # Python / OS
 __pycache__/
 *.py[cod]

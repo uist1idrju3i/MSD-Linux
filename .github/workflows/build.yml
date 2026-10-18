@@ -1,0 +1,66 @@
+name: Buildroot build and QEMU smoke test
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Install host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc bison build-essential cpio device-tree-compiler \
+            file flex git libelf-dev libncurses-dev libssl-dev perl python3 \
+            qemu-system-arm rsync unzip wget xz-utils
+
+      - uses: actions/cache@v6
+        with:
+          path: dl
+          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig') }}
+          restore-keys: buildroot-dl-${{ runner.os }}-
+
+      - uses: actions/cache@v6
+        with:
+          path: .ccache
+          key: buildroot-ccache-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig') }}
+          restore-keys: buildroot-ccache-${{ runner.os }}-
+
+      - name: Configure Buildroot
+        env:
+          BR2_DL_DIR: ${{ github.workspace }}/dl
+          BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          make -C vendor/buildroot \
+            BR2_EXTERNAL="${GITHUB_WORKSPACE}" \
+            O="${GITHUB_WORKSPACE}/output" \
+            msd_cardputerzero_defconfig
+
+      - name: Build image and legal information
+        env:
+          BR2_DL_DIR: ${{ github.workspace }}/dl
+          BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          make -C output -j"$(nproc)"
+          make -C output legal-info
+
+      - name: QEMU smoke test
+        run: board/cardputerzero/qemu/test-boot.sh
+
+      - name: Package artifacts
+        run: |
+          xz -T0 -k output/images/sdcard.img
+          tar -czf output/legal-info.tar.gz -C output legal-info
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: msd-cardputerzero-build
+          path: |
+            output/images/sdcard.img.xz
+            output/legal-info.tar.gz
