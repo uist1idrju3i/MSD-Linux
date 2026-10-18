@@ -1,0 +1,12 @@
+# 個人用のエージェント設定（コミットしない）
+CLAUDE.local.md
+.claude/settings.local.json
+AGENTS.override.md
+
+# yomiyasu_check.py の検査記録（ツール側でも .gitignore を自動作成する）
+.yomiyasu/
+
+# Python / OS
+__pycache__/
+*.py[cod]
+.DS_Store
