@@ -1,4 +1,5 @@
 MODULES y kernel modules and M5 out-of-tree drivers
+MODULE_DECOMPRESS y in-kernel XZ module decompression for BusyBox modprobe
 MMC y boot and storage media
 MMC_BCM2835_MMC y BCM2835 legacy SD host
 MMC_BCM2835 y BCM2835 SD host
