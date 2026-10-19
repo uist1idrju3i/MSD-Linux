@@ -5,7 +5,7 @@
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
 | `build.yml` | PR、`main` への push、手動実行 | 文書だけの PR では Buildroot ビルドを省略します。`main` への push と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
-| `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンクを検査するゲートです。 |
+| `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定した Raspberry Pi カーネルと `rpi-6.18.y` の差を報告します。更新の有無では失敗しません。これはブランチ先端との差を調べるもので、カーネル tarball のハッシュ検査ではありません。Dependabot は submodule と GitHub Actions を監視しますが、Buildroot のカーネル tarball hash は追跡しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
@@ -15,6 +15,28 @@
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させます。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
 
 `main` の同じ concurrency group では、保留中の実行が後続の実行に置き換わります。文書だけの push もビルドを省略すると、コード変更のビルドが実行されないまま残ることがあるため、`main` への push は常にビルドします。
+
+## 追跡テキストの文字範囲
+
+`agent-docs.yml` は、Git で追跡しているテキストファイルが JIS X 0213:2004 の範囲内にあるかを検査します。印字可能な ASCII と TAB、改行を除き、公式の対応表にない文字はエラーです。第3・第4水準漢字は表に含まれていても警告し、簡体字の混入がないか確認を促します。`--strict` を指定すると警告も失敗になります。
+
+Python の `euc_jis_2004` などの codec は公式対応表と異なる文字を受理または拒否するため、判定には使いません。検査器は Project X0213 の対応表を同梱し、その SHA-256 を確認してから読み込みます。
+
+```sh
+python3 .github/scripts/check-jisx0213.py
+python3 .github/scripts/check-jisx0213.py docs/CI.md
+```
+
+引数を省略した場合は `git ls-files -z` が返す追跡済みファイルを検査します。シンボリックリンク、先頭 8 KiB に NUL byte を含むバイナリファイル、および対応表 `.github/scripts/data/jisx0213-2004-std.txt` は対象外です。submodule の gitlink は通常ファイルではないため対象外です。バイナリ判定を通ったファイルの UTF-8 エラーは検査エラーになります。パスを指定した場合はそのファイルだけが対象です。例外は `.github/jisx0213-allowlist.tsv` にタブ区切りの4列で記載し、理由を必ず添えます。
+
+```text
+file	<path-or-glob>	*	<reason>
+quote	<exact-path>	<characters>	<reason>
+```
+
+`file` は一致するファイル内の範囲外文字をすべて許可します。`quote` は Markdown（`.md`）だけで有効で、指定文字をフェンス付きコードブロック、` {0,3}>` で始まる引用行、またはインラインコード内で許可します。Markdown 以外のファイルでは `quote` は適用されません。インラインコードは同じ行にある、開始と同じ長さの次のバッククォート列で閉じる扱いです。複数行にまたがるインラインコードは解析しません。使われていない例外は stale としてエラーになります。
+
+同梱表は [Project X0213 の JIS X 0213:2004 対応表](http://x0213.org/codetable/jisx0213-2004-std.txt) から取得しました。取得日は 2026-10-19、SHA-256 は `388ae7822cbf0aecff09b8466dd630ea343673d01a3c7df9d61947ad1ad5b2dd` です。表のライセンス表記には “You can use, modify, distribute this table freely” とあります。
 
 ## ローカル検証と runner の注意
 

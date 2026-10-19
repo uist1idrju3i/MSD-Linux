@@ -319,10 +319,10 @@ QEMU の `raspi3b` machine は BCM2837 SoC をエミュレートしますが、R
 | Zephyr v4.4 / Canonical Zephyr 26.04 | v4.4 に `rpi_zero_2w` / `bcm2710` 定義がないとの記述がありますが、公開 tree で未確認です。Canonical fork も未確認です | upstream main の Pi Zero 2 W 定義と SDHCI 対応状況は未確認です。CM0 対応は評価できません |
 | Alpine 3.24.2 / piCore64 17.0 | CM0 対応、kernel 6.18 系との情報がありますが、公開資料の確認が未完了です | A/B と起動時間の根拠はありません。RAM 展開型は 512 MB で厳しい可能性があります |
 | BusyBox 単独 | OS ではなく userland。Buildroot の最小構成で利用できる | kernel / firmware は Buildroot と共通。独立した起動時間根拠なし |
-| Rugix Bakery / Ctrl | 対応表では Pi 3 は tryboot、Zero 2 W は U-Boot。CM0 自体は一覧にない | U-Boot は GPU firmware 後に起動し、CM0 の直接対応は未確認 |
+| Rugix Bakery / Ctrl | 【一次】（2026-10-19 確認）対応表では Pi 5/Pi 4（Tier 1）/CM4（Tier 2）が `rpi-tryboot`、Pi 3/Zero 2 W（Tier 2）と Pi 2 v1.2/Pi 2/Pi 1/Zero（Tier 3）が `rpi-uboot`。Pi 3 の制約は Rugix の target による | Raspberry Pi firmware は全モデルで tryboot に対応します。CM0 で Rugix を使うには実験的な U-Boot flow が必要で、firmware 更新不可のため U-Boot 非採用の MSD 方針とは合いません。MSD 自身の tryboot 設計は影響を受けず、CM0 実機確認は継続します |
 | Android / BSD / RTOS / OpenWrt | 512 MB / CLI、M5 Linux ドライバ非対応、または kernel 6.12 系という理由で優先外 | FreeBSD 15.1 の Zero 2 W 対応は未確認です。LCD / keyboard / M5IOE1 も未確認です |
 
-出典: [Buildroot 2026.08](https://github.com/buildroot/buildroot/commit/d5180309b1b66ef3b8eaccca70ad69be8e0729a1)、[Yocto meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi/blob/919588393f41b48cb6c5d832aa35e58a19b6762d/conf/machine/raspberrypi0-2w-64.conf)、[Raspberry Pi Imager OS list](https://downloads.raspberrypi.com/os_list_imagingutility_v4.json)、[Zephyr Pi Zero 2 W board](https://github.com/zephyrproject-rtos/zephyr/tree/a915b2f12675b48b16d56653ea145dcd8f20cbbf/boards/raspberrypi/rpi_zero_2w)、[Rugix devices](https://rugix.org/docs/bakery/devices/)。
+出典: [Buildroot 2026.08](https://github.com/buildroot/buildroot/commit/d5180309b1b66ef3b8eaccca70ad69be8e0729a1)、[Yocto meta-raspberrypi](https://github.com/agherzan/meta-raspberrypi/blob/919588393f41b48cb6c5d832aa35e58a19b6762d/conf/machine/raspberrypi0-2w-64.conf)、[Raspberry Pi Imager OS list](https://downloads.raspberrypi.com/os_list_imagingutility_v4.json)、[Zephyr Pi Zero 2 W board](https://github.com/zephyrproject-rtos/zephyr/tree/a915b2f12675b48b16d56653ea145dcd8f20cbbf/boards/raspberrypi/rpi_zero_2w)、[Rugix devices](https://rugix.org/docs/bakery/devices/)、[Rugix Raspberry Pi flow](https://rugix.org/docs/bakery/devices/raspberry-pi)、[Raspberry Pi bootflow](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc#L91)。
 
 ## カーネル
 

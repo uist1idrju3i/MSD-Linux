@@ -1,0 +1,6 @@
+# kind	path	chars	reason
+file	.github/jisx0213-allowlist.tsv	*	検査器の許可文字を含む設定
+quote	docs/research/sources.md	µ	gist 本文の引用
+quote	docs/research/sources.md	🙋	EROFS FAQ ページタイトルの引用
+quote	docs/research/sources.md	载动总计启	CardputerZero/circle-boot-splash BENCHMARK.md 中国語原文の引用
+quote	.agents/skills/jisx0213-text/SKILL.md	µ≥≤🥈✅⚠️这说载动	置き換え例として示す文字

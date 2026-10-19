@@ -65,7 +65,9 @@
 | ROTAH | https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.d/hooks/preimage05-templates#L40-L42 | 2026-10-18 | 確認済み | autoboot.txt 生成(tryboot_a_b=1 は L42) |
 | RTC | https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/rtc/rtc-ds1307.c#L118 | 2026-10-18 | 確認済み | RX8130 レジスタ定義(L118-L119) |
 | RUG | https://api.github.com/repositories/642546697/releases | 2026-10-18 | 確認済み(API GET。v1.3.0=2026-08-05T05:05:29Z) | silitics/rugix。API は旧 URL から 301 で遷移 |
-| RUGD | https://rugix.org/docs/bakery/devices/ | 2026-10-18 | 確認済み。Pi 3 = rpi-tryboot、Zero 2 W = rpi-uboot | Rugix のデバイス表 |
+| RUGD | https://rugix.org/docs/bakery/devices/ | 2026-10-19 | 【一次】確認済み | Pi 5/Pi 4（Tier 1）/CM4（Tier 2）= `rpi-tryboot`。Pi 3/Zero 2 W（Tier 2）、Pi 2 v1.2/Pi 2/Pi 1/Zero（Tier 3）= `rpi-uboot` |
+| RUGP | https://rugix.org/docs/bakery/devices/raspberry-pi | 2026-10-19 | 【一次】確認済み | Pi 5/Pi 4/Pi 400/CM4 以外は `rpi-uboot` を使う。U-Boot flow は実験的で Raspberry Pi bootloader/firmware を更新できない |
+| RPBOOT | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc#L91 | 2026-10-19 | 【一次】確認済み | “All Raspberry Pi models support `tryboot`” |
 | SCH | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf | 2026-10-18 | 確認済み(HTTP 200。PDF 本文に HDMI/G6_SW_DET 等の記載) | 回路図 V0.6.1(2026-07-02)。ページ番号(P10 J5)の再照合は未実施 |
 | SKU | https://docs.m5stack.com/en/products/sku/C154 | 2026-10-18 | 確認済み(HTTP 200。今回ページ内リンクから回路図 PDF の URL を抽出) | 製品ページ(C154) |
 | SWU | https://api.github.com/repos/sbabic/swupdate/releases/latest | 2026-10-18 | 確認済み(API GET。2026.05.1=2026-06-22T07:54:11Z) | SWUpdate の最新リリース |
@@ -165,7 +167,7 @@
 | https://downloads.raspberrypi.com/raspios_arm64/release_notes.txt | 200 | L1 `2026-10-06:`、L38 `Linux kernel 6.18.50 - cff533aec2fa601846766b32ff57204e0a61bed7`、L39 は次の項 `2026-09-15:` | 一次 |
 | https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token= | 200 | Arm DDI 0501F(Cortex-A53 Cryptography Extension TRM r0p4)。`pdftotext` 後 L303-304「The optional Cryptography Extension is not included in the base product. ARM supplies the Cryptography Extension only under an additional licence…」 | 一次 |
 | https://www.freedesktop.org/software/systemd/man/latest/systemd-analyze.html | 200 | blame の注意:「does not display results for services with Type=simple」(即時起動扱いで測定不能)、キュー待ちは含まれない | 一次 |
-| https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | 「Intel Celeron N3060 under ChromeOS Crostini: regular fork 1762 µs …」(HTML タグ除去後の本文) | 二次(単一の gist) |
+| https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | 「`Intel Celeron N3060 under ChromeOS Crostini: regular fork 1762 µs …`」(HTML タグ除去後の本文) | 二次(単一の gist) |
 
 
 ### URL への到達結果（205 件）
@@ -205,7 +207,7 @@
 | https://docs.mender.io/release-information/supported-releases | 200 | Supported releases / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://docs.mender.io/release-information/release-notes-changelog/mender-convert | 200 | mender-convert / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://docs.mender.io | 200 → https://docs.mender.io/ | Mender Docs / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
-| https://erofs.docs.kernel.org/en/latest/faq.html | 200 | 🙋 Frequently Asked Questions &#8212; EROFS filesystem project | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
+| https://erofs.docs.kernel.org/en/latest/faq.html | 200 | `🙋 Frequently Asked Questions — EROFS filesystem project` | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://forums.raspberrypi.com/viewtopic.php?t=207888 | 403 | Just a moment... | 取得できず | 2026-10-18 20:54 |
 | https://forums.raspberrypi.com/viewtopic.php?t=263234 | 403 | Just a moment... | 取得できず | 2026-10-18 20:54 |
 | https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | Test Linux fork/vfork+exec(dynamic/static binary) performance. Dependecies: gcc, | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
