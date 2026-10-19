@@ -127,6 +127,16 @@ insert_mdev_rule() {
 insert_mdev_rule "-\$SUBSYSTEM=input;input/event[0-9]+ root:root 640 */usr/libexec/msd/cardputer-keyboard \"\$ACTION\" \"\$MDEV\""
 insert_mdev_rule "-\$POWERFAIL=1 root:root 660 */usr/libexec/msd/powerfail-notify"
 
+duplicate_mdev_rules="$(awk '
+	/^[[:space:]]*($|#)/ { next }
+	++seen[$0] == 2 { print $0 }
+' "$mdev_conf" | sort)"
+if [ -n "$duplicate_mdev_rules" ]; then
+	printf 'Duplicate non-comment mdev.conf lines:\n%s\n' \
+		"$duplicate_mdev_rules" >&2
+	exit 1
+fi
+
 base_dir="${BASE_DIR:-}"
 host_dir="${HOST_DIR:-}"
 if [ -z "$base_dir" ] || [ -z "$host_dir" ]; then
