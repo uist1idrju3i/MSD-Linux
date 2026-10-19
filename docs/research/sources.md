@@ -503,3 +503,13 @@
 | https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/package/m5stack-cardputerzero/m5stack-cardputerzero.mk | 200・本文確認 | `modules/st7789v-1.0` / `modules/tca8418-1.0` / `modules/es8389-1.0` | 【一次】 |
 | https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115 | 200・本文確認 | `handle_sysrq('u')` / `// handle_sysrq('s');` | 【一次】 |
 | https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327 | CI artifact 取得済み | `p1=1, p2=32769, p3=163841, p4=294913, p5=294914, p6=819203, p7=1343492` | 【実測】 |
+| https://man7.org/linux/man-pages/man5/mke2fs.conf.5.html | 200・本文確認 | `small = { blocksize = 1024` | 【一次】 |
+| https://man7.org/linux/man-pages/man8/mke2fs.8.html | 200・本文確認 | “heuristically determined by the file system size and the expected usage” | 【一次】 |
+| https://kspp.github.io/Recommended_Settings | 200・本文確認 | `CONFIG_STACKPROTECTOR_STRONG=y` / `CONFIG_HARDENED_USERCOPY=y` | 【一次】 |
+| https://documentation-service.arm.com/static/5e9075f9c8052b1608761519?token= | 本文確認 | “The Cortex-A53 processor implements the ARMv8-A architecture.” | 【一次】 |
+| https://support.arm.com/documentation/102433/0200/Return-oriented-programming | 本文確認 | Armv8.3-A で pointer authentication を導入 | 【一次】 |
+| https://developer.arm.com/documentation/109697/latest/Feature-descriptions/The-Armv8-5-architecture-extension | 本文確認 | `FEAT_BTI` は Armv8.4-A で optional | 【一次】 |
+| https://github.com/raspberrypi/firmware/issues/694 | 本文確認 | 試験用 firmware が `/chosen/kaslr-seed` を 8 byte の乱数として追加したとの記録 | 【一次・履歴】 |
+| https://github.com/raspberrypi/firmware/issues/1595 | 本文確認 | “There is a new firmware available ... that adds `/chosen/rng-seed`.” | 【一次・履歴】 |
+| https://github.com/raspberrypi/rpi-eeprom/commit/cbd599e30dd3a8e7bbc7646364f3d3907f3027e0 | 本文確認 | Pi 5 の `kaslr-seed` / `rng-seed` が正しい entropy source を使うよう修正 | 【一次】 |
+| https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/os/graphics-utilities.adoc | 本文確認 | `0x10000` は過去の undervoltage、`0x80000` は過去の soft temperature limit | 【一次】 |

@@ -89,7 +89,7 @@
       "purpose": "SquashFS rootfs、tmpfs、ext4 の /data、/etc の overlay、初回の data 初期化と fsck を説明する",
       "page_notes": [
         {
-          "content": "rootfs-overlay/etc/fstab、S02msd-data、S03msd-etc-overlay、docs/UPDATE.md を根拠にしてください。"
+          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、docs/UPDATE.md を根拠にしてください。"
         }
       ]
     },
@@ -113,12 +113,12 @@
       ]
     },
     {
-      "title": "更新処理のテスト",
-      "purpose": "tests/msd-update/run.sh によるホストでのテストの内容と、各テストが確かめている失敗ケースを説明する",
+      "title": "ホストテスト",
+      "purpose": "tests/msd-update/、tests/msd-data-grow/、tests/msd-hwinfo/ のホストテストを説明する",
       "parent": "A/B 更新と自動復帰",
       "page_notes": [
         {
-          "content": "tests/msd-update/ を根拠にしてください。"
+          "content": "tests/msd-update/run.sh、tests/msd-data-grow/run.sh、tests/msd-hwinfo/run.sh を根拠にしてください。origin/main の tests/ 配下にある全テストを対象にします。"
         }
       ]
     },

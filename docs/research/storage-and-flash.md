@@ -13,11 +13,11 @@
 | 用語 | 本書での意味 | ホストから確認できる範囲 |
 |---|---|---|
 | 論理セクター | このイメージでパーティション表が使う 512 byte 単位。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327) | `sfdisk` で開始セクターを読めます。 |
-| ファイルシステムブロック | ext4 などが割り当てに使う単位。現行 `data.ext4` は 1,024 byte ブロックです。【実測】[Buildroot のイメージ構成](../../board/cardputerzero/genimage.cfg) | ファイルシステム作成時の値は `dumpe2fs` などで読めます。 |
-| ページ | カード内部の NAND やコントローラーが扱う書込み単位を指す一般語です。カード固有の実際のページ寸法は今回確認できていません。【未確認】[SD Association の仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1) | 通常のブロックデバイスから実ページを直接観測できるとは限りません。 |
-| RU（Recording Unit） | SD 仕様上の記録単位。現行仕様の定義や AU との整列要件は取得できていません。【未確認】[SD Association の仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1) | 公開された Linux 属性から RU を直接確認できるとは限りません。 |
+| ファイルシステムブロック | ext4 などが割り当てに使う単位。現行 CI artifact の `data.ext4` は `dumpe2fs` で 1,024 byte ブロックと確認しました。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327) | ファイルシステム作成時の値は `dumpe2fs` などで読めます。 |
+| ページ | カード内部の NAND やコントローラーが扱う書込み単位を指す一般語です。カード固有の実際のページ寸法は今回確認できていません。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認 | 通常のブロックデバイスから実ページを直接観測できるとは限りません。 |
+| RU（Recording Unit） | SD 仕様上の記録単位。現行仕様の定義や AU との整列要件は取得できていません。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認 | 公開された Linux 属性から RU を直接確認できるとは限りません。 |
 | AU（Allocation Unit） | SD Status にカードが報告する割当単位。Linux 6.18 系は AU_SIZE をデコードしますが、これは RU の定義や最適な書込み境界を確定するものではありません。【一次】[Linux SD コア](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c#L53-L58) | カードが値を報告し、ドライバーが公開する場合に限り確認できます。 |
-| 消去ブロック | カードが内部消去に使う単位。カード内部の FTL に隠れるため、ホスト側の論理セクター境界と同一とは限りません。【未確認】[SD Association の仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1) | `erase_size` などはカードが公開する値であり、NAND 内部の実装全体を示すとは限りません。 |
+| 消去ブロック | カードが内部消去に使う単位。カード内部の FTL に隠れるため、ホスト側の論理セクター境界と同一とは限りません。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認 | `erase_size` などはカードが公開する値であり、NAND 内部の実装全体を示すとは限りません。 |
 | FTL | 論理ブロックとフラッシュ媒体の物理配置を仲介するカード内部の変換層です。カード固有の動作や電断時の保証は今回確認できていません。【未確認】[電源・更新方式の調査](power-and-updates.md) | 通常のホストから内部マッピングを直接確認できません。 |
 
 ## 現行イメージの開始位置
@@ -54,9 +54,17 @@ genimage v20 は `hdimage` の `align` を既定のパーティション整列�
 
 現行 p2 の開始セクター 32,769 にこの相対オフセットを足すと、データ領域は 16,927,232 byte から始まり、4 MiB 境界から 150,016 byte ずれます。パーティション開始位置だけを整列しても、FAT BPB 内の予約領域・FAT 面・ディレクトリーの合計は変わらないため、データ領域の相対位置は直りません。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)
 
-FAT のクラスタ数や予約セクターを変更すれば整列する、といった推奨は、確認した仕様資料で裏付けられていません。現時点では根拠を確認できる修正方法を採用せず、SDA のファイルシステム仕様または formatter の文書を確認し、再フォーマット後の BPB を測る項目として残します。【未確認】[SD Association の仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1)
+FAT のクラスタ数や予約セクターを変更すれば整列する、といった推奨は、確認した仕様資料で裏付けられていません。現時点では根拠を確認できる修正方法を採用せず、SDA のファイルシステム仕様または formatter の文書を確認し、再フォーマット後の BPB を測る項目として残します。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認
 
 ## ext4 の `/data`
+
+### ブロックサイズと作成条件
+
+CI artifact の 64 MiB の `/data` ext4 は、`dumpe2fs` の `Block size: 1024` から 1,024 B と確認しました。これは生成後のファイルシステムを測った値であり、`genimage.cfg` の記述から読み取った値ではありません。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)
+
+`mke2fs.conf(5)` の `small` 使用型は `blocksize = 1024` を設定し、`mke2fs(8)` は `-b` を省略した場合のブロックサイズをファイルシステムの大きさと用途から決めると説明しています。現行 `genimage.cfg` は `use-mke2fs = "true"` と `size = 64M` を指定するだけで、使用型やブロックサイズを明示しません。したがって 1 KiB は小さいファイルシステム向けの mke2fs 設定と整合しますが、CI で実際に選ばれた設定ファイル・使用型までは記録されておらず、選択理由の特定は未確認です。【一次】【未確認】[mke2fs.conf(5)](https://man7.org/linux/man-pages/man5/mke2fs.conf.5.html)／[mke2fs(8)](https://man7.org/linux/man-pages/man8/mke2fs.8.html)／[genimage.cfg](../../board/cardputerzero/genimage.cfg)
+
+1 KiB ブロックは 4 KiB ページより小さいため、`genimage` の ext4 `extraargs` に `-b 4096` を渡し、実行時の `S02msd-data` の `mkfs.ext4` にも `-b 4096` を指定する案があります。genimage v20 README は ext4 の `extraargs` を `mke2fs` に渡すと記載しています。両方を合わせれば初回作成と genimage 作成のブロックサイズを明示できます。ページ境界との整合が改善する利点は【推測】で、起動時間、`fsck` 時間、容量、書込み量の差は本リポジトリでは試していません。【一次】【推測】[genimage v20 README](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[mke2fs(8)](https://man7.org/linux/man-pages/man8/mke2fs.8.html)／[実行時 formatter](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)
 
 現行イメージでは `/data` に `data=journal` を指定します。【一次】[現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab)
 
@@ -70,7 +78,7 @@ ext4 は既定で write barrier を有効にします。電断時の順序保証
 
 `mke2fs -E stride` は RAID の chunk／stripe geometry 向けに文書化されており、一般的な microSD の AU や消去単位を指定する設定としては使いません。【一次】[mke2fs(8)](https://man7.org/linux/man-pages/man8/mke2fs.8.html)
 
-SquashFS／EROFS の圧縮ブロックサイズと rootfs の比較は、既存の[電源・更新方式の調査](power-and-updates.md)に記載しています。ここでは重複を避け、ストレージ配置と書込み境界に絞ります。
+SquashFS／EROFS の圧縮ブロックサイズと rootfs の比較は、既存の[ユーザー空間・セキュリティ調査](userspace-and-security.md)に記載しています。ここでは重複を避け、ストレージ配置と書込み境界に絞ります。
 
 ## discard、fstrim、SD バス
 
@@ -86,7 +94,8 @@ CM0 の正確な microSD ホスト接続、最大クロック、UHS 電圧切替
 2. 起動時に `/sys/class/mmc_host/` と `/sys/bus/mmc/devices/` を列挙し、カード識別情報と読み取り可能な `erase_size`、`preferred_erase_size`、`ssr` 等を保存します。実際に存在する sysfs 属性だけを記録し、欠落値を推定で補いません。【一次】[Linux SD コアの sysfs 属性](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c#L722-L797)
 3. `/sys/class/block/mmcblk*/queue/` の `logical_block_size`、`physical_block_size`、`minimum_io_size`、`optimal_io_size`、`alignment_offset`、`discard_granularity` など、実機で公開される属性を保存します。値の意味とドライバー実装が一致するかを確認し、存在しない属性は記録します。【未確認】[Linux SD コア](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c)
 4. 連続読み書き、小ブロックのランダム読み書き、起動時間、温度・電圧をそれぞれ測定し、同じ条件で複数回実行します。flashbench は候補の調査手段ですが、このカード／ホストでの測定手順と妥当性は未確認です。【未確認】
-5. SDA が公開する AU／RU 定義と formatter の手順を確認できるまでは、カードが報告した値から FAT の最適配置を推測しません。【未確認】[SD Association の仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1)
+5. SDA が公開する AU／RU 定義と formatter の手順を確認できるまでは、カードが報告した値から FAT の最適配置を推測しません。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認
+6. 1 KiB と 4 KiB の ext4 作成条件をそろえ、`fsck.ext4 -p` の時間、ファイルシステム容量、代表的な `/data` 書込み、電断後の整合性を比較します。【推測】[実行時 formatter](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)／[実機測定計画](measurement-and-planning.md)
 
 ## 電源断試験との関係
 
@@ -96,7 +105,7 @@ CM0 の正確な microSD ホスト接続、最大クロック、UHS 電圧切替
 
 | 項目 | 次に必要な確認 |
 |---|---|
-| RU／AU の規範的定義、FAT の推奨境界、formatter の整列挙動 | SDA の仕様書または正規 formatter 文書を確認し、再フォーマット後の BPB と照合する。【未確認】[SDA 仕様書](https://www.sdcard.org/downloads/pls/pdf/?p=Part1_Physical_Layer_Simplified_Specification_Ver9.10.jpg&f=Part1PhysicalLayerSimplifiedSpecificationVer9.10Fin_20231201.pdf&e=EN_SS9_1) |
+| RU／AU の規範的定義、FAT の推奨境界、formatter の整列挙動 | SDA の仕様書または正規 formatter 文書を確認し、再フォーマット後の BPB と照合する。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認 |
 | CM0 のホストコントローラー、クロック、UHS 切替 | 対象基板のデバイスツリー、カーネルログ、実カードで確認する。【未確認】[Linux SD コア](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c) |
 | `preferred_erase_size` 等の対象カード値と A1/A2 の実効性能 | 実機 sysfs と read-only のカード診断、同一条件の workload で測る。【未確認】[Application Performance Class](https://www.sdcard.org/developers/sd-standard-overview/application-performance-class/) |
 | `data=ordered` への変更がアプリケーションの更新要件を満たすか | `fsync`／rename と繰り返し電断を含む更新試験を行う。【未確認】[ext4 文書](https://docs.kernel.org/admin-guide/ext4.html) |

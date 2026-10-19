@@ -10,7 +10,7 @@ Raspberry Pi の secure-boot ガイドは Pi 4 以降の手順を説明してい
 
 ## 現行の対策と不足
 
-更新処理は SHA-256 マニフェスト検査と書込み後の read-back を行いますが、バンドルの署名検証は TODO です。マニフェストとペイロードを同時に置き換えられる場合、ハッシュだけでは配布元を認証できません。【一次】[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)
+更新処理は `manifest.sig` を公開鍵で検証し、SHA-256 マニフェスト検査と書込み後の read-back を行います。公開鍵は post-build で `/etc/msd-update/update-key.pem` に配置されます。ただしカード全体を交換できる攻撃者への信頼の起点にはならず、署名鍵のリリース運用・更新・失効は別途管理が必要です。【一次】[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)／[post-build](../../board/cardputerzero/post-build.sh)
 
 rootfs は読み取り専用の SquashFS として構成されています。一方、`/data` の ext4 マウントには `nosuid`、`nodev`、`noexec` が指定されていません。`noexec` は更新処理や利用者が意図する実行ファイルを妨げる可能性があるため、利用方法を確認してから採否を決めます。【一次】[現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab)／[イメージ構成](../../board/cardputerzero/genimage.cfg)
 
@@ -20,6 +20,7 @@ Wi-Fi、Bluetooth のカーネルドライバーとファームウェアは構�
 
 ## 対策の優先度
 
+
 | 区分 | 対策 | 期待する効果 | 費用（起動時間・RAM・保守） | ハードウェア機能へのリスク | 検証方法 |
 |---|---|---|---|---|---|
 | A：先に実施、低コスト | 更新マニフェストを秘密鍵で署名し、読み取り専用 rootfs に公開鍵を置いて検証する。既存の A/B、read-back、健全性確認は維持する。 | 配布中の更新物やネットワーク経路での置換を検出する。【推測】 | 起動時に小さな検証処理を追加し、鍵保管・ローテーション・復旧手順を保守する。 | 署名鍵や形式の誤りで更新が止まる可能性がある。 | QEMU／ホスト試験で正常署名、改ざん、鍵不一致、旧版への復帰を確認。実機で更新時間と電断復旧を確認。 |
@@ -27,6 +28,22 @@ Wi-Fi、Bluetooth のカーネルドライバーとファームウェアは構�
 | A：先に実施、低コスト | SSP、FORTIFY、RELRO、PIE を Buildroot の toolchain／package 設定で監査し、実際に適用できる保護を有効化する。sysctl は `dmesg_restrict`、`kptr_restrict`、`unprivileged_bpf_disabled` 等を対象に、既存機能との整合を確認する。 | メモリー破壊の悪用や情報露出を抑える多層防御になる。【推測】 | ビルド時間、RAM、バイナリーサイズへの影響を測り、ツールチェーンと全パッケージの保守が必要。 | 古いドライバー、デバッグ、必要なモジュールの遅延ロードに影響し得る。`modules_disabled=1` は再起動まで解除できず、後から必要な機能をロードできなくなるため無条件に設定しない。 | QEMU で最終 `.config`、ELF 属性、sysctl 値、必要なモジュールロードを確認。実機で全ハードウェア機能を回帰試験。 |
 | B：後で評価、中コスト | dm-verity で読み取り専用 rootfs のブロックを検証し、root digest を署名済み更新メタデータに結び付ける。 | rootfs の破損や改ざんを起動後に検出する。【推測】 | device-mapper、起動時検証、A/B 更新・復旧、ハッシュ管理が複雑になる。RAM と起動時間は実測が必要。 | 検証エラーで起動不能になる可能性があり、復旧スロットの検証も必要。 | QEMU でブロック改変の拒否と A/B 復旧を検証。実機で起動時間、RAM、読み込み遅延を測る。 |
 | C：この機器では優先しない、高コスト | 文書化された OTP secure boot を持つ SoC への移行、または外部の信頼できる root of trust を追加する。 | カード交換だけでは置換できない起動時の信頼点を設ける。【推測】 | 基板変更、不可逆の鍵登録、製造時の鍵管理、復旧・在庫運用が必要。 | 起動鍵や署名済みイメージを失うと復旧できない危険がある。 | QEMU では OTP／BootROM 強制を検証できない。量産相当の実機で未署名・改変イメージと復旧手順を試験する。 |
+
+## カーネル・起動時ハードニング候補
+
+KSPP の推奨設定を出発点に、CM0 の機能・起動時間・RAM との両立を確認します。tier は導入順の案であり、最終 kernel `.config` や性能を測定した結果ではありません。【一次】[KSPP Recommended Settings](https://kspp.github.io/Recommended_Settings)。コスト欄の見込みは設計上の推測で、実測値ではありません。
+
+| tier | 設定 | ねらい | 起動・RAM コスト／条件 |
+|---|---|---|---|
+| A | `CONFIG_STACKPROTECTOR_STRONG`、`CONFIG_STRICT_KERNEL_RWX`、`CONFIG_HARDENED_USERCOPY` | kernel memory の保護を強化 | 起動差は小さい見込み【推測】。driver 回帰を確認 |
+| A | `CONFIG_RANDOMIZE_BASE` | kernel ASLR | 起動差は小さい見込み【推測】。Pi firmware が `kaslr-seed`／`rng-seed` を CM0 に渡すか未確認 |
+| A | `CONFIG_SECURITY_YAMA`、`CONFIG_BPF_UNPRIV_DEFAULT_OFF` | ptrace と unprivileged BPF を制限 | 起動・RAM 影響は小さい見込み【推測】。診断・BPF 利用を確認 |
+| A | `modules_disabled=1` または `CONFIG_MODULE_SIG`／`CONFIG_MODULE_SIG_FORCE` | 起動後の module 追加を制限、または署名必須化 | modules_disabled は必要 module のロード後に設定。署名強制は鍵運用が必要 |
+| B | `CONFIG_INIT_STACK_ALL_ZERO`、`init_on_alloc=1`、`init_on_free=1` | 初期化されていない memory の利用を抑える | memory clear の CPU 帯域・起動時間コストを実測 |
+| B | `CONFIG_SLAB_FREELIST_HARDENED`、`CONFIG_SECURITY_LOCKDOWN_LSM` | heap exploit 緩和、kernel interface 制限 | RAM／CPU 増は未測定。Lockdown と firmware・debug 経路の互換性を確認 |
+| C | ARM64 PAC／BTI | return address・間接分岐の保護 | Cortex-A53 は Armv8.0 世代で PAC／BTI を実装しないため対象外【一次】[Arm Cortex-A53](https://developer.arm.com/documentation/100095/0001/)、[Arm PAC/BTI](https://developer.arm.com/documentation/102433/latest/) |
+
+採用前に最終 `.config`、起動ログ、全周辺機能、更新・復旧試験を確認します。
 
 署名鍵を read-only rootfs に置く設計は、更新バンドルの真正性を検査する用途です。CM0 の起動時に rootfs 自体を認証する独立した信頼点がないため、攻撃者がカード全体を交換できる場合は、鍵と検証処理も差し替えられます。したがって署名更新を「secure boot」と呼ばず、A/B の read-back と健全性確認も残します。【推測】[Raspberry Pi secure-boot ガイド](https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md)／[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)
 
@@ -52,7 +69,6 @@ USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID �
 | SSP／RELRO／PIE と BCM2837 の crypto HWCAP | 最終 ELF／kernel config と実機の CPU feature を確認します。【未確認】[Arm Cortex-A53 TRM](https://developer.arm.com/documentation/ddi0501/latest/) |
 | 攻撃者が持つ物理アクセスと復旧要件 | 製品要件として脅威境界を決めます。【未確認】 |
 
-## 出典
 
 - 【一次】[Raspberry Pi secure-boot ガイド](https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md) — “how secure-boot works on a Raspberry Pi 4 (or newer)”
 - 【一次】[dm-verity 文書](https://docs.kernel.org/admin-guide/device-mapper/verity.html) — dm-verity の設定、root digest、検証動作。
@@ -65,7 +81,7 @@ USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID �
 |---|---|---|---|
 | Raspberry Pi の secure-boot 手順対象 | [Raspberry Pi secure-boot guide](https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md) | “how secure-boot works on a Raspberry Pi 4 (or newer)” | 【一次】 |
 | BCM2837 legacy boot が SD の bootcode から始まる | [Raspberry Pi legacy boot flow](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc) | “check primary SD for `bootcode.bin`” | 【一次】 |
-| 更新処理の署名検証 TODO と SHA-256 | [現在の updater](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) | `TODO: verify a detached bundle signature before accepting updates.` / `sha256sum -c manifest` | 【一次】 |
+| 更新処理の署名検証と SHA-256 | [現在の updater](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) | `openssl pkeyutl -verify` / `sha256sum -c manifest` | 【一次】 |
 | `/data` mount options | [現行 fstab](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/rootfs-overlay/etc/fstab) | `/dev/mmcblk0p7 /data ext4 noauto,noatime,data=journal,errors=remount-ro 0 2` | 【一次】 |
 | dm-verity root digest の trust 要件 | [Linux dm-verity documentation](https://docs.kernel.org/admin-guide/device-mapper/verity.html) | “This hash should be trusted as there is no other authenticity beyond this point.” | 【一次】 |
 | Buildroot FORTIFY 設定 | [board defconfig](https://github.com/uist1idrju3i/MSD-Linux/blob/main/configs/msd_cardputerzero_defconfig) | `BR2_FORTIFY_SOURCE_3=y` | 【一次】 |
