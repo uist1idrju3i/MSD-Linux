@@ -136,7 +136,7 @@ else
 fi
 expect_status 1
 expect_output 'stale file allowlist entry'
-printf 'ok - reports stale file entries for the default tracked Markdown set\n'
+printf 'ok - reports stale file entries for the default tracked set\n'
 
 printf 'quote\treadme.md\t🥈\tstale quote\n' > "$allowlist"
 if output="$(cd "$default_repo" && python3 "$checker" --allowlist "$allowlist" 2>&1)"; then
@@ -146,7 +146,70 @@ else
 fi
 expect_status 1
 expect_output 'stale quote allowlist entry'
-printf 'ok - reports stale quote characters for the default tracked Markdown set\n'
+printf 'ok - reports stale quote characters for the default tracked set\n'
+
+printf '' > "$allowlist"
+write_text non-markdown.txt '这'
+git -C "$default_repo" add non-markdown.txt
+if output="$(cd "$default_repo" && python3 "$checker" --allowlist "$allowlist" 2>&1)"; then
+	status=0
+else
+	status=$?
+fi
+expect_status 1
+expect_output 'U+8FD9'
+printf 'ok - scans out-of-range characters in tracked non-Markdown text\n'
+
+printf 'quote\t%s\t这\ttest quote\n' "$test_root/script.sh" > "$allowlist"
+write_text script.sh "\`这\`"
+run_check --allowlist "$allowlist" "$test_root/script.sh"
+expect_status 1
+expect_output 'U+8FD9'
+printf 'ok - quote allowlists do not apply to non-Markdown files\n'
+
+printf '' > "$allowlist"
+binary_repo="$test_root/binary-repo"
+mkdir -p "$binary_repo"
+git -C "$binary_repo" init -q
+printf '\000µ' > "$binary_repo/binary.bin"
+git -C "$binary_repo" add binary.bin
+if output="$(cd "$binary_repo" && python3 "$checker" --allowlist "$allowlist" 2>&1)"; then
+	status=0
+else
+	status=$?
+fi
+expect_status 0
+expect_output 'files=0'
+printf 'ok - skips files with a NUL byte in the first 8 KiB\n'
+
+symlink_repo="$test_root/symlink-repo"
+mkdir -p "$symlink_repo"
+git -C "$symlink_repo" init -q
+write_text symlink-target.txt 'µ'
+ln -s "$test_root/symlink-target.txt" "$symlink_repo/link.txt"
+git -C "$symlink_repo" add link.txt
+if output="$(cd "$symlink_repo" && python3 "$checker" --allowlist "$allowlist" 2>&1)"; then
+	status=0
+else
+	status=$?
+fi
+expect_status 0
+expect_output 'files=0'
+printf 'ok - skips tracked symlinks\n'
+
+table_repo="$test_root/table-repo"
+mkdir -p "$table_repo/.github/scripts/data"
+git -C "$table_repo" init -q
+printf 'µ' > "$table_repo/.github/scripts/data/jisx0213-2004-std.txt"
+git -C "$table_repo" add .github/scripts/data/jisx0213-2004-std.txt
+if output="$(cd "$table_repo" && python3 "$checker" --allowlist "$allowlist" 2>&1)"; then
+	status=0
+else
+	status=$?
+fi
+expect_status 0
+expect_output 'files=0'
+printf 'ok - excludes the mapping table from the default scan\n'
 
 table_copy="$test_root/tampered-table.txt"
 printf 'tampered\n' > "$table_copy"

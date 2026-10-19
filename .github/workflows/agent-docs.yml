@@ -55,7 +55,7 @@ jobs:
             exit 1
           fi
 
-      - name: Markdown の文字が JIS X 0213 の範囲内にある
+      - name: 追跡しているテキストの文字が JIS X 0213 の範囲内にある
         run: python3 .github/scripts/check-jisx0213.py
 
       - name: JIS X 0213 検査のテスト

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check tracked Markdown text against the JIS X 0213:2004 mapping table."""
+"""Check tracked text against the JIS X 0213:2004 mapping table."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from pathlib import Path
 
 TABLE_SHA256 = "388ae7822cbf0aecff09b8466dd630ea343673d01a3c7df9d61947ad1ad5b2dd"
 TABLE_PATH = Path(__file__).parent / "data" / "jisx0213-2004-std.txt"
+TABLE_REPO_PATH = ".github/scripts/data/jisx0213-2004-std.txt"
 ALLOWLIST_PATH = Path(__file__).parents[1] / "jisx0213-allowlist.tsv"
 CODEPOINT_RE = re.compile(r"U\+([0-9A-Fa-f]{4,6})(?:\+([0-9A-Fa-f]{4,6}))?")
 ALTERNATE_RE = re.compile(r"(?:Fullwidth|Windows): U\+([0-9A-Fa-f]{4,6})")
@@ -188,16 +189,17 @@ def quote_mask(line: str, in_fence: tuple[str, int] | None) -> tuple[list[bool],
     return mask, None
 
 
-def markdown_paths() -> list[str]:
+def tracked_paths() -> list[str]:
     result = subprocess.run(
-        ["git", "ls-files", "-z", "--", "*.md"],
+        ["git", "ls-files", "-z"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
     )
     if result.returncode:
         raise RuntimeError(result.stderr.decode("utf-8", errors="replace").strip() or "git ls-files failed")
-    return [os.fsdecode(path) for path in result.stdout.split(b"\0") if path]
+    paths = [os.fsdecode(path) for path in result.stdout.split(b"\0") if path]
+    return [path for path in paths if path.replace(os.sep, "/") != TABLE_REPO_PATH]
 
 
 def location_for_byte(raw: bytes, offset: int) -> tuple[int, int]:
@@ -226,12 +228,14 @@ def scan_file(
         return
     if stat.S_ISLNK(mode) or not stat.S_ISREG(mode):
         return
-    reporter.files += 1
     try:
         raw = path.read_bytes()
     except OSError as exc:
         reporter.issue("error", raw_path, 1, 1, f"ファイルを読み込めません: {exc}")
         return
+    if b"\0" in raw[:8192]:
+        return
+    reporter.files += 1
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -245,11 +249,13 @@ def scan_file(
         for index, entry in enumerate(entries)
         if entry.kind == "file" and fnmatch.fnmatchcase(display_path, entry.path)
     ]
-    quote_entries = [
-        (index, entry)
-        for index, entry in enumerate(entries)
-        if entry.kind == "quote" and display_path == entry.path
-    ]
+    quote_entries = []
+    if display_path.endswith(".md"):
+        quote_entries = [
+            (index, entry)
+            for index, entry in enumerate(entries)
+            if entry.kind == "quote" and display_path == entry.path
+        ]
     lines = re.split(r"\r\n|\n|\r", text)
     in_fence: tuple[str, int] | None = None
     for line_number, line in enumerate(lines, 1):
@@ -304,7 +310,7 @@ def scan_file(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--allowlist", type=Path, default=ALLOWLIST_PATH)
-    parser.add_argument("paths", nargs="*", help="Markdown files to scan; defaults to tracked *.md files")
+    parser.add_argument("paths", nargs="*", help="text files to scan; defaults to all tracked files")
     parser.add_argument("--strict", action="store_true", help="treat warnings as failures")
     args = parser.parse_args()
     reporter = Reporter()
@@ -322,7 +328,7 @@ def main() -> int:
         reporter.issue("error", str(args.allowlist), line, 1, message)
     default_set = not args.paths
     try:
-        paths = markdown_paths() if default_set else args.paths
+        paths = tracked_paths() if default_set else args.paths
     except RuntimeError as exc:
         reporter.issue("error", "git", 1, 1, str(exc))
         reporter.summary()
