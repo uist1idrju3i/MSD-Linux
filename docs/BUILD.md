@@ -15,7 +15,7 @@ make -C output
 
 CI は Buildroot のダウンロードファイルと ccache をキャッシュし、`main` への push で共有キャッシュを更新します。文書だけを変更した pull request では、Buildroot のビルドを省略します。
 
-成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は 64 MiB です。p7 の初回起動時拡張は未実装です。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector と tryboot の動作は未確認です。
+成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は初期 64 MiB で、初回起動時にパーティション末尾まで拡張し、ext4 をオンライン拡張する実装です。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector、tryboot、p7 拡張は未確認です。
 
 各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest` を含み、どちらのスロットにも利用可能な構成です。SHA-256 は整合性確認用で、bundle の署名、鍵保管、secure boot は未実装です。
 
