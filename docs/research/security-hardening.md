@@ -12,7 +12,7 @@ Raspberry Pi の secure-boot ガイドは Pi 4 以降の手順を説明してい
 
 更新処理は `manifest.sig` を公開鍵で検証し、SHA-256 マニフェスト検査と書込み後の read-back を行います。公開鍵は post-build で `/etc/msd-update/update-key.pem` に配置されます。ただしカード全体を交換できる攻撃者への信頼の起点にはならず、署名鍵のリリース運用・更新・失効は別途管理が必要です。【一次】[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)／[post-build](../../board/cardputerzero/post-build.sh)
 
-rootfs は読み取り専用の SquashFS として構成されています。一方、`/data` の ext4 マウントには `nosuid`、`nodev`、`noexec` が指定されていません。`noexec` は更新処理や利用者が意図する実行ファイルを妨げる可能性があるため、利用方法を確認してから採否を決めます。【一次】[現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab)／[イメージ構成](../../board/cardputerzero/genimage.cfg)
+rootfs は読み取り専用の SquashFS として構成されています。`/data` の ext4 マウントには `nodev` と `nosuid` が指定済みで、`noexec` は未指定です。`noexec` は更新処理や利用者が意図する実行ファイルを妨げる可能性があるため、利用方法を確認してから採否を決めます。【一次】[現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab)／[イメージ構成](../../board/cardputerzero/genimage.cfg)
 
 Buildroot defconfig は `BR2_FORTIFY_SOURCE_3=y` を選んでいます。SSP、RELRO、PIE と最終的なカーネル設定は、Buildroot の選択値だけでなく生成物のリンク設定と最終 `.config` で確認します。【一次】【未確認】[Buildroot defconfig](../../configs/msd_cardputerzero_defconfig)／[カーネル fragment](../../board/cardputerzero/linux.fragment)
 

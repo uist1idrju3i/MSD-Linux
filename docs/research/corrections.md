@@ -27,6 +27,7 @@
 | 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |
 |---|---|---|---|
 | Mender を RPi3 の対象外 | Mender は RPi3 をサポートしない | mender-convert の README(HEAD 4b3f04a、2026-10-12 コミット)が `raspberrypi/uboot/debian/raspberrypi3_bookworm_64bit_config`(Raspberry Pi 3、Raspberry Pi OS bookworm 64bit)を「officially supported」の Core 構成に載せ、Mender Client 6.1 は 2026-10 にサポート対象(docs.mender.io supported-releases)。Mender Client 6.1.0 は mender.io のブログ(2026-10-16)に記載。CM0 自体の記載と動作は未確認 | [公開出典一覧](sources.md) |
+| `/data` のマウントオプション | `/data` に `nosuid`、`nodev`、`noexec` が指定されていない（security-hardening.md の旧記述） | `fstab` は `noatime,nodev,nosuid,data=ordered,errors=remount-ro`。未指定なのは `noexec` だけです（2026-10-19 に main の `fstab` で確認） | [現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab) |
 | powerfail_suo の動作 | S→U→O を実行する | SysRq-U に加えてバックライトと GPIO を操作します。`'i'`・`'s'`・`kernel_power_off()` はコメントアウトされています（powerfail_suo.c @7551854 の L74/L83/L93/L106） | [公開出典一覧](sources.md) |
 | UART0 の種別を PL011 と断定 | UART0 が PL011 である | 公式 DT は `serial0 = &uart1`(mini-UART、`uart1_pins` は空)、`serial1 = &uart0`(PL011、GPIO30〜33=BT)。公式 pi-gen は cmdline の `console=serial0,115200` を除去。「公式 pi-gen に enable_uart が無い」という記述は不正確でした。一部訂正として、pi-gen は M5 の Makefile(`config_setup`)経由で `enable_uart 1` を [all] に設定する(最終 config.txt は未検査) | [公開出典一覧](sources.md) |
 | 「OpenSSH の既定は AES-GCM 候補」 | 「OpenSSH の既定は AES-GCM 候補」 | `chacha20-poly1305@openssh.com` が先頭(myproposal.h、V_10_5_P1)。OpenVPN は暗号の設定が要る(`--data-ciphers` 既定は AES-GCM 先頭) | [公開出典一覧](sources.md) |
