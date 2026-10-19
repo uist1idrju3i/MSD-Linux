@@ -6,7 +6,7 @@ mkdir -p /data
 magic="$(dd if="$DATA_DEVICE" bs=1 skip=1080 count=2 2>/dev/null | od -An -v -tx1 | tr -d '[:space:]' || true)"
 if [ "$magic" != "53ef" ]; then
 	if cmp -n 67108864 "$DATA_DEVICE" /dev/zero >/dev/null 2>&1; then
-		mkfs.ext4 -F -L data "$DATA_DEVICE" || exit 1
+		mkfs.ext4 -F -b 4096 -L data "$DATA_DEVICE" || exit 1
 	else
 		printf '%s\n' 'Unrecognized non-empty data partition; refusing to format it.' >&2
 		exit 1
@@ -20,7 +20,9 @@ case "$fsck_status" in
 	*) exit "$fsck_status" ;;
 esac
 
-if mount -t ext4 -o noatime,data=journal,errors=remount-ro "$DATA_DEVICE" /data; then
+if mount -t ext4 -o noatime,nodev,nosuid,data=ordered,errors=remount-ro "$DATA_DEVICE" /data; then
+	mount_options="$(awk '$2 == "/data" { print $4; exit }' /proc/mounts)"
+	printf 'msd-data: /data %s\n' "$mount_options" >/dev/console
 	if ! /usr/sbin/msd-data-grow; then
 		printf '%s\n' 'msd-data-grow failed; keeping /data mounted.' >&2
 	fi

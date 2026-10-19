@@ -153,6 +153,11 @@ jobs:
             output/build/linux-custom/.config
           mke2fs -V
           output/host/bin/genimage --version
+          if ! dumpe2fs -h output/images/data.ext4 2>/dev/null |
+            grep -Eq '^Block size:[[:space:]]+4096$'; then
+            printf '%s\n' 'data.ext4 must use 4096-byte blocks.' >&2
+            exit 1
+          fi
 
       - name: Generate SBOM
         run: |

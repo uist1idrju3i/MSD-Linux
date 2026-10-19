@@ -62,7 +62,9 @@ tryboot 中に rootfs が SquashFS、`/data` が ext4 でマウント済みか�
 
 ## 書き込み可能な領域
 
-rootfs は Zstandard 圧縮 SquashFS で読み取り専用です。`/tmp`、`/run`、`/var` は tmpfs です。起動時に p7 の ext4 を `fsck.ext4 -p` で確認します。ext4 の superblock magic がなく、パーティション全体がゼロの場合だけ `mkfs.ext4` で初期化します。未知の非空パーティションはフォーマットせず、起動を停止する設計です。初期化または fsck の後に `/data` へマウントします。マウントオプションは `noatime,data=journal,errors=remount-ro` で、`commit=` は kernel の既定値を使います。
+rootfs は Zstandard 圧縮 SquashFS で読み取り専用です。fstab が tmpfs としてマウントするのは `/dev/shm`、`/tmp`、`/run` です。`/var` 自体は tmpfs ではありません。Buildroot の skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` 配下を指し、`/var/lock`、`/var/run` が `/run` 配下を指します。`/var/lib/misc` も `/tmp` 配下を指します。
+
+起動時は p7 の ext4 を `fsck.ext4 -p` で確認します。superblock magic がなく、パーティション全体がゼロの場合だけ `mkfs.ext4 -b 4096` で初期化する仕様です。未知の非空パーティションはフォーマットせず、起動を停止する設計です。初期化または fsck の後に `/data` へマウントします。新規 filesystem のブロックサイズは 4 KiB です。既存デバイスの 1 KiB filesystem は再フォーマットも移行もせず、新しい mount option でそのまま使用します。mount option は `noatime,nodev,nosuid,data=ordered,errors=remount-ro` です。`commit=` は kernel の既定値を使います。
 
 `/etc` は overlayfs で構成します。`/etc` と `/data/etc` を lower layer、`/run` 上の tmpfs を upper/work layer とするため、通常の `/etc` への変更は再起動で消えます。再起動後も残す設定ファイルは `/data/etc` に保存してください。サービスがその場所を直接参照しない場合は、個別の bind mount などを追加します。
 

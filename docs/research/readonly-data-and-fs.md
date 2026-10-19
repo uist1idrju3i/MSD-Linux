@@ -7,15 +7,15 @@
 | 対象 | `origin/main` の状態 | 根拠 |
 |---|---|---|
 | `/` | SquashFS を `ro` でマウントする。 | `board/cardputerzero/rootfs-overlay/etc/fstab:5` |
-| `/tmp`、`/run` | `nosuid,nodev` 付き tmpfs。 | `board/cardputerzero/rootfs-overlay/etc/fstab:6-7` |
-| `/data` | ext4。fstab は `noauto,noatime,data=journal,errors=remount-ro`。`S02msd-data` が空領域を初期化し、`fsck.ext4 -p`、mount、成長処理、状態ディレクトリ作成を行う。 | `board/cardputerzero/rootfs-overlay/etc/fstab:8`、`board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data:5-28` |
+| `/tmp`、`/run`、`/dev/shm` | fstab が tmpfs としてマウントする。 | `board/cardputerzero/rootfs-overlay/etc/fstab:3,6-7` |
+| `/data` | ext4。新規 image と空領域の初期化は 4 KiB block。既存の 1 KiB filesystem は移行せずそのまま使う。mount option は `noauto,noatime,nodev,nosuid,data=ordered,errors=remount-ro`。`S02msd-data` が `fsck.ext4 -p`、mount、成長処理、状態 directory 作成を行う。 | `board/cardputerzero/genimage.cfg`、`board/cardputerzero/rootfs-overlay/etc/fstab:8`、`board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data` |
 | `/etc` | `S03msd-etc-overlay` が `/data/etc:/etc` を lower、`/run/etc-overlay` を upper/work とする overlay を作り、merged view を `/etc` に bind mount する。 | `board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay:3-11` |
 | seedrng | `SEEDRNG_ARGS="--seed-dir=/data/seedrng"`。seedrng の永続 seed は `/data` 配下に置かれる。 | `board/cardputerzero/rootfs-overlay/etc/default/seedrng:1`、`board/cardputerzero/post-build.sh:69-82` |
 | update 状態と鍵 | updater の状態は `/data/msd-update`、公開鍵の読み取り元は `/etc/msd-update/update-key.pem`。ビルド時に公開鍵と key-origin を rootfs の `/etc` に生成する。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-update:8,10,168-178`、`board/cardputerzero/post-build.sh:182-185` |
 | A/B payload と selector | rootfs は p5/p6、boot payload は p2/p3 の inactive raw partition に書く。状態記録は `/data/msd-update`、`autoboot.txt` の切替は p1 上で行う。A/B payload を `/data` に保存する方式ではない。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-update:56,170-179,220-231` |
 | data partition grow | partition table の p4/p7 を調整し、`resize2fs` で p7 の ext4 を拡張する。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow:25,116-134` |
 | hwinfo・ready marker | hwinfo cache は `/run/msd/hardware`、ready marker は `/run/msd-ready`。これらの書き込み先は揮発領域である。 | `board/cardputerzero/rootfs-overlay/etc/init.d/S97msd-hwinfo:3-9`、`board/cardputerzero/rootfs-overlay/etc/init.d/S98msd-ready:3` |
-| `/var` とログ | fstab に `/var` の mount はない。`post-build.sh:5` は `/var/log` directory を作成するだけで、tmpfs mount の根拠ではない。対象 runtime scripts に syslog daemon の `/var/log` 書き込み設定も見つからなかった。 | `board/cardputerzero/rootfs-overlay/etc/fstab:1-8`、`board/cardputerzero/post-build.sh:5` |
+| `/var` とログ | `/var` 自体の mount はない。skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` への symlink、`/var/lock`、`/var/run` が `/run` への symlink、`/var/lib/misc` が `/tmp` への symlink。対象 runtime scripts に syslog daemon の `/var/log` 書き込み設定も見つからなかった。 | fstab、Buildroot `system/skeleton/var`、`board/cardputerzero/post-build.sh:5` |
 | RTC | `RESEARCH.md:40` は I2C1 上の RX8130CE を記録する。対象 init scripts に時刻を `/data` または `/etc` へ保存する処理は見つからなかった。RTC 初期化と実機時刻取得の経路は未確認。 | `RESEARCH.md:40`、上記 init scripts の調査 |
 | BCM2835 RNG | kernel の BCM2835 RNG driver は存在する【一次】が、`linux.fragment` に `CONFIG_HW_RANDOM_BCM2835` の明示設定はない。生成済み Linux `.config` を取得できていないため、有効状態は【未確認】。seedrng の `/data/seedrng` 保存を RNG hardware による代替とみなさない。 | `board/cardputerzero/linux.fragment`、生成 `.config` 未取得、[K1] |
 
@@ -44,13 +44,38 @@ OverlayFS upper は trusted/user xattr と有効な `d_type` を必要とする�
 
 | 項目 | 現状・候補 | 調査上の扱い |
 |---|---|---|
-| `noatime` | `/data` の現行設定にある。 | 維持候補。アクセス時刻更新を避ける。 |
-| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | ext4 で有効化した時の書き込み量、crash 後の時刻差、RW window の長さを測って決める【一次: K4】。 |
-| `nodev,nosuid` | `/data` mount に追加する候補。 | `/data` から device node や setuid executable を実行する必要性を確認してから採否判断【推測】。 |
-| `data=ordered` | 現行は `data=journal`。 | 性能・書き込み量・復旧挙動を同じ workload で比較する。単純に journal mode を変更しない。 |
-| 4 KiB block | `mkfs.ext4` の format-time 候補であり mount option ではない。 | small-file corpus、image size、fsck/mount 時間で比較する。現在の `S02msd-data` は block size を明示しない。 |
-| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | 小ファイル数・サイズ分布、e2fsck、オンライン resize、将来の機能互換性を測定して判断する。 |
+| `noatime` | S3 で維持し、`/data` mount option に含めた。 | アクセス時刻更新を避ける。 |
+| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | S3 の5回測定では V3 の中央値が V1 と同じで、10%削減条件を満たさず採用しない【一次: K4】【実測】。 |
+| `nodev,nosuid` | S3 で `/data` mount に採用した。 | `/data` は device node や setuid executable の実行場所にしない。 |
+| `data=ordered` | S3 の新規 image と mount option で採用。既存 filesystem も同じ mode で mount する。 | 小ファイル workload、書き込み量、復旧挙動を測る。 |
+| 4 KiB block | S3 で新規 filesystem に採用。 | 既存 1 KiB filesystem は再フォーマットしない。small-file corpus、image size、fsck/mount 時間を比較する。 |
+| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | S3 の V2 は電断試験を20回中20回通過した。5回測定の書き込み中央値は V1 と同じで、20%削減条件を満たさず採用しない【実測】。 |
 | F2FS `fsync_mode` | `posix` が既定、`strict` はより強い同期挙動、`nobarrier` 等も文書化される。 | checkpoint、fsync 頻度、power-cut replay と fsck/mount 時間を測る【一次: K5】。 |
+
+### S3 の測定結果と採用判断
+
+QEMU の `msd.s3bench=1` hook で、100 個の 200 B file を作り、各 file を一時 file へ書いて置き換える workload を実行した。各 variant は別 image から起動し、5 回測定した【実測】。
+
+| Variant | Filesystem / mount option | field 7 before→after sectors（run 1 / 2 / 3 / 4 / 5） | delta bytes（run 1 / 2 / 3 / 4 / 5、中央値） | idle delta sectors（run 1 / 2 / 3 / 4 / 5） | `df` used KiB（run 1 / 2 / 3 / 4 / 5、中央値） |
+|---|---|---|---|---|---|
+| V0 | 1 KiB / `data=journal` | `2,864→8,220 / 2,864→7,904 / 2,864→8,064 / 2,864→7,668 / 2,864→7,634` | `2,742,272 / 2,580,480 / 2,662,400 / 2,459,648 / 2,442,240`（2,580,480） | `0 / 0 / 0 / 0 / 0` | `153 / 153 / 153 / 153 / 153`（153） |
+| V1 | 4 KiB / `data=ordered` | `664→15,544 / 664→15,544 / 664→15,544 / 664→15,544 / 664→15,544` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `572 / 572 / 572 / 572 / 572`（572） |
+| V2 | 4 KiB / `data=ordered` + `inline_data` | `560→15,440 / 560→15,440 / 560→15,440 / 560→15,440 / 560→15,440` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `552 / 552 / 552 / 552 / 552`（552） |
+| V3 | 4 KiB / `data=ordered` + `lazytime` | `664→15,544 / 664→15,544 / 664→15,544 / 664→15,544 / 664→15,544` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `572 / 572 / 572 / 572 / 572`（572） |
+| V4 | 1 KiB / `data=ordered` | `2,850→7,282 / 2,850→7,190 / 2,850→7,150 / 2,850→7,526 / 2,850→7,398` | `2,269,184 / 2,222,080 / 2,201,600 / 2,394,112 / 2,328,576`（2,269,184） | `0 / 0 / 0 / 0 / 0` | `153 / 153 / 153 / 153 / 153`（153） |
+| V5 | 4 KiB / `data=journal` | `672→17,968`（5回） | `8,855,552`（5回、中央値8,855,552） | `0 / 0 / 0 / 0 / 0` | `572 / 572 / 572 / 572 / 572`（572） |
+
+前回の QMP `query-blockstats` は QEMU 6.2.0 の SD model の読み書き byte counter を計上せず、`rd_bytes` と `wr_bytes` の両方が0だったため、書き込み量の指標として無効だった。今回は mkfs 時に `-E lazy_itable_init=0,lazy_journal_init=0` を指定し、`/data` の mount と online grow の後に `mount -o remount,noinit_itable /data` を実行した。QEMU では remount が受理された。各 run は `sync` 後に field 7 を読み、10秒待って再読する validity gate を通し、idle delta が0のときだけ workload を開始した。V0〜V5の30回すべて idle delta は0で、idle delta を各表行に記録した【実測】。workload 開始直前と最終 `sync` 後に field 7（sectors written）を読み、delta bytes を `(after - before) × 512` で算出した。これは guest 側の block-layer 書き込み量であり、カード内部の FTL 書き込みや NAND への物理書き込み量は含まない【実測】。raw counter と serial log は `/home/ubuntu/work/sweep/data-s3/measure-gated/{V0,V1,V2,V3,V4,V5}/run*/attempt1/serial.log` に保存した。
+
+V1 と V2 は、step c の開始後 1〜10 秒の無作為な時点で QEMU を `SIGKILL` し、同じ SD image で再起動して検証した。V1 は20回中20回、V2 も20回中20回で、mount 後の `fsck.ext4 -n` は clean、100 file はすべて旧内容か新内容のいずれか 200 B を保持した。失敗はなかった【実測】。各試行の `firstboot.log` と `reboot.log` は `/home/ubuntu/work/sweep/data-s3/powercut/{V1,V2}/run{1,2,...,20}/` にある。
+
+前回の3回測定では V1 の field 7 の開始値に大きなばらつきがあり、背景の ext4 lazy inode-table initialization が混入した可能性を再検証した。追加の V1 観測では noinit workaround を使わず、mount 時の field 7 が16、60秒後が17,016で、差は17,000 sectors（8,704,000 bytes）だった【実測】。この区間は `/data` mount から `msd-data-grow` の online resize を含む最初の60秒間であり、lazy-init thread 単独の書き込み量ではない。
+
+新しい測定では V1 の中央値は7,618,560 bytes だった。V2 も7,618,560 bytesで、V1 に対する削減は0%であり、20%以上の条件を満たさなかった。V2 の電断試験は20回中20回成功したが、書き込み量の条件を満たさないため `inline_data` は採用しない。V3 も7,618,560 bytesで削減は0%となり、10%以上の条件を満たさないため `lazytime` も採用しない。採用規則に従い、4 KiB と `data=ordered` の V1 を維持する【実測】。V1 の初回60秒観測のログは `/home/ubuntu/work/sweep/data-s3/measure-gated/lazyinit-V1/serial.log` にある。
+
+追加した2×2では、`data=ordered` は `data=journal` より1 KiB時に12.1%、4 KiB時に14.0%少ない一方、4 KiBは同じ journal mode の1 KiBに対して3.43倍、ordered modeでは3.36倍の guest 書き込み量となり、この workload では block size の差が大きかった【実測】。V0の既存測定には `nodev,nosuid` がなく、V1/V4/V5にはあるが、これらの security mount option はこの通常ファイル workload の書き込みを変えない。
+
+実カードでは、ATP の industrial microSD 資料が “4KB page management” と記載し、Cactus Technologies の資料は “NAND flash is programmed in pages” としたうえで、ページ寸法を “either 2KB or 4KB” と説明している【一次】([ATP microSD](https://www.melchionielectronics.com/media/f8/73/b0/1759225388/atp_microsd_card.pdf?ts=1760740424), [Cactus Technologies](https://www.cactus-tech.com/wp-content/uploads/2019/03/CTWP005-WriteAbort-v3.pdf))。カードによっては4 KiB以上の内部ページに対して1 KiBの書き込みが内部で増幅される可能性があるが、製品固有の FTL とページ寸法は guest から確認できないため、対象 SD card での実機確認が必要である【推測】。
 
 | FS | 電断・回復モデル | small files・書き込み量 | fsck、RAM、tool size、成熟度 | MSD/Linux での位置づけ |
 |---|---|---|---|---|
