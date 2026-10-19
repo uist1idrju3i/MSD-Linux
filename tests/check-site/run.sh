@@ -24,6 +24,34 @@ write_file() {
 	printf '%s' "$2" > "$file"
 }
 
+write_webp() {
+	python3 - "$fixture/public_html/images/msd-linux-social-1280x640.webp" \
+		"${1:-1280}" "${2:-640}" "${3:-VP8L}" "${4:-ok}" <<'PY'
+import struct
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+width = int(sys.argv[2])
+height = int(sys.argv[3])
+chunk = sys.argv[4].encode("ascii")
+riff_mode = sys.argv[5]
+dimensions = (width - 1) | ((height - 1) << 14)
+payload = bytes([0x2F]) + struct.pack("<I", dimensions) + b"\x00\x00\x00"
+riff_size = 4 + 8 + len(payload)
+if riff_mode == "bad-riff":
+    riff_size -= 1
+path.write_bytes(
+    b"RIFF"
+    + struct.pack("<I", riff_size)
+    + b"WEBP"
+    + chunk
+    + struct.pack("<I", len(payload))
+    + payload
+)
+PY
+}
+
 new_repo() {
 	rm -rf "$fixture"
 	mkdir -p "$fixture"
@@ -36,7 +64,10 @@ new_repo() {
 <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src 'self'; style-src 'self'\">
 <link rel=\"canonical\" href=\"https://muromi.moe/\">
 <meta property=\"og:url\" content=\"https://muromi.moe/\">
-<meta property=\"og:image\" content=\"https://muromi.moe/images/msd-linux-social-1280x640.png\">
+<meta property=\"og:image\" content=\"https://muromi.moe/images/msd-linux-social-1280x640.webp\">
+<meta property=\"og:image:type\" content=\"image/webp\">
+<meta property=\"og:image:width\" content=\"1280\">
+<meta property=\"og:image:height\" content=\"640\">
 <link rel=\"stylesheet\" href=\"site.css\">
 </head><body><img src=\"images/msd-linux-mark.svg\"></body></html>
 "
@@ -55,11 +86,10 @@ new_repo() {
 '
 	write_file docs/logo/msd-linux-mark.svg '<svg>mark</svg>
 '
-	write_file docs/logo/msd-linux-social-1280x640.png 'png data
-'
-	for name in msd-linux-logo.svg msd-linux-logo-dark.svg msd-linux-mark.svg msd-linux-social-1280x640.png; do
+	for name in msd-linux-logo.svg msd-linux-logo-dark.svg msd-linux-mark.svg; do
 		cp "$fixture/docs/logo/$name" "$fixture/public_html/images/$name"
 	done
+	write_webp
 	python3 "$fixture/docs/logo/tools/site_patterns.py"
 	git -C "$fixture" add -A
 }
@@ -90,6 +120,56 @@ run_check
 expect_status 0
 expect_output 'errors=0'
 printf 'ok - accepts a valid local GitHub Pages site\n'
+
+new_repo
+write_webp 1280 640 'VP8 '
+git -C "$fixture" add public_html/images/msd-linux-social-1280x640.webp
+run_check
+expect_status 1
+expect_output 'VP8L のみを使ってください（検出: VP8 ）'
+printf 'ok - rejects lossy VP8 chunks\n'
+
+new_repo
+write_webp 1280 640 VP8X
+git -C "$fixture" add public_html/images/msd-linux-social-1280x640.webp
+run_check
+expect_status 1
+expect_output 'VP8L のみを使ってください（検出: VP8X）'
+printf 'ok - rejects extended VP8X chunks\n'
+
+new_repo
+write_webp 1200 630
+git -C "$fixture" add public_html/images/msd-linux-social-1280x640.webp
+run_check
+expect_status 1
+expect_output 'WebP の寸法は 1280x640 が必要です（検出: 1200x630）'
+printf 'ok - rejects incorrect WebP dimensions\n'
+
+new_repo
+sed '/og:image:type/d' "$fixture/public_html/index.html" > "$fixture/public_html/index.html.new"
+mv "$fixture/public_html/index.html.new" "$fixture/public_html/index.html"
+git -C "$fixture" add public_html/index.html
+run_check
+expect_status 1
+expect_output 'og:image:type は image/webp を指定してください'
+printf 'ok - rejects missing og:image:type\n'
+
+new_repo
+sed 's#content="image/webp"#content="image/png"#' "$fixture/public_html/index.html" > "$fixture/public_html/index.html.new"
+mv "$fixture/public_html/index.html.new" "$fixture/public_html/index.html"
+git -C "$fixture" add public_html/index.html
+run_check
+expect_status 1
+expect_output 'og:image:type は image/webp を指定してください'
+printf 'ok - rejects a PNG og:image:type\n'
+
+new_repo
+write_webp 1280 640 VP8L bad-riff
+git -C "$fixture" add public_html/images/msd-linux-social-1280x640.webp
+run_check
+expect_status 1
+expect_output 'RIFF サイズがファイル長と一致しません'
+printf 'ok - rejects a mismatched RIFF size\n'
 
 new_repo
 write_file "public_html/""README.md" 'Not site content.

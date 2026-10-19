@@ -1,0 +1,223 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+social-webp-2026-10-19,cwebp-z0,1,bytes,164382,B,yes,
+social-webp-2026-10-19,cwebp-z0,1,encode_time,0.019724,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z0,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z0,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z0,2,bytes,164382,B,yes,
+social-webp-2026-10-19,cwebp-z0,2,encode_time,0.019937,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z0,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z0,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z0,3,bytes,164382,B,yes,
+social-webp-2026-10-19,cwebp-z0,3,encode_time,0.019237,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z0,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z0,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z0,4,bytes,164382,B,yes,
+social-webp-2026-10-19,cwebp-z0,4,encode_time,0.019504,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z0,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z0,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z0,5,bytes,164382,B,yes,
+social-webp-2026-10-19,cwebp-z0,5,encode_time,0.022245,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z0,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z0,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z3,1,bytes,19542,B,yes,
+social-webp-2026-10-19,cwebp-z3,1,encode_time,0.032292,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z3,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z3,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z3,2,bytes,19542,B,yes,
+social-webp-2026-10-19,cwebp-z3,2,encode_time,0.033230,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z3,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z3,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z3,3,bytes,19542,B,yes,
+social-webp-2026-10-19,cwebp-z3,3,encode_time,0.030451,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z3,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z3,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z3,4,bytes,19542,B,yes,
+social-webp-2026-10-19,cwebp-z3,4,encode_time,0.031106,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z3,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z3,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z3,5,bytes,19542,B,yes,
+social-webp-2026-10-19,cwebp-z3,5,encode_time,0.031183,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z3,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z3,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z6,1,bytes,19570,B,yes,
+social-webp-2026-10-19,cwebp-z6,1,encode_time,0.034691,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z6,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z6,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z6,2,bytes,19570,B,yes,
+social-webp-2026-10-19,cwebp-z6,2,encode_time,0.034669,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z6,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z6,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z6,3,bytes,19570,B,yes,
+social-webp-2026-10-19,cwebp-z6,3,encode_time,0.033419,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z6,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z6,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z6,4,bytes,19570,B,yes,
+social-webp-2026-10-19,cwebp-z6,4,encode_time,0.035363,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z6,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z6,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z6,5,bytes,19570,B,yes,
+social-webp-2026-10-19,cwebp-z6,5,encode_time,0.038770,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z6,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z6,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9,1,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9,1,encode_time,0.713942,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9,2,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9,2,encode_time,0.656142,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9,3,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9,3,encode_time,0.674004,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9,4,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9,4,encode_time,0.654277,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9,5,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9,5,encode_time,0.670468,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-lossless-q100-m6,1,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-lossless-q100-m6,1,encode_time,0.654706,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-lossless-q100-m6,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-lossless-q100-m6,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-lossless-q100-m6,2,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-lossless-q100-m6,2,encode_time,0.649181,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-lossless-q100-m6,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-lossless-q100-m6,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-lossless-q100-m6,3,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-lossless-q100-m6,3,encode_time,0.656394,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-lossless-q100-m6,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-lossless-q100-m6,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-lossless-q100-m6,4,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-lossless-q100-m6,4,encode_time,0.751334,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-lossless-q100-m6,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-lossless-q100-m6,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-lossless-q100-m6,5,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-lossless-q100-m6,5,encode_time,0.671357,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-lossless-q100-m6,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-lossless-q100-m6,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-exact,1,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-exact,1,encode_time,0.615004,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-exact,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-exact,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-exact,2,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-exact,2,encode_time,0.637055,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-exact,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-exact,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-exact,3,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-exact,3,encode_time,0.625380,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-exact,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-exact,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-exact,4,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-exact,4,encode_time,0.614626,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-exact,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-exact,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-exact,5,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-exact,5,encode_time,0.620228,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-exact,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-exact,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-metadata-none,1,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-metadata-none,1,encode_time,0.648983,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-metadata-none,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-metadata-none,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-metadata-none,2,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-metadata-none,2,encode_time,0.696463,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-metadata-none,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-metadata-none,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-metadata-none,3,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-metadata-none,3,encode_time,0.698071,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-metadata-none,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-metadata-none,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-metadata-none,4,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-metadata-none,4,encode_time,0.657430,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-metadata-none,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-metadata-none,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-metadata-none,5,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-metadata-none,5,encode_time,0.664218,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-metadata-none,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-metadata-none,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-mt,1,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-mt,1,encode_time,0.354303,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-mt,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-mt,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-mt,2,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-mt,2,encode_time,0.343728,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-mt,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-mt,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-mt,3,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-mt,3,encode_time,0.366010,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-mt,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-mt,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-mt,4,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-mt,4,encode_time,0.354375,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-mt,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-mt,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,cwebp-z9-mt,5,bytes,19262,B,yes,
+social-webp-2026-10-19,cwebp-z9-mt,5,encode_time,0.352865,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,cwebp-z9-mt,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,cwebp-z9-mt,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method4,1,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method4,1,encode_time,0.088869,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method4,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method4,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method4,2,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method4,2,encode_time,0.056820,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method4,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method4,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method4,3,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method4,3,encode_time,0.055066,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method4,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method4,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method4,4,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method4,4,encode_time,0.055889,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method4,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method4,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method4,5,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method4,5,encode_time,0.063665,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method4,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method4,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method6,1,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method6,1,encode_time,0.950543,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method6,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method6,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method6,2,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method6,2,encode_time,1.050544,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method6,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method6,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method6,3,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method6,3,encode_time,0.953295,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method6,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method6,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method6,4,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method6,4,encode_time,0.944370,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method6,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method6,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-lossless-method6,5,bytes,19268,B,yes,
+social-webp-2026-10-19,pillow-lossless-method6,5,encode_time,0.930125,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-lossless-method6,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-lossless-method6,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-png-optimize,1,bytes,44830,B,yes,
+social-webp-2026-10-19,pillow-png-optimize,1,encode_time,0.062348,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-png-optimize,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-png-optimize,1,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-png-optimize,2,bytes,44830,B,yes,
+social-webp-2026-10-19,pillow-png-optimize,2,encode_time,0.064289,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-png-optimize,2,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-png-optimize,2,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-png-optimize,3,bytes,44830,B,yes,
+social-webp-2026-10-19,pillow-png-optimize,3,encode_time,0.050300,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-png-optimize,3,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-png-optimize,3,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-png-optimize,4,bytes,44830,B,yes,
+social-webp-2026-10-19,pillow-png-optimize,4,encode_time,0.050580,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-png-optimize,4,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-png-optimize,4,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,pillow-png-optimize,5,bytes,44830,B,yes,
+social-webp-2026-10-19,pillow-png-optimize,5,encode_time,0.050533,s,yes,cwebp process wall time or Pillow save wall time
+social-webp-2026-10-19,pillow-png-optimize,5,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
+social-webp-2026-10-19,pillow-png-optimize,5,deterministic,yes,boolean,yes,all five output byte strings equal
+social-webp-2026-10-19,original-png,1,bytes,46456,B,yes,existing GitHub Social preview PNG
+social-webp-2026-10-19,original-png,1,pixel_identical,yes,boolean,yes,RGB raw data compared with cmp
