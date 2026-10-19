@@ -190,3 +190,5 @@ mkdir -p "$target_dir/etc/msd-update"
 "$host_openssl" pkey -in "$signing_key" -pubout \
 	-out "$target_dir/etc/msd-update/update-key.pem"
 printf '%s\n' "$key_origin" > "$target_dir/etc/msd-update/key-origin"
+
+"$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"

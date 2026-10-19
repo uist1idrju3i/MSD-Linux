@@ -1,5 +1,15 @@
 MODULES y kernel modules and M5 out-of-tree drivers
 MODULE_DECOMPRESS y in-kernel XZ module decompression for BusyBox modprobe
+STACKPROTECTOR_STRONG y tier-A kernel stack protector
+STRICT_KERNEL_RWX y tier-A kernel memory permissions
+RANDOMIZE_BASE y tier-A kernel ASLR
+BPF_UNPRIV_DEFAULT_OFF y disable unprivileged BPF by default
+HARDENED_USERCOPY y validate kernel usercopy bounds
+SECURITY_YAMA y ptrace restrictions
+MODULE_SIG y enable module signatures
+MODULE_SIG_FORCE y require trusted module signatures
+MODULE_SIG_ALL y sign all installed modules
+MODULE_SIG_SHA256 y sign modules with SHA-256
 MMC y boot and storage media
 MMC_BCM2835_MMC y BCM2835 legacy SD host
 MMC_BCM2835 y BCM2835 SD host

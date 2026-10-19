@@ -4,3 +4,4 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-10-19-s06-kernel-hardening](2026-10-19-s06-kernel-hardening.md) | S6 | 2026-10-19 | 完了 | tier A 採用（Image +131,072 B、QEMU 相対 +2.63%、checker FAIL 125→111） |

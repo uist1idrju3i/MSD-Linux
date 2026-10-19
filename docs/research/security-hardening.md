@@ -33,12 +33,12 @@ Wi-Fi、Bluetooth のカーネルドライバーとファームウェアは構�
 
 KSPP の推奨設定を出発点に、CM0 の機能・起動時間・RAM との両立を確認します。tier は導入順の案であり、最終 kernel `.config` や性能を測定した結果ではありません。【一次】[KSPP Recommended Settings](https://kspp.github.io/Recommended_Settings)。コスト欄の見込みは設計上の推測で、実測値ではありません。
 
-| tier | 設定 | ねらい | 起動・RAM コスト／条件 |
-|---|---|---|---|
-| A | `CONFIG_STACKPROTECTOR_STRONG`、`CONFIG_STRICT_KERNEL_RWX`、`CONFIG_HARDENED_USERCOPY` | kernel memory の保護を強化 | 起動差は小さい見込み【推測】。driver 回帰を確認 |
-| A | `CONFIG_RANDOMIZE_BASE` | kernel ASLR | 起動差は小さい見込み【推測】。Pi firmware が `kaslr-seed`／`rng-seed` を CM0 に渡すか未確認 |
-| A | `CONFIG_SECURITY_YAMA`、`CONFIG_BPF_UNPRIV_DEFAULT_OFF` | ptrace と unprivileged BPF を制限 | 起動・RAM 影響は小さい見込み【推測】。診断・BPF 利用を確認 |
-| A | `modules_disabled=1` または `CONFIG_MODULE_SIG`／`CONFIG_MODULE_SIG_FORCE` | 起動後の module 追加を制限、または署名必須化 | modules_disabled は必要 module のロード後に設定。署名強制は鍵運用が必要 |
+| tier | 設定 | ねらい | 起動・RAM コスト／条件 | 採否・検証 |
+|---|---|---|---|---|
+| A | `CONFIG_STACKPROTECTOR_STRONG`、`CONFIG_STRICT_KERNEL_RWX`、`CONFIG_HARDENED_USERCOPY` | kernel memory の保護を強化 | driver 回帰を確認 | 採用。S6 の `Image` は 131,072 B、`gzip -9n` は 25,740 B 増加。QEMU ready-marker の中央値は 3.142595 s から 3.225268 s（+82.673 ms、+2.63%）。[実験記録](../experiments/2026-10-19-s06-kernel-hardening.md) |
+| A | `CONFIG_RANDOMIZE_BASE` | kernel ASLR | Pi firmware が `kaslr-seed`／`rng-seed` を CM0 に渡すか未確認 | 採用。seed の供給有無と実効性は実機で確認する。 |
+| A | `CONFIG_SECURITY_YAMA`、`CONFIG_BPF_UNPRIV_DEFAULT_OFF` | ptrace と unprivileged BPF を制限 | 診断・BPF 利用を確認 | 採用。`CONFIG_LSM` は既定の LSM 一覧を維持して Yama を含めた。QEMU の起動ログで Yama が有効になり、`ptrace_scope=1` を確認。 |
+| A | `CONFIG_MODULE_SIG`、`CONFIG_MODULE_SIG_FORCE`、`CONFIG_MODULE_SIG_ALL`、`CONFIG_MODULE_SIG_SHA256` | module の署名を必須化 | per-build 鍵を使う。kernel と modules は同じ build の組で配布する。 | 採用。1,039/1,039 modules に署名があり、未署名 `usbnet` は QEMU で拒否された。`modules_disabled=1` は USB／Wi-Fi／Bluetooth の hotplug autoload を妨げるため不採用。署名強制時は、信頼鍵で署名されていない第三者製 out-of-tree module をロードできない。 |
 | B | `CONFIG_INIT_STACK_ALL_ZERO`、`init_on_alloc=1`、`init_on_free=1` | 初期化されていない memory の利用を抑える | memory clear の CPU 帯域・起動時間コストを実測 |
 | B | `CONFIG_SLAB_FREELIST_HARDENED`、`CONFIG_SECURITY_LOCKDOWN_LSM` | heap exploit 緩和、kernel interface 制限 | RAM／CPU 増は未測定。Lockdown と firmware・debug 経路の互換性を確認 |
 | C | ARM64 PAC／BTI | return address・間接分岐の保護 | Cortex-A53 は Armv8.0 世代で PAC／BTI を実装しないため対象外【一次】[Arm Cortex-A53](https://developer.arm.com/documentation/100095/0001/)、[Arm PAC/BTI](https://developer.arm.com/documentation/102433/latest/) |
@@ -88,5 +88,7 @@ USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID �
 | kernel の media support と watchdog 設定 | [kernel fragment](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/linux.fragment) | `CONFIG_BCM2835_WDT=y` / `# CONFIG_MEDIA_SUPPORT is not set` | 【一次】 |
 | Cortex-A53 crypto extension は option | [Arm Cortex-A53 TRM](https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token=) | “The optional Cryptography Extension is not included in the base product.” | 【一次】 |
 | kernel hardening sysctl の存在 | [Linux kernel sysctl documentation](https://docs.kernel.org/admin-guide/sysctl/kernel.html) | `dmesg_restrict` / `kptr_restrict` / `unprivileged_bpf_disabled` | 【一次】 |
+| module の自動署名と制限モード | [Linux kernel module signing](https://docs.kernel.org/admin-guide/module-signing.html) | “modules will be automatically signed during the modules_install phase of a build”; “only modules that have a valid signature that can be verified by a public key in the kernel’s possession will be loaded.” | 【一次】 |
+| 既定の module signing key の自動生成 | [Linux kernel module signing](https://docs.kernel.org/admin-guide/module-signing.html) | “the kernel build will automatically generate a new keypair using openssl if one does not exist” | 【一次】 |
 
 A/B/C の費用・効果・リスクと実装案は、これらの資料および現在のリポジトリ構成に基づく設計上の推論です。実機での性能・攻撃耐性を示す測定結果ではありません。【推測】
