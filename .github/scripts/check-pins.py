@@ -151,11 +151,11 @@ def upstream(report_path: Path, root: Path) -> int:
         branches = [name for name in refs if re.fullmatch(r"rpi-\d+\.\d+\.y", name)]
         newest = max(branches, key=branch_key) if branches else "確認できず"
         rows.append(("Raspberry Pi Linux series", series, newest,
-                     "最新" if newest != "確認できず" else "確認できず",
+                     "参考",
                      "https://github.com/raspberrypi/linux/branches"))
     except (OSError, URLError, ValueError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         rows.append(("Raspberry Pi Linux", fixed, "確認できず", "確認できず", "https://github.com/raspberrypi/linux"))
-        rows.append(("Raspberry Pi Linux series", KERNEL_SERIES, "確認できず", "確認できず",
+        rows.append(("Raspberry Pi Linux series", KERNEL_SERIES, "確認できず", "参考",
                      "https://github.com/raspberrypi/linux/branches"))
     branch = parse_buildroot_branch((root / ".gitmodules").read_text())
     try:
@@ -166,15 +166,17 @@ def upstream(report_path: Path, root: Path) -> int:
         newest = max(branches, key=branch_key) if branches else "確認できず"
         lts = [name for name in branches if name.endswith(".02.x")]
         newest_lts = max(lts, key=branch_key) if lts else "確認できず"
-        for label, latest in (("Buildroot", newest), ("Buildroot LTS", newest_lts)):
-            current = branch_key(branch) >= branch_key(latest) if latest != "確認できず" else False
-            status = "確認できず" if latest == "確認できず" else ("最新" if current else "更新あり")
-            rows.append((label, branch, latest, status,
-                         "https://gitlab.com/buildroot.org/buildroot/-/branches"))
+        current = branch_key(branch) >= branch_key(newest) if newest != "確認できず" else False
+        status = "確認できず" if newest == "確認できず" else ("最新" if current else "更新あり")
+        rows.append(("Buildroot", branch, newest, status,
+                     "https://gitlab.com/buildroot.org/buildroot/-/branches"))
+        rows.append(("Buildroot LTS", branch, newest_lts, "参考",
+                     "https://gitlab.com/buildroot.org/buildroot/-/branches"))
     except (OSError, URLError, ValueError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        for label in ("Buildroot", "Buildroot LTS"):
-            rows.append((label, branch, "確認できず", "確認できず",
-                         "https://gitlab.com/buildroot.org/buildroot/-/branches"))
+        rows.append(("Buildroot", branch, "確認できず", "確認できず",
+                     "https://gitlab.com/buildroot.org/buildroot/-/branches"))
+        rows.append(("Buildroot LTS", branch, "確認できず", "参考",
+                     "https://gitlab.com/buildroot.org/buildroot/-/branches"))
 
     for name, repository, env_name in (
         ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION"),
@@ -227,12 +229,12 @@ def upstream(report_path: Path, root: Path) -> int:
     except (OSError, URLError, ValueError):
         rows.append(("GitHub-hosted runner", os.environ.get("RUNNER_LABEL") or runner_label(root) or "未設定",
                      "確認できず", "確認できず", "https://github.com/actions/runner-images"))
-    lines = ["| 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず) | 参照URL |",
+    lines = ["| 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず・参考) | 参照URL |",
              "|---|---|---|---|---|"]
     lines.extend(f"| {name} | `{pin}` | `{latest}` | {status} | {url} |"
                  for name, pin, latest, status, url in rows)
     report_path.write_text("\n".join(lines) + "\n")
-    print("更新あり" if any(row[3] != "最新" for row in rows) else "全て最新")
+    print("更新あり" if any(row[3] not in {"最新", "参考"} for row in rows) else "全て最新")
     return 0
 
 

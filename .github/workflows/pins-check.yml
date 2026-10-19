@@ -31,7 +31,7 @@ jobs:
           run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           issue="$(gh issue list --state open --json number,title --limit 100 |
             jq -r '.[] | select(.title == "固定版の更新確認") | .number' | head -n1)"
-          if grep -qvE '^(\|---|\| 依存 \||\|.*\| 最新 \|.*\|)$' "$report"; then
+          if grep -qvE '^([|]---.*|[|] 依存 [|].*|[|].*[|] (最新|参考) [|].*[|])$' "$report"; then
             body="$(cat "$report")
 
           実行: $run_url"
