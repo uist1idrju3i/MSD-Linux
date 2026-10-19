@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 
 
 TABLE_PATH = ".github/scripts/data/jisx0213-2004-std.txt"
+ALLOWLIST_PATH = ".github/link-check-allowlist.tsv"
 FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 ATX_RE = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+(.*?)[ \t]*|[ \t]*)$")
 STALE_PATH_RE = re.compile(
@@ -27,6 +28,7 @@ SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 PLACEHOLDERS = ("*", "<", "{", "YYYY", "NN")
 SKIPPED_STALE_PATHS = {
     ".github/scripts/check-links.py",
+    ALLOWLIST_PATH,
 }
 SKIPPED_STALE_PREFIXES = ("tests/check-links/",)
 
@@ -69,6 +71,14 @@ class Reporter:
 @dataclass(frozen=True)
 class Target:
     value: str
+    line: int
+
+
+@dataclass(frozen=True)
+class StalePathException:
+    path: str
+    token: str
+    reason: str
     line: int
 
 
@@ -458,12 +468,56 @@ def stale_path_exists(value: str, tracked: set[str]) -> bool:
     return normalized in tracked or tracked_directory(normalized, tracked)
 
 
+def load_stale_path_allowlist(
+    text: str, tracked: set[str], reporter: Reporter
+) -> list[StalePathException]:
+    entries: list[StalePathException] = []
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        fields = line.split("\t")
+        if len(fields) != 3:
+            reporter.error(
+                ALLOWLIST_PATH,
+                number,
+                "例外一覧の形式が不正です（TSV の3列が必要です）",
+            )
+            continue
+        path, token, reason = fields
+        if not path or not token or not reason.strip():
+            reporter.error(
+                ALLOWLIST_PATH,
+                number,
+                "例外一覧の path、token、reason は空にできません",
+            )
+            continue
+        if path not in tracked:
+            reporter.error(
+                ALLOWLIST_PATH,
+                number,
+                f"例外の対象ファイルが追跡対象にありません: {path}",
+            )
+            continue
+        entries.append(StalePathException(path, token, reason, number))
+    return entries
+
+
 def check_stale_paths(
     paths: list[str],
     texts: dict[str, str],
     tracked: set[str],
     reporter: Reporter,
 ) -> None:
+    if ALLOWLIST_PATH not in tracked:
+        reporter.error(ALLOWLIST_PATH, 1, "例外一覧が追跡対象にありません")
+        return
+    allowlist_text = texts.get(ALLOWLIST_PATH)
+    if allowlist_text is None:
+        reporter.error(ALLOWLIST_PATH, 1, "例外一覧を読み込めません")
+        return
+    exceptions = load_stale_path_allowlist(allowlist_text, tracked, reporter)
+    used_exceptions: set[int] = set()
+
     for path in paths:
         if path in SKIPPED_STALE_PATHS or path.startswith(SKIPPED_STALE_PREFIXES):
             continue
@@ -477,12 +531,39 @@ def check_stale_paths(
                     continue
                 reporter.stale_paths_checked += 1
                 value = match.group(0)
+                token = value.rstrip(".:;")
+                exception_index = next(
+                    (
+                        index
+                        for index, entry in enumerate(exceptions)
+                        if entry.path == path
+                        and (
+                            token == entry.token
+                            or (
+                                entry.token.endswith("/")
+                                and token.startswith(entry.token)
+                            )
+                        )
+                    ),
+                    None,
+                )
+                if exception_index is not None:
+                    used_exceptions.add(exception_index)
+                    continue
                 if not stale_path_exists(value, tracked):
                     reporter.error(
                         path,
                         line_number,
                         f"古い文書パスが追跡対象にありません: {value}",
                     )
+
+    for index, entry in enumerate(exceptions):
+        if index not in used_exceptions:
+            reporter.error(
+                ALLOWLIST_PATH,
+                entry.line,
+                f"使われていない例外: {entry.path} {entry.token}",
+            )
 
 
 def main() -> int:

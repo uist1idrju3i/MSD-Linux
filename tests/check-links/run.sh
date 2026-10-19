@@ -21,6 +21,8 @@ new_repo() {
 	rm -rf "$fixture"
 	mkdir -p "$fixture"
 	git -C "$fixture" init -q
+	write_file .github/link-check-allowlist.tsv '# path	token	reason
+'
 }
 
 write_file() {
@@ -143,6 +145,52 @@ run_check
 expect_status 1
 expect_output 'docs/foo.md'
 printf 'ok - detects stale documentation paths in non-Markdown text\n'
+
+new_repo
+write_file documentation/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+'
+write_file .github/link-check-allowlist.tsv '# path	token	reason
+documentation/research/sources.md	documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc	external repository page title
+'
+track_files
+run_check
+expect_status 0
+printf 'ok - accepts an explicitly allowlisted external repository path\n'
+
+new_repo
+write_file documentation/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+'
+track_files
+run_check
+expect_status 1
+expect_output 'documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc'
+printf 'ok - rejects the same external path without an allowlist entry\n'
+
+new_repo
+write_file documentation/research/sources.md 'documentation/research/README.md
+'
+write_file documentation/research/README.md 'tracked
+'
+write_file .github/link-check-allowlist.tsv '# path	token	reason
+documentation/research/sources.md	documentation/external-repository/	unused external path
+'
+track_files
+run_check
+expect_status 1
+expect_output '使われていない例外'
+printf 'ok - rejects an unused allowlist entry\n'
+
+new_repo
+write_file documentation/research/sources.md 'recorded title
+'
+write_file .github/link-check-allowlist.tsv '# path	token	reason
+documentation/research/missing.md	documentation/external-repository/	untracked source
+'
+track_files
+run_check
+expect_status 1
+expect_output '例外の対象ファイルが追跡対象にありません'
+printf 'ok - rejects an allowlist entry for an untracked file\n'
 
 new_repo
 write_file documentation/experiments/README.md 'placeholder directory

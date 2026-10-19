@@ -11,6 +11,7 @@
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
 `check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。追跡ファイルに旧 `docs` ディレクトリを参照するパスが残っていれば CI を失敗させ、文書移動後の参照漏れを防ぎます。
+`.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
 
 `build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
