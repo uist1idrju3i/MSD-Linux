@@ -35,7 +35,7 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 - A53 の Crypto Extension はオプション（Arm DDI 0501F）だが、BCM2837 に実装されているかの一次仕様と、SSH/VPN・耐量子鍵交換の CM0 実測は未確認。確認先: https://developer.arm.com/documentation/ddi0501/latest/
 - 7.2/7.3 を CM0 で起動できるか、alias unmap の再適用が与える影響。コミットメッセージだけでは、RPi 3/4 の起動問題が解消したか判断できない。詳細は[カーネル調査](boot-and-kernel.md)を参照。
 - M5 の名称・ロゴを第三者が利用する場合の公式ルールは未確認。確認先: https://docs.m5stack.com/
-- Kickstarter の期間・金額・更新内容は本体が HTTP 403 で、一部 SNS も本文を確認できていない。詳細は[最新動向](scope-and-hardware.md#9-最新動向-2026-10-18-時点)を参照。
+- Kickstarter の期間・金額・更新内容は本体が HTTP 403 で、一部 SNS も本文を確認できていない。詳細は[最新動向](scope-and-hardware.md#9-最新動向2026-10-18-時点)を参照。
 - OpenVPN 2.7.6 と OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、実機・実接続は未実施。詳細は[ユーザー領域とセキュリティの調査](userspace-and-security.md)を参照。
 - Raspberry Pi 3B+ の WP-1 ログにおける kernel の `Loaded` から `Device tree loaded` までの 2.63 s の内訳と、GPU 段のサイズ依存。実機未測定で、サイズ依存は推測。詳細は[起動・測定の調査](boot-and-kernel.md)を参照。
 - Newlib に Linux 用の sys ディレクトリがないか。sourceware のページを取得できず未確認。確認先: https://sourceware.org/newlib/

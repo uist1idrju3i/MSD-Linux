@@ -10,6 +10,9 @@
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
+`check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。追跡ファイルに旧 `docs` ディレクトリを参照するパスが残っていれば CI を失敗させ、文書移動後の参照漏れを防ぎます。
+`.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
+
 `build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させます。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
@@ -24,7 +27,7 @@ Python の `euc_jis_2004` などの codec は公式対応表と異なる文字�
 
 ```sh
 python3 .github/scripts/check-jisx0213.py
-python3 .github/scripts/check-jisx0213.py docs/CI.md
+python3 .github/scripts/check-jisx0213.py documentation/CI.md
 ```
 
 引数を省略した場合は `git ls-files -z` が返す追跡済みファイルを検査します。シンボリックリンク、先頭 8 KiB に NUL byte を含むバイナリファイル、および対応表 `.github/scripts/data/jisx0213-2004-std.txt` は対象外です。submodule の gitlink は通常ファイルではないため対象外です。バイナリ判定を通ったファイルの UTF-8 エラーは検査エラーになります。パスを指定した場合はそのファイルだけが対象です。例外は `.github/jisx0213-allowlist.tsv` にタブ区切りの4列で記載し、理由を必ず添えます。
