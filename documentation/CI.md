@@ -8,6 +8,7 @@
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
+| `pages.yml` | `main` への push で `docs/` または workflow が変わったとき、手動実行 | `check-site.py` の検査後、`docs/` だけを GitHub Pages に公開します。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
 `check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。追跡ファイルに旧 `docs` ディレクトリを参照するパスが残っていれば CI を失敗させ、文書移動後の参照漏れを防ぎます。
@@ -15,7 +16,9 @@
 
 ## GitHub Pages サイト
 
-`docs/` は GitHub Pages で公開するサイト専用で、公開ドメインは `docs/CNAME` にだけ記載します。`check-site.py` は許可したファイルだけが `docs/` にあること、canonical と OGP の URL が CNAME と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `documentation/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css`、`CNAME`、空の `.nojekyll` と `images/` 直下の SVG／PNG です。
+`docs/` は GitHub Pages で公開するサイト専用です。`pages.yml` は `check-site.py` の検査後、`docs/` だけを GitHub Pages に公開します。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。GitHub の Settings にある Pages 画面では、Source に「GitHub Actions」を選びます。
+
+Actions から公開すると `docs/CNAME` はドメイン設定に使われず、Pages の Settings に保存した値が使われます。`docs/CNAME` は canonical と OGP の URL を検査する基準として残します。`check-site.py` は許可したファイルだけが `docs/` にあること、canonical と OGP の URL が CNAME と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `documentation/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css`、`CNAME`、空の `.nojekyll` と `images/` 直下の SVG／PNG です。
 
 `build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
