@@ -70,14 +70,6 @@ while IFS= read -r line || [ -n "$line" ]; do
 	esac
 done <"$CONFIG_FILE"
 
-CAMERA_DTB="$CURRENT_DTB"
-if [ "$camera_overlay_configured" != true ]; then
-	CAMERA_DTB="${TMP_DIR}/camera.dtb"
-	cp "$CURRENT_DTB" "$CAMERA_DTB"
-	CURRENT_DTB="$CAMERA_DTB"
-	apply_overlay imx219
-fi
-
 find_imx219_node() {
 	find_dtb=$1
 	queue_file="${TMP_DIR}/node-queue"
@@ -113,23 +105,27 @@ EOF
 	return 1
 }
 
-if ! SENSOR_NODE="$(find_imx219_node "$CAMERA_DTB")"; then
-	printf 'IMX219 node with compatible sony,imx219 was not found.\n' >&2
-	exit 1
-fi
-SENSOR_STATUS="$("$FDTGET" -t s "$CAMERA_DTB" "$SENSOR_NODE" status 2>/dev/null || true)"
-if [ "$SENSOR_STATUS" != okay ]; then
-	printf 'IMX219 node is not enabled: %s status=%s\n' \
-		"$SENSOR_NODE" "${SENSOR_STATUS:-<unset>}" >&2
-	exit 1
-fi
+if [ "$camera_overlay_configured" = true ]; then
+	if ! SENSOR_NODE="$(find_imx219_node "$CURRENT_DTB")"; then
+		printf 'IMX219 node with compatible sony,imx219 was not found.\n' >&2
+		exit 1
+	fi
+	SENSOR_STATUS="$("$FDTGET" -t s "$CURRENT_DTB" "$SENSOR_NODE" status 2>/dev/null || true)"
+	if [ "$SENSOR_STATUS" != okay ]; then
+		printf 'IMX219 node is not enabled: %s status=%s\n' \
+			"$SENSOR_NODE" "${SENSOR_STATUS:-<unset>}" >&2
+		exit 1
+	fi
 
-CSI1_STATUS="$("$FDTGET" -t s "$CAMERA_DTB" /soc/csi@7e801000 status 2>/dev/null || true)"
-if [ "$CSI1_STATUS" != okay ]; then
-	printf 'CSI1 is not enabled: /soc/csi@7e801000 status=%s\n' \
-		"${CSI1_STATUS:-<unset>}" >&2
-	exit 1
-fi
+	CSI1_STATUS="$("$FDTGET" -t s "$CURRENT_DTB" /soc/csi@7e801000 status 2>/dev/null || true)"
+	if [ "$CSI1_STATUS" != okay ]; then
+		printf 'CSI1 is not enabled: /soc/csi@7e801000 status=%s\n' \
+			"${CSI1_STATUS:-<unset>}" >&2
+		exit 1
+	fi
 
-printf 'Device-tree overlay check passed: IMX219 at %s; CSI1 status=%s\n' \
-	"$SENSOR_NODE" "$CSI1_STATUS"
+	printf 'Device-tree overlay check passed: IMX219 at %s; CSI1 status=%s\n' \
+		"$SENSOR_NODE" "$CSI1_STATUS"
+else
+	printf 'Device-tree overlay check passed: configured overlays applied; IMX219 is not configured.\n'
+fi

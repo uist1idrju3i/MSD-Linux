@@ -13,7 +13,10 @@ else
 	REMOVE_LOG_FILE=true
 fi
 QEMU_PID=
-QEMU_EXTRA_APPEND="${QEMU_EXTRA_APPEND:+${QEMU_EXTRA_APPEND} }msd.module-test=usbnet,bcm2835-unicam,imx219"
+QEMU_MODULE_TEST="${QEMU_MODULE_TEST-usbnet,bcm2835-unicam,imx219}"
+if [ -n "$QEMU_MODULE_TEST" ]; then
+	QEMU_EXTRA_APPEND="${QEMU_EXTRA_APPEND:+${QEMU_EXTRA_APPEND} }msd.module-test=${QEMU_MODULE_TEST}"
+fi
 export QEMU_EXTRA_APPEND
 
 # shellcheck disable=SC2329 # Invoked by the EXIT trap below.
@@ -61,14 +64,18 @@ while (( SECONDS < deadline )); do
 					;;
 			esac
 		done
-		for module in usbnet bcm2835-unicam imx219; do
-			module_check_line="msd-module-check: ${module} loaded via modprobe and listed by lsmod"
-			if ! grep -Fq "$module_check_line" "$LOG_FILE"; then
-				printf 'QEMU serial log is missing the %s module-load check.\n' \
-					"$module" >&2
-				exit 1
-			fi
-		done
+		if [ -n "$QEMU_MODULE_TEST" ]; then
+			IFS=',' read -r -a modules <<< "$QEMU_MODULE_TEST"
+			for module in "${modules[@]}"; do
+				[ -n "$module" ] || continue
+				module_check_line="msd-module-check: ${module} loaded via modprobe and listed by lsmod"
+				if ! grep -Fq "$module_check_line" "$LOG_FILE"; then
+					printf 'QEMU serial log is missing the %s module-load check.\n' \
+						"$module" >&2
+					exit 1
+				fi
+			done
+		fi
 		printf 'QEMU boot marker and login prompt found for root %s.\n' \
 			"$ROOT_DEVICE"
 		exit 0

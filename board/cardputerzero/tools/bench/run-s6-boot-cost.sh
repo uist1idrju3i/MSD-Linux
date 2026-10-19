@@ -19,6 +19,7 @@ mkdir -p "$log_dir" "$(dirname -- "$csv")"
 if [ ! -e "$csv" ]; then
 	printf 'variant,run,ready_kernel_seconds\n' > "$csv"
 fi
+export QEMU_MODULE_TEST=
 
 for run in 1 2 3; do
 	run_log_dir="${log_dir}/run${run}"

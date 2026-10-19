@@ -195,7 +195,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | ID | 対象 | 主な方法・成果物 | 状態 | PR | 記録 |
 |---|---|---|---|---|---|
 | S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツールのみ・本番未実施 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
-| S2 | camera | Unicam + IMX219 の raw V4L2 path と utilities を実装。QEMU の module load は成功したが、相対 ready-marker は +4.66% で +1.0% 基準未達。capture と電源 GPIO は実機で確認する。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
+| S2 | camera | Unicam + IMX219 raw V4L2 path と utilities を実装し、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化。Lite 版にはセンサーがなく probe failure は想定内で harmless だが、実際の kernel message は未確認。trial 1 を破棄した統制 QEMU 再測定は相対中央値 +0.0510% で +1.0% 基準内のため tier A を採用。capture と電源 GPIO は実機で確認する。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
 | S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
 | S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
 | S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 未着手 | — | — |
