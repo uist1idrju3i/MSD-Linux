@@ -95,14 +95,10 @@ case "$p4_type" in
 esac
 
 disk_name="${disk##*/}"
-if [ -r "$sysfs_root/class/block/$disk_name/size" ]; then
-	disk_sectors="$(cat "$sysfs_root/class/block/$disk_name/size")" ||
-		fail "cannot read the size of $disk"
-else
-	disk_bytes="$(stat -c '%s' "$disk")" || fail "cannot determine the size of $disk"
-	is_uint "$disk_bytes" || fail "invalid disk size"
-	disk_sectors=$((disk_bytes / 512))
-fi
+disk_size_file="$sysfs_root/class/block/$disk_name/size"
+[ -r "$disk_size_file" ] || fail "cannot read disk sector count from $disk_size_file"
+disk_sectors="$(cat "$disk_size_file")" ||
+	fail "cannot read disk sector count from $disk_size_file"
 is_uint "$disk_sectors" || fail "invalid disk sector count"
 [ "$disk_sectors" -gt 0 ] || fail "disk has no sectors"
 
