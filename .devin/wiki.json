@@ -4,13 +4,13 @@
       "content": "MSD/Linux は M5Stack CardputerZero（Raspberry Pi CM0 = BCM2837、Cortex-A53 x4、RAM 512 MB、microSD 起動）向けの Buildroot 外部ツリーです。設計の柱は 6 つあります。すぐ使える（起動の短縮）、電源断で壊れない（読み取り専用 SquashFS rootfs と ext4 の /data）、更新に失敗しても戻れる（tryboot による A/B 更新と自動復帰）、ハードウェアをすべて使える、費用に見合うセキュリティ、検証できる（QEMU と実機の区別）です。各ページでは、説明している仕組みがどの柱に関わるかを明記してください。"
     },
     {
-      "content": "Wiki は日本語で書いてください。コード、識別子、ファイル名、Kconfig シンボル、コマンドは英語のまま記載します。リポジトリのドキュメント（README.md、RESEARCH.md、documentation/）も日本語です。"
+      "content": "Wiki は日本語で書いてください。コード、識別子、ファイル名、Kconfig シンボル、コマンドは英語のまま記載します。リポジトリのドキュメント（README.md、RESEARCH.md、docs/）も日本語です。"
     },
     {
       "content": "vendor/ 配下（vendor/buildroot、vendor/m5stack-linux-dtoverlays、vendor/yomiyasu）は shallow submodule で取り込んだ外部コードです。内部を詳しく説明する必要はありません。MSD/Linux がどのファイルやどの仕組みを使っているかだけを、リポジトリ側の設定（configs/、board/cardputerzero/、external.mk、Config.in、.gitmodules）から説明してください。"
     },
     {
-      "content": "確認済みの事実と未確認事項を区別してください。CI（.github/workflows/build.yml）は Buildroot のフルビルド、tests/msd-update/run.sh、QEMU raspi3b での A/B 両スロットの起動確認（board/cardputerzero/qemu/test-boot.sh、test-ab.sh）を実行しています。GPU firmware の tryboot、LCD、キーボード、M5 の I2C デバイス、実機での電源断は QEMU で再現できず、実機では未確認です。RESEARCH.md と documentation/research/ にある実機の数値や推奨案を、確認済みのように書かないでください。"
+      "content": "確認済みの事実と未確認事項を区別してください。CI（.github/workflows/build.yml）は Buildroot のフルビルド、tests/msd-update/run.sh、QEMU raspi3b での A/B 両スロットの起動確認（board/cardputerzero/qemu/test-boot.sh、test-ab.sh）を実行しています。GPU firmware の tryboot、LCD、キーボード、M5 の I2C デバイス、実機での電源断は QEMU で再現できず、実機では未確認です。RESEARCH.md と docs/research/ にある実機の数値や推奨案を、確認済みのように書かないでください。"
     },
     {
       "content": "主要なデータの流れです。configs/msd_cardputerzero_defconfig → Buildroot → board/cardputerzero/post-build.sh（rootfs の調整）→ board/cardputerzero/post-image.sh（kernel8.img と genimage）→ board/cardputerzero/genimage.cfg が sdcard.img を作ります。パーティションは MBR です。p1 bootsel（autoboot.txt、bootcode.bin）、p2/p3 boot-a/boot-b（FAT、config.txt と cmdline）、拡張パーティション p4 内の論理パーティション p5/p6 rootfs-a/b（SquashFS）、p7 data（ext4）の順に並びます。起動後は rootfs-overlay/etc/init.d/S01〜S99 の BusyBox init スクリプトが順に実行され、S99msd-health が tryboot 中のヘルスチェックと msd-update commit を担当します。"
@@ -41,7 +41,7 @@
       "purpose": "Buildroot 外部ツリー（external.desc、external.mk、Config.in）と defconfig の主要な選択（ツールチェーン、カーネル、firmware、SquashFS、genimage）を説明する",
       "page_notes": [
         {
-          "content": "configs/msd_cardputerzero_defconfig、external.desc、external.mk、Config.in、package/m5stack-cardputerzero/、documentation/BUILD.md を根拠にしてください。"
+          "content": "configs/msd_cardputerzero_defconfig、external.desc、external.mk、Config.in、package/m5stack-cardputerzero/、docs/BUILD.md を根拠にしてください。"
         }
       ]
     },
@@ -51,7 +51,7 @@
       "parent": "ビルドシステム",
       "page_notes": [
         {
-          "content": "board/cardputerzero/post-build.sh、post-image.sh、genimage.cfg を根拠にしてください。microSD の消去単位とパーティション境界の考え方は RESEARCH.md と documentation/research/storage-and-flash.md を参照してください。"
+          "content": "board/cardputerzero/post-build.sh、post-image.sh、genimage.cfg を根拠にしてください。microSD の消去単位とパーティション境界の考え方は RESEARCH.md と docs/research/storage-and-flash.md を参照してください。"
         }
       ]
     },
@@ -61,7 +61,7 @@
       "parent": "ビルドシステム",
       "page_notes": [
         {
-          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、documentation/research/boot-and-kernel.md を根拠にしてください。"
+          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、docs/research/boot-and-kernel.md を根拠にしてください。"
         }
       ]
     },
@@ -80,7 +80,7 @@
       "parent": "起動シーケンス",
       "page_notes": [
         {
-          "content": "RESEARCH.md の「起動時間」「高速化のアイデア一覧」と documentation/research/boot-and-kernel.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
+          "content": "RESEARCH.md の「起動時間」「高速化のアイデア一覧」と docs/research/boot-and-kernel.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
         }
       ]
     },
@@ -89,7 +89,7 @@
       "purpose": "SquashFS rootfs、tmpfs、ext4 の /data、/etc の overlay、初回の data 初期化と fsck を説明する",
       "page_notes": [
         {
-          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、documentation/UPDATE.md を根拠にしてください。"
+          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、docs/UPDATE.md を根拠にしてください。"
         }
       ]
     },
@@ -99,7 +99,7 @@
       "parent": "読み取り専用 rootfs と /data",
       "page_notes": [
         {
-          "content": "S01msd-watchdog、RESEARCH.md の「電源断耐性」、documentation/research/power-and-updates.md、documentation/research/storage-and-flash.md を根拠にしてください。"
+          "content": "S01msd-watchdog、RESEARCH.md の「電源断耐性」、docs/research/power-and-updates.md、docs/research/storage-and-flash.md を根拠にしてください。"
         }
       ]
     },
@@ -108,7 +108,7 @@
       "purpose": "msd-update の install、tryboot、commit の流れ、S99msd-health のヘルスチェック、失敗時に前のスロットへ戻る仕組みと制約を説明する",
       "page_notes": [
         {
-          "content": "board/cardputerzero/rootfs-overlay/usr/sbin/msd-update、S98msd-ready、S99msd-health、documentation/UPDATE.md、RESEARCH.md の「A/B 更新」を根拠にしてください。"
+          "content": "board/cardputerzero/rootfs-overlay/usr/sbin/msd-update、S98msd-ready、S99msd-health、docs/UPDATE.md、RESEARCH.md の「A/B 更新」を根拠にしてください。"
         }
       ]
     },
@@ -127,7 +127,7 @@
       "purpose": "CardputerZero の各ハードウェア機能（LCD、キーボード、音声、IMU、RTC、電池、IR、カメラ、Wi-Fi/BT、USB、Ethernet、HDMI、拡張端子、電源スイッチ）について、ドライバ、overlay、firmware、現在の対応状況を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md の「ハードウェア」、documentation/research/scope-and-hardware.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
+          "content": "RESEARCH.md の「ハードウェア」、docs/research/scope-and-hardware.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
         }
       ]
     },
@@ -136,7 +136,7 @@
       "purpose": "脅威モデル、採用済みの対策、費用対効果で分類した候補（カーネル、sysctl、マウントオプション、更新署名、無線と USB）を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md のセキュリティに関する節、documentation/research/userspace-and-security.md、documentation/research/security-hardening.md を根拠にしてください。"
+          "content": "RESEARCH.md のセキュリティに関する節、docs/research/userspace-and-security.md、docs/research/security-hardening.md を根拠にしてください。"
         }
       ]
     },
@@ -145,7 +145,7 @@
       "purpose": "QEMU raspi3b での起動確認スクリプトの仕組み、確認できる範囲とできない範囲を説明する",
       "page_notes": [
         {
-          "content": "board/cardputerzero/qemu/ と documentation/BUILD.md を根拠にしてください。"
+          "content": "board/cardputerzero/qemu/ と docs/BUILD.md を根拠にしてください。"
         }
       ]
     },
@@ -154,7 +154,7 @@
       "purpose": "GitHub Actions のワークフロー（build、lint、security、pins-check、agent-docs）、アクションの固定、zizmor、成果物を説明する",
       "page_notes": [
         {
-          "content": "documentation/CI.md、.github/workflows/、.github/zizmor-requirements.txt を根拠にしてください。"
+          "content": "docs/CI.md、.github/workflows/、.github/zizmor-requirements.txt を根拠にしてください。"
         }
       ]
     },
@@ -169,11 +169,20 @@
       ]
     },
     {
-      "title": "調査記録の読み方",
-      "purpose": "RESEARCH.md と documentation/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
+      "title": "公式サイト（muromi.moe）",
+      "purpose": "public_html/ の静的サイトの目的、GitHub Actions での公開の流れ、公開前の検査とドメインの照合、ロゴの派生画像の作り方を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md、documentation/research/measurement-and-planning.md、documentation/research/corrections.md、documentation/research/sources.md を根拠にしてください。"
+          "content": "public_html/index.html、public_html/404.html、public_html/site.css、.github/workflows/pages.yml、.github/scripts/check-site.py、tests/check-site/run.sh、docs/CI.md の「GitHub Pages サイト」、docs/logo/README.md を根拠にしてください。ドメインは Pages の Settings と check-site.py の SITE_ORIGIN の2か所にあり、CNAME ファイルは使いません。サイトは JavaScript と外部資源を使いません。"
+        }
+      ]
+    },
+    {
+      "title": "調査記録の読み方",
+      "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
+      "page_notes": [
+        {
+          "content": "RESEARCH.md、docs/research/measurement-and-planning.md、docs/research/corrections.md、docs/research/sources.md を根拠にしてください。"
         }
       ]
     },

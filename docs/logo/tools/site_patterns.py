@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the site pattern SVGs (flowing water and seigaiha) in docs/images/."""
+"""Generate the site pattern SVGs (flowing water and seigaiha) in public_html/images/."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-OUT = ROOT / "docs" / "images"
+OUT = ROOT / "public_html" / "images"
 
 THEMES = {
     "light": {"bg": "#f3f3f2", "wave": "#c9d3df", "flow": "#165e83"},
@@ -63,7 +63,7 @@ def outputs() -> dict[Path, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="fail if docs/images/ differs from the generator")
+    parser.add_argument("--check", action="store_true", help="fail if public_html/images/ differs from the generator")
     args = parser.parse_args()
     stale = []
     for path, text in outputs().items():
@@ -74,7 +74,7 @@ def main() -> int:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")
     for rel in stale:
-        print(f"::error file={rel}::documentation/logo/tools/site_patterns.py の出力と一致しません")
+        print(f"::error file={rel}::docs/logo/tools/site_patterns.py の出力と一致しません")
     return 1 if stale else 0
 
 

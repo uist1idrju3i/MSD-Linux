@@ -1,6 +1,6 @@
 ---
 name: experiment-record
-description: MSD-Linux で実験・測定・比較（カーネル設定の総当たり、QEMU の命令数・書き込み量、電源断の反復、サイズ比較など）を計画・実行・記録するときに使う。条件・手順・生の値・結論・失敗した試行を documentation/experiments/ に残し、別の人が再実行できるようにする。
+description: MSD-Linux で実験・測定・比較（カーネル設定の総当たり、QEMU の命令数・書き込み量、電源断の反復、サイズ比較など）を計画・実行・記録するときに使う。条件・手順・生の値・結論・失敗した試行を docs/experiments/ に残し、別の人が再実行できるようにする。
 ---
 
 # experiment-record（実験の記録）
@@ -9,12 +9,12 @@ description: MSD-Linux で実験・測定・比較（カーネル設定の総当
 
 ## 手順
 
-1. 計画: `references/record-template.md` を `documentation/experiments/YYYY-MM-DD-sNN-<short>.md` に写し、目的、仮説、変える条件と変えない条件、採否の基準、繰り返しの回数を先に書きます。採否の基準は数値で決め、結果を見てから変えません。繰り返しは 5 回以上を基本とし、中央値と最小・最大を出します。
+1. 計画: `references/record-template.md` を `docs/experiments/YYYY-MM-DD-sNN-<short>.md` に写し、目的、仮説、変える条件と変えない条件、採否の基準、繰り返しの回数を先に書きます。採否の基準は数値で決め、結果を見てから変えません。繰り返しは 5 回以上を基本とし、中央値と最小・最大を出します。
 2. 基準の固定: 基準の commit、ホストの OS、QEMU・Buildroot・GCC・カーネルの版、出力先のパス（`O=`）、使い回した出力の状態（`*-reconfigure` の有無など）を書きます。ツールの版は、実際に使われたバイナリから取ります（例: genimage が使う `output/host/sbin/mke2fs -V`）。
 3. 計測器の検証: 本番の前に、計測器が正しく反応するかを確かめます。既知の負荷を与える、アイドル時の増分が 0 かを見る、同じ条件で 2 回測って差を見る（A/A 試行）、のいずれかを行い、結果を記録します。
 4. 実行: 実行に使うスクリプトとフックは `board/cardputerzero/tools/bench/` などリポジトリ内に置きます。通常のイメージには入れず、ローカルの測定時にだけ有効にします。重い実験は CI に載せません。コマンドと環境変数は、記録にそのまま書きます。
 5. 記録: 人が読む要約は Markdown に、生の値は同じ名前の `.csv` に書きます（列は `assets/results-template.csv`）。捨てた試行も理由と一緒に残します。大きなログはコミットせず、再生成の方法と SHA-256 を書きます。CSV は 1 ファイル 1 MB までを目安にします。
-6. 反映: `documentation/experiments/README.md` の一覧に 1 行足し、結論を該当する調査文書と S1〜S17 の表に反映します。以前の記述を正すときは `documentation/research/corrections.md` にも書きます。PR 本文には記録へのリンクを書きます。日本語の文章は yomiyasu の lint を通します。
+6. 反映: `docs/experiments/README.md` の一覧に 1 行足し、結論を該当する調査文書と S1〜S17 の表に反映します。以前の記述を正すときは `docs/research/corrections.md` にも書きます。PR 本文には記録へのリンクを書きます。日本語の文章は yomiyasu の lint を通します。
 
 ## 提出前の確認
 

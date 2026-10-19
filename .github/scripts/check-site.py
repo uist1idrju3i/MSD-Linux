@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that docs/ contains only the local, script-free GitHub Pages site."""
+"""Check that public_html/ contains only the local, script-free GitHub Pages site."""
 
 from __future__ import annotations
 
@@ -15,14 +15,14 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 
+SITE_ORIGIN = "https://muromi.moe"
+SITE_ORIGIN_HOST = urlsplit(SITE_ORIGIN).hostname or ""
 FIXED_SITE_PATHS = {
-    "docs/index.html",
-    "docs/404.html",
-    "docs/site.css",
-    "docs/CNAME",
-    "docs/.nojekyll",
+    "public_html/index.html",
+    "public_html/404.html",
+    "public_html/site.css",
 }
-IMAGE_PATH_RE = re.compile(r"docs/images/[^/]+\.(?:svg|png)\Z")
+IMAGE_PATH_RE = re.compile(r"public_html/images/[^/]+\.(?:svg|png)\Z")
 LOGO_FILES = (
     "msd-linux-logo.svg",
     "msd-linux-logo-dark.svg",
@@ -35,11 +35,10 @@ REQUIRED_IMAGES = (
     "seigaiha-light.svg",
     "seigaiha-dark.svg",
 )
-HOST_LABEL_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\Z")
 CSP_DEFAULT_RE = re.compile(r"(?:^|;)\s*default-src\s+'none'\s*(?:;|$)", re.IGNORECASE)
 CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 CSS_URL_RE = re.compile(r"""url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*?))\s*\)""", re.IGNORECASE)
-SITE_PATTERNS = "documentation/logo/tools/site_patterns.py"
+SITE_PATTERNS = "docs/logo/tools/site_patterns.py"
 
 
 class Reporter:
@@ -128,46 +127,28 @@ def read_text(root: Path, path: str, reporter: Reporter) -> str | None:
     return text
 
 
-def check_docs_allowlist(docs_paths: set[str], reporter: Reporter) -> None:
-    for path in sorted(docs_paths):
+def check_site_allowlist(site_paths: set[str], reporter: Reporter) -> None:
+    for path in sorted(site_paths):
         if path not in FIXED_SITE_PATHS and not IMAGE_PATH_RE.fullmatch(path):
             reporter.error(
                 path,
                 1,
-                "docs/ はサイト専用です。文書は documentation/ に置いてください。",
+                "public_html/ はサイト専用です。文書は docs/ に置いてください。",
             )
-    for path in sorted(FIXED_SITE_PATHS - docs_paths):
+    for path in sorted(FIXED_SITE_PATHS - site_paths):
         reporter.error(path, 1, "必要なサイトファイルが追跡されていません")
 
 
-def check_cname(root: Path, docs_paths: set[str], reporter: Reporter) -> str | None:
-    path = "docs/CNAME"
-    if path not in docs_paths:
-        return None
-    raw = read_bytes(root, path, reporter)
-    if raw is None:
-        return None
-    if not raw or b"\r" in raw:
-        reporter.error(path, 1, "CNAME はホスト名1行だけにしてください")
-        return None
-    hostname_bytes = raw[:-1] if raw.endswith(b"\n") else raw
-    if not hostname_bytes or b"\n" in hostname_bytes:
-        reporter.error(path, 1, "CNAME はホスト名1行だけにしてください")
-        return None
-    try:
-        host = hostname_bytes.decode("ascii")
-    except UnicodeDecodeError:
-        reporter.error(path, 1, "CNAME は ASCII のホスト名で指定してください")
-        return None
-    labels = host.split(".")
-    if (
-        len(host) > 253
-        or not labels
-        or any(not HOST_LABEL_RE.fullmatch(label) for label in labels)
-    ):
-        reporter.error(path, 1, "CNAME は scheme や path を含まないホスト名にしてください")
-        return None
-    return host
+def check_expected_pages_cname(value: str, reporter: Reporter) -> None:
+    host = value.strip()
+    if not host:
+        reporter.error("Pages", 1, "Pages の Settings にドメインがありません")
+    elif host.casefold() != SITE_ORIGIN_HOST.casefold():
+        reporter.error(
+            "Pages",
+            1,
+            f"Pages の Settings のドメインが SITE_ORIGIN ({SITE_ORIGIN_HOST}) と一致しません",
+        )
 
 
 def resolve_local_target(source_path: str, value: str) -> tuple[str | None, str | None]:
@@ -184,15 +165,17 @@ def resolve_local_target(source_path: str, value: str) -> tuple[str | None, str 
     if target_path == "":
         target = source_path
     elif target_path == "/":
-        target = "docs/index.html"
+        target = "public_html/index.html"
     elif target_path.startswith("/"):
-        target = posixpath.normpath(posixpath.join("docs", target_path.lstrip("/")))
+        target = posixpath.normpath(
+            posixpath.join("public_html", target_path.lstrip("/"))
+        )
     else:
         target = posixpath.normpath(
             posixpath.join(posixpath.dirname(source_path), target_path)
         )
-    if not target.startswith("docs/"):
-        return None, "参照先が docs/ の外です"
+    if not target.startswith("public_html/"):
+        return None, "参照先が public_html/ の外です"
     return target, None
 
 
@@ -200,25 +183,24 @@ def check_local_reference(
     source_path: str,
     line: int,
     value: str,
-    docs_paths: set[str],
+    site_paths: set[str],
     reporter: Reporter,
 ) -> None:
     reporter.references_checked += 1
     target, problem = resolve_local_target(source_path, value)
     if problem:
         reporter.error(source_path, line, f"{problem}: {value}")
-    elif target not in docs_paths:
+    elif target not in site_paths:
         reporter.error(
             source_path,
             line,
-            f"docs/ 内の追跡ファイルが見つかりません: {value}",
+            f"public_html/ 内の追跡ファイルが見つかりません: {value}",
         )
 
 
 def check_metadata_url(
     metadata: MetadataURL,
-    cname: str | None,
-    docs_paths: set[str],
+    site_paths: set[str],
     reporter: Reporter,
 ) -> None:
     value = metadata.value
@@ -233,8 +215,10 @@ def check_metadata_url(
         return
 
     if not parts.scheme and not parts.netloc:
-        check_local_reference(
-            metadata.path, metadata.line, value, docs_paths, reporter
+        reporter.error(
+            metadata.path,
+            metadata.line,
+            f"{metadata.kind} URL は HTTPS の SITE_ORIGIN ({SITE_ORIGIN}) を使ってください",
         )
         return
 
@@ -242,19 +226,19 @@ def check_metadata_url(
         parts.scheme.lower() != "https"
         or not parts.netloc
         or not parts.hostname
-        or parts.hostname.lower() != (cname or "").lower()
-        or parts.netloc.lower() != (cname or "").lower()
+        or parts.hostname.casefold() != SITE_ORIGIN_HOST.casefold()
+        or parts.netloc.casefold() != SITE_ORIGIN_HOST.casefold()
         or port is not None
     ):
         reporter.error(
             metadata.path,
             metadata.line,
-            f"{metadata.kind} URL の host と scheme は CNAME の HTTPS URL に一致させてください",
+            f"{metadata.kind} URL の host と scheme は SITE_ORIGIN ({SITE_ORIGIN}) に一致させてください",
         )
     if metadata.kind == "og:image":
         image_path = parts.path or "/"
         check_local_reference(
-            metadata.path, metadata.line, image_path, docs_paths, reporter
+            metadata.path, metadata.line, image_path, site_paths, reporter
         )
 
 
@@ -271,12 +255,12 @@ class SiteHTMLParser(html.parser.HTMLParser):
     def __init__(
         self,
         path: str,
-        docs_paths: set[str],
+        site_paths: set[str],
         reporter: Reporter,
     ) -> None:
         super().__init__(convert_charrefs=True)
         self.path = path
-        self.docs_paths = docs_paths
+        self.site_paths = site_paths
         self.reporter = reporter
         self.csp_lines: list[tuple[int, str | None]] = []
         self.metadata_urls: list[MetadataURL] = []
@@ -339,7 +323,7 @@ class SiteHTMLParser(html.parser.HTMLParser):
             values = srcset_urls(value) if name == "srcset" else [value]
             for target in values:
                 check_local_reference(
-                    self.path, line, target, self.docs_paths, self.reporter
+                    self.path, line, target, self.site_paths, self.reporter
                 )
 
     def handle_startendtag(
@@ -379,11 +363,10 @@ def check_csp(
 def check_html(
     path: str,
     text: str,
-    docs_paths: set[str],
-    cname: str | None,
+    site_paths: set[str],
     reporter: Reporter,
 ) -> None:
-    parser = SiteHTMLParser(path, docs_paths, reporter)
+    parser = SiteHTMLParser(path, site_paths, reporter)
     try:
         parser.feed(text)
         parser.close()
@@ -392,7 +375,7 @@ def check_html(
         return
     check_csp(path, parser, reporter)
     for metadata in parser.metadata_urls:
-        check_metadata_url(metadata, cname, docs_paths, reporter)
+        check_metadata_url(metadata, site_paths, reporter)
 
 
 def without_css_comments(text: str) -> str:
@@ -405,26 +388,26 @@ def without_css_comments(text: str) -> str:
 def check_css(
     path: str,
     text: str,
-    docs_paths: set[str],
+    site_paths: set[str],
     reporter: Reporter,
 ) -> None:
     cleaned = without_css_comments(text)
     for match in CSS_URL_RE.finditer(cleaned):
         value = next(group for group in match.groups() if group is not None).strip()
         line = cleaned.count("\n", 0, match.start()) + 1
-        check_local_reference(path, line, value, docs_paths, reporter)
+        check_local_reference(path, line, value, site_paths, reporter)
 
 
 def check_logo_copies(
     root: Path,
     all_paths: set[str],
-    docs_paths: set[str],
+    site_paths: set[str],
     reporter: Reporter,
 ) -> None:
     for name in LOGO_FILES:
-        site_path = f"docs/images/{name}"
-        master_path = f"documentation/logo/{name}"
-        if site_path not in docs_paths:
+        site_path = f"public_html/images/{name}"
+        master_path = f"docs/logo/{name}"
+        if site_path not in site_paths:
             reporter.error(site_path, 1, "サイトのロゴコピーが追跡されていません")
             continue
         if master_path not in all_paths:
@@ -436,7 +419,7 @@ def check_logo_copies(
             reporter.error(
                 site_path,
                 1,
-                "documentation/logo/ のマスターと内容が一致しません",
+                "docs/logo/ のマスターと内容が一致しません",
             )
 
 
@@ -472,35 +455,33 @@ def main() -> int:
     default_root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=default_root)
+    parser.add_argument("--expect-pages-cname")
     args = parser.parse_args()
     root = args.root.resolve()
     reporter = Reporter()
 
     try:
         all_paths = tracked_paths(root)
-        docs_paths = tracked_paths(root, "docs")
+        site_paths = tracked_paths(root, "public_html")
     except RuntimeError as exc:
-        reporter.error("docs", 1, f"追跡ファイル一覧を取得できません: {exc}")
+        reporter.error("public_html", 1, f"追跡ファイル一覧を取得できません: {exc}")
         reporter.summary()
         return 1
 
-    check_docs_allowlist(docs_paths, reporter)
-    cname = check_cname(root, docs_paths, reporter)
-    if "docs/.nojekyll" in docs_paths:
-        nojekyll = read_bytes(root, "docs/.nojekyll", reporter)
-        if nojekyll is not None and nojekyll:
-            reporter.error("docs/.nojekyll", 1, ".nojekyll は空のファイルにしてください")
+    check_site_allowlist(site_paths, reporter)
+    if args.expect_pages_cname is not None:
+        check_expected_pages_cname(args.expect_pages_cname, reporter)
 
-    for path in sorted(item for item in docs_paths if item.lower().endswith(".html")):
+    for path in sorted(item for item in site_paths if item.lower().endswith(".html")):
         text = read_text(root, path, reporter)
         if text is not None:
-            check_html(path, text, docs_paths, cname, reporter)
-    if "docs/site.css" in docs_paths:
-        text = read_text(root, "docs/site.css", reporter)
+            check_html(path, text, site_paths, reporter)
+    if "public_html/site.css" in site_paths:
+        text = read_text(root, "public_html/site.css", reporter)
         if text is not None:
-            check_css("docs/site.css", text, docs_paths, reporter)
+            check_css("public_html/site.css", text, site_paths, reporter)
 
-    check_logo_copies(root, all_paths, docs_paths, reporter)
+    check_logo_copies(root, all_paths, site_paths, reporter)
     check_site_patterns(root, all_paths, reporter)
     reporter.summary()
     return 1 if reporter.errors else 0

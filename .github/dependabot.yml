@@ -30,9 +30,9 @@ updates:
       default-days: 7
     open-pull-requests-limit: 5
 
-  # documentation/logo/tools/requirements.txt の固定版（ロゴ生成スクリプト用）を追跡
+  # docs/logo/tools/requirements.txt の固定版（ロゴ生成スクリプト用）を追跡
   - package-ecosystem: "pip"
-    directory: "/documentation/logo/tools"
+    directory: "/docs/logo/tools"
     schedule:
       interval: "weekly"
     cooldown:
