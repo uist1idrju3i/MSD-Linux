@@ -2,6 +2,13 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/uist1idrju3i/MSD-Linux)
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/msd-linux-logo-dark.svg">
+    <img src="docs/logo/msd-linux-logo.svg" alt="MSD/Linux のロゴ。濃藍の円の中で室見川の流れが青海波の博多湾へ注ぐ。" width="480">
+  </picture>
+</p>
+
 MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero 向けの Linux OS を開発しています。
 
 ## 目的
