@@ -11,13 +11,34 @@ def main() -> None:
     with source:
         report = json.load(source)
 
-    components = {
-        component["bom-ref"]: component.get("name", component["bom-ref"])
-        for component in report.get("components", [])
-        if component.get("bom-ref")
+    components = {}
+    for component in report.get("components", []):
+        ref = component.get("bom-ref")
+        if not ref:
+            continue
+        properties = component.get("properties", [])
+        br_type = next(
+            (
+                prop.get("value")
+                for prop in properties
+                if prop.get("name") == "BR_TYPE"
+            ),
+            "unknown",
+        )
+        components[ref] = {
+            "name": component.get("name", ref),
+            "type": br_type,
+        }
+    exploitable = {
+        "target": collections.Counter(),
+        "host": collections.Counter(),
+        "unknown": collections.Counter(),
     }
-    exploitable = collections.Counter()
-    top_cves = collections.defaultdict(list)
+    top_cves = {
+        "target": collections.defaultdict(list),
+        "host": collections.defaultdict(list),
+        "unknown": collections.defaultdict(list),
+    }
     resolved = collections.Counter()
 
     for vulnerability in report.get("vulnerabilities", []):
@@ -40,22 +61,37 @@ def main() -> None:
             default=0.0,
         )
         for ref in refs:
-            name = components.get(ref, ref)
-            exploitable[name] += 1
-            top_cves[name].append((score, vulnerability.get("id", "unknown")))
+            br_type = components.get(ref, {}).get("type", "unknown")
+            section = br_type if br_type in {"target", "host"} else "unknown"
+            exploitable[section][ref] += 1
+            top_cves[section][ref].append((score, vulnerability.get("id", "unknown")))
 
     print("## Buildroot CVE report")
     print(
         f"\n- Resolved: {resolved['resolved']}"
         f"\n- Resolved with pedigree: {resolved['resolved_with_pedigree']}"
     )
-    print("\n### Exploitable CVEs by component")
-    if not exploitable:
-        print("\nNo exploitable CVEs were reported.")
-    for name in sorted(exploitable):
-        print(f"\n#### {name}: {exploitable[name]}")
-        for score, cve in sorted(top_cves[name], reverse=True)[:5]:
-            print(f"- {cve} (CVSS {score:g})")
+    print("\n### Exploitable CVEs by component type")
+    sections = [
+        ("target", "Target (in image)"),
+        ("host", "Host (build tools, not in image)"),
+        ("unknown", "Other (unknown BR_TYPE)"),
+    ]
+    for category, title in sections:
+        if category == "unknown" and not exploitable[category]:
+            continue
+        print(f"\n### {title}")
+        if not exploitable[category]:
+            print("\nNo exploitable CVEs were reported.")
+            continue
+        for ref in sorted(
+            exploitable[category],
+            key=lambda item: (components.get(item, {}).get("name", item), item),
+        ):
+            name = components.get(ref, {}).get("name", ref)
+            print(f"\n#### {name}: {exploitable[category][ref]}")
+            for score, cve in sorted(top_cves[category][ref], reverse=True)[:5]:
+                print(f"- {cve} (CVSS {score:g})")
 
 
 if __name__ == "__main__":
