@@ -1,0 +1,138 @@
+#!/bin/sh
+set -u
+
+disk="${MSD_DATA_GROW_DISK:-/dev/mmcblk0}"
+partition_prefix="${MSD_DATA_GROW_PARTITION_PREFIX:-/dev/mmcblk0p}"
+data_device="${MSD_DATA_GROW_DATA_DEVICE:-${partition_prefix}7}"
+sysfs_root="${MSD_DATA_GROW_SYSFS:-/sys}"
+
+log() {
+	printf 'msd-data-grow: %s\n' "$*" >&2
+}
+
+fail() {
+	log "$*"
+	exit 1
+}
+
+is_uint() {
+	case "$1" in
+		''|*[!0123456789]*) return 1 ;;
+		*) return 0 ;;
+	esac
+}
+
+table="$(sfdisk --dump "$disk")" || fail "cannot read partition table from $disk"
+
+partition_info() {
+	printf '%s\n' "$table" |
+		awk -v partition="$1" '
+			$1 == partition && $2 == ":" {
+				gsub(/[[:space:]]*=[[:space:]]*/, "=", $0)
+				for (i = 3; i <= NF; i++) {
+					field = $i
+					sub(/,$/, "", field)
+					if (field ~ /^start=/) {
+						sub(/^start=/, "", field)
+						start = field
+					}
+					if (field ~ /^size=/) {
+						sub(/^size=/, "", field)
+						size = field
+					}
+					if (field ~ /^type=/) {
+						sub(/^type=/, "", field)
+						type = field
+					}
+				}
+				if (start != "" && size != "" && type != "") {
+					print start, size, type
+					found = 1
+				}
+			}
+			END {
+				if (!found)
+					exit 1
+			}
+		'
+}
+
+last_partition="$(
+	printf '%s\n' "$table" |
+		awk -v prefix="$partition_prefix" '
+			$2 == ":" && index($1, prefix) == 1 {
+				number = substr($1, length(prefix) + 1)
+				if (number ~ /^[0-9]+$/ && number + 0 > highest)
+					highest = number + 0
+			}
+			END {
+				if (highest > 0)
+					print highest
+				else
+					exit 1
+			}
+		'
+)" || fail "cannot determine the last partition on $disk"
+[ "$last_partition" -eq 7 ] || fail "partition 7 is not the last partition"
+
+p4_info="$(partition_info "${partition_prefix}4")" ||
+	fail "partition 4 is missing or invalid"
+read -r p4_start p4_size p4_type <<EOF
+$p4_info
+EOF
+p7_info="$(partition_info "${partition_prefix}7")" ||
+	fail "partition 7 is missing or invalid"
+read -r p7_start p7_size p7_type <<EOF
+$p7_info
+EOF
+for value in "$p4_start" "$p4_size" "$p7_start" "$p7_size"; do
+	is_uint "$value" || fail "invalid partition geometry"
+done
+
+case "$p4_type" in
+	5|f|85|0x05|0x0f|0x85) ;;
+	*) fail "partition 4 is not an extended MBR partition" ;;
+esac
+
+disk_name="${disk##*/}"
+if [ -r "$sysfs_root/class/block/$disk_name/size" ]; then
+	disk_sectors="$(cat "$sysfs_root/class/block/$disk_name/size")" ||
+		fail "cannot read the size of $disk"
+else
+	disk_bytes="$(stat -c '%s' "$disk")" || fail "cannot determine the size of $disk"
+	is_uint "$disk_bytes" || fail "invalid disk size"
+	disk_sectors=$((disk_bytes / 512))
+fi
+is_uint "$disk_sectors" || fail "invalid disk sector count"
+[ "$disk_sectors" -gt 0 ] || fail "disk has no sectors"
+
+p4_end=$((p4_start + p4_size))
+p7_end=$((p7_start + p7_size))
+[ "$p4_end" -le "$disk_sectors" ] || fail "partition 4 extends beyond the disk"
+[ "$p7_end" -le "$disk_sectors" ] || fail "partition 7 extends beyond the disk"
+[ "$p7_end" -le "$p4_end" ] || fail "partition 7 extends beyond the extended partition"
+
+table_changed=0
+if [ "$p4_end" -lt "$disk_sectors" ]; then
+	new_p4_size=$((disk_sectors - p4_start))
+	log "extending partition 4 to the end of $disk"
+	printf 'start=%s, size=%s, type=%s\n' "$p4_start" "$new_p4_size" "$p4_type" |
+		sfdisk --no-reread -N 4 "$disk" >/dev/null ||
+		fail "cannot extend partition 4"
+	table_changed=1
+fi
+
+if [ "$p7_end" -lt "$disk_sectors" ]; then
+	new_p7_size=$((disk_sectors - p7_start))
+	log "extending partition 7 to the end of $disk"
+	printf 'start=%s, size=%s, type=%s\n' "$p7_start" "$new_p7_size" "$p7_type" |
+		sfdisk --no-reread -N 7 "$disk" >/dev/null ||
+		fail "cannot extend partition 7"
+	table_changed=1
+fi
+
+if [ "$table_changed" -eq 1 ] && [ "${MSD_DATA_GROW_SKIP_KERNEL_NOTIFY:-0}" != 1 ]; then
+	partx --update --nr 7:7 "$disk" || fail "cannot notify the kernel about partition 7"
+fi
+
+resize2fs "$data_device" || fail "cannot resize the ext4 filesystem on $data_device"

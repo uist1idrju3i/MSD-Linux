@@ -1,0 +1,15 @@
+#!/bin/sh
+
+mkdir -p /run/msd 2>/dev/null || exit 0
+(
+	output="/run/msd/hardware.$$"
+	if /usr/sbin/msd-hwinfo > "$output"; then
+		mv -f "$output" /run/msd/hardware
+	else
+		rm -f "$output"
+		printf '<4>msd-hwinfo: hardware detection failed\n' > /dev/kmsg 2>/dev/null ||
+			printf '%s\n' 'msd-hwinfo: hardware detection failed' >&2
+	fi
+) </dev/null >/dev/null 2>&1 &
+
+exit 0

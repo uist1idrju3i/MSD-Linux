@@ -48,6 +48,18 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot.vfat" "$UPDATE_DIR/"
 (
 	cd "$UPDATE_DIR"
 	sha256sum rootfs.squashfs boot.vfat > manifest
+	host_openssl="${HOST_DIR:-}/bin/openssl"
+	if [ ! -x "$host_openssl" ]; then
+		printf 'Required Buildroot host OpenSSL binary is missing: %s\n' "$host_openssl" >&2
+		exit 1
+	fi
+	signing_key="${MSD_UPDATE_SIGNING_KEY:-${BASE_DIR:?Buildroot must pass BASE_DIR}/msd-update-dev-key.pem}"
+	if [ ! -r "$signing_key" ]; then
+		printf 'Update signing key is missing or unreadable: %s\n' "$signing_key" >&2
+		exit 1
+	fi
+	"$host_openssl" pkeyutl -sign -rawin -inkey "$signing_key" \
+		-in manifest -out manifest.sig
 	tar -cf "${BINARIES_DIR}/msd-update-bundle.tar" \
-		rootfs.squashfs boot.vfat manifest
+		rootfs.squashfs boot.vfat manifest manifest.sig
 )

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+keymap=/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map
+
+if ! loadkeys -C /dev/tty0 -q "$keymap"; then
+	message="failed to load $keymap"
+	printf '<4>msd-keymap: %s\n' "$message" > /dev/kmsg 2>/dev/null ||
+		printf 'msd-keymap: %s\n' "$message" >&2
+fi
+
+exit 0

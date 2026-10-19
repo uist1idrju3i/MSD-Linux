@@ -7,6 +7,7 @@ P1_MOUNTPOINT="${MSD_UPDATE_P1_MOUNTPOINT:-/run/msd-bootsel}"
 P1_DIR_OVERRIDE="${MSD_UPDATE_P1_DIR:-}"
 STATE_DIR="${MSD_UPDATE_STATE_DIR:-/data/msd-update}"
 PARTITION_PREFIX="${MSD_UPDATE_PARTITION_PREFIX:-/dev/mmcblk0p}"
+UPDATE_KEY="${MSD_UPDATE_KEY_PATH:-/etc/msd-update/update-key.pem}"
 WORK_DIR=
 P1_MOUNTED=0
 
@@ -95,17 +96,20 @@ validate_bundle() {
 	tar -tf "$bundle" > "$WORK_DIR/members" || die "cannot list bundle"
 	tar -tvf "$bundle" | awk '$1 !~ /^-/ { invalid = 1 } END { exit invalid }' ||
 		die "bundle entries must be regular files"
-	[ "$(wc -l < "$WORK_DIR/members" | tr -d '[:space:]')" -eq 3 ] || die "bundle must contain exactly three files"
+	[ "$(wc -l < "$WORK_DIR/members" | tr -d '[:space:]')" -eq 4 ] || die "bundle must contain exactly four files"
 	while IFS= read -r member; do
 		case "$member" in
-			rootfs.squashfs|boot.vfat|manifest) ;;
+			rootfs.squashfs|boot.vfat|manifest|manifest.sig) ;;
 			*) die "unexpected bundle member: $member" ;;
 		esac
 	done < "$WORK_DIR/members"
-	for member in rootfs.squashfs boot.vfat manifest; do
+	for member in rootfs.squashfs boot.vfat manifest manifest.sig; do
 		grep -Fxq "$member" "$WORK_DIR/members" || die "bundle is missing $member"
 	done
 	tar -xf "$bundle" -C "$WORK_DIR" || die "cannot extract bundle"
+	openssl pkeyutl -verify -pubin -inkey "$UPDATE_KEY" -rawin \
+		-in "$WORK_DIR/manifest" -sigfile "$WORK_DIR/manifest.sig" >/dev/null 2>&1 ||
+		die "bundle signature verification failed"
 
 	root_hash=
 	boot_hash=
@@ -131,7 +135,6 @@ validate_bundle() {
 	[ "$manifest_entries" -eq 2 ] && [ -n "$root_hash" ] && [ -n "$boot_hash" ] ||
 		die "manifest must contain hashes for rootfs.squashfs and boot.vfat"
 
-	# TODO: verify a detached bundle signature before accepting updates.
 	(cd "$WORK_DIR" && sha256sum -c manifest) || die "bundle SHA-256 verification failed"
 	[ -f "$WORK_DIR/rootfs.squashfs" ] && [ -f "$WORK_DIR/boot.vfat" ] ||
 		die "bundle images are missing"

@@ -20,5 +20,11 @@ case "$fsck_status" in
 	*) exit "$fsck_status" ;;
 esac
 
-mount -t ext4 -o noatime,data=journal,errors=remount-ro "$DATA_DEVICE" /data
-mkdir -p /data/etc /data/msd-update
+if mount -t ext4 -o noatime,data=journal,errors=remount-ro "$DATA_DEVICE" /data; then
+	if ! /usr/sbin/msd-data-grow; then
+		printf '%s\n' 'msd-data-grow failed; keeping /data mounted.' >&2
+	fi
+	mkdir -p /data/etc /data/msd-update
+else
+	printf '%s\n' "Unable to mount $DATA_DEVICE on /data." >&2
+fi

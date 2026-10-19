@@ -4,18 +4,20 @@
 
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
-| `build.yml` | PR、`main` への push、手動実行 | 変更ファイルを確認し、文書だけの変更では Buildroot ビルドを省きます。`msd-update` のテストは毎回実行します。ビルドと QEMU 起動確認はゲートです。 |
+| `build.yml` | PR、`main` への push、手動実行 | 変更ファイルを確認し、文書だけの変更では Buildroot ビルドを省きます。ホストテストは毎回実行します。ビルドと QEMU 起動確認はゲートです。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンクを検査するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定した Raspberry Pi カーネルと `rpi-6.18.y` の差を報告します。更新の有無では失敗しません。これはブランチ先端との差を調べるもので、カーネル tarball のハッシュ検査ではありません。Dependabot は submodule と GitHub Actions を監視しますが、Buildroot のカーネル tarball hash は追跡しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
+
+`build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
 ## ローカル検証と runner の注意
 
 - 【CI で判明】`ubuntu-26.04` runner label は actionlint が認識しない時点がありました。runner image の preview 期間中は GitHub Actions で実際に job が開始できるかを確認します。label が queue されたままの場合、runner を独断で変更せず判断を依頼します。https://github.com/actions/runner-images
 - 【環境固有】Devin VM は `no new privileges` 制約により sudo でホスト依存を追加できません。`sudo: The "no new privileges" flag is set, which prevents sudo from running as root.` が出た場合、この環境でのホスト依存追加と QEMU 実行はブロックされます。Buildroot / QEMU 検証は依存導入済みホストまたは CI で実施します。
 - `board/cardputerzero/post-image.sh` の genimage `--rootpath` は **CI で判明し修正済み（#9）** です。
-- `package/m5stack-cardputerzero/m5stack-cardputerzero.mk` は `KCFLAGS=-DCONFIG_CARDPUTERO_V0_5=1` を指定しており、**未修正**です。`MODULE_MAKE_OPTS` の `KCFLAGS` が `LINUX_MAKE_FLAGS` の `KCFLAGS="$(LINUX_CFLAGS)"` を上書きし、`-Wno-attribute-alias` を落とす可能性があります。ビルドでの影響は未確認です。
+- `package/m5stack-cardputerzero/m5stack-cardputerzero.mk` は `KCFLAGS="$(LINUX_CFLAGS) -DCONFIG_CARDPUTERO_V0_5=1"` を指定し、`LINUX_MAKE_FLAGS` のコンパイラフラグを保ったまま基板の define を追加します。Buildroot は `LINUX_MAKE_FLAGS` の後に `MODULE_MAKE_OPTS` を渡すため、後者の `KCFLAGS` が前者を置き換えてもフラグは維持されます。
 - QEMU の `raspi3b` は BCM2837 相当の起動、UART、init、SquashFS/ext4、ユーザー空間 A/B ロジックを検証できます。GPU firmware / tryboot、LCD、M5 I2C、実機起動時間は検証できません。[QEMU の検証範囲](BUILD.md#qemu-での起動確認)
 
 ## SBOM、VEX、カーネル設定

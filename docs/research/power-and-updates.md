@@ -30,11 +30,13 @@
 【推測・設計案】MBR を候補にします。BCM2837 の boot ROM が GPT を読めない可能性を考慮しますが、CM0 での GPT 対応は未確認です。overlayfs の upper と `/etc` などの可変設定は tmpfs に置き、永続設定と開発ログは p7 に保存する案です。電源断試験ログには pstore/ramoops の利用を検討します。https://docs.kernel.org/filesystems/overlayfs.html<br>https://docs.kernel.org/admin-guide/ramoops.html
 
 ### 6.3 powerfail_suo
-overlay に `gpio-keys` ノードはなく、GPIO6 の電源断イベントをユーザー空間へ届けて正常停止させる経路もありません。SysRq-U は突然の電池取り外しや電池切れからデータを救う機能ではありません。
+Buildroot の package patch で `POWERFAIL=1` uevent を発行し、`sync_filesystem()` を `/`、`/boot`、`/data` に同期的に実行してから SysRq-U を呼び出します。mdev helper は `/dev/kmsg` に記録し、ユーザー空間の `sync` をバックグラウンドで実行します。パッチは `vendor/` を変更せず、`package/m5stack-cardputerzero/` に置きます。
 
-【一次】M5 の `powerfail_suo.c` では `handle_sysrq('u')`（read-only 再マウント）のみが実行されます。`'i'` と `'s'` はコメントアウトされています。ファイル冒頭のコメントと MODULE_DESCRIPTION は「S→U→O」と記載しますが、実装は U のみです。Devin が 2026-10-18 に公開資料で確認しました。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L74-L115
+【一次】上流 M5 ドライバでは `handle_sysrq('u')`（read-only 再マウント）のみが実行されます。`'i'` と `'s'` はコメントアウトされています。パッチは uevent と同期的な filesystem sync を追加してから U を実行します。同期 API は Linux 6.18 の `sync_filesystem()` を使用し、`fs/sync.c` の export と宣言を確認しました。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L74-L115
 
 GPIO6 の立下りを 500 ms デバウンスして SysRq-U を実行します。バックライトを 0 にし、`disabled-gpios = <&m5ioe1 11 1>` も駆動します。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts#L289-L295<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L108-L115
+
+正常停止は追加していません。hold-up 時間を実機で測定し、電源が失われる前に停止を完了できるか確認してから判断します。
 
 【推測】`<&m5ioe1 11 1>` が M5IOE1 の PYG12 に当たるかは、index + 1 が PYGn に対応すると仮定した推論です。公式 docs は PYG12=LCD_RST と記載しますが、このドライバが同端子を操作するかは実機または回路図で確認が必要です。https://docs.m5stack.com/en/CardputerZero
 
