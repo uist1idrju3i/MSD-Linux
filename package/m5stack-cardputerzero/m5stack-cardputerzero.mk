@@ -1,6 +1,11 @@
-M5STACK_CARDPUTERZERO_VERSION = 75518549a2640486f5d13ea72ca4935b198d7c20
 M5STACK_CARDPUTERZERO_SITE = $(BR2_EXTERNAL_MSD_PATH)/vendor/m5stack-linux-dtoverlays
 M5STACK_CARDPUTERZERO_SITE_METHOD = local
+M5STACK_CARDPUTERZERO_VERSION := $(shell git -C $(M5STACK_CARDPUTERZERO_SITE) rev-parse HEAD 2>/dev/null)
+ifeq ($(BR2_PACKAGE_M5STACK_CARDPUTERZERO),y)
+ifeq ($(strip $(M5STACK_CARDPUTERZERO_VERSION)),)
+$(error M5STACK_CARDPUTERZERO_VERSION is empty; initialize vendor/m5stack-linux-dtoverlays)
+endif
+endif
 M5STACK_CARDPUTERZERO_LICENSE = \
 	GPL-2.0 (kernel modules), \
 	unknown (cardputerzero,st7789v_lcd.bin), \

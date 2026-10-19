@@ -6,7 +6,7 @@
 |---|---|---|
 | `build.yml` | PR、`main` への push、手動実行 | 文書だけの PR では Buildroot ビルドを省略します。`main` への push と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
-| `pins-check.yml` | 毎週月曜、手動実行 | 固定した Raspberry Pi カーネルと `rpi-6.18.y` の差を報告します。更新の有無では失敗しません。これはブランチ先端との差を調べるもので、カーネル tarball のハッシュ検査ではありません。Dependabot は submodule と GitHub Actions を監視しますが、Buildroot のカーネル tarball hash は追跡しません。 |
+| `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
@@ -52,7 +52,11 @@ quote	<exact-path>	<characters>	<reason>
 
 `build.yml` のカーネル強化検査は固定した kernel-hardening-checker でビルド後の `.config` と起動コマンドラインを調べます。結果は OK/FAIL 件数と FAIL 項目をジョブサマリーに出し、JSON も成果物として保存します。この検査は報告のみで、結果によってビルドを失敗させません。
 
-`lint.yml` の zizmor は `1.31.1` をハッシュ固定してインストールする監査ツールです。CI では `--offline` でワークフローを検査し、結果で合否を決めます。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
+`lint.yml` の zizmor は `.github/zizmor-requirements.txt` でハッシュ固定した版をインストールする監査ツールです。CI では `--offline` でワークフローを検査し、結果で合否を決めます。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
+
+## 固定版の整合性と更新確認
+
+`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版です。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新し、すべて最新になったら Issue を閉じます。
 
 ## 採用しないツール
 

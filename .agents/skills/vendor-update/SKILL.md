@@ -9,21 +9,24 @@ description: Review and update MSD-Linux dependencies, read their complete chang
 
 ## 対象と変更履歴の参照先
 
-| 依存 | 現在値の確認方法 | 変更履歴の参照先 |
-|---|---|---|
-| Buildroot submodule | `git -C vendor/buildroot rev-parse HEAD` と `.gitmodules` の `2026.08.x` | `vendor/buildroot/CHANGES`、リリースのお知らせ、`git -C vendor/buildroot log <old>..<new> -- package/<使用中のパッケージ> linux boot toolchain`。使用中のパッケージ版や CVE 修正も確認する |
-| Raspberry Pi Linux | `configs/msd_cardputerzero_defconfig` のカスタム tarball URL、`.github/workflows/pins-check.yml` | `rpi-6.18.y` との GitHub compare、間の release/commit、`board/cardputerzero/linux.fragment` の Kconfig シンボルの改名・削除 |
-| rpi-firmware | defconfig の `BR2_PACKAGE_RPI_FIRMWARE`、`vendor/buildroot/package/rpi-firmware/rpi-firmware.mk` と `.hash` | Raspberry Pi firmware の変更履歴と、Buildroot の package 更新履歴 |
-| Bootlin toolchain | defconfig の `BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_*`、`vendor/buildroot/toolchain/toolchain-external/toolchain-external-bootlin/toolchain-external-bootlin.mk` と `.hash` | Bootlin toolchain のリリース情報と Buildroot の package 更新履歴 |
-| M5Stack overlays | `git -C vendor/m5stack-linux-dtoverlays rev-parse HEAD` | submodule の README、release、`git -C vendor/m5stack-linux-dtoverlays log <old>..<new>`。CardputerZero の設定とドライバーも照合する |
-| GitHub Actions | workflow の `uses:` にある commit SHA と `# vX.Y.Z` | 各 action の release と manifest。現在の major だけでなく、後続 major も確認し、`runs.using` の Node.js runtime がサポート対象か調べる |
-| GitHub-hosted runner | workflow の `runs-on`。現在は `ubuntu-26.04` | `actions/runner-images` のリリースと該当イメージの README。インストール済みツールの版も確認する |
-| apt ホスト依存 | `.github/workflows/build.yml` の `apt-get install` | Ubuntu のリリース情報と runner image の README。ビルドに必要なパッケージとその版を確認する |
-| yomiyasu | `git -C vendor/yomiyasu rev-parse HEAD` | nanaism/yomiyasu の release と変更履歴 |
-| actionlint / ShellCheck | `.github/workflows/lint.yml` にある版と archive SHA-256。現在は actionlint `1.7.12`、ShellCheck `0.11.0` | 各 release と公開 checksum。Dependabot の対象外なので、版や hash は手動で更新する |
-| zizmor | `.github/zizmor-requirements.txt` と `.github/dependabot.yml` の `/.github` pip entry。現在は `1.31.1` | PyPI の release metadata と wheel/sdist の hash。`--offline` 監査を維持し、受け入れる指摘は `.github/zizmor.yml` に理由を一行で記録する。pip Dependabot が週次で版を確認する |
-| kernel-hardening-checker | `.github/workflows/build.yml` にある tag と commit SHA。現在は `v0.6.17.1` / `afc376f2a935994793343cfeb05953583cc30191` | upstream release と tag の commit。workflow の SHA assertion も更新する |
-| NVD mirror | `.github/workflows/security.yml` と `support/scripts/cve-check` の呼び出し | mirror の更新方式。版ではなく週次データを ISO week cache に保存し、shallow fetch/reset と `--no-nvd-update` で追加 download を避ける動作を保つ |
+| 依存 | 現在値の確認方法 | 変更履歴の参照先 | 更新の検知 |
+|---|---|---|---|
+| Buildroot submodule | `git -C vendor/buildroot rev-parse HEAD` と `.gitmodules` の `branch` | `vendor/buildroot/CHANGES`、リリースのお知らせ、`git -C vendor/buildroot log <old>..<new> -- package/<使用中のパッケージ> linux boot toolchain`。使用中のパッケージ版や CVE 修正も確認する | Dependabot（submodule）、固定版の更新確認 Issue（系列） |
+| Raspberry Pi Linux | `configs/msd_cardputerzero_defconfig` のカスタム tarball URL、`.github/scripts/check-pins.py` の `KERNEL_SERIES` | `KERNEL_SERIES` との GitHub compare、間の release/commit、`board/cardputerzero/linux.fragment` の Kconfig シンボルの改名・削除 | 固定版の更新確認 Issue |
+| rpi-firmware | defconfig の `BR2_PACKAGE_RPI_FIRMWARE`、`vendor/buildroot/package/rpi-firmware/rpi-firmware.mk` と `.hash` | Raspberry Pi firmware の変更履歴と、Buildroot の package 更新履歴 | Buildroot 更新 PR の diff で版を確認 |
+| Bootlin toolchain | defconfig の `BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_*`、`vendor/buildroot/toolchain/toolchain-external/toolchain-external-bootlin/toolchain-external-bootlin.mk` と `.hash` | Bootlin toolchain のリリース情報と Buildroot の package 更新履歴 | Buildroot 更新 PR の diff で版を確認 |
+| Buildroot packages | `vendor/buildroot/package/<package>/*.mk` と `.hash` | `vendor/buildroot/CHANGES` と Buildroot のリリースのお知らせ | Buildroot 更新 PR の diff で版を確認 |
+| M5Stack overlays | `git -C vendor/m5stack-linux-dtoverlays rev-parse HEAD` | submodule の README、release、`git -C vendor/m5stack-linux-dtoverlays log <old>..<new>`。CardputerZero の設定とドライバーも照合する | Dependabot（submodule） |
+| GitHub Actions | workflow の `uses:` にある commit SHA と `# vX.Y.Z` | 各 action の release と manifest。現在の major だけでなく、後続 major も確認し、`runs.using` の Node.js runtime がサポート対象か調べる | Dependabot（GitHub Actions） |
+| GitHub-hosted runner | workflow の `runs-on` | `actions/runner-images` のリリースと該当イメージの README。インストール済みツールの版も確認する | 固定版の更新確認 Issue |
+| apt ホスト依存 | `.github/workflows/build.yml` の `apt-get install` | Ubuntu のリリース情報と runner image の README。ビルドに必要なパッケージとその版を確認する | 固定しない（runner image） |
+| yomiyasu | `git -C vendor/yomiyasu rev-parse HEAD` | nanaism/yomiyasu の release と変更履歴 | Dependabot（submodule） |
+| actionlint / ShellCheck | `.github/workflows/lint.yml` の `ACTIONLINT_VERSION` / `SHELLCHECK_VERSION` と archive SHA-256 | 各 release と公開 checksum。Dependabot の対象外なので、版や hash は手動で更新する | 固定版の更新確認 Issue |
+| zizmor | `.github/zizmor-requirements.txt` と `.github/dependabot.yml` の `/.github` pip entry | PyPI の release metadata と wheel/sdist の hash。`--offline` 監査を維持し、受け入れる指摘は `.github/zizmor.yml` に理由を一行で記録する。pip Dependabot が週次で版を確認する | Dependabot（pip） |
+| kernel-hardening-checker | `.github/workflows/build.yml` の `KHC_TAG` / `KHC_COMMIT` | upstream release と tag の commit。workflow の SHA assertion も更新する | 固定版の更新確認 Issue |
+| NVD mirror | `.github/workflows/security.yml` と `support/scripts/cve-check` の呼び出し | mirror の更新方式。版ではなく週次データを ISO week cache に保存し、shallow fetch/reset と `--no-nvd-update` で追加 download を避ける動作を保つ | 固定しない（週次データ） |
+
+新しい固定値を追加するときは、同じ PR で `check-pins.py` の検査対象にも加えます。
 
 ## 更新手順
 
