@@ -169,6 +169,15 @@
       ]
     },
     {
+      "title": "公式サイト（muromi.moe）",
+      "purpose": "public_html/ の静的サイトの目的、GitHub Actions での公開の流れ、公開前の検査とドメインの照合、ロゴの派生画像の作り方を説明する",
+      "page_notes": [
+        {
+          "content": "public_html/index.html、public_html/404.html、public_html/site.css、.github/workflows/pages.yml、.github/scripts/check-site.py、tests/check-site/run.sh、docs/CI.md の「GitHub Pages サイト」、docs/logo/README.md を根拠にしてください。ドメインは Pages の Settings と check-site.py の SITE_ORIGIN の2か所にあり、CNAME ファイルは使いません。サイトは JavaScript と外部資源を使いません。"
+        }
+      ]
+    },
+    {
       "title": "調査記録の読み方",
       "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
       "page_notes": [
