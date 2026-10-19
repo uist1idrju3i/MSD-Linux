@@ -21,6 +21,8 @@ CI は Buildroot のダウンロードファイルと ccache をキャッシュ�
 
 `BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。keymap の読み込みと symlink は実機未検証です。
 
+`/usr/sbin/msd-hwinfo` は Standard/Lite を判定し、起動時に `/run/msd/hardware` へ結果を書きます。この判定は実機未検証です。
+
 ## QEMU での起動確認
 
 ```sh

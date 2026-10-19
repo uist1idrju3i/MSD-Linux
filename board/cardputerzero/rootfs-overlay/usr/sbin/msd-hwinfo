@@ -1,0 +1,41 @@
+#!/bin/sh
+
+sysfs_root="${MSD_HWINFO_SYSFS:-/sys}"
+i2c_devices="$sysfs_root/bus/i2c/devices"
+iio_devices="$sysfs_root/bus/iio/devices"
+imu=unknown
+
+for device in "$i2c_devices"/*-0068; do
+	[ -d "$device" ] || continue
+	[ -e "$device/driver" ] || continue
+	imu=present
+	break
+done
+
+if [ "$imu" != present ]; then
+	for device in "$iio_devices"/iio:device*; do
+		[ -r "$device/name" ] || continue
+		name="$(tr '[:upper:]' '[:lower:]' < "$device/name")"
+		if [ "$name" = bmi270 ]; then
+			imu=present
+			break
+		fi
+	done
+fi
+
+if [ "$imu" != present ]; then
+	for device in "$i2c_devices"/*-004f; do
+		[ -d "$device" ] || continue
+		[ -e "$device/driver" ] || continue
+		imu=absent
+		break
+	done
+fi
+
+case "$imu" in
+	present) model=standard ;;
+	absent) model=lite ;;
+	*) model=unknown ;;
+esac
+
+printf 'model=%s imu=%s\n' "$model" "$imu"
