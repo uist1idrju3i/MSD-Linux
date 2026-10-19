@@ -13,6 +13,8 @@ else
 	REMOVE_LOG_FILE=true
 fi
 QEMU_PID=
+QEMU_EXTRA_APPEND="${QEMU_EXTRA_APPEND:+${QEMU_EXTRA_APPEND} }msd.module-test=usbnet"
+export QEMU_EXTRA_APPEND
 
 # shellcheck disable=SC2329 # Invoked by the EXIT trap below.
 cleanup() {
@@ -59,6 +61,11 @@ while (( SECONDS < deadline )); do
 					;;
 			esac
 		done
+		module_check_line="$(grep -F 'msd-module-check: usbnet loaded via modprobe and listed by lsmod' "$LOG_FILE" | tail -n 1 || true)"
+		if [ -z "$module_check_line" ]; then
+			printf 'QEMU serial log is missing the usbnet module-load check.\n' >&2
+			exit 1
+		fi
 		printf 'QEMU boot marker and login prompt found for root %s.\n' \
 			"$ROOT_DEVICE"
 		exit 0
