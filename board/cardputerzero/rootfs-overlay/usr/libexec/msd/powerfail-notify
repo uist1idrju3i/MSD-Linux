@@ -1,0 +1,8 @@
+#!/bin/sh
+
+(
+	printf '<4>msd-powerfail: power-fail event received\n' > /dev/kmsg 2>/dev/null || :
+	sync
+) </dev/null >/dev/null 2>&1 &
+
+exit 0

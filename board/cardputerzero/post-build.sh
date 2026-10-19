@@ -34,6 +34,7 @@ insert_mdev_rule() {
 }
 
 insert_mdev_rule "-\$SUBSYSTEM=input;input/event[0-9]+ root:root 640 */usr/libexec/msd/cardputer-keyboard \"\$ACTION\" \"\$MDEV\""
+insert_mdev_rule "-\$POWERFAIL=1 root:root 660 */usr/libexec/msd/powerfail-notify"
 
 base_dir="${BASE_DIR:-}"
 host_dir="${HOST_DIR:-}"

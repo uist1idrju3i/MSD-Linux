@@ -40,10 +40,11 @@
 6. **Wi-Fi の chip ID**
 7. **GL852G のリセット挙動**(PYG3 はキーボードと共用)
 8. **電源断試験**(書込み中/アイドル時の電源断を多数回)
+9. **GPIO6 電源断スイッチの hold-up 時間**（信号発生から電源が失われるまでを実機測定し、正常停止を追加できるか判断する）
 
 ### 今後の検討アイデア
 
-- **未着手:** GPIO6 のスイッチ検知をユーザー空間へ通知し、同期後に正常停止する経路を追加する。現行 `powerfail_suo` は SysRq-U とバックライト消灯、disabled GPIO の駆動までで、正常停止を実装していません。
+- **実装済み・実機未検証:** GPIO6 電源断イベントの通知と `/`, `/boot`, `/data` の同期を Buildroot package patch で SysRq-U より前に行う。正常停止は hold-up 時間の実機測定後に判断する。
 - **実装済み・実機未検証:** 初回起動時に p7 の末尾まで拡張し、ext4 `/data` を拡張する。
 - **実装済み・実機未検証:** Ed25519 で更新 bundle の manifest を署名・検証する。リリース鍵の配布・更新手順は今後の運用課題として残る。
 - **未着手:** 実機の公式イメージをベースラインとして測定し、比較条件を固定する。
@@ -65,7 +66,7 @@
 | rootfs | **SquashFS または EROFS の読み取り専用 rootfs + overlayfs（upper は tmpfs / zram）+ 小さな ext4 RW データ領域** | Raspberry Pi の公開ホワイトペーパーは、読み取り専用 rootfs と書き込み領域を分ける方式を推奨しています。 | https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-3-Making%20a%20more%20resilient%20file%20system.pdf |
 | A/B | **MBR + tryboot / autoboot.txt + RAUC custom バックエンド**（試行カウンターとフォールバックは自前） | Raspberry Pi の文書は tryboot を全モデル向けに説明していますが、BCM2837 での実動作は未確認です。U-Boot なしで追加段を避けられる可能性はあります（推測）。公式 image-rota は GPT を使い、対応モデルは Pi 4 / 5 です。代替候補の Rugix は Pi 3 で rpi-tryboot、Zero 2 W で rpi-uboot を示します。 | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc#L5-L60<br>https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.yaml#L2-L11<br>https://api.github.com/repos/rauc/rauc/pulls/1599<br>https://rugix.org/docs/bakery/devices/ |
 | UI | **CLI 専用を候補とし、HDMI / vc4 を外す構成を実測で評価** | ユーザー要件に基づく案です。HDMI / vc4 を外した実機での動作は未確認です。 | — |
-| 電源断 | 読み取り専用 rootfs に加え、**GPIO6 のスイッチ検知による正常停止**を併用 | `powerfail_suo` は SysRq-U の後にバックライトを消灯し disabled GPIO をアサートします。電池の突然の取り外しには読み取り専用 rootfs で備える案です。 | https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L472-L510 |
+| 電源断 | 読み取り専用 rootfs に加え、GPIO6 の通知・同期を実装。正常停止は hold-up 時間の測定後に判断 | package patch が通知と同期を SysRq-U より前に実行します。バックライト消灯と disabled GPIO の処理は維持しています。 | [電源断処理](power-and-updates.md#63-powerfail_suo) |
 
 ### 設計上の未決事項
 | 論点 | 選択肢・留保 | 状態 |

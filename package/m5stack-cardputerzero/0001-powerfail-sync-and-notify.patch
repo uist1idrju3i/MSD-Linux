@@ -1,0 +1,128 @@
+From: MSD/Linux maintainers
+Subject: [PATCH] cardputerzero: notify and sync before SysRq-U
+
+---
+diff --git a/modules/CardputerZero/powerfail_suo.c b/modules/CardputerZero/powerfail_suo.c
+--- a/modules/CardputerZero/powerfail_suo.c
++++ b/modules/CardputerZero/powerfail_suo.c
+@@ -2,14 +2,17 @@
+ /*
+  * Power fail GPIO driver
+  *
+- * When the power-fail GPIO is active-low, execute:
+- *
+- *   S: handle_sysrq('s')
+- *   U: handle_sysrq('u')
+- *   O: kernel_power_off()
++ * When the active-low power-fail signal is confirmed, notify userspace,
++ * synchronously sync the persistent filesystems, and then request SysRq-U.
++ * Normal poweroff remains disabled until hardware hold-up time is measured.
+  */
+-
++
++#include <linux/fs.h>
++#include <linux/kernel.h>
++#include <linux/kobject.h>
+ #include <linux/module.h>
++#include <linux/namei.h>
++#include <linux/path.h>
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+ #include <linux/gpio/consumer.h>
+@@ -33,11 +36,39 @@
+     struct work_struct work;
+ };
+-
++
++static void powerfail_sync_filesystems(struct device *dev)
++{
++    static const char * const mountpoints[] = { "/", "/boot", "/data" };
++    unsigned int i;
++
++    for (i = 0; i < ARRAY_SIZE(mountpoints); i++) {
++        struct path path;
++        struct super_block *sb;
++        int ret;
++
++        ret = kern_path(mountpoints[i], LOOKUP_FOLLOW, &path);
++        if (ret) {
++            dev_warn(dev, "cannot resolve %s for sync: %d\n",
++                     mountpoints[i], ret);
++            continue;
++        }
++
++        sb = path.dentry->d_sb;
++        down_read(&sb->s_umount);
++        ret = sync_filesystem(sb);
++        up_read(&sb->s_umount);
++        path_put(&path);
++        if (ret)
++            dev_warn(dev, "sync of %s failed: %d\n", mountpoints[i], ret);
++    }
++}
++
+ static void powerfail_suo_work(struct work_struct *work)
+ {
+     struct powerfail_suo_data *data =
+         container_of(work, struct powerfail_suo_data, work);
+     int val;
++    char *envp[] = { "POWERFAIL=1", NULL };
+-
++
+     /*
+      * Software debounce.
+@@ -69,19 +100,10 @@
+         return;
+     }
+-
++
+-    // dev_emerg(data->dev, "Power fail detected, execute SysRq S-U-O sequence\n");
+-
+-    // handle_sysrq('i');
+-    // msleep(100);
+-    // /*
+-    //  * S: sync
+-    //  *
+-    //  * Corresponding Magic SysRq:
+-    //  *   echo s > /proc/sysrq-trigger
+-    // */
+-    // dev_emerg(data->dev, "SysRq S: emergency sync filesystems\n");
+-    // handle_sysrq('s');
+-    // // msleep(2000);
++    dev_emerg(data->dev, "Power fail detected; notifying userspace\n");
++    if (kobject_uevent_env(&data->dev->kobj, KOBJ_CHANGE, envp))
++        dev_warn(data->dev, "cannot emit POWERFAIL uevent\n");
++    powerfail_sync_filesystems(data->dev);
+-
++
+     /*
+      * U: remount readonly
+@@ -92,19 +114,6 @@
+     dev_emerg(data->dev, "SysRq U: emergency remount filesystems readonly\n");
+     handle_sysrq('u');
+-
++
+-    // /*
+-    //  * O: power off
+-    //  *
+-    //  * Corresponding Magic SysRq:
+-    //  *   echo o > /proc/sysrq-trigger
+-    //  *
+-    //  * Note:
+-    //  * Whether kernel_power_off() actually cuts power depends on the board PMIC,
+-    //  * the power-management driver, and whether the pm_power_off callback is configured correctly.
+-    //  */
+-    // dev_emerg(data->dev, "SysRq O: power off now\n");
+-    // kernel_power_off();
+-
+     if (data->backlight) {
+         dev_emerg(data->dev, "set backlight brightness to 0\n");
+         backlight_device_set_brightness(data->backlight, 0);
+@@ -247,5 +256,5 @@
+ module_platform_driver(powerfail_suo_driver);
+-
++
+ MODULE_AUTHOR("dianjixz <dianjixz@m5stack.com>");
+-MODULE_DESCRIPTION("Power fail GPIO SysRq S-U-O driver");
++MODULE_DESCRIPTION("Power fail GPIO notification and SysRq-U driver");
+ MODULE_LICENSE("GPL");
