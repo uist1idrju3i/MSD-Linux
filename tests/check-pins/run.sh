@@ -7,6 +7,7 @@ python3 - "$repo_root" <<'PY'
 import contextlib
 import importlib.util
 import io
+import lzma
 import pathlib
 import shutil
 import sys
@@ -28,6 +29,7 @@ def fixture() -> pathlib.Path:
     (path / "board/cardputerzero/patches/linux").mkdir(parents=True)
     (path / "package/m5stack-cardputerzero").mkdir(parents=True)
     (path / ".github/workflows").mkdir(parents=True)
+    (path / "docker").mkdir()
     (path / "configs/msd_cardputerzero_defconfig").write_text(
         f'BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="linux-{sha}.tar.gz"\n'
         f'BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="linux-{sha}.tar.gz"\n'
@@ -42,7 +44,21 @@ def fixture() -> pathlib.Path:
         "env:\n"
         "  ACTIONLINT_VERSION: 1.7.12\n"
         "  SHELLCHECK_VERSION: 0.11.0\n"
+        "          printf '%s  %s\\n' \\\\\n"
+        "            8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8 \\\\\n"
+        "            \"$actionlint_archive\" | sha256sum -c -\n"
+        "          printf '%s  %s\\n' \\\\\n"
+        "            8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198 \\\\\n"
+        "            \"$shellcheck_archive\" | sha256sum -c -\n"
         "jobs:\n  lint:\n    runs-on: ubuntu-26.04\n"
+    )
+    (path / "docker/msd-dev.Dockerfile").write_text(
+        "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
+        "ARG QEMU_DEB_VERSION=1:11.0.2+ds-2~bpo13+1\n"
+        "ARG ACTIONLINT_VERSION=1.7.12\n"
+        "ARG ACTIONLINT_SHA256=8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8\n"
+        "ARG SHELLCHECK_VERSION=0.11.0\n"
+        "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198\n"
     )
     (path / ".github/workflows/build.yml").write_text(
         "env:\n"
@@ -63,6 +79,24 @@ def fixture() -> pathlib.Path:
 passed = fixture()
 assert module.consistency(passed) == []
 print("ok - consistency accepts a matching fixture")
+
+bad_docker_tool_pin = fixture()
+dockerfile = bad_docker_tool_pin / "docker/msd-dev.Dockerfile"
+dockerfile.write_text(dockerfile.read_text().replace(
+    "ARG ACTIONLINT_VERSION=1.7.12",
+    "ARG ACTIONLINT_VERSION=1.7.11",
+))
+assert any("ACTIONLINT_VERSION" in error for error in module.consistency(bad_docker_tool_pin))
+print("ok - detects Dockerfile tool version drift")
+
+bad_docker_hash = fixture()
+dockerfile = bad_docker_hash / "docker/msd-dev.Dockerfile"
+dockerfile.write_text(dockerfile.read_text().replace(
+    "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198",
+    "ARG SHELLCHECK_SHA256=" + "0" * 64,
+))
+assert any("SHELLCHECK_SHA256" in error for error in module.consistency(bad_docker_hash))
+print("ok - detects Dockerfile checksum drift")
 
 bad_hash = fixture()
 (bad_hash / "board/cardputerzero/patches/linux/linux.hash").write_text(
@@ -119,8 +153,32 @@ def fake_fetch(url):
     return "| `ubuntu-26.04` | current image |\n"
 
 
+def fake_fetch_bytes(url):
+    packages = (
+        "Package: qemu-system-arm\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
+        "Package: qemu-utils\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
+    ).encode()
+    return lzma.compress(packages)
+
+
 module.run = fake_run
 module.fetch = fake_fetch
+module.fetch_bytes = lambda url: lzma.compress(
+    b"Package: qemu-system-arm\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
+)
+with tempfile.TemporaryDirectory() as directory:
+    report_path = pathlib.Path(directory) / "pins.md"
+    with contextlib.redirect_stdout(io.StringIO()):
+        assert module.upstream(report_path, passed) == 0
+    report = report_path.read_text()
+    assert (
+        "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
+        "`確認できず` | 確認できず |"
+        in report
+    )
+print("ok - reports an incomplete Debian QEMU index as unknown")
+
+module.fetch_bytes = fake_fetch_bytes
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     output = io.StringIO()
@@ -131,6 +189,12 @@ with tempfile.TemporaryDirectory() as directory:
         "| Raspberry Pi Linux series | `rpi-6.18.y` | `rpi-7.3.y` | 参考 |"
         in report
     )
+    assert (
+        "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
+        "`1:11.0.2+ds-2~bpo13+1` | 最新 |"
+        in report
+    )
+    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 参考 |" in report
     assert "| Buildroot LTS | `2026.08.x` | `2026.02.x` | 参考 |" in report
     assert output.getvalue().strip() == "全て最新"
 print("ok - marks informational upstream rows as 参考 and excludes them from status")

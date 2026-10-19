@@ -38,3 +38,12 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+
+  # docker/ 配下の Dockerfile を週次で監視
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5

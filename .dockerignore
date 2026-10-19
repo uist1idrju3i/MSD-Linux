@@ -1,0 +1,5 @@
+**
+!docker/
+!docker/**
+!.github/
+!.github/zizmor-requirements.txt
