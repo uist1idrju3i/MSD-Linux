@@ -59,21 +59,21 @@ expect_output() {
 new_repo
 write_file README.md '# 日本語見出し
 
-[ページ](documentation/page.md#日本語見出し)
-[root](/documentation/page.md#日本語見出し)
-[query](documentation/page.md?raw=1#日本語見出し)
-[directory](documentation/)
+[ページ](docs/page.md#日本語見出し)
+[root](/docs/page.md#日本語見出し)
+[query](docs/page.md?raw=1#日本語見出し)
+[directory](docs/)
 [external](https://example.com/docs/x)
 [email](mailto:help@example.com)
-![画像](documentation/image.svg)
-<img src="documentation/image.svg">
-<source srcset="documentation/one.svg 1x, documentation/two.svg 2x">
+![画像](docs/image.svg)
+<img src="docs/image.svg">
+<source srcset="docs/one.svg 1x, docs/two.svg 2x">
 '
-write_file documentation/page.md '# 日本語見出し
+write_file docs/page.md '# 日本語見出し
 '
-write_file documentation/image.svg '<svg/>'
-write_file documentation/one.svg '<svg/>'
-write_file documentation/two.svg '<svg/>'
+write_file docs/image.svg '<svg/>'
+write_file docs/one.svg '<svg/>'
+write_file docs/two.svg '<svg/>'
 track_files
 run_check
 expect_status 0
@@ -138,19 +138,28 @@ expect_output 'anchors_checked=3'
 printf 'ok - checks duplicate heading slugs and explicit HTML anchors\n'
 
 new_repo
-write_file .github/workflows/example.yml '# docs/foo.md is stale
+write_file .github/workflows/example.yml '# documentation/foo.md is stale
 '
 track_files
 run_check
 expect_status 1
-expect_output 'docs/foo.md'
+expect_output 'documentation/foo.md'
 printf 'ok - detects stale documentation paths in non-Markdown text\n'
 
 new_repo
-write_file documentation/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+write_file .github/workflows/example.yml '# public_html/foo.md is stale
+'
+track_files
+run_check
+expect_status 1
+expect_output 'public_html/foo.md'
+printf 'ok - detects stale site paths in non-Markdown text\n'
+
+new_repo
+write_file docs/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
-documentation/research/sources.md	documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc	external repository page title
+docs/research/sources.md	documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc	external repository page title
 '
 track_files
 run_check
@@ -158,7 +167,7 @@ expect_status 0
 printf 'ok - accepts an explicitly allowlisted external repository path\n'
 
 new_repo
-write_file documentation/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+write_file docs/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
 '
 track_files
 run_check
@@ -167,12 +176,12 @@ expect_output 'documentation/documentation/asciidoc/computers/config_txt/autoboo
 printf 'ok - rejects the same external path without an allowlist entry\n'
 
 new_repo
-write_file documentation/research/sources.md 'documentation/research/README.md
+write_file docs/research/sources.md 'docs/research/README.md
 '
-write_file documentation/research/README.md 'tracked
+write_file docs/research/README.md 'tracked
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
-documentation/research/sources.md	documentation/external-repository/	unused external path
+docs/research/sources.md	documentation/external-repository/	unused external path
 '
 track_files
 run_check
@@ -181,10 +190,10 @@ expect_output '使われていない例外'
 printf 'ok - rejects an unused allowlist entry\n'
 
 new_repo
-write_file documentation/research/sources.md 'recorded title
+write_file docs/research/sources.md 'recorded title
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
-documentation/research/missing.md	documentation/external-repository/	untracked source
+docs/research/missing.md	documentation/external-repository/	untracked source
 '
 track_files
 run_check
@@ -193,12 +202,12 @@ expect_output '例外の対象ファイルが追跡対象にありません'
 printf 'ok - rejects an allowlist entry for an untracked file\n'
 
 new_repo
-write_file documentation/experiments/README.md 'placeholder directory
+write_file docs/experiments/README.md 'placeholder directory
 '
-write_file .github/workflows/example.yml 'path: documentation/experiments/YYYY-MM-DD-sNN-<short>.md
-record: documentation/experiments/README.md;
-site-only: documentation/*
-future-site: docs/*
+write_file .github/workflows/example.yml 'path: docs/experiments/YYYY-MM-DD-sNN-<short>.md
+record: docs/experiments/README.md;
+site-only: docs/*
+future-site: public_html/*
 '
 track_files
 run_check

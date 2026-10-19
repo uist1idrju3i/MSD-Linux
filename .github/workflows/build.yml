@@ -62,7 +62,7 @@ jobs:
           build=false
           while IFS= read -r -d '' path; do
             case "$path" in
-              *.md|documentation/*|docs/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE)
+              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE)
                 ;;
               *)
                 build=true

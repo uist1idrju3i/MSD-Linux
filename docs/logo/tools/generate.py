@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the MSD/Linux logo SVG masters.
 
-Needs fontTools and Lato Bold 2.007 (SIL OFL 1.1). The SVG files in documentation/logo/
+Needs fontTools and Lato Bold 2.007 (SIL OFL 1.1). The SVG files in docs/logo/
 are the masters; run this only when changing the design geometry.
 usage: generate.py [--font PATH] [OUTDIR]
 """

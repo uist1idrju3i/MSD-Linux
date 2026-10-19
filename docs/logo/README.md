@@ -13,6 +13,15 @@
 | `splash/msd-linux-splash-320x170.rgb565` | 起動画面の生データ（RGB565 リトルエンディアン、ヘッダーなし、108,800 バイト） |
 | `splash/logo_msd_clut224.ppm` | Linux カーネルの起動ロゴ形式（ASCII PPM、80×80、224 色以下） |
 
+## サイトで使う画像
+
+公式サイト（`public_html/`）は、次の画像を `public_html/images/` に置きます。どれも派生ファイルで、直接編集しません。
+
+| ファイル | 作り方 |
+|---|---|
+| `msd-linux-logo.svg`、`msd-linux-logo-dark.svg`、`msd-linux-mark.svg`、`msd-linux-social-1280x640.png` | `render.sh` が、このディレクトリのマスターを写します。CI の `check-site.py` が、マスターと一致するかを検査します。 |
+| `flow-light.svg`、`flow-dark.svg`、`seigaiha-light.svg`、`seigaiha-dark.svg` | `render.sh` が呼ぶ `tools/site_patterns.py` が作る、流水と青海波の背景です。CI の `check-site.py` が、生成結果と一致するかを検査します。 |
+
 ## 意匠
 
 - 名前と同じく、開発場所の近くを流れる室見川を主題にしました（[名前の由来](../../RESEARCH.md#名称)）。
@@ -51,10 +60,10 @@
 ## 作り直し方
 
 ```sh
-documentation/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3）
+docs/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3）
 python3 -m venv "$HOME/.cache/msd-linux-logo"
-"$HOME/.cache/msd-linux-logo/bin/pip" install --require-hashes -r documentation/logo/tools/requirements.txt
-"$HOME/.cache/msd-linux-logo/bin/python" documentation/logo/tools/generate.py  # 形状を変えるときだけ SVG を作り直す
+"$HOME/.cache/msd-linux-logo/bin/pip" install --require-hashes -r docs/logo/tools/requirements.txt
+"$HOME/.cache/msd-linux-logo/bin/python" docs/logo/tools/generate.py  # 形状を変えるときだけ SVG を作り直す
 ```
 
 `generate.py` の実行には、Lato Bold 2.007 と Python 3.11 以上が必要です。
