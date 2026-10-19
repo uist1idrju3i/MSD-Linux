@@ -1,4 +1,11 @@
 #!/bin/sh
 
 touch /run/msd-ready
-printf '%s\n' 'MSD/Linux ready' > /dev/console
+case " $(cat /proc/cmdline) " in
+	*" msd.sweep=1 "*)
+		printf '<6>MSD/Linux ready\n' > /dev/kmsg
+		;;
+	*)
+		printf '%s\n' 'MSD/Linux ready' > /dev/console
+		;;
+esac

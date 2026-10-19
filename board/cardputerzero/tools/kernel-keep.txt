@@ -1,0 +1,63 @@
+MODULES y kernel modules and M5 out-of-tree drivers
+MMC y boot and storage media
+MMC_BCM2835_MMC y BCM2835 legacy SD host
+MMC_BCM2835 y BCM2835 SD host
+MMC_SDHCI y SDHCI host support
+MMC_SDHCI_PLTFM y platform SDHCI support
+MMC_SDHCI_IPROC y BCM iProc SDHCI support
+EXT4_FS y writable /data filesystem
+SQUASHFS y immutable root filesystem
+SQUASHFS_ZSTD y current rootfs compression
+VFAT_FS y boot partition filesystem
+FAT_FS y boot partition filesystem
+OVERLAY_FS y S03msd-etc-overlay uses overlayfs
+I2C y M5 devices and board peripherals
+I2C_BCM2835 y BCM2835 I2C controller
+SPI y M5 display and board peripherals
+SPI_BCM2835 y BCM2835 SPI controller
+GPIOLIB y M5 GPIO and power-fail modules
+INPUT y M5 keypad driver
+DRM y display subsystem
+DRM_FBDEV_EMULATION y framebuffer console integration
+FB_CORE y display and framebuffer console
+FRAMEBUFFER_CONSOLE y serial/display console support
+BCM2835_WDT y board watchdog
+DEVTMPFS y dynamic device nodes
+DEVTMPFS_MOUNT y early device-node mount
+PSTORE y persistent crash records
+PSTORE_RAM y persistent crash records in RAM
+DRM_VC4 m display driver
+BRCMFMAC m onboard Wi-Fi driver
+BRCMFMAC_SDIO y onboard SDIO Wi-Fi transport
+BT m Bluetooth stack
+BT_HCIUART m Bluetooth UART transport
+BT_HCIUART_BCM y Broadcom Bluetooth UART support
+BT_BCM m Broadcom Bluetooth driver
+SND m audio stack
+SND_SOC m M5 audio codec support
+IIO m M5 IMU and magnetometer support
+USB_USBNET m USB networking support
+RTC_CLASS y M5 RTC driver interfaces
+POWER_SUPPLY y M5 battery driver interfaces
+REGULATOR y M5 power-management interfaces
+ARM64_ERRATUM_819472 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_824069 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_826319 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_827319 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_843419 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_845719 y Cortex-A53 erratum workaround
+ARM64_ERRATUM_858921 y Cortex-A53 erratum workaround
+ARM64_PTR_AUTH_KERNEL y Preserve current kernel pointer-authentication hardening
+INPUT_KEYBOARD y TCA8418 keypad module dependency
+INPUT_MATRIXKMAP m TCA8418 keymap support
+GPIO_CDEV y GPIO userspace interface used by board support
+DRM_MIPI_DBI m M5 SPI display driver dependency
+DRM_KMS_HELPER m M5 DRM display driver dependency
+DRM_PANEL_MIPI_DBI m M5 panel driver dependency
+SND_SOC_I2C_AND_SPI m M5 I2C audio codec dependency
+IIO_BUFFER y M5 IMU buffered data support
+IIO_KFIFO_BUF m M5 IMU buffered data support
+IIO_TRIGGERED_BUFFER m M5 IMU triggered-buffer support
+IIO_TRIGGER y M5 IMU trigger support
+REGULATOR_FIXED_VOLTAGE y M5 sensor and display supplies
+REGULATOR_GPIO y M5 sensor and display supplies

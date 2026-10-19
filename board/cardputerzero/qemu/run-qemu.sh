@@ -10,6 +10,8 @@ DTB="${DTB_IMAGE:-${IMAGES_DIR}/bcm2710-rpi-3-b.dtb}"
 QEMU="${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}"
 ROOT_DEVICE="${ROOT_DEVICE:-/dev/mmcblk0p5}"
 ROOT_FSTYPE="${ROOT_FSTYPE:-squashfs}"
+QEMU_EXTRA_APPEND="${QEMU_EXTRA_APPEND:-}"
+QEMU_ICOUNT="${QEMU_ICOUNT:-}"
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
@@ -29,11 +31,29 @@ while [ "$padded_size" -lt "$image_size" ]; do
 done
 truncate -s "$padded_size" "$QEMU_IMAGE"
 
+append_args=(
+	"earlycon=pl011,mmio32,0x3f201000"
+	"console=ttyAMA1,115200"
+	"initcall_blacklist=bcm2835_wdt_driver_init"
+	"root=$ROOT_DEVICE"
+	"rootwait"
+	"ro"
+	"rootfstype=$ROOT_FSTYPE"
+)
+if [ -n "$QEMU_EXTRA_APPEND" ]; then
+	read -r -a extra_append <<< "$QEMU_EXTRA_APPEND"
+	append_args+=("${extra_append[@]}")
+fi
+qemu_args=()
+if [ -n "$QEMU_ICOUNT" ]; then
+	qemu_args+=(-icount "$QEMU_ICOUNT")
+fi
+
 # The Pi 3 DTB maps the PL011 to ttyAMA1; QEMU resets when bcm2835_wdt is armed.
 # Blacklist the watchdog only in QEMU; hardware watchdog behavior is unchanged.
-exec "$QEMU" -M raspi3b -m 1G \
+exec "$QEMU" "${qemu_args[@]}" -M raspi3b -m 1G \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \
-	-append "earlycon=pl011,mmio32,0x3f201000 console=ttyAMA1,115200 initcall_blacklist=bcm2835_wdt_driver_init root=${ROOT_DEVICE} rootwait ro rootfstype=${ROOT_FSTYPE}" \
+	-append "${append_args[*]}" \
 	-nographic -serial mon:stdio
