@@ -232,62 +232,62 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 
 | 分類 | アイデア | 期待効果 | コスト | リスク | 検証（QEMU / 実機） | 優先度 | 状態 |
 |---|---|---|---|---|---|---|---|
-| 高速化 | [`kernel8.img` gzip 再圧縮](#高速化のアイデア一覧) | 読込量を減らす | 再現可能な カーネル 生成 | 展開時間や ファームウェア 互換 | QEMU: 起動 / 実機: 読込・展開時間 | P2 | 一部採用（圧縮方式・サイズ比較あり、非圧縮実測なし） |
-| 高速化 | [`start_cd.elf` / `fixup_cd.dat`](#高速化のアイデア一覧) | 小さい ファームウェア の可能性 | 低 | GPU/ファームウェア 互換 | QEMU: ファームウェア 不可 / 実機: 起動 | P3 | 採用済み（実機未確認） |
-| 高速化 | [`boot_delay=0` / `disable_splash=1`](#高速化のアイデア一覧) | 不要な待機・表示を減らす | 低 | 診断情報を隠す可能性 | QEMU: Linux 部分のみ / 実機: 起動 時間 | P2 | 採用済み（効果未実測） |
-| 高速化 | [未使用 dtoverlay の削除](#高速化のアイデア一覧) | 不要 初期化探索 を抑える | 中 | 必須機能喪失 | QEMU: DT / 実機: 全機能 | P2 | 未着手 |
-| 高速化 | [必須 ドライバー 組み込み、任意機能 モジュール](#高速化のアイデア一覧) | 任意 初期化探索 を遅らせる | 中 | モジュール 依存順・起動不能 | QEMU: 起動 / 実機: LCD・入力 | P1 | 未着手 |
-| 高速化 | [`quiet` / `lpj=` / `initcall_debug`](#高速化のアイデア一覧) | printk 負荷・遅い initcall の評価 | 低 | `lpj` 誤設定、測定 付加負荷 | QEMU: log / 実機: 時間 | P2 | 一部採用（quiet のみ） |
+| 高速化 | [`kernel8.img` gzip 再圧縮](#高速化のアイデア一覧) | 読込量を減らす | 再現可能なカーネル生成 | 展開時間やファームウェア互換 | QEMU: 起動 / 実機: 読込・展開時間 | P2 | 一部採用（圧縮方式・サイズ比較あり、非圧縮実測なし） |
+| 高速化 | [`start_cd.elf` / `fixup_cd.dat`](#高速化のアイデア一覧) | 小さいファームウェアの可能性 | 低 | GPU/ファームウェア互換 | QEMU: ファームウェア不可 / 実機: 起動 | P3 | 採用済み（実機未確認） |
+| 高速化 | [`boot_delay=0` / `disable_splash=1`](#高速化のアイデア一覧) | 不要な待機・表示を減らす | 低 | 診断情報を隠す可能性 | QEMU: Linux 部分のみ / 実機: 起動時間 | P2 | 採用済み（効果未実測） |
+| 高速化 | [未使用 dtoverlay の削除](#高速化のアイデア一覧) | 不要初期化探索を抑える | 中 | 必須機能喪失 | QEMU: DT / 実機: 全機能 | P2 | 未着手 |
+| 高速化 | [必須ドライバー組み込み、任意機能モジュール](#高速化のアイデア一覧) | 任意初期化探索を遅らせる | 中 | モジュール依存順・起動不能 | QEMU: 起動 / 実機: LCD・入力 | P1 | 未着手 |
+| 高速化 | [`quiet` / `lpj=` / `initcall_debug`](#高速化のアイデア一覧) | printk 負荷・遅い initcall の評価 | 低 | `lpj` 誤設定、測定付加負荷 | QEMU: log / 実機: 時間 | P2 | 一部採用（quiet のみ） |
 | 高速化 | [ST7789 DRM panel + fbcon](#高速化のアイデア一覧) | HDMI/GUI なしの CLI | 中 | console blank / 割当違い | QEMU: 不可 / 実機: LCD | P1 | 未着手 |
-| 高速化 | [initramfs を使わず `root=` を直接指定](#高速化のアイデア一覧) | 読込・展開・RAM を削減 | 中 | root ドライバー 不足 | QEMU: 起動 / 実機: 起動時間 | P2 | 採用済み |
-| 高速化 | [`initramfs_async=`](#高速化のアイデア一覧) | 展開と他処理を重ねる可能性 | 低 | 効果が 負荷条件 依存 | QEMU: 比較 / 実機: 起動時間 | P3 | 対象外（initramfs なし） |
+| 高速化 | [initramfs を使わず `root=` を直接指定](#高速化のアイデア一覧) | 読込・展開・RAM を削減 | 中 | root ドライバー不足 | QEMU: 起動 / 実機: 起動時間 | P2 | 採用済み |
+| 高速化 | [`initramfs_async=`](#高速化のアイデア一覧) | 展開と他処理を重ねる可能性 | 低 | 効果が負荷条件依存 | QEMU: 比較 / 実機: 起動時間 | P3 | 対象外（initramfs なし） |
 | 軽量化 | [SquashFS と EROFS の比較](#高速化のアイデア一覧) | サイズ・読込・CPU の選択 | 中 | 圧縮・起動要件の差 | QEMU: 機能 / 実機: I/O・RAM | P2 | 未着手 |
 | 軽量化 | [BusyBox init + mdev](#高速化のアイデア一覧) | ユーザー空間/サービスを小さくする | 中 | udev ルール / systemd 依存 | QEMU: デバイス / 実機: 全機能 | P3 | 採用済み |
 | 高速化 | [読み取り専用 SquashFS と preload/readahead](#高速化のアイデア一覧) | 不要な先読みを避ける | 低 | 必要な読込まで遅れる | QEMU: I/O 観測 / 実機: 起動時間 | P3 | 一部採用（SquashFS rootfs、先読み未実施） |
 | 高速化 | [`mksquashfs -sort`](#高速化のアイデア一覧) | 起動ファイルの配置を最適化 | 低 | open 順と I/O 順が不一致 | QEMU: イメージ / 実機: SD 読込 | P3 | 未着手 |
-| 高速化 | [fanotify / strace / blktrace](#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視 付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 未着手 |
-| 軽量化 | [不要 カーネル 機能・DTB の削減](#高速化のアイデア一覧) | イメージ と初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | 未着手 |
-| 高速化 | [Wi-Fi/camera/display 自動検出抑制](#高速化のアイデア一覧) | 未使用 初期化探索 を減らす可能性 | 中 | 全機能維持の柱と衝突するため遅延ロードで代替 | QEMU: 一部 / 実機: 対象機能 | P3 | 対象外（遅延ロードで代替） |
+| 高速化 | [fanotify / strace / blktrace](#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 未着手 |
+| 軽量化 | [不要カーネル機能・DTB の削減](#高速化のアイデア一覧) | イメージと初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | 未着手 |
+| 高速化 | [Wi-Fi/camera/display 自動検出抑制](#高速化のアイデア一覧) | 未使用初期化探索を減らす可能性 | 中 | 全機能維持の柱と衝突するため遅延ロードで代替 | QEMU: 一部 / 実機: 対象機能 | P3 | 対象外（遅延ロードで代替） |
 | 高速化 | [`max_framebuffers` / ファームウェア KMS](#高速化のアイデア一覧) | HDMI 初期化を抑える可能性 | 低 | LCD/HDMI と競合 | QEMU: 限定 / 実機: 表示 | P3 | 未着手 |
-| 高速化 | [`core_freq` / `initial_turbo`](#高速化のアイデア一覧) | 起動 ファームウェア 読込時間を短縮する可能性 | 低 | 発熱・電力・UART clock | QEMU: 不可 / 実機: 時間・温度 | P3 | 未着手 |
-| 軽量化 | [BusyBox applet 最小化・fork削減](#高速化のアイデア一覧) | ユーザー空間 処理を削減 | 中 | 実行時に必要 コマンド 不足 | QEMU: 起動 / 実機: 利用操作 | P3 | 未着手 |
+| 高速化 | [`core_freq` / `initial_turbo`](#高速化のアイデア一覧) | 起動ファームウェア読込時間を短縮する可能性 | 低 | 発熱・電力・UART clock | QEMU: 不可 / 実機: 時間・温度 | P3 | 未着手 |
+| 軽量化 | [BusyBox applet 最小化・fork削減](#高速化のアイデア一覧) | ユーザー空間処理を削減 | 中 | 実行時に必要コマンド不足 | QEMU: 起動 / 実機: 利用操作 | P3 | 未着手 |
 | 軽量化 | [static link / LTO / UPX](#高速化のアイデア一覧) | 配布サイズや load を比較 | 中 | サイズ増・展開 CPU | QEMU: 起動 / 実機: 時間・RSS | P3 | 未着手 |
 | 高速化 | [ネットワーク起動を終点後へ遅延](#高速化のアイデア一覧) | 対話可能になる前のネットワークサービスを減らす | 低 | 利用可能になるまで遅れる | QEMU: サービス / 実機: 入力時点 | P2 | 未着手 |
-| 軽量化 | [systemd ユニット の削減](#高速化のアイデア一覧) | 不要 ユニット を減らす | 中 | BusyBox init を使うため対象外 | QEMU: ユニット / 実機: 時間 | P3 | 対象外（BusyBox init 使用） |
+| 軽量化 | [systemd ユニットの削減](#高速化のアイデア一覧) | 不要ユニットを減らす | 中 | BusyBox init を使うため対象外 | QEMU: ユニット / 実機: 時間 | P3 | 対象外（BusyBox init 使用） |
 | 軽量化 | [libc / allocator 比較](#高速化のアイデア一覧) | 起動・RAM・サイズ最適化 | 高 | ABI/互換性・測定条件 | QEMU: 機能 / 実機: RAM・時間 | P3 | 未着手 |
-| 高速化 | [カーネル gzip / 非圧縮比較](#高速化のアイデア一覧) | 読込時間と展開時間を最適化 | 低 | ファームウェア 対応形式 | QEMU: Linux / 実機: 起動 経路 | P2 | 一部採用（gzip 方式の生成時比較、非圧縮実測なし） |
-| 高速化 | [GPU ファームウェア を省く ブートローダー](#高速化のアイデア一覧) | ファームウェア 段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
-| 高速化 | [PREEMPT / printk 比較](#高速化のアイデア一覧) | 起動ログ・init 付加負荷 の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 未着手 |
+| 高速化 | [カーネル gzip / 非圧縮比較](#高速化のアイデア一覧) | 読込時間と展開時間を最適化 | 低 | ファームウェア対応形式 | QEMU: Linux / 実機: 起動経路 | P2 | 一部採用（gzip 方式の生成時比較、非圧縮実測なし） |
+| 高速化 | [GPU ファームウェアを省くブートローダー](#高速化のアイデア一覧) | ファームウェア段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
+| 高速化 | [PREEMPT / printk 比較](#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 未着手 |
 | 信頼性 | [読み取り専用 SquashFS rootfs](#電源断耐性) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
 | 信頼性 | [`align = 4M`](docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 未着手（origin/main 未反映） |
-| 信頼性 | [FAT data-area offset の扱い](docs/research/storage-and-flash.md) | ファイルシステム 内部位置を把握 | フォーマッター/レイアウト 変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード 性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
+| 信頼性 | [FAT data-area offset の扱い](docs/research/storage-and-flash.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
 | 信頼性 | [`data=ordered` 移行検討](docs/research/storage-and-flash.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
 | 信頼性 | [barrier / `commit=` と `/data` 検証](docs/research/storage-and-flash.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
-| 信頼性 | [discard / `fstrim`](docs/research/storage-and-flash.md) | 対応時の空き領域通知 | カード・カーネル 対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
+| 信頼性 | [discard / `fstrim`](docs/research/storage-and-flash.md) | 対応時の空き領域通知 | カード・カーネル対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
 | 信頼性 | [カード erase/AU/sysfs と SD 性能測定](docs/research/storage-and-flash.md) | alignment 判断にデータを得る | 複数カード・計測 | 値は erase ユニット / 耐久保証でない | QEMU: 不可 / 実機: fio・sysfs | P1 | 未着手 |
-| 信頼性 | [A/B + tryboot + watchdog](docs/research/power-and-updates.md) | 起動失敗を検出し旧 スロット へ戻す案 | 状態・watchdog・試験 | S01msd-watchdog は実装済み、実機動作は未確認 | QEMU: スロット / 実機: tryboot・ハング | P1 | 採用済み（実機未確認） |
-| 信頼性 | [電源異常 正常 停止](docs/research/power-and-updates.md) | 電源異常を graceful 停止 に接続 | ドライバー / ユーザー空間 変更 | 電源保持時間不足の可能性 | QEMU: 不可 / 実機: 電源試験 | P1 | 未着手 |
-| 信頼性 | [更新記録の fsync/rename 原子性](docs/research/power-and-updates.md) | 確定記録の破損リスク低減 | 更新処理 実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
+| 信頼性 | [A/B + tryboot + watchdog](docs/research/power-and-updates.md) | 起動失敗を検出し旧スロットへ戻す案 | 状態・watchdog・試験 | S01msd-watchdog は実装済み、実機動作は未確認 | QEMU: スロット / 実機: tryboot・ハング | P1 | 採用済み（実機未確認） |
+| 信頼性 | [電源異常正常停止](docs/research/power-and-updates.md) | 電源異常を graceful 停止に接続 | ドライバー / ユーザー空間変更 | 電源保持時間不足の可能性 | QEMU: 不可 / 実機: 電源試験 | P1 | 未着手 |
+| 信頼性 | [更新記録の fsync/rename 原子性](docs/research/power-and-updates.md) | 確定記録の破損リスク低減 | 更新処理実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
 | 信頼性 | [p7 ext4 を `msd-data-grow` で拡張](#電源断耐性) | 利用可能容量を増やす | first-起動 script | 中断時の FS 整合性 | QEMU: サイズ変更 / 実機: 電断 | P2 | 採用済み |
 | 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](docs/research/power-and-updates.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
 | セキュリティ | [署名検証・公開鍵配置と鍵運用](docs/research/security-hardening.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
 | セキュリティ | [dm-verity と trusted root digest](docs/research/security-hardening.md) | root block 改ざん検知 | 起動 cmdline・digest管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | 未着手 |
 | セキュリティ | [`nosuid,nodev,noexec` と sysctl](docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | 未着手 |
 | セキュリティ | [SSP / FORTIFY / RELRO / PIE](docs/research/security-hardening.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
-| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](docs/research/security-hardening.md) | 書込み破損検出・スロット イメージ 確認 | 現行 更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
+| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](docs/research/security-hardening.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
 | セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](docs/research/security-hardening.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
-| セキュリティ | [対応 secure-起動 SoC への移行](docs/research/security-hardening.md) | ファームウェア 信頼連鎖 を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
-| ハードウェア | [ドライバー / ファームウェア / overlay の実機対応表](docs/research/scope-and-hardware.md#ハードウェア機能の対応表) | 未対応・遅延可能機能を把握 | 各機能の個別試験 | 初期化探索 成功だけで動作を誤認 | QEMU: 一部 / 実機: 全周辺 | P1 | 一部調査済み（実機動作未確認） |
-| ハードウェア | [IR / camera / IP2315 charger の対応調査](docs/research/scope-and-hardware.md#目標との差分) | 未実装機能との境界を明確化 | media/charger ドライバー 調査 | ハードウェア revision 依存 | QEMU: 設定 / 実機: I/O | P2 | 一部調査済み（実機対応未確認） |
-| 試験・保守 | [更新中を含む 200 回 電源断 試験案](#電源断耐性) | 電断 失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |
+| セキュリティ | [対応 secure-起動 SoC への移行](docs/research/security-hardening.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
+| ハードウェア | [ドライバー / ファームウェア / overlay の実機対応表](docs/research/scope-and-hardware.md#ハードウェア機能の対応表) | 未対応・遅延可能機能を把握 | 各機能の個別試験 | 初期化探索成功だけで動作を誤認 | QEMU: 一部 / 実機: 全周辺 | P1 | 一部調査済み（実機動作未確認） |
+| ハードウェア | [IR / camera / IP2315 charger の対応調査](docs/research/scope-and-hardware.md#目標との差分) | 未実装機能との境界を明確化 | media/charger ドライバー調査 | ハードウェア revision 依存 | QEMU: 設定 / 実機: I/O | P2 | 一部調査済み（実機対応未確認） |
+| 試験・保守 | [更新中を含む 200 回電源断試験案](#電源断耐性) | 電断失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |
 | 試験・保守 | [ホストテスト（msd-update／msd-data-grow／msd-hwinfo）](.devin/wiki.json) | 更新・拡張・機器情報処理を回帰検査 | 低 | ホスト試験は実機の周辺機器動作を保証しない | tests/ 配下3 テスト一式／実機：全機能 | P1 | 採用済み |
 | 試験・保守 | [SSH / VPN 実装](docs/research/userspace-and-security.md) | 遠隔管理 | 鍵・更新・攻撃面 | 現方針では実装対象外 | QEMU: 不要 / 実機: 不要 | P3 | 不採用 |
 | 軽量化 | GPU メモリ／CMA 量の見直し | RAM の余地を評価 |調査・測定| 削減で表示機能を損なう可能性 | 実機で必要量を測る | P2 | 未着手 |
 | 軽量化 | zram／zswap の評価 | RAM 内の圧縮 swap を評価 |調査・測定| base defconfig は `ZRAM=m`／`ZSWAP=y`、実運用未確認 | QEMU・実機で評価 | P2 | 一部採用（base defconfig、実運用未確認） |
-| 信頼性 | `kernel_watchdog_timeout` の OS 引継ぎ | watchdog 起動後給餌 |調査・測定| CM0 対応未確認 | QEMU・実機 ハング/リセット | P1 | 一部採用（S01msd-watchdog、ファームウェア handover 未確認） |
+| 信頼性 | `kernel_watchdog_timeout` の OS 引継ぎ | watchdog 起動後給餌 |調査・測定| CM0 対応未確認 | QEMU・実機ハング/リセット | P1 | 一部採用（S01msd-watchdog、ファームウェア handover 未確認） |
 | 信頼性 | `get_throttled` 低電圧・温度記録 | 電源・温度異常を記録 |調査・測定| bit 0／16、3／19。実機未測定 | 実機 | P1 | 未着手 |
 | 信頼性 | `/data` fsck 時間 | 起動遅延を把握 |調査・測定| `fsck.ext4 -p` 実装済み、時間未測定 | QEMU・実機起動時間 | P1 | 一部採用（fsck 実装、時間未測定） |
-| 信頼性 | `/data` ext4 4 KiB block | 1 KiB ブロックと 4 KiB ページ の整合候補 |調査・測定| 利点は推測、未測定 | QEMU・実機 I/O | P2 | 未着手 |
+| 信頼性 | `/data` ext4 4 KiB block | 1 KiB ブロックと 4 KiB ページの整合候補 |調査・測定| 利点は推測、未測定 | QEMU・実機 I/O | P2 | 未着手 |
 | セキュリティ | カーネル Kconfig／sysctl hardening | 攻撃面を緩和 |調査・測定| RAM／CPU／保守コストあり | 設定・実機回帰 | P1 | 未着手 |
 
 ## QEMU で検証できる範囲
