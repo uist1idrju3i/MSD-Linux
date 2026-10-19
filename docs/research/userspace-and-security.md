@@ -118,8 +118,8 @@
 ### 17.3 起動・exec コストの公表値(**条件併記・合成禁止**)
 | 値 | 条件 | 出典 | 確認度 |
 |---|---|---|---|
-| 自己 exec(静的)musl 234µs / uClibc 245µs / dietlibc 272µs / glibc 457µs。動的は 446/590/675/864µs | musl 1.1.5、uClibc 0.9.33.2、dietlibc 0.32、glibc 2.19、**Intel Atom N280(32bit x86)**、著者注記「近似値」 | https://www.etalabs.net/compare_libcs.html | 二次(musl 作者のページ) |
-| fork+exec:動的 131µs/静的 31µs(Core i5-6600K)、動的 1762µs/静的 507µs(Celeron N3060。**ChromeOS の Crostini VM 上での測定** で、実機と同列には比べられない。gist 本文で確認) | **x86_64、libc 比較ではなく静的/動的の比較**(musl-gcc でビルド) | https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 二次 |
+| 自己 exec(静的)musl 234μs / uClibc 245μs / dietlibc 272μs / glibc 457μs。動的は 446/590/675/864μs | musl 1.1.5、uClibc 0.9.33.2、dietlibc 0.32、glibc 2.19、**Intel Atom N280(32bit x86)**、著者注記「近似値」 | https://www.etalabs.net/compare_libcs.html | 二次(musl 作者のページ) |
+| fork+exec:動的 131μs/静的 31μs(Core i5-6600K)、動的 1762μs/静的 507μs(Celeron N3060。**ChromeOS の Crostini VM 上での測定** で、実機と同列には比べられない。gist 本文で確認) | **x86_64、libc 比較ではなく静的/動的の比較**(musl-gcc でビルド) | https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 二次 |
 | Zero 2 W、Buildroot 2024.02.1、**フル glibc**、カーネル大幅削減・非圧縮・initramfs なしで電源投入からユーザー空間まで約 3.5 秒（カーネル実行約 400 ms） | 個人ブログ（電源投入から GPIO トグルまで。KASLR・Spectre 緩和・sound / USB などを無効化） | https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/ | 二次 |
 - **aarch64 / Cortex-A53 / 現行版（musl 1.2.6、glibc 2.44）での公表比較は確認できていません（未確認。否定ではありません）。対象 SoC と libc の版を明記した公開測定で確認する必要があります。**
 

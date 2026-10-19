@@ -214,7 +214,7 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 | rpi-image-gen（公式、master `d7616a2`、2026-10-16。release v2.8.0、2026-08-13） | 【一次】device 層に pi3/zero2w/cm4/cm5/pi4/pi5 がある。image-rota は cm4/pi4/cm5/pi5 を対象とする。 | CM0 専用 device の有無は未確認。zero2w/pi3 の公式 A/B は成立しない。 | 公式ホワイトペーパー RP-010196-WP の数値は対象・条件を分けて参照する。 | https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.yaml#L2-L11<br>https://github.com/raspberrypi/rpi-image-gen/tree/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/device<br>https://api.github.com/repos/raspberrypi/rpi-image-gen/releases<br>https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf |
 | Alpine 3.24.2（2026-09-17） | CM0 対応、linux-rpi 6.18.52 は未確認。 | diskless（RAM 常駐）は 512 MB では厳しい可能性がある。A/B は標準にないとの記述も未確認。 | 実測なし。 | https://wiki.alpinelinux.org/wiki/Raspberry_Pi |
 | piCore64 17.0（2026-08-02、kernel 6.18.37） | RAM 展開型との情報は未確認。 | A/B は標準にないとの情報も未確認。 | 実測なし。 | http://tinycorelinux.net/ |
-| Rugix Bakery/Ctrl（v1.3.0、2026-08-05） | 【一次】対応表は Pi 4/CM4 = rpi-tryboot、Pi 3 = rpi-tryboot（🥈）、Zero 2 W = rpi-uboot（🥈）、Pi 2/1/Zero = rpi-uboot とする。 | CM0 自体の記載は未確認。U-Boot は GPU 段の後に入る。 | 実測なし。 | https://api.github.com/repositories/642546697/releases<br>https://rugix.org/docs/bakery/devices/ |
+| Rugix Bakery/Ctrl（v1.3.0、2026-08-05） | 【一次】対応表は Pi 4/CM4 = rpi-tryboot、Pi 3 = rpi-tryboot（Tier 2）、Zero 2 W = rpi-uboot（Tier 2）、Pi 2/1/Zero = rpi-uboot とする。 | CM0 自体の記載は未確認。U-Boot は GPU 段の後に入る。 | 実測なし。 | https://api.github.com/repositories/642546697/releases<br>https://rugix.org/docs/bakery/devices/ |
 
 ---
 

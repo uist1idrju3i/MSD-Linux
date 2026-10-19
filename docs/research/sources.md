@@ -165,7 +165,7 @@
 | https://downloads.raspberrypi.com/raspios_arm64/release_notes.txt | 200 | L1 `2026-10-06:`、L38 `Linux kernel 6.18.50 - cff533aec2fa601846766b32ff57204e0a61bed7`、L39 は次の項 `2026-09-15:` | 一次 |
 | https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token= | 200 | Arm DDI 0501F(Cortex-A53 Cryptography Extension TRM r0p4)。`pdftotext` 後 L303-304「The optional Cryptography Extension is not included in the base product. ARM supplies the Cryptography Extension only under an additional licence…」 | 一次 |
 | https://www.freedesktop.org/software/systemd/man/latest/systemd-analyze.html | 200 | blame の注意:「does not display results for services with Type=simple」(即時起動扱いで測定不能)、キュー待ちは含まれない | 一次 |
-| https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | 「Intel Celeron N3060 under ChromeOS Crostini: regular fork 1762 µs …」(HTML タグ除去後の本文) | 二次(単一の gist) |
+| https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | 「`Intel Celeron N3060 under ChromeOS Crostini: regular fork 1762 µs …`」(HTML タグ除去後の本文) | 二次(単一の gist) |
 
 
 ### URL への到達結果（205 件）
@@ -205,7 +205,7 @@
 | https://docs.mender.io/release-information/supported-releases | 200 | Supported releases / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://docs.mender.io/release-information/release-notes-changelog/mender-convert | 200 | mender-convert / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://docs.mender.io | 200 → https://docs.mender.io/ | Mender Docs / Mender documentation | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
-| https://erofs.docs.kernel.org/en/latest/faq.html | 200 | 🙋 Frequently Asked Questions &#8212; EROFS filesystem project | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
+| https://erofs.docs.kernel.org/en/latest/faq.html | 200 | `🙋 Frequently Asked Questions — EROFS filesystem project` | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
 | https://forums.raspberrypi.com/viewtopic.php?t=207888 | 403 | Just a moment... | 取得できず | 2026-10-18 20:54 |
 | https://forums.raspberrypi.com/viewtopic.php?t=263234 | 403 | Just a moment... | 取得できず | 2026-10-18 20:54 |
 | https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 200 | Test Linux fork/vfork+exec(dynamic/static binary) performance. Dependecies: gcc, | 到達のみ(本文未抽出) | 2026-10-18 20:54 |
