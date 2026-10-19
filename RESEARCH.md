@@ -99,6 +99,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - [訂正済み事項](docs/research/corrections.md)
 - [出典一覧と URL 取得記録](docs/research/sources.md)
 - [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
+- [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
 
 ### この記録に含めないもの
 
@@ -289,6 +290,10 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 | 信頼性 | `get_throttled` 低電圧・温度記録 | 電源・温度異常を記録 |調査・測定| bit 0／16、3／19。実機未測定 | 実機 | P1 | 未着手 |
 | 信頼性 | `/data` fsck 時間 | 起動遅延を把握 |調査・測定| `fsck.ext4 -p` 実装済み、時間未測定 | QEMU・実機起動時間 | P1 | 一部採用（fsck 実装、時間未測定） |
 | 信頼性 | `/data` ext4 4 KiB block／`inline_data` | 1 KiB と 4 KiB の割り当て量、inode 内保存の候補 |調査・測定| 小さい file での差はローカル測定済み。実機性能は未確認 | QEMU・実機 I/O／fsck | P2 | 候補（効果は未検証） |
+| 信頼性 | [`/etc`・`/data` の通常時 RO と `lazytime`](docs/research/readonly-data-and-fs.md#提案する-read-only-policy) | persistent write を限定し、通常時の SD 書き込みを減らす | writer の洗い出しと RW window 実装 | journal recovery、seedrng、更新状態、設定変更を壊す可能性 | QEMU: mount/update / 実機: 電断・書き込み量 | P1 | 未着手 |
+| 信頼性 | [ext4/F2FS/btrfs の `/data` 比較](docs/research/readonly-data-and-fs.md#mount-option-と-ext4f2fsbtrfs-の比較方針) | fsck/mount/recovery、小ファイル、write volume を比較 | image/tool build と測定 | SD FTL 依存、回復 tooling と複雑性 | QEMU: fsck/replay / 実機: 電断・I/O | P1 | 未着手 |
+| 信頼性 | [OverlayFS mode と古い `/data/etc` lower の移行](docs/research/readonly-data-and-fs.md#overlayfs-の3案) | read-only policy と A/B image defaults を整合 | migration schema と boot logic | 古い設定が新 image を隠す、upper FS xattr 制約 | QEMU: A/B config / 実機: update 回帰 | P1 | 未着手 |
+| 試験・保守 | [S17 storage fault/speed emulation](docs/research/readonly-data-and-fs.md#s17-ストレージの障害速度の模擬) | write/flush replay、I/O error、delay、帯域制限を検証 | device-mapper/QEMU image と test harness | QEMU/dm は実 SD FTL・物理電断を再現しない | QEMU guest: replay/error / 実機: 電断・SD 性能 | P1 | 未着手 |
 | セキュリティ | カーネル Kconfig／sysctl hardening | 攻撃面を緩和 |調査・測定| RAM／CPU／保守コストあり | 設定・実機回帰 | P1 | 未着手 |
 | 高速化 | [SquashFS codec／block size の実機比較](docs/research/soc-memory-compression.md) | rootfs size と展開・読込時間を比較 | 複数 build と実機測定 | SD rate、cache、CPU clock に依存 | QEMU: 起動 / 実機: SD・CPU | P1 | image size 実測済み、速度未測定 |
 | 軽量化 | [kernel compressor / EROFS の削減比較](docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | 未着手 |
