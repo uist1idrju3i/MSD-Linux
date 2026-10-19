@@ -99,6 +99,8 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - [訂正済み事項](docs/research/corrections.md)
 - [出典一覧と URL 取得記録](docs/research/sources.md)
 - [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
+- [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
+- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
 - [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
 
@@ -296,6 +298,16 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 | 信頼性 | [OverlayFS mode と古い `/data/etc` lower の移行](docs/research/readonly-data-and-fs.md#overlayfs-の3案) | read-only policy と A/B image defaults を整合 | migration schema と boot logic | 古い設定が新 image を隠す、upper FS xattr 制約 | QEMU: A/B config / 実機: update 回帰 | P1 | 未着手 |
 | 試験・保守 | [S17 storage fault/speed emulation](docs/research/readonly-data-and-fs.md#s17-ストレージの障害速度の模擬) | write/flush replay、I/O error、delay、帯域制限を検証 | device-mapper/QEMU image と test harness | QEMU/dm は実 SD FTL・物理電断を再現しない | QEMU guest: replay/error / 実機: 電断・SD 性能 | P1 | 未着手 |
 | セキュリティ | カーネル Kconfig／sysctl hardening | 攻撃面を緩和 |調査・測定| RAM／CPU／保守コストあり | 設定・実機回帰 | P1 | 未着手 |
+| 試験・保守 | [sysctl・I/O スケジューラーなどの既定値の一覧](docs/research/tunables-defaults.md) | 調整の出発点を固定する | QEMU で取得済み | QEMU の値は実機と異なる（RAM、SD、cpufreq、温度） | QEMU: 取得済み / 実機: 取り直し | P1 | 一部調査済み（QEMU のみ） |
+| 信頼性 | [`kernel.sysrq` を 32 に絞る（0 は不可）](docs/research/cpu-irq-and-sysctl.md#vps-運用記事との照合) | 電源断時の remount だけを残す | drop-in 1 つ | 0 にすると `powerfail_suo` の remount が止まる | QEMU: 値と remount / 実機: 電源断 | P1 | 未着手（現在は 502） |
+| 信頼性 | [`kernel.panic`／`panic_on_oops` と watchdog・tryboot](docs/research/cpu-irq-and-sysctl.md#項目ごとの判断) | ハング時の自動再起動と A/B の失敗検知 | 秒数の設計と試験 | 一時的な oops でも再起動する | QEMU: panic 経路 / 実機: tryboot | P1 | 未着手（現在は 0 / 0） |
+| セキュリティ | [情報漏えい・リンク保護の sysctl](docs/research/cpu-irq-and-sysctl.md#sysctl-の主な値) | `kptr_restrict`、`dmesg_restrict`、`fs.protected_*`、`ldisc_autoload`、redirect と `rp_filter` | drop-in 1 つ | 開発時のデバッグがしにくくなる | QEMU: 値 / 実機: 回帰 | P1 | 未着手 |
+| 高速化 | [I/O スケジューラーと `read_ahead_kb` の比較](docs/research/cpu-irq-and-sysctl.md#io-スケジューラーとブロックデバイス) | SquashFS の読み込みと `/data` の書き込み中の遅延 | 実機測定 | 差が小さい可能性【推測】 | QEMU: 不可 / 実機: 起動時間・遅延 | P3 | 未着手（現在は `mq-deadline`、128 KiB） |
+| 高速化 | [CPU governor（`ondemand`／`schedutil`／`performance`）と `maxcpus=1`](docs/research/cpu-irq-and-sysctl.md#コア数周波数熱) | 起動時間・温度・電力の比較 | 実機測定 | 1 コアでも周波数の上限は上がらない | QEMU: 不可（cpufreq なし） / 実機 | P2 | 未着手 |
+| 軽量化 | [irqbalance](docs/research/cpu-irq-and-sysctl.md#割り込みの分散と-irqbalance) | なし（カーネルが既に 4 コアへ順に分散） | - | 常駐プロセスが増える | 不要 | - | 不採用 |
+| 軽量化 | [CM0 にない機能のカーネルからの削除（NVMe、PCIe、RP1、KVM、binder、NFS、`brd` など）](docs/research/cpu-irq-and-sysctl.md#その他のチューニング要素) | 起動時間と RAM の削減 | S1 と合わせて試験 | 必要な機能を誤って外す | QEMU: サイズ・起動 / 実機: 全周辺 | P2 | 未着手 |
+| 信頼性 | [ramoops の領域予約](docs/research/cpu-irq-and-sysctl.md#その他のチューニング要素) | panic の記録を再起動後に読む | DT／cmdline と試験 | RAM を少し使う | QEMU: 一部 / 実機 | P2 | 未着手（`mem_size` 0） |
+| 試験・保守 | [VPS 向け設定（BBR、fq、大きな TCP バッファー、Falco、Suricata、ufw）](docs/research/cpu-irq-and-sysctl.md#項目ごとの判断) | サーバー向けで、端末には不要 | - | RAM と保守の負担 | 不要 | - | 不採用 |
 | 高速化 | [SquashFS codec／block size の実機比較](docs/research/soc-memory-compression.md) | rootfs size と展開・読込時間を比較 | 複数 build と実機測定 | SD rate、cache、CPU clock に依存 | QEMU: 起動 / 実機: SD・CPU | P1 | image size 実測済み、速度未測定 |
 | 軽量化 | [kernel compressor / EROFS の削減比較](docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | 未着手 |
 | 高速化 | [Buildroot `-O2` / `-Os`、LTO / PGO](docs/research/soc-memory-compression.md) | userland size と CPU-bound workload を比較 | build time、profile 回収、再現性 | package 対応と stale profile | QEMU: 機能 / 実機: CPU・起動 | P2 | 未着手 |
@@ -462,6 +474,10 @@ lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 で�
 | Buildroot packages | 最終構成で `make legal-info` を生成し、各配布物のバージョン・ライセンス・source archive を確認 |
 | M5 hardware revision | v3 / v5 overlay と製品回路の整合、GL852G reset と keyboard shared GPIO |
 | SSH / VPN | 実装しない方針。将来方針が変わる場合に限り暗号性能・鍵管理を再調査 |
+| sysctl・I/O の実機値 | QEMU で取った既定値（[一覧](docs/research/tunables-defaults.md)）を CM0 実機で取り直し、RAM、SD、cpufreq、温度に依存する値の差を記録 |
+| IRQ の分散 | 実機の `/proc/interrupts` で、周辺機器の割り込みが 4 コアへ回っているかを確認 |
+| `arm_boost=1` | CM0 で `arm_freq` が変わるかを `vcgencmd` で確認。`config.txt` のコメント（Pi 3 のブーストモード）は公式資料と一致しない |
+| `kernel.sysrq=32` | GPIO6 の電源断で remount が実行されることを、値を変えたイメージで実機確認 |
 | SD の配置・性能 | 現行／1 MiB／4 MiB の image layout、FAT data-area absolute offset、target card の sysfs erase/AU 値と実性能を実機で確認 |
 | `/data` の ext4 | `data=journal` から `data=ordered` へ移す場合の `fsync`/rename、barrier、`commit=` と電源断の整合性を確認 |
 | discard / fstrim | target card の discard capability と処理結果を実機で確認 |
