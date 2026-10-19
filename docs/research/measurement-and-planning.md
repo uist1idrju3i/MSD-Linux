@@ -231,6 +231,35 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 この計画で CI に追加するのは日本語 lint、relative-link、host test など軽い回帰検査に限り、既存 workflow は変更しない。kernel option sweep、複数 filesystem の電断/replay、full differential Buildroot、実機試験はローカルで行い、CI に長時間の sweep を追加しない【推測】。
 
+### 次の作業計画（2026-10-19 時点）
+
+S2（#36）を出した時点での残りの作業と、その順番です。セッションをまたいでも抜けないように、ここを正とします。各項目は experiment-record スキルに従って記録し、結果が出たら上の表の「状態」を更新します。
+
+| 順 | 作業 | 内容と完了の条件 |
+|---|---|---|
+| 1 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す（#36 の実験記録では、ツール類が展開後で約 3.1 MB）。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する（`dmesg` のセンサー ID、`media-ctl -p`、`v4l2-ctl --list-formats-ext`、`--stream-mmap` での raw の取得、PC での RAW10 の現像）。 |
+| 2 | S6 tier B | 下の「S6 tier B の分類」の 3 を、サイズと QEMU の命令数での起動コストを測ってから採否を決める。1 と 2 は根拠を確かめて S6 の記録に「対処しない理由」として残す。 |
+| 3 | S7 → S9 → S8 | S7 IR（M5 の Makefile は v3・v5 の両方で、受信に `gpio-ir,gpio_pin=13,gpio_pull=up`、送信に `gpio-ir-tx,gpio_pin=12` を追加する。v0.6.1 の回路図を画像で読み、GPIO12・13 の配線を確かめてから入れる）。S9 powerfail の正常 shutdown を設定で選べるようにし、QEMU で uevent を注入して試す。S8 IP2315 の driver を調べる。 |
+| 4 | S1・S14 本番 | 80 候補の総当たり。始める前に `kernel-variant-sweep.sh` を直し、QEMU が失敗した試行のログを残す（今は一時ディレクトリごと消える）。`NUMA=n` はログを残して測り直す。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
+| 5 | S10・S11 | 更新の署名が不正・破損・古い場合に拒否されることの試験と、watchdog による hang からの復帰の QEMU 試験。 |
+| 6 | S16 → S4・S5・S17 | `/etc` と `/data` を通常は読み取り専用にする設計を QEMU の電源断で確かめ、その上で FS（ext4・F2FS）と overlayfs の方式を比べる。ストレージの障害と速度の模擬（S17）を同じ枠組みで使う。 |
+| 7 | S12・S13・S15 | SquashFS の圧縮方式と block size、ユーザーランドの `-O2`・`-Os`・LTO、QEMU の版の比較。 |
+| 8 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
+
+保留: libcamera と VideoCore の ISP（カメラの tier B）は、VCHIQ と firmware の変更が必要で、起動時間と RAM への影響が大きいため、使う場面が決まるまで入れません。Raspberry Pi Zero 2 W は用意しません。CardputerZero が手に入らない場合に限り、代わりの実機として検討します。
+
+実機が届いたら、上の「実機が届いたら最初に測る項目」に加えて、実際の周辺機器（Wi-Fi、Bluetooth、音声、USB ネットワーク）でモジュールが自動でロードされることを確かめます。
+
+#### S6 tier B の分類
+
+S6（#31）のあとの kernel-hardening-checker v0.6.17.1 の FAIL は 111 件です（cmdline・sysctl の項目と、同じ項目の重複判定を含みます）。分類は次のとおりで、【要確認】は実装の前にビルドで確かめます。
+
+1. **A53（ARMv8.0）では使えないため対処しない:** `ARM64_BTI_KERNEL`（ARMv8.5）、`KASAN_HW_TAGS`（MTE、ARMv8.5）、`ARM_SMMU` 系（BCM2837 に SMMU はない）、`EFI_DISABLE_PCI_DMA`・`RESET_ATTACK_MITIGATION`・cmdline の `efi`（EFI 起動ではない）、`SCHED_CORE`・`nosmt`（SMT はない）、`CFI_CLANG`・`CFI_PERMISSIVE`（Clang が必要）。
+2. **ツールチェーンしだい【要確認】:** `SHADOW_CALL_STACK`（GCC の aarch64 対応）、`RANDSTRUCT_FULL`・`GCC_PLUGIN_LATENT_ENTROPY`（GCC plugin を作れるか）、`ARM64_SW_TTBR0_PAN`（A53 に PAN がなくソフトウェアで模擬するため、システムコールのコストを測る）。
+3. **低コストの候補（tier B として測る）:** `SLAB_FREELIST_HARDENED`、`SLAB_FREELIST_RANDOM`、`SLAB_MERGE_DEFAULT=n`、`RANDOM_KMALLOC_CACHES`、`LIST_HARDENED`、`BUG_ON_DATA_CORRUPTION`、`SHUFFLE_PAGE_ALLOCATOR`、`FORTIFY_SOURCE`、`ZERO_CALL_USED_REGS`、`RANDOMIZE_KSTACK_OFFSET_DEFAULT`、`RODATA_FULL_DEFAULT_ENABLED`、`DEBUG_WX`、`DEFAULT_MMAP_MIN_ADDR=65536`、`ARCH_MMAP_RND_BITS` の最大化、`SECURITY_DMESG_RESTRICT`、`LEGACY_TIOCSTI=n`、`LDISC_AUTOLOAD=n`、`PROC_MEM_NO_FORCE`、`STRICT_DEVMEM`・`IO_STRICT_DEVMEM`・`DEVPORT=n`、`SECURITY_LANDLOCK`、`SECURITY_LOCKDOWN_LSM`（integrity モード）、`MODULE_SIG_SHA512`、`BLK_DEV_WRITE_MOUNTED=n`（msd-update と両立するかを試験で確かめる）。
+4. **コストが大きいため既定では入れず、開発用イメージの選択肢にする:** `INIT_ON_ALLOC_DEFAULT_ON`、`INIT_ON_FREE_DEFAULT_ON`、`KSTACK_ERASE` 系、`UBSAN` 系、`KFENCE` 系、`PAGE_TABLE_CHECK` 系、`DEBUG_VIRTUAL`・`DEBUG_SG`・`DEBUG_NOTIFIERS`、`WERROR`。
+5. **機能を削るもの:** `MODULES`、`VT`、`FB` は CardputerZero の機能（後から挿す USB 機器、コンソール、LCD）に使うので残します。`STATIC_USERMODEHELPER` と `RSEQ` は、mdev と glibc への影響を確かめてから決めます。`DEBUG_FS`、`FTRACE`・`KPROBES` 系、`KALLSYMS`、`BPF_SYSCALL`、`USER_NS`、`IO_URING`、`AIO`、`MAGIC_SYSRQ`、`COREDUMP`、`CHECKPOINT_RESTORE`、`COMPAT` などは S1 の削減候補と重なるため、S1 の本番で影響を測ってから決めます。
+
 ## 調査範囲と限界
 
 調査した公開資料は[出典一覧](sources.md)に記載しています。kernel.org の kernel 文書、EROFS FAQ、squashfs-tools documentation、man7、BusyBox FAQ、Dropbear、WireGuard、musl、mimalloc、M5 documentation と overlay、raspberrypi/linux、raspberrypi/documentation を参照しました。起動時間や電断耐性など、実機での測定は未実施です。したがって性能効果は推測です。
