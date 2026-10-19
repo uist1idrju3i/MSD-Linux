@@ -54,6 +54,11 @@
 | `powerfail_suo` の先頭コメント範囲 | URL が O の行(L9)を含まない | URL 範囲を L3-L9 に修正し、O の行を含めます | [公開出典一覧](sources.md) |
 | Compute Module Zero のデータシート | RP-009251-DS を CYW43439 のデータシートとし、URL を未確認とする | データシート Release 3 で BCM2837、無線はオプション(CYW43439)、CM0Lite は eMMC なしで SDIO と確認できます。「CM0 内蔵」ではなく「無線搭載版に搭載」と表現します。CM0Lite に無線があるかはデータシートに明記がなく【未確認】です | [公開出典一覧](sources.md) |
 | Celeron benchmark の条件 | benchmark の測定条件が不明確 | ChromeOS の Crostini VM 上で測定された値です(gist 本文で確認)。blame には Type=simple の service は測定不能という注意が欠けていたことを man で確認しました | [公開出典一覧](sources.md) |
+| `/var` の filesystem | `/var` を tmpfs として扱う | この image では `/tmp`、`/run`、`/dev/shm` が tmpfs mount で、`/var` は tmpfs ではありません | [fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab) |
+| SD の page size | 多くの SD card の page size は 16 KiB 以上 | 取得した公開資料が示すのは 2 KiB または 4 KiB の例であり、「多くは 16 KiB 以上」とする根拠はありません。個別カードの値は未確認です | [S3 記録](../experiments/2026-10-19-s03-data-ext4-writes.md)、[読み取り専用領域と FS 比較](readonly-data-and-fs.md) |
+| CI の `mke2fs` version | PATH の `mke2fs 1.47.2` が image 作成にも使われた | image 作成に使われたのは Buildroot host `output/host/sbin/mke2fs` 1.47.4。PATH 上の version log は誤った binary を示していました | [storage-and-flash.md](storage-and-flash.md)、[Build run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529) |
+| module dependency index より前の状態 | boot smoke test が通るので module autoload も正常 | host depmod に XZ support がなく `.ko.xz` を飛ばし、`modules.dep` が空で `modprobe` できませんでした。実機 autoload への影響は未確認です | [S6 modules.dep 記録](../experiments/2026-10-19-s06-modules-dep-xz.md) |
+| NUMA=n の結果 | gzip size が 64,784 B 減った候補は成功 | raw CSV の状態は `QEMU_FAILED`。保持した QEMU log がなく、サイズ差だけで判定できません | [S1 記録](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 
 ## 個別訂正の補足
 

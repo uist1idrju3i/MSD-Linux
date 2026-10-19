@@ -190,27 +190,27 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 ## シミュレーション検証計画（S1–S17）
 
-`~/work/plan-sim-verification.md` の調査項目を試験単位に分け、根拠・成果物・担当範囲を記録する計画である。ここに記載する試験は計画であり、実施済みを意味しない。Filesystem の書き込み fault・速度模擬 S17 の詳細と取得済み出典は[読み取り専用領域と FS 比較](readonly-data-and-fs.md#s17-ストレージの障害速度の模擬)を参照する。
+この表を S1–S17 の試験状況の source of truth とし、根拠・成果物・担当範囲を記録する。Filesystem の書き込み fault・速度模擬 S17 の詳細と取得済み出典は[読み取り専用領域と FS 比較](readonly-data-and-fs.md#s17-ストレージの障害速度の模擬)を参照する。
 
-| ID | 対象 | 主な方法・成果物 |
-|---|---|---|
-| S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 |
-| S2 | camera | DT・driver・firmware の有無と target の要件を確認し、実機で接続・capture を確認する。QEMU は実 camera を保証しない。 |
-| S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 |
-| S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 |
-| S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 |
-| S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 |
-| S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 |
-| S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 |
-| S9 | power-fail shutdown | 実電源を切る前後の `powerfail_suo`、shutdown deadline、filesystem recovery を反復測定する。QEMU は GPIO/電源回路を代替しない。 |
-| S10 | update signature rejection | 署名不正・破損・古い bundle を host test と QEMU で与え、非 active slot と state が変化しないことを確認する。 |
-| S11 | watchdog fallback | 起動中 hang、health failure、watchdog reset 後の slot selection と recovery を QEMU・実機で分けて確認する。 |
-| S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 |
-| S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 |
-| S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 |
-| S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 |
-| S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 |
-| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 |
+| ID | 対象 | 主な方法・成果物 | 状態 | PR | 記録 |
+|---|---|---|---|---|---|
+| S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツールのみ・本番未実施 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
+| S2 | camera | DT・driver・firmware の有無と target の要件を確認し、実機で接続・capture を確認する。QEMU は実 camera を保証しない。 | 未着手 | — | — |
+| S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
+| S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
+| S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 未着手 | — | — |
+| S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 | PR 中 | #31; #28 | `2026-10-19-s06-kernel-hardening`（#31、main 未反映）; [2026-10-19-s06-modules-dep-xz](../experiments/2026-10-19-s06-modules-dep-xz.md)（#28） |
+| S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 | 未着手 | — | — |
+| S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 | 未着手 | — | — |
+| S9 | power-fail shutdown | 実電源を切る前後の `powerfail_suo`、shutdown deadline、filesystem recovery を反復測定する。QEMU は GPIO/電源回路を代替しない。 | 未着手 | — | — |
+| S10 | update signature rejection | 署名不正・破損・古い bundle を host test と QEMU で与え、非 active slot と state が変化しないことを確認する。 | 未着手 | — | — |
+| S11 | watchdog fallback | 起動中 hang、health failure、watchdog reset 後の slot selection と recovery を QEMU・実機で分けて確認する。 | 未着手 | — | — |
+| S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 | 未着手 | — | — |
+| S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 | 未着手 | — | — |
+| S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 未着手 | — | — |
+| S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | 未着手 | — | — |
+| S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | 設計のみ | #24 | — |
+| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | 調査のみ | #24 | — |
 
 ### 検証ツールと実行境界
 

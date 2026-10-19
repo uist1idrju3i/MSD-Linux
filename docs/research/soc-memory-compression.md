@@ -49,7 +49,7 @@ SquashFS tools 4.7.5 の `mksquashfs` は `-comp` で codec、`-Xcompression-lev
 
 ## ローカル rootfs image サイズ
 
-入力は CI artifact `/home/ubuntu/work/art/images/sdcard.img` の p5（start sector 294914、512 byte sector、256 MiB partition）から SquashFS を展開した同一 tree です。元 image は zstd、128 KiB block、15,627.37 KiB、1,844 inodes でした。host の mksquashfs / unsquashfs は 4.5（2021-07-22）です。生成した image は外部の `/home/ubuntu/work/research/measure/comp/images/` に保存しました。展開ログと各コマンドは `~/work/research/measure/comp/logs/` にあります。
+入力は [build.yml workflow の run 39204900529](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529) が保存した `msd-cardputerzero-build` artifact の `sdcard.img.xz` を展開し、p5（start sector 294914、512 byte sector、256 MiB partition）から SquashFS を展開した同一 tree です。元 image は zstd、128 KiB block、15,627.37 KiB、1,844 inodes でした。host の mksquashfs / unsquashfs は 4.5（2021-07-22）です。生成 image と展開 log は当時のローカル測定成果物であり、リポジトリには含めていません。
 
 | Codec / option | block | image bytes |
 |---|---:|---:|
