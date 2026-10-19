@@ -66,3 +66,9 @@ jobs:
 
       - name: 文書リンク検査のテスト
         run: tests/check-links/run.sh
+
+      - name: GitHub Pages サイトを検査する
+        run: python3 .github/scripts/check-site.py
+
+      - name: GitHub Pages サイト検査のテスト
+        run: tests/check-site/run.sh

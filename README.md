@@ -9,7 +9,7 @@
   </picture>
 </p>
 
-MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero 向けの Linux OS を開発しています。
+MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の近くを流れる福岡県の室見川から名前をとりました。名付け方は SSD/Linux にならっています（[名前の由来](RESEARCH.md#名称)）。M5Stack CardputerZero 向けの Linux OS を開発しています。
 
 ## 目的
 

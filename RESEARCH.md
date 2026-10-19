@@ -2,7 +2,7 @@
 
 ## 目的と前提
 
-MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室見川にちなんでいます。M5Stack CardputerZero（標準版・Lite 版の両方）向けに、再現可能な Linux イメージを作ることを目指します。
+MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の近くを流れる福岡県の室見川から名前をとりました（[名称](#名称)）。M5Stack CardputerZero（標準版・Lite 版の両方）向けに、再現可能な Linux イメージを作ることを目指します。
 
 外部の事前調査を出発点に公開資料で再確認し、確認度は各行の出典に基づいて示しています。
 
@@ -100,6 +100,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - [出典一覧と URL 取得記録](documentation/research/sources.md)
 - [高速起動記事とCortex-A53調整](documentation/research/fastboot-and-cpu-tuning.md)
 - [読み取り専用領域・ファイルシステム・障害試験](documentation/research/readonly-data-and-fs.md)
+- [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](documentation/research/wagara.md)
 
 ### この記録に含めないもの
 
@@ -397,7 +398,11 @@ Buildroot 2026.08 の BusyBox 1.38.0、binutils 2.45.1、glibc 2.44、musl 1.2.6
 
 ## 名称
 
-MSD/Linux は Muromi Software Distribution / Linux の略で、開発拠点のある福岡県を流れる **室見川** にちなんでいます。
+MSD/Linux は Muromi Software Distribution / Linux の略です。
+
+名付け方は、ぷらっとホームの [SSD/Linux](https://www.plathome.co.jp/support/labo/ssdlinux/) にならいました。公式ページによれば、SSD は「BSD (Berkeley Software Distribution) にならい、開発場所である外神田 (Sotokanda) を冠した名称」です。SSD/Linux は、開発者が中学3年生だった 2004 年に初めて触れた Linux です。
+
+MSD/Linux も同じように、開発場所の近くを流れる福岡県の室見川（Muromi）から名前をとりました。ロゴは、室見川が博多湾へ注ぐ姿を描いています（[ロゴの意匠](documentation/logo/README.md#意匠)）。ロゴと公式サイトの文様を選んだ調査は、[和柄（日本の伝統文様）の調査](documentation/research/wagara.md)にまとめました。
 
 ## 未確認事項
 

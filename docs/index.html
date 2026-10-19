@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>MSD/Linux - CardputerZero のための、すぐ起動して壊れにくい OS</title>
+<meta name="description" content="MSD/Linux は、ポケットに入る小さなコンピューター M5Stack CardputerZero のための Linux OS です。すぐ起動し、急に電源が切れても壊れにくく、更新に失敗しても元に戻ることを目指して開発しています。">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f3f3f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1838" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://muromi.moe/">
+<link rel="icon" href="images/msd-linux-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MSD/Linux">
+<meta property="og:title" content="MSD/Linux">
+<meta property="og:description" content="M5Stack CardputerZero のための、すぐ起動して壊れにくい Linux OS を開発しています。">
+<meta property="og:url" content="https://muromi.moe/">
+<meta property="og:image" content="https://muromi.moe/images/msd-linux-social-1280x640.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="MSD/Linux のロゴ。濃藍の円の中で、三本の流れが青海波の海へ注ぐ図柄">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<a class="skip" href="#content">本文へ移動</a>
+<header class="hero">
+<h1>
+<picture>
+<source srcset="images/msd-linux-logo-dark.svg" media="(prefers-color-scheme: dark)">
+<img src="images/msd-linux-logo.svg" alt="MSD/Linux" width="420" height="79">
+</picture>
+</h1>
+<p class="lead">ポケットに入る小さなコンピューター「CardputerZero」のための、すぐ起動して壊れにくい OS を作っています。</p>
+</header>
+<main id="content">
+<section aria-labelledby="merits">
+<h2 id="merits">MSD/Linux でできること</h2>
+<ul class="cards">
+<li><strong>電源を入れたら、すぐ使える</strong><span>待たずに文字を打ち始められるよう、起動までの時間を短くします。</span></li>
+<li><strong>急に電池が切れても壊れにくい</strong><span>いつ電源が落ちても、次に起動すれば元どおりに使えるようにします。</span></li>
+<li><strong>更新に失敗しても、元に戻る</strong><span>新しいバージョンで起動できなければ、自動で前のバージョンに戻ります。</span></li>
+<li><strong>付いている機能を削らずに使える</strong><span>画面、キーボード、音、カメラ、無線などを、速さのために削りません。</span></li>
+<li><strong>費用に見合う守りを備える</strong><span>盗まれたり、いたずらされたりしたときに備え、効果の大きい対策から入れます。</span></li>
+<li><strong>確かめたことだけを書く</strong><span>確かめたことと、まだ確かめていないことを分けて公開します。</span></li>
+</ul>
+</section>
+<section aria-labelledby="status">
+<h2 id="status">開発の状況</h2>
+<p class="note">開発中です。まだ、ふだん使える状態ではありません。CardputerZero の実機では、まだ動作を確かめていません。</p>
+<p>いまは、パソコンの中で CardputerZero に近い環境を再現して（エミュレーター）、起動や更新を試しています。画面、キーボード、実際の電源断などは、実機が届いてから確かめます。</p>
+</section>
+<section aria-labelledby="name">
+<h2 id="name">名前とロゴの由来</h2>
+<p>MSD は Muromi Software Distribution の頭文字です。開発場所の近くを流れる室見川（むろみがわ）から名前をとりました。</p>
+<p>この名付け方は、<a href="https://www.plathome.co.jp/support/labo/ssdlinux/">SSD/Linux</a> にならったものです。SSD/Linux は、開発者が中学3年生だった 2004 年に初めて触れた Linux で、開発場所の外神田（そとかんだ）から名前をとっていました。</p>
+<p>ロゴは、室見川が博多湾へ注ぐ姿を、伝統的な文様の流水と青海波で描いています。このページの見出しの下にある線は流水、いちばん下の波は青海波です。</p>
+</section>
+<section aria-labelledby="tech">
+<h2 id="tech">技術者の方へ</h2>
+<p>MSD/Linux は、Buildroot で作る M5Stack CardputerZero（Raspberry Pi CM0）向けの Linux ディストリビューションです。LCD のテキストコンソールと内蔵キーボードで操作する CLI を提供します。設計の柱は次の6つです。</p>
+<dl>
+<dt>すぐ使える</dt>
+<dd>firmware とカーネルの設定を最適化し、起動に要らないドライバーはモジュールにします。改善は実測で確かめます。</dd>
+<dt>電源断で壊れない</dt>
+<dd>rootfs は読み取り専用の SquashFS にし、書き込みを ext4 の <code>/data</code> に限ります。</dd>
+<dt>更新に失敗しても戻れる</dt>
+<dd>A/B の2スロットと、Raspberry Pi firmware の <code>tryboot</code>・<code>autoboot.txt</code> で、試験起動に合格したときだけ新しいバージョンを確定します。</dd>
+<dt>ハードウェアをすべて使える</dt>
+<dd>起動に必須のものだけを組み込み、ほかはモジュールとして必要なときに読み込みます。</dd>
+<dt>費用に見合うセキュリティ</dt>
+<dd>取り外せる microSD があり、ハードウェアの secure boot がない端末であることを前提に、カーネルのハードニングや更新イメージの署名を入れます。</dd>
+<dt>検証できる</dt>
+<dd>CI で Buildroot のビルドと QEMU での起動を確かめ、QEMU で確かめたことと実機でしか確かめられないことを分けて記録します。</dd>
+</dl>
+<p>バージョン番号や測定値は、リポジトリの文書にだけ書いています。</p>
+</section>
+<section aria-labelledby="links">
+<h2 id="links">文書とリンク</h2>
+<ul>
+<li><a href="https://github.com/uist1idrju3i/MSD-Linux">GitHub のリポジトリ</a>（ソースコードと README）</li>
+<li><a href="https://github.com/uist1idrju3i/MSD-Linux/blob/main/RESEARCH.md">調査記録（RESEARCH.md）</a></li>
+<li><a href="https://github.com/uist1idrju3i/MSD-Linux/blob/main/documentation/BUILD.md">ビルド手順（BUILD.md）</a>、<a href="https://github.com/uist1idrju3i/MSD-Linux/blob/main/documentation/UPDATE.md">更新の仕組み（UPDATE.md）</a></li>
+<li><a href="https://deepwiki.com/uist1idrju3i/MSD-Linux">DeepWiki</a></li>
+</ul>
+<p class="small">DeepWiki はリポジトリから AI が自動で作った解説です。内容が古かったり誤っていたりすることがあります。正式な内容は、リポジトリの文書です。</p>
+</section>
+</main>
+<footer>
+<p>MSD/Linux のリポジトリの対象ファイルは <a href="https://github.com/uist1idrju3i/MSD-Linux#ライセンス">GPL-2.0-or-later</a> です。</p>
+<p>ロゴの文字には、SIL Open Font License 1.1 の書体 Lato を使っています。</p>
+</footer>
+</body>
+</html>
