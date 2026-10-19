@@ -98,6 +98,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、福岡県の室�
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [訂正済み事項](docs/research/corrections.md)
 - [出典一覧と URL 取得記録](docs/research/sources.md)
+- [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
 
 ### この記録に含めないもの
 
