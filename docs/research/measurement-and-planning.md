@@ -199,7 +199,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
 | S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
 | S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 未着手 | — | — |
-| S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 | PR 中 | #31; #28 | `2026-10-19-s06-kernel-hardening`（#31、main 未反映）; [2026-10-19-s06-modules-dep-xz](../experiments/2026-10-19-s06-modules-dep-xz.md)（#28） |
+| S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 | 完了 | #31; #28 | [2026-10-19-s06-kernel-hardening](../experiments/2026-10-19-s06-kernel-hardening.md); [2026-10-19-s06-modules-dep-xz](../experiments/2026-10-19-s06-modules-dep-xz.md)（#28） |
 | S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 | 未着手 | — | — |
 | S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 | 未着手 | — | — |
 | S9 | power-fail shutdown | 実電源を切る前後の `powerfail_suo`、shutdown deadline、filesystem recovery を反復測定する。QEMU は GPIO/電源回路を代替しない。 | 未着手 | — | — |
