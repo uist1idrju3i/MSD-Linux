@@ -233,6 +233,7 @@ def upstream(report_path: Path, root: Path) -> int:
     for name, repository, env_name in (
         ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION"),
         ("ShellCheck", "koalaman/shellcheck", "SHELLCHECK_VERSION"),
+        ("hadolint", "hadolint/hadolint", "HADOLINT_VERSION"),
         ("kernel-hardening-checker", "a13xp0p0v/kernel-hardening-checker", "KHC_TAG"),
     ):
         workflow, env_key = (

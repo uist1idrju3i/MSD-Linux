@@ -44,6 +44,7 @@ def fixture() -> pathlib.Path:
         "env:\n"
         "  ACTIONLINT_VERSION: 1.7.12\n"
         "  SHELLCHECK_VERSION: 0.11.0\n"
+        "  HADOLINT_VERSION: 2.15.1\n"
         "          printf '%s  %s\\n' \\\\\n"
         "            8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8 \\\\\n"
         "            \"$actionlint_archive\" | sha256sum -c -\n"
@@ -148,6 +149,8 @@ def fake_fetch(url):
         return '{"tag_name":"1.7.12"}'
     if "koalaman/shellcheck" in url:
         return '{"tag_name":"0.11.0"}'
+    if "hadolint/hadolint" in url:
+        return '{"tag_name":"v2.15.1"}'
     if "kernel-hardening-checker" in url:
         return '{"tag_name":"v0.6.17.1"}'
     return "| `ubuntu-26.04` | current image |\n"

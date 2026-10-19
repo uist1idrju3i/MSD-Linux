@@ -120,10 +120,16 @@ jobs:
         with:
           persist-credentials: false
 
+      # Third-party actions are not on the repository allowlist, so run the pinned image directly.
       - name: Lint development Dockerfile
-        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
-        with:
-          dockerfile: docker/msd-dev.Dockerfile
+        env:
+          HADOLINT_VERSION: 2.15.1
+          HADOLINT_DIGEST: sha256:9a3944b7fddcb947d1ffd90829ac1a6e5c30479223358f249d8b96c7d0019e27
+        run: |
+          docker run --rm -i \
+            -v "$PWD/.hadolint.yaml:/.config/hadolint.yaml:ro" \
+            "ghcr.io/hadolint/hadolint:v${HADOLINT_VERSION}-debian@${HADOLINT_DIGEST}" \
+            hadolint --config /.config/hadolint.yaml - < docker/msd-dev.Dockerfile
 
       - name: Check Dockerfile build
         run: docker build --check -f docker/msd-dev.Dockerfile .
