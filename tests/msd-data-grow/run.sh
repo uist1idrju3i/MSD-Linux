@@ -56,6 +56,16 @@ make_sysfs() {
 	printf '%s\n' "$sectors" > "$sysfs_root/class/block/${disk##*/}/size"
 }
 
+statless_path="$test_root/statless-bin"
+mkdir -p "$statless_path"
+for tool in awk cat sfdisk resize2fs; do
+	tool_path="$(command -v "$tool")" || fail "required host test command not found: $tool"
+	ln -s "$tool_path" "$statless_path/$tool"
+done
+if PATH="$statless_path" command -v stat >/dev/null 2>&1; then
+	fail "stat unexpectedly available in the restricted PATH"
+fi
+
 partition_value() {
 	sfdisk --dump "$1" |
 		awk -v partition="$1$2" -v wanted="$3" '
@@ -84,7 +94,7 @@ make_sysfs "$sysfs_root" "$image" "$disk_sectors"
 truncate -s 64M "$data_fs"
 mke2fs -q -F -t ext4 "$data_fs"
 truncate -s 96M "$data_fs"
-run_grow "$image" "$data_fs" "$sysfs_root"
+PATH="$statless_path" run_grow "$image" "$data_fs" "$sysfs_root"
 
 p4_start="$(partition_value "$image" 4 start)"
 p7_start="$(partition_value "$image" 7 start)"

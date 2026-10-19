@@ -66,6 +66,13 @@ if [ "$missing_target_commands" -ne 0 ]; then
 	exit 1
 fi
 
+seedrng_defaults="$target_dir/etc/default/seedrng"
+if ! grep -Fxq 'SEEDRNG_ARGS="--seed-dir=/data/seedrng"' "$seedrng_defaults"; then
+	printf 'Seedrng state directory must be configured on /data: %s\n' \
+		"$seedrng_defaults" >&2
+	exit 1
+fi
+
 seedrng_init="$target_dir/etc/init.d/S01seedrng"
 seedrng_late_init="$target_dir/etc/init.d/S05seedrng"
 if [ -f "$seedrng_init" ]; then
