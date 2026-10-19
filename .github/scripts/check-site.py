@@ -147,11 +147,15 @@ def check_cname(root: Path, docs_paths: set[str], reporter: Reporter) -> str | N
     raw = read_bytes(root, path, reporter)
     if raw is None:
         return None
-    if raw.count(b"\n") != 1 or not raw.endswith(b"\n") or b"\r" in raw:
-        reporter.error(path, 1, "CNAME は末尾の改行を含む1行で指定してください")
+    if not raw or b"\r" in raw:
+        reporter.error(path, 1, "CNAME はホスト名1行だけにしてください")
+        return None
+    hostname_bytes = raw[:-1] if raw.endswith(b"\n") else raw
+    if not hostname_bytes or b"\n" in hostname_bytes:
+        reporter.error(path, 1, "CNAME はホスト名1行だけにしてください")
         return None
     try:
-        host = raw[:-1].decode("ascii")
+        host = hostname_bytes.decode("ascii")
     except UnicodeDecodeError:
         reporter.error(path, 1, "CNAME は ASCII のホスト名で指定してください")
         return None

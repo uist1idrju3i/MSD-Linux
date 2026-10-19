@@ -31,8 +31,7 @@ new_repo() {
 	mkdir -p "$fixture/docs/images" "$fixture/documentation/logo/tools"
 	cp "$pattern_generator" "$fixture/documentation/logo/tools/site_patterns.py"
 
-	write_file docs/CNAME 'muromi.moe
-'
+	write_file docs/CNAME 'muromi.moe'
 	: > "$fixture/docs/.nojekyll"
 	write_file docs/index.html "<!doctype html>
 <html><head>
@@ -93,6 +92,25 @@ run_check
 expect_status 0
 expect_output 'errors=0'
 printf 'ok - accepts a valid local GitHub Pages site\n'
+
+new_repo
+write_file docs/CNAME 'muromi.moe
+'
+git -C "$fixture" add docs/CNAME
+run_check
+expect_status 0
+expect_output 'errors=0'
+printf 'ok - accepts a CNAME with a trailing newline\n'
+
+new_repo
+write_file docs/CNAME 'muromi.moe
+other.example
+'
+git -C "$fixture" add docs/CNAME
+run_check
+expect_status 1
+expect_output 'CNAME はホスト名1行だけにしてください'
+printf 'ok - rejects a CNAME with two lines\n'
 
 new_repo
 write_file "docs/""README.md" 'Not site content.
