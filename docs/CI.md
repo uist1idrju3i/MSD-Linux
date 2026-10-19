@@ -7,6 +7,7 @@
 | `build.yml` | PR、`main` への push、手動実行 | 文書だけの PR では Buildroot ビルドを省略します。`main` への push と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
+| `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
@@ -67,6 +68,12 @@ quote	<exact-path>	<characters>	<reason>
 ## 固定版の整合性と更新確認
 
 `lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版です。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新し、すべて最新になったら Issue を閉じます。
+
+## 公開サイトの状態確認
+
+`site-status.yml` は Pages API の独自ドメイン、HTTPS 強制、証明書の状態・対象ドメイン・残り日数を確認します。DNS は `1.1.1.1` と `8.8.8.8` の回答を `.github/site-dns.tsv` と照合し、ワイルドカード回答の有無も検査対象です。IANA の RDAP 登録情報で得たドメイン期限は、残り 60 日以上が合格条件です。HTTP と HTTPS の応答およびリダイレクト先を検査します。証明書の残り日数は 14 日以上が基準です。
+
+異常があれば「公開サイトの状態確認」Issue を作成するか本文を更新します。すべて正常になった後の実行では、開いている Issue にコメントを付けて閉じます。DNS を意図的に変更したときは、期待値を `.github/site-dns.tsv` に反映してください。
 
 ## 採用しないツール
 

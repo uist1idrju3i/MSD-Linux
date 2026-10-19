@@ -56,6 +56,9 @@ jobs:
       - name: Test pin checker
         run: tests/check-pins/run.sh
 
+      - name: サイト状態確認をテスト
+        run: tests/check-site-status/run.sh
+
       - name: Run ShellCheck on tracked shell scripts
         run: |
           python3 - <<'PY'
