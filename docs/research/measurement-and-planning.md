@@ -188,6 +188,49 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 出典: [QEMU 11.1.2 release](https://www.qemu.org/download/)、[raspi machine models](https://qemu.readthedocs.io/en/v11.1.2/system/arm/raspi.html)、[TCG plugins](https://qemu.readthedocs.io/en/v11.1.2/devel/tcg-plugins.html)、[gem5 25.1.0.1](https://github.com/gem5/gem5/releases/tag/v25.1.0.1)、[Arm HPI model](https://github.com/gem5/gem5/blob/c8222cc6/configs/common/cores/arm/HPI.py)、[Arm FVP 11.32](https://support.arm.com/tools-and-software/fixed-virtual-platforms/arm-architecture-fvps)、[Renode 1.17.0](https://github.com/renode/renode/releases/tag/v1.17.0)、[CM0 datasheet](https://pip-assets.raspberrypi.com/categories/1286-raspberry-pi-compute-module-zero/documents/RP-009251-DS-3-cm0-datasheet.pdf)、[Zero 2 W product page](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/)。
 
+## シミュレーション検証計画（S1–S17）
+
+`~/work/plan-sim-verification.md` の調査項目を試験単位に分け、根拠・成果物・担当範囲を記録する計画である。ここに記載する試験は計画であり、実施済みを意味しない。Filesystem の書き込み fault・速度模擬 S17 の詳細と取得済み出典は[読み取り専用領域と FS 比較](readonly-data-and-fs.md#s17-ストレージの障害速度の模擬)を参照する。
+
+| ID | 対象 | 主な方法・成果物 |
+|---|---|---|
+| S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 |
+| S2 | camera | DT・driver・firmware の有無と target の要件を確認し、実機で接続・capture を確認する。QEMU は実 camera を保証しない。 |
+| S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 |
+| S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 |
+| S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 |
+| S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 |
+| S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 |
+| S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 |
+| S9 | power-fail shutdown | 実電源を切る前後の `powerfail_suo`、shutdown deadline、filesystem recovery を反復測定する。QEMU は GPIO/電源回路を代替しない。 |
+| S10 | update signature rejection | 署名不正・破損・古い bundle を host test と QEMU で与え、非 active slot と state が変化しないことを確認する。 |
+| S11 | watchdog fallback | 起動中 hang、health failure、watchdog reset 後の slot selection と recovery を QEMU・実機で分けて確認する。 |
+| S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 |
+| S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 |
+| S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 |
+| S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 |
+| S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 |
+| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 |
+
+### 検証ツールと実行境界
+
+- **Buildroot differential build:** まず baseline image、kernel `.config`、Buildroot config、`Image`/rootfs size を保存し、その後に一 option ずつ変える。build log と変更理由を S ID に結び付ける。
+- **QEMU function test:** `board/cardputerzero/qemu/run-qemu.sh` と `raspi3b` を使い、rootfs、init、A/B、update、watchdog の再現可能な機能範囲を確認する。標準 boot の成功と実機機能の保証を混同しない。
+- **仮想時間・initcall:** CPU option 比較では QEMU `-icount shift=0` と `initcall_debug` を使い、ready marker までの virtual time と initcall 数・所要時間を記録する。これは real-time benchmark ではない。
+- **filesystem fault:** 使い捨て image 上で forced QEMU stop、`kill -9`、dm-log-writes の replay、QEMU block statistics を使う。`kill -9` や `cache=unsafe` は実機の給電遮断と同じではない。再生前後に fsck とアプリケーション invariant を確認する。
+- **hardening/host tests:** `kernel-hardening-checker` と `tests/msd-update/run.sh` 等の対象 host tests を実行し、結果を該当 S ID に紐付ける。
+- **実機測定:** CM0/CardputerZero でのみ、電源断、物理 SD 性能、温度・周波数、camera/IR/charger、周辺機器の全機能を確認する。Zero 2 W は software timing の proxy にとどめ、同一 SoC でも board 差を別に記録する。
+
+### 実施順と抜け防止
+
+1. Baseline config/image、kernel version、firmware、DT、measurement endpoints を固定して保存する。
+2. S1 と S2/S7/S8 の hardware/driver inventory を行い、変更候補が製品機能に触れるか特定する。
+3. S3–S5 と S16 の filesystem/mount policy を、S17 fault matrix と組み合わせて検証する。
+4. S9–S11 の power/update recovery を続け、最後に S12–S15 の image/CPU/simulator 比較を行う。実測候補を選ぶ場合は実機で再確認する。
+5. 試験票に S ID、hypothesis、source URL、config/hash、command、device/card、始点・終点、artifact path、結果、未確認点を記録する。変更した config key と六つの製品要件の影響を照合し、各要件に「試験済み/未試験」の根拠が一つ以上あるまで完了扱いにしない。
+
+この計画で CI に追加するのは日本語 lint、relative-link、host test など軽い回帰検査に限り、既存 workflow は変更しない。kernel option sweep、複数 filesystem の電断/replay、full differential Buildroot、実機試験はローカルで行い、CI に長時間の sweep を追加しない【推測】。
+
 ## 調査範囲と限界
 
 調査した公開資料は[出典一覧](sources.md)に記載しています。kernel.org の kernel 文書、EROFS FAQ、squashfs-tools documentation、man7、BusyBox FAQ、Dropbear、WireGuard、musl、mimalloc、M5 documentation と overlay、raspberrypi/linux、raspberrypi/documentation を参照しました。起動時間や電断耐性など、実機での測定は未実施です。したがって性能効果は推測です。
