@@ -36,7 +36,7 @@
 | 終点(プロンプト+キー)までの最短化余地 | 中(unit を削り、`systemd-analyze critical-chain` で詰める) | 高 | 最高(ただし作り込み) |
 
 - systemd の起動可視化・並列化・活性化機能:`systemd-analyze blame/critical-chain/plot`(https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、socket activation(https://man7.org/linux/man-pages/man5/systemd.socket.5.html)、`sd_notify`(https://man7.org/linux/man-pages/man3/sd_notify.3.html)、`Type=` 等(https://man7.org/linux/man-pages/man5/systemd.service.5.html)。【一次】
-- 【推測】**全機能維持を最優先にするなら systemd を最小化（不要 unit を mask、journald を volatile、networkd / resolved を外す）して出発し、[起動時間の測定](measurement-and-planning.md)で critical-chain の上位を詰めます。** それでも終点が目標に届かない場合のみ BusyBox init + eudev に移る案です。自作 init は最後の手段です（作り込みのコストが大きいため）。この序列は実機測定前の推測で、systemd の起動オーバーヘッドが A53 で何 ms かは未測定です。
+- 【推測・初期案】初期ユーザー空間は BusyBox init + mdev + glibc とし、M5 の udev ルールを mdev 向けに移植できるか試します。M5 のルールは少数のため移植候補になりますが、mdev が `ID_PATH` を同じ形式で提供するかは未確認です。必要な機能を再現できない場合は systemd 最小化または eudev との比較に戻り、musl は必要に応じて比較します。systemd の起動オーバーヘッドは A53 / RAM 512 MB で数百 ms〜1 秒という推測がありますが、実測値はありません。
 
 ### 16.3 systemd の起動短縮手段(一次の範囲)
 - critical-chain で終点ユニットに至る最長経路を可視化し、そこにないものは `WantedBy` を変えて後段化できる(systemd-analyze man)。【一次】
@@ -129,11 +129,16 @@
 
 ### 17.5 設計上の見立て（推測・未測定）
 - **systemd を使うなら glibc が必要**です（Buildroot の制約）。**BusyBox init + 自作ミニ init なら musl の静的リンクが有利**と考えられます（MIT・小さいため）。uClibc-ng は新規設計での優先度が低いと考えられます。Newlib / picolibc / llvm-libc は Buildroot の選択肢にありません。Newlib の Linux 対応は未確認です。
-- M5 の udev / systemd unit 前提を踏まえると、**全機能維持を優先するなら glibc + systemd の最小化が現実的**です。musl + BusyBox は軽い一方で、M5 の udev ルール移植と NSS 非対応の制約があります。
+- 初期案は BusyBox init + mdev + glibc です。M5 の udev / systemd unit を変更せず全機能を維持する必要がある場合は、glibc + systemd の最小化を代替案として比較します。musl + BusyBox は静的リンクの利点がありますが、udev ルールの移植と NSS の制約を評価する必要があります。
 - 起動時間への libc 差は、静的 BusyBox などで exec 回数が少なければ全体のうち数十 ms 未満と推測されます（未実測）。支配項は firmware とカーネル側と考えられます（[KittenLabs の測定例](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/)）。CM0 実機で `perf trace` / bootchart 相当を取る必要があります。
 - OpenSSH は glibc なら libxcrypt を選びます（Buildroot Config.in）。Dropbear は静的ビルドに向きます。https://github.com/buildroot/buildroot/blob/2026.08/package/openssh/Config.in 【一次】
 
 ## 21. SSH・VPN、暗号拡張、鍵保管と A/B OTA
+
+### Firmware と再配布条件
+
+- 【未確認】CYW43439 の firmware は `firmware-nonfree` / `brcmfmac_sdio-firmware-rpi` などの配布経路と関連し、再配布条件の確認が必要です。採用する blob とそのライセンスを特定してから同梱します。https://github.com/RPi-Distro/firmware-nonfree<br>https://github.com/raspberrypi/firmware
+- 【未確認】M5 LCD 初期化用 binary、BMI270 初期化 firmware、keymap のライセンスは公開ソース内で確認できていません。公開配布前に M5Stack へ利用・再配布条件を確認します。https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules/st7789v-1.0<br>https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules/imu-1.0<br>https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules/tca8418-1.0
 
 ### 21.1 BCM2837 の ARMv8 Crypto Extensions
 | 事実 | 出典URL | 確認度 |
