@@ -112,7 +112,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            bc bison build-essential cpio device-tree-compiler \
+            bc bison build-essential cpio device-tree-compiler fdisk \
             file flex git libelf-dev libncurses-dev libssl-dev perl python3 \
             qemu-system-arm rsync unzip wget xz-utils
 
@@ -210,6 +210,9 @@ jobs:
           else
             echo "ccache binary is not available"
           fi
+
+      - name: Check image partition layout
+        run: board/cardputerzero/check-image-layout.sh output/images/sdcard.img
 
       - name: QEMU smoke test
         run: board/cardputerzero/qemu/test-boot.sh
