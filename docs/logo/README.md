@@ -51,10 +51,10 @@
 ## 作り直し方
 
 ```sh
-documentation/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3）
+docs/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3）
 python3 -m venv "$HOME/.cache/msd-linux-logo"
-"$HOME/.cache/msd-linux-logo/bin/pip" install --require-hashes -r documentation/logo/tools/requirements.txt
-"$HOME/.cache/msd-linux-logo/bin/python" documentation/logo/tools/generate.py  # 形状を変えるときだけ SVG を作り直す
+"$HOME/.cache/msd-linux-logo/bin/pip" install --require-hashes -r docs/logo/tools/requirements.txt
+"$HOME/.cache/msd-linux-logo/bin/python" docs/logo/tools/generate.py  # 形状を変えるときだけ SVG を作り直す
 ```
 
 `generate.py` の実行には、Lato Bold 2.007 と Python 3.11 以上が必要です。

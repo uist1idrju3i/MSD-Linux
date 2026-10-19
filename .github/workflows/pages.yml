@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - docs/**
+      - public_html/**
       - .github/workflows/pages.yml
   workflow_dispatch:
 
@@ -22,6 +22,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      pages: read
     steps:
       - name: ソースを取得
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,13 +30,17 @@ jobs:
           persist-credentials: false
           submodules: false
 
-      - name: サイトを検査
-        run: python3 .github/scripts/check-site.py
+      - name: サイトと Pages のドメインを検査
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cname="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.cname // ""')"
+          python3 .github/scripts/check-site.py --expect-pages-cname "$cname"
 
       - name: GitHub Pages 用の成果物を作成
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: docs
+          path: public_html
 
   deploy:
     name: GitHub Pages に公開

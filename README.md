@@ -4,8 +4,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="documentation/logo/msd-linux-logo-dark.svg">
-    <img src="documentation/logo/msd-linux-logo.svg" alt="MSD/Linux のロゴ。濃藍の円の中で室見川の流れが青海波の博多湾へ注ぐ。" width="480">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/msd-linux-logo-dark.svg">
+    <img src="docs/logo/msd-linux-logo.svg" alt="MSD/Linux のロゴ。濃藍の円の中で室見川の流れが青海波の博多湾へ注ぐ。" width="480">
   </picture>
 </p>
 
@@ -45,7 +45,7 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 実機での動作は未確認です。詳細な調査結果、出典、未確認事項は [RESEARCH.md](RESEARCH.md)、作業規約は [AGENTS.md](AGENTS.md) を参照してください。
 
-ビルドと QEMU 起動確認の手順は [documentation/BUILD.md](documentation/BUILD.md)、更新手順と検証範囲は [documentation/UPDATE.md](documentation/UPDATE.md) を参照してください。
+ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md)、更新手順と検証範囲は [docs/UPDATE.md](docs/UPDATE.md) を参照してください。
 
 ## 取得方法
 

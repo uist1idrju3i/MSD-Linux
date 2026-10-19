@@ -21,7 +21,7 @@ ALLOWLIST_PATH = ".github/link-check-allowlist.tsv"
 FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 ATX_RE = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+(.*?)[ \t]*|[ \t]*)$")
 STALE_PATH_RE = re.compile(
-    r"(?<![\w.\-/])/?(?:docs|documentation)/[^\s`'\"()\[\]<>|,、。）]*"
+    r"(?<![\w.\-/])/?(?:docs|documentation|public_html)/[^\s`'\"()\[\]<>|,、。）]*"
 )
 URL_RE = re.compile(r"\b[A-Za-z][A-Za-z0-9+.-]*:[^\s]+")
 SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
@@ -448,7 +448,7 @@ def stale_path_exists(value: str, tracked: set[str]) -> bool:
     path = value.rstrip(".:;")
     path = re.split(r"[?#]", path, maxsplit=1)[0]
     path = path.lstrip("/")
-    if path in {"docs", "docs/", "documentation", "documentation/"}:
+    if path in {"docs", "docs/", "documentation", "documentation/", "public_html", "public_html/"}:
         return True
     parts = [part for part in path.split("/") if part]
     placeholder_index = next(
@@ -461,7 +461,7 @@ def stale_path_exists(value: str, tracked: set[str]) -> bool:
     )
     if placeholder_index is not None:
         prefix = "/".join(parts[:placeholder_index])
-        if prefix in {"docs", "documentation"}:
+        if prefix in {"docs", "documentation", "public_html"}:
             return True
         return bool(prefix) and tracked_directory(prefix, tracked)
     normalized = posixpath.normpath(path)
