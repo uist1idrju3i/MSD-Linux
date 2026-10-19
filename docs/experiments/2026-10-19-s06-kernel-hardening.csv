@@ -1,0 +1,16 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+s6-kernel-hardening,base,1,ready_kernel_seconds,3.142622,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,base,2,ready_kernel_seconds,3.142595,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,base,3,ready_kernel_seconds,3.136482,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,hardened,1,ready_kernel_seconds,3.235654,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,hardened,2,ready_kernel_seconds,3.225268,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,hardened,3,ready_kernel_seconds,3.224376,s,true,QEMU ICOUNT shift=0
+s6-kernel-hardening,base,1,Image,26249728,B,true,
+s6-kernel-hardening,hardened,1,Image,26380800,B,true,
+s6-kernel-hardening,base,1,gzip9n_Image,10495325,B,true,
+s6-kernel-hardening,hardened,1,gzip9n_Image,10521065,B,true,
+s6-kernel-hardening,base,1,kernel8_img,10082566,B,true,
+s6-kernel-hardening,hardened,1,kernel8_img,10103524,B,true,
+s6-kernel-hardening,base,1,compressed_modules,10604912,B,true,
+s6-kernel-hardening,hardened,1,compressed_modules,11313872,B,true,
+s6-kernel-hardening,hardened,1,signed_modules,1039/1039,count,true,
