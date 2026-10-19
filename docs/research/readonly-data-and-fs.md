@@ -45,29 +45,31 @@ OverlayFS upper は trusted/user xattr と有効な `d_type` を必要とする�
 | 項目 | 現状・候補 | 調査上の扱い |
 |---|---|---|
 | `noatime` | S3 で維持し、`/data` mount option に含めた。 | アクセス時刻更新を避ける。 |
-| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | S3 のゲスト側測定では V3 が V1 より34.08%多く書き込んだため採用しない【一次: K4】【実測】。 |
+| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | S3 の5回測定では V3 の中央値が V1 と同じで、10%削減条件を満たさず採用しない【一次: K4】【実測】。 |
 | `nodev,nosuid` | S3 で `/data` mount に採用した。 | `/data` は device node や setuid executable の実行場所にしない。 |
 | `data=ordered` | S3 の新規 image と mount option で採用。既存 filesystem も同じ mode で mount する。 | 小ファイル workload、書き込み量、復旧挙動を測る。 |
 | 4 KiB block | S3 で新規 filesystem に採用。 | 既存 1 KiB filesystem は再フォーマットしない。small-file corpus、image size、fsck/mount 時間を比較する。 |
-| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | S3 の V2 は電断試験を20回中20回通過したが、V1 より34.15%多く書き込んだため採用しない【実測】。 |
+| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | S3 の V2 は電断試験を20回中20回通過した。5回測定の書き込み中央値は V1 と同じで、20%削減条件を満たさず採用しない【実測】。 |
 | F2FS `fsync_mode` | `posix` が既定、`strict` はより強い同期挙動、`nobarrier` 等も文書化される。 | checkpoint、fsync 頻度、power-cut replay と fsck/mount 時間を測る【一次: K5】。 |
 
 ### S3 の測定結果と採用判断
 
-QEMU の `msd.s3bench=1` hook で、100 個の 200 B file を作り、各 file を一時 file へ書いて置き換える workload を実行した。各 variant は別 image から起動し、3 回測定した【実測】。
+QEMU の `msd.s3bench=1` hook で、100 個の 200 B file を作り、各 file を一時 file へ書いて置き換える workload を実行した。各 variant は別 image から起動し、5 回測定した【実測】。
 
-| Variant | Filesystem / mount option | `/sys/class/block/mmcblk0p7/stat` field 7、before→after sectors（run 1 / 2 / 3） | delta bytes（run 1 / 2 / 3、中央値） | `df` used KiB（run 1 / 2 / 3、中央値） |
-|---|---|---|---|
-| V0 | 1 KiB / `data=journal` | `2,852→44,726 / 4,902→31,354 / 2,852→26,130` | `21,439,488 / 13,543,424 / 11,918,336`（13,543,424） | `153 / 153 / 153`（153） |
-| V1 | 4 KiB / `data=ordered` | `8,864→31,936 / 664→32,344 / 8,848→32,160` | `11,812,864 / 16,220,160 / 11,935,744`（11,935,744） | `572 / 572 / 572`（572） |
-| V2 | 4 KiB / `data=ordered` + `inline_data` | `560→31,816 / 560→32,152 / 560→31,832` | `16,003,072 / 16,175,104 / 16,011,264`（16,011,264） | `552 / 552 / 552`（552） |
-| V3 | 4 KiB / `data=ordered` + `lazytime` | `664→31,920 / 664→31,920 / 664→32,256` | `16,003,072 / 16,003,072 / 16,175,104`（16,003,072） | `572 / 572 / 572`（572） |
+| Variant | Filesystem / mount option | field 7 before→after sectors（run 1 / 2 / 3 / 4 / 5） | delta bytes（run 1 / 2 / 3 / 4 / 5、中央値） | idle delta sectors（run 1 / 2 / 3 / 4 / 5） | `df` used KiB（run 1 / 2 / 3 / 4 / 5、中央値） |
+|---|---|---|---|---|---|
+| V0 | 1 KiB / `data=journal` | `2,864→8,220 / 2,864→7,904 / 2,864→8,064 / 2,864→7,668 / 2,864→7,634` | `2,742,272 / 2,580,480 / 2,662,400 / 2,459,648 / 2,442,240`（2,580,480） | `0 / 0 / 0 / 0 / 0` | `153 / 153 / 153 / 153 / 153`（153） |
+| V1 | 4 KiB / `data=ordered` | `664→15,544 / 664→15,544 / 664→15,544 / 664→15,544 / 664→15,544` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `572 / 572 / 572 / 572 / 572`（572） |
+| V2 | 4 KiB / `data=ordered` + `inline_data` | `560→15,440 / 560→15,440 / 560→15,440 / 560→15,440 / 560→15,440` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `552 / 552 / 552 / 552 / 552`（552） |
+| V3 | 4 KiB / `data=ordered` + `lazytime` | `664→15,544 / 664→15,544 / 664→15,544 / 664→15,544 / 664→15,544` | `7,618,560 / 7,618,560 / 7,618,560 / 7,618,560 / 7,618,560`（7,618,560） | `0 / 0 / 0 / 0 / 0` | `572 / 572 / 572 / 572 / 572`（572） |
 
-前回の QMP `query-blockstats` は QEMU 6.2.0 の SD model の読み書き byte counter を計上せず、`rd_bytes` と `wr_bytes` の両方が0だったため、書き込み量の指標として無効だった。今回は各 run の hook が、最初の `sync` 直後と最後の `sync` 直後に guest の `/sys/class/block/mmcblk0p7/stat` の field 7（sectors written）を一度ずつ読み、両値を serial console に出力した。表の delta bytes は `(after - before) × 512` で計算した guest 側の block-layer 書き込み量であり、カード内部の FTL 書き込みや NAND への物理書き込み量は含まない【実測】。各 run では workload の開始・完了 marker も確認した。raw counter と serial log は `/home/ubuntu/work/sweep/data-s3/measure-gueststat/{V0,V1,V2,V3}/run{1,2,3}/serial.log` に保存した。
+前回の QMP `query-blockstats` は QEMU 6.2.0 の SD model の読み書き byte counter を計上せず、`rd_bytes` と `wr_bytes` の両方が0だったため、書き込み量の指標として無効だった。今回は mkfs 時に `-E lazy_itable_init=0,lazy_journal_init=0` を指定し、`/data` の mount と online grow の後に `mount -o remount,noinit_itable /data` を実行した。QEMU では remount が受理された。各 run は `sync` 後に field 7 を読み、10秒待って再読する validity gate を通し、idle delta が0のときだけ workload を開始した。20回すべて idle delta は0で、idle delta を各表行に記録した【実測】。workload 開始直前と最終 `sync` 後に field 7（sectors written）を読み、delta bytes を `(after - before) × 512` で算出した。これは guest 側の block-layer 書き込み量であり、カード内部の FTL 書き込みや NAND への物理書き込み量は含まない【実測】。raw counter と serial log は `/home/ubuntu/work/sweep/data-s3/measure-gated/{V0,V1,V2,V3}/run*/attempt1/serial.log` に保存した。
 
 V1 と V2 は、step c の開始後 1〜10 秒の無作為な時点で QEMU を `SIGKILL` し、同じ SD image で再起動して検証した。V1 は20回中20回、V2 も20回中20回で、mount 後の `fsck.ext4 -n` は clean、100 file はすべて旧内容か新内容のいずれか 200 B を保持した。失敗はなかった【実測】。各試行の `firstboot.log` と `reboot.log` は `/home/ubuntu/work/sweep/data-s3/powercut/{V1,V2}/run{1,2,...,20}/` にある。
 
-V1 の中央値は11,935,744 bytes だった。V2 は16,011,264 bytes でV1より34.15%多く、V1より20%以上減らす条件を満たさなかった。V2 の電断試験は20回中20回成功したが、書き込み量の条件を満たさないため `inline_data` は採用しない。V3 は16,003,072 bytes でV1より34.08%多く、10%以上減らす条件を満たさないため `lazytime` も採用しない。採用規則に従い、4 KiB と `data=ordered` の V1 を維持する【実測】。
+前回の3回測定では V1 の field 7 の開始値に大きなばらつきがあり、背景の ext4 lazy inode-table initialization が混入した可能性を再検証した。追加の V1 観測では noinit workaround を使わず、mount 時の field 7 が16、60秒後が17,016で、差は17,000 sectors（8,704,000 bytes）だった【実測】。この区間は `/data` mount から `msd-data-grow` の online resize を含む最初の60秒間であり、lazy-init thread 単独の書き込み量ではない。
+
+新しい測定では V1 の中央値は7,618,560 bytes だった。V2 も7,618,560 bytesで、V1 に対する削減は0%であり、20%以上の条件を満たさなかった。V2 の電断試験は20回中20回成功したが、書き込み量の条件を満たさないため `inline_data` は採用しない。V3 も7,618,560 bytesで削減は0%となり、10%以上の条件を満たさないため `lazytime` も採用しない。採用規則に従い、4 KiB と `data=ordered` の V1 を維持する【実測】。V1 の初回60秒観測のログは `/home/ubuntu/work/sweep/data-s3/measure-gated/lazyinit-V1/serial.log` にある。
 
 | FS | 電断・回復モデル | small files・書き込み量 | fsck、RAM、tool size、成熟度 | MSD/Linux での位置づけ |
 |---|---|---|---|---|
