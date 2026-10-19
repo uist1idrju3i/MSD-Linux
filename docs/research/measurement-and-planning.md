@@ -12,6 +12,11 @@
 | Linux stable 7.2.11 | 2026-10-15 の公開リリース一覧で確認しました。 | https://www.kernel.org/releases.json |
 | microSD FTL の電断挙動 | 一次資料は未確認です。LWN、Bootlin、JEDEC、SD Association の公開資料で確認する必要があります。 | URL未取得 |
 | MCUboot の arm64 実績 | 未確認です。MCUboot の公開ソースと対応ボード一覧で確認する必要があります。 | URL未取得 |
+| カード固有の erase/AU 情報と速度 | `preferred_erase_size` 等のカーネル報告値と実測性能はカード・ホストに依存し、CM0 実機では未確認です。 | [Linux MMC sysfs attributes](https://docs.kernel.org/driver-api/mmc/mmc-dev-attrs.html) |
+| GPT / MBR と 4 MiB alignment | firmware の互換性および速度・寿命・電断への効果は実機で未確認です。 | [Raspberry Pi boot documentation](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc) |
+| `/data` の ext4 移行 | 現行 `data=journal` から `data=ordered` へ移す場合のアプリ整合性、barrier、`commit=`、電断時挙動は未検証です。 | [ext4 documentation](https://docs.kernel.org/admin-guide/ext4.html) |
+| secure update / dm-verity | 署名検証、鍵・root digest の信頼起点、全カード交換への耐性は未実装・未検証です。 | [dm-verity documentation](https://docs.kernel.org/admin-guide/device-mapper/verity.html) |
+| ハードウェア機能 | LCD、入力、音声、センサー、RTC、充電、USB、HDMI 等の実機動作は未検証です。 | [CardputerZero hardware matrix](scope-and-hardware.md#ハードウェア機能の対応表) |
 
 ### 残る未確認事項
 | 事項 | 確認内容 | 出典URL |
@@ -41,6 +46,15 @@
 7. **GL852G のリセット挙動**(PYG3 はキーボードと共用)
 8. **電源断試験**(書込み中/アイドル時の電源断を多数回)
 9. **GPIO6 電源断スイッチの hold-up 時間**（信号発生から電源が失われるまでを実機測定し、正常停止を追加できるか判断する）
+10. **microSD の実測特性:** `/sys/block/mmcblk0/device/preferred_erase_size`、queue の `minimum_io_size` / `optimal_io_size` / `discard_granularity` / `discard_max_bytes`、MMC card 情報を記録し、モデル・容量・firmware とともに保存する。
+11. **パーティション比較:** 現行、`align=1M`、`align=4M` の各 image で開始 sector、FAT data-area 絶対位置、image size を記録する。4 MiB alignment が速度や寿命を改善すると先に仮定しない。
+12. **SD 性能:** 同じカード・ホスト・温度で sequential / random read-write と同期書込みを測り、反復回数、中央値、p90、card 使用状態を記録する。A1/A2 のラベルのみから性能を推定しない。
+13. **ext4 と電断:** `/data` の実 mount options、`data=journal` / `data=ordered`、barrier、`commit=` を記録し、アプリケーションの `fsync`/rename を含む更新と電源断試験を行う。
+14. **discard:** target card が報告する discard 能力、`fstrim` の成否・時間・結果を記録する。対応や効果をカード仕様から推定しない。
+15. **ハードウェア機能:** matrix の各 driver probe、firmware load、ユーザー空間利用を別々に確認し、電源異常・通常 shutdown は実測で区別する。
+16. **セキュリティ:** 署名不正／鍵違いの更新拒否、read-only root 上の鍵、dm-verity digest の信頼起点を確認する。試験でカード全体を差し替えた場合に防げないことも記録する。
+ 
+ 本リポジトリでは試していません。flashbench は手順案のみで、カード内部の erase unit を確定する計測として扱いません。【未確認】
 
 ### 今後の検討アイデア
 

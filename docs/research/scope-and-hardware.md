@@ -76,6 +76,64 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 
 ---
 
+## ハードウェア機能の対応表
+
+「ビルド済み」は設定・パッケージにドライバーや overlay が含まれることを指し、実機で機能したことを意味しません。遅延ロード欄は機能依存からの設計判断であり、起動時間や動作は未測定です。【推測】[Buildroot の M5 モジュール一覧](../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)／[ボード設定](../../board/cardputerzero/config.txt)
+
+| 機能 | driver / Kconfig | overlay / firmware | 現在のビルド | 遅延ロード | 未確認点 |
+|---|---|---|---|---|---|
+| LCD | M5 `st7789v-1.0` 外部モジュール。【一次】 | CardputerZero v5 overlay とパネル firmware。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | コンソール出力に使う場合は早期ロードが必要。【推測】 | 初期化、fbcon 接続、回転・色、実機表示。【未確認】 |
+| キーボード | M5 TCA8418 外部モジュール。【一次】 | v5 overlay と keymap。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | 起動後の CLI 入力に使うなら遅延不可。【推測】 | 入力、割込み、リセット共用端子、ロード順。【未確認】 |
+| 音声 | M5 ES8389 外部モジュール。【一次】 | 音声 codec overlay。【一次】 | パッケージ対象。【一次】 | 起動必須ではなければ可能。【推測】 | 再生・録音、イヤホン検出、アンプ制御。【未確認】 |
+| IMU | M5 BMI270 外部モジュール。【一次】 | BMI270/BMM150 overlay と初期化 firmware。【一次】 | モジュール・firmware 対象。【一次】 | センサーを使うまで遅延可能。【推測】 | probe、IIO 値、割込み、firmware 読込。【未確認】 |
+| 磁力計 | M5 BMM150 外部モジュール。【一次】 | BMI270/BMM150 overlay。【一次】 | モジュール対象。【一次】 | センサーを使うまで遅延可能。【推測】 | IIO 登録、BMI270 経由の接続、測定値。【未確認】 |
+| RTC | upstream `rtc-ds1307`／`CONFIG_RTC_DRV_DS1307`。【一次】 | v5 overlay が RX8130 を I²C 0x32 に宣言。【一次】 | kernel module と overlay 対象。【一次】 | 起動後の時刻取得まで遅延可能。【推測】 | RTC 登録、バックアップ保持、時刻同期。【未確認】 |
+| 燃料計 | M5 BQ27220 外部モジュール。【一次】 | `bq27220_v5` overlay。【一次】 | モジュール・overlay 対象。【一次】 | バッテリー表示が必要になるまで可能。【推測】 | 識別、校正、残量・電圧の精度。【未確認】 |
+| IP2315 充電器 | 対応 driver / Kconfig を選択した証拠なし。【未確認】 | 回路図に充電経路の記載。専用 overlay なし。【一次】 | charger module はパッケージ一覧にない。【一次】 | 現状ロード対象なし。 | 充電状態・制御・保護動作。【未確認】 |
+| M5IOE1 | M5 `m5ioe1` 外部モジュール。【一次】 | v5 overlay が I²C 0x4f と GPIO/PWM を宣言。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | LCD、電源・拡張制御の依存があるため早期ロード対象を確認する。【推測】 | probe、GPIO 番号対応、PWM、I²C 安定性。【未確認】 |
+| 電源スイッチ／GPIO6 電源異常 | M5 `powerfail_suo` 外部モジュール。【一次】 | v5 overlay が GPIO6 と 500 ms debounce を宣言。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | 電源異常への応答が目的なら早期ロードが望ましい。【推測】 | 割込み条件、SysRq 設定、電源保持時間、実際の電断耐性。【未確認】 |
+| IR | upstream `IR_GPIO_CIR` / `IR_GPIO_TX`。【一次】 | 現行 config に IR overlay なし。【一次】 | `MEDIA_SUPPORT` が無効で、有効化を確認できない。【一次】 | 有効化後にモジュールロードは可能。【推測】 | ピン配置、受信・送信、必要な media/RC 設定。【未確認】 |
+| カメラ | upstream `VIDEO_IMX219`。【一次】 | 現行 config に IMX219 overlay なし。【一次】 | board fragment が `MEDIA_SUPPORT` を無効化。カメラ機能は有効でない。【一次】 | media subsystem を有効にした後なら遅延可能。【推測】 | 実機カメラ有無、CSI 配線、media userspace。【未確認】 |
+| Wi-Fi | `BRCMFMAC` / SDIO。【一次】 | Raspberry Pi firmware とボード config。【一次】 | kernel module と firmware を選択。【一次】 | 接続時まで遅延可能。【推測】 | 搭載無線チップ、firmware 適合、起動 daemon、接続。【未確認】 |
+| Bluetooth | `BT_HCIUART` / BCM。【一次】 | firmware と UART 設定。【一次】 | kernel module 対象。BlueZ の選択は確認できない。【一次】【未確認】 | 使用時まで遅延可能。【推測】 | 対象モジュール、UART 配線、BlueZ、pairing。【未確認】 |
+| USB hub | Linux USB hub core。【一次】 | GL852G は基板上の USB 2.0 hub。【一次】 | 汎用 USB core。専用 M5 module なし。【一次】 | USB 機器の列挙に必要で、個別遅延は対象外。【推測】 | host/device 切替、各ポートの列挙・給電。【未確認】 |
+| SR9900A Ethernet | upstream `USB_NET_SR9700` の ID 対応は SR9900A と同一ではない。【一次】【未確認】 | 専用 overlay なし。 | SR9700 module の存在だけでは SR9900A 対応を示さない。【一次】 | 対応が確認できた後は USB net module を遅延ロード可能。【推測】 | USB VID:PID とドライバーの対応、通信。【未確認】 |
+| HDMI | `DRM_VC4`。【一次】 | 現行 board config に HDMI 用 overlay の選択なし。【一次】 | kernel module を選択。【一次】 | HDMI を使うまで遅延可能。【推測】 | connector、モード、表示・音声、実機出力。【未確認】 |
+| EXT / Grove | GPIO、I²C、SPI と M5IOE1。【一次】 | v5 overlay に拡張端子・rail 用の設定。【一次】 | 関連 driver と overlay を含む。【一次】 | 使用する bus / rail に応じて可能。【推測】 | ピン mux、電圧、既定 UART/I²C、周辺互換性。【未確認】 |
+| LED／backlight | M5IOE1 GPIO/PWM と backlight 系統。【一次】 | v5 overlay。【一次】 | M5IOE1 と overlay 対象。【一次】 | 表示に必要な backlight は LCD 初期化時に必要。【推測】 | LED 数、極性、輝度制御、電源異常時の動作。【未確認】 |
+| buzzer | 専用 driver / Kconfig を確認できない。【未確認】 | 専用 overlay を確認できない。【未確認】 | 専用機能のビルドを確認できない。【未確認】 | 専用機能なし。 | ブザー搭載有無と制御経路。音声 codec／speaker と同一視しない。【未確認】 |
+
+### 目標との差分
+
+- 現行 board fragment は `MEDIA_SUPPORT` を無効にしているため、カメラは有効ではありません。カメラを目標に含める場合は media subsystem、overlay、userspace を別途設計・検証します。【一次】[kernel fragment](../../board/cardputerzero/linux.fragment)
+- IR は製品ページに記載がありますが、現行構成では media/RC の有効化と IR overlay を確認できず、対応済みとは扱いません。【一次】【未確認】[ボード設定](../../board/cardputerzero/config.txt)
+- 回路図に IP2315 の充電経路がありますが、Buildroot の選択モジュールに charger driver がなく、充電状態の Linux 表示や制御は未確認です。【一次】【未確認】[M5 モジュール一覧](../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)
+- GPIO6 の電源異常処理は SysRq `u`（読み取り専用再マウント）を呼びます。SysRq `s` と `o` はコメントアウトされており、通常の同期・shutdown を実装しているとは言えません。【一次】[M5 powerfail driver](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115)
+
+### 出典
+
+- 【一次】[M5 CardputerZero](https://docs.m5stack.com/en/CardputerZero)、[回路図 V0.6.1](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)。
+- 【一次】[M5 Linux drivers and overlays](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero)、[Buildroot module list](../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)。
+- 【一次】[board config](../../board/cardputerzero/config.txt)、[Linux fragment](../../board/cardputerzero/linux.fragment)、[Buildroot defconfig](../../configs/msd_cardputerzero_defconfig)。
+
+### 対応表の根拠と短い抜粋
+
+| 対象 | 公開 URL | 原文の短い抜粋 | 確度 |
+|---|---|---|---|
+| M5 driver / overlay のビルド一覧 | [Buildroot package](https://github.com/uist1idrju3i/MSD-Linux/blob/main/package/m5stack-cardputerzero/m5stack-cardputerzero.mk) | `modules/st7789v-1.0` / `modules/tca8418-1.0` / `modules/es8389-1.0` / `modules/bq27220-1.0` | 【一次】 |
+| 現行 v5 overlay 選択 | [board config](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/config.txt) | `dtoverlay=cardputerzero-v5-overlay` / `dtoverlay=bq27220_v5` / `dtoverlay=bmi270_bmm150_overlay` | 【一次】 |
+| LCD firmware と M5 module | [Buildroot package](https://github.com/uist1idrju3i/MSD-Linux/blob/main/package/m5stack-cardputerzero/m5stack-cardputerzero.mk) | `cardputerzero,st7789v_lcd.bin` | 【一次】 |
+| TCA8418 keymap と M5 compatible | [M5 v5 overlay](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts) | `compatible = "m5stack,tca8418c"` | 【一次】 |
+| Audio overlay | [M5 v5 overlay](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts) | `compatible = "m5stack,cardputerzero-audio"` | 【一次】 |
+| RTC support | [Raspberry Pi Linux RTC driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/rtc/rtc-ds1307.c#L1164) | `.compatible = "epson,rx8130"` | 【一次】 |
+| IP2315 charge path | [CardputerZero schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf) | “The battery charging has a separate input path. Input priority: USB IN > EXT. IN” | 【一次】 |
+| GPIO6 power-fail action | [M5 powerfail driver](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115) | `handle_sysrq('u')` / `// handle_sysrq('s');` | 【一次】 |
+| camera/IR kernel support | [kernel fragment](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/linux.fragment) | `# CONFIG_MEDIA_SUPPORT is not set` | 【一次】 |
+| USB hub / Ethernet chipset | [CardputerZero product page](https://docs.m5stack.com/en/CardputerZero) | “GL852G-OHY60 USB 2.0 Hub / SR9900A USB 2.0 to Ethernet chip” | 【一次】 |
+| SR9700 driver identity | [Raspberry Pi Linux driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/net/usb/sr9700.c) | `USB_DEVICE(0x0fe6, 0x9700)` | 【一次】 |
+
+表中の「遅延ロード」は依存関係からの設計判断で、実機での起動時間や probe 順を測った結果ではありません。【推測】個別の hardware operation、無線の接続、charger telemetry、未掲載の buzzer の存在は実機確認が必要です。【未確認】
+
 ## 調査範囲
 
 - Zephyr 26.04 LTS と Linux ベースの方式を比較し、Ubuntu Core 26、Minimal Ubuntu、Buildroot、BusyBox、Yocto、Debian、Arch、Android、BSD 系、OpenBIOS、自作構成などを調べます。候補チップとして ESP32 での Linux 実行可否、nRF9151 単体と Zephyr も対象にします。

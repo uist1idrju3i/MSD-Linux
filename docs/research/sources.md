@@ -472,3 +472,44 @@
 | 調査時の検索式・一時的な検証コマンド | 個別の作業手順は公開資料に基づく事実ではないため収録しない |
 | 内部管理情報（ID、版履歴、監査記録、私的ファイル名、作業用パスなど） | 公開資料に基づく記録に不要な情報として除外し、個別の ID やファイル名は列挙しない |
 | URL 抽出時の句読点による差分 2 件 | URL 直後の全角句点・括弧が抽出結果に含まれる差分です。正規の URL は本書に掲載済みで、出典の欠落ではありません |
+
+### ストレージ・セキュリティ・機能対応表で追加した出典
+
+次の URL は本文の新規記述に使った公開資料です。短い英文は取得した資料からの抜粋です。社内の計測ファイル名や作業用パスは本文・表に記載していません。
+
+| URL | HTTP / 取得状況 | 短い抜粋 | 確度 |
+|---|---|---|---|
+| https://github.com/pengutronix/genimage/blob/v20/README.rst | 200・本文確認 | “the final offset rounded up to the partition's `align` value” | 【一次】 |
+| https://docs.kernel.org/admin-guide/ext4.html | 200・本文確認 | “All data are committed into the journal prior to being written into the main file system.” | 【一次】 |
+| https://man7.org/linux/man-pages/man8/mke2fs.8.html | 200・本文確認 | “Configure the file system for a RAID array with stride-size file system blocks” | 【一次】 |
+| https://www.sdcard.org/developers/sd-standard-overview/application-performance-class/ | 200・本文確認 | “the number of 4KB read/write commands can be executed per second” | 【一次】 |
+| https://www.sdcard.org/developers/sd-standard-overview/speed-class/ | 200・本文確認 | “All speed class types assures minimum sequential card access performance” | 【一次】 |
+| https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c#L722-L797 | 200・本文確認 | `MMC_DEV_ATTR(preferred_erase_size` | 【一次】 |
+| https://lwn.net/Articles/428584/ | 200・本文確認 | “reverse engineering based on timing data” | 【二次】 |
+| https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md | 200・本文確認 | “how secure-boot works on a Raspberry Pi 4 (or newer)” | 【一次】 |
+| https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc | 200・本文確認 | “check primary SD for `bootcode.bin`” | 【一次】 |
+| https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc | 200・本文確認 | “All Raspberry Pi models support `tryboot`” | 【一次】 |
+| https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L242-L271 | 200・本文確認 | “enables a hardware watchdog timer that is handed over to the operating system” | 【一次】 |
+| https://docs.kernel.org/admin-guide/device-mapper/verity.html | 200・本文確認 | “This hash should be trusted as there is no other authenticity beyond this point.” | 【一次】 |
+| https://docs.kernel.org/admin-guide/sysctl/kernel.html | 200・本文確認 | `dmesg_restrict` / `kptr_restrict` / `unprivileged_bpf_disabled` | 【一次】 |
+| https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token= | 200・PDF 本文確認 | “The optional Cryptography Extension is not included in the base product.” | 【一次】 |
+| https://docs.m5stack.com/en/CardputerZero | 200・本文確認 | “GL852G-OHY60 USB 2.0 Hub / SR9900A USB 2.0 to Ethernet chip” | 【一次】 |
+| https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf | 200・PDF 本文確認 | “The battery charging has a separate input path. Input priority: USB IN > EXT. IN” | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/board/cardputerzero/rootfs-overlay/etc/fstab | 200・本文確認 | `/dev/mmcblk0p7 /data ext4 noauto,noatime,data=journal,errors=remount-ro 0 2` | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/board/cardputerzero/rootfs-overlay/usr/sbin/msd-update | 200・本文確認 | `sha256sum -c manifest` / `rootfs read-back SHA-256 mismatch` | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog | 200・本文確認 | `watchdog -T 15 -t 5 /dev/watchdog` | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/board/cardputerzero/linux.fragment | 200・本文確認 | `CONFIG_BCM2835_WDT=y` / `# CONFIG_MEDIA_SUPPORT is not set` | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/board/cardputerzero/config.txt | 200・本文確認 | `dtoverlay=cardputerzero-v5-overlay` / `dtoverlay=bq27220_v5` | 【一次】 |
+| https://raw.githubusercontent.com/uist1idrju3i/MSD-Linux/main/package/m5stack-cardputerzero/m5stack-cardputerzero.mk | 200・本文確認 | `modules/st7789v-1.0` / `modules/tca8418-1.0` / `modules/es8389-1.0` | 【一次】 |
+| https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115 | 200・本文確認 | `handle_sysrq('u')` / `// handle_sysrq('s');` | 【一次】 |
+| https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327 | CI artifact 取得済み | `p1=1, p2=32769, p3=163841, p4=294913, p5=294914, p6=819203, p7=1343492` | 【実測】 |
+| https://man7.org/linux/man-pages/man5/mke2fs.conf.5.html | 200・本文確認 | `small = { blocksize = 1024` | 【一次】 |
+| https://man7.org/linux/man-pages/man8/mke2fs.8.html | 200・本文確認 | “heuristically determined by the file system size and the expected usage” | 【一次】 |
+| https://kspp.github.io/Recommended_Settings | 200・本文確認 | `CONFIG_STACKPROTECTOR_STRONG=y` / `CONFIG_HARDENED_USERCOPY=y` | 【一次】 |
+| https://documentation-service.arm.com/static/5e9075f9c8052b1608761519?token= | 本文確認 | “The Cortex-A53 processor implements the ARMv8-A architecture.” | 【一次】 |
+| https://support.arm.com/documentation/102433/0200/Return-oriented-programming | 本文確認 | Armv8.3-A で pointer authentication を導入 | 【一次】 |
+| https://developer.arm.com/documentation/109697/latest/Feature-descriptions/The-Armv8-5-architecture-extension | 本文確認 | `FEAT_BTI` は Armv8.4-A で optional | 【一次】 |
+| https://github.com/raspberrypi/firmware/issues/694 | 本文確認 | 試験用 firmware が `/chosen/kaslr-seed` を 8 byte の乱数として追加したとの記録 | 【一次・履歴】 |
+| https://github.com/raspberrypi/firmware/issues/1595 | 本文確認 | “There is a new firmware available ... that adds `/chosen/rng-seed`.” | 【一次・履歴】 |
+| https://github.com/raspberrypi/rpi-eeprom/commit/cbd599e30dd3a8e7bbc7646364f3d3907f3027e0 | 本文確認 | Pi 5 の `kaslr-seed` / `rng-seed` が正しい entropy source を使うよう修正 | 【一次】 |
+| https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/os/graphics-utilities.adoc | 本文確認 | `0x10000` は過去の undervoltage、`0x80000` は過去の soft temperature limit | 【一次】 |
