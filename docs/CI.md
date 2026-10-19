@@ -4,7 +4,7 @@
 
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
-| `build.yml` | PR、`main` への push、手動実行 | 文書だけの PR では Buildroot ビルドを省略します。`main` への push と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
+| `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
@@ -24,7 +24,9 @@
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させます。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
 
-`main` の同じ concurrency group では、保留中の実行が後続の実行に置き換わります。文書だけの push もビルドを省略すると、コード変更のビルドが実行されないまま残ることがあるため、`main` への push は常にビルドします。
+Buildroot ビルドは時間がかかるため、`changes` job は PR と `main` への push で変更ファイルを見て、必要な場合だけビルドを実行します。文書（`*.md`、`docs/`）、サイト（`public_html/`）、エージェント設定（`.agents/`、`.claude/`、`.devin/`）、`vendor/yomiyasu`、`LICENSE`、検査専用の `tests/check-*` はスキップ対象です。`.github/` 配下も `build.yml` 自身を除いて対象から外します。それ以外のファイルに変更があれば Buildroot のビルド対象です。ホストテストは変更判定と独立して毎回実行します。
+
+`main` への文書だけの push ではビルドを省略するため、最新のビルド成果物は過去の commit に対応したままです。新しい `main` の成果物が必要な場合は `workflow_dispatch` で手動実行してください。毎週月曜 03:47 UTC のビルドは、ダウンロード URL や runner image の変化を検出するために実行します。
 
 ## 追跡テキストの文字範囲
 

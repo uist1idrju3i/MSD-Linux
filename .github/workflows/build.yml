@@ -6,6 +6,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: "47 3 * * 1"
 
 permissions:
   contents: read
@@ -34,12 +36,13 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+          if [[ "$EVENT_NAME" != "pull_request" && "$EVENT_NAME" != "push" ]]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if ! git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null; then
+          if [[ "$EVENT_NAME" == "pull_request" ]] &&
+             ! git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null; then
             if ! git fetch --no-tags origin \
               "refs/pull/${PR_NUMBER}/head:refs/remotes/pull/${PR_NUMBER}/head"; then
               echo "build=true" >> "$GITHUB_OUTPUT"
@@ -62,7 +65,11 @@ jobs:
           build=false
           while IFS= read -r -d '' path; do
             case "$path" in
-              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE)
+              .github/workflows/build.yml)
+                build=true
+                break
+                ;;
+              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE|.devin/*|tests/check-*/*|.github/*)
                 ;;
               *)
                 build=true
