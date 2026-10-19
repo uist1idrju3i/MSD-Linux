@@ -7,15 +7,15 @@
 | 対象 | `origin/main` の状態 | 根拠 |
 |---|---|---|
 | `/` | SquashFS を `ro` でマウントする。 | `board/cardputerzero/rootfs-overlay/etc/fstab:5` |
-| `/tmp`、`/run` | `nosuid,nodev` 付き tmpfs。 | `board/cardputerzero/rootfs-overlay/etc/fstab:6-7` |
-| `/data` | ext4。fstab は `noauto,noatime,data=journal,errors=remount-ro`。`S02msd-data` が空領域を初期化し、`fsck.ext4 -p`、mount、成長処理、状態ディレクトリ作成を行う。 | `board/cardputerzero/rootfs-overlay/etc/fstab:8`、`board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data:5-28` |
+| `/tmp`、`/run`、`/dev/shm` | fstab が tmpfs としてマウントする。 | `board/cardputerzero/rootfs-overlay/etc/fstab:3,6-7` |
+| `/data` | ext4。新規 image と空領域の初期化は 4 KiB block。既存の 1 KiB filesystem は移行せずそのまま使う。mount option は `noauto,noatime,nodev,nosuid,data=ordered,errors=remount-ro`。`S02msd-data` が `fsck.ext4 -p`、mount、成長処理、状態 directory 作成を行う。 | `board/cardputerzero/genimage.cfg`、`board/cardputerzero/rootfs-overlay/etc/fstab:8`、`board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data` |
 | `/etc` | `S03msd-etc-overlay` が `/data/etc:/etc` を lower、`/run/etc-overlay` を upper/work とする overlay を作り、merged view を `/etc` に bind mount する。 | `board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay:3-11` |
 | seedrng | `SEEDRNG_ARGS="--seed-dir=/data/seedrng"`。seedrng の永続 seed は `/data` 配下に置かれる。 | `board/cardputerzero/rootfs-overlay/etc/default/seedrng:1`、`board/cardputerzero/post-build.sh:69-82` |
 | update 状態と鍵 | updater の状態は `/data/msd-update`、公開鍵の読み取り元は `/etc/msd-update/update-key.pem`。ビルド時に公開鍵と key-origin を rootfs の `/etc` に生成する。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-update:8,10,168-178`、`board/cardputerzero/post-build.sh:182-185` |
 | A/B payload と selector | rootfs は p5/p6、boot payload は p2/p3 の inactive raw partition に書く。状態記録は `/data/msd-update`、`autoboot.txt` の切替は p1 上で行う。A/B payload を `/data` に保存する方式ではない。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-update:56,170-179,220-231` |
 | data partition grow | partition table の p4/p7 を調整し、`resize2fs` で p7 の ext4 を拡張する。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow:25,116-134` |
 | hwinfo・ready marker | hwinfo cache は `/run/msd/hardware`、ready marker は `/run/msd-ready`。これらの書き込み先は揮発領域である。 | `board/cardputerzero/rootfs-overlay/etc/init.d/S97msd-hwinfo:3-9`、`board/cardputerzero/rootfs-overlay/etc/init.d/S98msd-ready:3` |
-| `/var` とログ | fstab に `/var` の mount はない。`post-build.sh:5` は `/var/log` directory を作成するだけで、tmpfs mount の根拠ではない。対象 runtime scripts に syslog daemon の `/var/log` 書き込み設定も見つからなかった。 | `board/cardputerzero/rootfs-overlay/etc/fstab:1-8`、`board/cardputerzero/post-build.sh:5` |
+| `/var` とログ | `/var` 自体の mount はない。skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` への symlink、`/var/lock`、`/var/run` が `/run` への symlink、`/var/lib/misc` が `/tmp` への symlink。対象 runtime scripts に syslog daemon の `/var/log` 書き込み設定も見つからなかった。 | fstab、Buildroot `system/skeleton/var`、`board/cardputerzero/post-build.sh:5` |
 | RTC | `RESEARCH.md:40` は I2C1 上の RX8130CE を記録する。対象 init scripts に時刻を `/data` または `/etc` へ保存する処理は見つからなかった。RTC 初期化と実機時刻取得の経路は未確認。 | `RESEARCH.md:40`、上記 init scripts の調査 |
 | BCM2835 RNG | kernel の BCM2835 RNG driver は存在する【一次】が、`linux.fragment` に `CONFIG_HW_RANDOM_BCM2835` の明示設定はない。生成済み Linux `.config` を取得できていないため、有効状態は【未確認】。seedrng の `/data/seedrng` 保存を RNG hardware による代替とみなさない。 | `board/cardputerzero/linux.fragment`、生成 `.config` 未取得、[K1] |
 
@@ -44,13 +44,30 @@ OverlayFS upper は trusted/user xattr と有効な `d_type` を必要とする�
 
 | 項目 | 現状・候補 | 調査上の扱い |
 |---|---|---|
-| `noatime` | `/data` の現行設定にある。 | 維持候補。アクセス時刻更新を避ける。 |
-| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | ext4 で有効化した時の書き込み量、crash 後の時刻差、RW window の長さを測って決める【一次: K4】。 |
-| `nodev,nosuid` | `/data` mount に追加する候補。 | `/data` から device node や setuid executable を実行する必要性を確認してから採否判断【推測】。 |
-| `data=ordered` | 現行は `data=journal`。 | 性能・書き込み量・復旧挙動を同じ workload で比較する。単純に journal mode を変更しない。 |
-| 4 KiB block | `mkfs.ext4` の format-time 候補であり mount option ではない。 | small-file corpus、image size、fsck/mount 時間で比較する。現在の `S02msd-data` は block size を明示しない。 |
-| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | 小ファイル数・サイズ分布、e2fsck、オンライン resize、将来の機能互換性を測定して判断する。 |
+| `noatime` | S3 で維持し、`/data` mount option に含めた。 | アクセス時刻更新を避ける。 |
+| `lazytime` | inode の atime/mtime/ctime を memory 上で更新し、disk 更新を遅らせる。 | S3 の測定では採否基準に使う QMP byte counter が有効でなかったため採用せず、再測定を残す【一次: K4】【実測】。 |
+| `nodev,nosuid` | S3 で `/data` mount に採用した。 | `/data` は device node や setuid executable の実行場所にしない。 |
+| `data=ordered` | S3 の新規 image と mount option で採用。既存 filesystem も同じ mode で mount する。 | 小ファイル workload、書き込み量、復旧挙動を測る。 |
+| 4 KiB block | S3 で新規 filesystem に採用。 | 既存 1 KiB filesystem は再フォーマットしない。small-file corpus、image size、fsck/mount 時間を比較する。 |
+| `inline_data` | ext4 feature。mount option ではなく、format 時に feature を有効化して作る。 | S3 の V2 は電断試験を通過したが、QMP byte counter が有効でなかったため採用しない。 |
 | F2FS `fsync_mode` | `posix` が既定、`strict` はより強い同期挙動、`nobarrier` 等も文書化される。 | checkpoint、fsync 頻度、power-cut replay と fsck/mount 時間を測る【一次: K5】。 |
+
+### S3 の測定結果と採用判断
+
+QEMU の `msd.s3bench=1` hook で、100 個の 200 B file を作り、各 file を一時 file へ書いて置き換える workload を実行した。各 variant は別 image から起動し、3 回測定した【実測】。
+
+| Variant | Filesystem / mount option | QMP `wr_bytes` delta（run 1 / 2 / 3） | `df` used KiB（run 1 / 2 / 3、中央値） |
+|---|---|---|---|
+| V0 | 1 KiB / `data=journal` | `0 / 0 / 0` † | `153 / 153 / 153`（153） |
+| V1 | 4 KiB / `data=ordered` | `0 / 0 / 0` † | `572 / 572 / 572`（572） |
+| V2 | 4 KiB / `data=ordered` + `inline_data` | `0 / 0 / 0` † | `552 / 552 / 552`（552） |
+| V3 | 4 KiB / `data=ordered` + `lazytime` | `0 / 0 / 0` † | `572 / 572 / 572`（572） |
+
+† 表の `wr_bytes` は QMP の生値であり、実際の書き込み量として有効ではない。ローカル QEMU 6.2.0 の `query-blockstats` は、測定開始・終了時とも `wr_bytes=0` と `wr_operations=0` を返した。各 serial log では workload の開始・完了 marker と `df` の使用量を確認できるが、QMP counter から書き込み byte の中央値や variant 間の削減率は求められない。`df` 使用量は書き込み byte の代用指標にしていない【実測】。ログと QMP trace は `/home/ubuntu/work/sweep/data-s3/measure/{V0,V1,V2,V3}/run{1,2,3}/` に保存した。
+
+V1 と V2 は、step c の開始後 1〜10 秒の無作為な時点で QEMU を `SIGKILL` し、同じ SD image で再起動して検証した。V1 は20回中20回、V2 も20回中20回で、mount 後の `fsck.ext4 -n` は clean、100 file はすべて旧内容か新内容のいずれか 200 B を保持した。失敗はなかった【実測】。各試行の `firstboot.log` と `reboot.log` は `/home/ubuntu/work/sweep/data-s3/powercut/{V1,V2}/run{1,2,...,20}/` にある。
+
+書き込み byte の counter が有効でないため、V2 が V1 より20%以上削減することも、V3 が10%以上削減することも確認できなかった。採用規則に従い、測定基準の V1（4 KiB、`data=ordered`）を採用し、`inline_data` と `lazytime` は採用しない。QMP counter の原因を特定し、有効な byte 計測を得ることは未完了である【実測】。
 
 | FS | 電断・回復モデル | small files・書き込み量 | fsck、RAM、tool size、成熟度 | MSD/Linux での位置づけ |
 |---|---|---|---|---|

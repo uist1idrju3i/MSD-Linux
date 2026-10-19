@@ -44,6 +44,21 @@ while (( SECONDS < deadline )); do
 			printf 'QEMU serial log contains boot error patterns.\n' >&2
 			exit 1
 		fi
+		mount_options_line="$(grep -F 'msd-data: /data ' "$LOG_FILE" | tail -n 1 || true)"
+		if [ -z "$mount_options_line" ]; then
+			printf 'QEMU serial log is missing the /data mount options.\n' >&2
+			exit 1
+		fi
+		for option in data=ordered nodev nosuid; do
+			case "$mount_options_line" in
+				*"$option"*) ;;
+				*)
+					printf 'QEMU /data mount options are missing %s: %s\n' \
+						"$option" "$mount_options_line" >&2
+					exit 1
+					;;
+			esac
+		done
 		printf 'QEMU boot marker and login prompt found for root %s.\n' \
 			"$ROOT_DEVICE"
 		exit 0
