@@ -32,3 +32,14 @@ rsvg-convert -w 80 -h 80 msd-linux-mark.svg | \
 # GitHub の Social preview（1280x640、1 MB 未満）
 rsvg-convert -w 1280 -h 640 msd-linux-social-1280x640.svg -o msd-linux-social-1280x640.png
 test "$(wc -c < msd-linux-social-1280x640.png)" -lt 1000000
+
+# GitHub Pages のサイトでも同じロゴを使う。
+site_images=../../docs/images
+mkdir -p "$site_images"
+cp msd-linux-logo.svg msd-linux-logo-dark.svg msd-linux-mark.svg \
+  msd-linux-social-1280x640.png "$site_images/"
+python3 tools/site_patterns.py
+for image in msd-linux-logo.svg msd-linux-logo-dark.svg msd-linux-mark.svg \
+  msd-linux-social-1280x640.png; do
+  cmp "$image" "$site_images/$image"
+done

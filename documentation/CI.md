@@ -13,6 +13,10 @@
 `check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。追跡ファイルに旧 `docs` ディレクトリを参照するパスが残っていれば CI を失敗させ、文書移動後の参照漏れを防ぎます。
 `.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
 
+## GitHub Pages サイト
+
+`docs/` は GitHub Pages で公開するサイト専用で、公開ドメインは `docs/CNAME` にだけ記載します。`check-site.py` は許可したファイルだけが `docs/` にあること、canonical と OGP の URL が CNAME と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `documentation/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css`、`CNAME`、空の `.nojekyll` と `images/` 直下の SVG／PNG です。
+
 `build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させます。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
