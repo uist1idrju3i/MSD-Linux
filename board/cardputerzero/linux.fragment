@@ -391,3 +391,13 @@ CONFIG_USB_USBNET=m
 # CONFIG_GPIO_MOCKUP is not set
 # The Pi 5 RP1 audio output selects SND_SOC_SPDIF, so disable the parent too.
 # CONFIG_SND_RP1_AUDIO_OUT is not set
+
+# CardputerZero does not use VideoCore audio, camera, or MMAL services.
+# CONFIG_BCM2835_VCHIQ is not set
+# CONFIG_VCHIQ_CDEV is not set
+# CONFIG_SND_BCM2835 is not set
+# CONFIG_BCM2835_VCHIQ_MMAL is not set
+# CONFIG_BCM_VC_SM_CMA is not set
+# CONFIG_VIDEO_BCM2835 is not set
+# CONFIG_VIDEO_CODEC_BCM2835 is not set
+# CONFIG_VIDEO_ISP_BCM2835 is not set

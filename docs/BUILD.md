@@ -13,15 +13,15 @@ make -C vendor/buildroot BR2_EXTERNAL="$PWD" O="$PWD/output" msd_cardputerzero_d
 make -C output
 ```
 
-CI は Buildroot のダウンロードファイルと ccache をキャッシュし、`main` への push で共有キャッシュを更新します。文書だけを変更した pull request では、Buildroot のビルドを省略します。
+CI は Buildroot のダウンロードファイルと ccache をキャッシュし、`main` への push で共有キャッシュを更新します。文書だけを変更した pull request では Buildroot のビルドを省略しますが、`main` への push と手動実行では常にビルドします。同じ concurrency group の保留中の実行は後続の実行に置き換わるため、文書だけの push を省くとコード変更が未ビルドのまま残ることがあります。
 
-成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は初期 64 MiB で、初回起動時にパーティション末尾まで拡張し、ext4 をオンライン拡張する実装です。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector、tryboot、p7 拡張は未確認です。
+成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は初期 64 MiB で、初回起動時にパーティション末尾まで拡張し、ext4 をオンライン拡張する実装です。`msd-data-grow` は `/sys/class/block/mmcblk0/size` からディスク容量を読み取るため、fstab で `/sys` を sysfs としてマウントします。容量を読み取れない場合は明示的に失敗します。`/var/run`、`/var/lock`、`/var/log` などの書き込み先は `/run` または `/tmp` への symlink なので、`/var` 自体には tmpfs を重ねません。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector、tryboot、p7 拡張は未確認です。
 
-各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest`、Ed25519 署名 `manifest.sig` の4ファイルです。端末は書き込み前に `/etc/msd-update/update-key.pem` で署名を検証します。`/etc/msd-update/key-origin` には `release` または `development` を記録します。`MSD_UPDATE_SIGNING_KEY=/path/to/private.pem` を指定するとリリース鍵を使います。未指定時は `$BASE_DIR/msd-update-dev-key.pem` を生成・再利用し、開発用鍵である旨を警告します。秘密鍵は成果物に含めず、開発用鍵をリリースに使わないでください。ビルド成果物の署名は実機未検証です。
+各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest`、Ed25519 署名 `manifest.sig` の4ファイルです。端末は書き込み前に `/etc/msd-update/update-key.pem` で署名を検証します。target には検証用の `openssl` コマンドも含めます。`/etc/msd-update/key-origin` には `release` または `development` を記録します。`MSD_UPDATE_SIGNING_KEY=/path/to/private.pem` を指定するとリリース鍵を使います。未指定時は `$BASE_DIR/msd-update-dev-key.pem` を生成・再利用し、開発用鍵である旨を警告します。秘密鍵は成果物に含めず、開発用鍵をリリースに使わないでください。ビルド成果物の署名は実機未検証です。
 
-`BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。keymap の読み込みと symlink は実機未検証です。
+`BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。`S05seedrng` は `S02msd-data` と `S03msd-etc-overlay` の後に起動し、`SEEDRNG_ARGS=--seed-dir=/data/seedrng` で乱数シードを永続領域に保存します。実機では `/var/lib` が読み取り専用 rootfs 上にあるため、seedrng の保存先を `/data` にしています。keymap の読み込みと symlink は実機未検証です。
 
-`/usr/sbin/msd-hwinfo` は Standard/Lite を判定し、起動時に `/run/msd/hardware` へ結果を書きます。この判定は実機未検証です。
+`/usr/sbin/msd-hwinfo` は Standard/Lite を判定し、起動時に `/run/msd/hardware` へ結果を書き、シリアルコンソールにも判定結果を出力します。この判定は実機未検証です。
 
 ## QEMU での起動確認
 
@@ -34,7 +34,7 @@ board/cardputerzero/qemu/test-ab.sh
 
 ## カーネル設定の範囲
 
-`board/cardputerzero/linux.fragment` では、CardputerZero の基板と有効なオーバーレイで使わないサウンドカード／コーデック、RTC・hwmon、FB_TFT／DRM パネル、赤外線・入力、USB misc の周辺機器、Ethernet・Bluetooth ドングル、旧式 USB gadget、Pi 4/5・HAT 向けドライバーを無効にします。LCD（ST7789V）、TCA8418 キーボード、IIO センサー、電源・GPIO、DS1307 ドライバー経由の Epson RX8130 RTC、BCM 系 Wi-Fi/Bluetooth、必要な ASoC 機能など、製品の構成に使う機能は残します。
+`board/cardputerzero/linux.fragment` では、CardputerZero の基板と有効なオーバーレイで使わないサウンドカード／コーデック、RTC・hwmon、FB_TFT／DRM パネル、赤外線・入力、USB misc の周辺機器、Ethernet・Bluetooth ドングル、旧式 USB gadget、Pi 4/5・HAT 向けドライバーを無効にします。LCD（ST7789V）、TCA8418 キーボード、IIO センサー、電源・GPIO、DS1307 ドライバー経由の Epson RX8130 RTC、BCM 系 Wi-Fi/Bluetooth、必要な ASoC 機能など、製品の構成に使う機能は残します。CardputerZero は HDMI audio、camera、MMAL を使わず、SPI 接続 LCD と I2S codec を使うため BCM2835 VCHIQ とその依存機能を無効にします。QEMU の mailbox は VCHIQ を実装しません。
 
 netfilter、md/dm、暗号・スケジューリング、USB serial/NIC、USB_CONFIGFS、HID、NLS、ATA、joystick、IIO は今回の削減対象に含めません。
 
@@ -44,4 +44,4 @@ QEMU の `raspi3b` マシンは BCM2837 をエミュレートしますが、Rasp
 
 ## 現在の検証状況
 
-この構成に対するフルビルド、QEMU 起動、実機起動はまだ確認していません。更新処理、ハードウェア判定、p7 拡張のシェルロジックは `tests/msd-update/run.sh`、`tests/msd-hwinfo/run.sh`、`tests/msd-data-grow/run.sh` でホスト上の一時データを使って確認できます。
+CI では Buildroot のフルビルド、QEMU の A/B 起動（p5/p6 とも成功）、ホストテストを実行します。ローカル QEMU では、拡大イメージで p7 の ext4 拡張と `/data/seedrng/seed.credit` の作成を確認しました。実機起動、LCD・キーボード、tryboot、watchdog、更新署名は未検証です。

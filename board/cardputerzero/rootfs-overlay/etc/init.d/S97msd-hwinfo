@@ -5,6 +5,8 @@ mkdir -p /run/msd 2>/dev/null || exit 0
 	output="/run/msd/hardware.$$"
 	if /usr/sbin/msd-hwinfo > "$output"; then
 		mv -f "$output" /run/msd/hardware
+		IFS= read -r hardware_info < /run/msd/hardware || hardware_info=unknown
+		printf 'MSD hardware: %s\n' "$hardware_info" > /dev/console 2>/dev/null || true
 	else
 		rm -f "$output"
 		printf '<4>msd-hwinfo: hardware detection failed\n' > /dev/kmsg 2>/dev/null ||

@@ -43,8 +43,17 @@ run_grow() {
 	MSD_DATA_GROW_DISK="$1" \
 	MSD_DATA_GROW_PARTITION_PREFIX="$1" \
 	MSD_DATA_GROW_DATA_DEVICE="$2" \
+	MSD_DATA_GROW_SYSFS="$3" \
 	MSD_DATA_GROW_SKIP_KERNEL_NOTIFY=1 \
 	"$grow"
+}
+
+make_sysfs() {
+	sysfs_root="$1"
+	disk="$2"
+	sectors="$3"
+	mkdir -p "$sysfs_root/class/block/${disk##*/}"
+	printf '%s\n' "$sectors" > "$sysfs_root/class/block/${disk##*/}/size"
 }
 
 partition_value() {
@@ -69,12 +78,14 @@ partition_value() {
 image="$test_root/cardputerzero.img"
 data_fs="$test_root/data.ext4"
 make_image "$image" 0
+disk_sectors=$((2 * 1024 * 1024 * 1024 / 512))
+sysfs_root="$test_root/sys"
+make_sysfs "$sysfs_root" "$image" "$disk_sectors"
 truncate -s 64M "$data_fs"
 mke2fs -q -F -t ext4 "$data_fs"
 truncate -s 96M "$data_fs"
-run_grow "$image" "$data_fs"
+run_grow "$image" "$data_fs" "$sysfs_root"
 
-disk_sectors=$((2 * 1024 * 1024 * 1024 / 512))
 p4_start="$(partition_value "$image" 4 start)"
 p7_start="$(partition_value "$image" 7 start)"
 p4_size="$(partition_value "$image" 4 size)"
@@ -86,20 +97,34 @@ blocks="$(dumpe2fs -h "$data_fs" 2>/dev/null | awk -F: '$1 == "Block count" {gsu
 printf 'ok - p4 and p7 grow to the disk end and ext4 grows offline\n'
 
 before="$(sha256sum "$image" | awk '{print $1}')"
-run_grow "$image" "$data_fs"
+run_grow "$image" "$data_fs" "$sysfs_root"
 after="$(sha256sum "$image" | awk '{print $1}')"
 [ "$before" = "$after" ] || fail "a second run changed the partition table"
 printf 'ok - a second run leaves the partition table unchanged\n'
 
 nonlast="$test_root/nonlast.img"
 make_image "$nonlast" 1
+nonlast_sysfs="$test_root/nonlast-sys"
+make_sysfs "$nonlast_sysfs" "$nonlast" "$disk_sectors"
 sfdisk --dump "$nonlast" > "$test_root/nonlast.before"
-if run_grow "$nonlast" "$data_fs" > "$test_root/nonlast.log" 2>&1; then
+if run_grow "$nonlast" "$data_fs" "$nonlast_sysfs" > "$test_root/nonlast.log" 2>&1; then
 	fail "growth succeeded when partition 7 was not last"
 fi
 sfdisk --dump "$nonlast" > "$test_root/nonlast.after"
 cmp "$test_root/nonlast.before" "$test_root/nonlast.after" ||
 	fail "the partition table changed when partition 7 was not last"
 printf 'ok - growth refuses when partition 7 is not last\n'
+
+missing_sysfs="$test_root/missing-sysfs"
+missing_disk="$test_root/cardputerzero.img"
+mkdir -p "$missing_sysfs/class/block/${missing_disk##*/}"
+if output="$(run_grow "$missing_disk" "$data_fs" "$missing_sysfs" 2>&1)"; then
+	fail "growth succeeded when the sysfs disk size was missing"
+fi
+if ! printf '%s\n' "$output" |
+	grep -Fq "cannot read disk sector count from $missing_sysfs/class/block/${missing_disk##*/}/size"; then
+	fail "missing sysfs disk size did not produce a clear error"
+fi
+printf 'ok - growth fails clearly when the sysfs disk size is missing\n'
 
 printf 'All msd-data-grow host tests passed.\n'

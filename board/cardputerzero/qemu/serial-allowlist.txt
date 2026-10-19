@@ -1,0 +1,2 @@
+# QEMU lacks the Raspberry Pi firmware GPIO buffer; brcmvirt_gpio_probe warns while mapping that unavailable buffer.
+WARNING: CPU: [0-9]+ PID: [0-9]+ at arch/arm64/mm/ioremap\.c:27 __ioremap_prot\+0x70/0xc0
