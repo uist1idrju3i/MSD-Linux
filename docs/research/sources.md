@@ -513,3 +513,66 @@
 | https://github.com/raspberrypi/firmware/issues/1595 | 本文確認 | “There is a new firmware available ... that adds `/chosen/rng-seed`.” | 【一次・履歴】 |
 | https://github.com/raspberrypi/rpi-eeprom/commit/cbd599e30dd3a8e7bbc7646364f3d3907f3027e0 | 本文確認 | Pi 5 の `kaslr-seed` / `rng-seed` が正しい entropy source を使うよう修正 | 【一次】 |
 | https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/os/graphics-utilities.adoc | 本文確認 | `0x10000` は過去の undervoltage、`0x80000` は過去の soft temperature limit | 【一次】 |
+
+### 割り当て単位・小さいファイル調査（2026-10-19）
+
+| 項目 | 版・日付 | URL | 短い抜粋 | 確認度 |
+|---|---|---|---|---|
+| e2fsprogs 最新版 | 1.47.4、2026-03-06 | https://github.com/tytso/e2fsprogs/releases/tag/v1.47.4 | “e2fsprogs 1.47.4” / “Mar 6, 2026” | 【一次】 |
+| mke2fs の既定と ext4 profile | e2fsprogs 1.47.4 | https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.conf.in | `[defaults] blocksize = 4096` / `small { blocksize = 1024` / `orphan_file` | 【一次】 |
+| small profile の比較 | e2fsprogs 1.46.5／1.47.4 | https://github.com/tytso/e2fsprogs/blob/v1.46.5/misc/mke2fs.conf.in<br>https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.conf.in | 両タグで `small` は `blocksize = 1024`、`inode_ratio = 4096` | 【一次】 |
+| mke2fs.conf のサイズ型の説明 | e2fsprogs upstream、issue #74 | https://github.com/tytso/e2fsprogs/issues/74 | small は 3–512 MiB、floppy は 3 MiB 未満という maintainer の説明 | 【一次】 |
+| Buildroot package | 2026.08 | https://raw.githubusercontent.com/buildroot/buildroot/2026.08/package/e2fsprogs/e2fsprogs.mk | `E2FSPROGS_VERSION = 1.47.4` | 【一次】 |
+| mke2fs の blocksize 選択 | mke2fs(8)、2026-10-19 取得 | https://man7.org/linux/man-pages/man8/mke2fs.8.html | “heuristically determined by the file system size and the expected usage” | 【一次】 |
+| genimage の ext4 引数 | v20 | https://github.com/pengutronix/genimage/blob/v20/image-ext2.c | `const char *extraargs = cfg_getstr` / `usage_type` があれば `-T` を付加 | 【一次】 |
+| ext4 blocksize／inline data／bigalloc／orphan file | docs.kernel.org 現行ページ、2026-10-19 取得 | https://docs.kernel.org/filesystems/ext4/ | “Blocks can range in size from 1KiB to 64KiB” / “Bigalloc” / “Inline Data” / “Orphan file” | 【一次】 |
+| ext4 inline-data 対応 | e2fsprogs 1.43、2016-05-17 | https://github.com/tytso/e2fsprogs/blob/v1.43/RELEASE-NOTES | “Add support for ... inline data” | 【一次】 |
+| dosfstools の FAT cluster 選択 | 4.2 | https://github.com/dosfstools/dosfstools/blob/v4.2/src/mkfs.fat.c | “fs size <= 260M: 0.5k clusters” / FAT32 cluster-size 条件表 | 【一次】 |
+| mkfs.fat の option／内部整列 | dosfstools 4.2 man page | https://man.cgr.dev/os/dosfstools/4.2-r46/man8/mkfs.fat.8.md | “align all the data structures to cluster size”; `-s`, `-S`, `--offset` | 【一次】 |
+| genimage vfat handler | v20 | https://github.com/pengutronix/genimage/blob/v20/image-vfat.c | `mkdosfs` option と `extraargs` を取得して formatter に渡す | 【一次】 |
+| Microsoft exFAT specification | 現行公開ページ、2026-10-19 取得 | https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification | cluster の最大値は 32 MiB。default-size table は見つからず | 【一次】【未確認】 |
+| SD Association Formatter | 公開 FAQ／解説、2026-10-19 取得 | https://www.sdcard.org/downloads/formatter/faq/<br>https://www.sdcard.org/press/thoughtleadership/the-sd-memory-card-formatterhow-this-handy-tool-solves-your-memory-card-formatting-needs/ | formatter は容量に応じ FAT／exFAT を選び、internal flash boundary に合わせる説明 | 【一次】 |
+| SD Association 仕様 PDF | Part 1、2026-10-19 取得 | PDF URL は HTTP 403 | SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認 | 【未確認】 |
+| exfatprogs の default cluster／boundary-align | 1.4.3、2026-08-14 | https://github.com/exfatprogs/exfatprogs/releases/tag/1.4.3<br>https://github.com/exfatprogs/exfatprogs/blob/1.4.3/lib/libexfat.c<br>https://github.com/exfatprogs/exfatprogs/blob/1.4.3/man/mkfs.exfat.8.in | cluster default は volume size により選択。`--boundary-align` は FAT／cluster heap の境界を指定 | 【一次】 |
+| SquashFS tools | 4.7.5、2026-03-01 | https://github.com/plougher/squashfs-tools/releases/tag/4.7.5<br>https://github.com/plougher/squashfs-tools/blob/4.7.5/README.md | `-b`、fragment、`-no-fragments`、`-always-use-fragments` | 【一次】 |
+| EROFS tools | 1.9.4、2026-08-19 | https://github.com/erofs/erofs-utils/blob/v1.9.4/ChangeLog<br>https://erofs.docs.kernel.org/en/latest/mkfs.html | “erofs-utils 1.9.4” / `ztailpacking`／fragments | 【一次】 |
+| F2FS small-file handling | docs.kernel.org 現行ページ、2026-10-19 取得 | https://docs.kernel.org/filesystems/f2fs.html | inline data／inline dentry を説明。kernel tag はページ上で未確認 | 【一次】【未確認】 |
+| SD small-write 例 | LWN、2011-01-27 | https://lwn.net/Articles/428584/ | “small writes were slower than aligned larger writes” | 【二次】 |
+
+### SoC・圧縮・最適化・シミュレーターの出典
+
+この節は 2026-10-19 に確認しました。release tag がないページは取得日を記録し、固定 revision ではなく取得時点の公開資料として扱います。
+
+| 項目 | 版・日付 | URL | 確認した抜粋・事実 | 信頼度 |
+|---|---|---|---|---|
+| CM0 | datasheet Release 3、2026-07-08 | https://pip-assets.raspberrypi.com/categories/1286-raspberry-pi-compute-module-zero/documents/RP-009251-DS-3-cm0-datasheet.pdf | 「Compute Module Zero」Release 3 | 【一次】 |
+| CardputerZero | 2026-10-19 取得 | https://docs.m5stack.com/en/CardputerZero | “Quad-core Cortex-A53 @ 1 GHz”; “512 MB LPDDR2” | 【一次・製品資料】 |
+| Cortex-A53 | TRM r0p4 | https://support.arm.com/documentation/ddi0500/j/Introduction/Implementation-options | L1/L2 実装範囲、SIMD/FP と暗号拡張は optional | 【一次】 |
+| Raspberry Pi kernel image format | documentation commit `ddea98e98dafe9419feb4fd82710c2fbdef7dc44` | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc | arm64 image は非圧縮または gzip archive | 【一次】 |
+| arm64 boot protocol | Linux v6.18.57 | https://github.com/torvalds/linux/blob/v6.18.57/Documentation/arch/arm64/booting.rst | arm64 Image の bootloader 要件 | 【一次】 |
+| Buildroot 選択版 Bootlin toolchain | stable 2025.08-1 / GCC 14.3.0 | https://toolchains.bootlin.com/releases_aarch64.html | AArch64 glibc stable 2025.08-1 は GCC 14.3.0 | 【一次】 |
+| Bootlin 最新 stable toolchain | 2026.08-1 / GCC 15.3.0 | https://toolchains.bootlin.com/releases_aarch64.html | 最新 stable は 2026.08-1 | 【一次】 |
+| GCC 最適化 / AArch64 | GCC 14.3.0 | https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/Optimize-Options.html<br>https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/AArch64-Options.html | `-Os`, `-Oz`, `-O2`, A53 tuning / errata options | 【一次】 |
+| GCC PGO / instrumentation | GCC 14.3.0 | https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/Instrumentation-Options.html | `-fprofile-generate` / `-fprofile-use` / `-fprofile-update` / `GCOV_PREFIX` | 【一次】 |
+| Buildroot optimization / LTO | Buildroot 2026.08 commit `d5180309b1b66ef3b8eaccca70ad69be8e0729a1` | https://github.com/buildroot/buildroot/blob/d5180309b1b66ef3b8eaccca70ad69be8e0729a1/Config.in | `BR2_OPTIMIZE_2` default and LTO option | 【一次】 |
+| SquashFS ARM64 BCJ | squashfs-tools 4.7.5 | https://github.com/plougher/squashfs-tools/blob/4.7.5/squashfs-tools/xz_wrapper_extended.c | source registers `"arm64"` BCJ filter | 【一次】 |
+| XZ | XZ Utils 5.8.3 | https://github.com/tukaani-project/xz/releases/tag/v5.8.3 | release 5.8.3; ARM64 BCJ filter | 【一次】 |
+| Linux kernel AutoFDO / Propeller / LTO | Linux v6.18.57 | https://github.com/torvalds/linux/blob/v6.18.57/Documentation/dev-tools/autofdo.rst<br>https://github.com/torvalds/linux/blob/v6.18.57/Documentation/dev-tools/propeller.rst<br>https://github.com/torvalds/linux/blob/v6.18.57/arch/Kconfig | arm64 sampling / Clang requirements / `LTO_CLANG` | 【一次】 |
+| AutoFDO profile tools | commit `f95d1a170dfe24ec5ce4117aa4b0f6d836841703`、2026-09-30 | https://github.com/google/autofdo/tree/f95d1a170dfe24ec5ce4117aa4b0f6d836841703 | `create_gcov` toolset と GCC AutoFDO の手順 | 【一次】 |
+| Kernel AutoFDO / Propeller merge | Linux 6.13、2024-11-30 報道 | https://www.phoronix.com/news/AutoFDO-Propeller-Linux-6.13 | upstream merge を報道 | 【二次】 |
+| Clang kernel instrumentation PGO | 2021-06-03 | https://www.phoronix.com/news/Clang-PGO-Linux-Shot-Down | Linux 5.14 patch の撤回を報道 | 【二次】 |
+| Zstandard benchmark | zstd 1.5.4、PTS result 2024-08-28 | https://mail.openbenchmarking.org/result/2408281-BOMM-240826011%26gru%26sro%26export=html | Pi 3B+ / A53、level 19 展開 67.9 MB/s | 【二次】 |
+| LZ4 benchmark | lzbench 1.7.3、LZ4 1.8.3 | https://github.com/lz4/lz4/pull/713 | 投稿された A53 測定、Silesia `dickens` 展開 448 MB/s。board / clock 未記載 | 【二次】 |
+| QEMU 最新 release | 11.1.2、2026-09-28 | https://github.com/qemu/qemu/releases/tag/v11.1.2 | latest stable release | 【一次】 |
+| QEMU Raspberry Pi models | QEMU 11.1.2 | https://qemu.readthedocs.io/en/v11.1.2/system/arm/raspi.html | DMA、SD/MMC host、MBOX、SPI、I2C と未実装 device | 【一次】 |
+| QEMU Raspberry Pi model changes | QEMU 9.0 | https://wiki.qemu.org/ChangeLog/9.0 | `raspi4b`、SPI / BSC I2C 支援 | 【一次】 |
+| QEMU Raspberry Pi models 6.2 | QEMU 6.2.0 | https://qemu.readthedocs.io/en/v6.2.0/system/arm/raspi.html | `raspi3b` model docs | 【一次】 |
+| QEMU TCG plugins | QEMU 11.1.2 | https://qemu.readthedocs.io/en/v11.1.2/devel/tcg-plugins.html | plugin callback、instruction / translation-block instrumentation | 【一次】 |
+| QEMU cache plugin | QEMU v11.1.2 source | https://github.com/qemu/qemu/blob/v11.1.2/contrib/plugins/cache.c | guest cache hit/miss counter | 【一次】 |
+| QEMU `-icount` | QEMU 11.1.2 | https://qemu.readthedocs.io/en/v11.1.2/system/invocation.html | instruction-count virtual clock | 【一次】 |
+| gem5 latest release | 25.1.0.1、2026-04-21 | https://github.com/gem5/gem5/releases/tag/v25.1.0.1 | hotfix release。取得時点で 26.0 release 未確認 | 【一次】 |
+| gem5 HPI | gem5 commit `c8222cc6` | https://github.com/gem5/gem5/blob/c8222cc6/configs/common/cores/arm/HPI.py | “representative of a modern in-order ARMv8-A implementation” | 【一次】 |
+| gem5 ex5_LITTLE | gem5 commit `c8222cc6` | https://github.com/gem5/gem5/blob/c8222cc6/configs/common/cores/arm/ex5_LITTLE.py | Cortex-A7 based model | 【一次】 |
+| Arm FVP | Fast Models 11.32、2026-07-30 | https://support.arm.com/tools-and-software/fixed-virtual-platforms/arm-architecture-fvps | Architecture FVP / Base RevC release list。license entitlement 未確認 | 【一次】【未確認】 |
+| Renode | 1.17.0、2026-09-07 | https://github.com/renode/renode/releases/tag/v1.17.0 | release page と platform tree。BCM2835/2837 model は未発見 | 【一次】【未確認】 |
+| Raspberry Pi Zero 2 W | 2026-10-19 取得 | https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/ | RP3A0、quad-core 1 GHz A53、512 MB LPDDR2 | 【一次・製品資料】 |
