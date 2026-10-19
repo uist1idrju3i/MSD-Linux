@@ -56,7 +56,7 @@ quote	<exact-path>	<characters>	<reason>
 
 ## 固定版の整合性と更新確認
 
-`lint.yml` の `check-pins.py consistency` は、カーネル tarball と `linux.hash`、Buildroot の版、runner、CI ツールなど、複数箇所に現れる固定値の不一致を PR 時に検査します。毎週の `固定版の更新確認` は upstream の最新版を表にして `固定版の更新確認` Issue に追記・更新します。更新がない週は既存 Issue をクローズする仕様です。
+`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版です。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新し、すべて最新になったら Issue を閉じます。
 
 ## 採用しないツール
 
