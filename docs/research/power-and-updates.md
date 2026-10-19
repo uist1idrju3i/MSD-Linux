@@ -147,3 +147,11 @@ Devin が 2026-10-18 に公開資料で確認しました。
 6. **弱点:** A/B 用 boot パーティション（FAT）は単一障害点です。更新を 1 セクター内に収める方法や検証用コピーを持つ方法は軽減案ですが、FAT 上での有効性は未検証です。firmware（start.elf / bootcode.bin）は A/B 化されないとの情報がありますが、裏付ける公開資料は未確認です。CM0 で firmware を A/B 化する公式手段も未確認です。
 7. CM0 向けの公式 A/B 構成は確認できておらず、tryboot は BCM2837 で未検証です。最初の実機試験では tryboot と `kernel_watchdog_*` の動作を確認します。動作しない場合は、段数が増える U-Boot または RAUC custom backend を代替案として検討します。
 8. **更新記録の原子性:** 更新物を一時ファイルへ書いて fsync し、rename 後に親ディレクトリも fsync する案です。tryboot=1、選択中のパーティション一致、インストール記録の検証がそろってから更新を確定します。FAT 上の更新動作と実装は未検証・未着手です。
+
+### 現行 watchdog init script の動作
+
+Raspberry Pi の文書は全モデルが `tryboot` を使えると説明しています。これは一度だけ alternate boot を選ぶ再起動ベースの仕組みで、OS が停止したことを自ら検知する機能ではありません。hang から戻すには watchdog による reset か人手の再起動が別に必要です。BCM2837/CM0 の実機での動作は未確認です。【一次】【未確認】[tryboot 文書](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc)／[autoboot.txt の one-shot 手順](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc)
+
+Raspberry Pi は `kernel_watchdog_timeout` を、ハードウェア watchdog を OS に引き渡す設定として説明しています。OS 側で watchdog を開いて給餌するサービスが必要であり、設定名やドライバーがあることだけでは CM0 でのリセットを証明しません。【一次】【未確認】[watchdog boot option](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L242-L271)
+
+現在の [`S01msd-watchdog`](../../board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog) は `watchdog -T 15 -t 5 /dev/watchdog` を実行します。スクリプトにはアプリケーションの健全性判定やログ記録はありません。タイムアウト・給餌周期を含む実際のリセット動作、init script が起動時に実行されること、CM0 watchdog の挙動は実機で確認します。【一次】【未確認】[現行 init script](../../board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog)／[BCM2835 watchdog driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/watchdog/bcm2835_wdt.c)
