@@ -32,3 +32,17 @@ jobs:
               }
             fi
           done
+
+      - name: 実験記録が一覧から参照されている
+        run: |
+          status=0
+          for record in docs/experiments/*.md; do
+            [ -e "$record" ] || continue
+            name="${record##*/}"
+            [ "$name" = README.md ] && continue
+            if ! grep -Fq "($name)" docs/experiments/README.md; then
+              echo "::error file=$record::$name が docs/experiments/README.md の一覧にありません。"
+              status=1
+            fi
+          done
+          exit "$status"
