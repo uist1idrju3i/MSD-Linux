@@ -8,6 +8,7 @@ import html.parser
 import os
 import posixpath
 import re
+import struct
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -22,13 +23,14 @@ FIXED_SITE_PATHS = {
     "public_html/404.html",
     "public_html/site.css",
 }
-IMAGE_PATH_RE = re.compile(r"public_html/images/[^/]+\.(?:svg|png)\Z")
+IMAGE_PATH_RE = re.compile(r"public_html/images/[^/]+\.(?:svg|png|webp)\Z")
 LOGO_FILES = (
     "msd-linux-logo.svg",
     "msd-linux-logo-dark.svg",
     "msd-linux-mark.svg",
-    "msd-linux-social-1280x640.png",
 )
+SOCIAL_WEBP = "public_html/images/msd-linux-social-1280x640.webp"
+SOCIAL_WEBP_URL = f"{SITE_ORIGIN}/images/msd-linux-social-1280x640.webp"
 REQUIRED_IMAGES = (
     "flow-light.svg",
     "flow-dark.svg",
@@ -264,6 +266,7 @@ class SiteHTMLParser(html.parser.HTMLParser):
         self.reporter = reporter
         self.csp_lines: list[tuple[int, str | None]] = []
         self.metadata_urls: list[MetadataURL] = []
+        self.metadata_properties: dict[str, list[tuple[int, str | None]]] = {}
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
@@ -290,6 +293,10 @@ class SiteHTMLParser(html.parser.HTMLParser):
             if http_equiv == "content-security-policy":
                 self.csp_lines.append((line, attributes.get("content")))
             property_name = (attributes.get("property") or "").lower()
+            if property_name:
+                self.metadata_properties.setdefault(property_name, []).append(
+                    (line, attributes.get("content"))
+                )
             if property_name in {"og:url", "og:image"}:
                 self.metadata_urls.append(
                     MetadataURL(
@@ -376,6 +383,89 @@ def check_html(
     check_csp(path, parser, reporter)
     for metadata in parser.metadata_urls:
         check_metadata_url(metadata, site_paths, reporter)
+    if path == "public_html/index.html":
+        check_social_metadata(parser, reporter)
+
+
+def check_social_metadata(parser: SiteHTMLParser, reporter: Reporter) -> None:
+    image_metadata = parser.metadata_properties.get("og:image", [])
+    if len(image_metadata) != 1 or image_metadata[0][1] != SOCIAL_WEBP_URL:
+        reporter.error(
+            parser.path,
+            image_metadata[0][0] if image_metadata else 1,
+            f"og:image は {SOCIAL_WEBP_URL} を参照してください",
+        )
+
+    for property_name, expected in (
+        ("og:image:type", "image/webp"),
+        ("og:image:width", "1280"),
+        ("og:image:height", "640"),
+    ):
+        values = parser.metadata_properties.get(property_name, [])
+        if len(values) != 1 or values[0][1] != expected:
+            reporter.error(
+                parser.path,
+                values[0][0] if values else 1,
+                f"{property_name} は {expected} を指定してください",
+            )
+
+
+def check_social_webp(
+    root: Path,
+    site_paths: set[str],
+    reporter: Reporter,
+) -> None:
+    if SOCIAL_WEBP not in site_paths:
+        reporter.error(SOCIAL_WEBP, 1, "Social preview の WebP が追跡されていません")
+        return
+    try:
+        data = (root / SOCIAL_WEBP).read_bytes()
+    except OSError as exc:
+        reporter.error(SOCIAL_WEBP, 1, f"WebP を読み込めません: {exc}")
+        return
+
+    if len(data) < 12 or data[:4] != b"RIFF" or data[8:12] != b"WEBP":
+        reporter.error(SOCIAL_WEBP, 1, "RIFF/WEBP ヘッダーが不正です")
+        return
+    riff_size = struct.unpack_from("<I", data, 4)[0]
+    if riff_size != len(data) - 8:
+        reporter.error(SOCIAL_WEBP, 1, "RIFF サイズがファイル長と一致しません")
+        return
+    if len(data) < 20:
+        reporter.error(SOCIAL_WEBP, 1, "VP8L チャンクがありません")
+        return
+    chunk_type = data[12:16]
+    if chunk_type != b"VP8L":
+        name = chunk_type.decode("ascii", errors="replace")
+        reporter.error(
+            SOCIAL_WEBP,
+            1,
+            f"VP8L のみを使ってください（検出: {name}）",
+        )
+        return
+
+    chunk_size = struct.unpack_from("<I", data, 16)[0]
+    expected_length = 20 + chunk_size + (chunk_size & 1)
+    if chunk_size < 5 or expected_length != len(data):
+        reporter.error(
+            SOCIAL_WEBP,
+            1,
+            "VP8L チャンク長または奇数長パディングが不正です",
+        )
+        return
+    if data[20] != 0x2F:
+        reporter.error(SOCIAL_WEBP, 1, "VP8L のシグネチャが不正です")
+        return
+
+    dimensions = struct.unpack_from("<I", data, 21)[0]
+    width = 1 + (dimensions & 0x3FFF)
+    height = 1 + ((dimensions >> 14) & 0x3FFF)
+    if (width, height) != (1280, 640):
+        reporter.error(
+            SOCIAL_WEBP,
+            1,
+            f"WebP の寸法は 1280x640 が必要です（検出: {width}x{height}）",
+        )
 
 
 def without_css_comments(text: str) -> str:
@@ -482,6 +572,7 @@ def main() -> int:
             check_css("public_html/site.css", text, site_paths, reporter)
 
     check_logo_copies(root, all_paths, site_paths, reporter)
+    check_social_webp(root, site_paths, reporter)
     check_site_patterns(root, all_paths, reporter)
     reporter.summary()
     return 1 if reporter.errors else 0

@@ -1,6 +1,6 @@
 # MSD/Linux のロゴ
 
-マスターは SVG です。PNG、RGB565、PPM は `render.sh` で SVG から作る派生ファイルで、直接編集しません。
+マスターは SVG です。PNG、WebP、RGB565、PPM は `render.sh` で SVG から作る派生ファイルで、直接編集しません。
 
 | ファイル | 用途 |
 |---|---|
@@ -19,7 +19,8 @@
 
 | ファイル | 作り方 |
 |---|---|
-| `msd-linux-logo.svg`、`msd-linux-logo-dark.svg`、`msd-linux-mark.svg`、`msd-linux-social-1280x640.png` | `render.sh` が、このディレクトリのマスターを写します。CI の `check-site.py` が、マスターと一致するかを検査します。 |
+| `msd-linux-logo.svg`、`msd-linux-logo-dark.svg`、`msd-linux-mark.svg` | `render.sh` が、このディレクトリのマスターを写します。CI の `check-site.py` が、マスターと一致するかを検査します。 |
+| `msd-linux-social-1280x640.webp` | `render.sh` が SVG から `cwebp -z 9 -metadata none` で可逆生成します。デコードした画素が SVG のラスターと一致することを `render.sh` が検査し、CI の `check-site.py` が VP8L と 1280×640 を検査します。 |
 | `flow-light.svg`、`flow-dark.svg`、`seigaiha-light.svg`、`seigaiha-dark.svg` | `render.sh` が呼ぶ `tools/site_patterns.py` が作る、流水と青海波の背景です。CI の `check-site.py` が、生成結果と一致するかを検査します。 |
 
 ## 意匠
@@ -60,7 +61,7 @@
 ## 作り直し方
 
 ```sh
-docs/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3）
+docs/logo/render.sh  # SVG から派生ファイルを作り直す（rsvg-convert、ImageMagick 6、python3、libwebp の cwebp / dwebp）
 python3 -m venv "$HOME/.cache/msd-linux-logo"
 "$HOME/.cache/msd-linux-logo/bin/pip" install --require-hashes -r docs/logo/tools/requirements.txt
 "$HOME/.cache/msd-linux-logo/bin/python" docs/logo/tools/generate.py  # 形状を変えるときだけ SVG を作り直す
