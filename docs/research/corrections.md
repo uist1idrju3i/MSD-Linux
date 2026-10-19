@@ -69,3 +69,4 @@
 | tryboot | Raspberry Pi 文書は Pi 4 / 5 を主に扱うとし、CM0 では未検証 | 文書では全モデル対応と記載。CM0 実機での動作は未確認 | [公開出典一覧](sources.md) |
 | `powerfail_suo` | 要約は SysRq-U のみと記載 | SysRq-U に加えてバックライト制御と GPIO 操作を行う | [公開出典一覧](sources.md) |
 | ES8389 | compatible 値の記載なし | compatible は `everest,es8390` | [公開出典一覧](sources.md) |
+| Rugix の Pi 3 対応 | 対応表では Pi 3 が `rpi-tryboot` とする | 【一次】（2026-10-19 確認）Pi 3 は Rugix では `rpi-uboot`（Tier 2）です。これは Rugix の target 制約であり、Raspberry Pi firmware 自体は全モデルで tryboot に対応します。CM0 で Rugix を使う場合は実験的な U-Boot flow が必要ですが、firmware 更新不可のため U-Boot 非採用の MSD 方針とは合いません。MSD 自身の tryboot 設計は影響を受けず、CM0 実機確認は継続します。 | https://rugix.org/docs/bakery/devices/<br>https://rugix.org/docs/bakery/devices/raspberry-pi<br>https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc#L91 |
