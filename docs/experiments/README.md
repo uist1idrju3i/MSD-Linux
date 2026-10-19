@@ -9,5 +9,6 @@
 | [2026-10-19-s03-data-ext4-writes](2026-10-19-s03-data-ext4-writes.md) | S3 | 2026-10-19 | 完了 | 4 KiB / `data=ordered` を採用。`inline_data` と `lazytime` は不採用。 |
 | [2026-10-19-s06-kernel-hardening](2026-10-19-s06-kernel-hardening.md) | S6 | 2026-10-19 | 完了 | tier A 採用（Image +131,072 B、QEMU 相対 +2.63%、checker FAIL 125→111） |
 | [2026-10-19-s06-modules-dep-xz](2026-10-19-s06-modules-dep-xz.md) | S6 | 2026-10-19 | 完了 | host kmod の XZ 対応と kernel decompressor を有効化し、A/B QEMU で module load を確認。 |
+| [2026-10-19-tunables-dump](2026-10-19-tunables-dump.md) | なし | 2026-10-19 | 完了 | QEMU で sysctl 606 項目、ブロックデバイス 1,385 項目などの既定値を取得。rootfs に sysctl の設定はなく、`kernel.sysrq` は 502、I/O は `mq-deadline`。実機の値は未取得。 |
 | [2026-10-19-social-webp](2026-10-19-social-webp.md) | なし | 2026-10-19 | 完了 | `cwebp -z 9 -metadata none` を可逆 Social preview 用に採用（19,262 B）。 |
 | [2026-10-19-site-render](2026-10-19-site-render.md) | なし | 2026-10-19 | 完了 | minify、svgo、CSS のインライン化、`content-visibility` はどれも不採用（基準の 10% 短縮か画素の一致を満たさない）。 |
