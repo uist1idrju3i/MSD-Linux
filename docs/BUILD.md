@@ -19,6 +19,8 @@ CI は Buildroot のダウンロードファイルと ccache をキャッシュ�
 
 各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest` を含み、どちらのスロットにも利用可能な構成です。SHA-256 は整合性確認用で、bundle の署名、鍵保管、secure boot は未実装です。
 
+`BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。keymap の読み込みと symlink は実機未検証です。
+
 ## QEMU での起動確認
 
 ```sh

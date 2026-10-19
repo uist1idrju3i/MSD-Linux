@@ -1,0 +1,49 @@
+#!/bin/sh
+
+action="${ACTION:-${1:-add}}"
+mdev_name="${MDEV:-${2:-}}"
+event="${mdev_name##*/}"
+sysfs_root="${MSD_KEYBOARD_SYSFS:-/sys}"
+dev_root="${MSD_KEYBOARD_DEV:-/dev}"
+link="$dev_root/input/cardputer-zero-internal"
+
+case "$event" in
+	event[0-9]*) ;;
+	*) exit 0 ;;
+esac
+
+log() {
+	printf '<4>msd-keyboard: %s\n' "$*" > /dev/kmsg 2>/dev/null ||
+		printf 'msd-keyboard: %s\n' "$*" >&2
+}
+
+case "$action" in
+	add|change)
+		name_file="$sysfs_root/class/input/$event/device/name"
+		[ -r "$name_file" ] || exit 0
+		name="$(cat "$name_file")"
+		[ "$name" = tca8418c ] || exit 0
+
+		mkdir -p "$dev_root/input" || {
+			log "cannot create $dev_root/input"
+			exit 1
+		}
+		if [ -e "$link" ] && [ ! -L "$link" ]; then
+			log "$link exists and is not a symlink"
+			exit 1
+		fi
+		if [ -L "$link" ] && [ "$(readlink "$link")" = "$event" ]; then
+			exit 0
+		fi
+		ln -sfn "$event" "$link" || {
+			log "cannot link $link to $event"
+			exit 1
+		}
+		;;
+	remove)
+		[ -L "$link" ] || exit 0
+		if [ "$(readlink "$link")" = "$event" ]; then
+			rm -f "$link"
+		fi
+		;;
+esac
