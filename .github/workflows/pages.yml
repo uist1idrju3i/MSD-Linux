@@ -6,13 +6,21 @@ on:
       - main
     paths:
       - public_html/**
+      - docs/logo/**
+      - .github/scripts/check-site.py
+      - .github/workflows/pages.yml
+  pull_request:
+    paths:
+      - public_html/**
+      - docs/logo/**
+      - .github/scripts/check-site.py
       - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions: {}
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -45,7 +53,7 @@ jobs:
   deploy:
     name: GitHub Pages に公開
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:

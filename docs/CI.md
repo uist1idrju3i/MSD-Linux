@@ -8,17 +8,17 @@
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
-| `pages.yml` | `main` への push で `public_html/` または workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
+| `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
-`check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。追跡ファイルに旧 `documentation/` やサイト内の文書を示す古い `public_html/` パスが残っていれば CI を失敗させ、移動後の参照漏れを防ぎます。
+`check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。URL と例外一覧を除き、`docs/`、`public_html/`、旧 `documentation/` で始まるパスが追跡対象を指していなければ CI を失敗させ、移動後の参照漏れを防ぎます。
 `.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
 
 ## GitHub Pages サイト
 
 `public_html/` は GitHub Pages で公開するサイト専用です。`pages.yml` は `check-site.py` の検査後、`public_html/` だけを GitHub Pages に公開します。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。GitHub の Settings → Pages では、Source に「GitHub Actions」を選びます。
 
-ドメインは Pages の Settings に保存します。Actions 公開では `CNAME` と `.nojekyll` は不要です。build job は Pages API が返す `cname` を `SITE_ORIGIN` のホスト名と照合してから公開します。`check-site.py` は `public_html/` に許可したファイルだけがあること、canonical と OGP の URL が `https://muromi.moe` と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `docs/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css` と `images/` 直下の SVG／PNG です。
+ドメインは Pages の Settings に保存します。Actions 公開では `CNAME` と `.nojekyll` は不要です。build job は Pages API が返す `cname` を `SITE_ORIGIN` のホスト名と照合してから公開します。PR ではサイト検査、ドメイン照合、成果物の作成まで実行し、デプロイは行いません。`check-site.py` は `public_html/` に許可したファイルだけがあること、canonical と OGP の URL が `https://muromi.moe` と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `docs/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css` と `images/` 直下の SVG／PNG です。
 
 `build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張の各テストを実行します。Buildroot ビルドの docs-only gate とは独立して実行します。
 
