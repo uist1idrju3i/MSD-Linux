@@ -146,6 +146,14 @@ jobs:
           make -C output -j"$(nproc)"
           make -C output legal-info
 
+      - name: Check kernel fragment and image tool versions
+        run: |
+          board/cardputerzero/tools/check-kernel-fragment.sh \
+            board/cardputerzero/linux.fragment \
+            output/build/linux-custom/.config
+          mke2fs -V
+          output/host/bin/genimage --version
+
       - name: Generate SBOM
         run: |
           set -o pipefail
@@ -246,6 +254,7 @@ jobs:
             output/images/kernel8.img
             output/images/bcm2710-rpi-3-b.dtb
             output/images/bcm2710-rpi-cm0.dtb
+            output/build/linux-*/.config
             output/images/sbom.cdx.json
             output/legal-info.tar.gz
 

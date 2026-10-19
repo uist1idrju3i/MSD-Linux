@@ -45,3 +45,19 @@ QEMU の `raspi3b` マシンは BCM2837 をエミュレートしますが、Rasp
 ## 現在の検証状況
 
 CI では Buildroot のフルビルド、QEMU の A/B 起動（p5/p6 とも成功）、ホストテストを実行します。ローカル QEMU では、拡大イメージで p7 の ext4 拡張と `/data/seedrng/seed.credit` の作成を確認しました。実機起動、LCD・キーボード、tryboot、watchdog、更新署名は未検証です。
+
+## カーネル候補のローカル測定
+
+`board/cardputerzero/tools/kernel-variant-sweep.sh` は、Linux のビルドが済んだ Buildroot output ディレクトリから実行します。総当たりビルドと QEMU 比較はローカル専用で、CI では実行しません。
+
+```sh
+cd ~/work/sweep/output
+../../../repos/MSD-Linux/board/cardputerzero/tools/kernel-variant-sweep.sh \
+  --candidates ../../../repos/MSD-Linux/board/cardputerzero/tools/kernel-candidates.txt
+```
+
+`--no-qemu` はビルドとサイズだけを測定し、`--only SYMBOL` は候補を一つに絞ります。出力 CSV は `symbol,value,category,status,image_bytes,gz_bytes,delta_gz,collateral,qemu_ready_vtime,initcalls` の列を持ちます。`collateral` は基準 `.config` から連動して変わった記号、`delta_gz` は基準との差です。`gz_bytes` は `pigz -11` があればその値、なければ `gzip -9` で測ります。QEMU の仮想時間は同一環境内の相対比較に限り、実機の起動時間を表しません。
+
+QEMU 比較では `initcall_debug` と `printk.time=1` を付け、スイープ専用の `msd.sweep=1` で ready marker を printk 経由にして仮想時刻を記録します。通常起動では既存の console marker を維持します。`qemu_ready_vtime` が `~` で始まる場合は、旧 artifact の時刻なし ready marker より前に最後に出た kernel timestamp です。
+
+Devin VM では Buildroot の recipe shell が `BASH_ENV` の影響を受けるため、初回設定とビルドは `env -u BASH_ENV make ...` で実行してください。スイープスクリプトもカーネルの `make` を呼ぶ前に `BASH_ENV` を解除します。

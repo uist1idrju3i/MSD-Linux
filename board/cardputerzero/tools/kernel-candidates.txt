@@ -1,0 +1,80 @@
+ARM64_LSE_ATOMICS n cpu Cortex-A53 lacks LSE; compare unused alternatives support
+ARM64_USE_LSE_ATOMICS n cpu LSE atomics alternative support is not needed on Cortex-A53
+ARM64_PAN n cpu Cortex-A53 is Armv8.0-A and lacks hardware PAN
+ARM64_RAS_EXTN n cpu Cortex-A53 lacks the Armv8.2 RAS extension
+ARM64_CNP n cpu Cortex-A53 lacks Common Not Private translations
+ARM64_PTR_AUTH n cpu Cortex-A53 lacks pointer authentication; keep kernel hardening settings unchanged
+ARM64_BTI n cpu Cortex-A53 lacks Branch Target Identification
+ARM64_E0PD n cpu Cortex-A53 lacks the Armv8.5 E0PD extension
+ARM64_AMU_EXTN n cpu Cortex-A53 lacks the Armv8.4 Activity Monitors extension
+ARM64_TLB_RANGE n cpu Cortex-A53 lacks Armv8.4 TLBI range support
+ARM64_MTE n cpu Cortex-A53 lacks the Memory Tagging Extension
+ARM64_SVE n cpu Cortex-A53 lacks Scalable Vector Extension
+ARM64_SME n cpu Cortex-A53 lacks Scalable Matrix Extension
+ARM64_EPAN n cpu Cortex-A53 lacks Enhanced PAN
+ARM64_POE n cpu Cortex-A53 lacks the Permission Overlay Extension
+ARM64_GCS n cpu Cortex-A53 lacks Guarded Control Stack support
+ARM64_HW_AFDBM n cpu compare optional hardware access and dirty-bit support
+ARM64_HAFT n cpu Cortex-A53 lacks hardware-managed access flag table support
+ARM64_BRBE n cpu Cortex-A53 lacks Branch Record Buffer Extension
+NUMA n cpu Board uses one physical memory node; measure config and image impact
+NUMA_EMU n cpu Emulated NUMA is not required for the physical board
+ARCH_BRCMSTB n cpu The target uses BCM2835-family support, not Broadcom STB
+ARM64_ERRATUM_832075 n cpu Cortex-A57-only erratum
+ARM64_ERRATUM_834220 n cpu Cortex-A57-only KVM erratum
+ARM64_ERRATUM_1742098 n cpu Cortex-A57/A72-only erratum
+ARM64_ERRATUM_1024718 n cpu Cortex-A55-only erratum
+ARM64_ERRATUM_1418040 n cpu Cortex-A76/Neoverse-N1-only erratum
+ARM64_ERRATUM_1165522 n cpu Cortex-A76-only erratum
+ARM64_ERRATUM_1319367 n cpu Cortex-A57/A72-only erratum
+ARM64_ERRATUM_1530923 n cpu Cortex-A55-only erratum
+ARM64_ERRATUM_2441007 n cpu Cortex-A55-only erratum
+ARM64_ERRATUM_1286807 n cpu Cortex-A76-only erratum
+ARM64_ERRATUM_1463225 n cpu Cortex-A76-only erratum
+ARM64_ERRATUM_1542419 n cpu Neoverse-N1-only erratum
+ARM64_ERRATUM_1508412 n cpu Cortex-A77-only erratum
+ARM64_ERRATUM_2051678 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_2077057 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_2658417 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_2054223 n cpu Cortex-A710-only erratum
+ARM64_ERRATUM_2067961 n cpu Neoverse-N2-only erratum
+ARM64_ERRATUM_2441009 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_2457168 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_2645198 n cpu Cortex-A715-only erratum
+ARM64_ERRATUM_3821522 n cpu Cortex-A725-only erratum
+ARM64_ERRATUM_2966298 n cpu Cortex-A520-only erratum
+ARM64_ERRATUM_3117295 n cpu Cortex-A510-only erratum
+ARM64_ERRATUM_4193714 n cpu C1-Pro-only erratum
+CAVIUM_ERRATUM_23144 n cpu Cavium-only ITS erratum
+CAVIUM_ERRATUM_30115 n cpu Cavium-only virtualization erratum
+CAVIUM_TX2_ERRATUM_219 n cpu ThunderX2-only erratum
+HISILICON_ERRATUM_161600802 n cpu HiSilicon Hip07-only erratum
+HISILICON_ERRATUM_162100801 n cpu HiSilicon Hip09-only erratum
+HISILICON_ERRATUM_161010101 n cpu HiSilicon-only erratum
+QCOM_FALKOR_ERRATUM_1003 n cpu Qualcomm Falkor-only erratum
+QCOM_FALKOR_ERRATUM_1009 n cpu Qualcomm Falkor-only erratum
+QCOM_QDF2400_ERRATUM_0065 n cpu Qualcomm QDF2400-only erratum
+QCOM_FALKOR_ERRATUM_E1041 n cpu Qualcomm Falkor-only erratum
+FUJITSU_ERRATUM_010001 n cpu Fujitsu A64FX-only erratum
+NVIDIA_CARMEL_CNP_ERRATUM n cpu NVIDIA Carmel-only erratum
+ROCKCHIP_ERRATUM_3568002 n cpu Rockchip-only GIC erratum
+ROCKCHIP_ERRATUM_3588001 n cpu Rockchip-only GIC erratum
+AMPERE_ERRATUM_AC03_CPU_38 n cpu AmpereOne-only erratum
+AMPERE_ERRATUM_AC04_CPU_23 n cpu AmpereOne-only erratum
+SQUASHFS_XZ n unused Rootfs image currently uses Zstandard compression
+SQUASHFS_LZ4 n unused Rootfs image currently uses Zstandard compression
+SQUASHFS_ZLIB n unused Rootfs image currently uses Zstandard compression
+SQUASHFS_LZO n unused Rootfs image currently uses Zstandard compression
+EROFS_FS n unused Rootfs is SquashFS; EROFS is not mounted
+CC_OPTIMIZE_FOR_SIZE y policy Compare kernel size-focused compiler optimization
+NR_CPUS 4 policy Control candidate; the current merged config already uses four CPUs
+NODES_SHIFT 1 policy Target board has one physical memory node
+HOTPLUG_CPU n policy CPU hotplug is not used by the current product workflow
+CPU_IDLE n policy Compare idle framework cost and hardware power behavior separately
+SCHED_SMT n policy Cortex-A53 has no simultaneous multithreading
+FTRACE n debug Trace framework is not used in production operation
+FTRACE_SYSCALLS n debug Syscall tracing is not used in production operation
+PROBE_EVENTS n debug Dynamic probe events are not used in production operation
+KPROBES n debug Dynamic probe support is not used in production operation
+KALLSYMS_ALL n debug Full symbol table is not required by normal operation
+IKCONFIG n debug Embedded kernel configuration is not required at runtime
