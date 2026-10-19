@@ -29,3 +29,12 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+
+  # docs/logo/tools/requirements.txt の固定版（ロゴ生成スクリプト用）を追跡
+  - package-ecosystem: "pip"
+    directory: "/docs/logo/tools"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
