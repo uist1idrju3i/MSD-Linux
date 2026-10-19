@@ -1,0 +1,50 @@
+#!/bin/sh
+
+cmdline=" $(cat /proc/cmdline) "
+case "$cmdline" in
+	*" msd.s3verify=1 "*) ;;
+	*) exit 0 ;;
+esac
+
+device="${MSD_DATA_DEVICE:-/dev/mmcblk0p7}"
+data_dir="${MSD_S3_DATA_DIR:-/data}"
+bench_dir="${MSD_S3_CUT_DIR:-$data_dir/powercut}"
+if ! umount "$data_dir"; then
+	printf '%s\n' 'S3CUT_VERIFY_FAIL umount' >/dev/console
+	exit 1
+fi
+fsck_status=0
+fsck.ext4 -n "$device" >/tmp/s3-fsck.log 2>&1 || fsck_status=$?
+cat /tmp/s3-fsck.log >/dev/console
+printf 'S3CUT_FSCK_STATUS=%s\n' "$fsck_status" >/dev/console
+if [ "$fsck_status" -ne 0 ]; then
+	printf '%s\n' 'S3CUT_VERIFY_FAIL fsck' >/dev/console
+	exit 1
+fi
+if ! mount -t ext4 -o ro,noatime,nodev,nosuid,data=ordered,errors=remount-ro "$device" "$data_dir"; then
+	printf '%s\n' 'S3CUT_VERIFY_FAIL remount' >/dev/console
+	exit 1
+fi
+write_old() {
+	printf '%-199s\n' "file=$1 state=old"
+}
+write_new() {
+	printf '%-199s\n' "file=$1 state=new"
+}
+index=0
+while [ "$index" -lt 100 ]; do
+	name="$(printf '%03d' "$index")"
+	file="$bench_dir/$name"
+	old_file="/tmp/$name.old"
+	new_file="/tmp/$name.new"
+	write_old "$name" >"$old_file"
+	write_new "$name" >"$new_file"
+	size="$(wc -c <"$file" 2>/dev/null || printf 0)"
+	if [ "$size" -ne 200 ] ||
+		{ ! cmp -s "$old_file" "$file" && ! cmp -s "$new_file" "$file"; }; then
+		printf 'S3CUT_VERIFY_FAIL file=%s size=%s\n' "$name" "$size" >/dev/console
+		exit 1
+	fi
+	index=$((index + 1))
+done
+printf '%s\n' 'S3CUT_VERIFY_PASS' >/dev/console

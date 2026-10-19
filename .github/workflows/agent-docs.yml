@@ -46,3 +46,11 @@ jobs:
             fi
           done
           exit "$status"
+
+      - name: 文書に個人環境のパスがない
+        run: |
+          if git grep -nE '/home/[A-Za-z0-9_-]+/|~/work/' -- \
+            docs README.md AGENTS.md .agents ':!.agents/skills/yomiyasu'; then
+            echo "::error::文書から VM・個人環境のパスを削除してください。"
+            exit 1
+          fi

@@ -1,0 +1,145 @@
+#!/bin/sh
+
+cmdline=" $(cat /proc/cmdline) "
+stat_file="${MSD_S3_STAT_PATH:-/sys/class/block/mmcblk0p7/stat}"
+data_dir="${MSD_S3_DATA_DIR:-/data}"
+read_sectors_written() {
+	awk 'NF >= 7 { print $7; exit }' "$stat_file"
+}
+case "$cmdline" in
+	*" msd.s3lazyinit=1 "*)
+		if [ ! -r /run/msd-s3lazyinit ]; then
+			printf '%s\n' 'S3LAZY_FAILED: missing mount counters.' >/dev/console
+			exit 1
+		fi
+		read -r sectors_at_mount uptime_at_mount </run/msd-s3lazyinit
+		uptime_now="$(awk '{ printf "%d\n", $1 }' /proc/uptime)"
+		wait_seconds=$((uptime_at_mount + 60 - uptime_now))
+		if [ "$wait_seconds" -gt 0 ]; then
+			sleep "$wait_seconds"
+		fi
+		sectors_after_60="$(read_sectors_written)"
+		case "$sectors_after_60" in
+			''|*[!0-9]*)
+				printf '%s\n' 'S3LAZY_FAILED: unable to read final counter.' >/dev/console
+				exit 1
+				;;
+		esac
+		lazyinit_delta=$((sectors_after_60 - sectors_at_mount))
+		printf 'S3LAZY_SECTORS_AFTER_60=%s\n' "$sectors_after_60" >/dev/console
+		printf 'S3LAZY_DELTA_SECTORS=%s\n' "$lazyinit_delta" >/dev/console
+		printf 'S3BENCH_SECTORS_BEFORE=%s\n' "$sectors_at_mount" >/dev/console
+		printf '%s\n' 'S3BENCH_START' >/dev/console
+		printf 'S3BENCH_SECTORS_AFTER=%s\n' "$sectors_after_60" >/dev/console
+		used_kib="$(df -k "$data_dir" | awk 'NR == 2 { print $3 }')"
+		printf 'S3BENCH_DF_USED_KB=%s\n' "$used_kib" >/dev/console
+		printf '%s\n' 'S3BENCH_DONE' >/dev/console
+		exit 0
+		;;
+esac
+case "$cmdline" in
+	*" msd.s3bench=1 "*) ;;
+	*) exit 0 ;;
+esac
+case "$cmdline" in
+	*" msd.s3verify=1 "*) exit 0 ;;
+esac
+
+write_old() {
+	printf '%-199s\n' "file=$1 state=old"
+}
+
+write_new() {
+	printf '%-199s\n' "file=$1 state=new"
+}
+
+cut_mode=0
+case "$cmdline" in
+	*" msd.s3cut=1 "*)
+		bench_dir="${MSD_S3_CUT_DIR:-$data_dir/powercut}"
+		cut_mode=1
+		;;
+	*)
+		bench_dir="${MSD_S3_BENCH_DIR:-$data_dir/bench}"
+		;;
+esac
+mkdir -p "$bench_dir"
+
+if [ "$cut_mode" -eq 1 ]; then
+	index=0
+	while [ "$index" -lt 100 ]; do
+		name="$(printf '%03d' "$index")"
+		write_old "$name" >"$bench_dir/$name"
+		index=$((index + 1))
+	done
+	sync
+	printf '%s\n' 'S3CUT_C_START' >/dev/console
+	index=0
+	while [ "$index" -lt 100 ]; do
+		name="$(printf '%03d' "$index")"
+		write_new "$name" >"$bench_dir/$name.tmp"
+		sync
+		mv "$bench_dir/$name.tmp" "$bench_dir/$name"
+		sleep 0.2
+		index=$((index + 1))
+	done
+	sync
+	printf '%s\n' 'S3CUT_C_DONE' >/dev/console
+	exit 0
+fi
+
+sync
+sectors_idle_before="$(read_sectors_written)"
+case "$sectors_idle_before" in
+	''|*[!0-9]*)
+		printf '%s\n' 'S3BENCH_FAILED: unable to read sectors written.' >/dev/console
+		exit 1
+		;;
+esac
+sleep 10
+sectors_idle_after="$(read_sectors_written)"
+case "$sectors_idle_after" in
+	''|*[!0-9]*)
+		printf '%s\n' 'S3BENCH_FAILED: unable to read sectors written.' >/dev/console
+		exit 1
+		;;
+esac
+idle_delta=$((sectors_idle_after - sectors_idle_before))
+printf 'S3BENCH_IDLE_SECTORS_BEFORE=%s\n' "$sectors_idle_before" >/dev/console
+printf 'S3BENCH_IDLE_SECTORS_AFTER=%s\n' "$sectors_idle_after" >/dev/console
+printf 'S3BENCH_IDLE_DELTA=%s\n' "$idle_delta" >/dev/console
+if [ "$idle_delta" -ne 0 ]; then
+	printf '%s\n' 'S3BENCH_INVALID=1' >/dev/console
+	exit 0
+fi
+sectors_before="$sectors_idle_after"
+printf 'S3BENCH_SECTORS_BEFORE=%s\n' "$sectors_before" >/dev/console
+printf '%s\n' 'S3BENCH_START' >/dev/console
+sleep 0.5
+index=0
+while [ "$index" -lt 100 ]; do
+	name="$(printf '%03d' "$index")"
+	write_old "$name" >"$bench_dir/$name"
+	index=$((index + 1))
+done
+sync
+index=0
+while [ "$index" -lt 100 ]; do
+	name="$(printf '%03d' "$index")"
+	write_new "$name" >"$bench_dir/$name.tmp"
+	sync
+	mv "$bench_dir/$name.tmp" "$bench_dir/$name"
+	index=$((index + 1))
+done
+sync
+sectors_after="$(read_sectors_written)"
+case "$sectors_after" in
+	''|*[!0-9]*)
+		printf '%s\n' 'S3BENCH_FAILED: unable to read sectors written.' >/dev/console
+		exit 1
+		;;
+esac
+printf 'S3BENCH_SECTORS_AFTER=%s\n' "$sectors_after" >/dev/console
+used_kib="$(df -k "$data_dir" | awk 'NR == 2 { print $3 }')"
+printf 'S3BENCH_DF_USED_KB=%s\n' "$used_kib" >/dev/console
+printf '%s\n' 'S3BENCH_DONE' >/dev/console
