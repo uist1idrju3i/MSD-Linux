@@ -57,7 +57,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 ## 7. 作業の進め方
 
 - 自明でない作業は調査して深い計画を立ててから着手します。計画はリポジトリにコミットせず、チャットで共有します。
-- 実験・測定・比較を行うときは「experiment-record」スキルに従い、条件、手順、生の値、結論、失敗した試行を `docs/experiments/` に残します。結果を PR 本文だけに書きません。
+- 実験・測定・比較を行うときは「experiment-record」スキルに従い、条件、手順、生の値、結論、失敗した試行を `documentation/experiments/` に残します。結果を PR 本文だけに書きません。
 - 文書の根拠に、VM や個人環境のパスを書きません。リポジトリ内のファイル、CI の成果物、公開 URL を示します。
 - 変更は小さく、主題ごとにまとめます。
 - GitHub の stacked PR は、同一リポジトリ内で PR を積み重ね、先行 PR の変更を後続ブランチに含める運用です。各 PR の base は利用者が設定し、エージェントは指示なしに base を変更したり、PR を merge したりしません。https://docs.github.com/en/pull-requests/reference/stacked-pull-requests、https://docs.github.com/en/pull-requests/get-started/about-stacked-prs

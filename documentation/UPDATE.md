@@ -30,7 +30,7 @@ boot_partition=3
 
 資料では `boot_partition` は 1 始まりで、`autoboot.txt` は初期ブートパーティションに置く仕様です。p2/p3 の共通 boot image に A/B 両方の cmdline を含め、`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件で選択します。A は `/dev/mmcblk0p5`、B は `/dev/mmcblk0p6` を指す設定です。Raspberry Pi の資料にも、同じ boot image を使い、`config.txt` の条件で cmdline ファイルを選ぶ例があります。
 
-参照資料は Raspberry Pi の [autoboot.txt と A/B 更新](https://www.raspberrypi.com/documentation/computers/configuration.html#autoboot-txt) と、リポジトリ外にある `documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc` です。後者は BCM2837 の ROM がブート元を調べて `bootcode.bin` を読み込む流れを説明していますが、「最初の FAT パーティション」と明記した記述は確認できませんでした。p1 への配置は、初期ブートパーティションを selector とし、SD の先頭に置く構成として採用しています。実機での起動確認が必要です。
+参照資料は Raspberry Pi の [autoboot.txt と A/B 更新](https://www.raspberrypi.com/documentation/computers/configuration.html#autoboot-txt) と、Raspberry Pi リポジトリにある `bootflow-legacy.adoc` です。後者は BCM2837 の ROM がブート元を調べて `bootcode.bin` を読み込む流れを説明していますが、「最初の FAT パーティション」と明記した記述は確認できませんでした。p1 への配置は、初期ブートパーティションを selector とし、SD の先頭に置く構成として採用しています。実機での起動確認が必要です。
 
 ## 更新の流れ
 
