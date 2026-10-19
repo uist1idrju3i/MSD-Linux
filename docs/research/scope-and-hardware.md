@@ -92,8 +92,8 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 | IP2315 充電器 | 対応 driver / Kconfig を選択した証拠なし。【未確認】 | 回路図に充電経路の記載。専用 overlay なし。【一次】 | charger module はパッケージ一覧にない。【一次】 | 現状ロード対象なし。 | 充電状態・制御・保護動作。【未確認】 |
 | M5IOE1 | M5 `m5ioe1` 外部モジュール。【一次】 | v5 overlay が I²C 0x4f と GPIO/PWM を宣言。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | LCD、電源・拡張制御の依存があるため早期ロード対象を確認する。【推測】 | probe、GPIO 番号対応、PWM、I²C 安定性。【未確認】 |
 | 電源スイッチ／GPIO6 電源異常 | M5 `powerfail_suo` 外部モジュール。【一次】 | v5 overlay が GPIO6 と 500 ms debounce を宣言。【一次】 | パッケージ対象・overlay 選択あり。【一次】 | 電源異常への応答が目的なら早期ロードが望ましい。【推測】 | 割込み条件、SysRq 設定、電源保持時間、実際の電断耐性。【未確認】 |
-| IR | upstream `IR_GPIO_CIR` / `IR_GPIO_TX`。【一次】 | 現行 config に IR overlay なし。【一次】 | `MEDIA_SUPPORT` が無効で、有効化を確認できない。【一次】 | 有効化後にモジュールロードは可能。【推測】 | ピン配置、受信・送信、必要な media/RC 設定。【未確認】 |
-| カメラ | upstream `VIDEO_IMX219`。【一次】 | 現行 config に IMX219 overlay なし。【一次】 | board fragment が `MEDIA_SUPPORT` を無効化。カメラ機能は有効でない。【一次】 | media subsystem を有効にした後なら遅延可能。【推測】 | 実機カメラ有無、CSI 配線、media userspace。【未確認】 |
+| IR | upstream `IR_GPIO_CIR` / `IR_GPIO_TX`。【一次】 | 現行 config に IR overlay なし。【一次】 | `MEDIA_CEC_RC` / `RC_CORE` と既存の `media/rc` module は維持する。S2 では変更しない。【一次】 | IR 使用時まで遅延可能。【推測】 | ピン配置、受信・送信、必要な media/RC 設定。【未確認】 |
+| カメラ | upstream `VIDEO_BCM2835_UNICAM` と `VIDEO_IMX219`。legacy Unicam は無効。【一次】 | CM0 の CSI1 は 2 lane。C154 V0.6.1 では CAM_3V3 LDO の EN は VSYS_5V に pull-up、CAM_GPIO は CM0 pin 44 に接続。CM0 DTS は CAM_GPIO を GPIO40 に割り当て、既定 `imx219` overlay は cam1 を使う。GPIO16 は v5 で PY32 reset 用であり、camera GPIO overlay は適用しない。【一次】 Lite 版の probe failure は想定内だが、実際の kernel message は未確認。【未確認】 | raw V4L2 module と `libv4l-utils` をビルド対象にした。DT checker は config の overlay を順に適用し、IMX219 が指定された場合だけ sensor / CSI1 を assert する。【一次】 | QEMU p5/p6 で三 module の load を確認。統制相対 ready-marker 中央値は +0.0510%（+1.0% 基準内）。QEMU では実機起動や撮像を検証しない。【実測・QEMU】【未確認】 | `dmesg` の sensor ID、`media-ctl -p` topology、2-lane raw capture、Lite の実際の probe-failure message。【未確認】 |
 | Wi-Fi | `BRCMFMAC` / SDIO。【一次】 | Raspberry Pi firmware とボード config。【一次】 | kernel module と firmware を選択。【一次】 | 接続時まで遅延可能。【推測】 | 搭載無線チップ、firmware 適合、起動 daemon、接続。【未確認】 |
 | Bluetooth | `BT_HCIUART` / BCM。【一次】 | firmware と UART 設定。【一次】 | kernel module 対象。BlueZ の選択は確認できない。【一次】【未確認】 | 使用時まで遅延可能。【推測】 | 対象モジュール、UART 配線、BlueZ、pairing。【未確認】 |
 | USB hub | Linux USB hub core。【一次】 | GL852G は基板上の USB 2.0 hub。【一次】 | 汎用 USB core。専用 M5 module なし。【一次】 | USB 機器の列挙に必要で、個別遅延は対象外。【推測】 | host/device 切替、各ポートの列挙・給電。【未確認】 |
@@ -105,8 +105,10 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 
 ### 目標との差分
 
-- 現行 board fragment は `MEDIA_SUPPORT` を無効にしているため、カメラは有効ではありません。カメラを目標に含める場合は media subsystem、overlay、userspace を別途設計・検証します。【一次】[kernel fragment](../../board/cardputerzero/linux.fragment)
-- IR は製品ページに記載がありますが、現行構成では media/RC の有効化と IR overlay を確認できず、対応済みとは扱いません。【一次】【未確認】[ボード設定](../../board/cardputerzero/config.txt)
+- S2 は Unicam + IMX219 による raw V4L2 capture path を有効にし、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化します。`libcamera`、VCHIQ/MMAL、`bcm2835-isp` は対象外です。Lite 版ではセンサー不在による probe failure は想定内ですが、実際の kernel message は未確認です。【一次】【未確認】[kernel fragment](../../board/cardputerzero/linux.fragment)／[board config](../../board/cardputerzero/config.txt)
+- C154 V0.6.1 では CAM_3V3 LDO の EN は VSYS_5V に pull-up され、CM0 pin 44 の CAM_GPIO は CM0 DTS で GPIO40 に対応します。既定の `imx219` overlay は cam1 を使い、v5 の GPIO16-high camera overlay は適用しません。追加の GPIO hog は不要です。【一次】[C154 V0.6.1 schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)／[CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts)／[M5 Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile)
+- QEMU では IMX219 と Unicam module のロードだけを確認します。実機で確認する項目は sensor ID、media topology、2-lane raw capture、Lite の probe-failure message です。【未確認】
+- IR は既存の `media/rc` modules を維持しますが、S2 では IR overlay や実機の送受信を検証しないため、対応済みとは扱いません。【一次】【未確認】[kernel fragment](../../board/cardputerzero/linux.fragment)
 - 回路図に IP2315 の充電経路がありますが、Buildroot の選択モジュールに charger driver がなく、充電状態の Linux 表示や制御は未確認です。【一次】【未確認】[M5 モジュール一覧](../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)
 - GPIO6 の電源異常処理は SysRq `u`（読み取り専用再マウント）を呼びます。SysRq `s` と `o` はコメントアウトされており、通常の同期・shutdown を実装しているとは言えません。【一次】[M5 powerfail driver](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115)
 
@@ -128,7 +130,7 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 | RTC support | [Raspberry Pi Linux RTC driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/rtc/rtc-ds1307.c#L1164) | `.compatible = "epson,rx8130"` | 【一次】 |
 | IP2315 charge path | [CardputerZero schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf) | “The battery charging has a separate input path. Input priority: USB IN > EXT. IN” | 【一次】 |
 | GPIO6 power-fail action | [M5 powerfail driver](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c#L93-L115) | `handle_sysrq('u')` / `// handle_sysrq('s');` | 【一次】 |
-| camera/IR kernel support | [kernel fragment](https://github.com/uist1idrju3i/MSD-Linux/blob/main/board/cardputerzero/linux.fragment) | `# CONFIG_MEDIA_SUPPORT is not set` | 【一次】 |
+| camera/IR kernel support | [kernel fragment](../../board/cardputerzero/linux.fragment)、[camera config](../../board/cardputerzero/config.txt) | `CONFIG_MEDIA_SUPPORT=m`; Unicam / IMX219 を有効化し、既存の `media/rc` は変更しない。`config.txt` では `camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効にする | 【一次】 |
 | USB hub / Ethernet chipset | [CardputerZero product page](https://docs.m5stack.com/en/CardputerZero) | “GL852G-OHY60 USB 2.0 Hub / SR9900A USB 2.0 to Ethernet chip” | 【一次】 |
 | SR9700 driver identity | [Raspberry Pi Linux driver](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/drivers/net/usb/sr9700.c) | `USB_DEVICE(0x0fe6, 0x9700)` | 【一次】 |
 
@@ -181,12 +183,15 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 | USB ハブ | GL852G(4 ポート) | リセットは **PYG3_KB_HUB_RST(TCA8418 キーボードと GL852G で共用)**(公式 docs に明記)。USB1=SR9900A(10/100M Ethernet)、USB2=USB-A、USB3=Type-C 左、USB4=HAT | https://docs.m5stack.com/en/CardputerZero<br>https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf |
 | USB モード | Host/Slave 物理スイッチ | Slave 時はハブを切断 | https://docs.m5stack.com/en/CardputerZero |
 | 右 Type-C | CM0 直結 | — | https://docs.m5stack.com/en/CardputerZero |
-| カメラ | IMX219(Lite 版を除く) | CSI | https://docs.m5stack.com/en/CardputerZero<br>https://docs.m5stack.com/en/products/sku/C154 |
+| カメラ | IMX219（Lite 版を除く） | CM0 の CSI1、2 lane。`config.txt` で `camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効にする。C154 V0.6.1 の CAM_3V3 LDO EN は VSYS_5V に pull-up され、CM0 pin 44 の CAM_GPIO は DTS で GPIO40 に対応します。既定の cam1 overlay が使うため追加 hog は不要です。GPIO16 は v5 で PY32 reset 用です。【一次】 Lite 版の probe failure は想定内ですが、実際の kernel message は未確認。 | [M5 CardputerZero](https://docs.m5stack.com/en/CardputerZero)<br>[C154 V0.6.1 schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)<br>[CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts)<br>[CSI1 2-lane DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm283x-rpi-csi1-2lane.dtsi)<br>[M5 CardputerZero Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile) 【一次】【未確認】 |
+
 | 電源状態検出 | PYG5_PWR_DET | 公式 docs の Power Status に記載（詳細な意味は未確認） | https://docs.m5stack.com/en/CardputerZero |
 | IR | TX G12 / RX G13 | — | https://docs.m5stack.com/en/CardputerZero<br>https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf |
 | 拡張 | HY2.0-4P、EXT 14pin | Cap はホットスワップ不可 | https://docs.m5stack.com/en/CardputerZero |
 | スイッチ検知 | SW_DET = G6 | [`powerfail_suo.c`](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c) が使用 | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c |
 | 映像出力 | **HDMI**(回路図 P10 J5、19pin、HDMI-001) | コネクタ形状(Type A か D か)は【**未確認**】。DSI/CVBS は未使用 | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf<br>(ページ P10 J5 の再照合は今回未実施) |
+
+一次資料の抜粋: [C154 V0.6.1 回路図 p.10](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf) は `CAM_3V3`、U36 (`SSP7615-33DFR`)、R190 (`100K`)、R192 (`NC`) を示し、U36 の EN が VSYS_5V に pull-up された常時有効の構成です。p.5 では CM0 pin 44、p.10 では JP5 pin 17 がそれぞれ `CAM_GPIO` と表示されています。upstream [CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts) は GPIO40 の line name を `CAM_GPIO` とし、`&cam1_reg` の `gpio = <&gpio 40 GPIO_ACTIVE_HIGH>` を設定します。M5 の [CardputerZero Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile) は GPIO16-high camera overlay を非 V0_5 側でのみ追加する構成です。したがって既定の cam1 overlay は CAM_GPIO に GPIO40 を使い、v5 では追加 hog が不要です。【一次】
 
 ### 2.2 ソフト開発上の留意点
 - 【一次】PYG3 は TCA8418 キーボードと GL852G ハブの**共用リセット**です。ハブのリセットがキーボードにも波及する可能性があります。【推測】（出典: https://docs.m5stack.com/en/CardputerZero）

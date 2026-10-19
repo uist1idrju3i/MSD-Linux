@@ -1,0 +1,36 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+S2-2026-10-19-controlled,base,1,Image,26380800,B,yes,rebuilt a534690
+S2-2026-10-19-controlled,s2-camera,1,Image,26380800,B,yes,
+S2-2026-10-19-controlled,base,1,gzip_9n_Image,10520862,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,gzip_9n_Image,10520876,B,yes,
+S2-2026-10-19-controlled,base,1,kernel8_img,10103613,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,kernel8_img,10103606,B,yes,
+S2-2026-10-19-controlled,base,1,compressed_module_count,1039,count,yes,
+S2-2026-10-19-controlled,s2-camera,1,compressed_module_count,1051,count,yes,
+S2-2026-10-19-controlled,base,1,compressed_module_bytes,11313808,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,compressed_module_bytes,11518820,B,yes,
+S2-2026-10-19-controlled,base,1,media_module_count,15,count,yes,既存CEC/RCを含む
+S2-2026-10-19-controlled,s2-camera,1,media_module_count,27,count,yes,既存CEC/RCを含む
+S2-2026-10-19-controlled,base,1,media_module_bytes,63856,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,media_module_bytes,265436,B,yes,
+S2-2026-10-19-controlled,base,1,rootfs_squashfs,22392832,B,yes,rebuilt a534690
+S2-2026-10-19-controlled,s2-camera,1,rootfs_squashfs,23891968,B,yes,stale local S6 test artifacts removed
+S2-2026-10-19-controlled,base,1,sdcard_img,771751936,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,sdcard_img,771751936,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,target_added_file_count,205,count,yes,
+S2-2026-10-19-controlled,s2-camera,1,target_added_file_bytes,3875813,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,target_changed_file_count,27,count,yes,
+S2-2026-10-19-controlled,s2-camera,1,target_changed_net_bytes,47170,B,yes,
+S2-2026-10-19-controlled,s2-camera,1,target_net_bytes,3922983,B,yes,
+S2-2026-10-19-trial1-discarded,base,1,qemu_ready_marker,3.234632,s,no,module-test=usbnet; base image not retained; unequal workload
+S2-2026-10-19-trial1-discarded,base,2,qemu_ready_marker,3.236133,s,no,module-test=usbnet; base image not retained; unequal workload
+S2-2026-10-19-trial1-discarded,base,3,qemu_ready_marker,3.231755,s,no,module-test=usbnet; base image not retained; unequal workload
+S2-2026-10-19-trial1-discarded,s2-camera,1,qemu_ready_marker,3.385412,s,no,"module-test=usbnet,bcm2835-unicam,imx219; unequal workload"
+S2-2026-10-19-trial1-discarded,s2-camera,2,qemu_ready_marker,3.383194,s,no,"module-test=usbnet,bcm2835-unicam,imx219; unequal workload"
+S2-2026-10-19-trial1-discarded,s2-camera,3,qemu_ready_marker,3.385959,s,no,"module-test=usbnet,bcm2835-unicam,imx219; unequal workload"
+S2-2026-10-19-controlled,base,1,qemu_ready_marker,3.196931,s,yes,QEMU_MODULE_TEST empty
+S2-2026-10-19-controlled,base,2,qemu_ready_marker,3.196344,s,yes,QEMU_MODULE_TEST empty
+S2-2026-10-19-controlled,base,3,qemu_ready_marker,3.201997,s,yes,QEMU_MODULE_TEST empty
+S2-2026-10-19-controlled,s2-camera,1,qemu_ready_marker,3.198561,s,yes,QEMU_MODULE_TEST empty
+S2-2026-10-19-controlled,s2-camera,2,qemu_ready_marker,3.201623,s,yes,QEMU_MODULE_TEST empty
+S2-2026-10-19-controlled,s2-camera,3,qemu_ready_marker,3.191795,s,yes,QEMU_MODULE_TEST empty

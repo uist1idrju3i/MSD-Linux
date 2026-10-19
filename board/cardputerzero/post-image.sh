@@ -35,6 +35,8 @@ cp -a "${BINARIES_DIR}/rpi-firmware/overlays/." "$BOOT_DIR/overlays/"
 if [ -d "${BINARIES_DIR}/overlays" ]; then
 	cp -a "${BINARIES_DIR}/overlays/." "$BOOT_DIR/overlays/"
 fi
+"${BOARD_DIR}/tools/check-dt-overlays.sh" \
+	"${HOST_DIR:?}" "$BINARIES_DIR" "${BINARIES_DIR}/rpi-firmware/config.txt"
 cp "${BINARIES_DIR}/rootfs.squashfs" "$STAGE_DIR/"
 
 genimage \

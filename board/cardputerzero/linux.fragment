@@ -49,8 +49,97 @@ CONFIG_SND_SOC=m
 CONFIG_IIO=m
 CONFIG_USB_USBNET=m
 
-# Limit unsupported media, network vendors, filesystems, and legacy buses.
-# CONFIG_MEDIA_SUPPORT is not set
+# Keep only the platform camera capture path and its required V4L2 core.
+CONFIG_MEDIA_SUPPORT=m
+CONFIG_MEDIA_SUPPORT_FILTER=y
+CONFIG_MEDIA_CAMERA_SUPPORT=y
+CONFIG_MEDIA_PLATFORM_SUPPORT=y
+# CONFIG_MEDIA_USB_SUPPORT is not set
+# CONFIG_MEDIA_PCI_SUPPORT is not set
+# CONFIG_MEDIA_ANALOG_TV_SUPPORT is not set
+# CONFIG_MEDIA_DIGITAL_TV_SUPPORT is not set
+# CONFIG_MEDIA_RADIO_SUPPORT is not set
+# CONFIG_MEDIA_SDR_SUPPORT is not set
+# CONFIG_MEDIA_TEST_SUPPORT is not set
+# CONFIG_USB_CONFIGFS_F_UVC is not set
+# CONFIG_USB_G_WEBCAM is not set
+CONFIG_VIDEO_DEV=m
+CONFIG_VIDEO_BCM2835_UNICAM=m
+CONFIG_VIDEO_IMX219=m
+# CONFIG_UVC_COMMON is not set
+# CONFIG_VIDEOBUF2_VMALLOC is not set
+# CONFIG_VIDEOBUF2_DMA_SG is not set
+# CONFIG_VIDEO_IR_I2C is not set
+# CONFIG_VIDEO_CS53L32A is not set
+# CONFIG_VIDEO_MSP3400 is not set
+# CONFIG_VIDEO_SAA711X is not set
+# CONFIG_VIDEO_CX25840 is not set
+# CONFIG_VIDEO_WM8775 is not set
+# CONFIG_VIDEO_AD5398 is not set
+# CONFIG_VIDEO_ADV7180 is not set
+# CONFIG_VIDEO_AK7375 is not set
+# CONFIG_VIDEO_ARDUCAM_64MP is not set
+# CONFIG_VIDEO_ARDUCAM_PIVARIETY is not set
+# CONFIG_VIDEO_AU0828 is not set
+# CONFIG_VIDEO_BU64754 is not set
+# CONFIG_VIDEO_BCM2835_UNICAM_LEGACY is not set
+# CONFIG_VIDEO_CX231XX is not set
+# CONFIG_VIDEO_CX231XX_ALSA is not set
+# CONFIG_VIDEO_CX231XX_DVB is not set
+# CONFIG_VIDEO_DW9807_VCM is not set
+# CONFIG_VIDEO_EM28XX is not set
+# CONFIG_VIDEO_EM28XX_ALSA is not set
+# CONFIG_VIDEO_EM28XX_DVB is not set
+# CONFIG_VIDEO_EM28XX_V4L2 is not set
+# CONFIG_VIDEO_GO7007 is not set
+# CONFIG_VIDEO_GO7007_USB is not set
+# CONFIG_VIDEO_GO7007_USB_S2250_BOARD is not set
+# CONFIG_VIDEO_HDPVR is not set
+# CONFIG_VIDEO_I2C is not set
+# CONFIG_VIDEO_IMX258 is not set
+# CONFIG_VIDEO_IMX283 is not set
+# CONFIG_VIDEO_IMX290 is not set
+# CONFIG_VIDEO_IMX296 is not set
+# CONFIG_VIDEO_IMX335 is not set
+# CONFIG_VIDEO_IMX355 is not set
+# CONFIG_VIDEO_IMX415 is not set
+# CONFIG_VIDEO_IMX477 is not set
+# CONFIG_VIDEO_IMX500 is not set
+# CONFIG_VIDEO_IMX519 is not set
+# CONFIG_VIDEO_IMX708 is not set
+# CONFIG_VIDEO_IRS1125 is not set
+# CONFIG_VIDEO_MIRA220 is not set
+# CONFIG_VIDEO_MT9V011 is not set
+# CONFIG_VIDEO_MUX is not set
+# CONFIG_VIDEO_OV2311 is not set
+# CONFIG_VIDEO_OV5647 is not set
+# CONFIG_VIDEO_OV64A40 is not set
+# CONFIG_VIDEO_OV7251 is not set
+# CONFIG_VIDEO_OV7640 is not set
+# CONFIG_VIDEO_OV9282 is not set
+# CONFIG_VIDEO_PVRUSB2 is not set
+# CONFIG_VIDEO_RASPBERRYPI_PISP_BE is not set
+# CONFIG_VIDEO_RP1_CFE is not set
+# CONFIG_VIDEO_RP1_CFE_DOWNSTREAM is not set
+# CONFIG_VIDEO_RPI_HEVC_DEC is not set
+# CONFIG_VIDEO_SONY_BTF_MPX is not set
+# CONFIG_VIDEO_SONY_STARVIS2 is not set
+# CONFIG_VIDEO_STK1160 is not set
+# CONFIG_VIDEO_TC358743 is not set
+# CONFIG_VIDEO_TVP5150 is not set
+# CONFIG_VIDEO_TW2804 is not set
+# CONFIG_VIDEO_TW9903 is not set
+# CONFIG_VIDEO_TW9906 is not set
+# CONFIG_VIDEO_UDA1342 is not set
+# CONFIG_VIDEO_USBTV is not set
+# CONFIG_VIDEO_VD55G1 is not set
+# CONFIG_VIDEO_VD56G3 is not set
+# CONFIG_VIDEO_VICODEC is not set
+# CONFIG_VIDEO_VIM2M is not set
+# CONFIG_VIDEO_VIMC is not set
+# CONFIG_VIDEO_VIVID is not set
+
+# Limit unsupported network vendors, filesystems, and legacy buses.
 # CONFIG_WLAN_VENDOR_ADMTEK is not set
 # CONFIG_WLAN_VENDOR_ATH is not set
 # CONFIG_WLAN_VENDOR_ATMEL is not set
@@ -404,7 +493,7 @@ CONFIG_USB_USBNET=m
 # The Pi 5 RP1 audio output selects SND_SOC_SPDIF, so disable the parent too.
 # CONFIG_SND_RP1_AUDIO_OUT is not set
 
-# CardputerZero does not use VideoCore audio, camera, or MMAL services.
+# CardputerZero uses Unicam raw capture, not VideoCore camera services.
 # CONFIG_BCM2835_VCHIQ is not set
 # CONFIG_VCHIQ_CDEV is not set
 # CONFIG_SND_BCM2835 is not set
