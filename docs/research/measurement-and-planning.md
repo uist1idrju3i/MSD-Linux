@@ -195,7 +195,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | ID | 対象 | 主な方法・成果物 | 状態 | PR | 記録 |
 |---|---|---|---|---|---|
 | S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツールのみ・本番未実施 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
-| S2 | camera | Unicam + IMX219 raw V4L2 path と utilities を実装し、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化。Lite 版にはセンサーがなく probe failure は想定内で harmless だが、実際の kernel message は未確認。trial 1 を破棄した統制 QEMU 再測定は相対中央値 +0.0510% で +1.0% 基準内のため tier A を採用。capture と電源 GPIO は実機で確認する。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
+| S2 | camera | Unicam + IMX219 raw V4L2 path と utilities を実装し、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化。C154 V0.6.1 は CAM_3V3 LDO の EN を VSYS_5V に pull-up し、CM0 DTS は CAM_GPIO を GPIO40 に割り当てます。v5 の GPIO16 は PY32 reset 用で、追加 camera GPIO overlay は適用しません。【一次】Lite 版の probe failure は想定内ですが、実際の kernel message は未確認。統制 QEMU 再測定は相対中央値 +0.0510% で +1.0% 基準内のため tier A を採用。実機では sensor ID、topology、2-lane raw capture、Lite の probe-failure message を確認します。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
 | S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
 | S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
 | S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 未着手 | — | — |
@@ -214,7 +214,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 ### S2 実機カメラ確認チェックリスト
 
-- [ ] CM0 の camera power-enable GPIO を GPIO40、GPIO16、M5IOE1 の候補から特定する。CM0 DTS の既定値を保ち、確認前に GPIO hog を追加しない。必要なら `cam1_reg_gpio` overlay parameter の配線を実機で確かめる。
+- [ ] `dmesg` から IMX219 の sensor ID を採取する。
 - [ ] IMX219 overlay 適用後に `media-ctl -p` を実行し、sensor → Unicam の media topology と link 状態を記録する。
 - [ ] CSI1 の 2-lane 接続で対応する raw format を選び、`v4l2-ctl --stream-mmap` による capture を実施して format、解像度、frame 数、drop/error を記録する。
 - [ ] カメラのない Lite 版で IMX219 probe が失敗する場合の実際の kernel message を採取し、想定内であることを確認する。【未確認】
