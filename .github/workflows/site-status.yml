@@ -1,0 +1,63 @@
+name: 公開サイトの状態確認
+
+on:
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: 公開サイトの状態を確認
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! command -v dig >/dev/null 2>&1; then
+            echo "::error::ubuntu-26.04 に dig がありません。dnsutils を確認してください。"
+            exit 1
+          fi
+          pages="$RUNNER_TEMP/pages.json"
+          gh api "repos/$GITHUB_REPOSITORY/pages" > "$pages"
+          report="$RUNNER_TEMP/site-status.md"
+          set +e
+          python3 .github/scripts/check-site-status.py \
+            --pages-json "$pages" \
+            --dns-expect .github/site-dns.tsv \
+            --report "$report"
+          rc=$?
+          set -e
+          if [ -f "$report" ]; then
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          issue="$(gh issue list --state open --json number,title --limit 100 |
+            jq -r '.[] | select(.title == "公開サイトの状態確認") | .number' | head -n1)"
+          if [ "$rc" -eq 1 ]; then
+            body="$(cat "$report")
+
+          実行: $run_url"
+            if [ -n "$issue" ]; then
+              gh issue edit "$issue" --body "$body"
+            else
+              gh issue create --title "公開サイトの状態確認" --body "$body"
+            fi
+          elif [ "$rc" -eq 0 ]; then
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --body "すべて正常です。$run_url"
+              gh issue close "$issue"
+            fi
+          else
+            exit "$rc"
+          fi

@@ -1,0 +1,13 @@
+name	type	value	reason
+muromi.moe	A	185.199.108.153	GitHub Pages の IP（公式文書）
+muromi.moe	A	185.199.109.153	GitHub Pages の IP（公式文書）
+muromi.moe	A	185.199.110.153	GitHub Pages の IP（公式文書）
+muromi.moe	A	185.199.111.153	GitHub Pages の IP（公式文書）
+muromi.moe	AAAA	2606:50c0:8000::153	GitHub Pages の IP（公式文書）
+muromi.moe	AAAA	2606:50c0:8001::153	GitHub Pages の IP（公式文書）
+muromi.moe	AAAA	2606:50c0:8002::153	GitHub Pages の IP（公式文書）
+muromi.moe	AAAA	2606:50c0:8003::153	GitHub Pages の IP（公式文書）
+www.muromi.moe	CNAME	muromi.moe.	www を apex に向ける（GitHub の DNS 検査が www の NS を引けるようにするため。公式の手順は <user>.github.io）
+muromi.moe	CAA	0 issue "letsencrypt.org"	Pages の証明書は Let's Encrypt
+muromi.moe	CAA	0 issuewild ";"	Pages の証明書は Let's Encrypt
+_github-pages-challenge-uist1idrju3i.muromi.moe	TXT	"d39be2c449111479294fb48b6851a0"	ドメイン検証。消すと乗っ取り防止が外れる
