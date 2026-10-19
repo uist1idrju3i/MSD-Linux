@@ -132,15 +132,13 @@ a:focus-visible {
   border-radius: 6px;
 }
 
-.cards strong {
-  display: block;
-  font-size: 1.05rem;
+.cards h3 {
+  margin: 0;
   text-wrap: balance;
 }
 
-.cards span {
-  display: block;
-  margin-top: 0.25rem;
+.cards p {
+  margin: 0.25rem 0 0;
   color: var(--sub);
   font-size: 0.95rem;
 }
@@ -189,5 +187,20 @@ footer p {
 @media (min-width: 48em) {
   .hero {
     padding-top: 5rem;
+  }
+}
+
+@media (max-height: 30em) {
+  .hero {
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  .hero img {
+    width: min(260px, 72%);
+  }
+
+  .lead {
+    margin-top: 0.75rem;
+    font-size: 1rem;
   }
 }
