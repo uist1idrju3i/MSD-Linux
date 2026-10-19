@@ -27,7 +27,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 
 ## 4. 依存関係の管理
 
-- `.github/dependabot.yml` で submodule と GitHub Actions を週次監視しています。pip などの依存を追加したら、同じ変更で監視対象にも加えます。
+- `.github/dependabot.yml` で submodule、GitHub Actions、pip を週次監視しています。Dependabot が扱えない固定値（カーネル、Buildroot の系列、CI ツール、runner）は「固定版の更新確認」ワークフローが週次で調べ、Issue で知らせます。依存を追加したら、同じ変更で監視対象に加えます。
 - Dependabot の PR を含むすべての更新で「vendor-update」スキルの変更履歴確認と回帰テストを行います。マージは人間が行います。
 
 ## 5. エージェントスキル

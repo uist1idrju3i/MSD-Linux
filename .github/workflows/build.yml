@@ -174,13 +174,16 @@ jobs:
 
       - name: Run kernel hardening checker
         continue-on-error: true
+        env:
+          KHC_TAG: v0.6.17.1
+          KHC_COMMIT: afc376f2a935994793343cfeb05953583cc30191
         run: |
           set -euo pipefail
           checker_dir="$RUNNER_TEMP/kernel-hardening-checker"
-          git clone --depth 1 --branch v0.6.17.1 \
+          git clone --depth 1 --branch "$KHC_TAG" \
             https://github.com/a13xp0p0v/kernel-hardening-checker "$checker_dir"
           test "$(git -C "$checker_dir" rev-parse HEAD)" = \
-            afc376f2a935994793343cfeb05953583cc30191
+            "$KHC_COMMIT"
           "$checker_dir/bin/kernel-hardening-checker" \
             -c output/build/linux-custom/.config \
             -l board/cardputerzero/cmdline_rootfs_a.txt \
