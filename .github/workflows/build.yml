@@ -146,6 +146,9 @@ jobs:
           make -C output -j"$(nproc)"
           make -C output legal-info
 
+      - name: Check module dependency index
+        run: board/cardputerzero/tools/check-modules-dep.sh output/target
+
       - name: Check kernel fragment and image tool versions
         run: |
           board/cardputerzero/tools/check-kernel-fragment.sh \
