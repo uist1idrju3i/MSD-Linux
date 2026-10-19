@@ -106,7 +106,7 @@ mdev_conf="$target_dir/etc/mdev.conf"
 test -f "$mdev_conf"
 insert_mdev_rule() {
 	rule="$1"
-	if grep -Fqx "$rule" "$mdev_conf"; then
+	if grep -Fqx -e "$rule" "$mdev_conf"; then
 		return
 	fi
 	awk -v rule="$rule" '
