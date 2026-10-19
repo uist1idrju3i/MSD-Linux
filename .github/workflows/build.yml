@@ -267,6 +267,8 @@ jobs:
         if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
         with:
           name: msd-cardputerzero-build
+          # output/build/linux-*/.config is a dotfile; upload-artifact skips those by default.
+          include-hidden-files: true
           path: |
             output/images/sdcard.img.xz
             output/images/Image
