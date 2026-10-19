@@ -7,7 +7,7 @@ M5STACK_CARDPUTERZERO_LICENSE = \
 	unknown (bmi270-init-data.fw), \
 	unknown (tca8418_keypad_m5stack_keymap.map)
 M5STACK_CARDPUTERZERO_LICENSE_FILES = COPYING
-M5STACK_CARDPUTERZERO_DEPENDENCIES += host-dtc
+M5STACK_CARDPUTERZERO_DEPENDENCIES += host-dtc host-openssl
 M5STACK_CARDPUTERZERO_MODULE_SUBDIRS = \
 	modules/CardputerZero \
 	modules/st7789v-1.0 \

@@ -10,6 +10,8 @@ STATE_DIR="${TEST_DIR}/state"
 PARTITION_PREFIX="${TEST_DIR}/partition"
 LOG_FILE="${TEST_DIR}/output"
 FSYNC_LOG="${TEST_DIR}/fsync.log"
+UPDATE_PRIVATE_KEY="${TEST_DIR}/update-private.pem"
+UPDATE_PUBLIC_KEY="${TEST_DIR}/update-public.pem"
 
 cleanup() {
 	rm -rf "$TEST_DIR"
@@ -53,7 +55,12 @@ run_update() {
 	MSD_UPDATE_P1_DIR="$P1_DIR" \
 	MSD_UPDATE_STATE_DIR="$STATE_DIR" \
 	MSD_UPDATE_PARTITION_PREFIX="$PARTITION_PREFIX" \
+	MSD_UPDATE_KEY_PATH="$UPDATE_PUBLIC_KEY" \
 	/bin/sh "$UPDATER" "$@"
+}
+
+sign_manifest() {
+	openssl pkeyutl -sign -rawin -inkey "$1" -in "$2/manifest" -out "$2/manifest.sig"
 }
 
 expect_failure() {
@@ -64,6 +71,8 @@ expect_failure() {
 
 mkdir -p "$DT_DIR" "$P1_DIR" "$STATE_DIR"
 mkdir -p "$TEST_DIR/bin"
+openssl genpkey -algorithm Ed25519 -out "$UPDATE_PRIVATE_KEY"
+openssl pkey -in "$UPDATE_PRIVATE_KEY" -pubout -out "$UPDATE_PUBLIC_KEY"
 # shellcheck disable=SC2016 # The generated test command must retain its variable expansion.
 printf '#!/bin/sh\nprintf "%%s\\n" "$1" >> "$MSD_TEST_FSYNC_LOG"\n' > "$TEST_DIR/bin/fsync"
 chmod +x "$TEST_DIR/bin/fsync"
@@ -104,7 +113,8 @@ mkdir -p "$TEST_DIR/bad"
 printf 'bad-rootfs\n' > "$TEST_DIR/bad/rootfs.squashfs"
 printf 'bad-boot\n' > "$TEST_DIR/bad/boot.vfat"
 printf '%064d  rootfs.squashfs\n%064d  boot.vfat\n' 0 0 > "$TEST_DIR/bad/manifest"
-tar -cf "$TEST_DIR/bad.tar" -C "$TEST_DIR/bad" rootfs.squashfs boot.vfat manifest
+sign_manifest "$UPDATE_PRIVATE_KEY" "$TEST_DIR/bad"
+tar -cf "$TEST_DIR/bad.tar" -C "$TEST_DIR/bad" rootfs.squashfs boot.vfat manifest manifest.sig
 printf 'old-rootfs\n' > "${PARTITION_PREFIX}6"
 printf 'old-boot\n' > "${PARTITION_PREFIX}3"
 set_dt 2 0
@@ -117,7 +127,8 @@ mkdir -p "$TEST_DIR/good" "$TEST_DIR/bin"
 printf 'verified-rootfs\n' > "$TEST_DIR/good/rootfs.squashfs"
 printf 'verified-boot\n' > "$TEST_DIR/good/boot.vfat"
 (cd "$TEST_DIR/good" && sha256sum rootfs.squashfs boot.vfat > manifest)
-tar -cf "$TEST_DIR/good.tar" -C "$TEST_DIR/good" rootfs.squashfs boot.vfat manifest
+sign_manifest "$UPDATE_PRIVATE_KEY" "$TEST_DIR/good"
+tar -cf "$TEST_DIR/good.tar" -C "$TEST_DIR/good" rootfs.squashfs boot.vfat manifest manifest.sig
 run_update install "$TEST_DIR/good.tar" > "$LOG_FILE"
 root_bytes="$(wc -c < "$TEST_DIR/good/rootfs.squashfs" | tr -d '[:space:]')"
 boot_bytes="$(wc -c < "$TEST_DIR/good/boot.vfat" | tr -d '[:space:]')"
@@ -127,6 +138,35 @@ cmp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/root-readback" || fail "rootfs r
 cmp "$TEST_DIR/good/boot.vfat" "$TEST_DIR/boot-readback" || fail "boot read-back differs"
 [ "$(cat "$STATE_DIR/installed")" = 3 ] || fail "verified install state was not recorded"
 printf 'ok - the shared boot bundle installs and verifies slot B\n'
+
+mkdir -p "$TEST_DIR/unsigned"
+cp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/good/boot.vfat" "$TEST_DIR/good/manifest" "$TEST_DIR/unsigned/"
+tar -cf "$TEST_DIR/unsigned.tar" -C "$TEST_DIR/unsigned" rootfs.squashfs boot.vfat manifest
+printf 'old-rootfs\n' > "${PARTITION_PREFIX}6"
+printf 'old-boot\n' > "${PARTITION_PREFIX}3"
+expect_failure install "$TEST_DIR/unsigned.tar"
+[ "$(cat "${PARTITION_PREFIX}6")" = 'old-rootfs' ] || fail "unsigned bundle changed the inactive rootfs"
+[ "$(cat "${PARTITION_PREFIX}3")" = 'old-boot' ] || fail "unsigned bundle changed the inactive boot slot"
+printf 'ok - unsigned bundles are rejected before writing slots\n'
+
+openssl genpkey -algorithm Ed25519 -out "$TEST_DIR/wrong-private.pem"
+mkdir -p "$TEST_DIR/wrong-key"
+cp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/good/boot.vfat" "$TEST_DIR/good/manifest" "$TEST_DIR/wrong-key/"
+sign_manifest "$TEST_DIR/wrong-private.pem" "$TEST_DIR/wrong-key"
+tar -cf "$TEST_DIR/wrong-key.tar" -C "$TEST_DIR/wrong-key" rootfs.squashfs boot.vfat manifest manifest.sig
+expect_failure install "$TEST_DIR/wrong-key.tar"
+[ "$(cat "${PARTITION_PREFIX}6")" = 'old-rootfs' ] || fail "wrong-key bundle changed the inactive rootfs"
+[ "$(cat "${PARTITION_PREFIX}3")" = 'old-boot' ] || fail "wrong-key bundle changed the inactive boot slot"
+printf 'ok - bundles signed by another key are rejected before writing slots\n'
+
+mkdir -p "$TEST_DIR/tampered"
+cp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/good/boot.vfat" "$TEST_DIR/good/manifest.sig" "$TEST_DIR/tampered/"
+printf 'tampered manifest\n' > "$TEST_DIR/tampered/manifest"
+tar -cf "$TEST_DIR/tampered.tar" -C "$TEST_DIR/tampered" rootfs.squashfs boot.vfat manifest manifest.sig
+expect_failure install "$TEST_DIR/tampered.tar"
+[ "$(cat "${PARTITION_PREFIX}6")" = 'old-rootfs' ] || fail "tampered manifest changed the inactive rootfs"
+[ "$(cat "${PARTITION_PREFIX}3")" = 'old-boot' ] || fail "tampered manifest changed the inactive boot slot"
+printf 'ok - tampered manifests are rejected before writing slots\n'
 
 printf 'old-rootfs-a\n' > "${PARTITION_PREFIX}5"
 printf 'old-boot-a\n' > "${PARTITION_PREFIX}2"

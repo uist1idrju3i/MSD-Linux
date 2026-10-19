@@ -34,3 +34,39 @@ insert_mdev_rule() {
 }
 
 insert_mdev_rule "-\$SUBSYSTEM=input;input/event[0-9]+ root:root 640 */usr/libexec/msd/cardputer-keyboard \"\$ACTION\" \"\$MDEV\""
+
+base_dir="${BASE_DIR:-}"
+host_dir="${HOST_DIR:-}"
+if [ -z "$base_dir" ] || [ -z "$host_dir" ]; then
+	printf '%s\n' 'BASE_DIR and HOST_DIR must be set for update signing.' >&2
+	exit 1
+fi
+host_openssl="$host_dir/bin/openssl"
+if [ ! -x "$host_openssl" ]; then
+	printf 'Required Buildroot host OpenSSL binary is missing: %s\n' "$host_openssl" >&2
+	exit 1
+fi
+
+if [ -n "${MSD_UPDATE_SIGNING_KEY:-}" ]; then
+	signing_key="$MSD_UPDATE_SIGNING_KEY"
+	key_origin=release
+else
+	signing_key="$base_dir/msd-update-dev-key.pem"
+	key_origin=development
+	if [ ! -f "$signing_key" ]; then
+		printf '%s\n' 'WARNING: generating a development update-signing key; use MSD_UPDATE_SIGNING_KEY for releases.' >&2
+		(
+			umask 077
+			"$host_openssl" genpkey -algorithm Ed25519 -out "$signing_key"
+		)
+	else
+		printf '%s\n' 'WARNING: using the development update-signing key; do not ship this key for releases.' >&2
+	fi
+	chmod 0600 "$signing_key"
+fi
+test -r "$signing_key"
+
+mkdir -p "$target_dir/etc/msd-update"
+"$host_openssl" pkey -in "$signing_key" -pubout \
+	-out "$target_dir/etc/msd-update/update-key.pem"
+printf '%s\n' "$key_origin" > "$target_dir/etc/msd-update/key-origin"

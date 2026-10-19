@@ -2,7 +2,7 @@
 
 ## ホスト環境
 
-Ubuntu 26.04 を想定しています。Buildroot のホスト依存パッケージと QEMU が必要です。CI と同じ環境にする場合は、`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。
+Ubuntu 26.04 を想定しています。Buildroot のホスト依存パッケージと QEMU が必要です。CI と同じ環境にする場合は、`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。ホストテストには `fdisk`、`e2fsprogs`、`openssl` も必要です。
 
 ## イメージのビルド
 
@@ -17,7 +17,7 @@ CI は Buildroot のダウンロードファイルと ccache をキャッシュ�
 
 成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は初期 64 MiB で、初回起動時にパーティション末尾まで拡張し、ext4 をオンライン拡張する実装です。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector、tryboot、p7 拡張は未確認です。
 
-各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest` を含み、どちらのスロットにも利用可能な構成です。SHA-256 は整合性確認用で、bundle の署名、鍵保管、secure boot は未実装です。
+各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest`、Ed25519 署名 `manifest.sig` の4ファイルです。端末は書き込み前に `/etc/msd-update/update-key.pem` で署名を検証します。`/etc/msd-update/key-origin` には `release` または `development` を記録します。`MSD_UPDATE_SIGNING_KEY=/path/to/private.pem` を指定するとリリース鍵を使います。未指定時は `$BASE_DIR/msd-update-dev-key.pem` を生成・再利用し、開発用鍵である旨を警告します。秘密鍵は成果物に含めず、開発用鍵をリリースに使わないでください。ビルド成果物の署名は実機未検証です。
 
 `BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。keymap の読み込みと symlink は実機未検証です。
 
@@ -44,4 +44,4 @@ QEMU の `raspi3b` マシンは BCM2837 をエミュレートしますが、Rasp
 
 ## 現在の検証状況
 
-この構成に対するフルビルド、QEMU 起動、実機起動はまだ確認していません。更新処理のシェルロジックは `tests/msd-update/run.sh` でホスト上の一時ディレクトリを使って確認できます。
+この構成に対するフルビルド、QEMU 起動、実機起動はまだ確認していません。更新処理、ハードウェア判定、p7 拡張のシェルロジックは `tests/msd-update/run.sh`、`tests/msd-hwinfo/run.sh`、`tests/msd-data-grow/run.sh` でホスト上の一時データを使って確認できます。

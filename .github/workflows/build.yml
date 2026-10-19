@@ -78,7 +78,7 @@ jobs:
           echo "build=$build" >> "$GITHUB_OUTPUT"
 
   msd-update-tests:
-    name: msd-update host tests
+    name: MSD host tests
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
@@ -86,8 +86,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run msd-update host tests
-        run: tests/msd-update/run.sh
+      - name: Install host test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fdisk e2fsprogs openssl
+
+      - name: Run host tests
+        run: |
+          tests/msd-update/run.sh
+          tests/msd-hwinfo/run.sh
+          tests/msd-data-grow/run.sh
 
   build:
     needs: changes
