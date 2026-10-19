@@ -31,6 +31,9 @@ dtoverlay=cardputerzero-v5-overlay
 dtoverlay=bq27220_v5
 # Load the v5 IMU overlay.
 dtoverlay=bmi270_bmm150_overlay
+# Enable only the selected camera overlay on hardware that has an IMX219.
+# camera_auto_detect=0
+# dtoverlay=imx219
 # Select the A root filesystem command line for boot partition 2.
 [boot_partition=2]
 cmdline=cmdline_rootfs_a.txt

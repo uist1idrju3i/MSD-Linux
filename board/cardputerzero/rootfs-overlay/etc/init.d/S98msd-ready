@@ -1,16 +1,30 @@
 #!/bin/sh
 
 touch /run/msd-ready
-case " $(cat /proc/cmdline) " in
-	*" msd.module-test=usbnet "*)
-		if modprobe usbnet &&
-			lsmod | awk '$1 == "usbnet" { found = 1 } END { exit !found }'; then
-			printf '%s\n' 'msd-module-check: usbnet loaded via modprobe and listed by lsmod' >/dev/console
-		else
-			printf '%s\n' 'msd-module-check: usbnet modprobe or lsmod failed' >/dev/console
-		fi
-		;;
-esac
+module_list="$(sed -n 's/.*[[:space:]]msd.module-test=\([^[:space:]]*\).*/\1/p' /proc/cmdline)"
+remaining_modules="$module_list"
+while [ -n "$remaining_modules" ]; do
+	case "$remaining_modules" in
+		*,*)
+			module="${remaining_modules%%,*}"
+			remaining_modules="${remaining_modules#*,}"
+			;;
+		*)
+			module="$remaining_modules"
+			remaining_modules=
+			;;
+	esac
+	[ -n "$module" ] || continue
+	lsmod_name="$(printf '%s\n' "$module" | tr '-' '_')"
+	if modprobe "$module" &&
+		lsmod | awk -v name="$lsmod_name" '$1 == name { found = 1 } END { exit !found }'; then
+		printf 'msd-module-check: %s loaded via modprobe and listed by lsmod\n' \
+			"$module" >/dev/console
+	else
+		printf 'msd-module-check: %s modprobe or lsmod failed\n' \
+			"$module" >/dev/console
+	fi
+done
 case " $(cat /proc/cmdline) " in
 	*" msd.sweep=1 "*)
 		printf '<6>MSD/Linux ready\n' > /dev/kmsg
