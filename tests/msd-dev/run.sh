@@ -107,3 +107,102 @@ for instruction in instructions:
 assert not missing, f"COPY sources absent from IMAGE_INPUTS: {missing!r}"
 print("ok - every Dockerfile COPY source is covered by IMAGE_INPUTS")
 PY
+
+fake_bin="${temporary_root}/fake-bin"
+no_gh_bin="${temporary_root}/no-gh-bin"
+docker_log="${temporary_root}/docker.log"
+gh_log="${temporary_root}/gh.log"
+output="${temporary_root}/output.log"
+mkdir -p -- "${fake_bin}" "${no_gh_bin}"
+cat > "${fake_bin}/docker" <<'SH'
+#!/usr/bin/env bash
+printf 'docker %s\n' "$*" >> "${FAKE_DOCKER_LOG}"
+if [[ "$1 $2 $3" == "buildx imagetools inspect" ]]; then
+    printf '%s\n' "${IMAGETOOLS_OUTPUT:-}" >&2
+    exit "${IMAGETOOLS_STATUS:-0}"
+fi
+exit "${DOCKER_STATUS:-0}"
+SH
+cat > "${fake_bin}/gh" <<'SH'
+#!/usr/bin/env bash
+printf 'gh %s\n' "$*" >> "${FAKE_GH_LOG}"
+exit "${GH_STATUS:-0}"
+SH
+chmod +x "${fake_bin}/docker" "${fake_bin}/gh"
+for tool in bash dirname sha256sum cut sort; do
+    ln -s -- "$(command -v "${tool}")" "${no_gh_bin}/${tool}"
+done
+ln -s -- "${fake_bin}/docker" "${no_gh_bin}/docker"
+env_bin="$(command -v env)"
+
+run_ensure() {
+    local path="$1"
+    shift
+    : > "${docker_log}"
+    : > "${gh_log}"
+    if "${env_bin}" \
+        PATH="${path}" \
+        FAKE_DOCKER_LOG="${docker_log}" \
+        FAKE_GH_LOG="${gh_log}" \
+        MSD_DEV_IMAGE=msd-dev:ensure-test \
+        MSD_DEV_REQUIRE_ATTESTATION=1 \
+        "$@" \
+        "${launcher}" ensure >"${output}" 2>&1; then
+        status=0
+    else
+        status=$?
+    fi
+}
+
+assert_no_docker_command() {
+    local pattern="$1"
+    if grep -Eq "${pattern}" "${docker_log}"; then
+        printf 'Unexpected Docker command in log: %s\n' "${pattern}" >&2
+        return 1
+    fi
+}
+
+run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=0 GH_STATUS=0
+[[ "${status}" -eq 0 ]]
+grep -Eq '^docker pull ghcr.io/uist1idrju3i/msd-dev:inputs-' "${docker_log}"
+grep -Eq '^gh attestation verify oci://ghcr.io/uist1idrju3i/msd-dev:inputs-' "${gh_log}"
+grep -Eq '^docker tag ghcr.io/uist1idrju3i/msd-dev:inputs-.* msd-dev:ensure-test$' "${docker_log}"
+assert_no_docker_command '^docker build '
+printf 'ok - ensure pulls and verifies a published image\n'
+
+run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=0 GH_STATUS=1
+[[ "${status}" -ne 0 ]]
+assert_no_docker_command '^docker build '
+printf 'ok - ensure does not build when attestation verification fails\n'
+
+run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=1 \
+    IMAGETOOLS_OUTPUT='ERROR: ghcr.io/uist1idrju3i/msd-dev:inputs-probe: not found'
+[[ "${status}" -eq 0 ]]
+grep -Eq '^docker build -f ' "${docker_log}"
+grep -Eq 'was not found; building locally' "${output}"
+printf 'ok - ensure builds when the remote tag is not found\n'
+
+run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=1 \
+    IMAGETOOLS_OUTPUT='ERROR: failed to authorize: authentication required'
+[[ "${status}" -ne 0 ]]
+assert_no_docker_command '^docker build '
+printf 'ok - ensure fails closed on registry errors\n'
+
+run_ensure "${no_gh_bin}" IMAGETOOLS_STATUS=0
+[[ "${status}" -ne 0 ]]
+grep -Eq 'gh is required when MSD_DEV_REQUIRE_ATTESTATION=1' "${output}"
+assert_no_docker_command '^docker tag '
+assert_no_docker_command '^docker build '
+printf 'ok - ensure requires gh when attestation is mandatory\n'
+
+: > "${docker_log}"
+"${env_bin}" \
+    PATH="${fake_bin}:${PATH}" \
+    FAKE_DOCKER_LOG="${docker_log}" \
+    MSD_DEV_IMAGE=msd-dev:ensure-test \
+    CCACHE_MAXSIZE=3G \
+    GITHUB_SHA=deadbeef \
+    "${launcher}" true >"${output}" 2>&1
+grep -Fq -- '--env CCACHE_MAXSIZE=3G' "${docker_log}"
+grep -Fq -- '--env GITHUB_SHA=deadbeef' "${docker_log}"
+printf 'ok - launcher passes ccache size and commit to the container\n'

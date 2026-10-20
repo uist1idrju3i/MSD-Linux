@@ -56,15 +56,7 @@ def fixture() -> pathlib.Path:
     )
     (path / ".github/workflows/lint.yml").write_text(
         "env:\n"
-        "  ACTIONLINT_VERSION: 1.7.12\n"
-        "  SHELLCHECK_VERSION: 0.11.0\n"
         "  HADOLINT_VERSION: 2.15.1\n"
-        "          printf '%s  %s\\n' \\\\\n"
-        "            8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8 \\\\\n"
-        "            \"$actionlint_archive\" | sha256sum -c -\n"
-        "          printf '%s  %s\\n' \\\\\n"
-        "            8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198 \\\\\n"
-        "            \"$shellcheck_archive\" | sha256sum -c -\n"
         "jobs:\n  lint:\n    runs-on: ubuntu-26.04\n"
     )
     (path / ".github/workflows/publish-dev-image.yml").write_text(
@@ -117,14 +109,41 @@ errors = module.consistency(passed)
 assert errors == [], errors
 print("ok - consistency accepts a matching fixture")
 
+for workflow, line, expected in (
+    (".github/workflows/lint.yml", "ACTIONLINT_VERSION: 1.7.12", "ACTIONLINT_VERSION"),
+    (".github/workflows/build.yml", "SHELLCHECK_VERSION: 0.11.0", "SHELLCHECK_VERSION"),
+    (".github/workflows/lint.yml", "sudo apt-get install shellcheck", "apt-get"),
+    (".github/workflows/build.yml", "sudo apt-get install qemu-system-arm", "apt-get"),
+):
+    bad_workflow = fixture()
+    path = bad_workflow / workflow
+    path.write_text(path.read_text() + "\n" + line + "\n")
+    assert any(expected in error for error in module.consistency(bad_workflow))
+print("ok - rejects duplicate lint pins and host apt installs")
+
 bad_docker_tool_pin = fixture()
 dockerfile = bad_docker_tool_pin / "docker/msd-dev.Dockerfile"
 dockerfile.write_text(dockerfile.read_text().replace(
     "ARG ACTIONLINT_VERSION=1.7.12",
     "ARG ACTIONLINT_VERSION=1.7.11",
 ))
-assert any("ACTIONLINT_VERSION" in error for error in module.consistency(bad_docker_tool_pin))
-print("ok - detects Dockerfile tool version drift")
+assert module.consistency(bad_docker_tool_pin) == []
+print("ok - Dockerfile is the sole actionlint version source")
+
+for name, value in (
+    ("ACTIONLINT_VERSION", "1.7.12"),
+    ("SHELLCHECK_VERSION", "0.11.0"),
+    ("SHELLCHECK_SHA256", "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"),
+):
+    missing_docker_pin = fixture()
+    dockerfile = missing_docker_pin / "docker/msd-dev.Dockerfile"
+    dockerfile.write_text(
+        dockerfile.read_text().replace(f"ARG {name}={value}\n", "")
+    )
+    assert any(
+        name in error for error in module.consistency(missing_docker_pin)
+    )
+print("ok - Dockerfile lint pins are required")
 
 bad_docker_hash = fixture()
 dockerfile = bad_docker_hash / "docker/msd-dev.Dockerfile"
@@ -132,8 +151,8 @@ dockerfile.write_text(dockerfile.read_text().replace(
     "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198",
     "ARG SHELLCHECK_SHA256=" + "0" * 64,
 ))
-assert any("SHELLCHECK_SHA256" in error for error in module.consistency(bad_docker_hash))
-print("ok - detects Dockerfile checksum drift")
+assert module.consistency(bad_docker_hash) == []
+print("ok - consistency does not duplicate the ShellCheck checksum")
 
 bad_trivy_version = fixture()
 publish_workflow = bad_trivy_version / ".github/workflows/publish-dev-image.yml"
@@ -390,6 +409,8 @@ with tempfile.TemporaryDirectory() as directory:
     with contextlib.redirect_stdout(io.StringIO()):
         assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
     report = report_path.read_text()
+    assert "| actionlint | `1.7.12` | `1.7.12` | 最新 |" in report
+    assert "| ShellCheck | `0.11.0` | `0.11.0` | 最新 |" in report
     assert (
         "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
         "`確認できず` | 確認できず |"

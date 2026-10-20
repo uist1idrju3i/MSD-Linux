@@ -35,6 +35,32 @@ if [[ "${1:-}" == "tag" ]]; then
     exit 0
 fi
 
+if [[ "${1:-}" == "ensure" ]]; then
+    if (($# != 1)); then
+        printf 'Usage: %s ensure\n' "$0" >&2
+        exit 2
+    fi
+    input_tag="$(image_input_hash)"
+    source_image="${image_repository}:inputs-${input_tag}"
+    if inspect_output="$(docker buildx imagetools inspect "${source_image}" 2>&1)"; then
+        printf '%s\n' "${inspect_output}"
+        exec "${0}" pull
+    else
+        inspect_status=$?
+    fi
+    if [[ "${inspect_output}" == *": not found"* ]]; then
+        printf 'Published image %s was not found; building locally.\n' \
+            "${source_image}" >&2
+        exec docker build \
+            -f "${repo_root}/docker/msd-dev.Dockerfile" \
+            -t "${image}" \
+            "${repo_root}"
+    fi
+    printf 'Could not inspect published image %s (exit %s): %s\n' \
+        "${source_image}" "${inspect_status}" "${inspect_output}" >&2
+    exit "${inspect_status}"
+fi
+
 if [[ "${1:-}" == "pull" ]]; then
     if (($# != 1)); then
         printf 'Usage: %s pull\n' "$0" >&2
@@ -46,6 +72,10 @@ if [[ "${1:-}" == "pull" ]]; then
     if command -v gh >/dev/null 2>&1; then
         gh attestation verify "oci://${source_image}" \
             --repo uist1idrju3i/MSD-Linux
+    elif [[ "${MSD_DEV_REQUIRE_ATTESTATION:-0}" == 1 ]]; then
+        printf '%s\n' \
+            'Error: gh is required when MSD_DEV_REQUIRE_ATTESTATION=1.' >&2
+        exit 1
     else
         printf '%s\n' \
             'Warning: gh is unavailable; attestation verification was skipped.' >&2
@@ -114,7 +144,8 @@ for name in BR2_DL_DIR BR2_CCACHE_DIR OUTPUT_DIR QEMU_LOG_DIR; do
     add_directory "${name}"
 done
 
-for name in QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT; do
+for name in \
+    QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT CCACHE_MAXSIZE GITHUB_SHA KHC_TAG KHC_COMMIT; do
     if [[ -v "$name" ]]; then
         docker_args+=(--env "${name}=${!name}")
     fi
