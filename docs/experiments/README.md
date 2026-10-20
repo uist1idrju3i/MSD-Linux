@@ -12,3 +12,4 @@
 | [2026-10-19-tunables-dump](2026-10-19-tunables-dump.md) | なし | 2026-10-19 | 完了 | QEMU で sysctl 606 項目、ブロックデバイス 1,385 項目などの既定値を取得。rootfs に sysctl の設定はなく、`kernel.sysrq` は 502、I/O は `mq-deadline`。実機の値は未取得。 |
 | [2026-10-19-social-webp](2026-10-19-social-webp.md) | なし | 2026-10-19 | 完了 | `cwebp -z 9 -metadata none` を可逆 Social preview 用に採用（19,262 B）。 |
 | [2026-10-19-site-render](2026-10-19-site-render.md) | なし | 2026-10-19 | 完了 | minify、svgo、CSS のインライン化、`content-visibility` はどれも不採用（基準の 10% 短縮か画素の一致を満たさない）。 |
+| [2026-10-20-ci-image-vs-runner](2026-10-20-ci-image-vs-runner.md) | なし | 2026-10-20 | 完了 | 既存の CI の run 9 件の振り返り。ccache が効けば、イメージ内の Buildroot の step（1,073〜1,184 秒）は runner（1,267〜1,313 秒）より遅くない。遅い run は ccache が効いていなかった。`ensure` は毎回ローカルでビルドしていた（312〜489 秒）。 |
