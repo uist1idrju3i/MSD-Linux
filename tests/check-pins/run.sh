@@ -32,9 +32,21 @@ def fixture() -> pathlib.Path:
     (path / "package/m5stack-cardputerzero").mkdir(parents=True)
     (path / ".github/workflows").mkdir(parents=True)
     (path / "docker").mkdir()
+    buildroot_config = (
+        path
+        / "vendor/buildroot/toolchain/toolchain-external/"
+        "toolchain-external-bootlin/Config.in.options"
+    )
+    buildroot_config.parent.mkdir(parents=True)
+    buildroot_config.write_text(
+        'config BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE\n'
+        '  bool "aarch64 glibc stable 2025.08-1"\n'
+        '  depends on BR2_aarch64\n'
+    )
     (path / "configs/msd_cardputerzero_defconfig").write_text(
         f'BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="linux-{sha}.tar.gz"\n'
         f'BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="linux-{sha}.tar.gz"\n'
+        'BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE=y\n'
     )
     (path / "board/cardputerzero/patches/linux/linux.hash").write_text(
         f"sha256 deadbeef linux-{sha}.tar.gz\n"
@@ -148,6 +160,19 @@ bad_hash = fixture()
 assert any("linux.hash" in error for error in module.consistency(bad_hash))
 print("ok - detects a mismatched linux.hash")
 
+bad_bootlin_option = fixture()
+bootlin_config = (
+    bad_bootlin_option
+    / "vendor/buildroot/toolchain/toolchain-external/"
+    "toolchain-external-bootlin/Config.in.options"
+)
+bootlin_config.write_text(
+    'config BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_X86_GLIBC_STABLE\n'
+    '  bool "x86 glibc stable 2025.08-1"\n'
+)
+assert any("Bootlin" in error for error in module.consistency(bad_bootlin_option))
+print("ok - detects a missing Bootlin option in checked-out Buildroot")
+
 bad_runner = fixture()
 (bad_runner / ".github/workflows/build.yml").write_text("jobs:\n  build:\n    runs-on: ubuntu-24.04\n")
 assert any("runs-on" in error for error in module.consistency(bad_runner))
@@ -184,12 +209,80 @@ assert module.parse_qemu_latest(
     '<a href="qemu-11.1.2.tar.xz">11.1.2</a>'
     '<a href="qemu-12.0.0-rc1.tar.xz">12.0.0-rc1</a>'
 ) == "11.1.2"
+bootlin_option = "BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE"
+bootlin_config = (
+    f"config {bootlin_option}\n"
+    '  bool "aarch64 glibc stable 2025.08-1"\n'
+    "  depends on BR2_aarch64\n"
+    "config BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_MUSL_STABLE\n"
+    '  bool "aarch64 musl stable 2025.08-1"\n'
+)
+assert module.parse_bootlin_option_version(bootlin_config, bootlin_option) == "2025.08-1"
+assert module.parse_bootlin_option_version(
+    bootlin_config, "BR2_TOOLCHAIN_EXTERNAL_MISSING"
+) == ""
+assert module.parse_bootlin_latest(
+    '<a href="aarch64--glibc--stable-2025.08-1.tar.xz">2025.08-1</a>'
+    '<a href="aarch64--glibc--stable-2026.08-1.tar.xz">2026.08-1</a>'
+    '<a href="aarch64--glibc--stable-2027.02-1-rc1.tar.xz">release candidate</a>'
+) == "2026.08-1"
+assert module.parse_bootlin_latest("<html>no toolchain archives</html>") == ""
+assert module.bootlin_status(
+    "2025.08-1", "2025.08-1", "2025.08-1", "2026.08.x"
+) == ("2025.08-1", "最新")
+assert module.bootlin_status(
+    "2025.08-1", "2026.08-1", "", "2026.08.x"
+) == (
+    "2026.08-1（安定版の Buildroot では未提供）",
+    "Buildroot 安定版待ち",
+)
+assert module.bootlin_status(
+    "2025.08-1", "2026.08-1", "2026.08-1", "2026.11.x"
+) == (
+    "2026.08-1（Buildroot 2026.11.x で選択可）",
+    "更新あり",
+)
+assert module.bootlin_status(
+    "2025.08-1", "", "2026.08-1", "2026.11.x"
+) == ("確認できず", "確認できず")
+assert module.bootlin_status(
+    "2025.08-1", "2026.08-1", None, "2026.11.x"
+) == ("2026.08-1", "確認できず")
+assert module.upstream_summary(
+    [("Bootlin", "2025.08-1", "2026.08-1", "Buildroot 安定版待ち", "")]
+) == "全て最新"
+assert module.parse_buildroot_point_release(
+    f"{'a' * 40}\trefs/tags/2026.08.2\n"
+    f"{'b' * 40}\trefs/tags/2026.08.2^{{}}\n"
+    f"{'c' * 40}\trefs/tags/2026.08.3\n"
+    f"{'d' * 40}\trefs/tags/2026.08.3^{{}}\n"
+    f"{'e' * 40}\trefs/tags/2026.11.1^{{}}\n",
+    "2026.08.x",
+) == ("2026.08.3", "d" * 40)
+assert module.parse_buildroot_point_release("", "2026.08.x") == ("", "")
 assert module.parse_runner_labels("| `ubuntu-24.04` | beta image |\n") == [
     ("ubuntu-24.04", "beta")
 ]
 print("ok - parses ls-remote, .gitmodules, releases, and runner README data")
+print("ok - parses Bootlin options/releases and Buildroot point tags")
+print("ok - classifies Bootlin stable-toolchain availability")
+print("ok - treats Buildroot stable-wait status as non-actionable")
+
+run_calls = []
+
 
 def fake_run(*args, cwd=None):
+    run_calls.append(args)
+    if "ls-tree" in args:
+        return f"160000 commit {sha}\tvendor/buildroot\n"
+    if "--tags" in args:
+        return (
+            f"{'c' * 40}\trefs/tags/2026.08.2\n"
+            f"{'d' * 40}\trefs/tags/2026.08.2^{{}}\n"
+            f"{'e' * 40}\trefs/tags/2026.08.3\n"
+            f"{'f' * 40}\trefs/tags/2026.08.3^{{}}\n"
+            f"{'1' * 40}\trefs/tags/2026.11.1^{{}}\n"
+        )
     if any("raspberrypi/linux.git" in arg for arg in args):
         return (
             f"{sha}\trefs/heads/rpi-6.18.y\n"
@@ -198,10 +291,31 @@ def fake_run(*args, cwd=None):
     return (
         f"{'b' * 40}\trefs/heads/2026.08.x\n"
         f"{'c' * 40}\trefs/heads/2026.02.x\n"
+        f"{'d' * 40}\trefs/heads/master\n"
     )
 
 
+def fake_run_without_point_tags(*args, cwd=None):
+    if "--tags" in args:
+        return ""
+    return fake_run(*args, cwd=cwd)
+
+
+fetch_calls = []
+
+
 def fake_fetch(url):
+    fetch_calls.append(url)
+    if "toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs" in url:
+        return (
+            '<a href="aarch64--glibc--stable-2025.08-1.tar.xz">2025.08-1</a>'
+            '<a href="aarch64--glibc--stable-2026.08-1.tar.xz">2026.08-1</a>'
+        )
+    if "/-/raw/" in url and url.endswith("toolchain-external-bootlin/Config.in.options"):
+        return (
+            "config BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE\n"
+            '  bool "aarch64 glibc stable 2025.08-1"\n'
+        )
     if "rhysd/actionlint" in url:
         return '{"tag_name":"1.7.12"}'
     if "koalaman/shellcheck" in url:
@@ -302,8 +416,33 @@ with tempfile.TemporaryDirectory() as directory:
     ) in report
     assert "| Debian snapshot date | `20261019T190000Z` | `-` | 最新 |" in report
     assert "| Buildroot LTS | `2026.08.x` | `2026.02.x` | 参考 |" in report
+    assert (
+        "| Bootlin toolchain (aarch64 glibc stable) | `2025.08-1` | "
+        "`2026.08-1（安定版の Buildroot では未提供）` | Buildroot 安定版待ち |"
+        in report
+    )
+    assert (
+        "| Buildroot point release | `" + sha + "` | `2026.08.3` | 参考 |"
+        in report
+    )
+    assert any(args[-1] == "refs/heads/20*.x" for args in run_calls)
+    assert any("/2026.08.x/" in url for url in fetch_calls)
+    assert not any("/master/" in url for url in fetch_calls)
     assert output.getvalue().strip() == "全て最新"
 print("ok - marks informational upstream rows as 参考 and excludes them from status")
+
+module.run = fake_run_without_point_tags
+with tempfile.TemporaryDirectory() as directory:
+    report_path = pathlib.Path(directory) / "pins.md"
+    with contextlib.redirect_stdout(io.StringIO()):
+        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
+    report = report_path.read_text()
+    assert (
+        "| Buildroot point release | `" + sha + "` | `確認できず` | 確認できず |"
+        in report
+    )
+module.run = fake_run
+print("ok - reports an unavailable Buildroot point release as unknown")
 
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
@@ -319,16 +458,17 @@ for path in fixtures:
     shutil.rmtree(path)
 PY
 
-issue_pattern='^([|]---.*|[|] 依存 [|].*|[|].*[|] (最新|参考) [|].*[|])$'
+issue_pattern='^([|]---.*|[|] 依存 [|].*|[|].*[|] (最新|参考|Buildroot 安定版待ち) [|].*[|])$'
 reference_report='| 依存 | 固定値 | 最新 | 状態 | 参照URL |
 |---|---|---|---|---|
 | Raspberry Pi Linux series | rpi-6.18.y | rpi-7.3.y | 参考 | https://example.test |
-| Buildroot LTS | 2026.08.x | 2026.02.x | 参考 | https://example.test |'
+| Buildroot LTS | 2026.08.x | 2026.02.x | 参考 | https://example.test |
+| Bootlin toolchain (aarch64 glibc stable) | 2025.08-1 | 2026.08-1 | Buildroot 安定版待ち | https://example.test |'
 if printf '%s\n' "$reference_report" | grep -qvE "$issue_pattern"; then
     echo "fail - informational rows must not trigger an issue" >&2
     exit 1
 fi
-echo "ok - ignores 参考 rows when deciding whether to open or update the issue"
+echo "ok - ignores informational rows when deciding whether to open or update the issue"
 
 actionable_report="$reference_report
 | Raspberry Pi Linux | 234188315037848e5b07d65b85d38edc64095caa | 5d64d1ea73716526ed9c0ed184a9cb5f6042e32c | 更新あり | https://example.test |"
