@@ -105,6 +105,8 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S9 のうち GPIO6 の経路 | QEMU に足した GPIO6 の割り込みで、通知、remount、fsck を確認 | [2026-10-20-qemu-powerfail-gpio6](../experiments/2026-10-20-qemu-powerfail-gpio6.md) |
 | 起動時間の内訳と K1・K2・U1 | initcall と init script ごとの時間。K2（ftrace の無効化）だけが基準を満たした | [2026-10-20-qemu-boottime](../experiments/2026-10-20-qemu-boottime.md) |
 | 調整項目の既定値 | sysctl、ブロックデバイス、モジュールパラメーター | [2026-10-19-tunables-dump](../experiments/2026-10-19-tunables-dump.md) |
+| `kernel8.img` の gzip 再圧縮 | 実装済み。`post-image.sh` が `pigz -11 -n` で圧縮し、展開結果を `cmp` で比べる。読み込み時間は実機で測る | #8（[BUILD.md](../BUILD.md)） |
+| `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](storage-and-flash.md)） |
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 
 #### QEMU で検証できるが未実施
@@ -132,8 +134,6 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
 | `/data` の `noexec` | mount の値と、アプリが動くか | 小 |
 | BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
-| `kernel8.img` の gzip 再圧縮 | 展開後にビットが一致すること（ホストで確認）。読み込み時間は実機で測る | 小 |
-| `align = 4M` | パーティションの配置。性能は実機で測る | 小 |
 | Lynis | 生成イメージの監査 | 小 |
 
 #### 実機でしか検証できない項目
@@ -154,7 +154,7 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 4. S1・S14 の本番（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む）と、任意機能のドライバーのモジュール化
 5. S13
 6. S16 → S4・S5・S17
-7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、`noexec`、BusyBox、gzip 再圧縮、`align = 4M`、Lynis）
+7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、`noexec`、BusyBox、Lynis）
 
 ### 次の作業計画（2026-10-19 時点）
 

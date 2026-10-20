@@ -2,9 +2,9 @@
 
 ## 結論
 
-現行の CI イメージは MBR で、p1～p7 の開始位置がすべて 4 KiB 境界からずれています。genimage v20 の `align = 4M` を使った実測では、拡張パーティションと論理パーティションを含む全開始位置が 4 MiB 境界にそろい、イメージは約 16 MiB 大きくなりました。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)／[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)
+#19 より前の CI イメージは MBR で、p1～p7 の開始位置がすべて 4 KiB 境界からずれていました。genimage v20 の `align = 4M` を使った実測では、拡張パーティションと論理パーティションを含む全開始位置が 4 MiB 境界にそろい、イメージは約 16 MiB 大きくなりました。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)／[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)
 
-現時点では、`align = 4M` を別変更として実機評価へ進める案を推奨します。これは測定した候補のうち全開始位置がそろう設定であり、SD の速度、寿命、電断耐性が向上することを示すものではありません。実カードで比較してから採否を決めます。【推測】[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[実機測定計画](measurement-and-planning.md)
+現時点では、`align = 4M` を別変更として実機評価へ進める案を推奨します。これは測定した候補のうち全開始位置がそろう設定であり、SD の速度、寿命、電断耐性が向上することを示すものではありません。実カードで比較してから採否を決めます。【推測】その後 #19 で `align = 4M` を `genimage.cfg` に入れ、`check-image-layout.sh` が CI で全開始位置の 8192 sector 境界を検査しています。実カードでの比較は未実施です。[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[実機測定計画](measurement-and-planning.md)
 
 パーティションの整列と FAT のデータ領域の整列は別です。現行 boot-a の FAT データ領域はパーティション開始から 292 セクター（149,504 byte）後にあります。パーティション開始を 4 MiB にそろえても、この相対オフセットは変わりません。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)／[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)
 

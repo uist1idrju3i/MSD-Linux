@@ -35,7 +35,7 @@ RESEARCH.md から分割した節です。
 | 高速化 | [GPU ファームウェアを省くブートローダー](fastboot-ideas.md#高速化のアイデア一覧) | ファームウェア段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
 | 高速化 | [PREEMPT / printk 比較](fastboot-ideas.md#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 未着手 |
 | 信頼性 | [読み取り専用 SquashFS rootfs](power-and-updates.md) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
-| 信頼性 | [`align = 4M`](../../docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 未着手（origin/main 未反映） |
+| 信頼性 | [`align = 4M`](../../docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 採用（#19。`genimage.cfg` の `align = 4M` と、`check-image-layout.sh` の 8192 sector 境界の検査）。実機での性能と電断は未確認 |
 | 信頼性 | [FAT data-area offset の扱い](../../docs/research/storage-and-flash.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
 | 信頼性 | [`data=ordered` 移行検討](../../docs/research/storage-and-flash.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
 | 信頼性 | [barrier / `commit=` と `/data` 検証](../../docs/research/storage-and-flash.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
