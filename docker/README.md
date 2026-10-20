@@ -19,11 +19,10 @@ docker/msd-dev bash -lc 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/out
 docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 ```
 
-QEMU は既定で `raspi3b`（1 GiB）を使います。CM0 の DTB で `raspi3ap`（512 MiB）を確認する場合は、次のように実行します。
+QEMU は既定で `raspi3ap`（512 MiB）と `bcm2710-rpi-cm0.dtb` を使います。1 GiB の `raspi3b` と Pi 3 の DTB で確認する場合は、次のように実行します。
 
 ```sh
-QEMU_MACHINE=raspi3ap DTB_IMAGE=output/images/bcm2710-rpi-cm0.dtb \
-  docker/msd-dev board/cardputerzero/qemu/test-boot.sh
+QEMU_MACHINE=raspi3b docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 ```
 
 `output/`、`dl/`、`.ccache/` はホスト側のリポジトリーに置き、コンテナーには bind mount します。`BR2_DL_DIR`、`BR2_CCACHE_DIR`、`OUTPUT_DIR` にリポジトリー外のパスを指定した場合も、そのパスを同じ位置に mount します。これらのデータはイメージには入りません。
@@ -38,7 +37,9 @@ Bootlin toolchain は x86_64 専用です。arm64 ホストでは開発用イメ
 
 公開イメージを取得するだけなら GitHub への認証は不要です。attestation の検証には、`gh auth login` または `GH_TOKEN` / `GITHUB_TOKEN` による `gh` の認証が必要です。`gh` が未認証の場合、通常は警告を出して検証を省略し、`MSD_DEV_REQUIRE_ATTESTATION=1` では失敗します。CI の `Ensure development image` は `GH_TOKEN` に `secrets.GITHUB_TOKEN` を渡し、job に `packages: read` と `attestations: read` を設定しています。
 
-Devin Outposts の worker（Docker 29.8.2、rootless、x86_64）で実行した actionlint、ShellCheck、`tests/check-pins/run.sh`、`tests/msd-update/run.sh`、`tests/msd-hwinfo/run.sh`、`tests/msd-data-grow/run.sh`、`tests/qemu-log-check/run.sh`、`tests/trivy-gate/run.sh` はいずれも成功です。Buildroot のフルビルドは ccache が空の状態で 12 スレッドを使い、1 回の実行に 3,599 秒でした。QEMU の結果は、`raspi3b` の `test-boot.sh` と `test-ab.sh`、および `bcm2710-rpi-cm0.dtb` を使う `raspi3ap` の `test-boot.sh` がいずれも成功しました。
+Devin Outposts の worker（Docker 29.8.2 の rootless、sudo なし、Docker Buildx plugin なし、`gh` 未認証、x86_64、12 スレッド）での、commit `dbe83fa` の検証結果です。ツリーに変更を加えず、`docker/msd-dev ensure` で公開イメージを取得しました。未認証の `gh` のため attestation 検証は警告付きで省略され、`MSD_DEV_REQUIRE_ATTESTATION=1` では設計どおり失敗する仕様です。actionlint、ShellCheck、`tests/check-pins/run.sh`、`tests/msd-update/run.sh`、`tests/msd-hwinfo/run.sh`、`tests/msd-data-grow/run.sh`、`tests/qemu-log-check/run.sh`、`tests/trivy-gate/run.sh`、`tests/msd-dev/run.sh` は成功しました。空の ccache で 12 スレッドを使った Buildroot のフルビルドは 3,199 秒（1 回）でした。`QEMU_MACHINE=raspi3ap` と `bcm2710-rpi-cm0.dtb` を使う `test-boot.sh` と `test-ab.sh` も成功し、生成物はすべて worker ユーザーの所有です。
+
+commit `e9b3b3f` のツリーを変更せずに、Docker Buildx plugin がない環境で `docker/msd-dev build` を legacy builder で実行したところ、no-cache のビルドが 812 秒（1 回）で成功しました。そのイメージでは ShellCheck 0.11.0 と QEMU 11.1.2 が動作し、`tests/msd-dev/run.sh` の 21 件と `tests/check-pins/run.sh` の 26 件も成功しました。記載した時間は、いずれも単一回の実行結果です。
 
 ## GHCR 公開イメージ
 

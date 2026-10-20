@@ -79,7 +79,7 @@ QEMU の `raspi3b` machine は 4 基の Cortex-A53 と 1 GiB RAM、`raspi3ap` �
 - GPU firmware と `tryboot`
 - 実際の SD timing、wear、電源断挙動
 
-`raspi3ap` の起動失敗は、Linux の `bcm2835-power` probe が読む ASB address `0x3f00a000` がモデル化されていないことによります。`raspi3b` は 1 GiB RAM がこの穴に alias するため起動できますが、`raspi3ap` では同期 external abort になります。この差を扱うため、QEMU に local `create_unimp` patch を追加する案を PR #55 で提案しました。
+パッチ適用前の `raspi3ap` の起動失敗は、Linux の `bcm2835-power` probe が読む ASB address `0x3f00a000` がモデル化されていないことによります。`raspi3b` は 1 GiB RAM がこの穴に alias するため起動できますが、`raspi3ap` では同期 external abort になります。この差を扱う QEMU の `create_unimp` パッチは、PR #55 で `docker/qemu-patches/` に追加されました。PR #61 以降、CI の既定 machine は `raspi3ap` です。
 
 TCG plugin は guest の実行を測るもので、ハードウェアモデルを追加しません。これまでの起動結果は**単一回の予備的な実行**です。条件を固定した formal experiment record は未作成であり、実機の周辺機能・時間・SD 特性の検証結果ではありません。
 
