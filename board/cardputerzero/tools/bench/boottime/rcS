@@ -1,0 +1,27 @@
+#!/bin/sh
+
+printf '<6>msd-boottime: rcS begin\n' >/dev/kmsg 2>/dev/null || true
+for i in /etc/init.d/S??*; do
+	[ ! -f "$i" ] && continue
+
+	printf '<6>msd-boottime: begin %s\n' "${i##*/}" \
+		>/dev/kmsg 2>/dev/null || true
+	case "$i" in
+		*.sh)
+			(
+				trap - INT QUIT TSTP
+				set start
+				# shellcheck source=/dev/null
+				. "$i"
+			)
+			rc=$?
+			;;
+		*)
+			"$i" start
+			rc=$?
+			;;
+	esac
+	printf '<6>msd-boottime: end %s status=%d\n' "${i##*/}" "$rc" \
+		>/dev/kmsg 2>/dev/null || true
+done
+printf '<6>msd-boottime: rcS end\n' >/dev/kmsg 2>/dev/null || true

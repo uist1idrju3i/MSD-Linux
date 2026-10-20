@@ -1,0 +1,9 @@
+#!/bin/sh
+
+case " $(cat /proc/cmdline) " in
+	*" msd.boottime=1 "*)
+		printf '%s\n' 'msd-boottime: dmesg begin' >/dev/console
+		dmesg | sed 's/^/=dmesg= /' >/dev/console
+		printf '%s\n' 'msd-boottime: dmesg end' >/dev/console
+		;;
+esac
