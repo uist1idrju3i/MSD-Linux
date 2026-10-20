@@ -101,6 +101,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
 - [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
 - [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
+- [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
 - [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
 
@@ -312,6 +313,7 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 | 軽量化 | [kernel compressor / EROFS の削減比較](docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | 未着手 |
 | 高速化 | [Buildroot `-O2` / `-Os`、LTO / PGO](docs/research/soc-memory-compression.md) | userland size と CPU-bound workload を比較 | build time、profile 回収、再現性 | package 対応と stale profile | QEMU: 機能 / 実機: CPU・起動 | P2 | 未着手 |
 | 試験・保守 | [三段階 simulator 検証](docs/research/measurement-and-planning.md#シミュレーターと検証基盤の比較) | QEMU 機能、TCG option 比較、実機 timing を分離 | hardware proxy と実機が必要 | QEMU / gem5 の時間を実機値と混同しない | QEMU・gem5・Zero 2 W・CM0 | P1 | 方針案 |
+| 開発・CI | [開発環境と CI](docs/research/dev-environment-and-ci.md) | ローカルと CI の toolchain をそろえ、検査・起動確認を再現する | 開発イメージと CI の保守 | CI 成果物との比較、速度改善は未確認 | QEMU: 機能確認 / CI: build・artifact | — | 開発イメージ採用、比較結果は予備的 |
 
 ## QEMU で検証できる範囲
 
@@ -472,6 +474,7 @@ lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 で�
 | M5 overlay | `cardputerzero-overlay` と `cardputerzero-v3/v5-overlay` の名称不整合、RTC overlay の I2C address |
 | image-rota / Zephyr | zero2w / pi3 での image-rota 挙動、Canonical Zephyr fork の内容 |
 | Buildroot packages | 最終構成で `make legal-info` を生成し、各配布物のバージョン・ライセンス・source archive を確認 |
+| 開発環境・CI の比較 | [記録](docs/research/dev-environment-and-ci.md)の artifact 比較は予備的です。第3段階の PR で正式な実験記録を作成し、未測定の build 最適化候補を評価 |
 | M5 hardware revision | v3 / v5 overlay と製品回路の整合、GL852G reset と keyboard shared GPIO |
 | SSH / VPN | 実装しない方針。将来方針が変わる場合に限り暗号性能・鍵管理を再調査 |
 | sysctl・I/O の実機値 | QEMU で取った既定値（[一覧](docs/research/tunables-defaults.md)）を CM0 実機で取り直し、RAM、SD、cpufreq、温度に依存する値の差を記録 |

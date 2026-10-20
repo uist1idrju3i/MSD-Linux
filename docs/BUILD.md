@@ -4,6 +4,17 @@
 
 Ubuntu 26.04 を想定しています。Buildroot のホスト依存パッケージと QEMU が必要です。CI と同じ環境にする場合は、`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。ホストテストには `fdisk`、`e2fsprogs`、`openssl` も必要です。
 
+## 推奨する開発環境
+
+CI と同じ固定版のツールを使う場合は、開発用コンテナー `docker/msd-dev` を推奨します。最初にイメージをビルドし、その後はコマンドをコンテナー内で実行します。
+
+```sh
+docker/msd-dev build
+docker/msd-dev bash
+```
+
+イメージの選定理由、実行例、GHCR からの取得方法は[開発用コンテナーの説明](../docker/README.md)を参照してください。ホストに依存を導入する方法も引き続き利用できます。
+
 ## イメージのビルド
 
 リポジトリのルートで、Buildroot の defconfig を適用してビルドします。
