@@ -13,4 +13,5 @@
 | [2026-10-19-social-webp](2026-10-19-social-webp.md) | なし | 2026-10-19 | 完了 | `cwebp -z 9 -metadata none` を可逆 Social preview 用に採用（19,262 B）。 |
 | [2026-10-19-site-render](2026-10-19-site-render.md) | なし | 2026-10-19 | 完了 | minify、svgo、CSS のインライン化、`content-visibility` はどれも不採用（基準の 10% 短縮か画素の一致を満たさない）。 |
 | [2026-10-20-ci-image-vs-runner](2026-10-20-ci-image-vs-runner.md) | なし | 2026-10-20 | 完了 | 既存の CI の run 9 件の振り返り。ccache が効けば、イメージ内の Buildroot の step（1,073〜1,184 秒）は runner（1,267〜1,313 秒）より遅くない。遅い run は ccache が効いていなかった。`ensure` は毎回ローカルでビルドしていた（312〜489 秒）。 |
+| [2026-10-20-qemu-boottime](2026-10-20-qemu-boottime.md) | なし | 2026-10-20 | 完了 | QEMU の値で、実機では未確認。K2（`CONFIG_FTRACE` 無効）は icount で `t_ready` −37.88 %、TCG で −5.68 % となり、基準を満たした（製品の設定は未変更）。U1（mdev の走査を `/sys/devices` に限る）は約 −3 % で基準未達。K1（`CONFIG_KPROBE_EVENTS` 無効）は不採用。 |
 | [2026-10-20-qemu-powerfail-gpio6](2026-10-20-qemu-powerfail-gpio6.md) | なし | 2026-10-20 | 完了 | 1.5 秒・5 秒の各 5 試行と post-rebase integrity は基準を満たした。SIGKILL による試験であり、実機では未確認。 |

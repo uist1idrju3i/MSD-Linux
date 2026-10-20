@@ -121,7 +121,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 ## 起動時間（実測値と分析）
 
-詳しくは [boot-time-measurements.md](docs/research/boot-time-measurements.md) を参照してください。
+詳しくは [boot-time-measurements.md](docs/research/boot-time-measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
 
 ## 高速化のアイデア一覧
 
