@@ -197,6 +197,7 @@ done
 
 for name in \
     QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT QEMU_MACHINE DTB_IMAGE \
+    QEMU_ICOUNT QEMU_MODULE_TEST QEMU_COPY_IMAGE KERNEL_IMAGE \
     CCACHE_MAXSIZE GITHUB_SHA KHC_TAG KHC_COMMIT; do
     if [[ -v "$name" ]]; then
         docker_args+=(--env "${name}=${!name}")
