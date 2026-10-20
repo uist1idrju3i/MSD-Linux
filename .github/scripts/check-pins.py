@@ -55,6 +55,103 @@ def parse_buildroot_branch(text: str) -> str:
     return match.group(1) if match else ""
 
 
+def selected_bootlin_option(definition: str) -> str:
+    options = re.findall(
+        r"^(BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_[A-Z0-9_]+)=y$", definition, re.M
+    )
+    return options[0] if len(options) == 1 else ""
+
+
+def bootlin_option_block(text: str, option: str) -> str | None:
+    match = re.search(
+        rf"^config {re.escape(option)}[ \t]*\n(.*?)(?=^config\s|\Z)",
+        text,
+        re.M | re.S,
+    )
+    return match.group(1) if match else None
+
+
+def parse_bootlin_option_version(text: str, option: str) -> str:
+    block = bootlin_option_block(text, option)
+    if block is None:
+        return ""
+    match = re.search(
+        r'^[ \t]*bool\s+"[^"]*?(\d{4}\.\d{2}-\d+)"[ \t]*$', block, re.M
+    )
+    return match.group(1) if match else ""
+
+
+def parse_bootlin_latest(html: str) -> str:
+    versions = re.findall(
+        r"aarch64--glibc--stable-(\d{4}\.\d{2}-\d+)\.tar\.xz", html
+    )
+    return max(versions, key=branch_key) if versions else ""
+
+
+def bootlin_status(
+    pinned: str, latest: str, offered: str | None, stable_branch: str
+) -> tuple[str, str]:
+    version_pattern = r"\d{4}\.\d{2}-\d+"
+    if not latest or not re.fullmatch(version_pattern, latest):
+        return "確認できず", "確認できず"
+    if offered is None:
+        return latest, "確認できず"
+    if not re.fullmatch(version_pattern, pinned):
+        return latest, "確認できず"
+    if offered and not re.fullmatch(version_pattern, offered):
+        return latest, "確認できず"
+    if not re.fullmatch(r"\d{4}\.\d{2}\.x", stable_branch):
+        return latest, "確認できず"
+    if pinned == latest:
+        return latest, "最新"
+    if offered and branch_key(offered) > branch_key(pinned):
+        available = (
+            f"Buildroot {stable_branch} で選択可"
+            if offered == latest
+            else f"Buildroot {stable_branch} で {offered} を選択可"
+        )
+        return f"{latest}（{available}）", "更新あり"
+    return f"{latest}（安定版の Buildroot では未提供）", "Buildroot 安定版待ち"
+
+
+def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
+    match = re.fullmatch(r"(\d{4}\.\d{2})\.x", branch)
+    if not match:
+        return "", ""
+    series = match.group(1)
+    tag_commits: dict[str, str] = {}
+    tag_objects: dict[str, str] = {}
+    tag_versions: dict[str, int] = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) != 2:
+            continue
+        sha, ref = fields
+        peeled = ref.endswith("^{}")
+        tag_ref = ref[:-3] if peeled else ref
+        tag_match = re.fullmatch(
+            rf"refs/tags/{re.escape(series)}(?:\.(\d+))?", tag_ref
+        )
+        if not tag_match:
+            continue
+        tag = tag_ref.removeprefix("refs/tags/")
+        tag_versions[tag] = int(tag_match.group(1) or 0)
+        if peeled:
+            tag_commits[tag] = sha
+        else:
+            tag_objects[tag] = sha
+    tags = set(tag_commits) | set(tag_objects)
+    if not tags:
+        return "", ""
+    latest = max(tags, key=tag_versions.__getitem__)
+    return latest, tag_commits.get(latest, tag_objects.get(latest, ""))
+
+
+def upstream_summary(rows: list[tuple[str, str, str, str, str]]) -> str:
+    informational = {"最新", "参考", "Buildroot 安定版待ち"}
+    return "更新あり" if any(row[3] not in informational for row in rows) else "全て最新"
+
+
 def branch_key(name: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.findall(r"\d+", name))
 
@@ -131,6 +228,16 @@ def run(*args: str, cwd: Path = ROOT) -> str:
     )
 
 
+def buildroot_gitlink_sha(root: Path) -> str:
+    try:
+        fields = run("git", "ls-tree", "HEAD", "vendor/buildroot", cwd=root).split()
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return ""
+    if len(fields) >= 3 and fields[0] == "160000" and fields[1] == "commit":
+        return fields[2]
+    return ""
+
+
 def consistency(root: Path) -> list[str]:
     errors: list[str] = []
     definition = (root / "configs/msd_cardputerzero_defconfig").read_text()
@@ -186,6 +293,22 @@ def consistency(root: Path) -> list[str]:
     branch = parse_buildroot_branch((root / ".gitmodules").read_text())
     if not readme_version or readme_version.group(1) != branch.removesuffix(".x"):
         errors.append("README Buildroot version differs from .gitmodules")
+
+    buildroot_root = root / "vendor/buildroot"
+    bootlin_config = (
+        buildroot_root
+        / "toolchain/toolchain-external/toolchain-external-bootlin/Config.in.options"
+    )
+    if (buildroot_root / ".git").exists() or bootlin_config.is_file():
+        bootlin_option = selected_bootlin_option(definition)
+        if not bootlin_option or not parse_bootlin_option_version(
+            bootlin_config.read_text() if bootlin_config.is_file() else "",
+            bootlin_option,
+        ):
+            errors.append(
+                "defconfig Bootlin toolchain option must exist in "
+                "Buildroot Config.in.options"
+            )
 
     lint_workflow = (root / ".github/workflows/lint.yml").read_text()
     for name in ("ACTIONLINT_VERSION", "SHELLCHECK_VERSION"):
@@ -296,17 +419,40 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
         rows.append(("Raspberry Pi Linux series", KERNEL_SERIES, "確認できず", "参考",
                      "https://github.com/raspberrypi/linux/branches"))
     branch = parse_buildroot_branch((root / ".gitmodules").read_text())
+    buildroot_repo = "https://gitlab.com/buildroot.org/buildroot.git"
+    buildroot_branches: list[str] = []
+    buildroot_newest = "確認できず"
     try:
         refs = parse_ls_remote(run(
-            "git", "ls-remote", "--heads", "https://gitlab.com/buildroot.org/buildroot.git",
+            "git",
+            "ls-remote",
+            "--heads",
+            buildroot_repo,
+            "refs/heads/20*.x",
         ))
-        branches = [name for name in refs if re.fullmatch(r"\d{4}\.\d{2}\.x", name)]
-        newest = max(branches, key=branch_key) if branches else "確認できず"
-        lts = [name for name in branches if name.endswith(".02.x")]
+        buildroot_branches = [
+            name
+            for name in refs
+            if re.fullmatch(r"\d{4}\.\d{2}\.x", name)
+        ]
+        buildroot_newest = (
+            max(buildroot_branches, key=branch_key)
+            if buildroot_branches
+            else "確認できず"
+        )
+        lts = [name for name in buildroot_branches if name.endswith(".02.x")]
         newest_lts = max(lts, key=branch_key) if lts else "確認できず"
-        current = branch_key(branch) >= branch_key(newest) if newest != "確認できず" else False
-        status = "確認できず" if newest == "確認できず" else ("最新" if current else "更新あり")
-        rows.append(("Buildroot", branch, newest, status,
+        current = (
+            branch_key(branch) >= branch_key(buildroot_newest)
+            if buildroot_newest != "確認できず"
+            else False
+        )
+        status = (
+            "確認できず"
+            if buildroot_newest == "確認できず"
+            else ("最新" if current else "更新あり")
+        )
+        rows.append(("Buildroot", branch, buildroot_newest, status,
                      "https://gitlab.com/buildroot.org/buildroot/-/branches"))
         rows.append(("Buildroot LTS", branch, newest_lts, "参考",
                      "https://gitlab.com/buildroot.org/buildroot/-/branches"))
@@ -315,6 +461,115 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
                      "https://gitlab.com/buildroot.org/buildroot/-/branches"))
         rows.append(("Buildroot LTS", branch, "確認できず", "参考",
                      "https://gitlab.com/buildroot.org/buildroot/-/branches"))
+
+    bootlin_option = selected_bootlin_option(definition)
+    bootlin_config = (
+        root
+        / "vendor/buildroot/toolchain/toolchain-external/"
+        "toolchain-external-bootlin/Config.in.options"
+    )
+    try:
+        bootlin_pinned = (
+            parse_bootlin_option_version(bootlin_config.read_text(), bootlin_option)
+            if bootlin_option and bootlin_config.is_file()
+            else ""
+        )
+    except OSError:
+        bootlin_pinned = ""
+    bootlin_url = (
+        "https://toolchains.bootlin.com/downloads/releases/toolchains/"
+        "aarch64/tarballs/"
+    )
+    try:
+        bootlin_latest = parse_bootlin_latest(fetch(bootlin_url))
+        if not bootlin_latest:
+            raise ValueError("no stable aarch64 glibc release found")
+    except (OSError, URLError, ValueError) as exc:
+        print(f"Bootlin toolchain: upstream check unavailable: {exc}", file=sys.stderr)
+        bootlin_latest = ""
+
+    bootlin_offered: str | None = None
+    if bootlin_option and buildroot_newest != "確認できず":
+        branch_url = (
+            "https://gitlab.com/buildroot.org/buildroot/-/raw/"
+            f"{buildroot_newest}/toolchain/toolchain-external/"
+            "toolchain-external-bootlin/Config.in.options"
+        )
+        try:
+            branch_config = fetch(branch_url)
+            if not re.search(r"^config\s+[A-Za-z0-9_]+", branch_config, re.M):
+                raise ValueError("invalid Buildroot Bootlin Kconfig")
+            if bootlin_option_block(branch_config, bootlin_option) is None:
+                bootlin_offered = ""
+            else:
+                bootlin_offered = (
+                    parse_bootlin_option_version(branch_config, bootlin_option)
+                    or None
+                )
+        except (OSError, URLError, ValueError) as exc:
+            print(
+                f"Bootlin Buildroot branch: upstream check unavailable: {exc}",
+                file=sys.stderr,
+            )
+            bootlin_offered = None
+    bootlin_latest_display, bootlin_state = bootlin_status(
+        bootlin_pinned or "未設定",
+        bootlin_latest,
+        bootlin_offered,
+        buildroot_newest,
+    )
+    rows.append(
+        (
+            "Bootlin toolchain (aarch64 glibc stable)",
+            bootlin_pinned or "未設定",
+            bootlin_latest_display,
+            bootlin_state,
+            "https://toolchains.bootlin.com/releases_aarch64.html",
+        )
+    )
+
+    buildroot_gitlink = buildroot_gitlink_sha(root)
+    buildroot_point_latest = "確認できず"
+    buildroot_point_state = "確認できず"
+    try:
+        if not re.fullmatch(r"\d{4}\.\d{2}\.x", branch):
+            raise ValueError("pinned Buildroot branch is not a stable series")
+        tags = run(
+            "git",
+            "ls-remote",
+            "--tags",
+            buildroot_repo,
+        )
+        buildroot_point_latest, latest_commit = parse_buildroot_point_release(
+            tags, branch
+        )
+        if not buildroot_point_latest or not latest_commit or not buildroot_gitlink:
+            raise ValueError("Buildroot point release or gitlink is unavailable")
+        buildroot_point_state = (
+            "最新" if buildroot_gitlink == latest_commit else "参考"
+        )
+    except (
+        OSError,
+        URLError,
+        ValueError,
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+    ) as exc:
+        buildroot_point_latest = "確認できず"
+        buildroot_point_state = "確認できず"
+        print(
+            f"Buildroot point release: upstream check unavailable: {exc}",
+            file=sys.stderr,
+        )
+    rows.append(
+        (
+            "Buildroot point release",
+            buildroot_gitlink or "未設定",
+            buildroot_point_latest,
+            buildroot_point_state,
+            "https://gitlab.com/buildroot.org/buildroot/-/tags",
+        )
+    )
 
     for name, repository, env_name in (
         ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION"),
@@ -461,12 +716,13 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     except (OSError, URLError, ValueError):
         rows.append(("GitHub-hosted runner", os.environ.get("RUNNER_LABEL") or runner_label(root) or "未設定",
                      "確認できず", "確認できず", "https://github.com/actions/runner-images"))
-    lines = ["| 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず・参考) | 参照URL |",
+    lines = [
+             "| 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず・参考・Buildroot 安定版待ち) | 参照URL |",
              "|---|---|---|---|---|"]
     lines.extend(f"| {name} | `{pin}` | `{latest}` | {status} | {url} |"
                  for name, pin, latest, status, url in rows)
     report_path.write_text("\n".join(lines) + "\n")
-    print("更新あり" if any(row[3] not in {"最新", "参考"} for row in rows) else "全て最新")
+    print(upstream_summary(rows))
     return 0
 
 
