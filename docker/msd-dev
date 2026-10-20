@@ -59,13 +59,15 @@ if [[ "${1:-}" == "ensure" ]]; then
     fi
     input_tag="$(image_input_hash)"
     source_image="${image_repository}:inputs-${input_tag}"
-    if inspect_output="$(docker buildx imagetools inspect "${source_image}" 2>&1)"; then
-        printf '%s\n' "${inspect_output}"
+    if inspect_output="$(docker manifest inspect "${source_image}" 2>&1)"; then
+        printf 'Published image %s found.\n' "${source_image}"
         exec "${0}" pull
     else
         inspect_status=$?
     fi
-    if [[ "${inspect_output}" == *": not found"* ]]; then
+    if [[ "${inspect_output}" == *"manifest unknown"* ||
+        "${inspect_output}" == *": not found"* ||
+        "${inspect_output}" == *"no such manifest"* ]]; then
         printf 'Published image %s was not found; building locally.\n' \
             "${source_image}" >&2
         exec docker build \
@@ -87,8 +89,17 @@ if [[ "${1:-}" == "pull" ]]; then
     source_image="${image_repository}:inputs-${input_tag}"
     docker pull "${source_image}"
     if command -v gh >/dev/null 2>&1; then
-        gh attestation verify "oci://${source_image}" \
-            --repo uist1idrju3i/MSD-Linux
+        if gh auth status >/dev/null 2>&1; then
+            gh attestation verify "oci://${source_image}" \
+                --repo uist1idrju3i/MSD-Linux
+        elif [[ "${MSD_DEV_REQUIRE_ATTESTATION:-0}" == 1 ]]; then
+            printf '%s\n' \
+                'Error: gh is not authenticated; run gh auth login or set GH_TOKEN.' >&2
+            exit 1
+        else
+            printf '%s\n' \
+                'Warning: gh is not authenticated; attestation verification was skipped.' >&2
+        fi
     elif [[ "${MSD_DEV_REQUIRE_ATTESTATION:-0}" == 1 ]]; then
         printf '%s\n' \
             'Error: gh is required when MSD_DEV_REQUIRE_ATTESTATION=1.' >&2
@@ -120,11 +131,34 @@ if [[ -t 0 ]]; then
     tty_args=(-it)
 fi
 
+rootless="${MSD_DEV_ROOTLESS:-}"
+if [[ -z "${rootless}" ]]; then
+    if docker info --format '{{.SecurityOptions}}' 2>/dev/null | grep -q rootless; then
+        rootless=1
+    else
+        rootless=0
+    fi
+fi
+
+case "${rootless}" in
+    0)
+        user_args=(--user "$(id -u):$(id -g)")
+        ;;
+    1)
+        # rootless Docker では、コンテナー内の root はホストの実行ユーザーに対応する。
+        user_args=(--user 0:0)
+        ;;
+    *)
+        printf 'MSD_DEV_ROOTLESS must be 0 or 1, got: %s\n' "${rootless}" >&2
+        exit 2
+        ;;
+esac
+
 docker_args=(
     run
     --rm
     "${tty_args[@]}"
-    --user "$(id -u):$(id -g)"
+    "${user_args[@]}"
     --env HOME=/tmp/home
     --volume "${repo_root}:/work"
     --workdir /work

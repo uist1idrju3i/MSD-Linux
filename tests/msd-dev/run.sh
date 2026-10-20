@@ -161,15 +161,22 @@ mkdir -p -- "${fake_bin}" "${no_gh_bin}"
 cat > "${fake_bin}/docker" <<'SH'
 #!/usr/bin/env bash
 printf 'docker %s\n' "$*" >> "${FAKE_DOCKER_LOG}"
-if [[ "$1 $2 $3" == "buildx imagetools inspect" ]]; then
-    printf '%s\n' "${IMAGETOOLS_OUTPUT:-}" >&2
-    exit "${IMAGETOOLS_STATUS:-0}"
+if [[ "$1 $2" == "manifest inspect" ]]; then
+    printf '%s\n' "${MANIFEST_OUTPUT:-}" >&2
+    exit "${MANIFEST_STATUS:-0}"
+fi
+if [[ "$1 $2" == "info --format" ]]; then
+    printf '%s\n' "${DOCKER_INFO_OUTPUT:-[name=seccomp]}"
+    exit "${DOCKER_INFO_STATUS:-0}"
 fi
 exit "${DOCKER_STATUS:-0}"
 SH
 cat > "${fake_bin}/gh" <<'SH'
 #!/usr/bin/env bash
 printf 'gh %s\n' "$*" >> "${FAKE_GH_LOG}"
+if [[ "$1 $2" == "auth status" ]]; then
+    exit "${GH_AUTH_STATUS:-0}"
+fi
 exit "${GH_STATUS:-0}"
 SH
 chmod +x "${fake_bin}/docker" "${fake_bin}/gh"
@@ -185,11 +192,11 @@ run_ensure() {
     : > "${docker_log}"
     : > "${gh_log}"
     if "${env_bin}" \
+        -u MSD_DEV_REQUIRE_ATTESTATION \
         PATH="${path}" \
         FAKE_DOCKER_LOG="${docker_log}" \
         FAKE_GH_LOG="${gh_log}" \
         MSD_DEV_IMAGE=msd-dev:ensure-test \
-        MSD_DEV_REQUIRE_ATTESTATION=1 \
         "$@" \
         "${launcher}" ensure >"${output}" 2>&1; then
         status=0
@@ -206,38 +213,132 @@ assert_no_docker_command() {
     fi
 }
 
-run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=0 GH_STATUS=0
+run_ensure "${fake_bin}:${PATH}" \
+    MSD_DEV_REQUIRE_ATTESTATION=1 \
+    MANIFEST_STATUS=0 \
+    MANIFEST_OUTPUT='{"schemaVersion":2}' \
+    GH_AUTH_STATUS=0 \
+    GH_STATUS=0
 [[ "${status}" -eq 0 ]]
+grep -Eq '^docker manifest inspect ghcr.io/uist1idrju3i/msd-dev:inputs-' "${docker_log}"
+grep -Eq '^Published image ghcr.io/uist1idrju3i/msd-dev:inputs-.* found\.$' "${output}"
+if grep -Fq '{"schemaVersion":2}' "${output}"; then
+    printf 'ensure printed the full manifest JSON.\n' >&2
+    exit 1
+fi
 grep -Eq '^docker pull ghcr.io/uist1idrju3i/msd-dev:inputs-' "${docker_log}"
+grep -Eq '^gh auth status$' "${gh_log}"
 grep -Eq '^gh attestation verify oci://ghcr.io/uist1idrju3i/msd-dev:inputs-' "${gh_log}"
 grep -Eq '^docker tag ghcr.io/uist1idrju3i/msd-dev:inputs-.* msd-dev:ensure-test$' "${docker_log}"
 assert_no_docker_command '^docker build '
 printf 'ok - ensure pulls and verifies a published image\n'
 
-run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=0 GH_STATUS=1
+run_ensure "${fake_bin}:${PATH}" \
+    MSD_DEV_REQUIRE_ATTESTATION=1 \
+    MANIFEST_STATUS=0 \
+    GH_AUTH_STATUS=0 \
+    GH_STATUS=1
 [[ "${status}" -ne 0 ]]
 assert_no_docker_command '^docker build '
-printf 'ok - ensure does not build when attestation verification fails\n'
+assert_no_docker_command '^docker tag '
+printf 'ok - ensure does not build or tag when attestation verification fails\n'
 
-run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=1 \
-    IMAGETOOLS_OUTPUT='ERROR: ghcr.io/uist1idrju3i/msd-dev:inputs-probe: not found'
-[[ "${status}" -eq 0 ]]
-grep -Eq '^docker build -f ' "${docker_log}"
-grep -Eq 'was not found; building locally' "${output}"
-printf 'ok - ensure builds when the remote tag is not found\n'
+for manifest_error in 'manifest unknown' ': not found' 'no such manifest'; do
+    run_ensure "${fake_bin}:${PATH}" \
+        MANIFEST_STATUS=1 \
+        MANIFEST_OUTPUT="${manifest_error}"
+    [[ "${status}" -eq 0 ]]
+    grep -Eq '^docker build -f ' "${docker_log}"
+    grep -Eq 'was not found; building locally' "${output}"
+done
+printf 'ok - ensure builds when manifest inspect reports a missing tag\n'
 
-run_ensure "${fake_bin}:${PATH}" IMAGETOOLS_STATUS=1 \
-    IMAGETOOLS_OUTPUT='ERROR: failed to authorize: authentication required'
+run_ensure "${fake_bin}:${PATH}" \
+    MANIFEST_STATUS=1 \
+    MANIFEST_OUTPUT='denied: requested access to the resource is denied'
 [[ "${status}" -ne 0 ]]
 assert_no_docker_command '^docker build '
+grep -Fq 'Could not inspect published image' "${output}"
 printf 'ok - ensure fails closed on registry errors\n'
 
-run_ensure "${no_gh_bin}" IMAGETOOLS_STATUS=0
+run_ensure "${fake_bin}:${PATH}" \
+    MANIFEST_STATUS=0 \
+    GH_AUTH_STATUS=1
+[[ "${status}" -eq 0 ]]
+grep -Eq '^docker tag ghcr.io/uist1idrju3i/msd-dev:inputs-.* msd-dev:ensure-test$' "${docker_log}"
+grep -Fq 'Warning: gh is not authenticated; attestation verification was skipped.' "${output}"
+if grep -q '^gh attestation verify ' "${gh_log}"; then
+    printf 'ensure verified an attestation despite unauthenticated gh.\n' >&2
+    exit 1
+fi
+printf 'ok - ensure skips attestation verification when gh is unauthenticated by default\n'
+
+run_ensure "${fake_bin}:${PATH}" \
+    MSD_DEV_REQUIRE_ATTESTATION=1 \
+    MANIFEST_STATUS=0 \
+    GH_AUTH_STATUS=1
+[[ "${status}" -ne 0 ]]
+grep -Fq 'Error: gh is not authenticated; run gh auth login or set GH_TOKEN.' "${output}"
+assert_no_docker_command '^docker tag '
+assert_no_docker_command '^docker build '
+printf 'ok - ensure requires authenticated gh when attestation is mandatory\n'
+
+run_ensure "${no_gh_bin}" \
+    MSD_DEV_REQUIRE_ATTESTATION=1 \
+    MANIFEST_STATUS=0
 [[ "${status}" -ne 0 ]]
 grep -Eq 'gh is required when MSD_DEV_REQUIRE_ATTESTATION=1' "${output}"
 assert_no_docker_command '^docker tag '
 assert_no_docker_command '^docker build '
 printf 'ok - ensure requires gh when attestation is mandatory\n'
+
+run_container() {
+    local docker_info_output="$1"
+    shift
+    : > "${docker_log}"
+    : > "${gh_log}"
+    if "${env_bin}" \
+        -u MSD_DEV_ROOTLESS \
+        PATH="${fake_bin}:${PATH}" \
+        FAKE_DOCKER_LOG="${docker_log}" \
+        FAKE_GH_LOG="${gh_log}" \
+        DOCKER_INFO_OUTPUT="${docker_info_output}" \
+        MSD_DEV_IMAGE=msd-dev:container-test \
+        "$@" \
+        "${launcher}" true >"${output}" 2>&1; then
+        status=0
+    else
+        status=$?
+    fi
+}
+
+assert_container_security_args() {
+    grep -Fq -- '--security-opt no-new-privileges' "${docker_log}"
+    grep -Fq -- '--cap-drop ALL' "${docker_log}"
+}
+
+expected_host_user="$(id -u):$(id -g)"
+run_container '[name=seccomp name=rootless]'
+[[ "${status}" -eq 0 ]]
+grep -Fq -- 'docker run --rm --user 0:0' "${docker_log}"
+assert_container_security_args
+printf 'ok - rootless Docker uses container root with security restrictions intact\n'
+
+run_container '[name=seccomp]'
+[[ "${status}" -eq 0 ]]
+grep -Fq -- "docker run --rm --user ${expected_host_user}" "${docker_log}"
+assert_container_security_args
+printf 'ok - non-rootless Docker uses the host uid and gid with security restrictions intact\n'
+
+run_container '[name=seccomp]' MSD_DEV_ROOTLESS=1
+[[ "${status}" -eq 0 ]]
+grep -Fq -- 'docker run --rm --user 0:0' "${docker_log}"
+printf 'ok - MSD_DEV_ROOTLESS=1 forces rootless mode\n'
+
+run_container '[name=seccomp name=rootless]' MSD_DEV_ROOTLESS=0
+[[ "${status}" -eq 0 ]]
+grep -Fq -- "docker run --rm --user ${expected_host_user}" "${docker_log}"
+printf 'ok - MSD_DEV_ROOTLESS=0 forces non-rootless mode\n'
 
 : > "${docker_log}"
 "${env_bin}" \

@@ -181,6 +181,8 @@ jobs:
         run: |
           # shellcheck disable=SC2016
           docker/msd-dev bash -c '
+            make -C output host-ccache
+            CCACHE_DIR="${BR2_CCACHE_DIR}" output/host/bin/ccache -z
             make -C output -j"$(nproc)"
             make -C output legal-info
           '
@@ -325,13 +327,13 @@ jobs:
             output/legal-info.tar.gz
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: always() && steps.dl-restore.outputs.cache-hit != 'true'
+        if: always() && steps.dl-restore.outputs.cache-hit != 'true' && steps.buildroot-build.outcome == 'success'
         with:
           path: dl
           key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: always()
+        if: always() && steps.buildroot-build.outcome == 'success'
         with:
           path: .ccache
           key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
