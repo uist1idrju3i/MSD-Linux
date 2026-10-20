@@ -61,7 +61,7 @@
       "parent": "ビルドシステム",
       "page_notes": [
         {
-          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、docs/research/boot-and-kernel.md を根拠にしてください。"
+          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、docs/research/boot-and-kernel.md、docs/research/kernel-size.md を根拠にしてください。"
         }
       ]
     },
@@ -80,7 +80,7 @@
       "parent": "起動シーケンス",
       "page_notes": [
         {
-          "content": "RESEARCH.md の「起動時間」「高速化のアイデア一覧」と docs/research/boot-and-kernel.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
+          "content": "docs/research/boot-time-measurements.md、RESEARCH.md の「高速化のアイデア一覧」と docs/research/boot-and-kernel.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
         }
       ]
     },
@@ -127,7 +127,7 @@
       "purpose": "CardputerZero の各ハードウェア機能（LCD、キーボード、音声、IMU、RTC、電池、IR、カメラ、Wi-Fi/BT、USB、Ethernet、HDMI、拡張端子、電源スイッチ）について、ドライバ、overlay、firmware、現在の対応状況を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md の「ハードウェア」、docs/research/scope-and-hardware.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
+          "content": "RESEARCH.md の「ハードウェア」、docs/research/scope-and-hardware.md、docs/research/hardware-spec.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
         }
       ]
     },
@@ -182,7 +182,7 @@
       "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md、docs/research/measurement-and-planning.md、docs/research/corrections.md、docs/research/sources.md を根拠にしてください。"
+          "content": "RESEARCH.md、docs/research/measurement-and-planning.md、docs/research/simulation-plan.md、docs/research/corrections.md、docs/research/sources.md を根拠にしてください。"
         }
       ]
     },

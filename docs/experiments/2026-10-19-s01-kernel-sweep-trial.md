@@ -3,7 +3,7 @@
 - 状態: 完了（ツールのみ。本番構成の採否は未実施）
 - 日付: 2026-10-19
 - 担当: Devin
-- 関連: PR #25、[S1–S17 検証計画](../research/measurement-and-planning.md#シミュレーション検証計画s1s17)
+- 関連: PR #25、[S1–S17 検証計画](../research/simulation-plan.md#シミュレーション検証計画s1s17)
 
 ## 目的と仮説
 
