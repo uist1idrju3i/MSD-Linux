@@ -20,7 +20,7 @@ Debian で使う QEMU 版は trixie-backports の Packages index にあるバイ
 - 開発イメージは GHCR で公開します。CI とローカルの lint・QEMU 起動確認に必要なツールはイメージに含め、CI で apt にフォールバックしません。
 - SBOM と provenance の attestation には GitHub 公式の `actions/attest-*` を使い、許可する action はリポジトリーの allowlist で管理します。第三者 action で行っていた処理は、可能なものを CLI または `docker run` に置き換えました。hadolint の起動失敗を避けるため、lint は digest 固定イメージを直接実行します。
 - `GITHUB_TOKEN` で作った bot の pull request では必須 CI が起動しないため、lock file と bot pull request による更新方式は採用しませんでした。
-- PR #53 では、内容から `inputs-<hash>` タグを作り、GitHub CLI の `gh attestation verify` で公開イメージを検証する方式を提案しました。
+- PR #53 で、内容から `inputs-<hash>` タグを作り、GitHub CLI の `gh attestation verify` で公開イメージを検証する方式を採用しました。
 
 actionlint v1.7.12 の公式配布バイナリーは Go 1.26.1 でビルドされており、Trivy 0.76.0 の検査で修正可能な HIGH の標準ライブラリー脆弱性が 23 件見つかりました。そのため開発イメージでは actionlint をソースからビルドし、`golang:1.27.2-trixie` を使います。zizmor の仮想環境に含まれていた pip 25.1.1 は実行時に使わないため削除します。
 
