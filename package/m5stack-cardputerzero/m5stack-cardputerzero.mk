@@ -29,6 +29,14 @@ M5STACK_CARDPUTERZERO_MODULE_MAKE_OPTS = \
 	CONFIG_BMI270_I2C=m \
 	KCFLAGS="$(LINUX_CFLAGS) -DCONFIG_CARDPUTERO_V0_5=1"
 
+# Local sources skip Buildroot's patch step; restore pristine files so rebuilds re-apply cleanly.
+define M5STACK_CARDPUTERZERO_APPLY_PATCHES
+	rsync -a --chmod=u=rwX,go=rX $(RSYNC_VCS_EXCLUSIONS) $(call qstrip,$(M5STACK_CARDPUTERZERO_OVERRIDE_SRCDIR))/ $(@D)
+	rm -f $(@D)/.applied_patches_list
+	$(APPLY_PATCHES) $(@D) $(M5STACK_CARDPUTERZERO_PKGDIR) \*.patch
+endef
+M5STACK_CARDPUTERZERO_POST_RSYNC_HOOKS += M5STACK_CARDPUTERZERO_APPLY_PATCHES
+
 $(eval $(kernel-module))
 
 define M5STACK_CARDPUTERZERO_BUILD_OVERLAYS
