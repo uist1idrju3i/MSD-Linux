@@ -1,0 +1,260 @@
+name: Publish development image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - docker/msd-dev.Dockerfile
+      - docker/debian.sources
+      - docker/msd-dev
+      - .github/zizmor-requirements.txt
+      - .github/workflows/publish-dev-image.yml
+  pull_request:
+    paths:
+      - docker/msd-dev.Dockerfile
+      - docker/debian.sources
+      - docker/msd-dev
+      - .github/zizmor-requirements.txt
+      - .github/workflows/publish-dev-image.yml
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and scan without publishing
+        required: false
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: publish-dev-image-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TRIVY_VERSION: "0.76.0"
+  TRIVY_DIGEST: "sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222"
+
+jobs:
+  plan:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.plan.outputs.tag }}
+      push: ${{ steps.plan.outputs.push }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - id: plan
+        name: Plan image publication
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_REF: ${{ github.ref }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          tag="$(docker/msd-dev tag)"
+          push=false
+          if [[ "$EVENT_NAME" == "push" && "$EVENT_REF" == "refs/heads/main" ]] ||
+             [[ "$EVENT_NAME" == "workflow_dispatch" && "$DRY_RUN" != "true" ]]; then
+            push=true
+          fi
+          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
+          printf 'push=%s\n' "$push" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: plan
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-26.04
+          - arch: arm64
+            runner: ubuntu-26.04-arm
+    outputs:
+      digest_amd64: ${{ steps.publish.outputs.digest_amd64 }}
+      digest_arm64: ${{ steps.publish.outputs.digest_arm64 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build development image
+        run: docker build -f docker/msd-dev.Dockerfile -t msd-dev:ci .
+
+      - name: Save image for scanning
+        run: docker save --output "$RUNNER_TEMP/msd-dev.tar" msd-dev:ci
+
+      - name: Prepare Trivy cache
+        run: mkdir -p "$RUNNER_TEMP/trivy-cache"
+
+      - name: Scan image
+        env:
+          TRIVY_IMAGE: ghcr.io/aquasecurity/trivy
+        run: |
+          docker run --rm \
+            --volume "$RUNNER_TEMP:/work" \
+            --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}:${TRIVY_VERSION}@${TRIVY_DIGEST}" \
+            image --input /work/msd-dev.tar \
+            --scanners vuln,secret,misconfig \
+            --format json \
+            --output /work/trivy.json
+
+      - name: Generate SPDX SBOM
+        env:
+          TRIVY_IMAGE: ghcr.io/aquasecurity/trivy
+        run: |
+          docker run --rm \
+            --volume "$RUNNER_TEMP:/work" \
+            --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}:${TRIVY_VERSION}@${TRIVY_DIGEST}" \
+            image --input /work/msd-dev.tar \
+            --format spdx-json \
+            --output /work/sbom.spdx.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: msd-dev-trivy-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/trivy.json
+            ${{ runner.temp }}/sbom.spdx.json
+          if-no-files-found: error
+
+      - name: Gate image findings
+        run: |
+          python3 .github/scripts/trivy-gate.py gate "$RUNNER_TEMP/trivy.json" |
+            tee "$RUNNER_TEMP/trivy-gate.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check SBOM size
+        if: needs.plan.outputs.push == 'true'
+        env:
+          SBOM_PATH: ${{ runner.temp }}/sbom.spdx.json
+        run: |
+          size="$(stat -c '%s' "$SBOM_PATH")"
+          if ((size >= 16777216)); then
+            printf 'SBOM is %s bytes; the maximum is less than 16 MiB.\n' "$size" >&2
+            exit 1
+          fi
+
+      - id: publish
+        name: Push architecture image
+        if: needs.plan.outputs.push == 'true'
+        env:
+          IMAGE_TAG: ${{ needs.plan.outputs.tag }}
+          ARCH: ${{ matrix.arch }}
+          GH_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          image=ghcr.io/uist1idrju3i/msd-dev
+          image_ref="${image}:${IMAGE_TAG}-${ARCH}"
+          printf '%s' "$GITHUB_TOKEN" |
+            docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+          docker tag msd-dev:ci "$image_ref"
+          docker push "$image_ref" 2>&1 | tee "$RUNNER_TEMP/docker-push.log"
+          digest="$(
+            sed -nE 's/.*digest: (sha256:[0-9a-f]{64}).*/\1/p' \
+              "$RUNNER_TEMP/docker-push.log" | tail -n 1
+          )"
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            printf 'Could not determine digest for %s\n' "$image_ref" >&2
+            exit 1
+          fi
+          printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+          printf 'digest_%s=%s\n' "$ARCH" "$digest" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
+        if: needs.plan.outputs.push == 'true'
+        env:
+          IMAGE: ghcr.io/uist1idrju3i/msd-dev
+          IMAGE_TAG: ${{ needs.plan.outputs.tag }}
+          ARCH: ${{ matrix.arch }}
+          DIGEST: ${{ steps.publish.outputs.digest }}
+          SBOM_PATH: ${{ runner.temp }}/sbom.spdx.json
+        with:
+          subject-name: ${{ env.IMAGE }}:${{ env.IMAGE_TAG }}-${{ env.ARCH }}
+          subject-digest: ${{ env.DIGEST }}
+          sbom-path: ${{ env.SBOM_PATH }}
+          push-to-registry: true
+
+  publish:
+    needs:
+      - plan
+      - build
+    if: needs.plan.outputs.push == 'true'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - id: publish
+        name: Publish multi-architecture tags
+        env:
+          IMAGE: ghcr.io/uist1idrju3i/msd-dev
+          IMAGE_TAG: ${{ needs.plan.outputs.tag }}
+          GITHUB_SHA: ${{ github.sha }}
+          GH_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AMD64_DIGEST: ${{ needs.build.outputs.digest_amd64 }}
+          ARM64_DIGEST: ${{ needs.build.outputs.digest_arm64 }}
+        run: |
+          set -euo pipefail
+          for digest in "$AMD64_DIGEST" "$ARM64_DIGEST"; do
+            if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+              printf 'Invalid architecture image digest: %s\n' "$digest" >&2
+              exit 1
+            fi
+          done
+          printf '%s' "$GITHUB_TOKEN" |
+            docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+          docker buildx imagetools create \
+            --tag "${IMAGE}:${IMAGE_TAG}" \
+            --tag "${IMAGE}:sha-${GITHUB_SHA}" \
+            --tag "${IMAGE}:latest" \
+            "${IMAGE}@${AMD64_DIGEST}" \
+            "${IMAGE}@${ARM64_DIGEST}"
+          digest="$(
+            docker buildx imagetools inspect "${IMAGE}:${IMAGE_TAG}" \
+              --format '{{json .Manifest}}' | jq -r '.digest'
+          )"
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            printf 'Could not determine image index digest: %s\n' "$digest" >&2
+            exit 1
+          fi
+          printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        env:
+          IMAGE: ghcr.io/uist1idrju3i/msd-dev
+          DIGEST: ${{ steps.publish.outputs.digest }}
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ env.DIGEST }}
+          push-to-registry: true
+
+      - name: Summarize publication
+        env:
+          IMAGE_TAG: ${{ needs.plan.outputs.tag }}
+          DIGEST: ${{ steps.publish.outputs.digest }}
+        run: |
+          {
+            printf '## Development image published\n\n'
+            printf -- '- Tag: %s\n' "$IMAGE_TAG"
+            printf -- '- Index digest: %s\n\n' "$DIGEST"
+            printf 'Pull it with docker/msd-dev pull.\n'
+          } >> "$GITHUB_STEP_SUMMARY"

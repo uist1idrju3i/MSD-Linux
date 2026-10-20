@@ -1,0 +1,101 @@
+name: Scan development image
+
+on:
+  schedule:
+    - cron: "31 7 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  TRIVY_VERSION: "0.76.0"
+  TRIVY_DIGEST: "sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222"
+
+jobs:
+  scan:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - id: pull
+        name: Pull latest development image
+        env:
+          IMAGE: ghcr.io/uist1idrju3i/msd-dev:latest
+        run: |
+          pull_log="$RUNNER_TEMP/docker-pull.log"
+          if docker pull --platform linux/amd64 "$IMAGE" > "$pull_log" 2>&1; then
+            cat "$pull_log"
+            docker save --output "$RUNNER_TEMP/msd-dev.tar" "$IMAGE"
+            echo 'image_available=true' >> "$GITHUB_OUTPUT"
+          else
+            cat "$pull_log" >&2
+            if grep -Eiq 'manifest unknown|not found|pull access denied|denied|unauthorized|name unknown' \
+              "$pull_log"; then
+              printf '%s\n' \
+                '公開イメージがまだないため、週次検査をスキップしました。' \
+                >> "$GITHUB_STEP_SUMMARY"
+              echo 'image_available=false' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            printf '%s\n' 'Docker pull failed unexpectedly.' >&2
+            exit 1
+          fi
+
+      - name: Prepare Trivy cache
+        if: steps.pull.outputs.image_available == 'true'
+        run: mkdir -p "$RUNNER_TEMP/trivy-cache"
+
+      - name: Scan latest image
+        if: steps.pull.outputs.image_available == 'true'
+        env:
+          IMAGE: ghcr.io/uist1idrju3i/msd-dev:latest
+          TRIVY_IMAGE: ghcr.io/aquasecurity/trivy
+        run: |
+          docker run --rm \
+            --volume "$RUNNER_TEMP:/work" \
+            --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}:${TRIVY_VERSION}@${TRIVY_DIGEST}" \
+            image --input /work/msd-dev.tar \
+            --scanners vuln,secret,misconfig \
+            --format json \
+            --output /work/trivy.json
+
+      - id: report
+        name: Report latest image findings
+        if: steps.pull.outputs.image_available == 'true'
+        run: |
+          python3 .github/scripts/trivy-gate.py report "$RUNNER_TEMP/trivy.json" \
+            --github-output "$GITHUB_OUTPUT" |
+            tee "$RUNNER_TEMP/trivy-report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Maintain vulnerability issue
+        if: steps.pull.outputs.image_available == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HAS_FINDINGS: ${{ steps.report.outputs.has_findings }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          issue="$(
+            gh issue list --state open --json number,title --limit 100 |
+              jq -r '.[] | select(.title == "開発用イメージの脆弱性") | .number' |
+              head -n 1
+          )"
+          if [[ "$HAS_FINDINGS" == "true" ]]; then
+            body="$(cat "$RUNNER_TEMP/trivy-report.md")
+
+          実行: $RUN_URL"
+            if [[ -n "$issue" ]]; then
+              gh issue edit "$issue" --body "$body"
+            else
+              gh issue create --title "開発用イメージの脆弱性" --body "$body"
+            fi
+          elif [[ -n "$issue" ]]; then
+            gh issue comment "$issue" --body "検出事項はありません。$RUN_URL"
+            gh issue close "$issue"
+          fi
