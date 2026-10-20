@@ -190,6 +190,7 @@ prepare_integrity_template() {
 	local squashfs_info compression block_size partition_info
 	local root_a_start root_a_size root_b_start root_b_size rootfs_bytes
 	local image_size padded_size
+	local unsquash_status=0
 
 	build_dir="${WORK_ROOT}/integrity-$(date -u +%Y%m%dT%H%M%SZ)"
 	target_dir="${build_dir}/target"
@@ -205,7 +206,15 @@ prepare_integrity_template() {
 
 	mkdir -p "$build_dir"
 	"$unsquashfs" -no-progress -no-xattrs -d "$target_dir" "$rootfs" \
-		>"${build_dir}/unsquashfs.log" 2>&1
+		>"${build_dir}/unsquashfs.log" 2>&1 || unsquash_status=$?
+	if ((unsquash_status != 0)); then
+		if ((unsquash_status != 2)) ||
+			! grep -Fq 'failed to change uid and gids' \
+				"${build_dir}/unsquashfs.log"; then
+			cat "${build_dir}/unsquashfs.log" >&2
+			return 1
+		fi
+	fi
 	install -D -m 0755 "${REPO_ROOT}/board/cardputerzero/tools/bench/s3/S02zz-s3verify" \
 		"${target_dir}/etc/init.d/S02zz-s3verify"
 	install -D -m 0755 "${REPO_ROOT}/board/cardputerzero/tools/bench/s3/S06msd-s3bench" \
