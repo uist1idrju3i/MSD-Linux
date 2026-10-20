@@ -158,6 +158,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
         gcc \
         git \
         gzip \
+        cmake \
         libelf-dev \
         libncurses-dev \
         libssl-dev \
