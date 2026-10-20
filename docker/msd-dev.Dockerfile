@@ -186,7 +186,9 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
     && rm -rf /var/lib/apt/lists/* /tmp/debian.sources
 
 ARG TARGETARCH
-RUN case "${TARGETARCH}" in \
+# The legacy builder leaves TARGETARCH empty.
+RUN target_arch="${TARGETARCH:-$(dpkg --print-architecture)}" \
+    && case "${target_arch}" in \
         amd64) \
             SHELLCHECK_ARCH=x86_64; \
             SHELLCHECK_EXPECTED_SHA256="${SHELLCHECK_SHA256}"; \
@@ -196,7 +198,7 @@ RUN case "${TARGETARCH}" in \
             SHELLCHECK_EXPECTED_SHA256="${SHELLCHECK_ARM64_SHA256}"; \
             ;; \
         *) \
-            printf 'Unsupported target architecture: %s\n' "${TARGETARCH}" >&2; \
+            printf 'Unsupported target architecture: %s\n' "${target_arch}" >&2; \
             exit 1; \
             ;; \
     esac \
