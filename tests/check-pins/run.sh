@@ -7,11 +7,13 @@ python3 - "$repo_root" <<'PY'
 import contextlib
 import importlib.util
 import io
+import json
 import lzma
 import pathlib
 import shutil
 import sys
 import tempfile
+from datetime import date
 
 root = pathlib.Path(sys.argv[1])
 spec = importlib.util.spec_from_file_location("check_pins", root / ".github/scripts/check-pins.py")
@@ -53,11 +55,30 @@ def fixture() -> pathlib.Path:
         "            \"$shellcheck_archive\" | sha256sum -c -\n"
         "jobs:\n  lint:\n    runs-on: ubuntu-26.04\n"
     )
+    (path / ".github/workflows/publish-dev-image.yml").write_text(
+        "env:\n"
+        "  TRIVY_VERSION: 0.76.0\n"
+        "  TRIVY_DIGEST: sha256:" + "1" * 64 + "\n"
+        "jobs:\n  build:\n    strategy:\n      matrix:\n"
+        "        include:\n          - arch: amd64\n"
+        "            runner: ubuntu-26.04\n"
+        "          - arch: arm64\n"
+        "            runner: ubuntu-26.04-arm\n"
+    )
+    (path / ".github/workflows/dev-image-scan.yml").write_text(
+        "env:\n"
+        "  TRIVY_VERSION: 0.76.0\n"
+        "  TRIVY_DIGEST: sha256:" + "1" * 64 + "\n"
+        "jobs:\n  scan:\n    runs-on: ubuntu-26.04\n"
+    )
     (path / "docker/msd-dev.Dockerfile").write_text(
+        "ARG ACTIONLINT_VERSION=1.7.12\n"
+        "FROM golang:1.27.2-trixie@sha256:" + "c" * 64 + " AS actionlint\n"
+        "ARG ACTIONLINT_VERSION\n"
+        "FROM debian:trixie-slim@sha256:" + "b" * 64 + " AS msd-dev\n"
+        "ARG ACTIONLINT_VERSION\n"
         "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
         "ARG QEMU_DEB_VERSION=1:11.0.2+ds-2~bpo13+1\n"
-        "ARG ACTIONLINT_VERSION=1.7.12\n"
-        "ARG ACTIONLINT_SHA256=8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8\n"
         "ARG SHELLCHECK_VERSION=0.11.0\n"
         "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198\n"
     )
@@ -68,7 +89,9 @@ def fixture() -> pathlib.Path:
         "jobs:\n  build:\n    runs-on: ubuntu-26.04\n"
     )
     (path / ".github/actionlint.yaml").write_text(
-        'paths:\n  .github/workflows/*.yml:\n    ignore:\n      - \'label "ubuntu-26.04" is unknown\'\n'
+        'paths:\n  .github/workflows/*.yml:\n    ignore:\n'
+        '      - \'label "ubuntu-26.04" is unknown\'\n'
+        '      - \'label "ubuntu-26.04-arm" is unknown\'\n'
     )
     (path / ".gitmodules").write_text(
         '[submodule "vendor/buildroot"]\n\tpath = vendor/buildroot\n\turl = https://example.test/buildroot\n\tbranch = 2026.08.x\n'
@@ -78,7 +101,8 @@ def fixture() -> pathlib.Path:
 
 
 passed = fixture()
-assert module.consistency(passed) == []
+errors = module.consistency(passed)
+assert errors == [], errors
 print("ok - consistency accepts a matching fixture")
 
 bad_docker_tool_pin = fixture()
@@ -98,6 +122,24 @@ dockerfile.write_text(dockerfile.read_text().replace(
 ))
 assert any("SHELLCHECK_SHA256" in error for error in module.consistency(bad_docker_hash))
 print("ok - detects Dockerfile checksum drift")
+
+bad_trivy_version = fixture()
+publish_workflow = bad_trivy_version / ".github/workflows/publish-dev-image.yml"
+publish_workflow.write_text(publish_workflow.read_text().replace(
+    "TRIVY_VERSION: 0.76.0",
+    "TRIVY_VERSION: 0.75.0",
+))
+assert any("TRIVY_VERSION" in error for error in module.consistency(bad_trivy_version))
+print("ok - detects Trivy version drift between workflows")
+
+bad_trivy_digest = fixture()
+scan_workflow = bad_trivy_digest / ".github/workflows/dev-image-scan.yml"
+scan_workflow.write_text(scan_workflow.read_text().replace(
+    "TRIVY_DIGEST: sha256:" + "1" * 64,
+    "TRIVY_DIGEST: sha256:" + "2" * 64,
+))
+assert any("TRIVY_DIGEST" in error for error in module.consistency(bad_trivy_digest))
+print("ok - detects Trivy image digest drift between workflows")
 
 bad_hash = fixture()
 (bad_hash / "board/cardputerzero/patches/linux/linux.hash").write_text(
@@ -127,6 +169,21 @@ assert module.parse_buildroot_branch(
     '[submodule "vendor/buildroot"]\n path = vendor/buildroot\n url = x\n branch = 2026.08.x\n'
 ) == "2026.08.x"
 assert module.parse_release('{"tag_name":"v1.2.3"}') == "v1.2.3"
+assert module.parse_latest_go_version(
+    json.dumps(
+        [
+            {"version": "go1.27.1", "stable": True},
+            {"version": "go1.26.9", "stable": True},
+            {"version": "go1.27.2", "stable": True},
+            {"version": "go1.26.10rc1", "stable": False},
+        ]
+    )
+) == "1.27.2"
+assert module.parse_qemu_latest(
+    '<a href="qemu-11.0.0.tar.xz">11.0.0</a>'
+    '<a href="qemu-11.1.2.tar.xz">11.1.2</a>'
+    '<a href="qemu-12.0.0-rc1.tar.xz">12.0.0-rc1</a>'
+) == "11.1.2"
 assert module.parse_runner_labels("| `ubuntu-24.04` | beta image |\n") == [
     ("ubuntu-24.04", "beta")
 ]
@@ -153,7 +210,36 @@ def fake_fetch(url):
         return '{"tag_name":"v2.15.1"}'
     if "kernel-hardening-checker" in url:
         return '{"tag_name":"v0.6.17.1"}'
+    if "aquasecurity/trivy" in url:
+        return '{"tag_name":"v0.76.0"}'
     return "| `ubuntu-26.04` | current image |\n"
+
+
+def fake_fetch_go_releases():
+    return json.dumps(
+        [
+            {"version": "go1.27.1", "stable": True},
+            {"version": "go1.26.9", "stable": True},
+            {"version": "go1.27.2", "stable": True},
+            {"version": "go1.26.10rc1", "stable": False},
+        ]
+    )
+
+
+def fake_fetch_qemu_releases():
+    return (
+        '<a href="qemu-11.0.0.tar.xz">11.0.0</a>'
+        '<a href="qemu-11.1.2.tar.xz">11.1.2</a>'
+        '<a href="qemu-12.0.0-rc1.tar.xz">12.0.0-rc1</a>'
+    )
+
+
+def fake_fetch_dockerhub_digest(repository, tag):
+    if repository == "golang" and tag == "1.27.2-trixie":
+        return "sha256:" + "c" * 64
+    if repository == "debian" and tag == "trixie-slim":
+        return "sha256:" + "b" * 64
+    return ""
 
 
 def fake_fetch_bytes(url):
@@ -166,13 +252,16 @@ def fake_fetch_bytes(url):
 
 module.run = fake_run
 module.fetch = fake_fetch
+module.fetch_go_releases = fake_fetch_go_releases
+module.fetch_qemu_releases = fake_fetch_qemu_releases
+module.fetch_dockerhub_digest = fake_fetch_dockerhub_digest
 module.fetch_bytes = lambda url: lzma.compress(
     b"Package: qemu-system-arm\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
 )
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     with contextlib.redirect_stdout(io.StringIO()):
-        assert module.upstream(report_path, passed) == 0
+        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
     report = report_path.read_text()
     assert (
         "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
@@ -186,7 +275,7 @@ with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
-        assert module.upstream(report_path, passed) == 0
+        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
     report = report_path.read_text()
     assert (
         "| Raspberry Pi Linux series | `rpi-6.18.y` | `rpi-7.3.y` | 参考 |"
@@ -197,10 +286,34 @@ with tempfile.TemporaryDirectory() as directory:
         "`1:11.0.2+ds-2~bpo13+1` | 最新 |"
         in report
     )
-    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 参考 |" in report
+    assert (
+        "| QEMU (upstream) | `1:11.0.2+ds-2~bpo13+1` | `11.1.2` | 参考 |"
+        in report
+    )
+    assert "| Trivy | `0.76.0` | `v0.76.0` | 最新 |" in report
+    assert "| Go toolchain | `1.27.2` | `1.27.2` | 最新 |" in report
+    assert (
+        "| Go builder image digest | `sha256:" + "c" * 64 + "` | `sha256:"
+        + "c" * 64 + "` | 最新 |"
+    ) in report
+    assert (
+        "| Debian base image digest | `sha256:" + "b" * 64 + "` | `sha256:"
+        + "b" * 64 + "` | 最新 |"
+    ) in report
+    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 最新 |" in report
     assert "| Buildroot LTS | `2026.08.x` | `2026.02.x` | 参考 |" in report
     assert output.getvalue().strip() == "全て最新"
 print("ok - marks informational upstream rows as 参考 and excludes them from status")
+
+with tempfile.TemporaryDirectory() as directory:
+    report_path = pathlib.Path(directory) / "pins.md"
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        assert module.upstream(report_path, passed, today=date(2026, 11, 19)) == 0
+    report = report_path.read_text()
+    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 更新あり |" in report
+    assert output.getvalue().strip() == "更新あり"
+print("ok - reports snapshots older than 30 days as update candidates")
 
 for path in fixtures:
     shutil.rmtree(path)

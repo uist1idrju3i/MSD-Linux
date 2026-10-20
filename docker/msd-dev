@@ -4,6 +4,56 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 repo_root="$(cd -- "${script_dir}/.." && pwd -P)"
 image="${MSD_DEV_IMAGE:-msd-dev:local}"
+image_repository=ghcr.io/uist1idrju3i/msd-dev
+IMAGE_INPUTS=(
+    .github/zizmor-requirements.txt
+    docker/debian.sources
+    docker/msd-dev.Dockerfile
+)
+
+image_input_hash() {
+    local input
+    local file_hash
+    local -a sorted_inputs
+
+    mapfile -t sorted_inputs < <(printf '%s\n' "${IMAGE_INPUTS[@]}" | LC_ALL=C sort)
+
+    {
+        for input in "${sorted_inputs[@]}"; do
+            file_hash="$(sha256sum -- "${repo_root}/${input}")"
+            printf '%s  %s\n' "${file_hash%% *}" "${input}"
+        done
+    } | sha256sum | cut -c1-16
+}
+
+if [[ "${1:-}" == "tag" ]]; then
+    if (($# != 1)); then
+        printf 'Usage: %s tag\n' "$0" >&2
+        exit 2
+    fi
+    printf 'inputs-%s\n' "$(image_input_hash)"
+    exit 0
+fi
+
+if [[ "${1:-}" == "pull" ]]; then
+    if (($# != 1)); then
+        printf 'Usage: %s pull\n' "$0" >&2
+        exit 2
+    fi
+    input_tag="$(image_input_hash)"
+    source_image="${image_repository}:inputs-${input_tag}"
+    docker pull "${source_image}"
+    if command -v gh >/dev/null 2>&1; then
+        gh attestation verify "oci://${source_image}" \
+            --repo uist1idrju3i/MSD-Linux
+    else
+        printf '%s\n' \
+            'Warning: gh is unavailable; attestation verification was skipped.' >&2
+    fi
+    docker tag "${source_image}" "${image}"
+    printf 'Pulled %s as %s\n' "${source_image}" "${image}"
+    exit 0
+fi
 
 if [[ "${1:-}" == "build" ]]; then
     if (($# != 1)); then

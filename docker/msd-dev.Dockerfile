@@ -1,15 +1,22 @@
-FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+ARG ACTIONLINT_VERSION=1.7.12
+
+FROM golang:1.27.2-trixie@sha256:47667934874913a449b96faa7ef4777fa285d9ec29126ee80ed61c45b7cccf0e AS actionlint
+ARG ACTIONLINT_VERSION
+ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOFLAGS=-trimpath
+RUN go install -ldflags='-s -w' github.com/rhysd/actionlint/cmd/actionlint@v${ACTIONLINT_VERSION}
+
+FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS msd-dev
+ARG ACTIONLINT_VERSION
 
 ARG DEBIAN_SNAPSHOT=20261019T190000Z
 ARG QEMU_DEB_VERSION=1:11.0.2+ds-2~bpo13+1
-ARG ACTIONLINT_VERSION=1.7.12
-ARG ACTIONLINT_SHA256=8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
-ARG ACTIONLINT_ARM64_SHA256=325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6
 ARG SHELLCHECK_VERSION=0.11.0
 ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
 ARG SHELLCHECK_ARM64_SHA256=12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+COPY --from=actionlint /go/bin/actionlint /usr/local/bin/actionlint
 
 LABEL org.opencontainers.image.source="https://github.com/uist1idrju3i/MSD-Linux" \
       org.opencontainers.image.description="MSD/Linux development tools and test environment" \
@@ -77,14 +84,10 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
 ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
         amd64) \
-            ACTIONLINT_ARCH=amd64; \
-            ACTIONLINT_EXPECTED_SHA256="${ACTIONLINT_SHA256}"; \
             SHELLCHECK_ARCH=x86_64; \
             SHELLCHECK_EXPECTED_SHA256="${SHELLCHECK_SHA256}"; \
             ;; \
         arm64) \
-            ACTIONLINT_ARCH=arm64; \
-            ACTIONLINT_EXPECTED_SHA256="${ACTIONLINT_ARM64_SHA256}"; \
             SHELLCHECK_ARCH=aarch64; \
             SHELLCHECK_EXPECTED_SHA256="${SHELLCHECK_ARM64_SHA256}"; \
             ;; \
@@ -95,14 +98,6 @@ RUN case "${TARGETARCH}" in \
     esac \
     && curl --fail --location --retry 8 --retry-delay 20 --retry-max-time 600 \
         --retry-all-errors \
-        "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_${ACTIONLINT_ARCH}.tar.gz" \
-        -o /tmp/actionlint.tar.gz \
-    && printf '%s  %s\n' "${ACTIONLINT_EXPECTED_SHA256}" /tmp/actionlint.tar.gz \
-        | sha256sum -c - \
-    && tar -xzf /tmp/actionlint.tar.gz -C /tmp actionlint \
-    && install -m 0755 /tmp/actionlint /usr/local/bin/actionlint \
-    && curl --fail --location --retry 8 --retry-delay 20 --retry-max-time 600 \
-        --retry-all-errors \
         "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.${SHELLCHECK_ARCH}.tar.xz" \
         -o /tmp/shellcheck.tar.xz \
     && printf '%s  %s\n' "${SHELLCHECK_EXPECTED_SHA256}" /tmp/shellcheck.tar.xz \
@@ -110,12 +105,13 @@ RUN case "${TARGETARCH}" in \
     && tar -xJf /tmp/shellcheck.tar.xz -C /tmp --strip-components=1 \
         "shellcheck-v${SHELLCHECK_VERSION}/shellcheck" \
     && install -m 0755 /tmp/shellcheck /usr/local/bin/shellcheck \
-    && rm -f /tmp/actionlint.tar.gz /tmp/actionlint /tmp/shellcheck.tar.xz /tmp/shellcheck
+    && rm -f /tmp/shellcheck.tar.xz /tmp/shellcheck
 
 COPY .github/zizmor-requirements.txt /tmp/zizmor-requirements.txt
 RUN python3 -m venv /opt/zizmor \
     && /opt/zizmor/bin/pip install --require-hashes -r /tmp/zizmor-requirements.txt \
     && ln -s /opt/zizmor/bin/zizmor /usr/local/bin/zizmor \
+    && rm -rf /opt/zizmor/bin/pip* /opt/zizmor/lib/python3.*/site-packages/pip* \
     && rm -f /tmp/zizmor-requirements.txt
 
 RUN printf '\nUMASK 027\n' >> /etc/login.defs \

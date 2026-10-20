@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+from datetime import date, datetime
 from pathlib import Path
 from urllib.error import URLError
 from urllib.request import Request, urlopen
@@ -59,6 +60,18 @@ def branch_key(name: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.findall(r"\d+", name))
 
 
+def parse_latest_go_version(data: str) -> str:
+    versions = []
+    for release in json.loads(data):
+        if not isinstance(release, dict) or release.get("stable") is not True:
+            continue
+        version = release.get("version", "")
+        match = re.fullmatch(r"go(\d+\.\d+\.\d+)", version)
+        if match:
+            versions.append(match.group(1))
+    return max(versions, key=branch_key) if versions else ""
+
+
 def workflow_env(root: Path, workflow: str, key: str) -> str:
     text = (root / workflow).read_text()
     match = re.search(rf"^\s+{re.escape(key)}:\s*([^\s#]+)", text, re.M)
@@ -68,6 +81,25 @@ def workflow_env(root: Path, workflow: str, key: str) -> str:
 def docker_arg(root: Path, name: str) -> str:
     text = (root / "docker/msd-dev.Dockerfile").read_text()
     match = re.search(rf"^ARG {re.escape(name)}=([^\s#]+)\s*$", text, re.M)
+    return match.group(1) if match else ""
+
+
+def docker_image_pins(root: Path) -> dict[str, tuple[str, str]]:
+    text = (root / "docker/msd-dev.Dockerfile").read_text()
+    images: dict[str, tuple[str, str]] = {}
+    for reference in re.findall(
+        r"^FROM\s+(?:--platform=\S+\s+)?([^\s]+)", text, re.M
+    ):
+        image, _, digest = reference.partition("@")
+        repository, separator, tag = image.rpartition(":")
+        if separator:
+            images[repository] = (tag, digest)
+    return images
+
+
+def go_builder_version(root: Path) -> str:
+    tag = docker_image_pins(root).get("golang", ("", ""))[0]
+    match = re.fullmatch(r"(\d+\.\d+\.\d+)-trixie", tag)
     return match.group(1) if match else ""
 
 
@@ -93,6 +125,20 @@ def parse_debian_package_versions(data: bytes) -> dict[str, str]:
         if package in {"qemu-system-arm", "qemu-utils"} and version:
             versions[package] = version
     return versions
+
+
+def parse_qemu_latest(data: str) -> str:
+    versions = re.findall(r"\bqemu-(\d+\.\d+\.\d+)\.tar\.xz\b", data)
+    return max(versions, key=branch_key) if versions else ""
+
+
+def debian_snapshot_status(snapshot: str, today: date | None = None) -> str:
+    match = re.fullmatch(r"(\d{8})T\d{6}Z", snapshot)
+    if not match:
+        return "確認できず"
+    snapshot_date = datetime.strptime(match.group(1), "%Y%m%d").date()
+    current_date = today or date.today()
+    return "更新あり" if (current_date - snapshot_date).days > 30 else "最新"
 
 
 def run(*args: str, cwd: Path = ROOT) -> str:
@@ -134,17 +180,22 @@ def consistency(root: Path) -> list[str]:
         except (IndexError, subprocess.CalledProcessError):
             errors.append("could not inspect dtoverlays submodule")
 
-    runners = [
-        match.group(1)
-        for path in sorted((root / ".github/workflows").glob("*.yml"))
-        for match in re.finditer(r"^\s*runs-on:\s*([^\s#]+)", path.read_text(), re.M)
-    ]
-    if not runners or len(set(runners)) != 1:
-        errors.append("all workflow runs-on labels must be identical")
+    runners: set[str] = set()
+    for path in sorted((root / ".github/workflows").glob("*.yml")):
+        text = path.read_text()
+        runners.update(
+            re.findall(r"^\s*runs-on:\s*(ubuntu-\d+\.04(?:-arm)?)\s*$", text, re.M)
+        )
+        runners.update(
+            re.findall(r"^\s*runner:\s*(ubuntu-\d+\.04(?:-arm)?)\s*$", text, re.M)
+        )
+    supported_runners = {"ubuntu-26.04", "ubuntu-26.04-arm"}
+    if not runners or not runners.issubset(supported_runners):
+        errors.append("workflow runs-on labels must use the current Ubuntu 26.04 images")
     actionlint = (root / ".github/actionlint.yaml").read_text()
     ignored = re.findall(r"label \"([^\"]+)\" is unknown", actionlint)
-    if len(ignored) != 1 or (runners and ignored[0] != runners[0]):
-        errors.append("actionlint ignored runner label differs from workflows")
+    if not runners.issubset(set(ignored)) or set(ignored) - runners:
+        errors.append("actionlint ignored runner labels differ from workflows")
 
     readme = (root / "README.md").read_text()
     readme_version = re.search(r"\| ビルド \| Buildroot ([0-9.]+) \|", readme)
@@ -158,14 +209,31 @@ def consistency(root: Path) -> list[str]:
         workflow_value = workflow_env(root, ".github/workflows/lint.yml", name)
         if not docker_value or docker_value != workflow_value:
             errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
-    for name, archive_variable in (
-        ("ACTIONLINT_SHA256", "actionlint_archive"),
-        ("SHELLCHECK_SHA256", "shellcheck_archive"),
-    ):
+    for name, archive_variable in (("SHELLCHECK_SHA256", "shellcheck_archive"),):
         docker_value = docker_arg(root, name)
         workflow_value = workflow_checksum(lint_workflow, archive_variable)
         if not docker_value or docker_value != workflow_value:
             errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
+    base_images = docker_image_pins(root)
+    if not go_builder_version(root):
+        errors.append("Go builder image must use a versioned -trixie tag")
+    for repository, description in (
+        ("golang", "Go builder"),
+        ("debian", "Debian runtime"),
+    ):
+        _, digest = base_images.get(repository, ("", ""))
+        if not digest.startswith("sha256:"):
+            errors.append(f"{description} image must be pinned by digest")
+    for name in ("TRIVY_VERSION", "TRIVY_DIGEST"):
+        workflow_values = [
+            workflow_env(root, workflow, name)
+            for workflow in (
+                ".github/workflows/publish-dev-image.yml",
+                ".github/workflows/dev-image-scan.yml",
+            )
+        ]
+        if not workflow_values[0] or workflow_values[0] != workflow_values[1]:
+            errors.append(f"{name} differs between development image workflows")
     return errors
 
 
@@ -183,7 +251,31 @@ def fetch_bytes(url: str) -> bytes:
         return response.read()
 
 
-def upstream(report_path: Path, root: Path) -> int:
+def fetch_go_releases() -> str:
+    request = Request(
+        "https://go.dev/dl/?mode=json", headers={"Accept": "application/json"}
+    )
+    with urlopen(request, timeout=20) as response:
+        return response.read().decode()
+
+
+def fetch_qemu_releases() -> str:
+    request = Request(
+        "https://download.qemu.org/", headers={"Accept": "text/html"}
+    )
+    with urlopen(request, timeout=20) as response:
+        return response.read().decode()
+
+
+def fetch_dockerhub_digest(repository: str, tag: str) -> str:
+    url = f"https://hub.docker.com/v2/repositories/library/{repository}/tags/{tag}"
+    request = Request(url, headers={"Accept": "application/json"})
+    with urlopen(request, timeout=20) as response:
+        data = json.loads(response.read().decode())
+    return str(data.get("digest") or "")
+
+
+def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     rows: list[tuple[str, str, str, str, str]] = []
     fixed = "unknown"
     definition = (root / "configs/msd_cardputerzero_defconfig").read_text()
@@ -278,8 +370,98 @@ def upstream(report_path: Path, root: Path) -> int:
     except (OSError, URLError, ValueError, EOFError, lzma.LZMAError):
         latest_qemu, qemu_status = "確認できず", "確認できず"
     rows.append(("QEMU (Debian trixie-backports)", qemu_pin, latest_qemu, qemu_status, qemu_url))
+    qemu_upstream_url = "https://download.qemu.org/"
+    try:
+        latest_qemu_upstream = parse_qemu_latest(fetch_qemu_releases())
+    except (OSError, URLError, ValueError) as exc:
+        print(f"QEMU upstream: upstream check unavailable: {exc}", file=sys.stderr)
+        latest_qemu_upstream = ""
+    rows.append(
+        (
+            "QEMU (upstream)",
+            qemu_pin,
+            latest_qemu_upstream or "確認できず",
+            "参考",
+            qemu_upstream_url,
+        )
+    )
     snapshot = docker_arg(root, "DEBIAN_SNAPSHOT") or "未設定"
-    rows.append(("Debian snapshot date", snapshot, "-", "参考", "https://snapshot.debian.org/"))
+    rows.append(
+        (
+            "Debian snapshot date",
+            snapshot,
+            "-",
+            debian_snapshot_status(snapshot, today),
+            "https://snapshot.debian.org/",
+        )
+    )
+
+    trivy_pin = (
+        workflow_env(root, ".github/workflows/publish-dev-image.yml", "TRIVY_VERSION")
+        or "未設定"
+    )
+    trivy_url = "https://github.com/aquasecurity/trivy/releases"
+    try:
+        latest_trivy = parse_release(
+            fetch("https://api.github.com/repos/aquasecurity/trivy/releases/latest")
+        )
+        trivy_status = (
+            "最新"
+            if trivy_pin.lstrip("v") == latest_trivy.lstrip("v")
+            else "更新あり"
+        )
+    except (OSError, URLError, ValueError) as exc:
+        print(f"Trivy: upstream check unavailable: {exc}", file=sys.stderr)
+        latest_trivy, trivy_status = "確認できず", "確認できず"
+    rows.append(("Trivy", trivy_pin, latest_trivy, trivy_status, trivy_url))
+
+    go_pin = go_builder_version(root) or "未設定"
+    try:
+        latest_go = parse_latest_go_version(fetch_go_releases())
+        if not latest_go:
+            go_status = "確認できず"
+        else:
+            go_status = "最新" if go_pin == latest_go else "更新あり"
+    except (OSError, URLError, ValueError) as exc:
+        print(f"Go: upstream check unavailable: {exc}", file=sys.stderr)
+        latest_go, go_status = "確認できず", "確認できず"
+    rows.append(
+        (
+            "Go toolchain",
+            go_pin,
+            latest_go or "確認できず",
+            go_status,
+            "https://go.dev/dl/",
+        )
+    )
+
+    base_images = docker_image_pins(root)
+    for repository, name in (
+        ("golang", "Go builder image digest"),
+        ("debian", "Debian base image digest"),
+    ):
+        tag, pinned_digest = base_images.get(repository, ("", ""))
+        source = f"https://hub.docker.com/_/{repository}?tab=tags&name={tag}"
+        try:
+            latest_digest = fetch_dockerhub_digest(repository, tag) if tag else ""
+            if not latest_digest:
+                digest_status = "確認できず"
+            else:
+                digest_status = (
+                    "最新" if pinned_digest == latest_digest else "更新あり"
+                )
+        except (OSError, URLError, ValueError) as exc:
+            print(f"{name}: upstream check unavailable: {exc}", file=sys.stderr)
+            latest_digest, digest_status = "", "確認できず"
+        rows.append(
+            (
+                name,
+                pinned_digest or "未設定",
+                latest_digest or "確認できず",
+                digest_status,
+                source,
+            )
+        )
 
     try:
         image_readme = fetch("https://raw.githubusercontent.com/actions/runner-images/main/README.md")

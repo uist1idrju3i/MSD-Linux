@@ -39,7 +39,7 @@ updates:
       default-days: 7
     open-pull-requests-limit: 5
 
-  # docker/ 配下の Dockerfile を週次で監視
+  # multi-stage の先頭 FROM を週次で監視。各ベースイメージの digest は固定版確認でも照合
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:

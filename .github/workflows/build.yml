@@ -99,6 +99,8 @@ jobs:
           tests/msd-hwinfo/run.sh
           tests/msd-data-grow/run.sh
           tests/qemu-log-check/run.sh
+          tests/msd-dev/run.sh
+          tests/trivy-gate/run.sh
 
   build:
     needs: changes
