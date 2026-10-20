@@ -11,6 +11,8 @@
 
 MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の近くを流れる福岡県の室見川から名前をとりました。名付け方は SSD/Linux にならっています（[名前の由来](RESEARCH.md#名称)）。M5Stack CardputerZero 向けの Linux OS を開発しています。
 
+公式サイト: <https://muromi.moe/>
+
 ## 目的
 
 CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱っても壊れない、ポケットに入る Linux 端末にすることが目的です。標準版と Lite 版をひとつのイメージでサポートし、LCD のテキストコンソールと内蔵キーボードで操作する CLI を提供します。
@@ -32,7 +34,9 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 ## 開発状況
 
-開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig を追加しました。CI では Buildroot のフルビルドと、QEMU の標準設定（`raspi3ap`、512 MiB、CM0 DTB）で A スロット・B スロットの起動を確認しています。`raspi3ap` の起動には、ASB パッチを含む開発用イメージ内の QEMU が必要です。1 GiB の `raspi3b` と Pi 3 DTB は `QEMU_MACHINE=raspi3b` で選べます。QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できないため、これらは実機での確認が必要です。実機は来月発売予定で、実機での起動は未確認です。
+開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig があり、CI で Buildroot のフルビルドと、QEMU での A スロット・B スロットの起動を確かめています。QEMU の標準設定は `raspi3ap`（512 MiB、CM0 DTB）で、ASB パッチを含む開発用イメージ内の QEMU が必要です。1 GiB の `raspi3b` と Pi 3 DTB は `QEMU_MACHINE=raspi3b` で選べます。
+
+QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できません。これらは実機で確かめます。CardputerZero の出荷は 2026 年 11 月に始まる予定です（M5Stack の Kickstarter の更新 13 による。[最新動向](docs/research/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。実機での起動はまだ試していません。
 
 ## 予定している構成
 
@@ -43,11 +47,17 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 | rootfs | Zstandard 圧縮の読み取り専用 SquashFS。書き込み領域に ext4 の `/data` を使用 |
 | A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う構成を追加。実機での確認は未実施 |
 
-実機での動作は未確認です。詳細な調査結果、出典、未確認事項は [RESEARCH.md](RESEARCH.md)、作業規約は [AGENTS.md](AGENTS.md) を参照してください。
+## 文書
 
-ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md)、更新手順と検証範囲は [docs/UPDATE.md](docs/UPDATE.md) を参照してください。
-
-CI と同じ開発用コンテナーは [docker/README.md](docker/README.md) を参照してください。
+| 文書 | 内容 |
+|---|---|
+| [RESEARCH.md](RESEARCH.md) | 調査の要約、出典、未確認事項。節ごとの詳細は [docs/research/](docs/research/) |
+| [docs/BUILD.md](docs/BUILD.md) | ビルドと QEMU 起動確認の手順 |
+| [docs/UPDATE.md](docs/UPDATE.md) | 更新手順と検証範囲 |
+| [docs/CI.md](docs/CI.md) | CI の構成と運用 |
+| [docs/experiments/](docs/experiments/README.md) | 実験・測定の記録と生の値 |
+| [docker/README.md](docker/README.md) | CI と同じ開発用コンテナー |
+| [AGENTS.md](AGENTS.md) | 作業規約（AI エージェントと人間に共通） |
 
 ## 取得方法
 
