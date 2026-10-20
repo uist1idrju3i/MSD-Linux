@@ -109,6 +109,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
 - [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
+- [CI・Issue・リポジトリ設定の点検（2026-10-20）](docs/research/repo-operations-review.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
 - [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
 
