@@ -17,7 +17,23 @@ CM0 上の Buildroot / MSD/Linux の起動時間は未測定です。下表は�
 
 M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であり、通常の Linux kernel / initramfs 読込の下限ではありません。GPU 段が kernel サイズに比例するかは未確認です。Pi 3B+ と Zero 2 W の kernel 読込値は機材・ログ区間が違うため比例関係を推定できません。最初に公式イメージの同一個体で計測し、始点・終点・カーネル・SD を記録します。
 
-以下に未実施の計測案を示します。
+### QEMU での段階ごとの測定（2026-10-20）
+
+QEMU（`raspi3ap`、TCG と icount）で、`MSD/Linux ready` までの時間を段階ごとに測りました。QEMU の秒数は実機の秒数ではなく、版どうしの比較にだけ使います。条件、生の値、捨てた試行は [2026-10-20-qemu-boottime](../experiments/2026-10-20-qemu-boottime.md) にあります。計測ハーネスは `board/cardputerzero/tools/bench/boottime/` です。
+
+| 条件 | 通常起動の `t_ready`（icount） | 同（TCG） | 判定 |
+|---|---:|---:|---|
+| 基準（baseline-a） | 3.037890 s | 24.327573 s | 基準。A/A の差は icount で 0.85 %、TCG で 0.74 % |
+| K2: `CONFIG_FTRACE` を無効にする | 1.887120 s（−37.88 %） | 22.944577 s（−5.68 %） | 両モードで基準を満たした。製品の設定は未変更 |
+| U1: mdev の起動時の走査を `/sys/devices` に限る | 2.943922 s（−3.09 %） | 23.585238 s（−3.05 %） | 5 % に届かず、改善とはみなさない |
+| K1: `CONFIG_KPROBE_EVENTS` を無効にする | 3.067266 s（+0.97 %） | 25.115355 s（+3.24 %） | 不採用。時間が `init_blk_tracer` に移った |
+
+- icount の基準では、カーネルの initcall の合計 1.650 秒のうち `init_kprobe_trace` が 1.102 秒を占めていました。ftrace を無効にすると、initcall の合計は 0.544 秒になりました。
+- K2 のあとに icount で残る大きな処理は、`S10mdev`（0.785 秒）と `dwc_otg_driver_init`（0.402 秒）です。
+- TCG でだけ長い区間（init の起動直後、swapon、fsck、`msd-data-grow`）は、icount ではどれも 0.07 秒以下でした。QEMU が SD カードなどを模倣する時間だと考えます。TCG の秒数でユーザー空間の I/O の速さを判断しません。
+- ftrace を無効にすると、kprobe、blktrace、ブート時の tracing が使えなくなります。製品で無効にするかどうかは、実機で測ってから決めます。
+
+以下に、実機で行う未実施の計測案を示します。
 
 - 主指標は LCD にプロンプトが出てキー入力を受け付ける時点、副指標は init の終点マーカー時点とする。
 - GPIO トグル、UART 時刻、`printk.time=1`、`initcall_debug`、`scripts/bootgraph.pl`、ハイスピード撮影を組み合わせる。

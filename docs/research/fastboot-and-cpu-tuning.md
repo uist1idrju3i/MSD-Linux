@@ -85,7 +85,7 @@ RPi firmwareはVideoCore firmwareを起動し、`start_file`と`fixup_file`はGP
 | 候補 | origin/mainの状態 | 期待効果【推測】 | コスト・6観点の主なリスク | 優先度と検証 |
 |---|---|---|---|---|
 | 実機起動の区間計測を先行 | 未実施 | 遅い段階を識別し誤最適化を防ぐ | UART配線と再現手順。⑥に必要 | P0。cold bootを複数回測り、電源投入・kernel entry・login・周辺機能readyを分ける |
-| `initcall_debug`でprobe内訳を取得 | 未確認 | 起動時間を使うprobe/driverを絞れる | ログ量増加。②③を維持した削減が必要 | P1。既存機能を落とさず、まず実機ログとboot trace |
+| `initcall_debug`でprobe内訳を取得 | QEMUで取得済み（[実験記録](../experiments/2026-10-20-qemu-boottime.md)）。実機は未取得 | 起動時間を使うprobe/driverを絞れる | ログ量増加。②③を維持した削減が必要 | P1。既存機能を落とさず、まず実機ログとboot trace |
 | A53以外のISA設定を外す | generic `bcm2711_defconfig`を使用 | kernelとalternativesの縮小【推測】 | 他Pi SoC互換、⑥の保守性に影響 | P1。生成`.config`とsize差、QEMU `-icount`、全周辺機能試験 |
 | NUMA/NUMA_EMUを無効化 | base defconfigで有効 | 単一SoCでは不要コード縮小【推測】 | page allocation、Pi共通kernel互換に影響 | P1。config差分、Image/vmlinux、boot測定 |
 | platformとDTSをCM0専用に縮小 | `config.txt`はCM0 DTB選択。BuildrootはCM0とPi 3BのDTSを指定 | build成果物や初期選択を減らす可能性 | ②③とQEMU/Pi 3試験を損なう | P2。DTS別成果物サイズ。CM0実機で全I/O試験 |
