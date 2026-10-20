@@ -250,7 +250,7 @@ if len(partitions) != 7:
     raise SystemExit(f"expected 7 partitions, found {len(partitions)}")
 for number in (5, 6):
     partition = partitions[number - 1]
-    print(partition["start"], partition["size"])
+    print(partition["start"], partition["size"], end=" ")
 ')"
 	read -r root_a_start root_a_size root_b_start root_b_size \
 		<<<"$partition_info"
