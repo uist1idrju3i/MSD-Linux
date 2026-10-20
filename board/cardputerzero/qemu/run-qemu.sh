@@ -8,10 +8,19 @@ IMAGE="${1:-${IMAGES_DIR}/sdcard.img}"
 KERNEL="${KERNEL_IMAGE:-${IMAGES_DIR}/Image}"
 DTB="${DTB_IMAGE:-${IMAGES_DIR}/bcm2710-rpi-3-b.dtb}"
 QEMU="${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}"
+QEMU_MACHINE="${QEMU_MACHINE:-raspi3b}"
 ROOT_DEVICE="${ROOT_DEVICE:-/dev/mmcblk0p5}"
 ROOT_FSTYPE="${ROOT_FSTYPE:-squashfs}"
 QEMU_EXTRA_APPEND="${QEMU_EXTRA_APPEND:-}"
 QEMU_ICOUNT="${QEMU_ICOUNT:-}"
+case "$QEMU_MACHINE" in
+	raspi3b) QEMU_MEMORY=1G ;;
+	raspi3ap) QEMU_MEMORY=512M ;;
+	*)
+		printf 'Unsupported QEMU_MACHINE: %s\n' "$QEMU_MACHINE" >&2
+		exit 2
+		;;
+esac
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
@@ -51,7 +60,7 @@ fi
 
 # The Pi 3 DTB maps the PL011 to ttyAMA1; QEMU resets when bcm2835_wdt is armed.
 # Blacklist the watchdog only in QEMU; hardware watchdog behavior is unchanged.
-exec "$QEMU" "${qemu_args[@]}" -M raspi3b -m 1G \
+exec "$QEMU" "${qemu_args[@]}" -M "$QEMU_MACHINE" -m "$QEMU_MEMORY" \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \

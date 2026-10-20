@@ -20,7 +20,7 @@ printf 'ok - tag is deterministic: %s\n' "${first_tag}"
 
 copy_inputs() {
     local destination="$1"
-    mkdir -p -- "${destination}/.github" "${destination}/docker"
+    mkdir -p -- "${destination}/.github" "${destination}/docker/qemu-patches"
     cp -p -- "${launcher}" "${destination}/docker/msd-dev"
     cp -- "${repo_root}/.github/zizmor-requirements.txt" \
         "${destination}/.github/zizmor-requirements.txt"
@@ -28,12 +28,18 @@ copy_inputs() {
         "${destination}/docker/debian.sources"
     cp -- "${repo_root}/docker/msd-dev.Dockerfile" \
         "${destination}/docker/msd-dev.Dockerfile"
+    cp -- "${repo_root}/docker/qemu-signing-key.asc" \
+        "${destination}/docker/qemu-signing-key.asc"
+    cp -- "${repo_root}/docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch" \
+        "${destination}/docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch"
 }
 
 inputs=(
     .github/zizmor-requirements.txt
     docker/debian.sources
     docker/msd-dev.Dockerfile
+    docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch
+    docker/qemu-signing-key.asc
 )
 
 for input in "${inputs[@]}"; do
@@ -70,10 +76,17 @@ expected = [
     ".github/zizmor-requirements.txt",
     "docker/debian.sources",
     "docker/msd-dev.Dockerfile",
+    "docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch",
+    "docker/qemu-signing-key.asc",
 ]
 assert inputs == expected, f"unexpected image inputs: {inputs!r}"
 
 dockerfile = (root / "docker/msd-dev.Dockerfile").read_text()
+assert "ARG QEMU_VERSION=11.1.2" in dockerfile
+assert "/opt/qemu/bin/qemu-system-aarch64 -machine help" in dockerfile
+assert "raspi3ap" in dockerfile and "raspi3b" in dockerfile
+assert "libinsn.so" in dockerfile or "libhotblocks.so" in dockerfile
+assert "qemu-img create -f raw /tmp/qemu-smoke.raw 1M" in dockerfile
 missing = []
 instructions = []
 pending = ""
@@ -102,8 +115,36 @@ for instruction in instructions:
             if not argument.startswith("--")
         ]
         sources = arguments[:-1]
-    missing.extend(source for source in sources if source not in inputs)
+    for source in sources:
+        matches = list(root.glob(source)) if any(char in source for char in "*?[") else [root / source]
+        if not matches:
+            missing.append(source)
+        missing.extend(
+            str(path.relative_to(root))
+            for path in matches
+            if str(path.relative_to(root)) not in inputs
+        )
 
 assert not missing, f"COPY sources absent from IMAGE_INPUTS: {missing!r}"
 print("ok - every Dockerfile COPY source is covered by IMAGE_INPUTS")
 PY
+
+if [[ -n "${MSD_DEV_QEMU_IMAGE:-}" ]]; then
+    version_output="$(
+        docker run --rm --entrypoint qemu-system-aarch64 \
+            "${MSD_DEV_QEMU_IMAGE}" --version
+    )"
+    [[ "${version_output}" == *"QEMU emulator version 11.1.2"* ]]
+    machine_output="$(
+        docker run --rm --entrypoint qemu-system-aarch64 \
+            "${MSD_DEV_QEMU_IMAGE}" -machine help
+    )"
+    grep -Eq '(^|[[:space:]])raspi3ap([[:space:]]|$)' <<< "${machine_output}"
+    grep -Eq '(^|[[:space:]])raspi3b([[:space:]]|$)' <<< "${machine_output}"
+    docker run --rm --entrypoint /bin/bash "${MSD_DEV_QEMU_IMAGE}" -euc \
+        'test -s /opt/qemu/lib/qemu-plugins/libinsn.so || test -s /opt/qemu/lib/qemu-plugins/libhotblocks.so'
+    docker run --rm --entrypoint /bin/bash "${MSD_DEV_QEMU_IMAGE}" -euc \
+        'qemu-img create -f raw /tmp/msd-dev-smoke.img 1M && qemu-img info /tmp/msd-dev-smoke.img >/dev/null'
+    printf 'ok - QEMU 11.1.2, machines, plugins, and qemu-img work in %s\n' \
+        "${MSD_DEV_QEMU_IMAGE}"
+fi

@@ -1,6 +1,17 @@
 name: Scan development image
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - docker/msd-dev.Dockerfile
+      - docker/debian.sources
+      - docker/msd-dev
+      - .github/zizmor-requirements.txt
+      - docker/qemu-patches/**
+      - docker/qemu-signing-key.asc
+      - .github/workflows/dev-image-scan.yml
   schedule:
     - cron: "31 7 * * 1"
   workflow_dispatch:

@@ -9,6 +9,8 @@ IMAGE_INPUTS=(
     .github/zizmor-requirements.txt
     docker/debian.sources
     docker/msd-dev.Dockerfile
+    docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch
+    docker/qemu-signing-key.asc
 )
 
 image_input_hash() {
@@ -114,7 +116,7 @@ for name in BR2_DL_DIR BR2_CCACHE_DIR OUTPUT_DIR QEMU_LOG_DIR; do
     add_directory "${name}"
 done
 
-for name in QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT; do
+for name in QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT QEMU_MACHINE DTB_IMAGE; do
     if [[ -v "$name" ]]; then
         docker_args+=(--env "${name}=${!name}")
     fi
