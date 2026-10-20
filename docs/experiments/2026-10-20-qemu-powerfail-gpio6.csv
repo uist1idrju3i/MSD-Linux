@@ -1,1 +1,444 @@
 run_id,variant,repeat,metric,value,unit,valid,note
+smoke-20261020T142103Z,smoke,1,status,failed-run,status,false,Wrong QOM path /machine/soc/gpio caused DeviceNotFound; logs=output/qemu-logs/powerfail/smoke-20261020T142103Z
+smoke-20261020T142253Z,smoke,2,status,failed-run,status,false,Notification absent because local-source package patch was skipped; probe and emergency remount seen; logs=output/qemu-logs/powerfail/smoke-20261020T142253Z
+integrity-20261020T144637Z,integrity,1,status,failed-run,status,false,Rootless unsquashfs uid/gid permission warning returned status 2 before QEMU start; harness fixed; log=output/qemu-powerfail/integrity-20261020T144637Z/unsquashfs.log
+integrity-20261020T144832Z,integrity,2,status,failed-run,status,false,Shell read omitted second partition size and falsely rejected fitting rootfs; parser fixed; log=output/qemu-logs/powerfail/pr-b-integrity-retry.log
+integrity-20261020T144939Z,single,1,status,failed-run,status,false,logs=output/qemu-logs/powerfail/integrity-20261020T144939Z;reason=marker-write-missing
+integrity-20261020T144939Z,single,1,target_delay_seconds,1.5,s,false,
+integrity-20261020T144939Z,single,1,gpio_low_to_kill_seconds,,s,false,
+integrity-20261020T144939Z,single,1,event_logged,no,bool,false,
+integrity-20261020T144939Z,single,1,remount_seen,no,bool,false,
+integrity-20261020T144939Z,single,1,userspace_log_to_sysrq_seconds,,s,false,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+integrity-20261020T144939Z,single,1,marker_present_after_reboot,no,bool,false,
+integrity-20261020T144939Z,single,1,fsck_exit_status,,code,false,
+integrity-20261020T144939Z,single,1,fs_recovery_messages,no,bool,false,
+integrity-20261020T144939Z,single,1,firstboot_wall_seconds,59.912690,s,false,
+integrity-20261020T144939Z,single,1,reboot_verify_wall_seconds,0,s,false,
+integrity-20261020T144939Z,single,1,total_wall_seconds,59.956110,s,false,
+integrity-20261020T145156Z,single,1,status,ok,status,true,logs=output/qemu-logs/powerfail/integrity-20261020T145156Z
+integrity-20261020T145156Z,single,1,target_delay_seconds,1.5,s,true,
+integrity-20261020T145156Z,single,1,gpio_low_to_kill_seconds,1.565330,s,true,
+integrity-20261020T145156Z,single,1,event_logged,yes,bool,true,
+integrity-20261020T145156Z,single,1,remount_seen,yes,bool,true,
+integrity-20261020T145156Z,single,1,userspace_log_to_sysrq_seconds,-0.211037,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+integrity-20261020T145156Z,single,1,marker_present_after_reboot,yes,bool,true,
+integrity-20261020T145156Z,single,1,fsck_exit_status,0,code,true,
+integrity-20261020T145156Z,single,1,fs_recovery_messages,no,bool,true,
+integrity-20261020T145156Z,single,1,firstboot_wall_seconds,88.877925,s,true,
+integrity-20261020T145156Z,single,1,reboot_verify_wall_seconds,39.006528,s,true,
+integrity-20261020T145156Z,single,1,total_wall_seconds,127.926814,s,true,
+20261020T145418Z-aa-1,aa,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-aa-1
+20261020T145418Z-aa-1,aa,1,target_delay_seconds,1.5,s,true,
+20261020T145418Z-aa-1,aa,1,gpio_low_to_kill_seconds,1.567163,s,true,
+20261020T145418Z-aa-1,aa,1,event_logged,yes,bool,true,
+20261020T145418Z-aa-1,aa,1,remount_seen,yes,bool,true,
+20261020T145418Z-aa-1,aa,1,userspace_log_to_sysrq_seconds,-0.218975,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-aa-1,aa,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-aa-1,aa,1,fsck_exit_status,0,code,true,
+20261020T145418Z-aa-1,aa,1,fs_recovery_messages,no,bool,true,
+20261020T145418Z-aa-1,aa,1,firstboot_wall_seconds,89.242827,s,true,
+20261020T145418Z-aa-1,aa,1,reboot_verify_wall_seconds,37.556727,s,true,
+20261020T145418Z-aa-1,aa,1,total_wall_seconds,126.841473,s,true,
+20261020T145418Z-aa-2,aa,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-aa-2
+20261020T145418Z-aa-2,aa,2,target_delay_seconds,1.5,s,true,
+20261020T145418Z-aa-2,aa,2,gpio_low_to_kill_seconds,1.571227,s,true,
+20261020T145418Z-aa-2,aa,2,event_logged,yes,bool,true,
+20261020T145418Z-aa-2,aa,2,remount_seen,yes,bool,true,
+20261020T145418Z-aa-2,aa,2,userspace_log_to_sysrq_seconds,-0.235120,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-aa-2,aa,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-aa-2,aa,2,fsck_exit_status,0,code,true,
+20261020T145418Z-aa-2,aa,2,fs_recovery_messages,no,bool,true,
+20261020T145418Z-aa-2,aa,2,firstboot_wall_seconds,91.317680,s,true,
+20261020T145418Z-aa-2,aa,2,reboot_verify_wall_seconds,38.484950,s,true,
+20261020T145418Z-aa-2,aa,2,total_wall_seconds,129.845966,s,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.1-1
+20261020T145418Z-delay-0.1-1,delay-0.1,1,target_delay_seconds,0.1,s,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,gpio_low_to_kill_seconds,0.168740,s,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,event_logged,no,bool,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.1-1,delay-0.1,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,firstboot_wall_seconds,87.921895,s,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,reboot_verify_wall_seconds,40.614066,s,true,
+20261020T145418Z-delay-0.1-1,delay-0.1,1,total_wall_seconds,128.582395,s,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.1-2
+20261020T145418Z-delay-0.1-2,delay-0.1,2,target_delay_seconds,0.1,s,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,gpio_low_to_kill_seconds,0.167931,s,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,event_logged,no,bool,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.1-2,delay-0.1,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,firstboot_wall_seconds,88.651930,s,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,reboot_verify_wall_seconds,40.939591,s,true,
+20261020T145418Z-delay-0.1-2,delay-0.1,2,total_wall_seconds,129.635381,s,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.1-3
+20261020T145418Z-delay-0.1-3,delay-0.1,3,target_delay_seconds,0.1,s,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,gpio_low_to_kill_seconds,0.169379,s,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,event_logged,no,bool,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.1-3,delay-0.1,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,firstboot_wall_seconds,87.504461,s,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,reboot_verify_wall_seconds,41.012222,s,true,
+20261020T145418Z-delay-0.1-3,delay-0.1,3,total_wall_seconds,128.557952,s,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.1-4
+20261020T145418Z-delay-0.1-4,delay-0.1,4,target_delay_seconds,0.1,s,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,gpio_low_to_kill_seconds,0.164525,s,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,event_logged,no,bool,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.1-4,delay-0.1,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,firstboot_wall_seconds,86.659316,s,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,reboot_verify_wall_seconds,40.824695,s,true,
+20261020T145418Z-delay-0.1-4,delay-0.1,4,total_wall_seconds,127.529744,s,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.1-5
+20261020T145418Z-delay-0.1-5,delay-0.1,5,target_delay_seconds,0.1,s,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,gpio_low_to_kill_seconds,0.165663,s,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,event_logged,no,bool,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.1-5,delay-0.1,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,firstboot_wall_seconds,87.287222,s,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,reboot_verify_wall_seconds,40.087474,s,true,
+20261020T145418Z-delay-0.1-5,delay-0.1,5,total_wall_seconds,127.417477,s,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.4-1
+20261020T145418Z-delay-0.4-1,delay-0.4,1,target_delay_seconds,0.4,s,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,gpio_low_to_kill_seconds,0.468856,s,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,event_logged,no,bool,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.4-1,delay-0.4,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,firstboot_wall_seconds,88.353813,s,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,reboot_verify_wall_seconds,40.714440,s,true,
+20261020T145418Z-delay-0.4-1,delay-0.4,1,total_wall_seconds,129.109060,s,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.4-2
+20261020T145418Z-delay-0.4-2,delay-0.4,2,target_delay_seconds,0.4,s,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,gpio_low_to_kill_seconds,0.469368,s,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,event_logged,no,bool,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.4-2,delay-0.4,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,firstboot_wall_seconds,90.024406,s,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,reboot_verify_wall_seconds,40.933748,s,true,
+20261020T145418Z-delay-0.4-2,delay-0.4,2,total_wall_seconds,131.002864,s,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.4-3
+20261020T145418Z-delay-0.4-3,delay-0.4,3,target_delay_seconds,0.4,s,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,gpio_low_to_kill_seconds,0.474549,s,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,event_logged,no,bool,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.4-3,delay-0.4,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,firstboot_wall_seconds,89.221893,s,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,reboot_verify_wall_seconds,40.291487,s,true,
+20261020T145418Z-delay-0.4-3,delay-0.4,3,total_wall_seconds,129.556881,s,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.4-4
+20261020T145418Z-delay-0.4-4,delay-0.4,4,target_delay_seconds,0.4,s,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,gpio_low_to_kill_seconds,0.469762,s,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,event_logged,no,bool,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.4-4,delay-0.4,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,firstboot_wall_seconds,88.215937,s,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,reboot_verify_wall_seconds,41.889752,s,true,
+20261020T145418Z-delay-0.4-4,delay-0.4,4,total_wall_seconds,130.145511,s,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.4-5
+20261020T145418Z-delay-0.4-5,delay-0.4,5,target_delay_seconds,0.4,s,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,gpio_low_to_kill_seconds,0.464688,s,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,event_logged,no,bool,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,remount_seen,no,bool,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.4-5,delay-0.4,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,firstboot_wall_seconds,88.820940,s,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,reboot_verify_wall_seconds,41.755857,s,true,
+20261020T145418Z-delay-0.4-5,delay-0.4,5,total_wall_seconds,130.618773,s,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.7-1
+20261020T145418Z-delay-0.7-1,delay-0.7,1,target_delay_seconds,0.7,s,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,gpio_low_to_kill_seconds,0.765500,s,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,event_logged,no,bool,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,remount_seen,yes,bool,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.7-1,delay-0.7,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,firstboot_wall_seconds,89.256097,s,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,reboot_verify_wall_seconds,38.728721,s,true,
+20261020T145418Z-delay-0.7-1,delay-0.7,1,total_wall_seconds,128.028196,s,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.7-2
+20261020T145418Z-delay-0.7-2,delay-0.7,2,target_delay_seconds,0.7,s,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,gpio_low_to_kill_seconds,0.769602,s,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,event_logged,no,bool,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,remount_seen,yes,bool,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.7-2,delay-0.7,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,firstboot_wall_seconds,88.853862,s,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,reboot_verify_wall_seconds,37.765425,s,true,
+20261020T145418Z-delay-0.7-2,delay-0.7,2,total_wall_seconds,126.662784,s,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.7-3
+20261020T145418Z-delay-0.7-3,delay-0.7,3,target_delay_seconds,0.7,s,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,gpio_low_to_kill_seconds,0.764297,s,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,event_logged,no,bool,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,remount_seen,yes,bool,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.7-3,delay-0.7,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,firstboot_wall_seconds,87.779837,s,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,reboot_verify_wall_seconds,38.416923,s,true,
+20261020T145418Z-delay-0.7-3,delay-0.7,3,total_wall_seconds,126.240955,s,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.7-4
+20261020T145418Z-delay-0.7-4,delay-0.7,4,target_delay_seconds,0.7,s,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,gpio_low_to_kill_seconds,0.771734,s,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,event_logged,no,bool,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,remount_seen,yes,bool,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.7-4,delay-0.7,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,firstboot_wall_seconds,88.578570,s,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,reboot_verify_wall_seconds,37.456837,s,true,
+20261020T145418Z-delay-0.7-4,delay-0.7,4,total_wall_seconds,126.077643,s,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-0.7-5
+20261020T145418Z-delay-0.7-5,delay-0.7,5,target_delay_seconds,0.7,s,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,gpio_low_to_kill_seconds,0.768110,s,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,event_logged,no,bool,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,remount_seen,yes,bool,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-0.7-5,delay-0.7,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,firstboot_wall_seconds,89.202070,s,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,reboot_verify_wall_seconds,38.088688,s,true,
+20261020T145418Z-delay-0.7-5,delay-0.7,5,total_wall_seconds,127.333613,s,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-1.5-1
+20261020T145418Z-delay-1.5-1,delay-1.5,1,target_delay_seconds,1.5,s,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,gpio_low_to_kill_seconds,1.567993,s,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,event_logged,yes,bool,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,remount_seen,yes,bool,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,userspace_log_to_sysrq_seconds,-0.244276,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-1.5-1,delay-1.5,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,firstboot_wall_seconds,92.179387,s,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,reboot_verify_wall_seconds,37.655783,s,true,
+20261020T145418Z-delay-1.5-1,delay-1.5,1,total_wall_seconds,129.880919,s,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-1.5-2
+20261020T145418Z-delay-1.5-2,delay-1.5,2,target_delay_seconds,1.5,s,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,gpio_low_to_kill_seconds,1.569017,s,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,event_logged,yes,bool,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,remount_seen,yes,bool,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,userspace_log_to_sysrq_seconds,-0.243972,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-1.5-2,delay-1.5,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,firstboot_wall_seconds,89.988056,s,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,reboot_verify_wall_seconds,37.349258,s,true,
+20261020T145418Z-delay-1.5-2,delay-1.5,2,total_wall_seconds,127.378842,s,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-1.5-3
+20261020T145418Z-delay-1.5-3,delay-1.5,3,target_delay_seconds,1.5,s,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,gpio_low_to_kill_seconds,1.573337,s,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,event_logged,yes,bool,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,remount_seen,yes,bool,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,userspace_log_to_sysrq_seconds,-0.231927,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-1.5-3,delay-1.5,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,firstboot_wall_seconds,90.036033,s,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,reboot_verify_wall_seconds,37.535226,s,true,
+20261020T145418Z-delay-1.5-3,delay-1.5,3,total_wall_seconds,127.617281,s,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-1.5-4
+20261020T145418Z-delay-1.5-4,delay-1.5,4,target_delay_seconds,1.5,s,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,gpio_low_to_kill_seconds,1.566480,s,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,event_logged,yes,bool,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,remount_seen,yes,bool,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,userspace_log_to_sysrq_seconds,-0.215527,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-1.5-4,delay-1.5,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,firstboot_wall_seconds,88.424464,s,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,reboot_verify_wall_seconds,37.394240,s,true,
+20261020T145418Z-delay-1.5-4,delay-1.5,4,total_wall_seconds,125.860622,s,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-1.5-5
+20261020T145418Z-delay-1.5-5,delay-1.5,5,target_delay_seconds,1.5,s,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,gpio_low_to_kill_seconds,1.567830,s,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,event_logged,yes,bool,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,remount_seen,yes,bool,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,userspace_log_to_sysrq_seconds,-0.219216,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-1.5-5,delay-1.5,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,firstboot_wall_seconds,89.711315,s,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,reboot_verify_wall_seconds,38.621616,s,true,
+20261020T145418Z-delay-1.5-5,delay-1.5,5,total_wall_seconds,128.376204,s,true,
+20261020T145418Z-delay-5-1,delay-5,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-5-1
+20261020T145418Z-delay-5-1,delay-5,1,target_delay_seconds,5,s,true,
+20261020T145418Z-delay-5-1,delay-5,1,gpio_low_to_kill_seconds,5.066873,s,true,
+20261020T145418Z-delay-5-1,delay-5,1,event_logged,yes,bool,true,
+20261020T145418Z-delay-5-1,delay-5,1,remount_seen,yes,bool,true,
+20261020T145418Z-delay-5-1,delay-5,1,userspace_log_to_sysrq_seconds,-0.243337,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-5-1,delay-5,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-5-1,delay-5,1,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-5-1,delay-5,1,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-5-1,delay-5,1,firstboot_wall_seconds,93.864056,s,true,
+20261020T145418Z-delay-5-1,delay-5,1,reboot_verify_wall_seconds,38.407380,s,true,
+20261020T145418Z-delay-5-1,delay-5,1,total_wall_seconds,132.318500,s,true,
+20261020T145418Z-delay-5-2,delay-5,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-5-2
+20261020T145418Z-delay-5-2,delay-5,2,target_delay_seconds,5,s,true,
+20261020T145418Z-delay-5-2,delay-5,2,gpio_low_to_kill_seconds,5.069020,s,true,
+20261020T145418Z-delay-5-2,delay-5,2,event_logged,yes,bool,true,
+20261020T145418Z-delay-5-2,delay-5,2,remount_seen,yes,bool,true,
+20261020T145418Z-delay-5-2,delay-5,2,userspace_log_to_sysrq_seconds,-0.237230,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-5-2,delay-5,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-5-2,delay-5,2,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-5-2,delay-5,2,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-5-2,delay-5,2,firstboot_wall_seconds,92.965050,s,true,
+20261020T145418Z-delay-5-2,delay-5,2,reboot_verify_wall_seconds,37.890896,s,true,
+20261020T145418Z-delay-5-2,delay-5,2,total_wall_seconds,130.901948,s,true,
+20261020T145418Z-delay-5-3,delay-5,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-5-3
+20261020T145418Z-delay-5-3,delay-5,3,target_delay_seconds,5,s,true,
+20261020T145418Z-delay-5-3,delay-5,3,gpio_low_to_kill_seconds,5.068684,s,true,
+20261020T145418Z-delay-5-3,delay-5,3,event_logged,yes,bool,true,
+20261020T145418Z-delay-5-3,delay-5,3,remount_seen,yes,bool,true,
+20261020T145418Z-delay-5-3,delay-5,3,userspace_log_to_sysrq_seconds,-0.234487,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-5-3,delay-5,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-5-3,delay-5,3,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-5-3,delay-5,3,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-5-3,delay-5,3,firstboot_wall_seconds,91.392865,s,true,
+20261020T145418Z-delay-5-3,delay-5,3,reboot_verify_wall_seconds,36.718424,s,true,
+20261020T145418Z-delay-5-3,delay-5,3,total_wall_seconds,128.151788,s,true,
+20261020T145418Z-delay-5-4,delay-5,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-5-4
+20261020T145418Z-delay-5-4,delay-5,4,target_delay_seconds,5,s,true,
+20261020T145418Z-delay-5-4,delay-5,4,gpio_low_to_kill_seconds,5.065245,s,true,
+20261020T145418Z-delay-5-4,delay-5,4,event_logged,yes,bool,true,
+20261020T145418Z-delay-5-4,delay-5,4,remount_seen,yes,bool,true,
+20261020T145418Z-delay-5-4,delay-5,4,userspace_log_to_sysrq_seconds,-0.214687,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-5-4,delay-5,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-5-4,delay-5,4,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-5-4,delay-5,4,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-5-4,delay-5,4,firstboot_wall_seconds,95.173403,s,true,
+20261020T145418Z-delay-5-4,delay-5,4,reboot_verify_wall_seconds,38.061545,s,true,
+20261020T145418Z-delay-5-4,delay-5,4,total_wall_seconds,133.278779,s,true,
+20261020T145418Z-delay-5-5,delay-5,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-delay-5-5
+20261020T145418Z-delay-5-5,delay-5,5,target_delay_seconds,5,s,true,
+20261020T145418Z-delay-5-5,delay-5,5,gpio_low_to_kill_seconds,5.068238,s,true,
+20261020T145418Z-delay-5-5,delay-5,5,event_logged,yes,bool,true,
+20261020T145418Z-delay-5-5,delay-5,5,remount_seen,yes,bool,true,
+20261020T145418Z-delay-5-5,delay-5,5,userspace_log_to_sysrq_seconds,-0.221740,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-delay-5-5,delay-5,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-delay-5-5,delay-5,5,fsck_exit_status,0,code,true,
+20261020T145418Z-delay-5-5,delay-5,5,fs_recovery_messages,no,bool,true,
+20261020T145418Z-delay-5-5,delay-5,5,firstboot_wall_seconds,91.768466,s,true,
+20261020T145418Z-delay-5-5,delay-5,5,reboot_verify_wall_seconds,38.187165,s,true,
+20261020T145418Z-delay-5-5,delay-5,5,total_wall_seconds,130.000388,s,true,
+20261020T145418Z-control-1,control-no-gpio,1,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-control-1
+20261020T145418Z-control-1,control-no-gpio,1,target_delay_seconds,5,s,true,
+20261020T145418Z-control-1,control-no-gpio,1,gpio_low_to_kill_seconds,5.028788,s,true,
+20261020T145418Z-control-1,control-no-gpio,1,event_logged,no,bool,true,
+20261020T145418Z-control-1,control-no-gpio,1,remount_seen,no,bool,true,
+20261020T145418Z-control-1,control-no-gpio,1,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-control-1,control-no-gpio,1,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-control-1,control-no-gpio,1,fsck_exit_status,0,code,true,
+20261020T145418Z-control-1,control-no-gpio,1,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-control-1,control-no-gpio,1,firstboot_wall_seconds,92.792836,s,true,
+20261020T145418Z-control-1,control-no-gpio,1,reboot_verify_wall_seconds,40.944686,s,true,
+20261020T145418Z-control-1,control-no-gpio,1,total_wall_seconds,133.781210,s,true,
+20261020T145418Z-control-2,control-no-gpio,2,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-control-2
+20261020T145418Z-control-2,control-no-gpio,2,target_delay_seconds,5,s,true,
+20261020T145418Z-control-2,control-no-gpio,2,gpio_low_to_kill_seconds,5.027217,s,true,
+20261020T145418Z-control-2,control-no-gpio,2,event_logged,no,bool,true,
+20261020T145418Z-control-2,control-no-gpio,2,remount_seen,no,bool,true,
+20261020T145418Z-control-2,control-no-gpio,2,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-control-2,control-no-gpio,2,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-control-2,control-no-gpio,2,fsck_exit_status,0,code,true,
+20261020T145418Z-control-2,control-no-gpio,2,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-control-2,control-no-gpio,2,firstboot_wall_seconds,92.997707,s,true,
+20261020T145418Z-control-2,control-no-gpio,2,reboot_verify_wall_seconds,42.106294,s,true,
+20261020T145418Z-control-2,control-no-gpio,2,total_wall_seconds,135.148488,s,true,
+20261020T145418Z-control-3,control-no-gpio,3,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-control-3
+20261020T145418Z-control-3,control-no-gpio,3,target_delay_seconds,5,s,true,
+20261020T145418Z-control-3,control-no-gpio,3,gpio_low_to_kill_seconds,5.028189,s,true,
+20261020T145418Z-control-3,control-no-gpio,3,event_logged,no,bool,true,
+20261020T145418Z-control-3,control-no-gpio,3,remount_seen,no,bool,true,
+20261020T145418Z-control-3,control-no-gpio,3,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-control-3,control-no-gpio,3,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-control-3,control-no-gpio,3,fsck_exit_status,0,code,true,
+20261020T145418Z-control-3,control-no-gpio,3,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-control-3,control-no-gpio,3,firstboot_wall_seconds,92.378775,s,true,
+20261020T145418Z-control-3,control-no-gpio,3,reboot_verify_wall_seconds,40.421888,s,true,
+20261020T145418Z-control-3,control-no-gpio,3,total_wall_seconds,132.846421,s,true,
+20261020T145418Z-control-4,control-no-gpio,4,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-control-4
+20261020T145418Z-control-4,control-no-gpio,4,target_delay_seconds,5,s,true,
+20261020T145418Z-control-4,control-no-gpio,4,gpio_low_to_kill_seconds,5.026961,s,true,
+20261020T145418Z-control-4,control-no-gpio,4,event_logged,no,bool,true,
+20261020T145418Z-control-4,control-no-gpio,4,remount_seen,no,bool,true,
+20261020T145418Z-control-4,control-no-gpio,4,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-control-4,control-no-gpio,4,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-control-4,control-no-gpio,4,fsck_exit_status,0,code,true,
+20261020T145418Z-control-4,control-no-gpio,4,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-control-4,control-no-gpio,4,firstboot_wall_seconds,92.163785,s,true,
+20261020T145418Z-control-4,control-no-gpio,4,reboot_verify_wall_seconds,39.688304,s,true,
+20261020T145418Z-control-4,control-no-gpio,4,total_wall_seconds,131.893743,s,true,
+20261020T145418Z-control-5,control-no-gpio,5,status,ok,status,true,logs=output/qemu-logs/powerfail/20261020T145418Z-control-5
+20261020T145418Z-control-5,control-no-gpio,5,target_delay_seconds,5,s,true,
+20261020T145418Z-control-5,control-no-gpio,5,gpio_low_to_kill_seconds,5.026886,s,true,
+20261020T145418Z-control-5,control-no-gpio,5,event_logged,no,bool,true,
+20261020T145418Z-control-5,control-no-gpio,5,remount_seen,no,bool,true,
+20261020T145418Z-control-5,control-no-gpio,5,userspace_log_to_sysrq_seconds,,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+20261020T145418Z-control-5,control-no-gpio,5,marker_present_after_reboot,yes,bool,true,
+20261020T145418Z-control-5,control-no-gpio,5,fsck_exit_status,0,code,true,
+20261020T145418Z-control-5,control-no-gpio,5,fs_recovery_messages,yes,bool,true,
+20261020T145418Z-control-5,control-no-gpio,5,firstboot_wall_seconds,94.739661,s,true,
+20261020T145418Z-control-5,control-no-gpio,5,reboot_verify_wall_seconds,40.730756,s,true,
+20261020T145418Z-control-5,control-no-gpio,5,total_wall_seconds,135.512817,s,true,
+integrity-20261020T162446Z,single,1,status,ok,status,true,logs=output/qemu-logs/powerfail/integrity-20261020T162446Z
+integrity-20261020T162446Z,single,1,target_delay_seconds,1.5,s,true,
+integrity-20261020T162446Z,single,1,gpio_low_to_kill_seconds,1.566716,s,true,
+integrity-20261020T162446Z,single,1,event_logged,yes,bool,true,
+integrity-20261020T162446Z,single,1,remount_seen,yes,bool,true,
+integrity-20261020T162446Z,single,1,userspace_log_to_sysrq_seconds,-0.224172,s,true,非同期 userspace ログの時刻から SysRq-U の時刻を引いた値。因果的な remount 時間ではない。
+integrity-20261020T162446Z,single,1,marker_present_after_reboot,yes,bool,true,
+integrity-20261020T162446Z,single,1,fsck_exit_status,0,code,true,
+integrity-20261020T162446Z,single,1,fs_recovery_messages,no,bool,true,
+integrity-20261020T162446Z,single,1,firstboot_wall_seconds,87.711287,s,true,
+integrity-20261020T162446Z,single,1,reboot_verify_wall_seconds,36.885361,s,true,
+integrity-20261020T162446Z,single,1,total_wall_seconds,124.639215,s,true,
+integrity-20261020T145156Z,single,1,kernel_detect_to_ext4_remount_seconds,0.165533,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-aa-1,aa,1,kernel_detect_to_ext4_remount_seconds,0.191057,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-aa-2,aa,2,kernel_detect_to_ext4_remount_seconds,0.089781,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-0.7-1,delay-0.7,1,kernel_detect_to_ext4_remount_seconds,0.179104,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-0.7-2,delay-0.7,2,kernel_detect_to_ext4_remount_seconds,0.179628,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-0.7-3,delay-0.7,3,kernel_detect_to_ext4_remount_seconds,0.192518,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-0.7-4,delay-0.7,4,kernel_detect_to_ext4_remount_seconds,0.189953,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-0.7-5,delay-0.7,5,kernel_detect_to_ext4_remount_seconds,0.191455,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-1.5-1,delay-1.5,1,kernel_detect_to_ext4_remount_seconds,0.193968,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-1.5-2,delay-1.5,2,kernel_detect_to_ext4_remount_seconds,0.208101,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-1.5-3,delay-1.5,3,kernel_detect_to_ext4_remount_seconds,0.080021,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-1.5-4,delay-1.5,4,kernel_detect_to_ext4_remount_seconds,0.175310,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-1.5-5,delay-1.5,5,kernel_detect_to_ext4_remount_seconds,0.083066,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-5-1,delay-5,1,kernel_detect_to_ext4_remount_seconds,0.190180,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-5-2,delay-5,2,kernel_detect_to_ext4_remount_seconds,0.188735,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-5-3,delay-5,3,kernel_detect_to_ext4_remount_seconds,0.100347,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-5-4,delay-5,4,kernel_detect_to_ext4_remount_seconds,0.184238,s,true,Kernel detection log to ext4 read-only remount log.
+20261020T145418Z-delay-5-5,delay-5,5,kernel_detect_to_ext4_remount_seconds,0.182983,s,true,Kernel detection log to ext4 read-only remount log.
+integrity-20261020T162446Z,single,1,kernel_detect_to_ext4_remount_seconds,0.167386,s,true,Kernel detection log to ext4 read-only remount log.
