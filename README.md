@@ -47,6 +47,8 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 ビルドと QEMU 起動確認の手順は [docs/BUILD.md](docs/BUILD.md)、更新手順と検証範囲は [docs/UPDATE.md](docs/UPDATE.md) を参照してください。
 
+CI と同じ開発用コンテナーは [docker/README.md](docker/README.md) を参照してください。
+
 ## 取得方法
 
 ```sh
