@@ -38,6 +38,7 @@ QEMU（`raspi3ap`、TCG と icount）で、`MSD/Linux ready` までの時間を�
 - 主指標は LCD にプロンプトが出てキー入力を受け付ける時点、副指標は init の終点マーカー時点とする。
 - GPIO トグル、UART 時刻、`printk.time=1`、`initcall_debug`、`scripts/bootgraph.pl`、ハイスピード撮影を組み合わせる。
 - 同じ個体・SD・firmware・cmdline で一度に一要素だけ変更し、コールドブート 15 回以上の中央値と p90 を記録する。初回は別扱いにする。
+- K2（`CONFIG_FTRACE` の無効化）は、同じ個体で ftrace を残したカーネルと無効にしたカーネルを比べる。QEMU の icount では 37.88 % 短くなったが、実機で同じ割合になるとは限らない。採否は、実機で短くなった時間と、ftrace・kprobe・blktrace を失う不便さを比べて決める。決めるまで製品の設定は変えない。
 - 測定用ログは起動時間に影響する。量産ビルドと測定ビルドを区別する。systemd を使う場合、`systemd-analyze blame` は並列起動待ちを反映せず、`Type=simple` のサービスも測れない。
 
 出典: [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html)、[bootgraph.pl](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/scripts/bootgraph.pl#L13-L33)、[systemd-analyze](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、[Raspberry Pi boot-time white paper](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf)。
