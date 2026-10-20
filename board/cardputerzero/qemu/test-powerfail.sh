@@ -317,7 +317,7 @@ run_integrity_trial() {
 	start_wall_ns="$(now_ns)"
 	cp --reflink=auto --sparse=always "$TEST_TEMPLATE" "$disk"
 	start_qemu "$disk" "$first_log" "$qmp_socket" \
-		"msd.s3cut=1 msd.powerfail=1" 0
+		"msd.s3bench=1 msd.s3cut=1 msd.powerfail=1" 0
 	if ! wait_for_text "$first_log" "MSD/Linux ready" "$CURRENT_PID" 180; then
 		failure=firstboot-ready-timeout
 	elif ! wait_for_text "$first_log" "S3CUT_MARKER_WRITTEN=1" \
@@ -391,7 +391,8 @@ run_integrity_trial() {
 	if grep -Fq -- 'SysRq U: emergency remount filesystems readonly' "$first_log"; then
 		remount=yes
 	fi
-	if grep -Fq -- 'S3CUT_MARKER_PRESENT=1' "$reboot_log"; then
+	if [[ -f "$reboot_log" ]] &&
+		grep -Fq -- 'S3CUT_MARKER_PRESENT=1' "$reboot_log"; then
 		marker=yes
 	fi
 	if [[ -f "$reboot_log" ]] &&
