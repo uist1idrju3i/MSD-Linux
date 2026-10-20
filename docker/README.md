@@ -38,7 +38,7 @@ Bootlin toolchain は x86_64 専用です。arm64 ホストでは開発用イメ
 
 公開時には同じ multi-arch イメージに `sha-<commit>` と `latest` のタグも付け、SPDX SBOM と provenance の attestation を付けます。`ensure` は入力タグを `imagetools inspect` で確認し、公開済みなら pull と attestation 検証を行います。タグが見つからない場合の処理はローカルビルドです。認証や通信など、それ以外の検査エラー、pull の失敗、attestation 検証の失敗ではビルドせずに終了します。通常の `pull` は GitHub CLI がない場合に警告して検証を省略しますが、`MSD_DEV_REQUIRE_ATTESTATION=1` を指定すると GitHub CLI がない場合も失敗します。CI ではこの設定が必須です。
 
-最初の公開直後は GHCR パッケージが非公開のため、所有者が公開設定に変更するまで取得できません。毎週月曜に `latest` を検査し、検出事項があれば「開発用イメージの脆弱性」Issue を作成または更新します。検出事項がなくなった後の検査では、Issue にコメントして閉じます。
+`ghcr.io/uist1idrju3i/msd-dev` は、認証なしで pull できる公開パッケージです。毎週月曜に `latest` を検査し、検出事項があれば「開発用イメージの脆弱性」Issue を作成または更新します。検出事項がなくなった後の検査では、Issue にコメントして閉じます。
 
 ## 固定値の更新
 

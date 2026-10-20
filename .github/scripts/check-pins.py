@@ -208,21 +208,6 @@ def workflow_checksum(text: str, archive_variable: str) -> str:
     return checksums[-1] if checksums else ""
 
 
-def parse_debian_package_versions(data: bytes) -> dict[str, str]:
-    versions: dict[str, str] = {}
-    for block in lzma.decompress(data).decode().split("\n\n"):
-        fields = dict(
-            line.split(": ", 1)
-            for line in block.splitlines()
-            if ": " in line
-        )
-        package = fields.get("Package", "")
-        version = fields.get("Version", "")
-        if package in {"qemu-system-arm", "qemu-utils"} and version:
-            versions[package] = version
-    return versions
-
-
 def parse_qemu_latest(data: str) -> str:
     versions = re.findall(r"\bqemu-(\d+\.\d+\.\d+)\.tar\.xz\b", data)
     return max(versions, key=branch_key) if versions else ""
