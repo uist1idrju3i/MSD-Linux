@@ -91,6 +91,71 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 この計画で CI に追加するのは日本語 lint、relative-link、host test など軽い回帰検査に限り、既存 workflow は変更しない。kernel option sweep、複数 filesystem の電断/replay、full differential Buildroot、実機試験はローカルで行い、CI に長時間の sweep を追加しない【推測】。
 
+### QEMU で検証できる範囲の網羅表（2026-10-20 時点）
+
+この節は、調査文書に挙げた項目を QEMU で検証できるかどうかで分け、状況をまとめたものです。照らし合わせた文書は、上の S1〜S17 の表、[アイデア総覧](ideas-overview.md)、[高速化のアイデア一覧](fastboot-ideas.md)、[高速起動記事と Cortex-A53 調整](fastboot-and-cpu-tuning.md)、[SoC・メモリ・SD 特性と圧縮方式](soc-memory-compression.md)、[CPU・割り込み・sysctl](cpu-irq-and-sysctl.md)、[セキュリティ対策](security-hardening.md)です。QEMU の秒数は版どうしの比較にだけ使い、実機の秒数とはみなしません。項目が済んだら、ここと上の S1〜S17 の表を同じ PR で更新します。
+
+#### QEMU で検証済み
+
+| 項目 | 確かめたこと | 記録 |
+|---|---|---|
+| S3 `/data` の ext4 設定 | mount option ごとの書き込み量と、SIGKILL 後の回復 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
+| S6 カーネル hardening（tier A） | kernel-hardening-checker の結果と起動の回帰 | [2026-10-19-s06-kernel-hardening](../experiments/2026-10-19-s06-kernel-hardening.md) |
+| S2 カメラ（QEMU の範囲） | 起動時間の回帰。センサーの動作は実機で確かめる | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
+| S9 のうち GPIO6 の経路 | QEMU に足した GPIO6 の割り込みで、通知、remount、fsck を確認 | [2026-10-20-qemu-powerfail-gpio6](../experiments/2026-10-20-qemu-powerfail-gpio6.md) |
+| 起動時間の内訳と K1・K2・U1 | initcall と init script ごとの時間。K2（ftrace の無効化）だけが基準を満たした | [2026-10-20-qemu-boottime](../experiments/2026-10-20-qemu-boottime.md) |
+| 調整項目の既定値 | sysctl、ブロックデバイス、モジュールパラメーター | [2026-10-19-tunables-dump](../experiments/2026-10-19-tunables-dump.md) |
+| S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
+
+#### QEMU で検証できるが未実施
+
+| 項目 | QEMU で確かめること | 規模 |
+|---|---|---|
+| S11 watchdog | 給餌が止まったときの reset、reboot、poweroff | 実施中 |
+| init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | 実施中 |
+| S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | 中 |
+| 温度 | QEMU に温度の値を足し、読み出しと記録の経路を確かめる | 小 |
+| S15 QEMU の版の比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
+| sysctl の候補 | `kernel.sysrq=32` でも電源断時の remount が動くこと、`panic=` と `panic_on_oops` と watchdog の経路、情報漏えい対策の値 | 小 |
+| ramoops | panic のログを再起動後に読めるか（QEMU で RAM が保たれる範囲） | 小 |
+| S12 SquashFS の圧縮方式と block size、EROFS | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | 中 |
+| S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（ビルドだけで約 1 日の見込み） |
+| S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 中（S1 と同じ仕組みで測る） |
+| `quiet`、`lpj=`、PREEMPT、printk | icount での起動時間の差 | 小（S1 と同じ仕組みで測る） |
+| 任意機能のドライバーをモジュールにする | K2 のあとに残る `dwc_otg_driver_init` などを遅らせたときの差。LCD とキーボードは実機で確かめる | 中 |
+| S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 大（全体の再ビルドが複数回） |
+| S16 `/etc` と `/data` を通常は読み取り専用にする | 各 writer が書き込み可能な期間だけで動くか | 中 |
+| S4 ext4・F2FS・btrfs、S5 OverlayFS の方式 | 同じ負荷での fsck、mount、SIGKILL 後の回復、書き込み量 | 大 |
+| S17 ストレージの障害と速度の模擬 | dm-log-writes の再生、dm-flakey、QEMU の blkdebug | 大 |
+| 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残した版で） | 中 |
+| zram | 動作と RAM の使い方 | 小 |
+| dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
+| `/data` の `noexec` | mount の値と、アプリが動くか | 小 |
+| BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
+| `kernel8.img` の gzip 再圧縮 | 展開後にビットが一致すること（ホストで確認）。読み込み時間は実機で測る | 小 |
+| `align = 4M` | パーティションの配置。性能は実機で測る | 小 |
+| Lynis | 生成イメージの監査 | 小 |
+
+#### 実機でしか検証できない項目
+
+config.txt の設定（`boot_delay`、`start_cd.elf`、`gpu_mem`、`max_framebuffers`、`core_freq`、`initial_turbo`、`arm_boost`）、tryboot と A/B の slot 選択、firmware から OS への watchdog の引き継ぎ、CPU の governor と `maxcpus=1` と温度、I/O スケジューラーと `read_ahead_kb`、SD の速度と erase の単位、`get_throttled`、実際の電源断（S9 の残りと 200 回試験）、LCD の fbcon、カメラ（S2）、IR（S7）、充電 IC（S8）、CMA の量。
+
+#### 調査だけの項目と採用しない項目
+
+SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secure boot に対応した SoC への移行、更新フレームワーク（RAUC など）の比較。
+
+#### 実施順（2026-10-20 時点）
+
+下の「次の作業計画（2026-10-19 時点）」を次の順に置き換えます。
+
+1. S11 watchdog と init script の stop 処理
+2. 小さい項目: S10、温度、sysctl の候補、ramoops、S15
+3. S12 と EROFS
+4. S1・S14 の本番（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む）と、任意機能のドライバーのモジュール化
+5. S13
+6. S16 → S4・S5・S17
+7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、`noexec`、BusyBox、gzip 再圧縮、`align = 4M`、Lynis）
+
 ### 次の作業計画（2026-10-19 時点）
 
 S2（#36）を出した時点での残りの作業と、その順番です。セッションをまたいでも抜けないように、ここを正とします。各項目は experiment-record スキルに従って記録し、結果が出たら上の表の「状態」を更新します。
