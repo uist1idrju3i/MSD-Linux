@@ -90,10 +90,17 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 - [調査の前提・ハードウェア・候補](docs/research/scope-and-hardware.md)
 - [起動高速化・カーネル](docs/research/boot-and-kernel.md)
+- [起動時間の実測と分析](docs/research/boot-time-measurements.md)
+- [カーネル縮小](docs/research/kernel-size.md)
+- [ハードウェア仕様と機能対応表](docs/research/hardware-spec.md)
+- [シミュレーション検証計画](docs/research/simulation-plan.md)
+- [sysctl の既定値](docs/research/tunables-sysctl.md)
+- [モジュールパラメーター](docs/research/tunables-module-params.md)
+- [公式サイトの HTML・CSS](docs/research/site-html-css.md)
 - [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
 - [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
 - [セキュリティ・ハードニング](docs/research/security-hardening.md)
-- [ハードウェア機能の対応表](docs/research/scope-and-hardware.md#ハードウェア機能の対応表)
+- [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
 - [ユーザー空間・SSH/VPN 調査](docs/research/userspace-and-security.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [訂正済み事項](docs/research/corrections.md)
@@ -113,60 +120,11 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 ## 起動時間（実測値と分析）
 
-CM0 上の Buildroot / MSD/Linux の起動時間は未測定です。下表は対象・条件・計測終点が異なるため、数値を合算・平均しません。
-
-| 数値 | 対象・条件 | 確認度と解釈 | 出典 |
-|---|---|---|---|
-| GPU firmware 2,112 ms、画面点灯 2.26 s | CardputerZero、M5 の独自 227 KB bare-metal splash。電源投入から ARM 開始まで | M5 自身のベンチマーク記載。Linux 全体の起動時間ではない。一次（Devin が 2026-10-18 に公開資料で確認） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
-| 約 7〜9 s | 同じ M5 資料の「Linux 可用」値 | 実測と概算の合算で終点定義がない。値の信頼性は低い。一次（Devin が 2026-10-18 に公開資料で確認） | [BENCHMARK.md](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
-| ARM 開始 約 6.79 s | Raspberry Pi 3B+。既定 firmware、11.7 MB initramfs、約 10.2 MB kernel8.img | Raspberry Pi の公式 white paper のログで、CM0 にそのまま当てはめられません。一次（Devin が 2026-10-18 に公開資料で確認） | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
-| 5.38 → 4.75 → 4.47 s | Zero 2 W + HQ camera。検出機能を無効化し、さらに initramfs を削除した個人ブログの自己申告 | 条件固有の二次情報。kernel 読込のログ差から約 1.54 s と算出した記載には、ログのタイミングが読込完了後である可能性がある。二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| 3.5 s 未満 | Zero 2 W、Buildroot 2024.02.1、GPIO トグルまで。非圧縮 kernel、initramfs なし、USB / sound 等多数を無効、KASLR / Spectre 緩和も無効 | 個人ブログの自己申告。CardputerZero の機能を含まず、条件を同等に比較できない。二次 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| 約 5.5 s | 古い buildroot-quickpi の README にある値 | 対象・条件が限られ、2018 年から更新停止。参考値のみ。二次 | [README](https://github.com/johschmitz/buildroot-quickpi/blob/2f62ac8b7a1d2edb29aad7008f2c5f38aa5195a5/README.md#L15-L16) |
-
-M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であり、通常の Linux kernel / initramfs 読込の下限ではありません。GPU 段が kernel サイズに比例するかは未確認です。Pi 3B+ と Zero 2 W の kernel 読込値は機材・ログ区間が違うため比例関係を推定できません。最初に公式イメージの同一個体で計測し、始点・終点・カーネル・SD を記録します。
-
-以下に未実施の計測案を示します。
-
-- 主指標は LCD にプロンプトが出てキー入力を受け付ける時点、副指標は init の終点マーカー時点とする。
-- GPIO トグル、UART 時刻、`printk.time=1`、`initcall_debug`、`scripts/bootgraph.pl`、ハイスピード撮影を組み合わせる。
-- 同じ個体・SD・firmware・cmdline で一度に一要素だけ変更し、コールドブート 15 回以上の中央値と p90 を記録する。初回は別扱いにする。
-- 測定用ログは起動時間に影響する。量産ビルドと測定ビルドを区別する。systemd を使う場合、`systemd-analyze blame` は並列起動待ちを反映せず、`Type=simple` のサービスも測れない。
-
-出典: [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html)、[bootgraph.pl](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/scripts/bootgraph.pl#L13-L33)、[systemd-analyze](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、[Raspberry Pi boot-time white paper](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf)。
+詳しくは [boot-time-measurements.md](docs/research/boot-time-measurements.md) を参照してください。
 
 ## 高速化のアイデア一覧
 
-期待効果は CM0 実機で測定していません。下表の提案は検証優先度を決める材料であり、適用済み機能ではありません。設計上の判断と公開資料で確認できた事実を区別し、根拠を確認できない主張は未確認または推測として示します。
-
-| アイデア | 期待される効果 | リスク・条件 | 確度 | 出典 |
-|---|---|---|---|---|
-| `kernel8.img` を gzip 再圧縮 | zopfli または libdeflate `-12` の標準 deflate で、同一 kernel を約 3〜8% 小さくできる可能性 | firmware gunzip 互換を、展開後の `cmp` でビット一致確認する。無圧縮と gzip は実機で SD 読込時間と展開時間を比較して決める | 【案・未検証】 | [Raspberry Pi boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L26-L52) |
-| `start_cd.elf` / `fixup_cd.dat` の採用を比較 | 小さい firmware の可能性 | M5 ベンチで使用。GPU メモリ 16 MB（`gpu_mem=16`）で起動できるか、VC4 を起動時に使わない条件で確認 | 【案・未検証】 | [M5 benchmark](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21) |
-| `boot_delay=0`、`disable_splash=1`、`avoid_warnings` | 不要な待機・表示・警告処理を減らす可能性 | BCM2837 での差分を個別に測る。`avoid_warnings` は警告を隠すため診断時は使わない | 【案・未検証】 | [config.txt boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc) |
-| 未使用 dtoverlay を削除 | 不要デバイスの probe や初期化を避ける可能性 | GPIO / I2C / USB の実使用と overlay の依存を確認します。M5 公式 config と Makefile の overlay 名に不整合があります | 【一次】 | [M5 config.txt](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/firmware/CardputerZero/config.txt#L12)、[M5 driver repository](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20) |
-| 起動必須機能を built-in、任意機能をモジュールに分ける | 不要な driver probe を終点後へ遅らせる | 起動時に必要な SD / FS / I2C1 / M5IOE1 / LCD / keyboard の依存順を保つ。Wi-Fi / BT / audio / camera / IMU / HDMI / Ethernet は後読み候補 | 【案・未検証】 | [M5 v5 overlay](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts) |
-| `quiet`、事前設定 `lpj=`、測定時 `initcall_debug` | 本番の printk 負荷を減らし、測定時は遅い initcall を特定 | `lpj=` の値は誤ると遅延精度に影響。測定ログ自体が時間に影響するため測定用 / 量産用を分ける | 【案・未検証】 | [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) |
-| ST7789 DRM panel 上で fbcon を CLI に使う | HDMI / GUI を起動せず内蔵 LCD を直接使う | `FRAMEBUFFER_CONSOLE` の実効値、DRM/fbcon 割当、`fbcon=map:off` の影響を実機確認する | 【推測】 | [RPi defconfig](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig#L1110-L1135) |
-| initramfs を使わない | initramfs 読込・展開と RAM 使用を削減 | 起動に必要なドライバと rootfs driver を built-in にする。外部モジュールの firmware 配布方法も設計する | 【案・未検証】 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| initramfs 非同期展開 (`initramfs_async=`) | 他の起動処理と展開を重ねられる可能性 | kernel parameter として存在する。initramfs なしとの比較が必要。古い資料の説明は最新 kernel で再検証する | 【一次（parameter の存在）】・【推測（効果）】 | [kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) |
-| SquashFS と EROFS を実機比較 | 読込・展開 CPU の差を見て最適化 | SquashFS は zstd / lz4、128〜256 KiB ブロックを候補に、EROFS は lz4・4 KiB クラスタを候補にする。同条件のサイズ・RAM・読込量も比較 | 【案・未検証】 | [SquashFS docs](https://docs.kernel.org/filesystems/squashfs.html)、[EROFS FAQ](https://erofs.docs.kernel.org/en/latest/faq.html)、[EROFS docs](https://docs.kernel.org/filesystems/erofs.html) |
-| BusyBox init + mdev | 小さい init / userland でサービス数と起動処理を減らす | M5 の udev ルールは `ID_PATH` や symlink を使い、systemd unit もある。mdev でそのまま置換できるとは限らず、eudev 併用またはルール移植が必要 | 【推測】 | [M5 udev rules](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules)、[BusyBox FAQ](https://busybox.net/FAQ.html) |
-| read-only SquashFS で preload / readahead を使わない | 起動時の余分な I/O と先読み処理を避ける | 効果は未測定。必要なら fanotify / blktrace で実アクセスを見てから再検討 | 【案・未検証】 | [readahead(2)](https://man7.org/linux/man-pages/man2/readahead.2.html)、[fanotify(7)](https://man7.org/linux/man-pages/man7/fanotify.7.html) |
-| `mksquashfs -sort` で起動ファイルを配置 | 初期アクセスを連続読込に近づける可能性 | open 順は物理 I/O 順と同じとは限らない。ファイル配置と SD 読込量、終点時間を実測する | 【推測】 | [SquashFS docs](https://docs.kernel.org/filesystems/squashfs.html) |
-| `fanotify` / `strace` / `blktrace` で起動時アクセスを観測 | 起動に必要なファイル・ブロック I/O を把握 | `strace` は ptrace overhead がある。`blktrace` には `CONFIG_BLK_DEV_IO_TRACE` が必要 | 【一次（ツール機能）】・【推測（影響）】 | [strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html)、[blktrace(8)](https://man7.org/linux/man-pages/man8/blktrace.8.html) |
-| 不要なカーネル機能と DTB を削る | kernel / DTB を小さくし初期化・読込を減らす | M5 必須ドライバとデバイス依存を落とすと起動不能になる。効果は実測が必要 | 【推測】 | [KittenLabs](https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/) |
-| Wi-Fi / camera / display の自動検出を抑える | 不要な probe を省ける可能性 | Raspberry Pi の公開測定は別 SoC / 別条件です。CardputerZero の LCD と周辺機器に必要なものは残します。CardputerZero での効果は未確認です | 【未確認】 | [RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
-| `max_framebuffers=0`、`disable_fw_kms_setup=1` 等を比較 | HDMI EDID / firmware KMS 初期化を省く可能性 | white paper の該当記述は未確認です。LCD 表示や HDMI の要件と衝突する場合があります | 【未確認】 | [Raspberry Pi config docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc)、[RP-010196-WP-1](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf) |
-| `core_freq` / `initial_turbo` を比較 | kernel 読込短縮の可能性 | mini-UART 利用時の `enable_uart=1` が core frequency と干渉する可能性があります。温度・電力・再現性も記録します | 【推測】 | [Raspberry Pi config reference](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/reference.adoc) |
-| BusyBox applet を最小化、外部 fork/exec を減らす | userland 実行数とサイズを減らす | CM0 の必要 applet は未調査。実利用を `strace` 等で採取してから除去する | 【推測】 | [BusyBox FAQ](https://busybox.net/FAQ.html)、[strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html) |
-| 静的リンク、LTO、UPX を比較 | 共有ライブラリ読込や配布サイズを抑える可能性 | 静的リンクはファイルサイズや更新対象を増やす場合がある。UPX は起動時の展開が追加されるため、起動速度向上を前提にせず実測する | 【推測】・【未確認】 | [BusyBox FAQ](https://busybox.net/FAQ.html) |
-| ネットワーク / SSH 等の常駐を終点後へ遅延 | 終点前の service / driver 初期化を減らす | 本プロジェクトでは SSH / VPN を実装しない。一般的なネットワークも必要になるまで起動しない案 | 【推測】 | [systemd.socket(5)](https://man7.org/linux/man-pages/man5/systemd.socket.5.html)、[systemd.service(5)](https://man7.org/linux/man-pages/man5/systemd.service.5.html) |
-| systemd を使う場合は unit を削り critical chain を短くする | 不要サービスを省き並列化を活かす | M5 の udev ルール・`fb_load.service` に systemd 前提がある。systemd は Buildroot で glibc が必要 | 【一次（Buildroot 制約）】・【推測（効果）】 | [systemd-analyze(1)](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)、[Buildroot systemd Config.in](https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in) |
-| libc / allocator を比較 | サイズ、RSS、exec の差を削減できる可能性 | 公開比較は Intel x86 等で、Cortex-A53 の現行版比較は見つからない。起動差は CM0 実測が必要 | 【二次】・【未確認】 | [musl libc comparison](https://www.etalabs.net/compare_libcs.html)、[Buildroot toolchain options](https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in) |
-| カーネル圧縮を gzip / 無圧縮で比較 | SD 読込時間と CPU 展開時間のトレードオフを最適化 | 標準 RPi arm64 起動で LZ4 / ZSTD / LZO を直接使える根拠なし。カスタム ARM stub / TF-A による展開は未確認 | 【推測】・【未確認】 | [Raspberry Pi boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L26-L52)、[rpi-eeprom issue #541](https://github.com/raspberrypi/rpi-eeprom/issues/541) |
-| GPU firmware 段を省略する bootloader 案 | 理論上 firmware 起動を短縮する可能性 | `rpi-open-firmware` / `lk-overlay` は実験的とされています。対応 SoC・安定性は未確認です。U-Boot Falcon も GPU firmware 段をなくす方式ではありません | 【未確認】・【推測】 | [CardputerZero u-boot](https://github.com/CardputerZero/u-boot)、[rpi-open-firmware](https://github.com/librerpi/rpi-open-firmware)、[lk-overlay](https://github.com/raspberrypi/lk-overlay) |
-| PREEMPT 設定 / printk を測る | initcall / printk overhead の傾向を比較 | 起動時間差は未測定。RT の printk 変更は CM0 非 RT に適用できない可能性。量産は `quiet`、測定は `PRINTK=y` を分ける | 【一次（Kconfig）】・【推測（性能）】 | [6.18 Kconfig.preempt](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/kernel/Kconfig.preempt)、[printk change](https://lkml.iu.edu/2512.0/00981.html) |
+詳しくは [fastboot-ideas.md](docs/research/fastboot-ideas.md) を参照してください。
 
 ## 電源断耐性
 
@@ -234,86 +192,7 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 
 ## アイデア総覧
 
-この表は高速化・電源断・A/B 案に、ストレージ、セキュリティ、ハードウェア機能の案を加えた一覧です。QEMU で確認できるのは仮想化された Linux・イメージ・更新処理に限られ、ファームウェアの選択、SD 性能、実物の周辺機器、電源断は実機で確認します。優先度は目安です。状態は `origin/main` のコードと設定に照合しました。「採用済み」は実装の存在を示し、実機動作の確認を意味しません。
-
-| 分類 | アイデア | 期待効果 | コスト | リスク | 検証（QEMU / 実機） | 優先度 | 状態 |
-|---|---|---|---|---|---|---|---|
-| 高速化 | [`kernel8.img` gzip 再圧縮](#高速化のアイデア一覧) | 読込量を減らす | 再現可能なカーネル生成 | 展開時間やファームウェア互換 | QEMU: 起動 / 実機: 読込・展開時間 | P2 | 一部採用（圧縮方式・サイズ比較あり、非圧縮実測なし） |
-| 高速化 | [`start_cd.elf` / `fixup_cd.dat`](#高速化のアイデア一覧) | 小さいファームウェアの可能性 | 低 | GPU/ファームウェア互換 | QEMU: ファームウェア不可 / 実機: 起動 | P3 | 採用済み（実機未確認） |
-| 高速化 | [`boot_delay=0` / `disable_splash=1`](#高速化のアイデア一覧) | 不要な待機・表示を減らす | 低 | 診断情報を隠す可能性 | QEMU: Linux 部分のみ / 実機: 起動時間 | P2 | 採用済み（効果未実測） |
-| 高速化 | [未使用 dtoverlay の削除](#高速化のアイデア一覧) | 不要初期化探索を抑える | 中 | 必須機能喪失 | QEMU: DT / 実機: 全機能 | P2 | 未着手 |
-| 高速化 | [必須ドライバー組み込み、任意機能モジュール](#高速化のアイデア一覧) | 任意初期化探索を遅らせる | 中 | モジュール依存順・起動不能 | QEMU: 起動 / 実機: LCD・入力 | P1 | 未着手 |
-| 高速化 | [`quiet` / `lpj=` / `initcall_debug`](#高速化のアイデア一覧) | printk 負荷・遅い initcall の評価 | 低 | `lpj` 誤設定、測定付加負荷 | QEMU: log / 実機: 時間 | P2 | 一部採用（quiet のみ） |
-| 高速化 | [ST7789 DRM panel + fbcon](#高速化のアイデア一覧) | HDMI/GUI なしの CLI | 中 | console blank / 割当違い | QEMU: 不可 / 実機: LCD | P1 | 未着手 |
-| 高速化 | [initramfs を使わず `root=` を直接指定](#高速化のアイデア一覧) | 読込・展開・RAM を削減 | 中 | root ドライバー不足 | QEMU: 起動 / 実機: 起動時間 | P2 | 採用済み |
-| 高速化 | [`initramfs_async=`](#高速化のアイデア一覧) | 展開と他処理を重ねる可能性 | 低 | 効果が負荷条件依存 | QEMU: 比較 / 実機: 起動時間 | P3 | 対象外（initramfs なし） |
-| 軽量化 | [SquashFS と EROFS の比較](#高速化のアイデア一覧) | サイズ・読込・CPU の選択 | 中 | 圧縮・起動要件の差 | QEMU: 機能 / 実機: I/O・RAM | P2 | 未着手 |
-| 軽量化 | [BusyBox init + mdev](#高速化のアイデア一覧) | ユーザー空間/サービスを小さくする | 中 | udev ルール / systemd 依存 | QEMU: デバイス / 実機: 全機能 | P3 | 採用済み |
-| 高速化 | [読み取り専用 SquashFS と preload/readahead](#高速化のアイデア一覧) | 不要な先読みを避ける | 低 | 必要な読込まで遅れる | QEMU: I/O 観測 / 実機: 起動時間 | P3 | 一部採用（SquashFS rootfs、先読み未実施） |
-| 高速化 | [`mksquashfs -sort`](#高速化のアイデア一覧) | 起動ファイルの配置を最適化 | 低 | open 順と I/O 順が不一致 | QEMU: イメージ / 実機: SD 読込 | P3 | 未着手 |
-| 高速化 | [fanotify / strace / blktrace](#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 未着手 |
-| 軽量化 | [不要カーネル機能・DTB の削減](#高速化のアイデア一覧) | イメージと初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | 未着手 |
-| 高速化 | [Wi-Fi/camera/display 自動検出抑制](#高速化のアイデア一覧) | 未使用初期化探索を減らす可能性 | 中 | 全機能維持の柱と衝突するため遅延ロードで代替 | QEMU: 一部 / 実機: 対象機能 | P3 | 対象外（遅延ロードで代替） |
-| 高速化 | [`max_framebuffers` / ファームウェア KMS](#高速化のアイデア一覧) | HDMI 初期化を抑える可能性 | 低 | LCD/HDMI と競合 | QEMU: 限定 / 実機: 表示 | P3 | 未着手 |
-| 高速化 | [`core_freq` / `initial_turbo`](#高速化のアイデア一覧) | 起動ファームウェア読込時間を短縮する可能性 | 低 | 発熱・電力・UART clock | QEMU: 不可 / 実機: 時間・温度 | P3 | 未着手 |
-| 軽量化 | [BusyBox applet 最小化・fork削減](#高速化のアイデア一覧) | ユーザー空間処理を削減 | 中 | 実行時に必要コマンド不足 | QEMU: 起動 / 実機: 利用操作 | P3 | 未着手 |
-| 軽量化 | [static link / LTO / UPX](#高速化のアイデア一覧) | 配布サイズや load を比較 | 中 | サイズ増・展開 CPU | QEMU: 起動 / 実機: 時間・RSS | P3 | 未着手 |
-| 高速化 | [ネットワーク起動を終点後へ遅延](#高速化のアイデア一覧) | 対話可能になる前のネットワークサービスを減らす | 低 | 利用可能になるまで遅れる | QEMU: サービス / 実機: 入力時点 | P2 | 未着手 |
-| 軽量化 | [systemd ユニットの削減](#高速化のアイデア一覧) | 不要ユニットを減らす | 中 | BusyBox init を使うため対象外 | QEMU: ユニット / 実機: 時間 | P3 | 対象外（BusyBox init 使用） |
-| 軽量化 | [libc / allocator 比較](#高速化のアイデア一覧) | 起動・RAM・サイズ最適化 | 高 | ABI/互換性・測定条件 | QEMU: 機能 / 実機: RAM・時間 | P3 | 未着手 |
-| 高速化 | [カーネル gzip / 非圧縮比較](#高速化のアイデア一覧) | 読込時間と展開時間を最適化 | 低 | ファームウェア対応形式 | QEMU: Linux / 実機: 起動経路 | P2 | 一部採用（gzip 方式の生成時比較、非圧縮実測なし） |
-| 高速化 | [GPU ファームウェアを省くブートローダー](#高速化のアイデア一覧) | ファームウェア段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
-| 高速化 | [PREEMPT / printk 比較](#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 未着手 |
-| 信頼性 | [読み取り専用 SquashFS rootfs](#電源断耐性) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
-| 信頼性 | [`align = 4M`](docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 未着手（origin/main 未反映） |
-| 信頼性 | [FAT data-area offset の扱い](docs/research/storage-and-flash.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
-| 信頼性 | [`data=ordered` 移行検討](docs/research/storage-and-flash.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
-| 信頼性 | [barrier / `commit=` と `/data` 検証](docs/research/storage-and-flash.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
-| 信頼性 | [discard / `fstrim`](docs/research/storage-and-flash.md) | 対応時の空き領域通知 | カード・カーネル対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
-| 信頼性 | [カード erase/AU/sysfs と SD 性能測定](docs/research/storage-and-flash.md) | alignment 判断にデータを得る | 複数カード・計測 | 値は erase ユニット / 耐久保証でない | QEMU: 不可 / 実機: fio・sysfs | P1 | 未着手 |
-| 信頼性 | [A/B + tryboot + watchdog](docs/research/power-and-updates.md) | 起動失敗を検出し旧スロットへ戻す案 | 状態・watchdog・試験 | S01msd-watchdog は実装済み、実機動作は未確認 | QEMU: スロット / 実機: tryboot・ハング | P1 | 採用済み（実機未確認） |
-| 信頼性 | [電源異常正常停止](docs/research/power-and-updates.md) | 電源異常を graceful 停止に接続 | ドライバー / ユーザー空間変更 | 電源保持時間不足の可能性 | QEMU: 不可 / 実機: 電源試験 | P1 | 未着手 |
-| 信頼性 | [更新記録の fsync/rename 原子性](docs/research/power-and-updates.md) | 確定記録の破損リスク低減 | 更新処理実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
-| 信頼性 | [p7 ext4 を `msd-data-grow` で拡張](#電源断耐性) | 利用可能容量を増やす | first-起動 script | 中断時の FS 整合性 | QEMU: サイズ変更 / 実機: 電断 | P2 | 採用済み |
-| 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](docs/research/power-and-updates.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
-| セキュリティ | [署名検証・公開鍵配置と鍵運用](docs/research/security-hardening.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
-| セキュリティ | [dm-verity と trusted root digest](docs/research/security-hardening.md) | root block 改ざん検知 | 起動 cmdline・digest管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | 未着手 |
-| セキュリティ | [`nosuid,nodev,noexec` と sysctl](docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | 未着手 |
-| セキュリティ | [SSP / FORTIFY / RELRO / PIE](docs/research/security-hardening.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
-| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](docs/research/security-hardening.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
-| セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](docs/research/security-hardening.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
-| セキュリティ | [対応 secure-起動 SoC への移行](docs/research/security-hardening.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
-| ハードウェア | [ドライバー / ファームウェア / overlay の実機対応表](docs/research/scope-and-hardware.md#ハードウェア機能の対応表) | 未対応・遅延可能機能を把握 | 各機能の個別試験 | 初期化探索成功だけで動作を誤認 | QEMU: 一部 / 実機: 全周辺 | P1 | 一部調査済み（実機動作未確認） |
-| ハードウェア | [IR / camera / IP2315 charger の対応調査](docs/research/scope-and-hardware.md#目標との差分) | 未実装機能との境界を明確化 | media/charger ドライバー調査 | ハードウェア revision 依存 | QEMU: 設定 / 実機: I/O | P2 | 一部調査済み（実機対応未確認） |
-| 試験・保守 | [更新中を含む 200 回電源断試験案](#電源断耐性) | 電断失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |
-| 試験・保守 | [ホストテスト（msd-update／msd-data-grow／msd-hwinfo）](.devin/wiki.json) | 更新・拡張・機器情報処理を回帰検査 | 低 | ホスト試験は実機の周辺機器動作を保証しない | tests/ 配下3 テスト一式／実機：全機能 | P1 | 採用済み |
-| 試験・保守 | [SSH / VPN 実装](docs/research/userspace-and-security.md) | 遠隔管理 | 鍵・更新・攻撃面 | 現方針では実装対象外 | QEMU: 不要 / 実機: 不要 | P3 | 不採用 |
-| 軽量化 | GPU メモリ／CMA 量の見直し | RAM の余地を評価 |調査・測定| 削減で表示機能を損なう可能性 | 実機で必要量を測る | P2 | 未着手 |
-| 軽量化 | zram／zswap の評価 | RAM 内の圧縮 swap を評価 |調査・測定| base defconfig は `ZRAM=m`／`ZSWAP=y`、実運用未確認 | QEMU・実機で評価 | P2 | 一部採用（base defconfig、実運用未確認） |
-| 信頼性 | `kernel_watchdog_timeout` の OS 引継ぎ | watchdog 起動後給餌 |調査・測定| CM0 対応未確認 | QEMU・実機ハング/リセット | P1 | 一部採用（S01msd-watchdog、ファームウェア handover 未確認） |
-| 信頼性 | `get_throttled` 低電圧・温度記録 | 電源・温度異常を記録 |調査・測定| bit 0／16、3／19。実機未測定 | 実機 | P1 | 未着手 |
-| 信頼性 | `/data` fsck 時間 | 起動遅延を把握 |調査・測定| `fsck.ext4 -p` 実装済み、時間未測定 | QEMU・実機起動時間 | P1 | 一部採用（fsck 実装、時間未測定） |
-| 信頼性 | `/data` ext4 4 KiB block／`inline_data` | 1 KiB と 4 KiB の割り当て量、inode 内保存の候補 |調査・測定| 小さい file での差はローカル測定済み。実機性能は未確認 | QEMU・実機 I/O／fsck | P2 | 候補（効果は未検証） |
-| 信頼性 | [`/etc`・`/data` の通常時 RO と `lazytime`](docs/research/readonly-data-and-fs.md#提案する-read-only-policy) | persistent write を限定し、通常時の SD 書き込みを減らす | writer の洗い出しと RW window 実装 | journal recovery、seedrng、更新状態、設定変更を壊す可能性 | QEMU: mount/update / 実機: 電断・書き込み量 | P1 | 未着手 |
-| 信頼性 | [ext4/F2FS/btrfs の `/data` 比較](docs/research/readonly-data-and-fs.md#mount-option-と-ext4f2fsbtrfs-の比較方針) | fsck/mount/recovery、小ファイル、write volume を比較 | image/tool build と測定 | SD FTL 依存、回復 tooling と複雑性 | QEMU: fsck/replay / 実機: 電断・I/O | P1 | 未着手 |
-| 信頼性 | [OverlayFS mode と古い `/data/etc` lower の移行](docs/research/readonly-data-and-fs.md#overlayfs-の3案) | read-only policy と A/B image defaults を整合 | migration schema と boot logic | 古い設定が新 image を隠す、upper FS xattr 制約 | QEMU: A/B config / 実機: update 回帰 | P1 | 未着手 |
-| 試験・保守 | [S17 storage fault/speed emulation](docs/research/readonly-data-and-fs.md#s17-ストレージの障害速度の模擬) | write/flush replay、I/O error、delay、帯域制限を検証 | device-mapper/QEMU image と test harness | QEMU/dm は実 SD FTL・物理電断を再現しない | QEMU guest: replay/error / 実機: 電断・SD 性能 | P1 | 未着手 |
-| セキュリティ | カーネル Kconfig／sysctl hardening | 攻撃面を緩和 |調査・測定| RAM／CPU／保守コストあり | 設定・実機回帰 | P1 | 未着手 |
-| 試験・保守 | [sysctl・I/O スケジューラーなどの既定値の一覧](docs/research/tunables-defaults.md) | 調整の出発点を固定する | QEMU で取得済み | QEMU の値は実機と異なる（RAM、SD、cpufreq、温度） | QEMU: 取得済み / 実機: 取り直し | P1 | 一部調査済み（QEMU のみ） |
-| 信頼性 | [`kernel.sysrq` を 32 に絞る（0 は不可）](docs/research/cpu-irq-and-sysctl.md#vps-運用記事との照合) | 電源断時の remount だけを残す | drop-in 1 つ | 0 にすると `powerfail_suo` の remount が止まる | QEMU: 値と remount / 実機: 電源断 | P1 | 未着手（現在は 502） |
-| 信頼性 | [`kernel.panic`／`panic_on_oops` と watchdog・tryboot](docs/research/cpu-irq-and-sysctl.md#項目ごとの判断) | ハング時の自動再起動と A/B の失敗検知 | 秒数の設計と試験 | 一時的な oops でも再起動する | QEMU: panic 経路 / 実機: tryboot | P1 | 未着手（現在は 0 / 0） |
-| セキュリティ | [情報漏えい・リンク保護の sysctl](docs/research/cpu-irq-and-sysctl.md#sysctl-の主な値) | `kptr_restrict`、`dmesg_restrict`、`fs.protected_*`、`ldisc_autoload`、redirect と `rp_filter` | drop-in 1 つ | 開発時のデバッグがしにくくなる | QEMU: 値 / 実機: 回帰 | P1 | 未着手 |
-| 高速化 | [I/O スケジューラーと `read_ahead_kb` の比較](docs/research/cpu-irq-and-sysctl.md#io-スケジューラーとブロックデバイス) | SquashFS の読み込みと `/data` の書き込み中の遅延 | 実機測定 | 差が小さい可能性【推測】 | QEMU: 不可 / 実機: 起動時間・遅延 | P3 | 未着手（現在は `mq-deadline`、128 KiB） |
-| 高速化 | [CPU governor（`ondemand`／`schedutil`／`performance`）と `maxcpus=1`](docs/research/cpu-irq-and-sysctl.md#コア数周波数熱) | 起動時間・温度・電力の比較 | 実機測定 | 1 コアでも周波数の上限は上がらない | QEMU: 不可（cpufreq なし） / 実機 | P2 | 未着手 |
-| 軽量化 | [irqbalance](docs/research/cpu-irq-and-sysctl.md#割り込みの分散と-irqbalance) | なし（カーネルが既に 4 コアへ順に分散） | - | 常駐プロセスが増える | 不要 | - | 不採用 |
-| 軽量化 | [CM0 にない機能のカーネルからの削除（NVMe、PCIe、RP1、KVM、binder、NFS、`brd` など）](docs/research/cpu-irq-and-sysctl.md#その他のチューニング要素) | 起動時間と RAM の削減 | S1 と合わせて試験 | 必要な機能を誤って外す | QEMU: サイズ・起動 / 実機: 全周辺 | P2 | 未着手 |
-| 信頼性 | [ramoops の領域予約](docs/research/cpu-irq-and-sysctl.md#その他のチューニング要素) | panic の記録を再起動後に読む | DT／cmdline と試験 | RAM を少し使う | QEMU: 一部 / 実機 | P2 | 未着手（`mem_size` 0） |
-| 試験・保守 | [VPS 向け設定（BBR、fq、大きな TCP バッファー、Falco、Suricata、ufw）](docs/research/cpu-irq-and-sysctl.md#項目ごとの判断) | サーバー向けで、端末には不要 | - | RAM と保守の負担 | 不要 | - | 不採用 |
-| 高速化 | [SquashFS codec／block size の実機比較](docs/research/soc-memory-compression.md) | rootfs size と展開・読込時間を比較 | 複数 build と実機測定 | SD rate、cache、CPU clock に依存 | QEMU: 起動 / 実機: SD・CPU | P1 | image size 実測済み、速度未測定 |
-| 軽量化 | [kernel compressor / EROFS の削減比較](docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | 未着手 |
-| 高速化 | [Buildroot `-O2` / `-Os`、LTO / PGO](docs/research/soc-memory-compression.md) | userland size と CPU-bound workload を比較 | build time、profile 回収、再現性 | package 対応と stale profile | QEMU: 機能 / 実機: CPU・起動 | P2 | 未着手 |
-| 試験・保守 | [三段階 simulator 検証](docs/research/measurement-and-planning.md#シミュレーターと検証基盤の比較) | QEMU 機能、TCG option 比較、実機 timing を分離 | hardware proxy と実機が必要 | QEMU / gem5 の時間を実機値と混同しない | QEMU・gem5・Zero 2 W・CM0 | P1 | 方針案 |
-| 開発・CI | [開発環境と CI](docs/research/dev-environment-and-ci.md) | ローカルと CI の toolchain をそろえ、検査・起動確認を再現する | 開発イメージと CI の保守 | CI 成果物との比較、速度改善は未確認 | QEMU: 機能確認 / CI: build・artifact | — | 開発イメージ採用、比較結果は予備的 |
+詳しくは [ideas-overview.md](docs/research/ideas-overview.md) を参照してください。
 
 ## QEMU で検証できる範囲
 
@@ -422,43 +301,7 @@ MSD/Linux も同じように、開発場所の近くを流れる福岡県の室�
 
 ## 公式サイトの HTML・CSS
 
-公式サイト（https://muromi.moe/ 、ソースは `public_html/`）について、使える HTML・CSS の技術を採否つきで検討しました（2026-10-19）。読む人として、パソコンとスマートフォンに加えて、低スペックの機器（CardputerZero のような 320×170 の画面と遅い CPU）、テキストブラウザー（w3m、lynx）、スクリーンリーダーを想定します。
-
-### 測った結果
-
-測定の条件と生の値は [docs/experiments/2026-10-19-site-render.md](docs/experiments/2026-10-19-site-render.md) にあります。GitHub Pages は HTML・CSS・SVG を gzip で送り、Brotli には対応しません。HTML・CSS を minify しても、gzip 後の転送量は数十バイトしか減りません。レンダリング時間も、320×170・CPU 6 倍の条件で誤差（2〜3 ms）を超えて縮みませんでした。時間の大半はレイアウトです。SVG の最適化（svgo）は画素が変わり、CSS のインライン化は CSP にハッシュを足す手間に見合う短縮がありませんでした。`content-visibility: auto` は FCP が 28% 縮みましたが、全体のスクリーンショットが変わり、スクロール中にページの高さも変わるため、採用しません。
-
-### 採用したもの
-
-| 項目 | 内容 |
-|---|---|
-| カードの見出しと説明を `<h3>`・`<p>` にする | `<strong>`・`<span>` を CSS の `display: block` で分けていたため、w3m と lynx で見出しと説明が1行につながっていました。スクリーンリーダーで見出しを飛び移るときにも使えます。1280×800 の見た目は1画素も変わりません |
-| 縦の短い画面で余白を詰める | `@media (max-height: 30em)` で、ロゴのまわりの余白とロゴの幅を小さくします。320×170 の最初の画面に、ロゴと説明文の3行が入ります |
-
-### 以前から入っているもの
-
-`color-scheme` と明暗の `theme-color`、システムフォント、画像の `width`・`height` と `alt`、スキップリンク、`:focus-visible`、ランドマーク（`header`・`main`・`footer`）、`default-src 'none'` から始める CSP、`referrer`。色のコントラストは、明・暗とも WCAG AA（4.5:1）を超えます（最も低いのは暗い表示のカードの上のリンク色で 6.04:1）。強制カラー（Windows のハイコントラスト）でも、文字とロゴが読めます。
-
-### 採用しないもの
-
-| 項目 | 理由 |
-|---|---|
-| HTML・CSS の minify、svgo、CSS のインライン化、`content-visibility` | 上の測定のとおり |
-| `preload`、`fetchpriority`、`loading="lazy"`、`decoding` | 画像はロゴ1枚だけで、最初の画面にあります。先に読ませる対象も、遅らせる対象もありません |
-| `prefers-reduced-motion` | 動きのある表現がありません |
-| `prefers-reduced-data` | 既定で対応しているブラウザーがありません |
-| `manifest` | アプリ（PWA）ではありません |
-| SRI | 外部のオリジンから読むものがありません |
-| `apple-touch-icon`、`favicon.ico` | PNG・ICO の派生ファイルが増え、二重管理になります |
-| 構造化データ（JSON-LD） | 1ページのサイトでは得るものが小さいためです |
-| `robots.txt`、`sitemap.xml` | 1ページで、全部を公開してよいため、置かなくても同じ扱いになります |
-| `security.txt`（RFC 9116） | `Expires` を1年以内ごとに更新する手間がかかります。連絡先は GitHub のリポジトリから辿れます |
-| HTML・CSS の lint を CI に入れる | W3C の Nu Html Checker（26.10.12）ではエラーが 0 件でした。html-validate（11.16.4）は doctype の小文字、Stylelint（17.16.0、標準の設定）は書き方の好み3件を指摘しただけです。CI に入れると Java や npm の依存と、その監視が増えます |
-| CSP の `frame-ancestors`、HSTS、キャッシュの調整 | meta の CSP では `frame-ancestors` が効かず、GitHub Pages では応答ヘッダーを付けられません。ほかのサイトへの埋め込みは防げないことを、制約として残します |
-
-### テキストブラウザーの限界
-
-lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 では切れません。lynx 2.9.0dev.10 の `-dump -width=80` の出力で全角文字を2桁と数えると、1行が最大 145 桁になります。lynx が全角文字を1桁と数えて折り返しているためです。サイトの側では直せないため、記録だけにします。
+詳しくは [site-html-css.md](docs/research/site-html-css.md) を参照してください。
 
 ## 未確認事項
 

@@ -14,7 +14,7 @@ description: MSD-Linux で実験・測定・比較（カーネル設定の総当
 3. 計測器の検証: 本番の前に、計測器が正しく反応するかを確かめます。既知の負荷を与える、アイドル時の増分が 0 かを見る、同じ条件で 2 回測って差を見る（A/A 試行）、のいずれかを行い、結果を記録します。
 4. 実行: 実行に使うスクリプトとフックは `board/cardputerzero/tools/bench/` などリポジトリ内に置きます。通常のイメージには入れず、ローカルの測定時にだけ有効にします。重い実験は CI に載せません。コマンドと環境変数は、記録にそのまま書きます。
 5. 記録: 人が読む要約は Markdown に、生の値は同じ名前の `.csv` に書きます（列は `assets/results-template.csv`）。捨てた試行も理由と一緒に残します。大きなログはコミットせず、再生成の方法と SHA-256 を書きます。CSV は 1 ファイル 1 MB までを目安にします。
-6. 反映: `docs/experiments/README.md` の一覧に 1 行足し、結論を該当する調査文書と S1〜S17 の表に反映します。以前の記述を正すときは `docs/research/corrections.md` にも書きます。PR 本文には記録へのリンクを書きます。日本語の文章は yomiyasu の lint を通します。
+6. 反映: `docs/experiments/README.md` の一覧に 1 行足し、結論を該当する調査文書と docs/research/simulation-plan.md の S1〜S17 の表に反映します。以前の記述を正すときは `docs/research/corrections.md` にも書きます。PR 本文には記録へのリンクを書きます。日本語の文章は yomiyasu の lint を通します。
 
 ## 提出前の確認
 
