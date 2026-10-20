@@ -20,7 +20,7 @@
 | 5 | 固定版の更新確認が、Trivy を「更新あり」と出す（固定値 `"0.76.0"`、最新 `v0.76.0`） | `check-pins.py upstream` を 2026-10-20 に手元で実行 | 引用符を外して比べるよう `check-pins.py` を直す。これは誤検知で、Trivy は最新 |
 | 6 | 同じ実行で、カーネルの固定 commit（`2341883…`）より rpi-6.18.y の先頭（`5d64d1e…`）が新しい。Go は 1.27.2 → 1.27.3 | 同上 | vendor-update スキルの手順（変更履歴、回帰、ビルドと QEMU 起動）で更新する |
 | 7 | GitHub Pages の deploy で Node の `DEP0040 punycode` 警告が出る | run 39311249087 | `actions/deploy-pages` の中の警告で、こちらでは直せない。新しい版が出たら更新する |
-| 8 | `agent-docs` の JIS X 0213 検査が、`.agents/skills/jisx0213-text/SKILL.md` の置き換え例（`开`、`关`）に毎回 warning を出す | 手元の `check-jisx0213.py` | allowlist の引用に載った文字では warning を出さないようにする |
+| 8 | `agent-docs` の JIS X 0213 検査が、`.agents/skills/jisx0213-text/SKILL.md` にある置き換え例の簡体字 2 字に、毎回 warning を出す | 手元の `check-jisx0213.py` | allowlist の引用に載った文字では warning を出さないようにする |
 | 9 | 文書だけを変えた push では、`changes` の path filter で `build` job が skipped になる | run 39424719570 | 必須チェックは skipped を成功と見なすので、マージは止まらない。意図どおりなら `docs/CI.md` に書く |
 | 10 | `site-status.yml` は schedule（月曜 05:41 UTC）と手動だけで、まだ一度も動いていない | 公開 API の run 一覧 | 初回の結果を次の月曜に確かめる |
 
