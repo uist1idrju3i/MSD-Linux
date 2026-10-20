@@ -50,7 +50,7 @@ CI 実行 [39308965520](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/3
 | `make` | 1,267秒、job 時間の約90% |
 | QEMU A/B 起動 | 約15秒、約14秒 |
 | 成果物の操作 | 約34秒、約24秒 |
-| ccache hit rate | 94.15% |
+| ccache hit rate | 94.15%（統計をリセットせずに数えた累計で、この実行だけの値ではない） |
 | `build-time.log` の Linux | 475秒 |
 | `build-time.log` の host-ccache | 73秒 |
 | `build-time.log` の host-zstd | 43秒 |
