@@ -259,6 +259,19 @@ assert module.parse_buildroot_point_release(
     f"{'e' * 40}\trefs/tags/2026.11.1^{{}}\n",
     "2026.08.x",
 ) == ("2026.08.3", "d" * 40)
+assert module.parse_buildroot_point_release(
+    f"{'a' * 40}\trefs/tags/2026.08\n"
+    f"{'b' * 40}\trefs/tags/2026.08^{{}}\n"
+    f"{'c' * 40}\trefs/tags/2026.08-rc3\n",
+    "2026.08.x",
+) == ("2026.08", "b" * 40)
+assert module.parse_buildroot_point_release(
+    f"{'a' * 40}\trefs/tags/2026.08\n"
+    f"{'b' * 40}\trefs/tags/2026.08^{{}}\n"
+    f"{'c' * 40}\trefs/tags/2026.08.1\n"
+    f"{'d' * 40}\trefs/tags/2026.08.1^{{}}\n",
+    "2026.08.x",
+) == ("2026.08.1", "d" * 40)
 assert module.parse_buildroot_point_release("", "2026.08.x") == ("", "")
 assert module.parse_runner_labels("| `ubuntu-24.04` | beta image |\n") == [
     ("ubuntu-24.04", "beta")

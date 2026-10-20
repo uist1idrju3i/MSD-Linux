@@ -122,6 +122,7 @@ def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
     series = match.group(1)
     tag_commits: dict[str, str] = {}
     tag_objects: dict[str, str] = {}
+    tag_versions: dict[str, int] = {}
     for line in text.splitlines():
         fields = line.split()
         if len(fields) != 2:
@@ -130,11 +131,12 @@ def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
         peeled = ref.endswith("^{}")
         tag_ref = ref[:-3] if peeled else ref
         tag_match = re.fullmatch(
-            rf"refs/tags/{re.escape(series)}\.(\d+)", tag_ref
+            rf"refs/tags/{re.escape(series)}(?:\.(\d+))?", tag_ref
         )
         if not tag_match:
             continue
         tag = tag_ref.removeprefix("refs/tags/")
+        tag_versions[tag] = int(tag_match.group(1) or 0)
         if peeled:
             tag_commits[tag] = sha
         else:
@@ -142,7 +144,7 @@ def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
     tags = set(tag_commits) | set(tag_objects)
     if not tags:
         return "", ""
-    latest = max(tags, key=lambda tag: int(tag.rsplit(".", 1)[1]))
+    latest = max(tags, key=tag_versions.__getitem__)
     return latest, tag_commits.get(latest, tag_objects.get(latest, ""))
 
 
