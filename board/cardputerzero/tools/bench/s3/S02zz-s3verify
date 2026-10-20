@@ -47,4 +47,16 @@ while [ "$index" -lt 100 ]; do
 	fi
 	index=$((index + 1))
 done
+case "$cmdline" in
+	*" msd.powerfail=1 "*)
+		printf '%s\n' 'cardputerzero-powerfail-marker-v1' \
+			>/tmp/s3-powerfail-marker.expected
+		if ! cmp -s /tmp/s3-powerfail-marker.expected \
+			"$bench_dir/powerfail-marker"; then
+			printf '%s\n' 'S3CUT_VERIFY_FAIL marker' >/dev/console
+			exit 1
+		fi
+		printf '%s\n' 'S3CUT_MARKER_PRESENT=1' >/dev/console
+		;;
+esac
 printf '%s\n' 'S3CUT_VERIFY_PASS' >/dev/console

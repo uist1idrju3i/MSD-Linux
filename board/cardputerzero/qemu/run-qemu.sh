@@ -27,8 +27,7 @@ case "$QEMU_MACHINE" in
 		;;
 esac
 DTB="${DTB_IMAGE:-${IMAGES_DIR}/${default_dtb}}"
-WORK_DIR="$(mktemp -d)"
-trap 'rm -rf "$WORK_DIR"' EXIT
+QEMU_COPY_IMAGE="${QEMU_COPY_IMAGE:-1}"
 
 for required in "$IMAGE" "$KERNEL" "$DTB"; do
 	if [ ! -f "$required" ]; then
@@ -37,14 +36,27 @@ for required in "$IMAGE" "$KERNEL" "$DTB"; do
 	fi
 done
 
-QEMU_IMAGE="${WORK_DIR}/sdcard.img"
-cp "$IMAGE" "$QEMU_IMAGE"
-image_size="$(stat -c '%s' "$QEMU_IMAGE")"
-padded_size=1
-while [ "$padded_size" -lt "$image_size" ]; do
-	padded_size=$((padded_size * 2))
-done
-truncate -s "$padded_size" "$QEMU_IMAGE"
+case "$QEMU_COPY_IMAGE" in
+	1)
+		WORK_DIR="$(mktemp -d)"
+		trap 'rm -rf "$WORK_DIR"' EXIT
+		QEMU_IMAGE="${WORK_DIR}/sdcard.img"
+		cp "$IMAGE" "$QEMU_IMAGE"
+		image_size="$(stat -c '%s' "$QEMU_IMAGE")"
+		padded_size=1
+		while [ "$padded_size" -lt "$image_size" ]; do
+			padded_size=$((padded_size * 2))
+		done
+		truncate -s "$padded_size" "$QEMU_IMAGE"
+		;;
+	0)
+		QEMU_IMAGE="$IMAGE"
+		;;
+	*)
+		printf 'QEMU_COPY_IMAGE must be 0 or 1: %s\n' "$QEMU_COPY_IMAGE" >&2
+		exit 2
+		;;
+esac
 
 append_args=(
 	"earlycon=pl011,mmio32,0x3f201000"
@@ -62,6 +74,9 @@ fi
 qemu_args=()
 if [ -n "$QEMU_ICOUNT" ]; then
 	qemu_args+=(-icount "$QEMU_ICOUNT")
+fi
+if [ -n "${QEMU_QMP_SOCKET:-}" ]; then
+	qemu_args+=(-qmp "unix:${QEMU_QMP_SOCKET},server=on,wait=off")
 fi
 
 # Both Pi 3 DTBs map the PL011 to ttyAMA1; QEMU resets when bcm2835_wdt is armed.

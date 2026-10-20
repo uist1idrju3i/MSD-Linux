@@ -1,0 +1,12 @@
+/dts-v1/;
+/plugin/;
+
+&{/} {
+	powerfail {
+		compatible = "cardputerzero,powerfail-suo";
+		debounce-ms = <500>;
+		interrupt-parent = <&gpio>;
+		interrupts = <6 2>;
+		irq-gpios = <&gpio 6 0>;
+	};
+};
