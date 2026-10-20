@@ -1,6 +1,6 @@
 Types: deb
 URIs: https://snapshot.debian.org/archive/debian/@DEBIAN_SNAPSHOT@
-Suites: trixie trixie-updates trixie-backports
+Suites: trixie trixie-updates
 Components: main
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 Check-Valid-Until: no

@@ -1,5 +1,8 @@
 **
 !docker/
 !docker/**
+!docker/qemu-signing-key.asc
+!docker/qemu-patches/
+!docker/qemu-patches/**
 !.github/
 !.github/zizmor-requirements.txt

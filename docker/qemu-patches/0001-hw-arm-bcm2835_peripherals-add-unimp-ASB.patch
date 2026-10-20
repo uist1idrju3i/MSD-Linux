@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] hw/arm/bcm2835_peripherals: Add an unimplemented ASB device
+
+The Linux bcm2835-power driver reads the ASB window at BRDG_OFFSET
+(0xa000) during probe. On raspi3ap, 512 MiB of RAM leaves the hole
+unassigned, so bcm2835_power_probe raises a synchronous external abort.
+raspi3b boots because a RAM alias covers the hole.
+
+---
+ hw/arm/bcm2835_peripherals.c        | 1 +
+ include/hw/arm/bcm2835_peripherals.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+--- a/hw/arm/bcm2835_peripherals.c
++++ b/hw/arm/bcm2835_peripherals.c
+@@ -521,2 +521,3 @@
+     create_unimp(s, &s->txp, "bcm2835-txp", TXP_OFFSET, 0x1000);
++    create_unimp(s, &s->asb, "bcm2835-asb", BRDG_OFFSET, 0x1000);
+     create_unimp(s, &s->armtmr, "bcm2835-sp804", ARMCTRL_TIMER0_1_OFFSET, 0x40);
+--- a/include/hw/arm/bcm2835_peripherals.h
++++ b/include/hw/arm/bcm2835_peripherals.h
+@@ -58,2 +58,3 @@
+     UnimplementedDeviceState txp;
++    UnimplementedDeviceState asb;
+     UnimplementedDeviceState armtmr;

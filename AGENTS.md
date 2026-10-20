@@ -68,6 +68,8 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 
 ```sh
 git submodule update --init             # submodule の取得
+docker/msd-dev build                    # 開発用イメージの作成
+docker/msd-dev <command>                # 固定ツール環境でコマンドを実行
 make -C vendor/buildroot BR2_EXTERNAL="$PWD" O="$PWD/output" msd_cardputerzero_defconfig && make -C output  # defconfig とビルド
 tests/msd-update/run.sh                  # 更新処理のホストテスト
 board/cardputerzero/qemu/test-boot.sh    # A スロットの QEMU 起動確認

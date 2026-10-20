@@ -49,7 +49,7 @@ while (( SECONDS < deadline )); do
 			printf 'QEMU serial log contains boot error patterns.\n' >&2
 			exit 1
 		fi
-		mount_options_line="$(grep -F 'msd-data: /data ' "$LOG_FILE" | tail -n 1 || true)"
+		mount_options_line="$(grep -aF 'msd-data: /data ' "$LOG_FILE" | tail -n 1 || true)"
 		if [ -z "$mount_options_line" ]; then
 			printf 'QEMU serial log is missing the /data mount options.\n' >&2
 			exit 1
