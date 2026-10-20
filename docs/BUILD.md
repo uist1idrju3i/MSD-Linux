@@ -51,6 +51,8 @@ board/cardputerzero/qemu/test-ab.sh
 
 `test-boot.sh` は A スロット（p5）、`test-ab.sh` は B スロット（p6）を rootfs として起動し、`MSD/Linux ready` marker と login prompt を検出した時点で QEMU を停止します。`QEMU_BOOT_TIMEOUT` は検出を待つ上限時間です。両スクリプトはイメージをコピーし、サイズを次の 2 の累乗にそろえます。対話的な起動には `board/cardputerzero/qemu/run-qemu.sh` を使ってください。
 
+既定では `raspi3ap`（512 MiB）と `bcm2710-rpi-cm0.dtb` を使います。1 GiB の `raspi3b` と `bcm2710-rpi-3-b.dtb` に切り替えるには、`QEMU_MACHINE=raspi3b` を設定します。`raspi3ap` の起動には、ASB パッチを含む開発用イメージ内の QEMU が必要です。
+
 ## カーネル設定の範囲
 
 `board/cardputerzero/linux.fragment` では、CardputerZero の基板と有効なオーバーレイで使わないサウンドカード／コーデック、RTC・hwmon、FB_TFT／DRM パネル、赤外線・入力、USB misc の周辺機器、Ethernet・Bluetooth ドングル、旧式 USB gadget、Pi 4/5・HAT 向けドライバーを無効にします。LCD（ST7789V）、TCA8418 キーボード、IIO センサー、電源・GPIO、DS1307 ドライバー経由の Epson RX8130 RTC、BCM 系 Wi-Fi/Bluetooth、必要な ASoC 機能など、製品の構成に使う機能は残します。CardputerZero は HDMI audio、camera、MMAL を使わず、SPI 接続 LCD と I2S codec を使うため BCM2835 VCHIQ とその依存機能を無効にします。QEMU の mailbox は VCHIQ を実装しません。
