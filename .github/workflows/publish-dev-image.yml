@@ -188,7 +188,7 @@ jobs:
           DIGEST: ${{ steps.publish.outputs.digest }}
           SBOM_PATH: ${{ runner.temp }}/sbom.spdx.json
         with:
-          subject-name: ${{ env.IMAGE }}:${{ env.IMAGE_TAG }}-${{ env.ARCH }}
+          subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ env.DIGEST }}
           sbom-path: ${{ env.SBOM_PATH }}
           push-to-registry: true
