@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import lzma
 import os
 import re
 import subprocess
@@ -64,6 +65,36 @@ def workflow_env(root: Path, workflow: str, key: str) -> str:
     return match.group(1) if match else ""
 
 
+def docker_arg(root: Path, name: str) -> str:
+    text = (root / "docker/msd-dev.Dockerfile").read_text()
+    match = re.search(rf"^ARG {re.escape(name)}=([^\s#]+)\s*$", text, re.M)
+    return match.group(1) if match else ""
+
+
+def workflow_checksum(text: str, archive_variable: str) -> str:
+    marker = f'"${archive_variable}" | sha256sum -c -'
+    before, separator, _ = text.partition(marker)
+    if not separator:
+        return ""
+    checksums = re.findall(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])", before)
+    return checksums[-1] if checksums else ""
+
+
+def parse_debian_package_versions(data: bytes) -> dict[str, str]:
+    versions: dict[str, str] = {}
+    for block in lzma.decompress(data).decode().split("\n\n"):
+        fields = dict(
+            line.split(": ", 1)
+            for line in block.splitlines()
+            if ": " in line
+        )
+        package = fields.get("Package", "")
+        version = fields.get("Version", "")
+        if package in {"qemu-system-arm", "qemu-utils"} and version:
+            versions[package] = version
+    return versions
+
+
 def run(*args: str, cwd: Path = ROOT) -> str:
     return subprocess.check_output(
         args, cwd=cwd, text=True, stderr=subprocess.STDOUT, timeout=30
@@ -120,6 +151,21 @@ def consistency(root: Path) -> list[str]:
     branch = parse_buildroot_branch((root / ".gitmodules").read_text())
     if not readme_version or readme_version.group(1) != branch.removesuffix(".x"):
         errors.append("README Buildroot version differs from .gitmodules")
+
+    lint_workflow = (root / ".github/workflows/lint.yml").read_text()
+    for name in ("ACTIONLINT_VERSION", "SHELLCHECK_VERSION"):
+        docker_value = docker_arg(root, name)
+        workflow_value = workflow_env(root, ".github/workflows/lint.yml", name)
+        if not docker_value or docker_value != workflow_value:
+            errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
+    for name, archive_variable in (
+        ("ACTIONLINT_SHA256", "actionlint_archive"),
+        ("SHELLCHECK_SHA256", "shellcheck_archive"),
+    ):
+        docker_value = docker_arg(root, name)
+        workflow_value = workflow_checksum(lint_workflow, archive_variable)
+        if not docker_value or docker_value != workflow_value:
+            errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
     return errors
 
 
@@ -129,6 +175,12 @@ def fetch(url: str) -> str:
         request.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
     with urlopen(request, timeout=20) as response:
         return response.read().decode()
+
+
+def fetch_bytes(url: str) -> bytes:
+    request = Request(url, headers={"Accept": "application/octet-stream"})
+    with urlopen(request, timeout=30) as response:
+        return response.read()
 
 
 def upstream(report_path: Path, root: Path) -> int:
@@ -181,6 +233,7 @@ def upstream(report_path: Path, root: Path) -> int:
     for name, repository, env_name in (
         ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION"),
         ("ShellCheck", "koalaman/shellcheck", "SHELLCHECK_VERSION"),
+        ("hadolint", "hadolint/hadolint", "HADOLINT_VERSION"),
         ("kernel-hardening-checker", "a13xp0p0v/kernel-hardening-checker", "KHC_TAG"),
     ):
         workflow, env_key = (
@@ -203,6 +256,30 @@ def upstream(report_path: Path, root: Path) -> int:
             print(f"{name}: upstream check unavailable: {exc}", file=sys.stderr)
             latest, status = "確認できず", "確認できず"
         rows.append((name, pinned_value, latest, status, f"https://github.com/{repository}/releases"))
+
+    qemu_pin = docker_arg(root, "QEMU_DEB_VERSION") or "未設定"
+    qemu_url = "https://deb.debian.org/debian/dists/trixie-backports/main/binary-amd64/Packages.xz"
+    try:
+        qemu_versions = parse_debian_package_versions(fetch_bytes(qemu_url))
+        qemu_values = {
+            qemu_versions.get("qemu-system-arm", ""),
+            qemu_versions.get("qemu-utils", ""),
+        }
+        qemu_values.discard("")
+        latest_qemu = (
+            next(iter(qemu_values))
+            if len(qemu_versions) == 2 and len(qemu_values) == 1
+            else "確認できず"
+        )
+        if latest_qemu == "確認できず":
+            qemu_status = "確認できず"
+        else:
+            qemu_status = "最新" if qemu_pin == latest_qemu else "更新あり"
+    except (OSError, URLError, ValueError, EOFError, lzma.LZMAError):
+        latest_qemu, qemu_status = "確認できず", "確認できず"
+    rows.append(("QEMU (Debian trixie-backports)", qemu_pin, latest_qemu, qemu_status, qemu_url))
+    snapshot = docker_arg(root, "DEBIAN_SNAPSHOT") or "未設定"
+    rows.append(("Debian snapshot date", snapshot, "-", "参考", "https://snapshot.debian.org/"))
 
     try:
         image_readme = fetch("https://raw.githubusercontent.com/actions/runner-images/main/README.md")

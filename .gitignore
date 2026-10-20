@@ -9,6 +9,7 @@ AGENTS.override.md
 
 # Buildroot
 /output/
+/output-docker/
 /dl/
 /.ccache/
 

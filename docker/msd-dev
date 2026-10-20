@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+repo_root="$(cd -- "${script_dir}/.." && pwd -P)"
+image="${MSD_DEV_IMAGE:-msd-dev:local}"
+
+if [[ "${1:-}" == "build" ]]; then
+    if (($# != 1)); then
+        printf 'Usage: %s build\n' "$0" >&2
+        exit 2
+    fi
+    exec docker build -f "${repo_root}/docker/msd-dev.Dockerfile" -t "${image}" "${repo_root}"
+fi
+
+command=("$@")
+if ((${#command[@]} == 0)); then
+    command=(bash)
+fi
+
+tty_args=()
+if [[ -t 0 ]]; then
+    tty_args=(-it)
+fi
+
+docker_args=(
+    run
+    --rm
+    "${tty_args[@]}"
+    --user "$(id -u):$(id -g)"
+    --env HOME=/tmp/home
+    --volume "${repo_root}:/work"
+    --workdir /work
+    --security-opt no-new-privileges
+    --cap-drop ALL
+)
+
+add_directory() {
+    local name="$1"
+    local host_path
+    local container_path
+
+    [[ -v "$name" ]] || return 0
+    local value="${!name}"
+    if [[ -z "${value}" ]]; then
+        docker_args+=(--env "${name}=")
+        return 0
+    fi
+    host_path="$(realpath -m -- "${value}")"
+    mkdir -p -- "${host_path}"
+
+    if [[ "${host_path}" == "${repo_root}" ]]; then
+        container_path=/work
+    elif [[ "${host_path}" == "${repo_root}/"* ]]; then
+        container_path="/work/${host_path#"${repo_root}/"}"
+    else
+        container_path="${host_path}"
+        docker_args+=(--volume "${host_path}:${container_path}")
+    fi
+    docker_args+=(--env "${name}=${container_path}")
+}
+
+for name in BR2_DL_DIR BR2_CCACHE_DIR OUTPUT_DIR QEMU_LOG_DIR; do
+    add_directory "${name}"
+done
+
+for name in QEMU_EXTRA_APPEND QEMU_BOOT_TIMEOUT; do
+    if [[ -v "$name" ]]; then
+        docker_args+=(--env "${name}=${!name}")
+    fi
+done
+
+exec docker "${docker_args[@]}" \
+    --entrypoint /bin/bash \
+    "${image}" \
+    -c 'mkdir -p -- /tmp/home && exec "$@"' \
+    msd-dev \
+    "${command[@]}"
