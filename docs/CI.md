@@ -4,13 +4,13 @@
 
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
-| `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。ホストテストは毎回実行し、ビルドと QEMU 起動確認はゲートです。 |
+| `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
 | `publish-dev-image.yml` | 開発イメージの入力変更を含む PR、`main` への push、手動実行 | PR では amd64 と arm64 のイメージを作成して Trivy で検査します。修正版のある HIGH / CRITICAL の脆弱性と、HIGH / CRITICAL の秘密情報・設定不備を公開ゲートにします。`main` への push と手動実行では GHCR へ公開し、SBOM と provenance の attestation を付けます。手動実行では `dry_run` を有効にすると公開を省けます。 |
 | `dev-image-scan.yml` | 毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、検出事項を「開発用イメージの脆弱性」Issue に集約します。検出事項では失敗せず、イメージがまだ公開されていない場合も検査を省きます。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
-| `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor に加え、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。hadolint は digest 固定イメージを `docker run` で実行し、ツールの版と取得物のハッシュを固定します。 |
+| `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
 
@@ -23,11 +23,13 @@
 
 ドメインは Pages の Settings に保存します。Actions 公開では `CNAME` と `.nojekyll` は不要です。build job は Pages API が返す `cname` を `SITE_ORIGIN` のホスト名と照合してから公開します。PR ではサイト検査、ドメイン照合、成果物の作成まで実行し、デプロイは行いません。`check-site.py` は `public_html/` に許可したファイルだけがあること、canonical と OGP の URL が `https://muromi.moe` と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `docs/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css` と `images/` 直下の SVG／PNG です。
 
-`build.yml` のホストテスト job は `fdisk`、`e2fsprogs`、`openssl` を導入し、更新処理、hwinfo、p7 拡張、開発イメージのタグ、Trivy の公開判定を実行します。Buildroot ビルドの docs-only 判定とは独立して実行します。
+`build.yml` は GHCR にログインして `docker/msd-dev ensure` を実行し、開発用イメージを準備します。タグが公開済みなら pull と attestation 検証を行い、未公開ならローカルビルドに切り替わります。認証、通信、pull、検証のエラーではビルドに切り替えず、job は失敗扱いです。
+
+更新処理、hwinfo、p7 拡張、開発イメージのタグ、Trivy の公開判定を含むテストと Buildroot/QEMU の処理はイメージ内で実行します。テストは Buildroot ビルドの docs-only 判定にかかわらず毎回実行されます。
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させる設定です。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
 
-Buildroot ビルドは時間がかかるため、`changes` job は PR と `main` への push で変更ファイルを見て、必要な場合だけビルドを実行します。文書（`*.md`、`docs/`）、サイト（`public_html/`）、エージェント設定（`.agents/`、`.claude/`、`.devin/`）、`vendor/yomiyasu`、`LICENSE`、検査専用の `tests/check-*` はスキップ対象です。`.github/` 配下も `build.yml` 自身を除いて対象から外します。それ以外のファイルに変更があれば Buildroot のビルド対象です。ホストテストは変更判定と独立して毎回実行します。
+Buildroot ビルドは時間がかかるため、`changes` job は PR と `main` への push で変更ファイルを見て、必要な場合だけビルドを実行します。文書（`*.md`、`docs/`）、サイト（`public_html/`）、エージェント設定（`.agents/`、`.claude/`、`.devin/`）、`vendor/yomiyasu`、`LICENSE`、検査専用の `tests/check-*` はスキップ対象です。`.github/` 配下も `build.yml` 自身を除いて対象から外します。それ以外のファイルに変更があれば Buildroot のビルド対象です。開発用イメージ内のテストは変更判定と独立して毎回実行します。
 
 `main` への文書だけの push ではビルドを省略するため、最新のビルド成果物は過去の commit に対応したままです。新しい `main` の成果物が必要な場合は `workflow_dispatch` で手動実行してください。毎週月曜 03:47 UTC のビルドは、ダウンロード URL や runner image の変化を検出するために実行します。
 
@@ -67,7 +69,7 @@ quote	<exact-path>	<characters>	<reason>
 
 `build.yml` のカーネル強化検査は固定した kernel-hardening-checker でビルド後の `.config` と起動コマンドラインを調べます。結果は OK/FAIL 件数と FAIL 項目をジョブサマリーに出し、JSON も成果物として保存します。この検査は報告のみで、結果によってビルドを失敗させません。
 
-`lint.yml` の zizmor は `.github/zizmor-requirements.txt` でハッシュ固定した版をインストールする監査ツールです。CI では `--offline` でワークフローを検査し、結果で合否を決めます。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
+`lint.yml` の actionlint と ShellCheck は開発用イメージの Dockerfile ARG で版を固定します。zizmor は `.github/zizmor-requirements.txt` でハッシュ固定し、イメージ内で `--offline` によりワークフローを検査します。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
 
 ## 固定版の整合性と更新確認
 

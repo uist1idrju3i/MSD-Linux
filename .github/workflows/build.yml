@@ -80,46 +80,71 @@ jobs:
           echo "build=$build" >> "$GITHUB_OUTPUT"
 
   msd-update-tests:
-    name: MSD host tests
+    name: MSD tests in development image
     runs-on: ubuntu-26.04
     timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: read
+      attestations: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Install host test dependencies
+      - name: Log in to GHCR
+        env:
+          GHCR_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y fdisk e2fsprogs openssl
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io \
+            --username "$GHCR_ACTOR" \
+            --password-stdin
 
-      - name: Run host tests
+      - name: Ensure development image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MSD_DEV_REQUIRE_ATTESTATION: "1"
+        run: docker/msd-dev ensure
+
+      - name: Run tests in the development image
         run: |
-          tests/msd-update/run.sh
-          tests/msd-hwinfo/run.sh
-          tests/msd-data-grow/run.sh
-          tests/qemu-log-check/run.sh
-          tests/msd-dev/run.sh
-          tests/trivy-gate/run.sh
+          docker/msd-dev tests/msd-update/run.sh
+          docker/msd-dev tests/msd-hwinfo/run.sh
+          docker/msd-dev tests/msd-data-grow/run.sh
+          docker/msd-dev tests/qemu-log-check/run.sh
+          docker/msd-dev tests/msd-dev/run.sh
+          docker/msd-dev tests/trivy-gate/run.sh
 
   build:
     needs: changes
     if: needs.changes.outputs.build == 'true'
     runs-on: ubuntu-26.04
     timeout-minutes: 150
+    permissions:
+      contents: read
+      packages: read
+      attestations: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
           persist-credentials: false
 
-      - name: Install host dependencies
+      - name: Log in to GHCR
+        env:
+          GHCR_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            bc bison build-essential cpio device-tree-compiler fdisk \
-            file flex git libelf-dev libncurses-dev libssl-dev perl python3 \
-            qemu-system-arm rsync unzip wget xz-utils
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io \
+            --username "$GHCR_ACTOR" \
+            --password-stdin
+
+      - name: Ensure development image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MSD_DEV_REQUIRE_ATTESTATION: "1"
+        run: docker/msd-dev ensure
 
       - id: dl-restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -140,10 +165,12 @@ jobs:
           BR2_DL_DIR: ${{ github.workspace }}/dl
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
-          make -C vendor/buildroot \
-            BR2_EXTERNAL="${GITHUB_WORKSPACE}" \
-            O="${GITHUB_WORKSPACE}/output" \
-            msd_cardputerzero_defconfig
+          docker/msd-dev bash -c '
+            make -C vendor/buildroot \
+              BR2_EXTERNAL=/work \
+              O=/work/output \
+              msd_cardputerzero_defconfig
+          '
 
       - id: buildroot-build
         name: Build image and legal information
@@ -152,34 +179,44 @@ jobs:
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
           CCACHE_MAXSIZE: 3G
         run: |
-          make -C output -j"$(nproc)"
-          make -C output legal-info
+          # shellcheck disable=SC2016
+          docker/msd-dev bash -c '
+            make -C output host-ccache
+            CCACHE_DIR="${BR2_CCACHE_DIR}" output/host/bin/ccache -z
+            make -C output -j"$(nproc)"
+            make -C output legal-info
+          '
 
       - name: Check module dependency index
-        run: board/cardputerzero/tools/check-modules-dep.sh output/target
+        run: docker/msd-dev board/cardputerzero/tools/check-modules-dep.sh output/target
 
       - name: Check kernel fragment and image tool versions
         run: |
-          board/cardputerzero/tools/check-kernel-fragment.sh \
-            board/cardputerzero/linux.fragment \
-            output/build/linux-custom/.config
-          output/host/sbin/mke2fs -V
-          output/host/bin/mksquashfs -version
-          output/host/bin/genimage --version
-          if ! dumpe2fs -h output/images/data.ext4 2>/dev/null |
-            grep -Eq '^Block size:[[:space:]]+4096$'; then
-            printf '%s\n' 'data.ext4 must use 4096-byte blocks.' >&2
-            exit 1
-          fi
+          docker/msd-dev bash -c '
+            board/cardputerzero/tools/check-kernel-fragment.sh \
+              board/cardputerzero/linux.fragment \
+              output/build/linux-custom/.config
+            output/host/sbin/mke2fs -V
+            output/host/bin/mksquashfs -version
+            output/host/bin/genimage --version
+            if ! dumpe2fs -h output/images/data.ext4 2>/dev/null |
+              grep -Eq "^Block size:[[:space:]]+4096$"; then
+              printf "%s\n" "data.ext4 must use 4096-byte blocks." >&2
+              exit 1
+            fi
+          '
 
       - name: Generate SBOM
         run: |
-          set -o pipefail
-          make -s -C output show-info |
-            python3 vendor/buildroot/utils/generate-cyclonedx \
-              --project-name msd-linux \
-              --project-version "$GITHUB_SHA" \
-              > output/images/sbom.cdx.json
+          # shellcheck disable=SC2016
+          docker/msd-dev bash -c '
+            set -o pipefail
+            make -s -C output show-info |
+              python3 vendor/buildroot/utils/generate-cyclonedx \
+                --project-name msd-linux \
+                --project-version "$GITHUB_SHA" \
+                > output/images/sbom.cdx.json
+          '
 
       - name: Run kernel hardening checker
         continue-on-error: true
@@ -188,16 +225,19 @@ jobs:
           KHC_COMMIT: afc376f2a935994793343cfeb05953583cc30191
         run: |
           set -euo pipefail
-          checker_dir="$RUNNER_TEMP/kernel-hardening-checker"
-          git clone --depth 1 --branch "$KHC_TAG" \
-            https://github.com/a13xp0p0v/kernel-hardening-checker "$checker_dir"
-          test "$(git -C "$checker_dir" rev-parse HEAD)" = \
-            "$KHC_COMMIT"
-          "$checker_dir/bin/kernel-hardening-checker" \
-            -c output/build/linux-custom/.config \
-            -l board/cardputerzero/cmdline_rootfs_a.txt \
-            -m json \
-            > output/images/kernel-hardening.json
+          # shellcheck disable=SC2016
+          docker/msd-dev bash -c '
+            set -euo pipefail
+            checker_dir=/tmp/kernel-hardening-checker
+            git clone --depth 1 --branch "$KHC_TAG" \
+              https://github.com/a13xp0p0v/kernel-hardening-checker "$checker_dir"
+            test "$(git -C "$checker_dir" rev-parse HEAD)" = "$KHC_COMMIT"
+            "$checker_dir/bin/kernel-hardening-checker" \
+              -c output/build/linux-custom/.config \
+              -l board/cardputerzero/cmdline_rootfs_a.txt \
+              -m json \
+              > output/images/kernel-hardening.json
+          '
 
       - name: Summarize kernel hardening results
         if: always()
@@ -228,16 +268,19 @@ jobs:
       - name: Show ccache statistics
         if: always()
         env:
-          CCACHE_DIR: ${{ github.workspace }}/.ccache
+          BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
-          if [[ -x output/host/bin/ccache ]]; then
-            output/host/bin/ccache -s
-          else
-            echo "ccache binary is not available"
-          fi
+          # shellcheck disable=SC2016
+          docker/msd-dev bash -c '
+            if [[ -x output/host/bin/ccache ]]; then
+              CCACHE_DIR="${BR2_CCACHE_DIR}" output/host/bin/ccache -s
+            else
+              echo "ccache binary is not available"
+            fi
+          '
 
       - name: Check image partition layout
-        run: board/cardputerzero/check-image-layout.sh output/images/sdcard.img
+        run: docker/msd-dev board/cardputerzero/check-image-layout.sh output/images/sdcard.img
 
       - name: Prepare QEMU serial log directory
         run: mkdir -p output/qemu-logs
@@ -245,12 +288,12 @@ jobs:
       - name: QEMU smoke test
         env:
           QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
-        run: board/cardputerzero/qemu/test-boot.sh
+        run: docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 
       - name: QEMU B-slot smoke test
         env:
           QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
-        run: board/cardputerzero/qemu/test-ab.sh
+        run: docker/msd-dev board/cardputerzero/qemu/test-ab.sh
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
@@ -262,8 +305,10 @@ jobs:
       - name: Package artifacts
         if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
         run: |
-          xz -T0 -k output/images/sdcard.img
-          tar -czf output/legal-info.tar.gz -C output legal-info
+          docker/msd-dev bash -c '
+            xz -T0 -k output/images/sdcard.img
+            tar -czf output/legal-info.tar.gz -C output legal-info
+          '
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ !cancelled() && steps.buildroot-build.outcome == 'success' }}
@@ -282,13 +327,13 @@ jobs:
             output/legal-info.tar.gz
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: always() && steps.dl-restore.outputs.cache-hit != 'true'
+        if: always() && steps.dl-restore.outputs.cache-hit != 'true' && steps.buildroot-build.outcome == 'success'
         with:
           path: dl
           key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: always()
+        if: always() && steps.buildroot-build.outcome == 'success'
         with:
           path: .ccache
           key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}

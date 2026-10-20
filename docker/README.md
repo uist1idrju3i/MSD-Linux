@@ -13,6 +13,7 @@ QEMU 11.1.2 は署名付きソースからビルドします。`docker/qemu-sign
 ## ビルドと実行
 
 ```sh
+docker/msd-dev ensure
 docker/msd-dev build
 docker/msd-dev bash -lc 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig && make -C output'
 docker/msd-dev board/cardputerzero/qemu/test-boot.sh
@@ -27,17 +28,27 @@ QEMU_MACHINE=raspi3ap DTB_IMAGE=output/images/bcm2710-rpi-cm0.dtb \
 
 `output/`、`dl/`、`.ccache/` はホスト側のリポジトリーに置き、コンテナーには bind mount します。`BR2_DL_DIR`、`BR2_CCACHE_DIR`、`OUTPUT_DIR` にリポジトリー外のパスを指定した場合も、そのパスを同じ位置に mount します。これらのデータはイメージには入りません。
 
-Bootlin toolchain は x86_64 専用です。arm64 ホストでは lint、QEMU 起動確認、ホストテストを実行できますが、Buildroot のビルドは実行できません。
+Bootlin toolchain は x86_64 専用です。arm64 ホストでは開発用イメージを使った lint、QEMU 起動確認、テストを実行できますが、Buildroot のビルドは実行できません。
+
+## rootless Docker での実行
+
+`docker/msd-dev` は `docker info --format '{{.SecurityOptions}}'` の出力から rootless Docker を自動判定します。rootless の場合はコンテナー内の実行ユーザーを `0:0` にします。rootless Docker の user namespace ではコンテナー内の root がホストの実行ユーザーに対応するため、bind mount した作業ツリーにも書き込み可能です。通常の Docker ではホストの uid:gid で実行します。判定の上書きには `MSD_DEV_ROOTLESS=1` または `0` を指定します。両モードで `--cap-drop ALL` と `--security-opt no-new-privileges` が有効です。
+
+公開タグの確認には Docker CLI 標準の `docker manifest inspect` を使うため、`ensure` に Docker Buildx plugin は不要です。rootless Docker を設定済みのホストでは、sudo なしでイメージの取得、ビルド、コンテナーの実行ができます。
+
+公開イメージを取得するだけなら GitHub への認証は不要です。attestation の検証には、`gh auth login` または `GH_TOKEN` / `GITHUB_TOKEN` による `gh` の認証が必要です。`gh` が未認証の場合、通常は警告を出して検証を省略し、`MSD_DEV_REQUIRE_ATTESTATION=1` では失敗します。CI の `Ensure development image` は `GH_TOKEN` に `secrets.GITHUB_TOKEN` を渡し、job に `packages: read` と `attestations: read` を設定しています。
+
+Devin Outposts の worker（Docker 29.8.2、rootless、x86_64）で実行した actionlint、ShellCheck、`tests/check-pins/run.sh`、`tests/msd-update/run.sh`、`tests/msd-hwinfo/run.sh`、`tests/msd-data-grow/run.sh`、`tests/qemu-log-check/run.sh`、`tests/trivy-gate/run.sh` はいずれも成功です。Buildroot のフルビルドは ccache が空の状態で 12 スレッドを使い、1 回の実行に 3,599 秒でした。QEMU の結果は、`raspi3b` の `test-boot.sh` と `test-ab.sh`、および `bcm2710-rpi-cm0.dtb` を使う `raspi3ap` の `test-boot.sh` がいずれも成功しました。
 
 ## GHCR 公開イメージ
 
-公開イメージは `docker/msd-dev pull` で取得できます。取得後のローカル名は `MSD_DEV_IMAGE` で指定でき、省略時は `msd-dev:local` です。
+公開イメージは `docker/msd-dev ensure` で用意できます。取得後のローカル名は `MSD_DEV_IMAGE` で指定でき、省略時は `msd-dev:local` です。`docker/msd-dev pull` は公開イメージを直接取得するコマンドです。
 
 タグは `inputs-` と SHA-256 の先頭 16 桁で構成します。ハッシュ対象は `docker/msd-dev.Dockerfile`、`docker/debian.sources`、QEMU の署名鍵とパッチ、`.github/zizmor-requirements.txt` の内容とパスです。入力の内容が変わるとタグも変わります。
 
-公開時には同じ multi-arch イメージに `sha-<commit>` と `latest` のタグも付け、SPDX SBOM と provenance の attestation を付けます。GitHub CLI がある環境では `docker/msd-dev pull` が attestation を検証し、検証に失敗すると取得処理も失敗します。GitHub CLI がない場合は、検証省略の警告を出して取得を続ける仕様です。
+公開時には同じ multi-arch イメージに `sha-<commit>` と `latest` のタグも付け、SPDX SBOM と provenance の attestation を付けます。`ensure` は入力タグを `docker manifest inspect` で確認し、公開済みなら pull と attestation 検証を行います。タグが見つからない場合の処理はローカルビルドです。認証や通信などの検査エラー、pull の失敗、attestation 検証の失敗は、ローカルビルドへ切り替えずエラー扱いです。`gh` がない、または未認証の場合、通常の `pull` は警告を出して検証を省略します。`MSD_DEV_REQUIRE_ATTESTATION=1` を指定すると、`gh` の未導入または未認証で失敗します。CI ではこの設定が必須です。
 
-最初の公開直後は GHCR パッケージが非公開のため、所有者が公開設定に変更するまで取得できません。毎週月曜に `latest` を検査し、検出事項があれば「開発用イメージの脆弱性」Issue を作成または更新します。検出事項がなくなった後の検査では、Issue にコメントして閉じます。
+`ghcr.io/uist1idrju3i/msd-dev` は、認証なしで pull できる公開パッケージです。毎週月曜に `latest` を検査し、検出事項があれば「開発用イメージの脆弱性」Issue を作成または更新します。検出事項がなくなった後の検査では、Issue にコメントして閉じます。
 
 ## 固定値の更新
 

@@ -310,17 +310,16 @@ def consistency(root: Path) -> list[str]:
                 "Buildroot Config.in.options"
             )
 
-    lint_workflow = (root / ".github/workflows/lint.yml").read_text()
-    for name in ("ACTIONLINT_VERSION", "SHELLCHECK_VERSION"):
-        docker_value = docker_arg(root, name)
-        workflow_value = workflow_env(root, ".github/workflows/lint.yml", name)
-        if not docker_value or docker_value != workflow_value:
-            errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
-    for name, archive_variable in (("SHELLCHECK_SHA256", "shellcheck_archive"),):
-        docker_value = docker_arg(root, name)
-        workflow_value = workflow_checksum(lint_workflow, archive_variable)
-        if not docker_value or docker_value != workflow_value:
-            errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
+    for workflow in (".github/workflows/lint.yml", ".github/workflows/build.yml"):
+        text = (root / workflow).read_text()
+        for name in ("ACTIONLINT_VERSION", "SHELLCHECK_VERSION"):
+            if re.search(rf"\b{re.escape(name)}\b", text):
+                errors.append(f"{workflow} must not contain {name}")
+        if re.search(r"\bapt-get\s+install\b", text):
+            errors.append(f"{workflow} must not install host packages with apt-get")
+    for name in ("ACTIONLINT_VERSION", "SHELLCHECK_VERSION", "SHELLCHECK_SHA256"):
+        if not docker_arg(root, name):
+            errors.append(f"{name} must be set in docker/msd-dev.Dockerfile")
     for name, pattern in (
         ("QEMU_SHA256", r"[0-9a-f]{64}"),
         ("QEMU_SIGNING_FINGERPRINT", r"[0-9A-F]{40}"),
@@ -571,18 +570,22 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
         )
     )
 
-    for name, repository, env_name in (
-        ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION"),
-        ("ShellCheck", "koalaman/shellcheck", "SHELLCHECK_VERSION"),
-        ("hadolint", "hadolint/hadolint", "HADOLINT_VERSION"),
-        ("kernel-hardening-checker", "a13xp0p0v/kernel-hardening-checker", "KHC_TAG"),
+    for name, repository, env_name, workflow in (
+        ("actionlint", "rhysd/actionlint", "ACTIONLINT_VERSION", ""),
+        ("ShellCheck", "koalaman/shellcheck", "SHELLCHECK_VERSION", ""),
+        ("hadolint", "hadolint/hadolint", "HADOLINT_VERSION", ".github/workflows/lint.yml"),
+        (
+            "kernel-hardening-checker",
+            "a13xp0p0v/kernel-hardening-checker",
+            "KHC_TAG",
+            ".github/workflows/build.yml",
+        ),
     ):
-        workflow, env_key = (
-            (".github/workflows/build.yml", env_name)
-            if env_name.startswith("KHC_")
-            else (".github/workflows/lint.yml", env_name)
-        )
-        pin = os.environ.get(env_name) or workflow_env(root, workflow, env_key) or "未設定"
+        pin = os.environ.get(env_name) or (
+            docker_arg(root, env_name)
+            if not workflow
+            else workflow_env(root, workflow, env_name)
+        ) or "未設定"
         pinned_value = pin
         if env_name == "KHC_TAG":
             commit = os.environ.get("KHC_COMMIT") or workflow_env(

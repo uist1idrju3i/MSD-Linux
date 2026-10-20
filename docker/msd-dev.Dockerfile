@@ -142,6 +142,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
         build-essential \
         bash \
         ca-certificates \
+        cmake \
         cpio \
         curl \
         debianutils \

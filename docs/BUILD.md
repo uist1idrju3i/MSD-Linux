@@ -2,11 +2,12 @@
 
 ## ホスト環境
 
-Ubuntu 26.04 を想定しています。Buildroot のホスト依存パッケージと QEMU が必要です。CI と同じ環境にする場合は、`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。ホストテストには `fdisk`、`e2fsprogs`、`openssl` も必要です。
+Ubuntu 26.04 を想定しています。ホスト上でビルドする場合は Buildroot の依存パッケージと QEMU が必要です。`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。ホストでテストを実行する場合は `fdisk`、`e2fsprogs`、`openssl` も必要です。CI はこれらのホスト依存を runner に導入せず、開発用イメージ内でテストとビルドを実行します。
 
 ## 推奨する開発環境
 
 CI と同じ固定版のツールを使う場合は、開発用コンテナー `docker/msd-dev` を推奨します。最初にイメージをビルドし、その後はコマンドをコンテナー内で実行します。
+rootless Docker では実行モードを自動で判定するため、sudo なしで利用可能です。詳しくは[開発用コンテナーの説明](../docker/README.md)を参照してください。
 
 ```sh
 docker/msd-dev build
@@ -18,6 +19,13 @@ docker/msd-dev bash
 ## イメージのビルド
 
 リポジトリのルートで、Buildroot の defconfig を適用してビルドします。
+
+```sh
+docker/msd-dev ensure
+docker/msd-dev bash -lc 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig && make -C output'
+```
+
+上記は CI と同じ開発用イメージを使います。ホスト上で直接ビルドする場合は、次のコマンドを実行します。
 
 ```sh
 make -C vendor/buildroot BR2_EXTERNAL="$PWD" O="$PWD/output" msd_cardputerzero_defconfig
@@ -55,7 +63,7 @@ QEMU の `raspi3b` マシンは BCM2837 をエミュレートしますが、Rasp
 
 ## 現在の検証状況
 
-CI では Buildroot のフルビルド、QEMU の A/B 起動（p5/p6 とも成功）、ホストテストを実行します。ローカル QEMU では、拡大イメージで p7 の ext4 拡張と `/data/seedrng/seed.credit` の作成を確認しました。実機起動、LCD・キーボード、tryboot、watchdog、更新署名は未検証です。
+CI では開発用イメージ内で Buildroot のフルビルド、QEMU の A/B 起動（p5/p6 とも成功）、テストを実行します。ローカル QEMU では、拡大イメージで p7 の ext4 拡張と `/data/seedrng/seed.credit` の作成を確認しました。実機起動、LCD・キーボード、tryboot、watchdog、更新署名は未検証です。
 
 ## カーネル候補のローカル測定
 
