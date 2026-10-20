@@ -61,7 +61,7 @@ netfilter、md/dm、暗号・スケジューリング、USB serial/NIC、USB_CON
 
 QEMU では A/B の起動を確認しますが、このカーネル設定を実機で再確認する作業は未完了です。
 
-QEMU の `raspi3b` マシンは BCM2837 をエミュレートしますが、Raspberry Pi の GPU ファームウェアを実行しません。そのため `autoboot.txt` と firmware の `tryboot` による切替・自動フォールバックは確認できません。CardputerZero の LCD、内蔵キーボード、M5Stack の I2C デバイスも再現しません。実機での表示、入力、電源断耐性、watchdog、firmware レベルの A/B 更新は実機で別途検証する必要があります。QEMU の起動テストでは PL011 コンソールに `ttyAMA1` を使い、`initcall_blacklist=bcm2835_wdt_driver_init` で BCM2835 watchdog ドライバーを無効にするため、watchdog の動作は実機でのみ確認します。
+QEMU の `raspi3ap` と `raspi3b` は BCM2837 をエミュレートしますが、Raspberry Pi の GPU ファームウェアを実行しません。そのため `autoboot.txt` と firmware の `tryboot` による切替・自動フォールバックは確認できません。CardputerZero の LCD、内蔵キーボード、M5Stack の I2C デバイスも再現しません。実機での表示、入力、電源断耐性、watchdog、firmware レベルの A/B 更新は実機で別途検証する必要があります。QEMU の起動テストでは PL011 コンソールに `ttyAMA1` を使い、`initcall_blacklist=bcm2835_wdt_driver_init` で BCM2835 watchdog ドライバーを無効にするため、watchdog の動作は実機でのみ確認します。
 
 ## 現在の検証状況
 
