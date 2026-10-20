@@ -1,0 +1,68 @@
+#!/bin/sh
+
+console()
+{
+	printf '%s\n' "$*" >/dev/console
+}
+
+mode="$(awk '{
+	for (i = 1; i <= NF; i++) {
+		if ($i ~ /^msd[.]wdtest=/) {
+			sub(/^msd[.]wdtest=/, "", $i)
+			print $i
+			exit
+		}
+	}
+}' /proc/cmdline)"
+
+[ -n "$mode" ] || exit 0
+
+if [ -e /data/.msd-wdtest-done ]; then
+	console 'msd-wdtest: second boot'
+	exit 0
+fi
+
+if [ ! -e /sys/class/watchdog/watchdog0/state ] ||
+	[ ! -e /sys/class/watchdog/watchdog0/timeout ]; then
+	console 'msd-wdtest: watchdog sysfs missing'
+	exit 1
+fi
+
+console "msd-wdtest: cmdline=$(cat /proc/cmdline)"
+console "msd-wdtest: wdt state=$(cat /sys/class/watchdog/watchdog0/state) timeout=$(cat /sys/class/watchdog/watchdog0/timeout)"
+touch /data/.msd-wdtest-done
+sync
+console "msd-wdtest: action $mode"
+
+case "$mode" in
+	none)
+		;;
+	stop|kill9|term)
+		watchdog_pid="$(pidof watchdog 2>/dev/null | awk '{print $1}')"
+		if [ -z "$watchdog_pid" ]; then
+			console 'msd-wdtest: watchdog pid missing'
+			exit 1
+		fi
+		case "$mode" in
+			stop)
+				kill -STOP "$watchdog_pid"
+				;;
+			kill9)
+				kill -KILL "$watchdog_pid"
+				;;
+			term)
+				kill -TERM "$watchdog_pid"
+				;;
+		esac
+		;;
+	reboot)
+		reboot
+		;;
+	poweroff)
+		poweroff
+		;;
+	*)
+		console "msd-wdtest: unsupported mode $mode"
+		exit 2
+		;;
+esac
