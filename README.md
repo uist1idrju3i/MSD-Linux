@@ -32,7 +32,7 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 ## 開発状況
 
-開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig を追加しました。CI では Buildroot のフルビルドと、QEMU（`raspi3b`）での A スロット・B スロットの起動確認を実行しています。QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できないため、これらは実機での確認が必要です。実機は来月発売予定で、実機での起動は未確認です。
+開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig を追加しました。CI では Buildroot のフルビルドと、QEMU の標準設定（`raspi3ap`、512 MiB、CM0 DTB）で A スロット・B スロットの起動を確認しています。`raspi3ap` の起動には、ASB パッチを含む開発用イメージ内の QEMU が必要です。1 GiB の `raspi3b` と Pi 3 DTB は `QEMU_MACHINE=raspi3b` で選べます。QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できないため、これらは実機での確認が必要です。実機は来月発売予定で、実機での起動は未確認です。
 
 ## 予定している構成
 
