@@ -9,16 +9,30 @@ IMAGE_INPUTS=(
     .github/zizmor-requirements.txt
     docker/debian.sources
     docker/msd-dev.Dockerfile
-    docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch
     docker/qemu-signing-key.asc
 )
 
 image_input_hash() {
     local input
     local file_hash
+    local patch_file
+    local -a image_inputs
+    local -a qemu_patch_files
     local -a sorted_inputs
 
-    mapfile -t sorted_inputs < <(printf '%s\n' "${IMAGE_INPUTS[@]}" | LC_ALL=C sort)
+    image_inputs=("${IMAGE_INPUTS[@]}")
+    mapfile -t qemu_patch_files < <(
+        compgen -G "${repo_root}/docker/qemu-patches/*.patch" | LC_ALL=C sort
+    )
+    if ((${#qemu_patch_files[@]} == 0)); then
+        printf 'No QEMU source patches found in %s\n' \
+            "${repo_root}/docker/qemu-patches" >&2
+        return 1
+    fi
+    for patch_file in "${qemu_patch_files[@]}"; do
+        image_inputs+=("${patch_file#"${repo_root}/"}")
+    done
+    mapfile -t sorted_inputs < <(printf '%s\n' "${image_inputs[@]}" | LC_ALL=C sort)
 
     {
         for input in "${sorted_inputs[@]}"; do
@@ -33,7 +47,8 @@ if [[ "${1:-}" == "tag" ]]; then
         printf 'Usage: %s tag\n' "$0" >&2
         exit 2
     fi
-    printf 'inputs-%s\n' "$(image_input_hash)"
+    input_hash="$(image_input_hash)"
+    printf 'inputs-%s\n' "${input_hash}"
     exit 0
 fi
 

@@ -30,8 +30,8 @@ copy_inputs() {
         "${destination}/docker/msd-dev.Dockerfile"
     cp -- "${repo_root}/docker/qemu-signing-key.asc" \
         "${destination}/docker/qemu-signing-key.asc"
-    cp -- "${repo_root}/docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch" \
-        "${destination}/docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch"
+    cp -- "${repo_root}"/docker/qemu-patches/*.patch \
+        "${destination}/docker/qemu-patches/"
 }
 
 inputs=(
@@ -56,6 +56,25 @@ for input in "${inputs[@]}"; do
     printf 'ok - changing %s changes the tag\n' "${input}"
 done
 
+fixture="$(mktemp -d "${temporary_root}/patches.XXXXXX")"
+copy_inputs "${fixture}"
+fixture_launcher="${fixture}/docker/msd-dev"
+before="$("${fixture_launcher}" tag)"
+printf '%s\n' 'dummy patch' > "${fixture}/docker/qemu-patches/0002-dummy.patch"
+after="$("${fixture_launcher}" tag)"
+if [[ "${before}" == "${after}" ]]; then
+    printf 'Adding a second QEMU patch did not change the tag.\n' >&2
+    exit 1
+fi
+printf 'ok - adding a second QEMU patch changes the tag\n'
+
+rm -- "${fixture}"/docker/qemu-patches/*.patch
+if "${fixture_launcher}" tag >/dev/null 2>&1; then
+    printf 'Tag command succeeded without QEMU patches.\n' >&2
+    exit 1
+fi
+printf 'ok - tag fails when no QEMU patches are present\n'
+
 python3 - "${repo_root}" <<'PY'
 import json
 import pathlib
@@ -76,10 +95,15 @@ expected = [
     ".github/zizmor-requirements.txt",
     "docker/debian.sources",
     "docker/msd-dev.Dockerfile",
-    "docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch",
     "docker/qemu-signing-key.asc",
 ]
 assert inputs == expected, f"unexpected image inputs: {inputs!r}"
+patch_inputs = sorted(
+    str(path.relative_to(root))
+    for path in (root / "docker/qemu-patches").glob("*.patch")
+)
+assert patch_inputs, "no QEMU source patches found"
+covered_inputs = {*inputs, *patch_inputs}
 
 dockerfile = (root / "docker/msd-dev.Dockerfile").read_text()
 assert "ARG QEMU_VERSION=11.1.2" in dockerfile
@@ -122,7 +146,7 @@ for instruction in instructions:
         missing.extend(
             str(path.relative_to(root))
             for path in matches
-            if str(path.relative_to(root)) not in inputs
+            if str(path.relative_to(root)) not in covered_inputs
         )
 
 assert not missing, f"COPY sources absent from IMAGE_INPUTS: {missing!r}"
