@@ -8,7 +8,7 @@
 | `publish-dev-image.yml` | 開発イメージの入力変更を含む PR、`main` への push、手動実行 | PR では amd64 と arm64 のイメージを作成して Trivy で検査します。修正版のある HIGH / CRITICAL の脆弱性と、HIGH / CRITICAL の秘密情報・設定不備を公開ゲートにします。`main` への push と手動実行では GHCR へ公開し、SBOM と provenance の attestation を付けます。手動実行では `dry_run` を有効にすると公開を省けます。 |
 | `dev-image-scan.yml` | 毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、検出事項を「開発用イメージの脆弱性」Issue に集約します。検出事項では失敗せず、イメージがまだ公開されていない場合も検査を省きます。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
-| `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
+| `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を実行するゲートです。ツールの版と取得物のハッシュを固定します。 |
 | `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
@@ -71,7 +71,7 @@ quote	<exact-path>	<characters>	<reason>
 
 ## 固定版の整合性と更新確認
 
-`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版です。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新し、すべて最新になったら Issue を閉じます。
+`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版、チェックアウト済み Buildroot における defconfig 選択中の Bootlin ツールチェーンです。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。Bootlin の新しい安定版は、最新の安定版 Buildroot ブランチが提供しているかも確認します。Buildroot のポイントリリースは、`.gitmodules` の系列に属する最新タグの commit と submodule の gitlink の比較です。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新します。「Buildroot 安定版待ち」は情報表示のみで Issue の対象にせず、ほかに対応が必要な行がなければ Issue を閉じます。
 
 ## 公開サイトの状態確認
 
