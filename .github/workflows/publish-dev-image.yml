@@ -9,6 +9,8 @@ on:
       - docker/debian.sources
       - docker/msd-dev
       - .github/zizmor-requirements.txt
+      - docker/qemu-patches/**
+      - docker/qemu-signing-key.asc
       - .github/workflows/publish-dev-image.yml
   pull_request:
     paths:
@@ -16,6 +18,8 @@ on:
       - docker/debian.sources
       - docker/msd-dev
       - .github/zizmor-requirements.txt
+      - docker/qemu-patches/**
+      - docker/qemu-signing-key.asc
       - .github/workflows/publish-dev-image.yml
   workflow_dispatch:
     inputs:

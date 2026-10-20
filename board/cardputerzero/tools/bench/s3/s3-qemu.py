@@ -23,6 +23,10 @@ def prepare_disk(source, destination):
 
 
 def qemu_command(disk, log, append, qmp_socket=None):
+    machine = os.environ.get("QEMU_MACHINE", "raspi3b")
+    memory = {"raspi3b": "1G", "raspi3ap": "512M"}.get(machine)
+    if memory is None:
+        raise ValueError(f"Unsupported QEMU_MACHINE: {machine}")
     command_line = [
         "earlycon=pl011,mmio32,0x3f201000",
         "console=ttyAMA1,115200",
@@ -37,8 +41,8 @@ def qemu_command(disk, log, append, qmp_socket=None):
         command_line.extend(extra_append.split())
     command = [
         QEMU,
-        "-M", "raspi3b",
-        "-m", "1G",
+        "-M", machine,
+        "-m", memory,
         "-kernel", str(Path(args.kernel).resolve()),
         "-dtb", str(Path(args.dtb).resolve()),
         "-drive", f"file={disk},if=sd,format=raw",

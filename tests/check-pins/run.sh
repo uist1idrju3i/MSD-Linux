@@ -8,7 +8,6 @@ import contextlib
 import importlib.util
 import io
 import json
-import lzma
 import pathlib
 import shutil
 import sys
@@ -31,7 +30,7 @@ def fixture() -> pathlib.Path:
     (path / "board/cardputerzero/patches/linux").mkdir(parents=True)
     (path / "package/m5stack-cardputerzero").mkdir(parents=True)
     (path / ".github/workflows").mkdir(parents=True)
-    (path / "docker").mkdir()
+    (path / "docker/qemu-patches").mkdir(parents=True)
     buildroot_config = (
         path
         / "vendor/buildroot/toolchain/toolchain-external/"
@@ -85,14 +84,23 @@ def fixture() -> pathlib.Path:
     )
     (path / "docker/msd-dev.Dockerfile").write_text(
         "ARG ACTIONLINT_VERSION=1.7.12\n"
+        "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
+        "ARG QEMU_VERSION=11.1.2\n"
+        "ARG QEMU_SHA256=" + "1" * 64 + "\n"
+        "ARG QEMU_SIGNING_FINGERPRINT=CEACC9E15534EBABB82D3FA03353C9CEF108B584\n"
         "FROM golang:1.27.2-trixie@sha256:" + "c" * 64 + " AS actionlint\n"
         "ARG ACTIONLINT_VERSION\n"
         "FROM debian:trixie-slim@sha256:" + "b" * 64 + " AS msd-dev\n"
         "ARG ACTIONLINT_VERSION\n"
         "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
-        "ARG QEMU_DEB_VERSION=1:11.0.2+ds-2~bpo13+1\n"
         "ARG SHELLCHECK_VERSION=0.11.0\n"
         "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198\n"
+    )
+    (path / "docker/qemu-patches/README.md").write_text(
+        "`0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch`\n"
+    )
+    (path / "docker/qemu-patches/0001-hw-arm-bcm2835_peripherals-add-unimp-ASB.patch").write_text(
+        "fixture patch\n"
     )
     (path / ".github/workflows/build.yml").write_text(
         "env:\n"
@@ -134,6 +142,30 @@ dockerfile.write_text(dockerfile.read_text().replace(
 ))
 assert any("SHELLCHECK_SHA256" in error for error in module.consistency(bad_docker_hash))
 print("ok - detects Dockerfile checksum drift")
+
+bad_qemu_sha = fixture()
+dockerfile = bad_qemu_sha / "docker/msd-dev.Dockerfile"
+dockerfile.write_text(dockerfile.read_text().replace(
+    "ARG QEMU_SHA256=" + "1" * 64,
+    "ARG QEMU_SHA256=" + "z" * 64,
+))
+assert any("QEMU_SHA256" in error for error in module.consistency(bad_qemu_sha))
+print("ok - detects an invalid QEMU checksum")
+
+bad_qemu_fingerprint = fixture()
+dockerfile = bad_qemu_fingerprint / "docker/msd-dev.Dockerfile"
+dockerfile.write_text(dockerfile.read_text().replace(
+    "CEACC9E15534EBABB82D3FA03353C9CEF108B584",
+    "CEACC9E15534EBABB82D3FA03353C9CEF108B58",
+))
+assert any("QEMU_SIGNING_FINGERPRINT" in error for error in module.consistency(bad_qemu_fingerprint))
+print("ok - detects an invalid QEMU signing fingerprint")
+
+bad_qemu_patch_readme = fixture()
+(bad_qemu_patch_readme / "docker/qemu-patches/README.md").write_text("")
+assert any("missing from docker/qemu-patches/README.md" in error
+           for error in module.consistency(bad_qemu_patch_readme))
+print("ok - requires every QEMU patch in its README")
 
 bad_trivy_version = fixture()
 publish_workflow = bad_trivy_version / ".github/workflows/publish-dev-image.yml"
@@ -369,35 +401,24 @@ def fake_fetch_dockerhub_digest(repository, tag):
     return ""
 
 
-def fake_fetch_bytes(url):
-    packages = (
-        "Package: qemu-system-arm\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
-        "Package: qemu-utils\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
-    ).encode()
-    return lzma.compress(packages)
-
-
 module.run = fake_run
 module.fetch = fake_fetch
 module.fetch_go_releases = fake_fetch_go_releases
 module.fetch_qemu_releases = fake_fetch_qemu_releases
 module.fetch_dockerhub_digest = fake_fetch_dockerhub_digest
-module.fetch_bytes = lambda url: lzma.compress(
-    b"Package: qemu-system-arm\nVersion: 1:11.0.2+ds-2~bpo13+1\n\n"
-)
+module.fetch_qemu_releases = lambda: "<html>no release tarballs</html>"
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     with contextlib.redirect_stdout(io.StringIO()):
         assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
     report = report_path.read_text()
     assert (
-        "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
-        "`確認できず` | 確認できず |"
+        "| QEMU | `11.1.2` | `確認できず` | 確認できず |"
         in report
     )
-print("ok - reports an incomplete Debian QEMU index as unknown")
+print("ok - reports a malformed QEMU release listing as unknown")
 
-module.fetch_bytes = fake_fetch_bytes
+module.fetch_qemu_releases = fake_fetch_qemu_releases
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     output = io.StringIO()
@@ -408,15 +429,7 @@ with tempfile.TemporaryDirectory() as directory:
         "| Raspberry Pi Linux series | `rpi-6.18.y` | `rpi-7.3.y` | 参考 |"
         in report
     )
-    assert (
-        "| QEMU (Debian trixie-backports) | `1:11.0.2+ds-2~bpo13+1` | "
-        "`1:11.0.2+ds-2~bpo13+1` | 最新 |"
-        in report
-    )
-    assert (
-        "| QEMU (upstream) | `1:11.0.2+ds-2~bpo13+1` | `11.1.2` | 参考 |"
-        in report
-    )
+    assert "| QEMU | `11.1.2` | `11.1.2` | 最新 |" in report
     assert "| Trivy | `0.76.0` | `v0.76.0` | 最新 |" in report
     assert "| Go toolchain | `1.27.2` | `1.27.2` | 最新 |" in report
     assert (
@@ -443,6 +456,19 @@ with tempfile.TemporaryDirectory() as directory:
     assert not any("/master/" in url for url in fetch_calls)
     assert output.getvalue().strip() == "全て最新"
 print("ok - marks informational upstream rows as 参考 and excludes them from status")
+
+qemu_update = fixture()
+dockerfile = qemu_update / "docker/msd-dev.Dockerfile"
+dockerfile.write_text(dockerfile.read_text().replace(
+    "ARG QEMU_VERSION=11.1.2",
+    "ARG QEMU_VERSION=11.0.2",
+))
+with tempfile.TemporaryDirectory() as directory:
+    report_path = pathlib.Path(directory) / "pins.md"
+    with contextlib.redirect_stdout(io.StringIO()):
+        assert module.upstream(report_path, qemu_update, today=date(2026, 10, 19)) == 0
+    assert "| QEMU | `11.0.2` | `11.1.2` | 更新あり |" in report_path.read_text()
+print("ok - reports a newer QEMU source release as an update")
 
 module.run = fake_run_without_point_tags
 with tempfile.TemporaryDirectory() as directory:

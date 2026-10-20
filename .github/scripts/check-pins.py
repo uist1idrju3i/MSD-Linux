@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import lzma
 import os
 import re
 import subprocess
@@ -209,21 +208,6 @@ def workflow_checksum(text: str, archive_variable: str) -> str:
     return checksums[-1] if checksums else ""
 
 
-def parse_debian_package_versions(data: bytes) -> dict[str, str]:
-    versions: dict[str, str] = {}
-    for block in lzma.decompress(data).decode().split("\n\n"):
-        fields = dict(
-            line.split(": ", 1)
-            for line in block.splitlines()
-            if ": " in line
-        )
-        package = fields.get("Package", "")
-        version = fields.get("Version", "")
-        if package in {"qemu-system-arm", "qemu-utils"} and version:
-            versions[package] = version
-    return versions
-
-
 def parse_qemu_latest(data: str) -> str:
     versions = re.findall(r"\bqemu-(\d+\.\d+\.\d+)\.tar\.xz\b", data)
     return max(versions, key=branch_key) if versions else ""
@@ -337,6 +321,22 @@ def consistency(root: Path) -> list[str]:
         workflow_value = workflow_checksum(lint_workflow, archive_variable)
         if not docker_value or docker_value != workflow_value:
             errors.append(f"{name} differs between docker/msd-dev.Dockerfile and lint.yml")
+    for name, pattern in (
+        ("QEMU_SHA256", r"[0-9a-f]{64}"),
+        ("QEMU_SIGNING_FINGERPRINT", r"[0-9A-F]{40}"),
+    ):
+        if not re.fullmatch(pattern, docker_arg(root, name)):
+            errors.append(f"{name} must be a valid hexadecimal pin")
+    patch_directory = root / "docker/qemu-patches"
+    patch_readme = patch_directory / "README.md"
+    patch_names = [path.name for path in sorted(patch_directory.glob("*.patch"))]
+    if not patch_readme.is_file():
+        errors.append("docker/qemu-patches/README.md is missing")
+    else:
+        readme_text = patch_readme.read_text()
+        for patch_name in patch_names:
+            if patch_name not in readme_text:
+                errors.append(f"{patch_name} is missing from docker/qemu-patches/README.md")
     base_images = docker_image_pins(root)
     if not go_builder_version(root):
         errors.append("Go builder image must use a versioned -trixie tag")
@@ -366,12 +366,6 @@ def fetch(url: str) -> str:
         request.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
     with urlopen(request, timeout=20) as response:
         return response.read().decode()
-
-
-def fetch_bytes(url: str) -> bytes:
-    request = Request(url, headers={"Accept": "application/octet-stream"})
-    with urlopen(request, timeout=30) as response:
-        return response.read()
 
 
 def fetch_go_releases() -> str:
@@ -604,42 +598,21 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
             latest, status = "確認できず", "確認できず"
         rows.append((name, pinned_value, latest, status, f"https://github.com/{repository}/releases"))
 
-    qemu_pin = docker_arg(root, "QEMU_DEB_VERSION") or "未設定"
-    qemu_url = "https://deb.debian.org/debian/dists/trixie-backports/main/binary-amd64/Packages.xz"
+    qemu_pin = docker_arg(root, "QEMU_VERSION") or "未設定"
+    qemu_url = "https://download.qemu.org/"
     try:
-        qemu_versions = parse_debian_package_versions(fetch_bytes(qemu_url))
-        qemu_values = {
-            qemu_versions.get("qemu-system-arm", ""),
-            qemu_versions.get("qemu-utils", ""),
-        }
-        qemu_values.discard("")
-        latest_qemu = (
-            next(iter(qemu_values))
-            if len(qemu_versions) == 2 and len(qemu_values) == 1
-            else "確認できず"
+        latest_qemu = parse_qemu_latest(fetch_qemu_releases())
+        qemu_status = (
+            "確認できず"
+            if not latest_qemu
+            else "最新"
+            if qemu_pin == latest_qemu
+            else "更新あり"
         )
-        if latest_qemu == "確認できず":
-            qemu_status = "確認できず"
-        else:
-            qemu_status = "最新" if qemu_pin == latest_qemu else "更新あり"
-    except (OSError, URLError, ValueError, EOFError, lzma.LZMAError):
-        latest_qemu, qemu_status = "確認できず", "確認できず"
-    rows.append(("QEMU (Debian trixie-backports)", qemu_pin, latest_qemu, qemu_status, qemu_url))
-    qemu_upstream_url = "https://download.qemu.org/"
-    try:
-        latest_qemu_upstream = parse_qemu_latest(fetch_qemu_releases())
     except (OSError, URLError, ValueError) as exc:
-        print(f"QEMU upstream: upstream check unavailable: {exc}", file=sys.stderr)
-        latest_qemu_upstream = ""
-    rows.append(
-        (
-            "QEMU (upstream)",
-            qemu_pin,
-            latest_qemu_upstream or "確認できず",
-            "参考",
-            qemu_upstream_url,
-        )
-    )
+        print(f"QEMU: upstream check unavailable: {exc}", file=sys.stderr)
+        latest_qemu, qemu_status = "確認できず", "確認できず"
+    rows.append(("QEMU", qemu_pin, latest_qemu or "確認できず", qemu_status, qemu_url))
     snapshot = docker_arg(root, "DEBIAN_SNAPSHOT") or "未設定"
     rows.append(
         (
