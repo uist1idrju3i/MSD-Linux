@@ -65,6 +65,17 @@ case "$cmdline" in
 esac
 mkdir -p "$bench_dir"
 
+case "$cmdline" in
+	*" msd.powerfail=1 "*)
+		if [ "$cut_mode" -eq 1 ]; then
+			printf '%s\n' 'cardputerzero-powerfail-marker-v1' \
+				>"$bench_dir/powerfail-marker"
+			sync
+			printf '%s\n' 'S3CUT_MARKER_WRITTEN=1' >/dev/console
+		fi
+		;;
+esac
+
 if [ "$cut_mode" -eq 1 ]; then
 	index=0
 	while [ "$index" -lt 100 ]; do

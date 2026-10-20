@@ -295,6 +295,11 @@ jobs:
           QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
         run: docker/msd-dev board/cardputerzero/qemu/test-ab.sh
 
+      - name: QEMU GPIO6 power-fail smoke test
+        env:
+          QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
+        run: docker/msd-dev board/cardputerzero/qemu/test-powerfail.sh --smoke
+
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
