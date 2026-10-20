@@ -12,7 +12,7 @@ from typing import Any
 BLOCKING_SEVERITIES = {"HIGH", "CRITICAL"}
 CATEGORIES = (
     ("Vulnerability", "Vulnerabilities", "vulnerabilities"),
-    ("Secret", "Secrets", "secrets"),
+    ("Credential", "Secrets", "credential_rules"),
     ("Misconfiguration", "Misconfigurations", "misconfigurations"),
 )
 
@@ -30,18 +30,23 @@ def evaluate(
             for item in result.get(field) or []:
                 counts[count_name] += 1
                 severity = str(item.get("Severity") or "UNKNOWN").upper()
-                identifier = str(
-                    item.get("VulnerabilityID")
-                    or item.get("RuleID")
-                    or item.get("ID")
-                    or "unknown"
-                )
-                title = str(
-                    item.get("PkgName")
-                    or item.get("Title")
-                    or item.get("Message")
-                    or identifier
-                )
+                if category == "Credential":
+                    # Match and Code are deliberately never read; both may expose credentials.
+                    identifier = str(item.get("RuleID") or "unknown")
+                    title = str(item.get("Category") or "secret rule")
+                else:
+                    identifier = str(
+                        item.get("VulnerabilityID")
+                        or item.get("RuleID")
+                        or item.get("ID")
+                        or "unknown"
+                    )
+                    title = str(
+                        item.get("PkgName")
+                        or item.get("Title")
+                        or item.get("Message")
+                        or identifier
+                    )
                 finding = {
                     "category": category,
                     "id": identifier,
@@ -73,7 +78,10 @@ def render_report(
             for finding in blockers
             if (
                 (name == "vulnerabilities" and finding["category"] == "Vulnerability")
-                or (name == "secrets" and finding["category"] == "Secret")
+                or (
+                    name == "credential_rules"
+                    and finding["category"] == "Credential"
+                )
                 or (
                     name == "misconfigurations"
                     and finding["category"] == "Misconfiguration"
@@ -88,7 +96,8 @@ def render_report(
         "| 区分 | 検出数 | 公開ゲート対象 |",
         "|---|---:|---:|",
         f"| 脆弱性 | {counts['vulnerabilities']} | {gate_counts['vulnerabilities']} |",
-        f"| 秘密情報 | {counts['secrets']} | {gate_counts['secrets']} |",
+        f"| 秘密情報 | {counts['credential_rules']} | "
+        f"{gate_counts['credential_rules']} |",
         f"| 設定不備 | {counts['misconfigurations']} | {gate_counts['misconfigurations']} |",
     ]
     reported = blockers if mode == "gate" else findings

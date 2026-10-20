@@ -48,9 +48,13 @@ report = {
             "Secrets": [
                 {
                     "RuleID": "generic-secret",
-                    "Title": "Example key",
+                    "Category": "cloud credential",
+                    "PkgName": "AKIAFAKEMARKER",
+                    "Title": "AKIAFAKEMARKER",
+                    "Message": "AKIAFAKEMARKER",
                     "Severity": "HIGH",
-                    "Match": "must not appear in reports",
+                    "Match": "AKIAFAKEMARKER",
+                    "Code": {"Lines": [{"Content": "AKIAFAKEMARKER"}]},
                 }
             ],
             "Misconfigurations": [
@@ -66,7 +70,7 @@ report = {
 counts, findings, blockers = module.evaluate(report)
 assert counts == {
     "vulnerabilities": 3,
-    "secrets": 1,
+    "credential_rules": 1,
     "misconfigurations": 1,
 }
 assert len(findings) == 5
@@ -75,12 +79,18 @@ assert [finding["id"] for finding in blockers] == [
     "generic-secret",
     "DS-0001",
 ]
+credential_finding = next(
+    finding for finding in findings if finding["category"] == "Credential"
+)
+assert credential_finding["title"] == "cloud credential"
 gate_report = module.render_report(counts, findings, blockers, "gate")
 assert "CVE-2026-1000" in gate_report
-assert "must not appear in reports" not in gate_report
+assert "| 秘密情報 | 1 | 1 |" in gate_report
+assert "AKIAFAKEMARKER" not in gate_report
 assert "CVE-2026-1001" not in gate_report
 full_report = module.render_report(counts, findings, blockers, "report")
 assert "CVE-2026-1001" in full_report
+assert "AKIAFAKEMARKER" not in full_report
 
 with tempfile.TemporaryDirectory() as directory:
     output = pathlib.Path(directory) / "github-output"
@@ -98,6 +108,7 @@ with tempfile.TemporaryDirectory() as directory:
         check=False,
     )
     assert gated.returncode == 1
+    assert "AKIAFAKEMARKER" not in gated.stdout
     report_mode = subprocess.run(
         [sys.executable, str(script), "report", str(report_path)],
         capture_output=True,
@@ -105,6 +116,7 @@ with tempfile.TemporaryDirectory() as directory:
         check=False,
     )
     assert report_mode.returncode == 0
+    assert "AKIAFAKEMARKER" not in report_mode.stdout
     clean_report = {
         "Results": [
             {
