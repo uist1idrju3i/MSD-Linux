@@ -251,7 +251,9 @@ def append_csv(path: Path, rows: list[CsvRow]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     write_header = not path.exists() or path.stat().st_size == 0
     with path.open("a", encoding="utf-8", newline="") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=CSV_COLUMNS)
+        writer = csv.DictWriter(
+            csv_file, fieldnames=CSV_COLUMNS, lineterminator="\n"
+        )
         if write_header:
             writer.writeheader()
         writer.writerows(rows)

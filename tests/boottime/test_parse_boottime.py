@@ -1,4 +1,5 @@
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -135,6 +136,13 @@ class ParseBoottimeTest(unittest.TestCase):
         rows, reasons = self.parse(text)
         self.assertEqual(reasons, [])
         self.assertTrue(all(row["valid"] == "1" for row in rows))
+
+    def test_csv_rows_use_lf_line_endings(self):
+        rows, _ = self.parse()
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            csv_path = Path(temporary_dir) / "boot.csv"
+            parse_boottime.append_csv(csv_path, rows)
+            self.assertNotIn(b"\r", csv_path.read_bytes())
 
 
 if __name__ == "__main__":
