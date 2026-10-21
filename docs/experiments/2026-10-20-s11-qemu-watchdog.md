@@ -79,6 +79,44 @@ term は 5/5 で観測時間内に reset しなかった。この結果は magic
 
 全試行の生データは [CSV](2026-10-20-s11-qemu-watchdog.csv) を参照する。QEMU log には MMC1 timeout、補助 UART の `-EINVAL`、Bluetooth HCI timeout などの周辺機器診断が繰り返し記録された。watchdog の marker、reset または QEMU exit の記録とは別に扱った。
 
+## 初回 after-run 後の停止処理判定基準の訂正
+
+init script の stop guard を確認した初回 after-run の後、再起動区間の回帰判定を訂正した。最初の案は `msd-wdtest: action reboot` から `reboot: Restarting system` まで `MSD/Linux ready` がないことを求めていた。しかし `S97zz-wdtest` は `S98msd-ready` より前に実行され、reboot 要求後も sysinit の `rcS` は残りの start script を実行する。そのため、初回起動時の `S98msd-ready` が通常どおり ready を出力する。この出力は shutdown 時の stop 処理再実行を示さない。
+
+訂正後は、serial log の先頭から最初の `reboot: Restarting system` までを初回起動区間とする。この区間で `MSD/Linux ready` が substring としてちょうど 1 回あり、次の文字列がすべて 0 回であれば合格とする。console の制御 byte は行頭に付く場合があるため、ready は行頭一致でなく substring で数える。
+
+- `msd-wdtest: second boot`
+- `e2fsck: Cannot continue`
+- `overlayfs: upperdir is in-use`
+- `overlayfs: workdir is in-use`
+
+この確認は `QEMU_WATCHDOG=1` で `test-watchdog.sh --mode reboot --runs 1` を実行した fixed image の回帰判定であり、v1 の30試行と CSV は変更しない。shutdown 時の再実行は `init script の stop 処理の修正（別 PR）` で対処する。
+
+修正前のログ `s11-20261020T215917Z-1-reboot-1/serial.log` は ready が 2 回で、禁止文字列は各 1 回出たため不合格だった。固定 image の after-run `s11-20261021T000920Z-1-reboot-1/serial.log` は ready が 1 回で、禁止文字列はすべて 0 回となり合格した。reset 後には `msd-wdtest: second boot` と `MSD/Linux ready` の両方を確認した。以下の行は初回起動区間の抜粋である。制御 byte は `\xNN` 表記に置き換えた。
+
+修正前（不合格）
+
+```text
+289:30.958131451 msd-wdtest: action reboot
+295:31.346294031 \x01\x03\x0c\x00MSD/Linux ready
+298:32.037864511 MSD/Linux ready
+302:32.157731931 msd-wdtest: second boot
+316:33.721933723 [   31.063183] overlayfs: upperdir is in-use as upperdir/workdir of another mount, accessing files from both mounts will result in undefined behavior.
+317:33.725321046 [   31.063574] overlayfs: workdir is in-use as upperdir/workdir of another mount, accessing files from both mounts will result in undefined behavior.
+319:34.099835705 e2fsck: Cannot continue, aborting.
+333:37.760717299 [   35.105470] reboot: Restarting system
+```
+
+修正後（合格）
+
+```text
+289:29.013162895 msd-wdtest: action reboot
+297:29.351233144 MSD/Linux ready
+319:34.531244687 [   31.521882] reboot: Restarting system
+```
+
+修正前の serial log の SHA-256 は `9cb3a7956b0631a6b2ca89e023cd14b4f3029c25bab8a2cac0afb5ae0577923f`、修正後は `6122347d05d6ed7b9a0f7bdfa42e46d47011caff9e0d45c403f5f1c37e543b66`。機械判定の出力 `s11-init-stop-guard-after-20261021T000911Z/first-boot-criterion.txt` の SHA-256 は `b0293e0447d56810283de1c081b2cecaffc34f4c85b26b9dbb1c0dff2d0a432d`。これらの log と判定出力は commit せず、永続ログ領域に保存した。判定は serial log を byte 列として読み、最初の restart marker までの部分で各文字列の出現数を数えた。
+
 ## 捨てた試行と経緯
 
 事前確認として実施した stop ×1 の smoke は 72.37 秒で終了したが、marker→reset 14.582 秒の後、40 秒の観測期間内に second boot ready を確認できず、criteria-failed となった。serial log は `smoke/s11-smoke-20261020T215705Z-1-stop-1/serial.log`。このため、CI に追加していた watchdog smoke step は削除した。2 分以内ではあるが、現状の基準では CI を失敗させるためである。

@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 console()
 {
 	printf '%s\n' "$*" >/dev/console
