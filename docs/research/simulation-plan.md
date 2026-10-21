@@ -109,6 +109,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](storage-and-flash.md)） |
 | Lynis による監査（QEMU のみ） | 製品イメージの監査を 3 回行い、結果が同じこと。指摘の分類。対応は sysctl 候補と S1・S14 で行う | [2026-10-21-qemu-lynis](../experiments/2026-10-21-qemu-lynis.md) |
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
+| `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
 
 #### QEMU で検証できるが未実施
 
@@ -133,7 +134,6 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残した版で） | 中 |
 | zram | 動作と RAM の使い方 | 小 |
 | dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
-| `/data` の `noexec` | mount の値と、アプリが動くか | 小 |
 | BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
 
 #### 実機でしか検証できない項目
@@ -154,7 +154,7 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 4. S1・S14 の本番（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む）と、任意機能のドライバーのモジュール化
 5. S13
 6. S16 → S4・S5・S17
-7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、`noexec`、BusyBox、Lynis）
+7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、BusyBox、Lynis）
 
 ### 次の作業計画（2026-10-19 時点）
 

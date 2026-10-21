@@ -1,3 +1,8 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 watchdog -T 15 -t 5 /dev/watchdog

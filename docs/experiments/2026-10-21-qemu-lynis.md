@@ -23,7 +23,7 @@
 
 | 項目 | 値 |
 |---|---|
-| 基準の commit | `39ccd234761a76f818c128a19b97fe8af1cf207b` のビルド（[`/data` の `noexec` の試験](https://github.com/uist1idrju3i/MSD-Linux/pull/76)と同じ出力。その後の main の変更は文書だけ） |
+| 基準の commit | `39ccd234761a76f818c128a19b97fe8af1cf207b` のビルド（[`/data` の `noexec` の試験](2026-10-21-qemu-data-noexec.md)と同じ出力。その後の main の変更は文書だけ） |
 | ホスト | Ubuntu 26.04.1 LTS、Linux 7.0.0-38-generic、x86_64 |
 | QEMU | QEMU emulator version 11.1.2、machine `raspi3ap`、RAM 512 MiB、TCG |
 | 入力の SHA-256 | `Image`: `4bad7a2ed1d31272dbca4c716fc96cff3211ce16266f6713920a4275e98a2505`、`rootfs.squashfs`: `7bc7c5174ae81674ae130edc7583a435aad3e432166642ad948deddbb7b6ab57`、`sdcard.img`: `6cc795a97b2a4133717351b88b5f5006e24ee74e88a9ec5f5fb777b2b5700713` |

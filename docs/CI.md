@@ -25,6 +25,8 @@
 
 `build.yml` は GHCR にログインして `docker/msd-dev ensure` を実行し、開発用イメージを準備します。タグが公開済みなら pull と attestation 検証を行い、未公開ならローカルビルドに切り替わります。認証、通信、pull、検証のエラーではビルドに切り替えず、job は失敗扱いです。
 
+各 job の末尾では、完了した step の所要時間を `=step-time=`、job 開始時刻や開発用イメージと ccache の状態を `=ci-meta=` として出力します。長いログは閲覧ツールで途中が省略されることがあるため、末尾にも集約し、各 step の時間とキャッシュ状態を確認できるようにします。
+
 更新処理、hwinfo、p7 拡張、開発イメージのタグ、Trivy の公開判定を含むテストと Buildroot/QEMU の処理はイメージ内で実行します。テストは Buildroot ビルドの docs-only 判定にかかわらず毎回実行されます。
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させる設定です。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。

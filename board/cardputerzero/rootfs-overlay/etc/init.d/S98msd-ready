@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 touch /run/msd-ready
 module_list="$(sed -n 's/.*[[:space:]]msd.module-test=\([^[:space:]]*\).*/\1/p' /proc/cmdline)"
 remaining_modules="$module_list"

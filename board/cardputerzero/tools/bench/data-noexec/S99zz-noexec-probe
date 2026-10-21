@@ -1,0 +1,40 @@
+#!/bin/sh
+# Test-only hook for the /data noexec experiment. Not shipped.
+case "${1:-start}" in
+    start) ;;
+    *) exit 0 ;;
+esac
+
+stage=/data/noexec-probe-stage
+say() { printf '=noexec= %s\n' "$*" >/dev/console; }
+
+if [ ! -e "$stage" ]; then
+    mkdir -p /data/probe-bin
+    cp /bin/busybox /data/probe-bin/busybox
+    printf '#!/bin/sh\necho probe-ok\n' >/data/probe.sh
+    printf '#!/bin/sh\necho probe-ok\n' >/data/etc/msd-probe.sh
+    chmod 0755 /data/probe-bin/busybox /data/probe.sh /data/etc/msd-probe.sh
+    : >"$stage"
+    sync
+    say stage1-done
+    exit 0
+fi
+
+opts="$(awk '$2 == "/data" { print $4; exit }' /proc/mounts)"
+case ",$opts," in
+    *,noexec,*) say "P1 noexec=yes opts=$opts" ;;
+    *) say "P1 noexec=no opts=$opts" ;;
+esac
+probe() {
+    name="$1"; shift
+    if out="$("$@" 2>&1)"; then
+        say "$name rc=0 out=$out"
+    else
+        say "$name rc=$? out=$out"
+    fi
+}
+probe P2 /data/probe-bin/busybox true
+probe P3 /data/probe.sh
+probe P4 sh /data/probe.sh
+probe P5 /etc/msd-probe.sh
+say finished
