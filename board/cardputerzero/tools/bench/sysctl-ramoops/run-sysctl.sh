@@ -89,7 +89,7 @@ run_boot() {
 		valid=1
 		criteria=pass
 	fi
-	if [[ "$variant" == Y0 ]]; then
+	if [[ "$variant" == 0 ]]; then
 		condition=Y0-boot
 		criteria=observation
 	elif [[ "$root_device" == /dev/mmcblk0p6 ]]; then

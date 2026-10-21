@@ -38,7 +38,8 @@ OUTPUT_DIR="$OUTPUT_DIR" S21_LOG_ROOT="$LOG_ROOT" \
 S21_POWERFAIL_REPO="$POWERFAIL_REPO" \
   OUTPUT_DIR="$OUTPUT_DIR" S21_LOG_ROOT="$LOG_ROOT" \
   S21_VARIANT_ROOT="$VARIANTS" \
-  board/cardputerzero/tools/bench/sysctl-ramoops/run-powerfail.sh
+  board/cardputerzero/tools/bench/sysctl-ramoops/run-powerfail.sh \
+  --run-tag initial
 
 OUTPUT_DIR="$OUTPUT_DIR" QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
   board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh
@@ -77,3 +78,15 @@ The R1 runner waits for `s21: pstore collection complete` after second-boot
 ready before it terminates QEMU, and removes NUL bytes from the serial log
 before parsing pstore records. Before starting, it refuses any run whose log
 directory or CSV run ID already exists.
+
+The powerfail runner also requires a unique `--run-tag`, refuses existing run
+directories or CSV IDs, and keeps the request marker as a separate metric in
+each run's metrics CSV:
+
+```sh
+S21_POWERFAIL_REPO="$POWERFAIL_REPO" \
+  OUTPUT_DIR="$OUTPUT_DIR" S21_LOG_ROOT="$LOG_ROOT" \
+  S21_VARIANT_ROOT="$VARIANTS" \
+  board/cardputerzero/tools/bench/sysctl-ramoops/run-powerfail.sh \
+  --run-tag amendment4
+```

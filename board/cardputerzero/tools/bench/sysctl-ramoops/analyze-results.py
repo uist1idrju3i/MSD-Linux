@@ -77,6 +77,32 @@ def main() -> int:
     failed = False
     for condition, expected in EXPECTED_COUNTS.items():
         selected = [row for row in rows if row["condition"] == condition]
+        if condition == "Y0-boot":
+            observed = sum(row["valid"] == "1" for row in selected)
+            print(
+                f"{condition}: n={len(selected)}/{expected} "
+                f"observation={observed} criteria_result=ignored"
+            )
+            if len(selected) != expected or observed != expected:
+                failed = True
+            continue
+        if condition in {"Y1-powerfail", "Y2-powerfail"}:
+            variant = condition.split("-", 1)[0]
+            replacement = [
+                row
+                for row in selected
+                if row["run_id"].startswith(
+                    f"s21-{variant}-powerfail-amendment4-"
+                )
+            ]
+            initial = [row for row in selected if row not in replacement]
+            print(
+                f"{condition} original rows retained={len(initial)} "
+                f"amendment4 verdict trials={len(replacement)}"
+            )
+            if len(initial) != expected or len(replacement) != expected:
+                failed = True
+            selected = replacement
         if condition == "P0":
             replacement = [
                 row
@@ -134,10 +160,7 @@ def main() -> int:
         )
         if len(selected) != expected:
             failed = True
-        if condition == "Y0-boot":
-            if valid != expected:
-                failed = True
-        elif condition == "Y1-boot":
+        if condition == "Y1-boot":
             if passed != expected or any(
                 not sysctls_match(row["sysctl_readbacks"])
                 or row["running_sysctl"] != "OK"
@@ -150,13 +173,18 @@ def main() -> int:
             if passed != expected or any(
                 row["powerfail_event"] != "yes"
                 or row["powerfail_sysrq_u_remount"] != "yes"
+                or "sysrq_u_requested=" not in row["note"]
                 for row in selected
             ):
                 failed = True
         elif condition == "Y2-powerfail":
             if expected_negative != expected or valid != expected:
                 failed = True
-            if any(row["powerfail_sysrq_u_remount"] != "no" for row in selected):
+            if any(
+                row["powerfail_sysrq_u_remount"] != "no"
+                or "sysrq_u_requested=" not in row["note"]
+                for row in selected
+            ):
                 failed = True
         elif passed != expected:
             failed = True

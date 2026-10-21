@@ -148,7 +148,7 @@ Y1 と Y2 の `powerfail_remount_from_event_seconds` はそれぞれ −0.302〜
 
 hash 監査では、判定対象外の元 P0 5 行を除く 55 行について、CSV に記録した serial と runner log hash が証拠ファイルに一致した。Y1 A/B の実行時、runner は run ID を上書きする前に出力 directory を決めていたため、A/B の log は `s21-y1-boot-1/` に保存された。CSV の note は実際の配置を示すよう修正した。A/B 実行が同 directory の `sdcard.img` を更新したため、Y1 boot 1 の後状態 image は失われたが、boot 1 の serial log、runner log、記録済み hash と測定値は残っている。runner は今後の実行で run ID 決定後に directory を作るよう修正した。
 
-Y0 の 5 行は ready で `valid=1` だが、CSV の `criteria_result` は `fail` である。一方、runner の Y0 分岐は `observation` を指定している。試験時の runner と現存コードの差を立証できないため、CSV 値は書き換えず、Y0 は事前登録どおり観測値としてのみ扱う。
+Y0 の 5 行は ready で `valid=1` だが、CSV の `criteria_result` は `fail` である。runner は `$variant` の値 `0` を `Y0` と比較していたため Y0 分岐に入らず、Y1 の期待値検査側で `fail` を記録した。5 行は変更しない。事前登録どおり Y0 は観測のみとし、analyzer は記録済み `criteria_result` にかかわらず `valid` を観測結果として扱う。
 
 ## 失敗した試行と経緯
 
