@@ -125,6 +125,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           MSD_JOB_NAME: MSD tests in development image
         run: |
+          # shellcheck disable=SC2016
           step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
             .jobs[] | select(.name == env.MSD_JOB_NAME) as $job |
             "=ci-meta=\tjob_started_at\t\($job.started_at)",
@@ -385,6 +386,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           MSD_JOB_NAME: build
         run: |
+          # shellcheck disable=SC2016
           step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
             .jobs[] | select(.name == env.MSD_JOB_NAME) as $job |
             "=ci-meta=\tjob_started_at\t\($job.started_at)",
