@@ -1,6 +1,6 @@
 # S11 QEMU watchdog の検証
 
-- 状態: v1・v2 の QEMU 実験済み（実機未確認）
+- 状態: v3 を主結果として QEMU 実験済み（実機未確認）
 - 日付: 2026-10-20
 - 担当: Devin
 - 関連: [S11 調査計画](../research/simulation-plan.md)
@@ -26,24 +26,39 @@ v1 は initial marker から 40 秒で観測を打ち切ったため、`stop` �
 
 v2 では、`stop` と `kill9` の試行で marker の後 30 秒以内に reset を検出し、その reset から最大 120 秒まで second boot ready を待つ。120 秒は `reboot` で観測した reset から ready までの最大 29.3 秒のおよそ 4 倍である。marker から reset までの 8〜30 秒、reset 前に restart message がないこと、その他の v1 基準は変えない。
 
-6 mode × 5 回をすべて、rebase 後の `origin/main` HEAD `d1f65609cb314491556071c9399b974445a96319` から build した image で測り直す。v1 の 30 試行は CSV と本文に残し、`version=v1` として区別する。v2 は別の run ID（`s11-v2-<UTC>-<run>-<mode>-<repeat>`）と別の CSV 行にし、version 列を追加して `version=v2` と記録する。
+6 mode × 5 回をすべて、rebase 後の `origin/main` HEAD `d1f65609cb314491556071c9399b974445a96319` を source とする Buildroot の SD image で測り直す。v1 の 30 試行は CSV と本文に残し、`version=v1` として区別する。v2 は別の run ID（`s11-v2-<UTC>-<run>-<mode>-<repeat>`）と別の CSV 行にし、version 列を追加して `version=v2` と記録する。
+
+## Amendment 2（v3、2026-10-21T18:39:01Z、測定前）
+
+v2 で使った QEMU の provenance を確認した。旧 patch（blob SHA-256 の先頭 `90f104191ddc2c49`。commit `819f2d6`、`af48343`、`099e762` で同じもの）を署名済み QEMU 11.1.2 tarball に `patch -p1 --forward --batch` で適用すると exit 1 になる。commit `c01f6e7` の patch は適用できる。
+
+v2 の image `sha256:763f112a…` では、`/opt/qemu` が `COPY dir:…` の prebuilt layer から入っており、commit 済み patch から build した QEMU ではなかった。image 内の `qemu-system-aarch64` の SHA-256 は `fe10c9ad…f8e1`。したがって v2 の 30 試行は「commit されていない source から build した QEMU による試行」として扱う。v2 の結果と CSV 行は変更せず、invalid とはせず、別 build の参考値として残す。
+
+作業用に直接書き換えた source（mtime は 2026-10-21 06:37 +0900）と `c01f6e7` の patch を適用した source の差分を確認した。差分の SHA-256 は `15f8d6cc664551340ce07b5a2d0a94a27c6ee372f09e80ae3281f45b7d292a2f`。こちらで確認できた差分には signedness と cast（`int64_t now_ns` / `expire_ns`、`(int64_t)delay_ns`、`(uint32_t)` の戻り値）と空行があった。ユーザーの報告では header の include 順も異なるが、保存済み diff を参照した出力では該当 hunk を確認できなかったため、この点は未確認とする。いずれにしても、v2 image 内の `/opt/qemu` source がこの作業用 source だったことを証明するものではない。
+
+v3 では、commit `c01f6e7` の patch から `docker/msd-dev build` で作成した `msd-dev:local`（image ID `sha256:f9785d712ccab0dcb26ce2ebbad502c6c8a29a49000f56c60766fa7551b1d087`）を使う。image 内の `qemu-system-aarch64` の SHA-256 は `7199b846fb617f519c80962e2008ee63d2ce73bd125c05b0206dfca1ed73f3a6`。SD image は v2 と同じ `output/images/sdcard.img`（SHA-256 `e9be1675b865f51f321209340f692b47869d4deb1ee038cfac681c7e78987165`）を使う。6 mode × 5 回を、v2 と同じ基準・待ち時間で実施し、`version=v3` と `s11-v3-<UTC>-<run>-<mode>-<repeat>` の別行・別 run ID で記録する。default `test-boot.sh` 回帰も `QEMU_WATCHDOG` を unset して実施する。
 
 ## 条件
 
 | 項目 | 値 |
 |---|---|
 | v1 image の source commit | `fca902408e1e6e83f4317870ef9cb082051a120b` |
-| v2 image の source commit | `d1f65609cb314491556071c9399b974445a96319` |
+| v2 Buildroot tree の source commit | `d1f65609cb314491556071c9399b974445a96319` |
+| v3 QEMU patch の commit | `c01f6e7` |
 | ホスト | Ubuntu 26.04.1 x86_64、Linux 7.0.0-38-generic |
 | 開発コンテナー | Debian 13.7、Python 3.13.5、Bash 5.2.37 |
-| QEMU | QEMU emulator 11.1.2。GCC 14.2.0 でビルドした `msd-dev:local` 内の binary |
+| QEMU | QEMU emulator 11.1.2 |
 | v2 Buildroot | 2026.08、submodule commit `d6061d653d7fb215c2409c59e4bfad1b9d677215` |
 | cross GCC | `aarch64-linux-gcc.br_real` 14.3.0 |
 | kernel | 6.18.57-v8 |
 | rootfs / image tools | unsquashfs と mksquashfs 4.7.5、sfdisk 2.41.5、mke2fs 1.47.4 |
 | v1 出力先と状態 | 既存の `OUTPUT_DIR` を再利用。Buildroot の再 configure / 再 build は行わなかった。 |
-| v2 出力先と状態 | 既存の output を再利用し、`origin/main` HEAD で `msd_cardputerzero_defconfig` と full build を実施した。 |
-| v2 QEMU image | `msd-dev:local`（QEMU 11.1.2、image ID `sha256:763f112a609ec5839867c1a20df3e2612ca865e14a4a6fc3fbdfb582c65201ad`） |
+| v2 出力先と状態 | 既存の output を再利用し、Buildroot tree の HEAD で `msd_cardputerzero_defconfig` と full build を実施した。 |
+| v2 QEMU image | `msd-dev:local`（image ID `sha256:763f112a609ec5839867c1a20df3e2612ca865e14a4a6fc3fbdfb582c65201ad`）。`/opt/qemu` は prebuilt layer から導入されており、commit 済み patch から build した QEMU ではない。 |
+| v2 QEMU binary | `qemu-system-aarch64` SHA-256 `fe10c9ad…f8e1` |
+| v3 QEMU image | `msd-dev:local`（image ID `sha256:f9785d712ccab0dcb26ce2ebbad502c6c8a29a49000f56c60766fa7551b1d087`）。`c01f6e7` の patch から `docker/msd-dev build` で作成した。 |
+| v3 QEMU binary | `qemu-system-aarch64` SHA-256 `7199b846fb617f519c80962e2008ee63d2ce73bd125c05b0206dfca1ed73f3a6` |
+| v3 SD image | v2 と同じ `output/images/sdcard.img`、SHA-256 `e9be1675b865f51f321209340f692b47869d4deb1ee038cfac681c7e78987165`。Buildroot output は再実行せず再利用した。 |
 | 変える条件 | watchdog の停止・終了・reboot・poweroff 動作 |
 | 変えない条件 | QEMU machine、kernel、DTB、SD image、仮想時間設定、rootfs 以外の image 内容 |
 | 繰り返し | TCG で各 mode 5 回。中央値と最小・最大を報告する。 |
@@ -59,24 +74,48 @@ docker/msd-dev make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output \
   msd_cardputerzero_defconfig
 docker/msd-dev make -C output -j8 \
   M5STACK_CARDPUTERZERO_VERSION=75518549a2640486f5d13ea72ca4935b198d7c20
+docker/msd-dev build
 
 QEMU_WATCHDOG=1 QEMU_LOG_DIR=<永続ログディレクトリー> \
   docker/msd-dev board/cardputerzero/qemu/test-watchdog.sh \
+  --experiment --csv /work/docs/experiments/2026-10-20-s11-qemu-watchdog.csv
+
+QEMU_WATCHDOG=1 QEMU_LOG_DIR=<永続ログディレクトリー> \
+  docker/msd-dev env QEMU_WATCHDOG_VERSION=v3 \
+  board/cardputerzero/qemu/test-watchdog.sh \
   --experiment --csv /work/docs/experiments/2026-10-20-s11-qemu-watchdog.csv
 
 env -u QEMU_WATCHDOG QEMU_LOG_DIR=<永続ログディレクトリー> \
   docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 ```
 
-v2 の run ID は `s11-v2-20261021T162737Z-1-<mode>-<repeat>`。default `test-boot.sh` 回帰は `QEMU_WATCHDOG` を unset して実行した。
+v2 の run ID は `s11-v2-20261021T162737Z-1-<mode>-<repeat>`。v3 の run ID は `s11-v3-20261021T183947Z-1-<mode>-<repeat>`。v3 の default `test-boot.sh` 回帰は `QEMU_WATCHDOG` を unset して実行し、exit 0、35 秒で ready となった。
 
 v1 の `run_id` は `s11-20261020T215917Z-1-<mode>-<repeat>`。TCG 実験は 35 分 27.31 秒で完了し、stop / kill9 の事前登録基準を満たさなかったため、コマンドの終了 status は 1 だった。全 30 行は CSV に保存されている。
 
 ## 計測器の検証
 
-serial の各行に host monotonic timestamp を付けた。v1 と v2 の各 30 serial log と CSV を照合した。全試行で `msd.wdtest=<mode>` が kernel command line にあり、watchdog driver の initcall blacklist はなかった。none と term の全試行で `state=active timeout=15` を確認した。v1 の reboot では restart message から次の `Booting Linux` まで 1.485–1.603 秒、v2 では 1.514–1.588 秒だった。
+serial の各行に host monotonic timestamp を付けた。v1・v2・v3 の各 30 serial log と CSV を照合した。全試行で `msd.wdtest=<mode>` が kernel command line にあり、watchdog driver の initcall blacklist はなかった。none と term の各試行で `state=active timeout=15` を確認した。v1 の reboot では restart message から次の `Booting Linux` まで 1.485–1.603 秒、v2 では 1.514–1.588 秒だった。v3 では同じ区間が 1.400–1.622 秒で、全 reboot 試行に restart message、reset、second boot ready があった。
 
 ## 結果
+
+### v3（commit `c01f6e7` の patch から build した QEMU、主結果）
+
+v3 の 30 試行はすべて CSV に `valid=1` として記録され、事前登録した全判定対象基準を満たした。
+
+| mode | 実測結果 | 事前登録基準 |
+|---|---|---|
+| none | 5/5 は marker 後 60 秒以内に reset せず、全て `state=active timeout=15`。 | 5/5。達成。 |
+| stop | 5/5 reset。marker→reset は中央値 14.528 秒（14.310–15.101 秒）、restart message は 0/5、second boot ready は 5/5。reset→ready は中央値 30.456 秒（29.243–30.730 秒）。 | 5/5。達成。 |
+| kill9 | 5/5 reset。marker→reset は中央値 17.064 秒（16.988–17.155 秒）、restart message は 0/5、second boot ready は 5/5。reset→ready は中央値 29.861 秒（29.151–31.097 秒）。 | 5/5。達成。 |
+| reboot | 5/5 で restart message、reset、second boot ready を確認した。marker→reset は中央値 7.631 秒（7.401–7.765 秒）、restart message→reset は 1.518 秒（1.400–1.622 秒）、reset→ready は 28.542 秒（28.184–29.234 秒）。 | 5/5。達成。 |
+| poweroff | 5/5 で reset せず QEMU が status 0 で終了した。marker→exit は中央値 6.120 秒（5.872–6.190 秒）。 | 5/5。達成。 |
+| term | 5/5 で marker 後 60 秒以内に reset しなかった。 | 観察のみ。pass/fail 判定なし。 |
+| default boot regression | `QEMU_WATCHDOG` unset で `test-boot.sh` は exit 0、35 秒で ready になった。 | exit 0。達成。 |
+
+stop と kill9 は reset 後最大 120 秒まで待ち、second boot ready を各 5/5 回確認した。v3 の run ID は `s11-v3-20261021T183947Z-1-<mode>-<repeat>`。
+
+### v1（観測窓が不足した履歴）
 
 | mode | 実測結果 | 事前登録基準 |
 |---|---|---|
@@ -88,7 +127,9 @@ serial の各行に host monotonic timestamp を付けた。v1 と v2 の各 30 
 | term | 5/5 で 60 秒以内に reset なし。 | 観察のみ。pass/fail 判定なし。 |
 | default boot regression | `QEMU_WATCHDOG` なしで `test-boot.sh` は exit 0、34 秒で ready。kernel command line に既定の initcall blacklist がある。 | exit 0。達成。 |
 
-v2 の結果は次のとおり。CSV の全行で `valid=1` となり、criteria failure はなかった。
+### v2（commit されていない source から build した QEMU による参考値）
+
+Amendment 2 のとおり、v2 の QEMU は commit 済み patch から build されたものと確認できなかった。v2 の結果と CSV 行は変更せず、invalid とはせず、別 build の参考値として保持する。CSV の全行は `valid=1` であり、v2 の実行基準も満たした。
 
 | mode | v2 実測結果 | 事前登録基準 |
 |---|---|---|
@@ -160,7 +201,9 @@ v1 では stop 5/5 と kill9 5/5 が second-ready 基準を満たさず、全体
 
 ## 結論
 
-v1 は観測窓の設定誤りにより stop / kill9 の second boot ready を確認できず、基準未達だった。修正した v2 では 6 mode × 5 回を実行し、stop / kill9 を含む全ての判定対象 mode で基準を満たした。stop / kill9 は reset 後 120 秒以内に各 5/5 回 ready となった。製品設定は変更していない。
+v3 は commit `c01f6e7` の patch から build した QEMU で 6 mode × 5 回を実施し、stop / kill9 を含む全ての判定対象 mode で基準を満たした。stop / kill9 は reset 後最大 120 秒以内に各 5/5 回 ready となった。default boot regression も exit 0 だった。製品設定は変更していない。
+
+v1 は観測窓の設定誤りにより stop / kill9 の second boot ready を確認できず、基準未達だった。v2 の測定結果は invalid とはせず、commit されていない source から build した別 QEMU の参考値として保持する。v2 の結果は v3 の結果と区別する。
 
 none では watchdog が active のまま 60 秒 reset せず、term でも 60 秒 reset しなかった。term の結果は magic close `V` の仮説と整合するが、close の方式そのものは確認できない。これらは QEMU TCG の結果であり、実機の watchdog 動作を示すものではない。BCM2837 / CardputerZero 実機での reset と poweroff は未確認である。
 
@@ -216,3 +259,5 @@ QEMU は GPU firmware と tryboot を持たず、`-kernel` による再起動は
 v2 の 30 serial log、rootfs 作成ログ、driver log、default boot regression log、Buildroot の defconfig・失敗した build・成功した build の SHA-256 は、永続 `s11-logs` の root にある `s11-v2-20261021T162713Z.sha256` にまとめた。この manifest は commit せず、SHA-256 は `1fc88cdfdc463d5745f2c15eacb0202c4c5a326f66f7ae6db685091c55ee9eb1`。v2 build log の SHA-256 は defconfig `5920c8bf8bad8df1d3e8211d8c02c284bf5db6c13ec377cfd420746c5f5a5da4`、metadata 不足で失敗した初回 build `5f7399bd11fbe97d5ab6a15b0b49110a2956e5835dc64d5f5b6ebe6960e64eaa`、成功した再試行 `75dfbe93f67050a1fe569e0bdc9d3919adb641ecb1c52c2c1dfc6fdef075e15a`。
 
 v2 の base image は `output/images/sdcard.img` で SHA-256 `e9be1675b865f51f321209340f692b47869d4deb1ee038cfac681c7e78987165`、rootfs は `db6d3437d9b6b8324c030a31e9b03eb66947a85e0851c77802b9012bc1dbf8c4`、kernel `Image` は `3f3abfcbd8c0ce8c4f8beb230d2661b8fec745f80979837ee2d9917c377edcf4` だった。
+
+v3 の 30 serial log と default boot regression log は外部の永続ログ領域の `experiment/s11-v3-20261021T183945Z/` に保存した。`s11-v3-logs.sha256` は 32 個の driver / serial log を含み、SHA-256 は `813154fa961e393859c609b3dd7da2f4ec03190e0546985d63d75052eb97bcb4`。v3 の CSV 30 行は `version=v3` であり、既存の v1・v2 60 行とその値は変更していない。
