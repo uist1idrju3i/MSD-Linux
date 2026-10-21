@@ -19,6 +19,7 @@ SMOKE=0
 RUNS=5
 MODE=""
 CSV_OVERRIDE=""
+PROTOCOL_VERSION=v2
 
 case "$QEMU_MACHINE" in
 	raspi3b)
@@ -244,6 +245,53 @@ wait_after_marker() {
 	done
 }
 
+wait_for_reset_and_ready() {
+	local log="$1"
+
+	python3 - "$log" <<'PY'
+import sys
+import time
+from pathlib import Path
+
+log_path = Path(sys.argv[1])
+started = time.monotonic()
+
+def read_log():
+    try:
+        return log_path.read_text(encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        return ""
+
+def after_marker(text):
+    marker = text.find("msd-wdtest: wdt state=")
+    return text[marker:] if marker >= 0 else ""
+
+while time.monotonic() - started < 30:
+    text = read_log()
+    marker_log = after_marker(text)
+    if "[host] serial EOF" in text:
+        raise SystemExit(0)
+    reset = marker_log.find("Booting Linux")
+    if reset >= 0:
+        reset_seen = time.monotonic()
+        while time.monotonic() - reset_seen < 120:
+            text = read_log()
+            marker_log = after_marker(text)
+            if "[host] serial EOF" in text:
+                raise SystemExit(0)
+            reset = marker_log.find("Booting Linux")
+            if reset >= 0:
+                second_boot = marker_log.find("msd-wdtest: second boot", reset)
+                if second_boot >= 0 and "MSD/Linux ready" in marker_log[second_boot:]:
+                    raise SystemExit(0)
+            time.sleep(0.1)
+        raise SystemExit(0)
+    time.sleep(0.1)
+
+raise SystemExit(0)
+PY
+}
+
 analyze_log() {
 	local log="$1"
 	python3 - "$log" <<'PY'
@@ -312,17 +360,20 @@ PY
 }
 
 append_csv_row() {
-	local run_id="$1" mode="$2" repeat="$3" marker_s="$4" reset_s="$5"
-	local delta_s="$6" restart_line="$7" second_ready="$8" qemu_exit="$9"
-	local valid="${10}" note="${11//,/;}"
+	local version="$1" run_id="$2" mode="$3" repeat="$4" marker_s="$5"
+	local reset_s="$6" delta_s="$7" restart_line="$8" second_ready="$9"
+	local qemu_exit="${10}" valid="${11}" note="${12//,/;}"
+	local header='version,run_id,mode,repeat,marker_s,reset_s,delta_s,restart_line,second_ready,qemu_exit,valid,note'
 
 	if [[ ! -s "$CSV_FILE" ]]; then
-		printf 'run_id,mode,repeat,marker_s,reset_s,delta_s,restart_line,second_ready,qemu_exit,valid,note\n' \
-			>"$CSV_FILE"
+		printf '%s\n' "$header" >"$CSV_FILE"
+	elif [[ "$(head -n 1 "$CSV_FILE")" != "$header" ]]; then
+		printf 'Unexpected CSV header in %s\n' "$CSV_FILE" >&2
+		return 1
 	fi
-	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-		"$run_id" "$mode" "$repeat" "$marker_s" "$reset_s" "$delta_s" \
-		"$restart_line" "$second_ready" "$qemu_exit" "$valid" "$note" \
+	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+		"$version" "$run_id" "$mode" "$repeat" "$marker_s" "$reset_s" \
+		"$delta_s" "$restart_line" "$second_ready" "$qemu_exit" "$valid" "$note" \
 		>>"$CSV_FILE"
 }
 
@@ -354,6 +405,8 @@ run_trial() {
 	if ! wait_for_text "$log" "msd-wdtest: wdt state=" 180; then
 		note="marker-timeout"
 		valid=0
+	elif [[ "$mode" == stop || "$mode" == kill9 ]]; then
+		wait_for_reset_and_ready "$log"
 	else
 		wait_after_marker "$timeout"
 	fi
@@ -429,8 +482,9 @@ run_trial() {
 			;;
 	esac
 
-	append_csv_row "$run_id" "$mode" "$repeat" "$marker_s" "$reset_s" \
-		"$delta_s" "$restart_line" "$second_ready" "$qemu_exit" "$valid" "$note"
+	append_csv_row "$PROTOCOL_VERSION" "$run_id" "$mode" "$repeat" "$marker_s" \
+		"$reset_s" "$delta_s" "$restart_line" "$second_ready" "$qemu_exit" \
+		"$valid" "$note"
 	printf 'mode=%s repeat=%s marker=%s reset=%s delta=%s restart=%s second_ready=%s qemu_exit=%s valid=%s log=%s\n' \
 		"$mode" "$repeat" "$marker_s" "$reset_s" "$delta_s" \
 		"$restart_line" "$second_ready" "$qemu_exit" "$valid" "$log"
@@ -450,9 +504,9 @@ fi
 failed=0
 for mode in "${modes[@]}"; do
 	for ((repeat = 1; repeat <= RUNS; repeat++)); do
-		run_id="s11-${run_timestamp}-${mode}-${repeat}"
+		run_id="s11-${PROTOCOL_VERSION}-${run_timestamp}-${mode}-${repeat}"
 		if [[ "$SMOKE" == 1 ]]; then
-			run_id="s11-smoke-${run_timestamp}-${mode}-${repeat}"
+			run_id="s11-smoke-${PROTOCOL_VERSION}-${run_timestamp}-${mode}-${repeat}"
 		fi
 		if ! run_trial "$run_id" "$mode" "$repeat"; then
 			failed=1

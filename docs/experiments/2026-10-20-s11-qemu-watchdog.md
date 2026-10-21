@@ -1,6 +1,6 @@
 # S11 QEMU watchdog の検証
 
-- 状態: QEMU 実験済み（実機未確認）
+- 状態: v1 の QEMU 実験済み、v2 は測定前（実機未確認）
 - 日付: 2026-10-20
 - 担当: Devin
 - 関連: [S11 調査計画](../research/simulation-plan.md)
@@ -11,20 +11,29 @@ QEMU 11.1.2 の BCM2835 power-management watchdog に仮想時間タイマーを
 
 ## 採否の基準（結果を見る前に書く）
 
-実行モードは TCG、各 mode を 5 回繰り返す。以下を実行前に固定した。
+TCG で各 mode を 5 回ずつ実行する。以下の基準を測定前に定めた。
 
-- none: 5/5 no reset in 60 s, state=active, timeout=15.
-- stop, kill9: 5/5 reset with marker→reset 8–30 s, no `reboot: Restarting system` before it, second boot ready.
-- reboot: 5/5 `reboot: Restarting system` then reset within 10 s, second boot ready.
-- poweroff: 5/5 QEMU exits by itself within 30 s without reset.
-- term: observation only (hypothesis: BusyBox writes magic close 'V' so the watchdog stops and no reset happens); report count, no pass/fail.
-- Regression: default `board/cardputerzero/qemu/test-boot.sh` (no QEMU_WATCHDOG) still exit 0.
+- `none` は 5/5 回で 60 秒以内に reset せず、watchdog state が active、timeout が 15 であることを求める。
+- `stop` と `kill9` は 5/5 回で reset し、marker から reset までが 8〜30 秒であること、reset 前に `reboot: Restarting system` が出ないこと、second boot が ready になることを求める。
+- `reboot` は 5/5 回で `reboot: Restarting system` の後 10 秒以内に reset し、second boot が ready になることを求める。
+- `poweroff` は 5/5 回で reset せず、30 秒以内に QEMU が自ら終了することを求める。
+- `term` は観察のみとする。BusyBox が magic close `V` を書き watchdog を停止するため reset しない、という仮説を記録するが、合否は判定しない。
+- `QEMU_WATCHDOG` を設定しない既定の `board/cardputerzero/qemu/test-boot.sh` が exit 0 となることを回帰条件とする。
+
+## Amendment 1（v2、2026-10-21T16:16:10Z、測定前）
+
+v1 は initial marker から 40 秒で観測を打ち切ったため、`stop` と `kill9` では reset 後 23〜26 秒までしか観測できず、second boot ready は各 0/5 回だった。この 30 試行は失敗した v1 の記録として残す。`reboot` では reset から ready まで 28.215〜29.307 秒かかったため、stop と kill9 の観測時間が不足していた。
+
+v2 では、`stop` と `kill9` の試行で marker の後 30 秒以内に reset を検出し、その reset から最大 120 秒まで second boot ready を待つ。120 秒は `reboot` で観測した reset から ready までの最大 29.3 秒のおよそ 4 倍である。marker から reset までの 8〜30 秒、reset 前に restart message がないこと、その他の v1 基準は変えない。
+
+6 mode × 5 回をすべて、rebase 後の `origin/main` HEAD `d1f65609cb314491556071c9399b974445a96319` から build した image で測り直す。v1 の 30 試行は CSV と本文に残し、`version=v1` として区別する。v2 は別の run ID（`s11-v2-<UTC>-<run>-<mode>-<repeat>`）と別の CSV 行にし、version 列を追加して `version=v2` と記録する。
 
 ## 条件
 
 | 項目 | 値 |
 |---|---|
-| 基準の commit | `fca902408e1e6e83f4317870ef9cb082051a120b` |
+| v1 image の source commit | `fca902408e1e6e83f4317870ef9cb082051a120b` |
+| v2 image の source commit | `d1f65609cb314491556071c9399b974445a96319` |
 | ホスト | Ubuntu 26.04.1 x86_64、Linux 7.0.0-38-generic |
 | 開発コンテナー | Debian 13、Python 3.13.5、Bash 5.2.37 |
 | QEMU | QEMU emulator 11.1.2。GCC 14.2.0 でビルドした `msd-dev:local` 内の binary |
@@ -32,8 +41,9 @@ QEMU 11.1.2 の BCM2835 power-management watchdog に仮想時間タイマーを
 | cross GCC | `aarch64-linux-gcc.br_real` 14.3.0 |
 | kernel | 6.18.57-v8 |
 | rootfs / image tools | unsquashfs と mksquashfs 4.7.5、sfdisk 2.41.5 |
-| 基準の commit | `fca902408e1e6e83f4317870ef9cb082051a120b` |
-| 出力先と状態 | 既存の `OUTPUT_DIR` を再利用。Buildroot の再 configure / 再 build は行わない。 |
+| v1 出力先と状態 | 既存の `OUTPUT_DIR` を再利用。Buildroot の再 configure / 再 build は行わなかった。 |
+| v2 出力先と状態 | v2 条件として `origin/main` の HEAD から再 configure / build する。実施結果は後述する。 |
+| v2 QEMU image | `msd-dev:local`（QEMU 11.1.2、image ID `sha256:763f112a609ec5839867c1a20df3e2612ca865e14a4a6fc3fbdfb582c65201ad`） |
 | 変える条件 | watchdog の停止・終了・reboot・poweroff 動作 |
 | 変えない条件 | QEMU machine、kernel、DTB、SD image、仮想時間設定、rootfs 以外の image 内容 |
 | 繰り返し | TCG で各 mode 5 回。中央値と最小・最大を報告する。 |
@@ -55,7 +65,7 @@ QEMU_LOG_DIR=<永続ログディレクトリー> \
 docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 ```
 
-実験の `run_id` は `s11-20261020T215917Z-1-<mode>-<repeat>`。TCG 実験は 35 分 27.31 秒で完了し、stop / kill9 の事前登録基準を満たさなかったため、コマンドの終了 status は 1 だった。全 30 行は CSV に保存されている。
+v1 の `run_id` は `s11-20261020T215917Z-1-<mode>-<repeat>`。TCG 実験は 35 分 27.31 秒で完了し、stop / kill9 の事前登録基準を満たさなかったため、コマンドの終了 status は 1 だった。全 30 行は CSV に保存されている。
 
 ## 計測器の検証
 
@@ -73,7 +83,7 @@ serial の各行に host monotonic timestamp を付けた。30 個の serial log
 | term | 5/5 で 60 秒以内に reset なし。 | 観察のみ。pass/fail 判定なし。 |
 | default boot regression | `QEMU_WATCHDOG` なしで `test-boot.sh` は exit 0、34 秒で ready。kernel command line に既定の initcall blacklist がある。 | exit 0。達成。 |
 
-stop / kill9 の second boot は 40 秒の制限内に ready へ到達しなかった。該当試行の 40 秒時点では reset 後 23–26 秒で、QEMU はその時点で host により終了された。reboot 試行では reset 後 28.215–29.307 秒で ready に到達した。登録済みの待ち時間は変更していない。
+v1 の stop / kill9 は initial marker から 40 秒の制限内に second boot ready へ到達しなかった。該当試行では reset 後 23〜26 秒で QEMU を host 側から終了した。reboot 試行では reset 後 28.215〜29.307 秒で ready に到達した。v1 の測定値と判定はそのまま保持し、v2 の待ち時間は Amendment 1 のとおり変更する。
 
 term は 5/5 で観測時間内に reset しなかった。この結果は magic close `V` の仮説と整合するが、serial log から close の方式そのものは確認できない。
 
@@ -90,7 +100,9 @@ init script の stop guard を確認した初回 after-run の後、再起動区
 - `overlayfs: upperdir is in-use`
 - `overlayfs: workdir is in-use`
 
-この確認は `QEMU_WATCHDOG=1` で `test-watchdog.sh --mode reboot --runs 1` を実行した fixed image の回帰判定であり、v1 の30試行と CSV は変更しない。shutdown 時の再実行は `init script の stop 処理の修正（別 PR）` で対処する。
+この確認は `QEMU_WATCHDOG=1` で `test-watchdog.sh --mode reboot --runs 1` を実行した fixed image の回帰判定であり、v1 の 30 試行と CSV は変更しない。
+
+その後、PR #77 の start-only stop guard が main に入った。`S01msd-watchdog` などの既存 init script は start 以外の引数では処理せず、`S97zz-wdtest` も同じ guard を持つ。v2 はこの guard を含む `origin/main` の image で測る。この節に記録した after-run は履歴として残し、v2 の結果とは区別する。
 
 修正前のログ `s11-20261020T215917Z-1-reboot-1/serial.log` は ready が 2 回で、禁止文字列は各 1 回出たため不合格だった。固定 image の after-run `s11-20261021T000920Z-1-reboot-1/serial.log` は ready が 1 回で、禁止文字列はすべて 0 回となり合格した。reset 後には `msd-wdtest: second boot` と `MSD/Linux ready` の両方を確認した。以下の行は初回起動区間の抜粋である。制御 byte は `\xNN` 表記に置き換えた。
 
@@ -124,10 +136,10 @@ init script の stop guard を確認した初回 after-run の後、再起動区
 この smoke の CSV 行（列名は本実験 CSV と同じ）は次のとおり。
 
 ```text
-s11-smoke-20261020T215705Z-1-stop-1,stop,1,30.306809702,44.888341572,14.581531870,no,no,killed@69.779983733,1,criteria-failed
+v1,s11-smoke-20261020T215705Z-1-stop-1,stop,1,30.306809702,44.888341572,14.581531870,no,no,killed@69.779983733,1,criteria-failed:v1-wait-window-too-short
 ```
 
-本実験では stop 5/5 と kill9 5/5 が second-ready 基準を満たさず、全体の終了 status は 1 となった。試行の破棄・再実行、待ち時間や基準の変更は行っていない。その他の 20 試行も含め、全 30 行を CSV に記録した。
+v1 では stop 5/5 と kill9 5/5 が second-ready 基準を満たさず、全体の終了 status は 1 となった。この 10 試行は待ち時間の誤りによる失敗として、元の測定値を保持して CSV に記録した。その他の 20 試行も含め、全 30 行を CSV に記録した。
 
 ## 結論
 
