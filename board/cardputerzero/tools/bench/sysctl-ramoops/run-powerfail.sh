@@ -8,7 +8,8 @@ powerfail_repo="${S21_POWERFAIL_REPO:?set S21_POWERFAIL_REPO to the isolated tes
 output_dir="${OUTPUT_DIR:-${repo_root}/output}"
 log_root="${S21_LOG_ROOT:-${QEMU_LOG_DIR:-${HOME}/work/s21-logs}}"
 variant_root="${S21_VARIANT_ROOT:-${log_root}/variants}"
-csv="${S21_CSV:-${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv}"
+default_csv="${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv"
+csv="${S21_CSV:-$default_csv}"
 [[ -d "$powerfail_repo/.git" || -f "$powerfail_repo/.git" ]]
 
 sha256_file() {

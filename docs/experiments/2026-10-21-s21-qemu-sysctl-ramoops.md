@@ -1,6 +1,6 @@
 # S21 sysctl 候補、panic 経路、QEMU の ramoops 試験
 
-- 状態: build 完了、試験開始前
+- 状態: QEMU 試験完了（製品採否は未決定、実機未確認）
 - 日付: 2026-10-21
 - 担当: Devin
 - 関連: [CPU・割り込み・sysctl](../research/cpu-irq-and-sysctl.md)、[simulation plan](../research/simulation-plan.md)
@@ -112,15 +112,35 @@ R1 の `amendment1` 5 試行では、second boot ready まで到達したが、r
 
 ## 計測器の検証
 
-未実施。Y0 の事前登録 5 回の最初の 2 回を同条件の A/A 確認として使い、hook marker と読み出しの再現性を記録する。追加試行は行わない。
+Y0 の最初の 2 回を事前登録どおり A/A 確認に使った。両方で hook が 15 key を読み出し、runner の `Running sysctl: OK` と serial 検査 exit 0 を記録した。読み戻し値は 2 回で一致し、ready は 34 秒と 36 秒であった。この確認に追加試行は使っていない。
 
 ## 結果
 
-未実施。
+CSV は 60 行、44 列である。全列を監査し、条件別の選定、試行回数、sysctl の読み戻し、判定、ログ hash を照合した。Amendment 2 の P0 5 回と Amendment 3 の R1 5 回を、それぞれ判定対象とする。元の P0 5 行、誤実行の P0 4 行、R1 の初回 5 行と Amendment 1 の 5 行は保持し、判定から除外する。
+
+| 条件 | 結果 | 判定 |
+|---|---|---|
+| Y0 boot | 5/5 回で ready。34〜36 秒 | 観測のみ。ready 中央値の差は合否に使わない |
+| Y1 boot | 5/5 回で ready。全 key の読み戻し値と `Running sysctl: OK` を確認 | pass |
+| Y1 A/B | 1/1 回で pass。ready は 35 秒 | pass |
+| Y1 powerfail | 5/5 回で `SysRq U` marker と powerfail script の基準を確認 | pass |
+| Y2 powerfail | 5/5 回とも `kernel.sysrq=0` を読み戻したが、`SysRq U` marker と remount の観測値があった | 事前登録の期待と矛盾し、5/5 回 fail |
+| P0 | Amendment 2 の 5/5 回で watchdog reset と second-boot ready を確認。marker から reset までの中央値 13.606 秒（13.497〜14.902 秒） | pass |
+| P1 | 5/5 回で `Rebooting in 5 seconds` と second-boot ready を確認。marker から reset までの中央値 6.825 秒（6.711〜6.932 秒） | pass |
+| R0 | 5/5 回で reset 後に ramoops record がないことを確認。marker から reset までの中央値 6.719 秒（6.704〜6.820 秒） | pass |
+| R1 | Amendment 3 の 5/5 回で reset、ramoops 登録、pstore collection 完了、必要な 2 record を確認。marker から reset までの中央値 6.809 秒（6.687〜6.919 秒） | pass |
+
+Y1 と Y2 の `powerfail_remount_from_event_seconds` はそれぞれ −0.302〜−0.243 秒、−0.226〜−0.202 秒であった。列名に反して負の値であり、event 後の所要時間として解釈しない。Y2 の marker は実際の remount を単独では証明しない。カーネルの `__handle_sysrq` は `sysrq_on()` で gate され、`sysrq_always_enabled` の実行時値は確かめていないため、実 remount の有無は未確定である。判定は事前登録どおり marker の有無に基づく。
+
+元の P0 5 行の記録値は 13.392〜14.945 秒、中央値 13.914 秒であり、Amendment 2 の 5 行は 13.497〜14.902 秒、中央値 13.606 秒であった。中央値の差は 0.308 秒で、範囲は大きく重なるため概ね整合する。ただし元の最小値と最大値は新しい範囲の外にあり、値が一致したわけではない。元の P0 log hash は全 5 行で現存 log と一致しないため、古い値は判定に用いない。
+
+hash 監査では、判定対象外の元 P0 5 行を除く 55 行について、CSV に記録した serial と runner log hash が証拠ファイルに一致した。Y1 A/B の実行時、runner は run ID を上書きする前に出力 directory を決めていたため、A/B の log は `s21-y1-boot-1/` に保存された。CSV の note は実際の配置を示すよう修正した。A/B 実行が同 directory の `sdcard.img` を更新したため、Y1 boot 1 の後状態 image は失われたが、boot 1 の serial log、runner log、記録済み hash と測定値は残っている。runner は今後の実行で run ID 決定後に directory を作るよう修正した。
+
+Y0 の 5 行は ready で `valid=1` だが、CSV の `criteria_result` は `fail` である。一方、runner の Y0 分岐は `observation` を指定している。試験時の runner と現存コードの差を立証できないため、CSV 値は書き換えず、Y0 は事前登録どおり観測値としてのみ扱う。
 
 ## 失敗した試行と経緯
 
-測定 run はまだない。Buildroot の失敗した build attempt は `s21-logs/` に残し、最終 manifest に含める。最初の 3 回は S21 tree または基準 tree の defconfig 後に BusyBox 1.38.0 の target install で失敗した。ログには次の結果がある。
+Buildroot の失敗した build attempt は保持し、最終 manifest に含める。最初の 3 回は S21 tree または基準 tree の defconfig 後に BusyBox 1.38.0 の target install で失敗した。ログには次の結果がある。
 
 ```text
 >>> busybox 1.38.0 Installing to target
@@ -129,11 +149,11 @@ make[1]: *** [package/pkg-generic.mk:364: .../busybox-1.38.0/.stamp_target_insta
 make: *** [Makefile:23: _all] Error 2
 ```
 
-この時点では失敗した install command を特定できなかった。既存 output tree を clean して再 build した際は、host-skeleton の host install で一度失敗した。`make V=1` と shell trace でも command は特定できず、`BASH_ENV` を unset した `make` の再実行で build が完了した。clean build の warning は 273 件で、主に上流 package の configure、compiler、Python packaging warning だった。測定条件を変えた試行はない。条件や値を変える場合は、対象 run の前に時刻と理由を Amendment として記録する。
+この時点では失敗した install command を特定できなかった。既存 output tree を clean して再 build した際は、host-skeleton の host install で一度失敗した。`make V=1` と shell trace でも command は特定できず、`BASH_ENV` を unset した `make` の再実行で build が完了した。clean build の warning は 273 件で、主に上流 package の configure、compiler、Python packaging warning だった。最初の R1 5 試行は runner が pstore 収集前に QEMU を終了したため不完全であり、Amendment 1 に従った再試行 5 行も variant rootfs に collection-completion marker がなかったため不完全である。両方の log と CSV 行を保持し、R1 判定から除外した。誤った環境変数転送により実行された P0 4 行も保持し、unplanned として除外した。元 P0 5 行の log hash 不一致も上記のとおりである。条件や値を変える場合は、対象 run の前に時刻と理由を Amendment として記録する。
 
 ## 結論
 
-未実施。QEMU での結果は実機の結果ではなく、製品への採否は利用者が判断する。
+Y1 の hardening drop-in は QEMU 起動、A/B、powerfail の条件で動作したが、Y2 の負の対照は事前登録の期待を満たさなかった。P0、P1、R0、R1 の panic と ramoops の条件は、指定した QEMU image でそれぞれ 5/5 回基準を満たした。QEMU の system reset をまたぐ ramoops record の保持は確認したが、実機の watchdog reset 後の保持、ramoops address と firmware の `gpu_mem` の競合、`panic_on_oops` は未確認である。製品への採否は利用者が判断する。
 
 ## 未確認の点
 
@@ -144,4 +164,4 @@ make: *** [Makefile:23: _all] Error 2
 
 ## ログ
 
-生ログは repository 外の `~/work/s21-logs/` に保存し、SHA-256 manifest を作成する。ログ本体は commit しない。
+生ログ、失敗試行の log、variant artifact は repository 外のローカル `s21-logs/` に保存した。全列監査は `s21-final-csv-audit.txt`、CSV と証拠 hash の照合は `s21-final-review.txt` に保存した。manifest `s21-final-20261022.sha256` は manifest 自身を除く全 236 file（57,216,398,175 byte）を含み、SHA-256 は `dd09fa30d82b19306a437bbf3b26273438380b997184978c1562b20335b935ed` である。ログ本体は commit しない。

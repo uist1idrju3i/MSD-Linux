@@ -7,7 +7,8 @@ append_row="${script_dir}/append-row.py"
 output_dir="${OUTPUT_DIR:-${repo_root}/output}"
 log_root="${S21_LOG_ROOT:-${QEMU_LOG_DIR:-${HOME}/work/s21-logs}}"
 variant_root="${S21_VARIANT_ROOT:-${log_root}/variants}"
-csv="${S21_CSV:-${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv}"
+default_csv="${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv"
+csv="${S21_CSV:-$default_csv}"
 trial_count="${S21_BOOT_TRIALS:-5}"
 qemu_machine="${QEMU_MACHINE:-raspi3ap}"
 
@@ -30,8 +31,7 @@ run_boot() {
 	local device_suffix=mmcblk0p5
 	local image="${variant_root}/Y${variant}/sdcard.img"
 	local run_id="s21-y${variant}-boot-${trial}"
-	local run_dir="${log_root}/${run_id}"
-	local disk="${run_dir}/sdcard.img"
+	local run_dir disk
 	local serial_log test_log exit_status ready ready_seconds sysctl_values
 	local running_sysctl serial_status ab_status valid criteria log_sha image_hash
 
@@ -41,6 +41,8 @@ run_boot() {
 		device_suffix=mmcblk0p6
 		run_id="s21-y1-test-ab-1"
 	fi
+	run_dir="${log_root}/${run_id}"
+	disk="${run_dir}/sdcard.img"
 	mkdir -p "$run_dir"
 	cp --sparse=always "$image" "$disk"
 	image_hash="$(sha256_file "$disk")"
