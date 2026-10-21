@@ -88,6 +88,18 @@ R1 の `amendment1` 5 試行では、second boot ready まで到達したが、r
 
 既存の R1 variant は保持し、現在の hook を含む R1 rootfs と SD image を別の `variants-amendment3` directory に作り直す。新しい DTB copy は引き続き `msd-dev` 内の `dtc` で生成する。この条件で R1 を `amendment3` tag の別 run ID で 5 回測り直し、その 5 行を R1 の判定に使う。試行条件、値、合否基準は変えない。P0 の `amendment2` 結果は変更しない。
 
+## Amendment 4（2026-10-21T23:26:57Z、事後解析後・再試行前）
+
+この Amendment は、Y1/Y2 powerfail の既存結果を確認した後に記録した。driver の `powerfail-suo powerfail: SysRq U: emergency remount filesystems readonly` は patch 内の `dev_emerg()` による出力であり、`handle_sysrq('u')` の前に出る。そのため、SysRq が無効でも marker は出る。実際の remount は、`handle_sysrq()` が `sysrq_on()` を通過した後に出るカーネル action line `sysrq: Emergency Remount R/O` と `Emergency Remount complete` で判定する。
+
+従来の `test-powerfail.sh` は driver marker を `remount_seen` として記録し、remount の時刻も marker から取っていた。この測定器では Y2 の実 remount を示せない。
+
+既存の `firstboot.log` を再解析した結果、Y1 1〜5 は各 run で driver marker 1、kernel action 1、完了 line 1 だった。Y2 1〜5 は各 run で driver marker 1、kernel action 0、完了 line 0 だった。各 log に含まれる kernel command line に `sysrq_always_enabled` はなかった。
+
+元の Y1/Y2 powerfail 10 行は CSV を含め変更しない。事前登録と当時の計測器に基づく既存 verdict も記録どおり保持する。Y1 は driver marker を基準に pass、Y2 は同じ marker を基準に 5/5 fail とした。これは旧計測器による verdict である。既存 log の事後解析では kernel action line を根拠に、Y1 は実 remount 5/5、Y2 は remount なし 5/5 と判定した。
+
+`test-powerfail.sh` の計測器を修正し、`remount_seen` と remount 時刻は kernel action line から取得する。driver marker は別 metric として保持する。Y1 と Y2 を同じ条件・回数で新しい run tag により各 5 回再実行する。採否基準は事前登録のままとし、remount の判定だけを kernel action line に基づける。この再試行 10 行を Y1/Y2 powerfail の verdict に使う。
+
 ## 条件
 
 | 項目 | 値 |
