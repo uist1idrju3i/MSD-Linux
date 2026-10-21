@@ -58,9 +58,9 @@ CI 実行 [39308965520](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/3
 
 2026-10-21 に C1（`BR2_PER_PACKAGE_DIRECTORIES=y` と top-level `make -j`）をローカルで 1 回ずつ比較しました。同一 commit、共有 DL_DIR、新規の空の ccache を使い、PPD run2 の top-level make は 2,298.974 秒、非 PPD base run3 は 3,004.838 秒でした。この 1 回では PPD が 705.864 秒（約 23.5%）短くなりましたが、再現性のある短縮率とは判断しません。target manifest は 1,064 paths 異なり、PPD では libv4l の `msgfmt` が per-package host path に見つからず、locale translation が生成されない差もありました。詳細は [CI 高速化 C1 の非 PPD 対照 build](../experiments/2026-10-21-ci8-ppd-control.md) を参照してください。
 
-この 1 回の結果だけでは採否を判断できない。追加反復と target 差の評価が必要である。registry cache、変更検知、cache の分割、job 分割、150 分の timeout も見直し候補である。有料の上位 runner は採用しない。
+この結果だけでは C1 を採用しません。追加反復と target 差の評価が必要です。registry cache、変更検知、cache の分割、job 分割、150 分の timeout も見直し候補です。有料の上位 runner は採用しません。
 
-標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たした。legal-info の package/version 13 組は一致した。後日の path-map 追試では、`v4l2-compliance` と `v4l2-ctl` に残った 217 B と 11,669 B の差を、埋め込まれる host path の長さで説明でき、成果物基準 3 も満たした。製品 build に `-ffile-prefix-map` を入れない場合、PPD の binary は path length に応じて異なる。`BR2_REPRODUCIBLE` の `$(BASE_DIR)=buildroot` map は per-package の suffix を残すため、この差を解消しない。PPD の採否は利用者が判断し、判断に先立つ post-build の seedrng 処理の修正を前提とする。run/job ID と計測値は [CI 比較の実験記録](../experiments/2026-10-21-ci8-ppd-ci.md)、成果物差の検証は [path-map 追試の記録](../experiments/2026-10-21-ci8-ppd-pathmap.md)、target 差の調査は [非 PPD 対照 build の記録](../experiments/2026-10-21-ci8-ppd-control.md)を参照する。
+標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たしました。legal-info の package/version 13 組はすべて一致する結果でした。後日の path-map 追試では、`v4l2-compliance` と `v4l2-ctl` に残った 217 B と 11,669 B の差を、埋め込まれる host path の長さで説明でき、成果物基準 3 も満たしました。製品 build に `-ffile-prefix-map` を入れない場合、PPD の binary は path length に応じて異なります。`BR2_REPRODUCIBLE` の `$(BASE_DIR)=buildroot` map は per-package の suffix を残すため、この差を解消しません。PPD の採否は利用者が判断します。判断に先立つ post-build の seedrng 処理の修正が前提となります。run/job ID と計測値は [CI 比較の実験記録](../experiments/2026-10-21-ci8-ppd-ci.md)、成果物差の検証は [path-map 追試の記録](../experiments/2026-10-21-ci8-ppd-pathmap.md)、target 差の調査は [非 PPD 対照 build の記録](../experiments/2026-10-21-ci8-ppd-control.md)を参照してください。
 
 ## Bootlin toolchain
 

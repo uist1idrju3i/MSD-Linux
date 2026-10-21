@@ -148,7 +148,7 @@ P0 の base r1/r2 は全 6 binary で一致し、開始時の hash とも一致�
 | `v4l2-ctl` | 116,500 → 116,532 B（+32）、raw 93,244、common prefix に 11,669 B 差と 8 B tail 差 | 10,392 B、286 | 7,968 B、656 |
 | `v4l2-dbg` | 22,458 → 22,474 B（+16）、raw 17,383、path/padding 除去後は一致 | 712 B、43 | 11,000 B、514 |
 
-shared library `ARIB-STD-B24.so` と `EN300-468-TAB00.so` では `.rodata` と `.data` が一致し、`.dynstr` だけが path length と同じ 19 B 増えた。全対象で `NEEDED` set と dynamic symbol name set は一致した。正規化した disassembly は `ldr` の decimal offset だけに差が残り、その offset を mask すると差は 0 行になった。
+以前の [非 PPD 対照 build の記録](2026-10-21-ci8-ppd-control.md) にある P0 解析では、shared library `ARIB-STD-B24.so` と `EN300-468-TAB00.so` の `.rodata` と `.data` が一致し、`.dynstr` だけが path length と同じ 19 B 増えた。今回の P1 ではこの 2 ファイルを比較対象に含めず、再確認していない。全対象で `NEEDED` set と dynamic symbol name set は一致した。正規化した disassembly は `ldr` の decimal offset だけに差が残り、その offset を mask すると差は 0 行になった。
 
 ### P1
 
@@ -181,7 +181,7 @@ P1 では map 前の host path が 6 binary から消え、base と PPD の全 6
 ## 限界
 
 - P1 は対象の libv4l build に `-ffile-prefix-map` を足した診断条件であり、製品 build の条件ではない。
-- 結果は指定した 6 binary と関連 shared library の比較である。全 package や全 root filesystem の再現性を証明しない。
+- P1 で比較したのは v4l-utils の 6 binary のみであり、shared library は含まない。全 package や全 root filesystem の再現性を証明しない。
 - QEMU と実機の性能・機能試験は行っていない。
 - CI が毎回 clean build であることは、この実験の local incremental failure が既存 CI run に影響しないという範囲の確認であり、別の CI 再利用方式には適用しない。
 
