@@ -48,7 +48,7 @@ RESEARCH.md から分割した節です。
 | 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](../../docs/research/power-and-updates.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
 | セキュリティ | [署名検証・公開鍵配置と鍵運用](../../docs/research/security-hardening.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
 | セキュリティ | [dm-verity と trusted root digest](../../docs/research/security-hardening.md) | root block 改ざん検知 | 起動 cmdline・digest管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | 未着手 |
-| セキュリティ | [`nosuid,nodev,noexec` と sysctl](../../docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | 未着手 |
+| セキュリティ | [`nosuid,nodev,noexec` と sysctl](../../docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | QEMU 確認済み・実機とアプリは未確認（[記録](../../docs/experiments/2026-10-21-qemu-data-noexec.md)） |
 | セキュリティ | [SSP / FORTIFY / RELRO / PIE](../../docs/research/security-hardening.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
 | セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](../../docs/research/security-hardening.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
 | セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](../../docs/research/security-hardening.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
