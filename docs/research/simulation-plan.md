@@ -107,6 +107,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | 調整項目の既定値 | sysctl、ブロックデバイス、モジュールパラメーター | [2026-10-19-tunables-dump](../experiments/2026-10-19-tunables-dump.md) |
 | `kernel8.img` の gzip 再圧縮 | 実装済み。`post-image.sh` が `pigz -11 -n` で圧縮し、展開結果を `cmp` で比べる。読み込み時間は実機で測る | #8（[BUILD.md](../BUILD.md)） |
 | `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](storage-and-flash.md)） |
+| Lynis による監査（QEMU のみ） | 製品イメージの監査を 3 回行い、結果が同じこと。指摘の分類。対応は sysctl 候補と S1・S14 で行う | [2026-10-21-qemu-lynis](../experiments/2026-10-21-qemu-lynis.md) |
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
 
@@ -134,7 +135,6 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | zram | 動作と RAM の使い方 | 小 |
 | dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
 | BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
-| Lynis | 生成イメージの監査 | 小 |
 
 #### 実機でしか検証できない項目
 
