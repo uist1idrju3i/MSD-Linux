@@ -103,6 +103,7 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MSD_DEV_REQUIRE_ATTESTATION: "1"
@@ -173,6 +174,7 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MSD_DEV_REQUIRE_ATTESTATION: "1"
@@ -298,6 +300,7 @@ jobs:
           PY
 
       - name: Show ccache statistics
+        shell: bash
         if: always()
         env:
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
