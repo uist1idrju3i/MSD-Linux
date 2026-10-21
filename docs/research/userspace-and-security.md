@@ -6,7 +6,7 @@
 | 項目 | 事実 | 出典URL | 確認度 |
 |---|---|---|---|
 | 静的リンク BusyBox | FAQ に「静的ビルドは `LDFLAGS=--static`」と記載。静的リンクのコスト/利点(共有ライブラリ読込の省略)は FAQ の「relocatable code, PIC, and static linking」節にある | https://busybox.net/FAQ.html | 一次 |
-| 最小アプレット選定 | `make menuconfig` でアプレット単位に選択できます（BusyBox の標準手順）。**CM0 向けの最小セットは未作成**です。実使用の洗い出しは `strace -f -e trace=execve,openat` などで記録し、使われたコマンドだけ残す方法が考えられます（手順案・推測）。 | https://busybox.net/FAQ.html<br>https://man7.org/linux/man-pages/man1/strace.1.html | 一次（ツール） / 推測（手順） |
+| 最小アプレット選定 | `make menuconfig` でアプレット単位に選択できます（BusyBox の標準手順）。QEMUの静的・動的調査から試験用の63 applet集合を作成し、起動とlinkを確認しました。保守・対話用を含む製品用の範囲は未決です（[実験記録](../experiments/2026-10-21-qemu-busybox.md)）。実使用の洗い出しは `strace -f -e trace=execve,openat` などで記録し、使われたコマンドだけ残す方法が考えられます（手順案・推測）。 | https://busybox.net/FAQ.html<br>https://man7.org/linux/man-pages/man1/strace.1.html | 一次（ツール） / 推測（手順） |
 | 依存確認 | `ldd` はターゲット実行になる場合があるため、クロス環境では `readelf -d`（NEEDED）で確認する方が安全との情報があります。根拠となる一次資料は未確認です。 | — | 推測 |
 | fork 削減 | シェルスクリプトの外部コマンド呼び出し(fork+exec)を減らす、BusyBox の `NOFORK/NOEXEC`(ash の組込み実行)機能など。**BusyBox の該当設定の一次確認は未実施** | — | 未確認 |
 

@@ -133,8 +133,8 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S4 ext4・F2FS・btrfs、S5 OverlayFS の方式 | 同じ負荷での fsck、mount、SIGKILL 後の回復、書き込み量 | 大 |
 | S17 ストレージの障害と速度の模擬 | dm-log-writes の再生、dm-flakey、QEMU の blkdebug | 大 |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残した版で） | 中 |
-| dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
-| BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
+| dm-verity | QEMUで改ざん拒否を確認済み。実機性能、A/B復旧、信頼できるroot digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)） | 中 |
+| BusyBox の applet を減らす、静的リンク | QEMUで静的リンクと63 appletを比較済み。製品用appletの範囲は未決（[記録](../experiments/2026-10-21-qemu-busybox.md)） | 中 |
 
 #### 実機でしか検証できない項目
 
@@ -154,7 +154,7 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 4. S1・S14 の本番（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む）と、任意機能のドライバーのモジュール化
 5. S13
 6. S16 → S4・S5・S17
-7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、残りの小項目（zram、dm-verity、BusyBox、Lynis）
+7. 起動時のファイルアクセスの観測と `mksquashfs -sort`、小項目（zram、dm-verity、BusyBox、Lynis）の記録
 
 ### 次の作業計画（2026-10-19 時点）
 

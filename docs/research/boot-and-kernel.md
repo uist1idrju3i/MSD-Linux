@@ -184,7 +184,7 @@
 | 電断検知 | 公式 docs の SW_DET = G6 と M5 overlay の `irq-gpios = <&gpio 6 0>`（falling）は、同じ GPIO6 で矛盾しません。GPIO6 は CM0 側の SW_DET です。M5IOE1 側の PYG6 は MIC_SW で別信号です。`disabled-gpios = <&m5ioe1 11 1>` が PYG12（LCD_RST）に当たるかは index + 1 の推論で未確認です。https://docs.m5stack.com/en/CardputerZero<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts#L289-L295 |
 | 書込み量と原子性 | rootfs を read-only にして書込みを最小化する案、ext4 `data=ordered`、更新時の atomic write が検討対象です。[電源と更新](power-and-updates.md) |
 | 電源喪失保護付き SD | UCSD の DAC 2011 論文などに PLP 付きストレージの記述があります。pSLC は eMMC 向けで microSD には適用できないとの情報があり、ベンダー主張は未検証です。[公開出典一覧](sources.md) |
-| dm-verity | CM0 に AES/SHA 命令がないとの前提と SHA-256 のソフトウェア実装コストは未確認です。A/B 切替時のみ全検証する案があります（推測）。確認先: https://developer.arm.com/documentation/ddi0500/latest/ |
+| dm-verity | QEMUでrootfs改ざん拒否を確認しました。CM0のSHA命令・実機性能・A/B切替時のみ全検証する案は未確認です（[QEMU記録](../experiments/2026-10-21-qemu-dm-verity.md)）。確認先: https://developer.arm.com/documentation/ddi0500/latest/ |
 | watchdog と復旧 | WDT、boot counter、最小復旧イメージは候補です。復旧方式は未決です。[電源と更新](power-and-updates.md) |
 | 電断試験 | `dm-flakey`、`dm-log-writes`、CrashMonkey などの障害注入が候補です。これらは実カードの FTL や実際の電源遮断を再現しません。[公開出典一覧](sources.md) |
 | スーパーキャパシタ | 筐体内に搭載するのは難しいとの見立てですが、寸法・電力条件の確認は未実施です（推測）。 |

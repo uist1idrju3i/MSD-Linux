@@ -1,0 +1,56 @@
+#!/bin/sh
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+run_probe() {
+	label="$1"
+	shift
+	printf '=bb=probe=%s=begin\n' "$label" >/dev/console
+	"$@" >/dev/console 2>&1
+	status=$?
+	printf '=bb=\t%s\trc\t%s\n' "$label" "$status" >/dev/console
+	return 0
+}
+
+run_probe id id -u root
+run_probe ls ls /
+run_probe date date
+run_probe ps ps
+
+mkdir -p /sys/kernel/tracing >/dev/null 2>&1
+tracefs_mounted=no
+while read -r _source mountpoint fstype rest; do
+	if [ "$mountpoint" = /sys/kernel/tracing ] &&
+		[ "$fstype" = tracefs ]; then
+		tracefs_mounted=yes
+	fi
+done </proc/mounts
+tracefs_status=0
+if [ "$tracefs_mounted" != yes ]; then
+	mount -t tracefs tracefs /sys/kernel/tracing >/dev/null 2>&1
+	tracefs_status=$?
+fi
+printf '=bb=tracefs-mount-exit=%s\n' "$tracefs_status" >/dev/console
+run_probe mount mount
+run_probe msd-update /usr/sbin/msd-update --help
+
+read -r start_uptime rest </proc/uptime
+loop_status=0
+i=0
+while [ "$i" -lt 1000 ]; do
+	/bin/true >/dev/console 2>&1 || loop_status=$?
+	i=$((i + 1))
+done
+read -r end_uptime rest </proc/uptime
+printf '=bb=exec-loop-start-uptime=%s\n' "$start_uptime" >/dev/console
+printf '=bb=exec-loop-end-uptime=%s\n' "$end_uptime" >/dev/console
+printf '=bb=exec-loop-status=%s\n' "$loop_status" >/dev/console
+
+printf '=bb=trace-begin\n' >/dev/console
+cat /sys/kernel/tracing/trace >/dev/console 2>&1
+trace_status=$?
+printf '=bb=trace-exit=%s\n' "$trace_status" >/dev/console
+printf '=bb=trace-end\n' >/dev/console
