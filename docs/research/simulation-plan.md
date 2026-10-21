@@ -109,6 +109,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](storage-and-flash.md)） |
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
+| zram（QEMU のみ） | zstd・lz4 とも `modprobe` から `swapon -p 100` まで動き、zswap は無効のまま。圧縮できないデータでは OOM になる。CPU の負荷は実機で確認する | [2026-10-21-qemu-zram](../experiments/2026-10-21-qemu-zram.md) |
 
 #### QEMU で検証できるが未実施
 
@@ -131,7 +132,6 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S4 ext4・F2FS・btrfs、S5 OverlayFS の方式 | 同じ負荷での fsck、mount、SIGKILL 後の回復、書き込み量 | 大 |
 | S17 ストレージの障害と速度の模擬 | dm-log-writes の再生、dm-flakey、QEMU の blkdebug | 大 |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残した版で） | 中 |
-| zram | 動作と RAM の使い方 | 小 |
 | dm-verity | 改ざんした rootfs で起動を拒むこと | 中 |
 | BusyBox の applet を減らす、静的リンク | 起動の回帰とサイズ | 中 |
 | Lynis | 生成イメージの監査 | 小 |

@@ -59,7 +59,7 @@ RESEARCH.md から分割した節です。
 | 試験・保守 | [ホストテスト（msd-update／msd-data-grow／msd-hwinfo）](../../.devin/wiki.json) | 更新・拡張・機器情報処理を回帰検査 | 低 | ホスト試験は実機の周辺機器動作を保証しない | tests/ 配下3 テスト一式／実機：全機能 | P1 | 採用済み |
 | 試験・保守 | [SSH / VPN 実装](../../docs/research/userspace-and-security.md) | 遠隔管理 | 鍵・更新・攻撃面 | 現方針では実装対象外 | QEMU: 不要 / 実機: 不要 | P3 | 不採用 |
 | 軽量化 | GPU メモリ／CMA 量の見直し | RAM の余地を評価 |調査・測定| 削減で表示機能を損なう可能性 | 実機で必要量を測る | P2 | 未着手 |
-| 軽量化 | zram／zswap の評価 | RAM 内の圧縮 swap を評価 |調査・測定| base defconfig は `ZRAM=m`／`ZSWAP=y`、実運用未確認 | QEMU・実機で評価 | P2 | 一部採用（base defconfig、実運用未確認） |
+| 軽量化 | zram／zswap の評価 | RAM 内の圧縮 swap を評価 |調査・測定| base defconfig は `ZRAM=m`／`ZSWAP=y`、実運用未確認 | QEMU・実機で評価 | P2 | 一部採用（base defconfig）。QEMU で zram swap の動作を確認、実機と製品への組み込みは未確認（[記録](../experiments/2026-10-21-qemu-zram.md)） |
 | 信頼性 | `kernel_watchdog_timeout` の OS 引継ぎ | watchdog 起動後給餌 |調査・測定| CM0 対応未確認 | QEMU・実機ハング/リセット | P1 | 一部採用（S01msd-watchdog、ファームウェア handover 未確認） |
 | 信頼性 | `get_throttled` 低電圧・温度記録 | 電源・温度異常を記録 |調査・測定| bit 0／16、3／19。実機未測定 | 実機 | P1 | 未着手 |
 | 信頼性 | `/data` fsck 時間 | 起動遅延を把握 |調査・測定| `fsck.ext4 -p` 実装済み、時間未測定 | QEMU・実機起動時間 | P1 | 一部採用（fsck 実装、時間未測定） |
