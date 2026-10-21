@@ -56,7 +56,7 @@ CI 実行 [39308965520](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/3
 | `build-time.log` の host-zstd | 43秒 |
 | `build-time.log` の host-python3 | 37秒 |
 
-2026-10-21 に C1（`BR2_PER_PACKAGE_DIRECTORIES=y` と top-level `make -j`）をローカルで 1 回ずつ比較しました。同一 commit、共有 DL_DIR、新規の空の ccache を使い、PPD run2 の top-level make は 2,298.974 秒、非 PPD base run3 は 3,004.838 秒でした。この 1 回では PPD が 705.864 秒（約 23.5%）短くなりましたが、再現性のある短縮率とは判断しません。target manifest は 1,064 paths 異なり、PPD では libv4l の `msgfmt` が per-package host path に見つからず、locale translation が生成されない差もありました。N は commit `39ccd23` から `d64fa91` への source 差を含みます。詳細は [CI 高速化 C1 の非 PPD 対照 build](../experiments/2026-10-21-ci8-ppd-control.md) を参照してください。
+2026-10-21 に C1（`BR2_PER_PACKAGE_DIRECTORIES=y` と top-level `make -j`）をローカルで 1 回ずつ比較しました。同一 commit、共有 DL_DIR、新規の空の ccache を使い、PPD run2 の top-level make は 2,298.974 秒、非 PPD base run3 は 3,004.838 秒でした。この 1 回では PPD が 705.864 秒（約 23.5%）短くなりましたが、再現性のある短縮率とは判断しません。target manifest は 1,064 paths 異なり、PPD では libv4l の `msgfmt` が per-package host path に見つからず、locale translation が生成されない差もありました。詳細は [CI 高速化 C1 の非 PPD 対照 build](../experiments/2026-10-21-ci8-ppd-control.md) を参照してください。
 
 この結果だけでは C1 を採用しません。追加反復と target 差の評価が必要です。registry cache、変更検知、cache の分割、job 分割、150 分の timeout も見直し候補です。有料の上位 runner は採用しません。
 

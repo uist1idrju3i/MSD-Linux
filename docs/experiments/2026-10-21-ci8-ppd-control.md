@@ -200,7 +200,7 @@ N・P の再生成は保存済み manifest に対して比較スクリプトを�
 
 ## CI 本番の後の追加調査
 
-対象は base run3 と PPD run2 の target にある gconv shared object 2 件と v4l-utils binary 6 件です。結果の比較には PR [#81](https://github.com/uist1idrju3i/MSD-Linux/pull/81) と PR [#82](https://github.com/uist1idrju3i/MSD-Linux/pull/82) の CI 記録も参照しました。
+対象は base run3 と PPD run2 の target にある gconv shared object 2 件と v4l-utils binary 6 件です。調査はローカルの 2 つの build の target で行い、Buildroot の再 build はしていません。
 
 ### gconv shared object
 
