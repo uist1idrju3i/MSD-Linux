@@ -61,12 +61,14 @@ esac
 append_args=(
 	"earlycon=pl011,mmio32,0x3f201000"
 	"console=ttyAMA1,115200"
-	"initcall_blacklist=bcm2835_wdt_driver_init"
 	"root=$ROOT_DEVICE"
 	"rootwait"
 	"ro"
 	"rootfstype=$ROOT_FSTYPE"
 )
+if [ "${QEMU_WATCHDOG:-0}" != 1 ]; then
+	append_args+=("initcall_blacklist=bcm2835_wdt_driver_init")
+fi
 if [ -n "$QEMU_EXTRA_APPEND" ]; then
 	read -r -a extra_append <<< "$QEMU_EXTRA_APPEND"
 	append_args+=("${extra_append[@]}")
@@ -79,8 +81,7 @@ if [ -n "${QEMU_QMP_SOCKET:-}" ]; then
 	qemu_args+=(-qmp "unix:${QEMU_QMP_SOCKET},server=on,wait=off")
 fi
 
-# Both Pi 3 DTBs map the PL011 to ttyAMA1; QEMU resets when bcm2835_wdt is armed.
-# Blacklist the watchdog only in QEMU; hardware watchdog behavior is unchanged.
+# Both Pi 3 DTBs map the PL011 to ttyAMA1; enable the QEMU watchdog model only on request.
 exec "$QEMU" "${qemu_args[@]}" -M "$QEMU_MACHINE" -m "$QEMU_MEMORY" \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
