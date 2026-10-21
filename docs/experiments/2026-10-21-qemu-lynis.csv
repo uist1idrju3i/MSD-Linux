@@ -1,0 +1,193 @@
+run,kind,id,value,valid,note
+run-r1,meta,log_sha256,fb7735a100e61726deef3b67948599b7199f4bae1d91d5b73ab8e19831d60887,1,
+run-r1,meta,finished,1,1,
+run-r1,meta,rc,0,1,
+run-r1,meta,lynis_version,3.1.7,1,
+run-r1,suggestion,AUTH-9262,Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc,1,
+run-r1,warning,AUTH-9308,No password set for single mode,1,
+run-r1,suggestion,AUTH-9308,Set password for single user mode to minimize physical access attack surface,1,
+run-r1,suggestion,AUTH-9328,"Default umask in /etc/init.d/rcS could not be found and defaults usually to 022, which could be more strict like 027",1,
+run-r1,suggestion,FILE-6310,"To decrease the impact of a full /var file system, place /var on a separate partition",1,
+run-r1,suggestion,USB-1000,"Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft",1,
+run-r1,suggestion,STRG-1846,"Disable drivers like firewire storage when not used, to prevent unauthorized storage or data theft",1,
+run-r1,suggestion,NAME-4028,Check DNS configuration for the dns domain name,1,
+run-r1,suggestion,PKGS-7398,Install a package audit tool to determine vulnerable packages,1,
+run-r1,suggestion,NETW-3200,Determine if protocol 'dccp' is really needed on this system,1,
+run-r1,suggestion,NETW-3200,Determine if protocol 'sctp' is really needed on this system,1,
+run-r1,suggestion,NETW-3200,Determine if protocol 'rds' is really needed on this system,1,
+run-r1,suggestion,NETW-3200,Determine if protocol 'tipc' is really needed on this system,1,
+run-r1,suggestion,FIRE-4590,Configure a firewall/packet filter to filter incoming and outgoing traffic,1,
+run-r1,suggestion,LOGG-2146,Check if log files are properly rotated,1,
+run-r1,suggestion,LOGG-2154,Enable logging to an external logging host for archiving purposes and additional protection,1,
+run-r1,suggestion,BANN-7126,"Add a legal banner to /etc/issue, to warn unauthorized users",1,
+run-r1,suggestion,ACCT-9622,Enable process accounting,1,
+run-r1,suggestion,ACCT-9626,Enable sysstat to collect accounting (no results),1,
+run-r1,suggestion,ACCT-9628,Enable auditd to collect audit information,1,
+run-r1,suggestion,TIME-3104,Use NTP daemon or NTP client to prevent time issues.,1,
+run-r1,suggestion,FINT-4350,Install a file integrity tool to monitor changes to critical and sensitive files,1,
+run-r1,suggestion,TOOL-5002,Determine if automation tools are present for system management,1,
+run-r1,suggestion,KRNL-6000,One or more sysctl values differ from the scan profile and could be tweaked,1,
+run-r1,suggestion,HRDN-7230,"Harden the system by installing at least one malware scanner, to perform periodic file system scans",1,
+run-r1,meta,lynis_tests_done,204,1,
+run-r1,meta,hardening_index,60,1,
+run-r1,meta,tests_executed_count,204,1,
+run-r1,meta,tests_executed_sha256,b08d9225e09024a4d8ab4f77209b9592d1652030fffe6aaadc00d7c05fe9e503,1,SHA-256 of sorted IDs joined by |
+run-r1,sysctl,dev.tty.ldisc_autoload,1,1,profile expects 0
+run-r1,sysctl,fs.protected_fifos,0,1,profile expects 2
+run-r1,sysctl,fs.protected_hardlinks,0,1,profile expects 1
+run-r1,sysctl,fs.protected_regular,0,1,profile expects 2
+run-r1,sysctl,fs.protected_symlinks,0,1,profile expects 1
+run-r1,sysctl,kernel.core_uses_pid,0,1,profile expects 1
+run-r1,sysctl,kernel.dmesg_restrict,0,1,profile expects 1
+run-r1,sysctl,kernel.kptr_restrict,0,1,profile expects 2
+run-r1,sysctl,kernel.modules_disabled,0,1,profile expects 1
+run-r1,sysctl,kernel.sysrq,502,1,profile expects 0
+run-r1,sysctl,kernel.unprivileged_bpf_disabled,2,1,profile expects 1
+run-r1,sysctl,net.core.bpf_jit_harden,0,1,profile expects 2
+run-r1,sysctl,net.ipv4.conf.all.accept_redirects,1,1,profile expects 0
+run-r1,sysctl,net.ipv4.conf.all.log_martians,0,1,profile expects 1
+run-r1,sysctl,net.ipv4.conf.all.rp_filter,0,1,profile expects 1
+run-r1,sysctl,net.ipv4.conf.all.send_redirects,1,1,profile expects 0
+run-r1,sysctl,net.ipv4.conf.default.accept_redirects,1,1,profile expects 0
+run-r1,sysctl,net.ipv4.conf.default.accept_source_route,1,1,profile expects 0
+run-r1,sysctl,net.ipv4.conf.default.log_martians,0,1,profile expects 1
+run-r1,meta,skipped_tests,272,1,
+run-r2,meta,log_sha256,cf5de49554ce04c9e0ea40c81cb1ed524d6833aa5588adc1cb3a219a38e51b09,1,
+run-r2,meta,finished,1,1,
+run-r2,meta,rc,0,1,
+run-r2,meta,lynis_version,3.1.7,1,
+run-r2,suggestion,AUTH-9262,Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc,1,
+run-r2,warning,AUTH-9308,No password set for single mode,1,
+run-r2,suggestion,AUTH-9308,Set password for single user mode to minimize physical access attack surface,1,
+run-r2,suggestion,AUTH-9328,"Default umask in /etc/init.d/rcS could not be found and defaults usually to 022, which could be more strict like 027",1,
+run-r2,suggestion,FILE-6310,"To decrease the impact of a full /var file system, place /var on a separate partition",1,
+run-r2,suggestion,USB-1000,"Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft",1,
+run-r2,suggestion,STRG-1846,"Disable drivers like firewire storage when not used, to prevent unauthorized storage or data theft",1,
+run-r2,suggestion,NAME-4028,Check DNS configuration for the dns domain name,1,
+run-r2,suggestion,PKGS-7398,Install a package audit tool to determine vulnerable packages,1,
+run-r2,suggestion,NETW-3200,Determine if protocol 'dccp' is really needed on this system,1,
+run-r2,suggestion,NETW-3200,Determine if protocol 'sctp' is really needed on this system,1,
+run-r2,suggestion,NETW-3200,Determine if protocol 'rds' is really needed on this system,1,
+run-r2,suggestion,NETW-3200,Determine if protocol 'tipc' is really needed on this system,1,
+run-r2,suggestion,FIRE-4590,Configure a firewall/packet filter to filter incoming and outgoing traffic,1,
+run-r2,suggestion,LOGG-2146,Check if log files are properly rotated,1,
+run-r2,suggestion,LOGG-2154,Enable logging to an external logging host for archiving purposes and additional protection,1,
+run-r2,suggestion,BANN-7126,"Add a legal banner to /etc/issue, to warn unauthorized users",1,
+run-r2,suggestion,ACCT-9622,Enable process accounting,1,
+run-r2,suggestion,ACCT-9626,Enable sysstat to collect accounting (no results),1,
+run-r2,suggestion,ACCT-9628,Enable auditd to collect audit information,1,
+run-r2,suggestion,TIME-3104,Use NTP daemon or NTP client to prevent time issues.,1,
+run-r2,suggestion,FINT-4350,Install a file integrity tool to monitor changes to critical and sensitive files,1,
+run-r2,suggestion,TOOL-5002,Determine if automation tools are present for system management,1,
+run-r2,suggestion,KRNL-6000,One or more sysctl values differ from the scan profile and could be tweaked,1,
+run-r2,suggestion,HRDN-7230,"Harden the system by installing at least one malware scanner, to perform periodic file system scans",1,
+run-r2,meta,lynis_tests_done,204,1,
+run-r2,meta,hardening_index,60,1,
+run-r2,meta,tests_executed_count,204,1,
+run-r2,meta,tests_executed_sha256,b08d9225e09024a4d8ab4f77209b9592d1652030fffe6aaadc00d7c05fe9e503,1,SHA-256 of sorted IDs joined by |
+run-r2,sysctl,dev.tty.ldisc_autoload,1,1,profile expects 0
+run-r2,sysctl,fs.protected_fifos,0,1,profile expects 2
+run-r2,sysctl,fs.protected_hardlinks,0,1,profile expects 1
+run-r2,sysctl,fs.protected_regular,0,1,profile expects 2
+run-r2,sysctl,fs.protected_symlinks,0,1,profile expects 1
+run-r2,sysctl,kernel.core_uses_pid,0,1,profile expects 1
+run-r2,sysctl,kernel.dmesg_restrict,0,1,profile expects 1
+run-r2,sysctl,kernel.kptr_restrict,0,1,profile expects 2
+run-r2,sysctl,kernel.modules_disabled,0,1,profile expects 1
+run-r2,sysctl,kernel.sysrq,502,1,profile expects 0
+run-r2,sysctl,kernel.unprivileged_bpf_disabled,2,1,profile expects 1
+run-r2,sysctl,net.core.bpf_jit_harden,0,1,profile expects 2
+run-r2,sysctl,net.ipv4.conf.all.accept_redirects,1,1,profile expects 0
+run-r2,sysctl,net.ipv4.conf.all.log_martians,0,1,profile expects 1
+run-r2,sysctl,net.ipv4.conf.all.rp_filter,0,1,profile expects 1
+run-r2,sysctl,net.ipv4.conf.all.send_redirects,1,1,profile expects 0
+run-r2,sysctl,net.ipv4.conf.default.accept_redirects,1,1,profile expects 0
+run-r2,sysctl,net.ipv4.conf.default.accept_source_route,1,1,profile expects 0
+run-r2,sysctl,net.ipv4.conf.default.log_martians,0,1,profile expects 1
+run-r2,meta,skipped_tests,272,1,
+run-r3,meta,log_sha256,78885165895dba59181331e3572d2e617d41b42aaa86755e3a6f05ccb32c3d18,1,
+run-r3,meta,finished,1,1,
+run-r3,meta,rc,0,1,
+run-r3,meta,lynis_version,3.1.7,1,
+run-r3,suggestion,AUTH-9262,Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc,1,
+run-r3,warning,AUTH-9308,No password set for single mode,1,
+run-r3,suggestion,AUTH-9308,Set password for single user mode to minimize physical access attack surface,1,
+run-r3,suggestion,AUTH-9328,"Default umask in /etc/init.d/rcS could not be found and defaults usually to 022, which could be more strict like 027",1,
+run-r3,suggestion,FILE-6310,"To decrease the impact of a full /var file system, place /var on a separate partition",1,
+run-r3,suggestion,USB-1000,"Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft",1,
+run-r3,suggestion,STRG-1846,"Disable drivers like firewire storage when not used, to prevent unauthorized storage or data theft",1,
+run-r3,suggestion,NAME-4028,Check DNS configuration for the dns domain name,1,
+run-r3,suggestion,PKGS-7398,Install a package audit tool to determine vulnerable packages,1,
+run-r3,suggestion,NETW-3200,Determine if protocol 'dccp' is really needed on this system,1,
+run-r3,suggestion,NETW-3200,Determine if protocol 'sctp' is really needed on this system,1,
+run-r3,suggestion,NETW-3200,Determine if protocol 'rds' is really needed on this system,1,
+run-r3,suggestion,NETW-3200,Determine if protocol 'tipc' is really needed on this system,1,
+run-r3,suggestion,FIRE-4590,Configure a firewall/packet filter to filter incoming and outgoing traffic,1,
+run-r3,suggestion,LOGG-2146,Check if log files are properly rotated,1,
+run-r3,suggestion,LOGG-2154,Enable logging to an external logging host for archiving purposes and additional protection,1,
+run-r3,suggestion,BANN-7126,"Add a legal banner to /etc/issue, to warn unauthorized users",1,
+run-r3,suggestion,ACCT-9622,Enable process accounting,1,
+run-r3,suggestion,ACCT-9626,Enable sysstat to collect accounting (no results),1,
+run-r3,suggestion,ACCT-9628,Enable auditd to collect audit information,1,
+run-r3,suggestion,TIME-3104,Use NTP daemon or NTP client to prevent time issues.,1,
+run-r3,suggestion,FINT-4350,Install a file integrity tool to monitor changes to critical and sensitive files,1,
+run-r3,suggestion,TOOL-5002,Determine if automation tools are present for system management,1,
+run-r3,suggestion,KRNL-6000,One or more sysctl values differ from the scan profile and could be tweaked,1,
+run-r3,suggestion,HRDN-7230,"Harden the system by installing at least one malware scanner, to perform periodic file system scans",1,
+run-r3,meta,lynis_tests_done,204,1,
+run-r3,meta,hardening_index,60,1,
+run-r3,meta,tests_executed_count,204,1,
+run-r3,meta,tests_executed_sha256,b08d9225e09024a4d8ab4f77209b9592d1652030fffe6aaadc00d7c05fe9e503,1,SHA-256 of sorted IDs joined by |
+run-r3,sysctl,dev.tty.ldisc_autoload,1,1,profile expects 0
+run-r3,sysctl,fs.protected_fifos,0,1,profile expects 2
+run-r3,sysctl,fs.protected_hardlinks,0,1,profile expects 1
+run-r3,sysctl,fs.protected_regular,0,1,profile expects 2
+run-r3,sysctl,fs.protected_symlinks,0,1,profile expects 1
+run-r3,sysctl,kernel.core_uses_pid,0,1,profile expects 1
+run-r3,sysctl,kernel.dmesg_restrict,0,1,profile expects 1
+run-r3,sysctl,kernel.kptr_restrict,0,1,profile expects 2
+run-r3,sysctl,kernel.modules_disabled,0,1,profile expects 1
+run-r3,sysctl,kernel.sysrq,502,1,profile expects 0
+run-r3,sysctl,kernel.unprivileged_bpf_disabled,2,1,profile expects 1
+run-r3,sysctl,net.core.bpf_jit_harden,0,1,profile expects 2
+run-r3,sysctl,net.ipv4.conf.all.accept_redirects,1,1,profile expects 0
+run-r3,sysctl,net.ipv4.conf.all.log_martians,0,1,profile expects 1
+run-r3,sysctl,net.ipv4.conf.all.rp_filter,0,1,profile expects 1
+run-r3,sysctl,net.ipv4.conf.all.send_redirects,1,1,profile expects 0
+run-r3,sysctl,net.ipv4.conf.default.accept_redirects,1,1,profile expects 0
+run-r3,sysctl,net.ipv4.conf.default.accept_source_route,1,1,profile expects 0
+run-r3,sysctl,net.ipv4.conf.default.log_martians,0,1,profile expects 1
+run-r3,meta,skipped_tests,272,1,
+pilot,meta,log_sha256,3c836b104cbcde250c7ef79a4f8ccc2cabc3ece269114b44f6113b80bdcfa366,1,
+pilot,meta,finished,1,1,
+pilot,meta,rc,0,1,
+pilot,meta,lynis_version,3.1.7,1,
+pilot,suggestion,AUTH-9262,Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc or libpam-passwdqc,1,
+pilot,warning,AUTH-9308,No password set for single mode,1,
+pilot,suggestion,AUTH-9308,Set password for single user mode to minimize physical access attack surface,1,
+pilot,suggestion,AUTH-9328,"Default umask in /etc/init.d/rcS could not be found and defaults usually to 022, which could be more strict like 027",1,
+pilot,suggestion,FILE-6310,"To decrease the impact of a full /var file system, place /var on a separate partition",1,
+pilot,suggestion,USB-1000,"Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft",1,
+pilot,suggestion,STRG-1846,"Disable drivers like firewire storage when not used, to prevent unauthorized storage or data theft",1,
+pilot,suggestion,NAME-4028,Check DNS configuration for the dns domain name,1,
+pilot,suggestion,PKGS-7398,Install a package audit tool to determine vulnerable packages,1,
+pilot,suggestion,NETW-3200,Determine if protocol 'dccp' is really needed on this system,1,
+pilot,suggestion,NETW-3200,Determine if protocol 'sctp' is really needed on this system,1,
+pilot,suggestion,NETW-3200,Determine if protocol 'rds' is really needed on this system,1,
+pilot,suggestion,NETW-3200,Determine if protocol 'tipc' is really needed on this system,1,
+pilot,suggestion,FIRE-4590,Configure a firewall/packet filter to filter incoming and outgoing traffic,1,
+pilot,suggestion,LOGG-2146,Check if log files are properly rotated,1,
+pilot,suggestion,LOGG-2154,Enable logging to an external logging host for archiving purposes and additional protection,1,
+pilot,suggestion,BANN-7126,"Add a legal banner to /etc/issue, to warn unauthorized users",1,
+pilot,suggestion,ACCT-9622,Enable process accounting,1,
+pilot,suggestion,ACCT-9626,Enable sysstat to collect accounting (no results),1,
+pilot,suggestion,ACCT-9628,Enable auditd to collect audit information,1,
+pilot,suggestion,TIME-3104,Use NTP daemon or NTP client to prevent time issues.,1,
+pilot,suggestion,FINT-4350,Install a file integrity tool to monitor changes to critical and sensitive files,1,
+pilot,suggestion,TOOL-5002,Determine if automation tools are present for system management,1,
+pilot,suggestion,KRNL-6000,One or more sysctl values differ from the scan profile and could be tweaked,1,
+pilot,suggestion,HRDN-7230,"Harden the system by installing at least one malware scanner, to perform periodic file system scans",1,
+pilot,meta,lynis_tests_done,204,1,
+pilot,meta,hardening_index,60,1,
+pilot,meta,tests_executed_count,204,1,
+pilot,meta,tests_executed_sha256,b08d9225e09024a4d8ab4f77209b9592d1652030fffe6aaadc00d7c05fe9e503,1,SHA-256 of sorted IDs joined by |
