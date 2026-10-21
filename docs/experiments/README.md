@@ -18,7 +18,7 @@
 | [2026-10-21-qemu-data-noexec](2026-10-21-qemu-data-noexec.md) | なし | 2026-10-21 | 完了 | QEMU のみ。`/data` に `noexec` を足しても起動と `/data` の準備は 5/5 で変わらず、直接実行だけが拒否された。`sh` 経由と `/etc` overlay 経由の実行は防げない。製品の設定は未変更。 |
 | [2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md) | なし | 2026-10-21 | 完了 | QEMU のみ。製品イメージを Lynis 3.1.7 で 3 回監査し、3 回とも同じ結果（hardening index 60、warning 1、suggestion 24）。指摘を当てはまる・当てはまらない・実機に分けた |
 | [2026-10-21-qemu-zram](2026-10-21-qemu-zram.md) | なし | 2026-10-21 | 完了 | QEMU のみ。zstd・lz4 とも 5/5 で zram swap が動き、zswap は無効のまま。設定は icount で 0.04〜0.05 秒。zero ページは zram を通らない。製品の設定は未変更 |
-| [2026-10-21-qemu-busybox](2026-10-21-qemu-busybox.md) | なし | 2026-10-21 | 完了 | QEMU icount のみ。静的リンクは ready 基準未達だが、1000回 exec は基準達成。63 applet は起動・loop を確認。製品設定は未変更。 |
-| [2026-10-21-qemu-dm-verity](2026-10-21-qemu-dm-verity.md) | なし | 2026-10-21 | 完了 | QEMU のみ。T0 5/5、T1〜T5 の改ざん拒否を確認。実機性能と信頼できる root digest は未確認。製品設定は未変更。 |
+| [2026-10-21-qemu-busybox](2026-10-21-qemu-busybox.md) | なし | 2026-10-21 | 完了 | 測定は QEMU icount のみで実施した。静的リンク条件では ready の基準に届かなかったが、1000 回の exec は基準を達成した。63 applet の条件では起動と loop を確認した。製品設定は未変更である。 |
+| [2026-10-21-qemu-dm-verity](2026-10-21-qemu-dm-verity.md) | なし | 2026-10-21 | 完了 | 測定は QEMU のみで実施した。T0 は 5/5 回 valid で、T1〜T5 の改ざんを拒否した。実機性能と信頼できる root digest は未確認である。製品設定は未変更である。 |
 | [2026-10-21-ci8-ppd-control](2026-10-21-ci8-ppd-control.md) | なし | 2026-10-21 | 完了（予備） | 同じ commit のローカル build を PPD あり・なしで 1 回ずつ比べた。PPD の top-level make は約 23.5 % 短かった。target の差は署名・時刻・生成鍵・埋め込み path・libv4l locale・gconv の RPATH 長で説明できたが、v4l-utils 2 binary の `.rodata` に差が残るため、採否は保留。 |
 | [2026-10-21-ci8-ppd-ci](2026-10-21-ci8-ppd-ci.md) | なし | 2026-10-21 | 完了（保留） | CI の標準 runner で C0 と C1（PPD）を warm-up 1 回と本番 5 回ずつ比べた。Buildroot の step の中央値は 1,218 → 832 秒（−31.7 %）で、時間の基準は満たした。v4l-utils の 2 binary に説明できない差が残るため、採否は保留。 |
