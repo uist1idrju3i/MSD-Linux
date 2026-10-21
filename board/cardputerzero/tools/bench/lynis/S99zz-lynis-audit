@@ -1,0 +1,25 @@
+#!/bin/sh
+# Test-only hook for the QEMU Lynis audit; never part of the normal image.
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+say() { printf '=lynis= %s\n' "$*" >/dev/console; }
+case " $(cat /proc/cmdline) " in
+	*" msd.lynis=1 "*) ;;
+	*) exit 0 ;;
+esac
+say begin
+cd /tmp || exit 0
+lynis audit system --quick --no-colors \
+	--logfile /tmp/lynis.log --report-file /tmp/lynis-report.dat >/tmp/lynis.out 2>&1
+say "rc=$?"
+grep -E '^(warning\[\]|suggestion\[\]|hardening_index|lynis_tests_done|tests_skipped\[\]|tests_executed|lynis_version)=' \
+	/tmp/lynis-report.dat | while IFS= read -r line; do say "$line"; done
+grep -F 'Result: sysctl key' /tmp/lynis.log | grep -F 'different' | cut -d' ' -f3- |
+	while IFS= read -r line; do say "sysctl $line"; done
+say "skipped_tests=$(grep -c 'Skipped test' /tmp/lynis.log)"
+grep -F 'Skipped test' /tmp/lynis.log | cut -d' ' -f3- |
+	while IFS= read -r line; do say "skip $line"; done
+say finished
