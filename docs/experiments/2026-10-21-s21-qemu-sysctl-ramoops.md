@@ -1,6 +1,6 @@
 # S21 sysctl 候補、panic 経路、QEMU の ramoops 試験
 
-- 状態: 計画（事前登録済み）
+- 状態: build 完了、試験開始前
 - 日付: 2026-10-21
 - 担当: Devin
 - 関連: [CPU・割り込み・sysctl](../research/cpu-irq-and-sysctl.md)、[simulation plan](../research/simulation-plan.md)
@@ -74,9 +74,9 @@ QEMU は system reset をまたいで RAM を保持する。実機の watchdog r
 | 基準の commit | `0cc65a9379acd9263e3de50522bafc5f1e5ba79e`（S11 watchdog branch、stacked PR） |
 | ホスト | Ubuntu 26.04.1 LTS、Linux 7.0.0-38-generic、x86_64 |
 | QEMU | msd-dev image `sha256:f9785d712ccab0dcb26ce2ebbad502c6c8a29a49000f56c60766fa7551b1d087`、QEMU 11.1.2、binary SHA-256 `7199b846fb617f519c80962e2008ee63d2ce73bd125c05b0206dfca1ed73f3a6` |
-| Buildroot / toolchain / kernel | Buildroot submodule `d6061d653d7fb215c2409c59e4bfad1b9d677215`、kernel `6.18.57-v8`。GCC と host tool の版は、試験に使う binary から記録する |
-| 出力と入力 | 既存 output tree を再利用する。`.config` SHA-256 `f80716ec65ffaf5e9c9691135116ef4cb85a99007cf4de91e4cfe9810278bb33`。試験前に defconfig と一致することを確認する |
-| base artifact SHA-256 | `Image` `3f3abfcbd8c0ce8c4f8beb230d2661b8fec745f80979837ee2d9917c377edcf4`、base DTB `e035db2336d4081dcaf76bf2d336404aca4d9421a8c0de8133e8962ef385c98f`、base rootfs `db6d3437d9b6b8324c030a31e9b03eb66947a85e0851c77802b9012bc1dbf8c4`、base `sdcard.img` `e9be1675b865f51f321209340f692b47869d4deb1ee038cfac681c7e78987165` |
+| Buildroot / toolchain / kernel | Buildroot `2026.08`、submodule `d6061d653d7fb215c2409c59e4bfad1b9d677215`、GCC `14.3.0`、kernel `6.18.57-v8`。実使用した DTC は `1.7.2`、SquashFS tools は `4.7.5`、sfdisk は util-linux `2.41.5` |
+| 出力と入力 | 基準 branch の output tree を完全 clean して再 build した。build 時の `.config` SHA-256 は `09a8a8f5292d6732b52faeac7dbca58fe3378c30c2fb7b73ea869879751c2647`。初期記録の `f80716ec...` から、S21 tree での defconfig 後は `9c8c6fab...`、基準 tree の defconfig 後は上記 hash になった。S21 tree と基準 tree の `.config` 比較では、差は外部 tree の path、version、defconfig path と生成 comment のみであり、package option に差はなかった |
+| base artifact SHA-256 | `Image` `df9ee366c5e24c8819da50512cf008708f769f72b1439f23390a16e668cea686`、base DTB `e035db2336d4081dcaf76bf2d336404aca4d9421a8c0de8133e8962ef385c98f`、base rootfs `683de811fd11d10949b3365c57599335274e168cd0cee449a994084c7a2a1879`、base `sdcard.img` `da1b172cb3be133896a92d77986f0f7bc7dddaf25f35bda47209a4761bba6930` |
 | QEMU machine / RAM | TCG、`raspi3ap`、512 MiB、base DTB `bcm2710-rpi-cm0.dtb` |
 | 条件と回数 | Y0/Y1 boot 各 5、Y1/Y2 powerfail 各 5、Y1 A/B 1、P0/P1/R0/R1 各 5 |
 | 変えない条件 | 製品 config と product files。全 variant は test-only rootfs または DTB copy とする |
@@ -84,7 +84,9 @@ QEMU は system reset をまたいで RAM を保持する。実機の watchdog r
 
 ## 手順
 
-結果を見る前にこの記録と CSV header を commit する。その後、`board/cardputerzero/tools/bench/sysctl-ramoops/` の builder で test-only variant を作り、同 directory の runner で上記の条件を実行する。`test-powerfail.sh` は `POWERFAIL_IMAGE` で variant image を指定し、`test-ab.sh` と `test-boot.sh` は変更せずに使う。実行 command、tool version、variant hash、log manifest は結果の追記に残す。
+結果を見る前にこの記録と CSV header を commit した。Buildroot は既存 output tree を再利用して `make clean` の後に build した。build log は `s21-logs/buildroot-clean-envfix.log` に保存した。初回の 3 build は BusyBox の target install で失敗し、clean 後の build も host-skeleton install で一度失敗した。失敗 log と詳細は「失敗した試行と経緯」に残す。成功 build の `make` は `BASH_ENV` を unset して実行した。
+
+次に `board/cardputerzero/tools/bench/sysctl-ramoops/` の builder で test-only variant を作り、同 directory の runner で上記の条件を実行する。`test-powerfail.sh` は `POWERFAIL_IMAGE` で variant image を指定し、`test-ab.sh` と `test-boot.sh` は変更せずに使う。実行 command、variant hash、log manifest は結果の追記に残す。
 
 ## 計測器の検証
 
@@ -96,7 +98,16 @@ QEMU は system reset をまたいで RAM を保持する。実機の watchdog r
 
 ## 失敗した試行と経緯
 
-未実施。実行した失敗試行は削除せず、CSV と log manifest に残す。条件や値を変える場合は、対象 run の前に時刻と理由を Amendment として記録する。
+測定 run はまだない。Buildroot の失敗した build attempt は `s21-logs/` に残し、最終 manifest に含める。最初の 3 回は S21 tree または基準 tree の defconfig 後に BusyBox 1.38.0 の target install で失敗した。ログには次の結果がある。
+
+```text
+>>> busybox 1.38.0 Installing to target
+# Use the 'noclobber' install rule, to prevent BusyBox from overwriting
+make[1]: *** [package/pkg-generic.mk:364: .../busybox-1.38.0/.stamp_target_installed] Error 1
+make: *** [Makefile:23: _all] Error 2
+```
+
+この時点では失敗した install command を特定できなかった。既存 output tree を clean して再 build した際は、host-skeleton の host install で一度失敗した。`make V=1` と shell trace でも command は特定できず、`BASH_ENV` を unset した `make` の再実行で build が完了した。clean build の warning は 273 件で、主に上流 package の configure、compiler、Python packaging warning だった。測定条件を変えた試行はない。条件や値を変える場合は、対象 run の前に時刻と理由を Amendment として記録する。
 
 ## 結論
 
