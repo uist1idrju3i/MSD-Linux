@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 cmdline=" $(cat /proc/cmdline) "
 stat_file="${MSD_S3_STAT_PATH:-/sys/class/block/mmcblk0p7/stat}"
 data_dir="${MSD_S3_DATA_DIR:-/data}"

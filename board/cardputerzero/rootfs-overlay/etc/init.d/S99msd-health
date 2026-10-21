@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 status="$(msd-update status 2>/dev/null)" || exit 0
 case "$status" in
 	*'tryboot=1'*) ;;
