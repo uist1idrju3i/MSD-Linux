@@ -17,3 +17,4 @@
 | [2026-10-20-qemu-powerfail-gpio6](2026-10-20-qemu-powerfail-gpio6.md) | なし | 2026-10-20 | 完了 | 1.5 秒・5 秒の各 5 試行と post-rebase integrity は基準を満たした。SIGKILL による試験であり、実機では未確認。 |
 | [2026-10-21-qemu-data-noexec](2026-10-21-qemu-data-noexec.md) | なし | 2026-10-21 | 完了 | QEMU のみ。`/data` に `noexec` を足しても起動と `/data` の準備は 5/5 で変わらず、直接実行だけが拒否された。`sh` 経由と `/etc` overlay 経由の実行は防げない。製品の設定は未変更。 |
 | [2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md) | なし | 2026-10-21 | 完了 | QEMU のみ。製品イメージを Lynis 3.1.7 で 3 回監査し、3 回とも同じ結果（hardening index 60、warning 1、suggestion 24）。指摘を当てはまる・当てはまらない・実機に分けた |
+| [2026-10-21-qemu-zram](2026-10-21-qemu-zram.md) | なし | 2026-10-21 | 完了 | QEMU のみ。zstd・lz4 とも 5/5 で zram swap が動き、zswap は無効のまま。設定は icount で 0.04〜0.05 秒。zero ページは zram を通らない。製品の設定は未変更 |
