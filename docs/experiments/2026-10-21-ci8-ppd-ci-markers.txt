@@ -1,0 +1,762 @@
+# c0 warmup run_id=39539939275 job_id=119025162911 sha=9e07682d173da856fad6cf13aa86a9dbea1566c0
+2026-10-21T04:01:16.7666323Z =ci-meta=	job_started_at	2026-10-21T03:41:26Z
+2026-10-21T04:01:16.7666888Z =step-time=	1	Set up job	2026-10-21T03:41:27Z	2026-10-21T03:41:29Z	2	success
+2026-10-21T04:01:16.7667482Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T03:41:29Z	2026-10-21T03:41:39Z	10	success
+2026-10-21T04:01:16.7668018Z =step-time=	3	Log in to GHCR	2026-10-21T03:41:39Z	2026-10-21T03:41:40Z	1	success
+2026-10-21T04:01:16.7668442Z =step-time=	4	Ensure development image	2026-10-21T03:41:40Z	2026-10-21T03:41:56Z	16	success
+2026-10-21T04:01:16.7669048Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T03:41:56Z	2026-10-21T03:42:04Z	8	success
+2026-10-21T04:01:16.7670232Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T03:42:04Z	2026-10-21T03:42:13Z	9	success
+2026-10-21T04:01:16.7670808Z =step-time=	7	Configure Buildroot	2026-10-21T03:42:13Z	2026-10-21T03:42:22Z	9	success
+2026-10-21T04:01:16.7671294Z =step-time=	8	Build image and legal information	2026-10-21T03:42:22Z	2026-10-21T03:59:26Z	1024	success
+2026-10-21T04:01:16.7671778Z =step-time=	9	Check module dependency index	2026-10-21T03:59:26Z	2026-10-21T03:59:26Z	0	success
+2026-10-21T04:01:16.7672291Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T03:59:26Z	2026-10-21T03:59:27Z	1	success
+2026-10-21T04:01:16.7672758Z =step-time=	11	Generate SBOM	2026-10-21T03:59:27Z	2026-10-21T03:59:33Z	6	success
+2026-10-21T04:01:16.7673193Z =step-time=	12	Run kernel hardening checker	2026-10-21T03:59:33Z	2026-10-21T03:59:35Z	2	success
+2026-10-21T04:01:16.7673694Z =step-time=	13	Summarize kernel hardening results	2026-10-21T03:59:35Z	2026-10-21T03:59:35Z	0	success
+2026-10-21T04:01:16.7674165Z =step-time=	14	Show ccache statistics	2026-10-21T03:59:35Z	2026-10-21T03:59:35Z	0	success
+2026-10-21T04:01:16.7674617Z =step-time=	15	Check image partition layout	2026-10-21T03:59:35Z	2026-10-21T03:59:36Z	1	success
+2026-10-21T04:01:16.7675096Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T03:59:36Z	2026-10-21T03:59:36Z	0	success
+2026-10-21T04:01:16.7675541Z =step-time=	17	QEMU smoke test	2026-10-21T03:59:36Z	2026-10-21T03:59:48Z	12	success
+2026-10-21T04:01:16.7675973Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T03:59:48Z	2026-10-21T04:00:00Z	12	success
+2026-10-21T04:01:16.7676429Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T04:00:00Z	2026-10-21T04:00:12Z	12	success
+2026-10-21T04:01:16.7677016Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:00:12Z	2026-10-21T04:00:13Z	1	success
+2026-10-21T04:01:16.7677579Z =step-time=	21	Package artifacts	2026-10-21T04:00:13Z	2026-10-21T04:00:50Z	37	success
+2026-10-21T04:01:16.7678140Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:00:50Z	2026-10-21T04:01:10Z	20	success
+2026-10-21T04:01:16.7678826Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:01:10Z	2026-10-21T04:01:10Z	0	skipped
+2026-10-21T04:01:16.7679470Z =step-time=	24	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:01:10Z	2026-10-21T04:01:16Z	6	success
+2026-10-21T04:01:16.7691033Z =ci-meta=	ensure	published
+2026-10-21T04:01:16.7701591Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T04:01:16.7701943Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T04:01:16.7702258Z =ci-meta=	ccache	    Direct:         15431 / 15900 (97.05%)
+2026-10-21T04:01:16.7702559Z =ci-meta=	ccache	    Preprocessed:     469 / 15900 ( 2.95%)
+2026-10-21T04:01:16.7702844Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T04:01:16.7703148Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T04:01:16.7703419Z =ci-meta=	ccache	Local storage:
+2026-10-21T04:01:16.7703678Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.37%)
+2026-10-21T04:01:16.7703964Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T04:01:16.7704245Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T04:01:16.7825101Z =br-time=	wall	948.7
+2026-10-21T04:01:16.7825341Z =br-time=	unmatched	0
+2026-10-21T04:01:16.7825559Z =br-time=	step	build	505.5
+2026-10-21T04:01:16.7825793Z =br-time=	step	configure	242.0
+2026-10-21T04:01:16.7826031Z =br-time=	step	install-target	45.6
+2026-10-21T04:01:16.7826269Z =br-time=	step	extract	19.6
+2026-10-21T04:01:16.7826501Z =br-time=	step	install-host	12.7
+2026-10-21T04:01:16.7826749Z =br-time=	step	install-staging	4.8
+2026-10-21T04:01:16.7826986Z =br-time=	step	patch	4.1
+2026-10-21T04:01:16.7827200Z =br-time=	step	download	1.5
+2026-10-21T04:01:16.7827418Z =br-time=	step	install-image	0.6
+2026-10-21T04:01:16.7827830Z =br-time=	step	rsync	0.1
+2026-10-21T04:01:16.7828064Z =br-time=	package	linux	375.1
+2026-10-21T04:01:16.7828304Z =br-time=	package	host-ccache	58.2
+2026-10-21T04:01:16.7828554Z =br-time=	package	host-python3	32.0
+2026-10-21T04:01:16.7828797Z =br-time=	package	host-m4	30.5
+2026-10-21T04:01:16.7829034Z =br-time=	package	util-linux	25.6
+2026-10-21T04:01:16.7829281Z =br-time=	package	host-util-linux	25.1
+2026-10-21T04:01:16.7829536Z =br-time=	package	host-zstd	22.3
+2026-10-21T04:01:16.7829770Z =br-time=	package	libopenssl	22.1
+2026-10-21T04:01:16.7830002Z =br-time=	package	host-libopenssl	21.6
+2026-10-21T04:01:16.7830430Z =br-time=	package	host-bison	20.7
+2026-10-21T04:01:16.7830656Z =br-time=	package	busybox	20.1
+2026-10-21T04:01:16.7830882Z =br-time=	package	host-libarchive	14.6
+2026-10-21T04:01:16.7831112Z =br-time=	package	e2fsprogs	13.2
+2026-10-21T04:01:16.7831343Z =br-time=	package	host-xz	12.8
+2026-10-21T04:01:16.7831561Z =br-time=	package	kbd	10.9
+# c1 warmup run_id=39539945854 job_id=119025193725 sha=18896af87f958b243bea7f9792f64c58cf1a1bfe
+2026-10-21T04:33:11.5521615Z =ci-meta=	job_started_at	2026-10-21T03:41:33Z
+2026-10-21T04:33:11.5522355Z =step-time=	1	Set up job	2026-10-21T03:41:33Z	2026-10-21T03:41:34Z	1	success
+2026-10-21T04:33:11.5523170Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T03:41:34Z	2026-10-21T03:41:42Z	8	success
+2026-10-21T04:33:11.5523800Z =step-time=	3	Log in to GHCR	2026-10-21T03:41:42Z	2026-10-21T03:41:42Z	0	success
+2026-10-21T04:33:11.5524304Z =step-time=	4	Ensure development image	2026-10-21T03:41:42Z	2026-10-21T03:41:59Z	17	success
+2026-10-21T04:33:11.5524968Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T03:41:59Z	2026-10-21T03:42:05Z	6	success
+2026-10-21T04:33:11.5526116Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T03:42:05Z	2026-10-21T03:42:11Z	6	success
+2026-10-21T04:33:11.5526761Z =step-time=	7	Configure Buildroot	2026-10-21T03:42:11Z	2026-10-21T03:42:20Z	9	success
+2026-10-21T04:33:11.5527562Z =step-time=	8	Build image and legal information	2026-10-21T03:42:20Z	2026-10-21T04:31:02Z	2922	success
+2026-10-21T04:33:11.5528158Z =step-time=	9	Check module dependency index	2026-10-21T04:31:02Z	2026-10-21T04:31:03Z	1	success
+2026-10-21T04:33:11.5528766Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T04:31:03Z	2026-10-21T04:31:03Z	0	success
+2026-10-21T04:33:11.5529332Z =step-time=	11	Generate SBOM	2026-10-21T04:31:03Z	2026-10-21T04:31:11Z	8	success
+2026-10-21T04:33:11.5529844Z =step-time=	12	Run kernel hardening checker	2026-10-21T04:31:11Z	2026-10-21T04:31:13Z	2	success
+2026-10-21T04:33:11.5530407Z =step-time=	13	Summarize kernel hardening results	2026-10-21T04:31:13Z	2026-10-21T04:31:13Z	0	success
+2026-10-21T04:33:11.5530965Z =step-time=	14	Show ccache statistics	2026-10-21T04:31:13Z	2026-10-21T04:31:15Z	2	success
+2026-10-21T04:33:11.5531497Z =step-time=	15	Check image partition layout	2026-10-21T04:31:15Z	2026-10-21T04:31:15Z	0	success
+2026-10-21T04:33:11.5532062Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T04:31:15Z	2026-10-21T04:31:15Z	0	success
+2026-10-21T04:33:11.5532686Z =step-time=	17	QEMU smoke test	2026-10-21T04:31:15Z	2026-10-21T04:31:29Z	14	success
+2026-10-21T04:33:11.5533190Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T04:31:29Z	2026-10-21T04:31:43Z	14	success
+2026-10-21T04:33:11.5533735Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T04:31:43Z	2026-10-21T04:31:56Z	13	success
+2026-10-21T04:33:11.5534473Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:31:56Z	2026-10-21T04:31:57Z	1	success
+2026-10-21T04:33:11.5535305Z =step-time=	21	Package artifacts	2026-10-21T04:31:57Z	2026-10-21T04:32:39Z	42	success
+2026-10-21T04:33:11.5536188Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:32:39Z	2026-10-21T04:33:02Z	23	success
+2026-10-21T04:33:11.5536966Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:33:02Z	2026-10-21T04:33:05Z	3	success
+2026-10-21T04:33:11.5545512Z =ci-meta=	ensure	published
+2026-10-21T04:33:11.5557283Z =ci-meta=	ccache	Cacheable calls:    15911 / 21937 (72.53%)
+2026-10-21T04:33:11.5557772Z =ci-meta=	ccache	  Hits:              6863 / 15911 (43.13%)
+2026-10-21T04:33:11.5558148Z =ci-meta=	ccache	    Direct:          2301 /  6863 (33.53%)
+2026-10-21T04:33:11.5558530Z =ci-meta=	ccache	    Preprocessed:    4562 /  6863 (66.47%)
+2026-10-21T04:33:11.5558901Z =ci-meta=	ccache	  Misses:            9048 / 15911 (56.87%)
+2026-10-21T04:33:11.5559273Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T04:33:11.5559635Z =ci-meta=	ccache	Errors:                 3 / 21937 ( 0.01%)
+2026-10-21T04:33:11.5559997Z =ci-meta=	ccache	Local storage:
+2026-10-21T04:33:11.5560320Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.20%)
+2026-10-21T04:33:11.5560676Z =ci-meta=	ccache	  Hits:              6863 / 15911 (43.13%)
+2026-10-21T04:33:11.5561032Z =ci-meta=	ccache	  Misses:            9048 / 15911 (56.87%)
+2026-10-21T04:33:11.5741160Z =br-time=	wall	2837.6
+2026-10-21T04:33:11.5741497Z =br-time=	unmatched	0
+2026-10-21T04:33:11.5741803Z =br-time=	step	build	3709.4
+2026-10-21T04:33:11.5742149Z =br-time=	step	configure	441.5
+2026-10-21T04:33:11.5742411Z =br-time=	step	extract	41.8
+2026-10-21T04:33:11.5742670Z =br-time=	step	install-target	41.8
+2026-10-21T04:33:11.5742954Z =br-time=	step	install-host	22.4
+2026-10-21T04:33:11.5743222Z =br-time=	step	download	16.6
+2026-10-21T04:33:11.5743472Z =br-time=	step	patch	14.8
+2026-10-21T04:33:11.5743737Z =br-time=	step	install-staging	6.9
+2026-10-21T04:33:11.5744011Z =br-time=	step	install-image	1.0
+2026-10-21T04:33:11.5744278Z =br-time=	step	rsync	0.4
+2026-10-21T04:33:11.5744781Z =br-time=	package	linux	2438.0
+2026-10-21T04:33:11.5745059Z =br-time=	package	libopenssl	417.3
+2026-10-21T04:33:11.5745333Z =br-time=	package	util-linux	150.0
+2026-10-21T04:33:11.5745600Z =br-time=	package	libv4l	147.2
+2026-10-21T04:33:11.5745871Z =br-time=	package	host-libopenssl	130.4
+2026-10-21T04:33:11.5746168Z =br-time=	package	busybox	129.0
+2026-10-21T04:33:11.5746462Z =br-time=	package	e2fsprogs	100.6
+2026-10-21T04:33:11.5746738Z =br-time=	package	host-python3	88.1
+2026-10-21T04:33:11.5747141Z =br-time=	package	host-util-linux	67.9
+2026-10-21T04:33:11.5747540Z =br-time=	package	host-ccache	63.2
+2026-10-21T04:33:11.5747815Z =br-time=	package	host-m4	52.7
+2026-10-21T04:33:11.5748089Z =br-time=	package	host-e2fsprogs	42.4
+2026-10-21T04:33:11.5748376Z =br-time=	package	host-libarchive	37.7
+2026-10-21T04:33:11.5748647Z =br-time=	package	kbd	35.2
+2026-10-21T04:33:11.5748938Z =br-time=	package	host-bison	35.2
+# c0 r1 run_id=39544791479 job_id=119040435652 sha=b6344927efbc2dc92e4e68d1d4aa45b59743c871
+2026-10-21T04:58:32.7450803Z =ci-meta=	job_started_at	2026-10-21T04:34:46Z
+2026-10-21T04:58:32.7451574Z =step-time=	1	Set up job	2026-10-21T04:34:47Z	2026-10-21T04:34:48Z	1	success
+2026-10-21T04:58:32.7452696Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T04:34:48Z	2026-10-21T04:34:59Z	11	success
+2026-10-21T04:58:32.7453400Z =step-time=	3	Log in to GHCR	2026-10-21T04:34:59Z	2026-10-21T04:34:59Z	0	success
+2026-10-21T04:58:32.7453972Z =step-time=	4	Ensure development image	2026-10-21T04:34:59Z	2026-10-21T04:35:20Z	21	success
+2026-10-21T04:58:32.7454756Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:35:20Z	2026-10-21T04:35:28Z	8	success
+2026-10-21T04:58:32.7456212Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:35:28Z	2026-10-21T04:35:37Z	9	success
+2026-10-21T04:58:32.7456965Z =step-time=	7	Configure Buildroot	2026-10-21T04:35:37Z	2026-10-21T04:35:43Z	6	success
+2026-10-21T04:58:32.7457582Z =step-time=	8	Build image and legal information	2026-10-21T04:35:43Z	2026-10-21T04:56:23Z	1240	success
+2026-10-21T04:58:32.7458230Z =step-time=	9	Check module dependency index	2026-10-21T04:56:23Z	2026-10-21T04:56:23Z	0	success
+2026-10-21T04:58:32.7458975Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T04:56:23Z	2026-10-21T04:56:25Z	2	success
+2026-10-21T04:58:32.7459591Z =step-time=	11	Generate SBOM	2026-10-21T04:56:25Z	2026-10-21T04:56:34Z	9	success
+2026-10-21T04:58:32.7460153Z =step-time=	12	Run kernel hardening checker	2026-10-21T04:56:34Z	2026-10-21T04:56:35Z	1	success
+2026-10-21T04:58:32.7460795Z =step-time=	13	Summarize kernel hardening results	2026-10-21T04:56:35Z	2026-10-21T04:56:35Z	0	success
+2026-10-21T04:58:32.7461415Z =step-time=	14	Show ccache statistics	2026-10-21T04:56:35Z	2026-10-21T04:56:36Z	1	success
+2026-10-21T04:58:32.7462009Z =step-time=	15	Check image partition layout	2026-10-21T04:56:36Z	2026-10-21T04:56:36Z	0	success
+2026-10-21T04:58:32.7462766Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T04:56:36Z	2026-10-21T04:56:36Z	0	success
+2026-10-21T04:58:32.7463345Z =step-time=	17	QEMU smoke test	2026-10-21T04:56:36Z	2026-10-21T04:56:52Z	16	success
+2026-10-21T04:58:32.7463886Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T04:56:52Z	2026-10-21T04:57:06Z	14	success
+2026-10-21T04:58:32.7464478Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T04:57:06Z	2026-10-21T04:57:21Z	15	success
+2026-10-21T04:58:32.7465503Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:57:21Z	2026-10-21T04:57:22Z	1	success
+2026-10-21T04:58:32.7466246Z =step-time=	21	Package artifacts	2026-10-21T04:57:22Z	2026-10-21T04:58:02Z	40	success
+2026-10-21T04:58:32.7466982Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:58:02Z	2026-10-21T04:58:26Z	24	success
+2026-10-21T04:58:32.7467874Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:58:26Z	2026-10-21T04:58:26Z	0	skipped
+2026-10-21T04:58:32.7468735Z =step-time=	24	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:58:26Z	2026-10-21T04:58:32Z	6	success
+2026-10-21T04:58:32.7479929Z =ci-meta=	ensure	published
+2026-10-21T04:58:32.7492614Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T04:58:32.7493321Z =ci-meta=	ccache	  Hits:             15889 / 15917 (99.82%)
+2026-10-21T04:58:32.7493987Z =ci-meta=	ccache	    Direct:         15420 / 15889 (97.05%)
+2026-10-21T04:58:32.7494665Z =ci-meta=	ccache	    Preprocessed:     469 / 15889 ( 2.95%)
+2026-10-21T04:58:32.7495568Z =ci-meta=	ccache	  Misses:              28 / 15917 ( 0.18%)
+2026-10-21T04:58:32.7496269Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T04:58:32.7496703Z =ci-meta=	ccache	Local storage:
+2026-10-21T04:58:32.7497048Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.38%)
+2026-10-21T04:58:32.7497422Z =ci-meta=	ccache	  Hits:             15889 / 15917 (99.82%)
+2026-10-21T04:58:32.7497783Z =ci-meta=	ccache	  Misses:              28 / 15917 ( 0.18%)
+2026-10-21T04:58:32.7678934Z =br-time=	wall	1147.7
+2026-10-21T04:58:32.7679724Z =br-time=	unmatched	0
+2026-10-21T04:58:32.7680233Z =br-time=	step	build	673.7
+2026-10-21T04:58:32.7680736Z =br-time=	step	configure	262.8
+2026-10-21T04:58:32.7681252Z =br-time=	step	install-target	44.7
+2026-10-21T04:58:32.7681784Z =br-time=	step	extract	22.6
+2026-10-21T04:58:32.7682299Z =br-time=	step	install-host	16.3
+2026-10-21T04:58:32.7682831Z =br-time=	step	install-staging	5.2
+2026-10-21T04:58:32.7683359Z =br-time=	step	patch	4.4
+2026-10-21T04:58:32.7683809Z =br-time=	step	download	1.7
+2026-10-21T04:58:32.7684280Z =br-time=	step	install-image	0.8
+2026-10-21T04:58:32.7685215Z =br-time=	step	rsync	0.2
+2026-10-21T04:58:32.7685657Z =br-time=	package	linux	486.1
+2026-10-21T04:58:32.7686150Z =br-time=	package	host-ccache	77.4
+2026-10-21T04:58:32.7686705Z =br-time=	package	host-python3	35.1
+2026-10-21T04:58:32.7687290Z =br-time=	package	util-linux	30.8
+2026-10-21T04:58:32.7687829Z =br-time=	package	host-m4	30.7
+2026-10-21T04:58:32.7688341Z =br-time=	package	host-zstd	30.3
+2026-10-21T04:58:32.7688886Z =br-time=	package	host-libopenssl	30.2
+2026-10-21T04:58:32.7689447Z =br-time=	package	host-util-linux	29.3
+2026-10-21T04:58:32.7689953Z =br-time=	package	libopenssl	28.8
+2026-10-21T04:58:32.7690481Z =br-time=	package	busybox	24.1
+2026-10-21T04:58:32.7690979Z =br-time=	package	host-bison	23.0
+2026-10-21T04:58:32.7691488Z =br-time=	package	host-xz	15.8
+2026-10-21T04:58:32.7692008Z =br-time=	package	host-libarchive	15.1
+2026-10-21T04:58:32.7692543Z =br-time=	package	kbd	13.4
+2026-10-21T04:58:32.7693071Z =br-time=	package	e2fsprogs	13.1
+# c1 r1 run_id=39544793067 job_id=119040434773 sha=df67c29a2fe2e958bbd871b924fef3cf78a3f245
+2026-10-21T04:48:54.3724241Z =ci-meta=	job_started_at	2026-10-21T04:34:45Z
+2026-10-21T04:48:54.3724693Z =step-time=	1	Set up job	2026-10-21T04:34:46Z	2026-10-21T04:34:47Z	1	success
+2026-10-21T04:48:54.3725102Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T04:34:47Z	2026-10-21T04:34:54Z	7	success
+2026-10-21T04:48:54.3725515Z =step-time=	3	Log in to GHCR	2026-10-21T04:34:54Z	2026-10-21T04:34:55Z	1	success
+2026-10-21T04:48:54.3725835Z =step-time=	4	Ensure development image	2026-10-21T04:34:55Z	2026-10-21T04:35:13Z	18	success
+2026-10-21T04:48:54.3726256Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:35:13Z	2026-10-21T04:35:19Z	6	success
+2026-10-21T04:48:54.3727124Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:35:19Z	2026-10-21T04:35:29Z	10	success
+2026-10-21T04:48:54.3727531Z =step-time=	7	Configure Buildroot	2026-10-21T04:35:29Z	2026-10-21T04:35:38Z	9	success
+2026-10-21T04:48:54.3727883Z =step-time=	8	Build image and legal information	2026-10-21T04:35:38Z	2026-10-21T04:47:16Z	698	success
+2026-10-21T04:48:54.3728244Z =step-time=	9	Check module dependency index	2026-10-21T04:47:16Z	2026-10-21T04:47:16Z	0	success
+2026-10-21T04:48:54.3728620Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T04:47:16Z	2026-10-21T04:47:17Z	1	success
+2026-10-21T04:48:54.3728967Z =step-time=	11	Generate SBOM	2026-10-21T04:47:17Z	2026-10-21T04:47:23Z	6	success
+2026-10-21T04:48:54.3729281Z =step-time=	12	Run kernel hardening checker	2026-10-21T04:47:23Z	2026-10-21T04:47:25Z	2	success
+2026-10-21T04:48:54.3729637Z =step-time=	13	Summarize kernel hardening results	2026-10-21T04:47:25Z	2026-10-21T04:47:25Z	0	success
+2026-10-21T04:48:54.3730001Z =step-time=	14	Show ccache statistics	2026-10-21T04:47:25Z	2026-10-21T04:47:25Z	0	success
+2026-10-21T04:48:54.3730341Z =step-time=	15	Check image partition layout	2026-10-21T04:47:25Z	2026-10-21T04:47:25Z	0	success
+2026-10-21T04:48:54.3730696Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T04:47:25Z	2026-10-21T04:47:25Z	0	success
+2026-10-21T04:48:54.3731165Z =step-time=	17	QEMU smoke test	2026-10-21T04:47:25Z	2026-10-21T04:47:36Z	11	success
+2026-10-21T04:48:54.3731482Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T04:47:36Z	2026-10-21T04:47:46Z	10	success
+2026-10-21T04:48:54.3731892Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T04:47:46Z	2026-10-21T04:47:56Z	10	success
+2026-10-21T04:48:54.3732323Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:47:56Z	2026-10-21T04:47:57Z	1	success
+2026-10-21T04:48:54.3732739Z =step-time=	21	Package artifacts	2026-10-21T04:47:57Z	2026-10-21T04:48:31Z	34	success
+2026-10-21T04:48:54.3733158Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T04:48:31Z	2026-10-21T04:48:48Z	17	success
+2026-10-21T04:48:54.3733707Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:48:48Z	2026-10-21T04:48:48Z	0	skipped
+2026-10-21T04:48:54.3734172Z =step-time=	24	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T04:48:48Z	2026-10-21T04:48:53Z	5	success
+2026-10-21T04:48:54.3749508Z =ci-meta=	ensure	published
+2026-10-21T04:48:54.3762621Z =ci-meta=	ccache	Cacheable calls:    15914 / 21937 (72.54%)
+2026-10-21T04:48:54.3762990Z =ci-meta=	ccache	  Hits:             15885 / 15914 (99.82%)
+2026-10-21T04:48:54.3763337Z =ci-meta=	ccache	    Direct:         15416 / 15885 (97.05%)
+2026-10-21T04:48:54.3763683Z =ci-meta=	ccache	    Preprocessed:     469 / 15885 ( 2.95%)
+2026-10-21T04:48:54.3764035Z =ci-meta=	ccache	  Misses:              29 / 15914 ( 0.18%)
+2026-10-21T04:48:54.3764398Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T04:48:54.3764710Z =ci-meta=	ccache	Local storage:
+2026-10-21T04:48:54.3765016Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.20%)
+2026-10-21T04:48:54.3765367Z =ci-meta=	ccache	  Hits:             15885 / 15914 (99.82%)
+2026-10-21T04:48:54.3765633Z =ci-meta=	ccache	  Misses:              29 / 15914 ( 0.18%)
+2026-10-21T04:48:54.3922470Z =br-time=	wall	621.7
+2026-10-21T04:48:54.3922746Z =br-time=	unmatched	0
+2026-10-21T04:48:54.3922988Z =br-time=	step	build	610.1
+2026-10-21T04:48:54.3923232Z =br-time=	step	configure	389.6
+2026-10-21T04:48:54.3923396Z =br-time=	step	extract	41.6
+2026-10-21T04:48:54.3923569Z =br-time=	step	install-target	38.4
+2026-10-21T04:48:54.3923748Z =br-time=	step	download	21.6
+2026-10-21T04:48:54.3923919Z =br-time=	step	install-host	21.5
+2026-10-21T04:48:54.3924089Z =br-time=	step	patch	20.5
+2026-10-21T04:48:54.3924258Z =br-time=	step	install-staging	5.5
+2026-10-21T04:48:54.3924433Z =br-time=	step	install-image	1.0
+2026-10-21T04:48:54.3924827Z =br-time=	step	rsync	0.4
+2026-10-21T04:48:54.3924992Z =br-time=	package	linux	332.8
+2026-10-21T04:48:54.3925161Z =br-time=	package	busybox	61.0
+2026-10-21T04:48:54.3925336Z =br-time=	package	host-libopenssl	53.8
+2026-10-21T04:48:54.3925526Z =br-time=	package	libopenssl	50.2
+2026-10-21T04:48:54.3925707Z =br-time=	package	host-ccache	46.7
+2026-10-21T04:48:54.3925885Z =br-time=	package	util-linux	46.2
+2026-10-21T04:48:54.3926063Z =br-time=	package	host-python3	44.9
+2026-10-21T04:48:54.3926242Z =br-time=	package	host-util-linux	43.9
+2026-10-21T04:48:54.3926429Z =br-time=	package	host-m4	37.1
+2026-10-21T04:48:54.3926595Z =br-time=	package	host-xz	28.9
+2026-10-21T04:48:54.3926764Z =br-time=	package	host-bison	25.7
+2026-10-21T04:48:54.3926930Z =br-time=	package	kbd	23.2
+2026-10-21T04:48:54.3927106Z =br-time=	package	host-libarchive	22.8
+2026-10-21T04:48:54.3927288Z =br-time=	package	e2fsprogs	20.3
+2026-10-21T04:48:54.3927460Z =br-time=	package	host-zstd	17.8
+# c0 r2 run_id=39547252925 job_id=119048144071 sha=48f2d7173d0ebd15aa0647669dd860e3a13d6500
+2026-10-21T05:25:22.3231696Z =ci-meta=	job_started_at	2026-10-21T05:01:54Z
+2026-10-21T05:25:22.3232494Z =step-time=	1	Set up job	2026-10-21T05:01:55Z	2026-10-21T05:01:56Z	1	success
+2026-10-21T05:25:22.3233299Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:01:56Z	2026-10-21T05:02:01Z	5	success
+2026-10-21T05:25:22.3234106Z =step-time=	3	Log in to GHCR	2026-10-21T05:02:01Z	2026-10-21T05:02:02Z	1	success
+2026-10-21T05:25:22.3234761Z =step-time=	4	Ensure development image	2026-10-21T05:02:02Z	2026-10-21T05:02:13Z	11	success
+2026-10-21T05:25:22.3235662Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:02:13Z	2026-10-21T05:02:18Z	5	success
+2026-10-21T05:25:22.3237151Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:02:18Z	2026-10-21T05:02:25Z	7	success
+2026-10-21T05:25:22.3238021Z =step-time=	7	Configure Buildroot	2026-10-21T05:02:25Z	2026-10-21T05:02:29Z	4	success
+2026-10-21T05:25:22.3238728Z =step-time=	8	Build image and legal information	2026-10-21T05:02:29Z	2026-10-21T05:23:14Z	1245	success
+2026-10-21T05:25:22.3239845Z =step-time=	9	Check module dependency index	2026-10-21T05:23:14Z	2026-10-21T05:23:14Z	0	success
+2026-10-21T05:25:22.3240816Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T05:23:14Z	2026-10-21T05:23:15Z	1	success
+2026-10-21T05:25:22.3241537Z =step-time=	11	Generate SBOM	2026-10-21T05:23:15Z	2026-10-21T05:23:23Z	8	success
+2026-10-21T05:25:22.3242334Z =step-time=	12	Run kernel hardening checker	2026-10-21T05:23:23Z	2026-10-21T05:23:25Z	2	success
+2026-10-21T05:25:22.3243847Z =step-time=	13	Summarize kernel hardening results	2026-10-21T05:23:25Z	2026-10-21T05:23:25Z	0	success
+2026-10-21T05:25:22.3244580Z =step-time=	14	Show ccache statistics	2026-10-21T05:23:25Z	2026-10-21T05:23:25Z	0	success
+2026-10-21T05:25:22.3245276Z =step-time=	15	Check image partition layout	2026-10-21T05:23:25Z	2026-10-21T05:23:25Z	0	success
+2026-10-21T05:25:22.3246399Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T05:23:25Z	2026-10-21T05:23:25Z	0	success
+2026-10-21T05:25:22.3247076Z =step-time=	17	QEMU smoke test	2026-10-21T05:23:25Z	2026-10-21T05:23:41Z	16	success
+2026-10-21T05:25:22.3247694Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T05:23:41Z	2026-10-21T05:23:57Z	16	success
+2026-10-21T05:25:22.3248380Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T05:23:57Z	2026-10-21T05:24:12Z	15	success
+2026-10-21T05:25:22.3249563Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:24:12Z	2026-10-21T05:24:12Z	0	success
+2026-10-21T05:25:22.3250453Z =step-time=	21	Package artifacts	2026-10-21T05:24:12Z	2026-10-21T05:24:52Z	40	success
+2026-10-21T05:25:22.3251221Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:24:52Z	2026-10-21T05:25:16Z	24	success
+2026-10-21T05:25:22.3252129Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:25:16Z	2026-10-21T05:25:16Z	0	skipped
+2026-10-21T05:25:22.3265164Z =ci-meta=	ensure	published
+2026-10-21T05:25:22.3277865Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T05:25:22.3278315Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T05:25:22.3278714Z =ci-meta=	ccache	    Direct:         15431 / 15900 (97.05%)
+2026-10-21T05:25:22.3279459Z =ci-meta=	ccache	    Preprocessed:     469 / 15900 ( 2.95%)
+2026-10-21T05:25:22.3279900Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T05:25:22.3280305Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T05:25:22.3280663Z =ci-meta=	ccache	Local storage:
+2026-10-21T05:25:22.3281000Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.38%)
+2026-10-21T05:25:22.3281374Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T05:25:22.3281751Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T05:25:22.3434213Z =br-time=	wall	1150.7
+2026-10-21T05:25:22.3434638Z =br-time=	unmatched	0
+2026-10-21T05:25:22.3434989Z =br-time=	step	build	677.0
+2026-10-21T05:25:22.3435343Z =br-time=	step	configure	261.1
+2026-10-21T05:25:22.3435748Z =br-time=	step	install-target	46.4
+2026-10-21T05:25:22.3436154Z =br-time=	step	extract	22.8
+2026-10-21T05:25:22.3436518Z =br-time=	step	install-host	16.2
+2026-10-21T05:25:22.3436898Z =br-time=	step	install-staging	4.8
+2026-10-21T05:25:22.3437275Z =br-time=	step	patch	4.3
+2026-10-21T05:25:22.3437679Z =br-time=	step	download	1.7
+2026-10-21T05:25:22.3438111Z =br-time=	step	install-image	0.8
+2026-10-21T05:25:22.3438467Z =br-time=	step	rsync	0.2
+2026-10-21T05:25:22.3439080Z =br-time=	package	linux	491.5
+2026-10-21T05:25:22.3439811Z =br-time=	package	host-ccache	78.2
+2026-10-21T05:25:22.3440213Z =br-time=	package	host-python3	34.3
+2026-10-21T05:25:22.3440604Z =br-time=	package	util-linux	31.0
+2026-10-21T05:25:22.3440985Z =br-time=	package	host-m4	30.6
+2026-10-21T05:25:22.3441366Z =br-time=	package	host-libopenssl	30.2
+2026-10-21T05:25:22.3441762Z =br-time=	package	host-zstd	29.8
+2026-10-21T05:25:22.3442138Z =br-time=	package	host-util-linux	29.3
+2026-10-21T05:25:22.3442535Z =br-time=	package	libopenssl	28.2
+2026-10-21T05:25:22.3455477Z =br-time=	package	busybox	23.3
+2026-10-21T05:25:22.3455981Z =br-time=	package	host-bison	22.5
+2026-10-21T05:25:22.3456473Z =br-time=	package	host-xz	16.2
+2026-10-21T05:25:22.3456933Z =br-time=	package	host-libarchive	15.1
+2026-10-21T05:25:22.3457425Z =br-time=	package	kbd	13.3
+2026-10-21T05:25:22.3458069Z =br-time=	package	e2fsprogs	12.8
+# c1 r2 run_id=39547257232 job_id=119048164162 sha=70963fd6faab661d7a098209a25a0971a7771288
+2026-10-21T05:21:26.6257468Z =ci-meta=	job_started_at	2026-10-21T05:01:59Z
+2026-10-21T05:21:26.6258252Z =step-time=	1	Set up job	2026-10-21T05:02:00Z	2026-10-21T05:02:01Z	1	success
+2026-10-21T05:21:26.6259076Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:02:01Z	2026-10-21T05:02:08Z	7	success
+2026-10-21T05:21:26.6259865Z =step-time=	3	Log in to GHCR	2026-10-21T05:02:08Z	2026-10-21T05:02:08Z	0	success
+2026-10-21T05:21:26.6260495Z =step-time=	4	Ensure development image	2026-10-21T05:02:08Z	2026-10-21T05:02:23Z	15	success
+2026-10-21T05:21:26.6261426Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:02:23Z	2026-10-21T05:02:30Z	7	success
+2026-10-21T05:21:26.6262785Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:02:30Z	2026-10-21T05:02:42Z	12	success
+2026-10-21T05:21:26.6264134Z =step-time=	7	Configure Buildroot	2026-10-21T05:02:42Z	2026-10-21T05:02:45Z	3	success
+2026-10-21T05:21:26.6264892Z =step-time=	8	Build image and legal information	2026-10-21T05:02:45Z	2026-10-21T05:19:21Z	996	success
+2026-10-21T05:21:26.6265658Z =step-time=	9	Check module dependency index	2026-10-21T05:19:21Z	2026-10-21T05:19:21Z	0	success
+2026-10-21T05:21:26.6266411Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T05:19:21Z	2026-10-21T05:19:22Z	1	success
+2026-10-21T05:21:26.6267076Z =step-time=	11	Generate SBOM	2026-10-21T05:19:22Z	2026-10-21T05:19:30Z	8	success
+2026-10-21T05:21:26.6267669Z =step-time=	12	Run kernel hardening checker	2026-10-21T05:19:30Z	2026-10-21T05:19:31Z	1	success
+2026-10-21T05:21:26.6268503Z =step-time=	13	Summarize kernel hardening results	2026-10-21T05:19:31Z	2026-10-21T05:19:31Z	0	success
+2026-10-21T05:21:26.6269172Z =step-time=	14	Show ccache statistics	2026-10-21T05:19:31Z	2026-10-21T05:19:32Z	1	success
+2026-10-21T05:21:26.6269814Z =step-time=	15	Check image partition layout	2026-10-21T05:19:32Z	2026-10-21T05:19:32Z	0	success
+2026-10-21T05:21:26.6270496Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T05:19:32Z	2026-10-21T05:19:32Z	0	success
+2026-10-21T05:21:26.6271147Z =step-time=	17	QEMU smoke test	2026-10-21T05:19:32Z	2026-10-21T05:19:47Z	15	success
+2026-10-21T05:21:26.6271738Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T05:19:47Z	2026-10-21T05:20:01Z	14	success
+2026-10-21T05:21:26.6272385Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T05:20:01Z	2026-10-21T05:20:16Z	15	success
+2026-10-21T05:21:26.6273234Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:20:16Z	2026-10-21T05:20:17Z	1	success
+2026-10-21T05:21:26.6274325Z =step-time=	21	Package artifacts	2026-10-21T05:20:17Z	2026-10-21T05:20:55Z	38	success
+2026-10-21T05:21:26.6275134Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:20:55Z	2026-10-21T05:21:19Z	24	success
+2026-10-21T05:21:26.6276078Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:21:19Z	2026-10-21T05:21:19Z	0	skipped
+2026-10-21T05:21:26.6277092Z =step-time=	24	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:21:19Z	2026-10-21T05:21:26Z	7	success
+2026-10-21T05:21:26.6287048Z =ci-meta=	ensure	published
+2026-10-21T05:21:26.6299046Z =ci-meta=	ccache	Cacheable calls:    15914 / 21937 (72.54%)
+2026-10-21T05:21:26.6299464Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T05:21:26.6299835Z =ci-meta=	ccache	    Direct:         15417 / 15886 (97.05%)
+2026-10-21T05:21:26.6300231Z =ci-meta=	ccache	    Preprocessed:     469 / 15886 ( 2.95%)
+2026-10-21T05:21:26.6300610Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T05:21:26.6301006Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T05:21:26.6301353Z =ci-meta=	ccache	Local storage:
+2026-10-21T05:21:26.6301686Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.20%)
+2026-10-21T05:21:26.6302057Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T05:21:26.6302413Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T05:21:26.6523908Z =br-time=	wall	895.6
+2026-10-21T05:21:26.6524327Z =br-time=	unmatched	0
+2026-10-21T05:21:26.6524618Z =br-time=	step	build	935.0
+2026-10-21T05:21:26.6524931Z =br-time=	step	configure	513.1
+2026-10-21T05:21:26.6525232Z =br-time=	step	extract	52.1
+2026-10-21T05:21:26.6525555Z =br-time=	step	install-target	51.7
+2026-10-21T05:21:26.6525891Z =br-time=	step	install-host	30.2
+2026-10-21T05:21:26.6526207Z =br-time=	step	download	19.4
+2026-10-21T05:21:26.6526528Z =br-time=	step	patch	17.0
+2026-10-21T05:21:26.6526828Z =br-time=	step	install-staging	8.1
+2026-10-21T05:21:26.6527210Z =br-time=	step	install-image	1.7
+2026-10-21T05:21:26.6527805Z =br-time=	step	rsync	0.7
+2026-10-21T05:21:26.6528116Z =br-time=	package	linux	517.7
+2026-10-21T05:21:26.6528429Z =br-time=	package	busybox	89.4
+2026-10-21T05:21:26.6528750Z =br-time=	package	host-libopenssl	89.2
+2026-10-21T05:21:26.6529106Z =br-time=	package	libopenssl	77.6
+2026-10-21T05:21:26.6529440Z =br-time=	package	host-ccache	73.8
+2026-10-21T05:21:26.6529769Z =br-time=	package	util-linux	64.3
+2026-10-21T05:21:26.6530098Z =br-time=	package	host-util-linux	62.2
+2026-10-21T05:21:26.6530440Z =br-time=	package	host-python3	59.2
+2026-10-21T05:21:26.6530766Z =br-time=	package	host-m4	46.5
+2026-10-21T05:21:26.6531073Z =br-time=	package	host-xz	37.6
+2026-10-21T05:21:26.6531377Z =br-time=	package	host-bison	34.9
+2026-10-21T05:21:26.6531689Z =br-time=	package	kbd	30.2
+2026-10-21T05:21:26.6531986Z =br-time=	package	host-libarchive	30.0
+2026-10-21T05:21:26.6532446Z =br-time=	package	host-zstd	29.2
+2026-10-21T05:21:26.6532765Z =br-time=	package	e2fsprogs	27.8
+# c0 r3 run_id=39549658926 job_id=119055750000 sha=85bb80174451761bc120a7f5944fd9b6f83ab013
+2026-10-21T05:48:40.7452491Z =ci-meta=	job_started_at	2026-10-21T05:27:39Z
+2026-10-21T05:48:40.7453141Z =step-time=	1	Set up job	2026-10-21T05:27:40Z	2026-10-21T05:27:41Z	1	success
+2026-10-21T05:48:40.7453992Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:27:41Z	2026-10-21T05:27:50Z	9	success
+2026-10-21T05:48:40.7454790Z =step-time=	3	Log in to GHCR	2026-10-21T05:27:50Z	2026-10-21T05:27:52Z	2	success
+2026-10-21T05:48:40.7455425Z =step-time=	4	Ensure development image	2026-10-21T05:27:52Z	2026-10-21T05:28:10Z	18	success
+2026-10-21T05:48:40.7456297Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:28:10Z	2026-10-21T05:28:16Z	6	success
+2026-10-21T05:48:40.7458148Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:28:16Z	2026-10-21T05:28:24Z	8	success
+2026-10-21T05:48:40.7459061Z =step-time=	7	Configure Buildroot	2026-10-21T05:28:24Z	2026-10-21T05:28:30Z	6	success
+2026-10-21T05:48:40.7459783Z =step-time=	8	Build image and legal information	2026-10-21T05:28:30Z	2026-10-21T05:46:33Z	1083	success
+2026-10-21T05:48:40.7478522Z =step-time=	9	Check module dependency index	2026-10-21T05:46:33Z	2026-10-21T05:46:34Z	1	success
+2026-10-21T05:48:40.7479674Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T05:46:34Z	2026-10-21T05:46:35Z	1	success
+2026-10-21T05:48:40.7480712Z =step-time=	11	Generate SBOM	2026-10-21T05:46:35Z	2026-10-21T05:46:44Z	9	success
+2026-10-21T05:48:40.7481685Z =step-time=	12	Run kernel hardening checker	2026-10-21T05:46:44Z	2026-10-21T05:46:46Z	2	success
+2026-10-21T05:48:40.7482805Z =step-time=	13	Summarize kernel hardening results	2026-10-21T05:46:46Z	2026-10-21T05:46:46Z	0	success
+2026-10-21T05:48:40.7483732Z =step-time=	14	Show ccache statistics	2026-10-21T05:46:46Z	2026-10-21T05:46:46Z	0	success
+2026-10-21T05:48:40.7484453Z =step-time=	15	Check image partition layout	2026-10-21T05:46:46Z	2026-10-21T05:46:46Z	0	success
+2026-10-21T05:48:40.7485274Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T05:46:46Z	2026-10-21T05:46:46Z	0	success
+2026-10-21T05:48:40.7486205Z =step-time=	17	QEMU smoke test	2026-10-21T05:46:46Z	2026-10-21T05:47:01Z	15	success
+2026-10-21T05:48:40.7487341Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T05:47:01Z	2026-10-21T05:47:15Z	14	success
+2026-10-21T05:48:40.7488255Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T05:47:15Z	2026-10-21T05:47:29Z	14	success
+2026-10-21T05:48:40.7489395Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:47:29Z	2026-10-21T05:47:30Z	1	success
+2026-10-21T05:48:40.7490536Z =step-time=	21	Package artifacts	2026-10-21T05:47:30Z	2026-10-21T05:48:10Z	40	success
+2026-10-21T05:48:40.7491746Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:48:10Z	2026-10-21T05:48:34Z	24	success
+2026-10-21T05:48:40.7493415Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:48:34Z	2026-10-21T05:48:34Z	0	skipped
+2026-10-21T05:48:40.7494478Z =ci-meta=	ensure	published
+2026-10-21T05:48:40.7500494Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T05:48:40.7501165Z =ci-meta=	ccache	  Hits:             15889 / 15917 (99.82%)
+2026-10-21T05:48:40.7501733Z =ci-meta=	ccache	    Direct:         15420 / 15889 (97.05%)
+2026-10-21T05:48:40.7502487Z =ci-meta=	ccache	    Preprocessed:     469 / 15889 ( 2.95%)
+2026-10-21T05:48:40.7503360Z =ci-meta=	ccache	  Misses:              28 / 15917 ( 0.18%)
+2026-10-21T05:48:40.7503967Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T05:48:40.7504467Z =ci-meta=	ccache	Local storage:
+2026-10-21T05:48:40.7505009Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.38%)
+2026-10-21T05:48:40.7505586Z =ci-meta=	ccache	  Hits:             15889 / 15917 (99.82%)
+2026-10-21T05:48:40.7506221Z =ci-meta=	ccache	  Misses:              28 / 15917 ( 0.18%)
+2026-10-21T05:48:40.7647086Z =br-time=	wall	992.8
+2026-10-21T05:48:40.7648068Z =br-time=	unmatched	0
+2026-10-21T05:48:40.7648744Z =br-time=	step	build	591.0
+2026-10-21T05:48:40.7649420Z =br-time=	step	configure	216.5
+2026-10-21T05:48:40.7650128Z =br-time=	step	install-target	37.1
+2026-10-21T05:48:40.7650832Z =br-time=	step	extract	21.1
+2026-10-21T05:48:40.7651505Z =br-time=	step	install-host	13.2
+2026-10-21T05:48:40.7652358Z =br-time=	step	install-staging	4.1
+2026-10-21T05:48:40.7653031Z =br-time=	step	patch	3.1
+2026-10-21T05:48:40.7653673Z =br-time=	step	download	1.6
+2026-10-21T05:48:40.7654313Z =br-time=	step	install-image	0.6
+2026-10-21T05:48:40.7655010Z =br-time=	step	rsync	0.1
+2026-10-21T05:48:40.7655763Z =br-time=	package	linux	429.4
+2026-10-21T05:48:40.7656815Z =br-time=	package	host-ccache	69.0
+2026-10-21T05:48:40.7657672Z =br-time=	package	host-python3	29.3
+2026-10-21T05:48:40.7658416Z =br-time=	package	host-zstd	28.4
+2026-10-21T05:48:40.7659094Z =br-time=	package	host-m4	26.7
+2026-10-21T05:48:40.7659791Z =br-time=	package	util-linux	25.5
+2026-10-21T05:48:40.7660598Z =br-time=	package	host-util-linux	24.3
+2026-10-21T05:48:40.7661327Z =br-time=	package	host-libopenssl	24.3
+2026-10-21T05:48:40.7662455Z =br-time=	package	libopenssl	23.1
+2026-10-21T05:48:40.7663130Z =br-time=	package	busybox	19.1
+2026-10-21T05:48:40.7663791Z =br-time=	package	host-bison	18.9
+2026-10-21T05:48:40.7664490Z =br-time=	package	host-xz	13.4
+2026-10-21T05:48:40.7665175Z =br-time=	package	host-libarchive	12.4
+2026-10-21T05:48:40.7665856Z =br-time=	package	kbd	11.0
+2026-10-21T05:48:40.7666593Z =br-time=	package	host-lz4	10.2
+# c1 r3 run_id=39549665922 job_id=119055768448 sha=d34b07d45b38352910baf230872bc811c7350f20
+2026-10-21T05:44:09.3244692Z =ci-meta=	job_started_at	2026-10-21T05:27:43Z
+2026-10-21T05:44:09.3245657Z =step-time=	1	Set up job	2026-10-21T05:27:43Z	2026-10-21T05:27:44Z	1	success
+2026-10-21T05:44:09.3246538Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:27:44Z	2026-10-21T05:27:51Z	7	success
+2026-10-21T05:44:09.3247377Z =step-time=	3	Log in to GHCR	2026-10-21T05:27:51Z	2026-10-21T05:27:52Z	1	success
+2026-10-21T05:44:09.3248019Z =step-time=	4	Ensure development image	2026-10-21T05:27:52Z	2026-10-21T05:28:05Z	13	success
+2026-10-21T05:44:09.3248831Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:28:05Z	2026-10-21T05:28:10Z	5	success
+2026-10-21T05:44:09.3250101Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:28:10Z	2026-10-21T05:28:20Z	10	success
+2026-10-21T05:44:09.3251030Z =step-time=	7	Configure Buildroot	2026-10-21T05:28:20Z	2026-10-21T05:28:28Z	8	success
+2026-10-21T05:44:09.3251767Z =step-time=	8	Build image and legal information	2026-10-21T05:28:28Z	2026-10-21T05:42:20Z	832	success
+2026-10-21T05:44:09.3252737Z =step-time=	9	Check module dependency index	2026-10-21T05:42:20Z	2026-10-21T05:42:20Z	0	success
+2026-10-21T05:44:09.3253673Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T05:42:20Z	2026-10-21T05:42:20Z	0	success
+2026-10-21T05:44:09.3254422Z =step-time=	11	Generate SBOM	2026-10-21T05:42:20Z	2026-10-21T05:42:28Z	8	success
+2026-10-21T05:44:09.3255108Z =step-time=	12	Run kernel hardening checker	2026-10-21T05:42:28Z	2026-10-21T05:42:29Z	1	success
+2026-10-21T05:44:09.3255843Z =step-time=	13	Summarize kernel hardening results	2026-10-21T05:42:29Z	2026-10-21T05:42:29Z	0	success
+2026-10-21T05:44:09.3256568Z =step-time=	14	Show ccache statistics	2026-10-21T05:42:29Z	2026-10-21T05:42:29Z	0	success
+2026-10-21T05:44:09.3257274Z =step-time=	15	Check image partition layout	2026-10-21T05:42:29Z	2026-10-21T05:42:30Z	1	success
+2026-10-21T05:44:09.3258029Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T05:42:30Z	2026-10-21T05:42:30Z	0	success
+2026-10-21T05:44:09.3258737Z =step-time=	17	QEMU smoke test	2026-10-21T05:42:30Z	2026-10-21T05:42:41Z	11	success
+2026-10-21T05:44:09.3259386Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T05:42:41Z	2026-10-21T05:42:52Z	11	success
+2026-10-21T05:44:09.3260141Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T05:42:52Z	2026-10-21T05:43:03Z	11	success
+2026-10-21T05:44:09.3261005Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:43:03Z	2026-10-21T05:43:04Z	1	success
+2026-10-21T05:44:09.3261579Z =step-time=	21	Package artifacts	2026-10-21T05:43:04Z	2026-10-21T05:43:42Z	38	success
+2026-10-21T05:44:09.3262160Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T05:43:42Z	2026-10-21T05:44:03Z	21	success
+2026-10-21T05:44:09.3263077Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:44:03Z	2026-10-21T05:44:03Z	0	skipped
+2026-10-21T05:44:09.3276499Z =ci-meta=	ensure	published
+2026-10-21T05:44:09.3287960Z =ci-meta=	ccache	Cacheable calls:    15914 / 21937 (72.54%)
+2026-10-21T05:44:09.3288461Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T05:44:09.3288882Z =ci-meta=	ccache	    Direct:         15417 / 15886 (97.05%)
+2026-10-21T05:44:09.3289203Z =ci-meta=	ccache	    Preprocessed:     469 / 15886 ( 2.95%)
+2026-10-21T05:44:09.3289515Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T05:44:09.3289825Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T05:44:09.3290124Z =ci-meta=	ccache	Local storage:
+2026-10-21T05:44:09.3290406Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.21%)
+2026-10-21T05:44:09.3290719Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T05:44:09.3291035Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T05:44:09.3456604Z =br-time=	wall	744.3
+2026-10-21T05:44:09.3456932Z =br-time=	unmatched	0
+2026-10-21T05:44:09.3457438Z =br-time=	step	build	747.6
+2026-10-21T05:44:09.3457782Z =br-time=	step	configure	448.9
+2026-10-21T05:44:09.3458138Z =br-time=	step	install-target	46.2
+2026-10-21T05:44:09.3458480Z =br-time=	step	extract	45.0
+2026-10-21T05:44:09.3458716Z =br-time=	step	install-host	24.3
+2026-10-21T05:44:09.3458941Z =br-time=	step	download	20.9
+2026-10-21T05:44:09.3459175Z =br-time=	step	patch	20.2
+2026-10-21T05:44:09.3459405Z =br-time=	step	install-staging	6.8
+2026-10-21T05:44:09.3459652Z =br-time=	step	install-image	1.1
+2026-10-21T05:44:09.3459893Z =br-time=	step	rsync	0.7
+2026-10-21T05:44:09.3460110Z =br-time=	package	linux	417.1
+2026-10-21T05:44:09.3460494Z =br-time=	package	busybox	75.9
+2026-10-21T05:44:09.3460742Z =br-time=	package	host-libopenssl	64.3
+2026-10-21T05:44:09.3461002Z =br-time=	package	libopenssl	62.0
+2026-10-21T05:44:09.3461249Z =br-time=	package	host-ccache	59.8
+2026-10-21T05:44:09.3461486Z =br-time=	package	util-linux	55.4
+2026-10-21T05:44:09.3461737Z =br-time=	package	host-python3	50.5
+2026-10-21T05:44:09.3462059Z =br-time=	package	host-util-linux	49.8
+2026-10-21T05:44:09.3462305Z =br-time=	package	host-m4	44.5
+2026-10-21T05:44:09.3462537Z =br-time=	package	host-xz	33.1
+2026-10-21T05:44:09.3462753Z =br-time=	package	host-bison	29.7
+2026-10-21T05:44:09.3463205Z =br-time=	package	host-libarchive	25.7
+2026-10-21T05:44:09.3463553Z =br-time=	package	kbd	25.6
+2026-10-21T05:44:09.3463786Z =br-time=	package	e2fsprogs	24.1
+2026-10-21T05:44:09.3464032Z =br-time=	package	host-zstd	23.0
+# c0 r4 run_id=39551764007 job_id=119062373284 sha=85d68a3bd1107f8ccea5d307f12c272ab88b1981
+2026-10-21T06:12:57.6228764Z =ci-meta=	job_started_at	2026-10-21T05:49:54Z
+2026-10-21T06:12:57.6229935Z =step-time=	1	Set up job	2026-10-21T05:49:55Z	2026-10-21T05:49:56Z	1	success
+2026-10-21T06:12:57.6231176Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:49:56Z	2026-10-21T05:50:02Z	6	success
+2026-10-21T06:12:57.6232372Z =step-time=	3	Log in to GHCR	2026-10-21T05:50:02Z	2026-10-21T05:50:03Z	1	success
+2026-10-21T06:12:57.6233151Z =step-time=	4	Ensure development image	2026-10-21T05:50:03Z	2026-10-21T05:50:17Z	14	success
+2026-10-21T06:12:57.6234324Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:50:17Z	2026-10-21T05:50:22Z	5	success
+2026-10-21T06:12:57.6236542Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:50:22Z	2026-10-21T05:50:30Z	8	success
+2026-10-21T06:12:57.6237999Z =step-time=	7	Configure Buildroot	2026-10-21T05:50:30Z	2026-10-21T05:50:34Z	4	success
+2026-10-21T06:12:57.6239104Z =step-time=	8	Build image and legal information	2026-10-21T05:50:34Z	2026-10-21T06:10:52Z	1218	success
+2026-10-21T06:12:57.6240186Z =step-time=	9	Check module dependency index	2026-10-21T06:10:52Z	2026-10-21T06:10:52Z	0	success
+2026-10-21T06:12:57.6241346Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T06:10:52Z	2026-10-21T06:10:54Z	2	success
+2026-10-21T06:12:57.6242425Z =step-time=	11	Generate SBOM	2026-10-21T06:10:54Z	2026-10-21T06:11:03Z	9	success
+2026-10-21T06:12:57.6243426Z =step-time=	12	Run kernel hardening checker	2026-10-21T06:11:03Z	2026-10-21T06:11:04Z	1	success
+2026-10-21T06:12:57.6244548Z =step-time=	13	Summarize kernel hardening results	2026-10-21T06:11:04Z	2026-10-21T06:11:04Z	0	success
+2026-10-21T06:12:57.6245881Z =step-time=	14	Show ccache statistics	2026-10-21T06:11:04Z	2026-10-21T06:11:04Z	0	success
+2026-10-21T06:12:57.6246936Z =step-time=	15	Check image partition layout	2026-10-21T06:11:04Z	2026-10-21T06:11:05Z	1	success
+2026-10-21T06:12:57.6248072Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T06:11:05Z	2026-10-21T06:11:05Z	0	success
+2026-10-21T06:12:57.6248980Z =step-time=	17	QEMU smoke test	2026-10-21T06:11:05Z	2026-10-21T06:11:19Z	14	success
+2026-10-21T06:12:57.6249553Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T06:11:19Z	2026-10-21T06:11:34Z	15	success
+2026-10-21T06:12:57.6250170Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T06:11:34Z	2026-10-21T06:11:48Z	14	success
+2026-10-21T06:12:57.6250963Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:11:48Z	2026-10-21T06:11:49Z	1	success
+2026-10-21T06:12:57.6251716Z =step-time=	21	Package artifacts	2026-10-21T06:11:49Z	2026-10-21T06:12:28Z	39	success
+2026-10-21T06:12:57.6252485Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:12:28Z	2026-10-21T06:12:52Z	24	success
+2026-10-21T06:12:57.6253410Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:12:52Z	2026-10-21T06:12:52Z	0	skipped
+2026-10-21T06:12:57.6263005Z =ci-meta=	ensure	published
+2026-10-21T06:12:57.6276066Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T06:12:57.6276789Z =ci-meta=	ccache	  Hits:             15887 / 15917 (99.81%)
+2026-10-21T06:12:57.6277460Z =ci-meta=	ccache	    Direct:         15418 / 15887 (97.05%)
+2026-10-21T06:12:57.6278136Z =ci-meta=	ccache	    Preprocessed:     469 / 15887 ( 2.95%)
+2026-10-21T06:12:57.6278795Z =ci-meta=	ccache	  Misses:              30 / 15917 ( 0.19%)
+2026-10-21T06:12:57.6279478Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T06:12:57.6280102Z =ci-meta=	ccache	Local storage:
+2026-10-21T06:12:57.6280523Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.44%)
+2026-10-21T06:12:57.6281083Z =ci-meta=	ccache	  Hits:             15887 / 15917 (99.81%)
+2026-10-21T06:12:57.6281455Z =ci-meta=	ccache	  Misses:              30 / 15917 ( 0.19%)
+2026-10-21T06:12:57.6425387Z =br-time=	wall	1126.3
+2026-10-21T06:12:57.6426000Z =br-time=	unmatched	0
+2026-10-21T06:12:57.6426292Z =br-time=	step	build	667.9
+2026-10-21T06:12:57.6426787Z =br-time=	step	configure	254.3
+2026-10-21T06:12:57.6427099Z =br-time=	step	install-target	43.4
+2026-10-21T06:12:57.6427406Z =br-time=	step	extract	22.3
+2026-10-21T06:12:57.6427699Z =br-time=	step	install-host	15.6
+2026-10-21T06:12:57.6428008Z =br-time=	step	install-staging	5.0
+2026-10-21T06:12:57.6428324Z =br-time=	step	patch	4.3
+2026-10-21T06:12:57.6428615Z =br-time=	step	download	1.7
+2026-10-21T06:12:57.6428899Z =br-time=	step	install-image	0.8
+2026-10-21T06:12:57.6429191Z =br-time=	step	rsync	0.2
+2026-10-21T06:12:57.6429464Z =br-time=	package	linux	487.6
+2026-10-21T06:12:57.6429951Z =br-time=	package	host-ccache	74.1
+2026-10-21T06:12:57.6430271Z =br-time=	package	host-python3	33.5
+2026-10-21T06:12:57.6430583Z =br-time=	package	host-m4	30.0
+2026-10-21T06:12:57.6430877Z =br-time=	package	util-linux	30.0
+2026-10-21T06:12:57.6431187Z =br-time=	package	host-libopenssl	29.6
+2026-10-21T06:12:57.6431510Z =br-time=	package	host-zstd	29.5
+2026-10-21T06:12:57.6431816Z =br-time=	package	host-util-linux	28.1
+2026-10-21T06:12:57.6432130Z =br-time=	package	libopenssl	28.0
+2026-10-21T06:12:57.6432434Z =br-time=	package	busybox	23.1
+2026-10-21T06:12:57.6432724Z =br-time=	package	host-bison	22.1
+2026-10-21T06:12:57.6433023Z =br-time=	package	host-xz	15.6
+2026-10-21T06:12:57.6433314Z =br-time=	package	host-libarchive	14.5
+2026-10-21T06:12:57.6433625Z =br-time=	package	kbd	12.9
+2026-10-21T06:12:57.6433909Z =br-time=	package	e2fsprogs	12.6
+# c1 r4 run_id=39551769173 job_id=119062385021 sha=e4d8b62f518b2c5141d9003842f2d54bdce68265
+2026-10-21T06:07:46.6310701Z =ci-meta=	job_started_at	2026-10-21T05:49:57Z
+2026-10-21T06:07:46.6311571Z =step-time=	1	Set up job	2026-10-21T05:49:57Z	2026-10-21T05:49:58Z	1	success
+2026-10-21T06:07:46.6312599Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T05:49:58Z	2026-10-21T05:50:05Z	7	success
+2026-10-21T06:07:46.6313411Z =step-time=	3	Log in to GHCR	2026-10-21T05:50:05Z	2026-10-21T05:50:05Z	0	success
+2026-10-21T06:07:46.6314295Z =step-time=	4	Ensure development image	2026-10-21T05:50:05Z	2026-10-21T05:50:23Z	18	success
+2026-10-21T06:07:46.6315002Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:50:23Z	2026-10-21T05:50:28Z	5	success
+2026-10-21T06:07:46.6315970Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T05:50:28Z	2026-10-21T05:50:37Z	9	success
+2026-10-21T06:07:46.6316631Z =step-time=	7	Configure Buildroot	2026-10-21T05:50:37Z	2026-10-21T05:50:47Z	10	success
+2026-10-21T06:07:46.6317196Z =step-time=	8	Build image and legal information	2026-10-21T05:50:47Z	2026-10-21T06:05:32Z	885	success
+2026-10-21T06:07:46.6317781Z =step-time=	9	Check module dependency index	2026-10-21T06:05:33Z	2026-10-21T06:05:33Z	0	success
+2026-10-21T06:07:46.6318390Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T06:05:33Z	2026-10-21T06:05:33Z	0	success
+2026-10-21T06:07:46.6318962Z =step-time=	11	Generate SBOM	2026-10-21T06:05:33Z	2026-10-21T06:05:41Z	8	success
+2026-10-21T06:07:46.6319486Z =step-time=	12	Run kernel hardening checker	2026-10-21T06:05:41Z	2026-10-21T06:05:43Z	2	success
+2026-10-21T06:07:46.6320072Z =step-time=	13	Summarize kernel hardening results	2026-10-21T06:05:43Z	2026-10-21T06:05:43Z	0	success
+2026-10-21T06:07:46.6320634Z =step-time=	14	Show ccache statistics	2026-10-21T06:05:43Z	2026-10-21T06:05:43Z	0	success
+2026-10-21T06:07:46.6321435Z =step-time=	15	Check image partition layout	2026-10-21T06:05:43Z	2026-10-21T06:05:43Z	0	success
+2026-10-21T06:07:46.6322026Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T06:05:43Z	2026-10-21T06:05:43Z	0	success
+2026-10-21T06:07:46.6322583Z =step-time=	17	QEMU smoke test	2026-10-21T06:05:43Z	2026-10-21T06:05:57Z	14	success
+2026-10-21T06:07:46.6323095Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T06:05:57Z	2026-10-21T06:06:12Z	15	success
+2026-10-21T06:07:46.6323656Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T06:06:12Z	2026-10-21T06:06:27Z	15	success
+2026-10-21T06:07:46.6324353Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:06:27Z	2026-10-21T06:06:27Z	0	success
+2026-10-21T06:07:46.6325023Z =step-time=	21	Package artifacts	2026-10-21T06:06:27Z	2026-10-21T06:07:14Z	47	success
+2026-10-21T06:07:46.6325684Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:07:14Z	2026-10-21T06:07:39Z	25	success
+2026-10-21T06:07:46.6326470Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:07:39Z	2026-10-21T06:07:39Z	0	skipped
+2026-10-21T06:07:46.6336300Z =ci-meta=	ensure	published
+2026-10-21T06:07:46.6348501Z =ci-meta=	ccache	Cacheable calls:    15914 / 21937 (72.54%)
+2026-10-21T06:07:46.6348982Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T06:07:46.6349363Z =ci-meta=	ccache	    Direct:         15417 / 15886 (97.05%)
+2026-10-21T06:07:46.6349767Z =ci-meta=	ccache	    Preprocessed:     469 / 15886 ( 2.95%)
+2026-10-21T06:07:46.6350180Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T06:07:46.6350560Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T06:07:46.6351274Z =ci-meta=	ccache	Local storage:
+2026-10-21T06:07:46.6351633Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.21%)
+2026-10-21T06:07:46.6352003Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T06:07:46.6352375Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T06:07:46.6559434Z =br-time=	wall	791.8
+2026-10-21T06:07:46.6559821Z =br-time=	unmatched	0
+2026-10-21T06:07:46.6560159Z =br-time=	step	build	816.5
+2026-10-21T06:07:46.6560484Z =br-time=	step	configure	438.1
+2026-10-21T06:07:46.6560868Z =br-time=	step	install-target	49.4
+2026-10-21T06:07:46.6561367Z =br-time=	step	extract	46.8
+2026-10-21T06:07:46.6561670Z =br-time=	step	install-host	25.1
+2026-10-21T06:07:46.6562006Z =br-time=	step	download	17.8
+2026-10-21T06:07:46.6562603Z =br-time=	step	patch	14.7
+2026-10-21T06:07:46.6562983Z =br-time=	step	install-staging	7.3
+2026-10-21T06:07:46.6563469Z =br-time=	step	install-image	1.4
+2026-10-21T06:07:46.6563759Z =br-time=	step	rsync	0.5
+2026-10-21T06:07:46.6564034Z =br-time=	package	linux	459.9
+2026-10-21T06:07:46.6564434Z =br-time=	package	host-libopenssl	70.5
+2026-10-21T06:07:46.6564739Z =br-time=	package	busybox	68.7
+2026-10-21T06:07:46.6565024Z =br-time=	package	host-ccache	67.9
+2026-10-21T06:07:46.6565312Z =br-time=	package	libopenssl	66.1
+2026-10-21T06:07:46.6565610Z =br-time=	package	host-python3	55.3
+2026-10-21T06:07:46.6565919Z =br-time=	package	util-linux	54.5
+2026-10-21T06:07:46.6566213Z =br-time=	package	host-util-linux	54.0
+2026-10-21T06:07:46.6566508Z =br-time=	package	host-m4	45.1
+2026-10-21T06:07:46.6566809Z =br-time=	package	host-xz	36.0
+2026-10-21T06:07:46.6567085Z =br-time=	package	host-bison	30.7
+2026-10-21T06:07:46.6567366Z =br-time=	package	host-zstd	27.8
+2026-10-21T06:07:46.6567634Z =br-time=	package	kbd	26.2
+2026-10-21T06:07:46.6567914Z =br-time=	package	host-libarchive	25.6
+2026-10-21T06:07:46.6568210Z =br-time=	package	e2fsprogs	23.4
+# c0 r5 run_id=39554170189 job_id=119069966839 sha=9a601c0d7acf6c26349fb93a3bf008fc9e3038ef
+2026-10-21T06:37:06.6096286Z =ci-meta=	job_started_at	2026-10-21T06:14:18Z
+2026-10-21T06:37:06.6097683Z =step-time=	1	Set up job	2026-10-21T06:14:19Z	2026-10-21T06:14:20Z	1	success
+2026-10-21T06:37:06.6099712Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T06:14:20Z	2026-10-21T06:14:28Z	8	success
+2026-10-21T06:37:06.6101225Z =step-time=	3	Log in to GHCR	2026-10-21T06:14:28Z	2026-10-21T06:14:28Z	0	success
+2026-10-21T06:37:06.6102153Z =step-time=	4	Ensure development image	2026-10-21T06:14:28Z	2026-10-21T06:14:41Z	13	success
+2026-10-21T06:37:06.6103490Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:14:41Z	2026-10-21T06:14:48Z	7	success
+2026-10-21T06:37:06.6105353Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:14:48Z	2026-10-21T06:14:56Z	8	success
+2026-10-21T06:37:06.6106644Z =step-time=	7	Configure Buildroot	2026-10-21T06:14:56Z	2026-10-21T06:15:00Z	4	success
+2026-10-21T06:37:06.6107672Z =step-time=	8	Build image and legal information	2026-10-21T06:15:00Z	2026-10-21T06:35:01Z	1201	success
+2026-10-21T06:37:06.6109059Z =step-time=	9	Check module dependency index	2026-10-21T06:35:01Z	2026-10-21T06:35:01Z	0	success
+2026-10-21T06:37:06.6110235Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T06:35:01Z	2026-10-21T06:35:03Z	2	success
+2026-10-21T06:37:06.6111420Z =step-time=	11	Generate SBOM	2026-10-21T06:35:03Z	2026-10-21T06:35:11Z	8	success
+2026-10-21T06:37:06.6112724Z =step-time=	12	Run kernel hardening checker	2026-10-21T06:35:11Z	2026-10-21T06:35:12Z	1	success
+2026-10-21T06:37:06.6114157Z =step-time=	13	Summarize kernel hardening results	2026-10-21T06:35:12Z	2026-10-21T06:35:12Z	0	success
+2026-10-21T06:37:06.6115126Z =step-time=	14	Show ccache statistics	2026-10-21T06:35:12Z	2026-10-21T06:35:13Z	1	success
+2026-10-21T06:37:06.6116031Z =step-time=	15	Check image partition layout	2026-10-21T06:35:13Z	2026-10-21T06:35:13Z	0	success
+2026-10-21T06:37:06.6116840Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T06:35:13Z	2026-10-21T06:35:13Z	0	success
+2026-10-21T06:37:06.6117585Z =step-time=	17	QEMU smoke test	2026-10-21T06:35:13Z	2026-10-21T06:35:28Z	15	success
+2026-10-21T06:37:06.6118282Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T06:35:28Z	2026-10-21T06:35:42Z	14	success
+2026-10-21T06:37:06.6119370Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T06:35:42Z	2026-10-21T06:35:56Z	14	success
+2026-10-21T06:37:06.6120292Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:35:56Z	2026-10-21T06:35:57Z	1	success
+2026-10-21T06:37:06.6121218Z =step-time=	21	Package artifacts	2026-10-21T06:35:57Z	2026-10-21T06:36:35Z	38	success
+2026-10-21T06:37:06.6122153Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:36:35Z	2026-10-21T06:37:00Z	25	success
+2026-10-21T06:37:06.6123204Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:37:00Z	2026-10-21T06:37:00Z	0	skipped
+2026-10-21T06:37:06.6125764Z =ci-meta=	ensure	published
+2026-10-21T06:37:06.6138457Z =ci-meta=	ccache	Cacheable calls:    15917 / 22025 (72.27%)
+2026-10-21T06:37:06.6139624Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T06:37:06.6140589Z =ci-meta=	ccache	    Direct:         15431 / 15900 (97.05%)
+2026-10-21T06:37:06.6141447Z =ci-meta=	ccache	    Preprocessed:     469 / 15900 ( 2.95%)
+2026-10-21T06:37:06.6142320Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T06:37:06.6143104Z =ci-meta=	ccache	Uncacheable calls:   6108 / 22025 (27.73%)
+2026-10-21T06:37:06.6143563Z =ci-meta=	ccache	Local storage:
+2026-10-21T06:37:06.6144092Z =ci-meta=	ccache	  Cache size (GiB):   0.9 /   5.0 (17.44%)
+2026-10-21T06:37:06.6144560Z =ci-meta=	ccache	  Hits:             15900 / 15917 (99.89%)
+2026-10-21T06:37:06.6145135Z =ci-meta=	ccache	  Misses:              17 / 15917 ( 0.11%)
+2026-10-21T06:37:06.6343226Z =br-time=	wall	1110.7
+2026-10-21T06:37:06.6344227Z =br-time=	unmatched	0
+2026-10-21T06:37:06.6344770Z =br-time=	step	build	657.5
+2026-10-21T06:37:06.6345416Z =br-time=	step	configure	253.4
+2026-10-21T06:37:06.6345924Z =br-time=	step	install-target	42.7
+2026-10-21T06:37:06.6346531Z =br-time=	step	extract	22.1
+2026-10-21T06:37:06.6347049Z =br-time=	step	install-host	15.6
+2026-10-21T06:37:06.6347667Z =br-time=	step	install-staging	4.9
+2026-10-21T06:37:06.6348205Z =br-time=	step	patch	4.3
+2026-10-21T06:37:06.6349191Z =br-time=	step	download	1.7
+2026-10-21T06:37:06.6349739Z =br-time=	step	install-image	0.8
+2026-10-21T06:37:06.6350364Z =br-time=	step	rsync	0.2
+2026-10-21T06:37:06.6350859Z =br-time=	package	linux	478.3
+2026-10-21T06:37:06.6351730Z =br-time=	package	host-ccache	73.9
+2026-10-21T06:37:06.6352315Z =br-time=	package	host-python3	33.4
+2026-10-21T06:37:06.6352902Z =br-time=	package	host-m4	30.1
+2026-10-21T06:37:06.6353449Z =br-time=	package	util-linux	29.8
+2026-10-21T06:37:06.6354026Z =br-time=	package	host-libopenssl	29.7
+2026-10-21T06:37:06.6354608Z =br-time=	package	host-zstd	29.3
+2026-10-21T06:37:06.6355218Z =br-time=	package	host-util-linux	28.0
+2026-10-21T06:37:06.6355763Z =br-time=	package	libopenssl	27.5
+2026-10-21T06:37:06.6356288Z =br-time=	package	busybox	22.6
+2026-10-21T06:37:06.6356887Z =br-time=	package	host-bison	21.6
+2026-10-21T06:37:06.6357434Z =br-time=	package	host-xz	15.3
+2026-10-21T06:37:06.6358010Z =br-time=	package	host-libarchive	14.8
+2026-10-21T06:37:06.6358527Z =br-time=	package	kbd	12.9
+2026-10-21T06:37:06.6359262Z =br-time=	package	e2fsprogs	12.4
+# c1 r5 run_id=39554174301 job_id=119069987687 sha=019906fa3473ccc4c20766d3242870be75fa8534
+2026-10-21T06:28:46.5389360Z =ci-meta=	job_started_at	2026-10-21T06:14:22Z
+2026-10-21T06:28:46.5391245Z =step-time=	1	Set up job	2026-10-21T06:14:23Z	2026-10-21T06:14:24Z	1	success
+2026-10-21T06:28:46.5393334Z =step-time=	2	Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1	2026-10-21T06:14:24Z	2026-10-21T06:14:31Z	7	success
+2026-10-21T06:28:46.5395255Z =step-time=	3	Log in to GHCR	2026-10-21T06:14:31Z	2026-10-21T06:14:33Z	2	success
+2026-10-21T06:28:46.5396155Z =step-time=	4	Ensure development image	2026-10-21T06:14:33Z	2026-10-21T06:14:48Z	15	success
+2026-10-21T06:28:46.5396563Z =step-time=	5	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:14:48Z	2026-10-21T06:14:53Z	5	success
+2026-10-21T06:28:46.5397439Z =step-time=	6	Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:14:53Z	2026-10-21T06:15:01Z	8	success
+2026-10-21T06:28:46.5397965Z =step-time=	7	Configure Buildroot	2026-10-21T06:15:01Z	2026-10-21T06:15:10Z	9	success
+2026-10-21T06:28:46.5399677Z =step-time=	8	Build image and legal information	2026-10-21T06:15:10Z	2026-10-21T06:27:01Z	711	success
+2026-10-21T06:28:46.5400907Z =step-time=	9	Check module dependency index	2026-10-21T06:27:01Z	2026-10-21T06:27:01Z	0	success
+2026-10-21T06:28:46.5402843Z =step-time=	10	Check kernel fragment and image tool versions	2026-10-21T06:27:01Z	2026-10-21T06:27:01Z	0	success
+2026-10-21T06:28:46.5405978Z =step-time=	11	Generate SBOM	2026-10-21T06:27:01Z	2026-10-21T06:27:09Z	8	success
+2026-10-21T06:28:46.5407286Z =step-time=	12	Run kernel hardening checker	2026-10-21T06:27:09Z	2026-10-21T06:27:10Z	1	success
+2026-10-21T06:28:46.5408074Z =step-time=	13	Summarize kernel hardening results	2026-10-21T06:27:10Z	2026-10-21T06:27:10Z	0	success
+2026-10-21T06:28:46.5408604Z =step-time=	14	Show ccache statistics	2026-10-21T06:27:10Z	2026-10-21T06:27:10Z	0	success
+2026-10-21T06:28:46.5409969Z =step-time=	15	Check image partition layout	2026-10-21T06:27:10Z	2026-10-21T06:27:11Z	1	success
+2026-10-21T06:28:46.5410322Z =step-time=	16	Prepare QEMU serial log directory	2026-10-21T06:27:11Z	2026-10-21T06:27:11Z	0	success
+2026-10-21T06:28:46.5411213Z =step-time=	17	QEMU smoke test	2026-10-21T06:27:11Z	2026-10-21T06:27:22Z	11	success
+2026-10-21T06:28:46.5411781Z =step-time=	18	QEMU B-slot smoke test	2026-10-21T06:27:22Z	2026-10-21T06:27:35Z	13	success
+2026-10-21T06:28:46.5412662Z =step-time=	19	QEMU GPIO6 power-fail smoke test	2026-10-21T06:27:35Z	2026-10-21T06:27:44Z	9	success
+2026-10-21T06:28:46.5413245Z =step-time=	20	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:27:44Z	2026-10-21T06:27:46Z	2	success
+2026-10-21T06:28:46.5414159Z =step-time=	21	Package artifacts	2026-10-21T06:27:46Z	2026-10-21T06:28:22Z	36	success
+2026-10-21T06:28:46.5414742Z =step-time=	22	Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9	2026-10-21T06:28:22Z	2026-10-21T06:28:40Z	18	success
+2026-10-21T06:28:46.5417288Z =step-time=	23	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:28:40Z	2026-10-21T06:28:40Z	0	skipped
+2026-10-21T06:28:46.5419123Z =step-time=	24	Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9	2026-10-21T06:28:40Z	2026-10-21T06:28:46Z	6	success
+2026-10-21T06:28:46.5468326Z =ci-meta=	ensure	published
+2026-10-21T06:28:46.5496481Z =ci-meta=	ccache	Cacheable calls:    15914 / 21937 (72.54%)
+2026-10-21T06:28:46.5498127Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T06:28:46.5498437Z =ci-meta=	ccache	    Direct:         15417 / 15886 (97.05%)
+2026-10-21T06:28:46.5498681Z =ci-meta=	ccache	    Preprocessed:     469 / 15886 ( 2.95%)
+2026-10-21T06:28:46.5499957Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T06:28:46.5500220Z =ci-meta=	ccache	Uncacheable calls:   6023 / 21937 (27.46%)
+2026-10-21T06:28:46.5500423Z =ci-meta=	ccache	Local storage:
+2026-10-21T06:28:46.5500615Z =ci-meta=	ccache	  Cache size (GiB):   1.2 /   5.0 (23.22%)
+2026-10-21T06:28:46.5500834Z =ci-meta=	ccache	  Hits:             15886 / 15914 (99.82%)
+2026-10-21T06:28:46.5501044Z =ci-meta=	ccache	  Misses:              28 / 15914 ( 0.18%)
+2026-10-21T06:28:46.5650767Z =br-time=	wall	633.0
+2026-10-21T06:28:46.5651001Z =br-time=	unmatched	0
+2026-10-21T06:28:46.5651180Z =br-time=	step	build	619.1
+2026-10-21T06:28:46.5651370Z =br-time=	step	configure	391.9
+2026-10-21T06:28:46.5651556Z =br-time=	step	extract	42.6
+2026-10-21T06:28:46.5651723Z =br-time=	step	install-target	39.5
+2026-10-21T06:28:46.5651905Z =br-time=	step	install-host	21.6
+2026-10-21T06:28:46.5652074Z =br-time=	step	download	21.4
+2026-10-21T06:28:46.5652241Z =br-time=	step	patch	20.5
+2026-10-21T06:28:46.5652415Z =br-time=	step	install-staging	5.8
+2026-10-21T06:28:46.5652597Z =br-time=	step	install-image	0.9
+2026-10-21T06:28:46.5653020Z =br-time=	step	rsync	0.6
+2026-10-21T06:28:46.5653183Z =br-time=	package	linux	337.2
+2026-10-21T06:28:46.5653352Z =br-time=	package	busybox	62.7
+2026-10-21T06:28:46.5653522Z =br-time=	package	host-libopenssl	53.7
+2026-10-21T06:28:46.5653709Z =br-time=	package	libopenssl	51.9
+2026-10-21T06:28:46.5653880Z =br-time=	package	host-ccache	49.5
+2026-10-21T06:28:46.5654121Z =br-time=	package	util-linux	47.4
+2026-10-21T06:28:46.5654299Z =br-time=	package	host-python3	44.9
+2026-10-21T06:28:46.5654478Z =br-time=	package	host-util-linux	43.4
+2026-10-21T06:28:46.5654664Z =br-time=	package	host-m4	37.5
+2026-10-21T06:28:46.5654827Z =br-time=	package	host-xz	28.7
+2026-10-21T06:28:46.5654988Z =br-time=	package	host-bison	27.7
+2026-10-21T06:28:46.5655159Z =br-time=	package	host-libarchive	23.9
+2026-10-21T06:28:46.5655331Z =br-time=	package	kbd	22.9
+2026-10-21T06:28:46.5655490Z =br-time=	package	e2fsprogs	20.0
+2026-10-21T06:28:46.5655663Z =br-time=	package	host-zstd	18.7

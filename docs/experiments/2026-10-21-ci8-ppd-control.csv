@@ -1,0 +1,38 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+run3-base,base,1,defconfig_wall,3.959,s,true,exit_code=0
+run3-base,base,1,host_ccache_wall,113.697,s,true,exit_code=0
+run3-base,base,1,top_level_make_wall,3004.838,s,true,exit_code=0; nproc=12
+run3-base,base,1,legal_info_wall,33.875,s,true,exit_code=0
+run2,ppd,1,defconfig_wall,3.277,s,true,exit_code=0
+run2,ppd,1,host_ccache_wall,117.402,s,true,exit_code=0
+run2,ppd,1,top_level_make_wall,2298.974,s,true,exit_code=0; nproc=12
+run2,ppd,1,legal_info_wall,35.127,s,true,exit_code=0
+run3-base,base,1,buildroot_download,4.827,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_extract,30.581,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_patch,6.278,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_configure,537.203,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_build,2201.674,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_install_host,20.399,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_install_image,1.334,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_install_staging,6.758,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_install_target,84.078,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_install_all,112.570,s,true,sum of paired Buildroot start/end events
+run3-base,base,1,buildroot_log_wall,3053.514,s,true,first start to last end
+run2,ppd,1,buildroot_download,123.992,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_extract,83.480,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_patch,36.482,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_configure,1014.364,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_build,3177.778,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_install_host,38.591,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_install_image,3.149,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_install_staging,14.150,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_install_target,97.330,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_install_all,153.219,s,true,sum of paired Buildroot start/end events
+run2,ppd,1,buildroot_log_wall,2336.285,s,true,first start to last end
+run3-base,base,1,target_entries,2174,count,true,target manifest entry count
+run2,ppd,1,target_entries,2173,count,true,target manifest entry count
+run3-base,base,1,N_changed_paths,1055,path,true,baseline commit 39ccd23 to base run3
+run3-base,base,1,P_changed_paths,1064,path,true,base run3 to PPD run2
+run3-base,base,1,P_minus_N_changed_paths,10,path,true,manifest path set subtraction
+run3-base,base,1,QEMU_test_boot,34.161,s,true,ready marker and login prompt; exit_code=0
+run3-base,base,1,free_disk,58,GiB,true,df reported 74 percent used after QEMU test
