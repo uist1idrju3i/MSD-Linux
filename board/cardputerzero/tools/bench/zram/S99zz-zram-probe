@@ -1,0 +1,68 @@
+#!/bin/sh
+# Test-only hook for the QEMU zram experiment; never part of the normal image.
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+say() { printf '=zram= %s\n' "$*" >/dev/console; }
+alg="$(sed -n 's/.*msd\.zram=\([a-z0-9]*\).*/\1/p' /proc/cmdline)"
+if [ -z "$alg" ]; then
+	say skipped
+	exit 0
+fi
+up() { cut -d' ' -f1 /proc/uptime; }
+
+t0="$(up)"
+if ! modprobe zram num_devices=1; then
+	say "Z1 modprobe=failed"
+	say finished
+	exit 0
+fi
+if [ ! -b /dev/zram0 ]; then
+	# shellcheck disable=SC2046
+	mknod /dev/zram0 b $(tr ':' ' ' </sys/block/zram0/dev)
+fi
+echo "$alg" >/sys/block/zram0/comp_algorithm
+echo 128M >/sys/block/zram0/disksize
+mkswap /dev/zram0 >/dev/null 2>&1
+swapon -p 100 /dev/zram0
+rc=$?
+echo 100 >/proc/sys/vm/swappiness
+echo 0 >/proc/sys/vm/page-cluster
+t1="$(up)"
+say "Z1 swapon_rc=$rc setup_s=$(awk -v a="$t0" -v b="$t1" 'BEGIN { printf "%.3f", b - a }') comp=$(cat /sys/block/zram0/comp_algorithm)"
+say "Z1 swaps=$(awk '$1 == "/dev/zram0" { print $3 "," $4 "," $5 }' /proc/swaps)"
+say "Z2 zswap=$(cat /sys/module/zswap/parameters/enabled)"
+
+mkdir -p /run/zram-load
+mount -t tmpfs -o size=450M tmpfs /run/zram-load
+# Compressible, non-zero 4 MiB chunk (zero pages may bypass zram entirely).
+yes 'MSD/Linux zram probe 0123456789 abcdefghijklmnopqrstuvwxyz' | head -c 4194304 >/run/zram-text
+load() {
+	name="$1"
+	src="$2"
+	i=0
+	ok=yes
+	: >/run/zram-load/fill
+	while [ "$i" -lt 100 ]; do
+		if ! dd if="$src" bs=4M count=1 2>/dev/null >>/run/zram-load/fill; then
+			ok=no
+			break
+		fi
+		i=$((i + 1))
+	done
+	say "Z3 load=$name chunks=$i ok=$ok mm_stat=$(tr -s ' ' ',' </sys/block/zram0/mm_stat | sed 's/^,//')"
+	say "Z3 load=$name swaps=$(awk '$1 == "/dev/zram0" { print $4 }' /proc/swaps) memavail_kb=$(awk '$1 == "MemAvailable:" { print $2 }' /proc/meminfo) oom=$(dmesg | grep -c 'invoked oom-killer')"
+	rm -f /run/zram-load/fill
+	sync
+}
+loads="$(sed -n 's/.*msd\.zram_loads=\([a-z,]*\).*/\1/p' /proc/cmdline)"
+for name in $(echo "${loads:-zero,urandom}" | tr ',' ' '); do
+	case "$name" in
+		zero) load zero /dev/zero ;;
+		text) load text /run/zram-text ;;
+		urandom) load urandom /dev/urandom ;;
+	esac
+done
+say finished
