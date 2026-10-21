@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 case " $(cat /proc/cmdline) " in
 	*" msd.s6check=1 "*)
 		lsm_line="$(dmesg | grep -F 'LSM: initializing lsm=' | tail -n 1)"

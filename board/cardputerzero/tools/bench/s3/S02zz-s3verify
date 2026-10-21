@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 cmdline=" $(cat /proc/cmdline) "
 case "$cmdline" in
 	*" msd.s3verify=1 "*) ;;
