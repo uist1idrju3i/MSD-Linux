@@ -1,6 +1,6 @@
 # S11 QEMU watchdog の検証
 
-- 状態: v1 の QEMU 実験済み、v2 は測定前（実機未確認）
+- 状態: v1・v2 の QEMU 実験済み（実機未確認）
 - 日付: 2026-10-20
 - 担当: Devin
 - 関連: [S11 調査計画](../research/simulation-plan.md)
@@ -35,14 +35,14 @@ v2 では、`stop` と `kill9` の試行で marker の後 30 秒以内に reset 
 | v1 image の source commit | `fca902408e1e6e83f4317870ef9cb082051a120b` |
 | v2 image の source commit | `d1f65609cb314491556071c9399b974445a96319` |
 | ホスト | Ubuntu 26.04.1 x86_64、Linux 7.0.0-38-generic |
-| 開発コンテナー | Debian 13、Python 3.13.5、Bash 5.2.37 |
+| 開発コンテナー | Debian 13.7、Python 3.13.5、Bash 5.2.37 |
 | QEMU | QEMU emulator 11.1.2。GCC 14.2.0 でビルドした `msd-dev:local` 内の binary |
-| Buildroot | 2026.08 系の既存出力 |
+| v2 Buildroot | 2026.08、submodule commit `d6061d653d7fb215c2409c59e4bfad1b9d677215` |
 | cross GCC | `aarch64-linux-gcc.br_real` 14.3.0 |
 | kernel | 6.18.57-v8 |
-| rootfs / image tools | unsquashfs と mksquashfs 4.7.5、sfdisk 2.41.5 |
+| rootfs / image tools | unsquashfs と mksquashfs 4.7.5、sfdisk 2.41.5、mke2fs 1.47.4 |
 | v1 出力先と状態 | 既存の `OUTPUT_DIR` を再利用。Buildroot の再 configure / 再 build は行わなかった。 |
-| v2 出力先と状態 | v2 条件として `origin/main` の HEAD から再 configure / build する。実施結果は後述する。 |
+| v2 出力先と状態 | 既存の output を再利用し、`origin/main` HEAD で `msd_cardputerzero_defconfig` と full build を実施した。 |
 | v2 QEMU image | `msd-dev:local`（QEMU 11.1.2、image ID `sha256:763f112a609ec5839867c1a20df3e2612ca865e14a4a6fc3fbdfb582c65201ad`） |
 | 変える条件 | watchdog の停止・終了・reboot・poweroff 動作 |
 | 変えない条件 | QEMU machine、kernel、DTB、SD image、仮想時間設定、rootfs 以外の image 内容 |
@@ -50,26 +50,31 @@ v2 では、`stop` と `kill9` の試行で marker の後 30 秒以内に reset 
 
 ## 手順
 
-Buildroot 出力と SD image は既存のものを使い、watchdog init script を加えたテスト用 rootfs を作成した。`test-watchdog.sh` は各試行用に SD image をコピーし、`QEMU_ICOUNT` を解除して TCG で起動する。実行コマンドは次のとおり。
+v1 は既存の Buildroot 出力を使った。v2 は `origin/main` HEAD `d1f65609cb314491556071c9399b974445a96319` に切り替え、Buildroot の `msd_cardputerzero_defconfig` と full build を実行した。output tree は再利用し、Buildroot と board の source tree は HEAD のものを使った。Docker 内から submodule の `.git` file が参照する worktree metadata を解決できず、最初の full build は `M5STACK_CARDPUTERZERO_VERSION is empty` で停止した。submodule の実 commit `75518549a2640486f5d13ea72ca4935b198d7c20` を make variable として渡した再試行は成功した。成功した build log には `ASH_SLEEP` の未定義 symbol、BusyBox の compiler warning など 45 行の warning があったが、build は exit 0 で完了した。
+
+`test-watchdog.sh` は各試行用に SD image をコピーし、watchdog init script を加えた test-only rootfs を作成して `QEMU_ICOUNT` を解除した TCG で起動する。実行コマンドは次のとおり。
 
 ```sh
-QEMU_WATCHDOG=1 \
-OUTPUT_DIR=<既存の Buildroot 出力> \
-QEMU_LOG_DIR=<永続ログディレクトリー> \
-docker/msd-dev board/cardputerzero/qemu/test-watchdog.sh \
-  --experiment --csv "$QEMU_LOG_DIR/watchdog.csv"
+docker/msd-dev make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output \
+  msd_cardputerzero_defconfig
+docker/msd-dev make -C output -j8 \
+  M5STACK_CARDPUTERZERO_VERSION=75518549a2640486f5d13ea72ca4935b198d7c20
 
-env -u QEMU_WATCHDOG \
-OUTPUT_DIR=<既存の Buildroot 出力> \
-QEMU_LOG_DIR=<永続ログディレクトリー> \
-docker/msd-dev board/cardputerzero/qemu/test-boot.sh
+QEMU_WATCHDOG=1 QEMU_LOG_DIR=<永続ログディレクトリー> \
+  docker/msd-dev board/cardputerzero/qemu/test-watchdog.sh \
+  --experiment --csv /work/docs/experiments/2026-10-20-s11-qemu-watchdog.csv
+
+env -u QEMU_WATCHDOG QEMU_LOG_DIR=<永続ログディレクトリー> \
+  docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 ```
+
+v2 の run ID は `s11-v2-20261021T162737Z-1-<mode>-<repeat>`。default `test-boot.sh` 回帰は `QEMU_WATCHDOG` を unset して実行した。
 
 v1 の `run_id` は `s11-20261020T215917Z-1-<mode>-<repeat>`。TCG 実験は 35 分 27.31 秒で完了し、stop / kill9 の事前登録基準を満たさなかったため、コマンドの終了 status は 1 だった。全 30 行は CSV に保存されている。
 
 ## 計測器の検証
 
-serial の各行に host monotonic timestamp を付けた。30 個の serial log と CSV を照合した。全試行で `msd.wdtest=<mode>` が kernel command line にあり、watchdog driver の initcall blacklist はなかった。none と term の全試行で `state=active timeout=15` を確認した。reboot の restart message から次の `Booting Linux` までは 1.485–1.603 秒だった。
+serial の各行に host monotonic timestamp を付けた。v1 と v2 の各 30 serial log と CSV を照合した。全試行で `msd.wdtest=<mode>` が kernel command line にあり、watchdog driver の initcall blacklist はなかった。none と term の全試行で `state=active timeout=15` を確認した。v1 の reboot では restart message から次の `Booting Linux` まで 1.485–1.603 秒、v2 では 1.514–1.588 秒だった。
 
 ## 結果
 
@@ -83,7 +88,19 @@ serial の各行に host monotonic timestamp を付けた。30 個の serial log
 | term | 5/5 で 60 秒以内に reset なし。 | 観察のみ。pass/fail 判定なし。 |
 | default boot regression | `QEMU_WATCHDOG` なしで `test-boot.sh` は exit 0、34 秒で ready。kernel command line に既定の initcall blacklist がある。 | exit 0。達成。 |
 
-v1 の stop / kill9 は initial marker から 40 秒の制限内に second boot ready へ到達しなかった。該当試行では reset 後 23〜26 秒で QEMU を host 側から終了した。reboot 試行では reset 後 28.215〜29.307 秒で ready に到達した。v1 の測定値と判定はそのまま保持し、v2 の待ち時間は Amendment 1 のとおり変更する。
+v2 の結果は次のとおり。CSV の全行で `valid=1` となり、criteria failure はなかった。
+
+| mode | v2 実測結果 | 事前登録基準 |
+|---|---|---|
+| none | 5/5 は 60 秒以内に reset せず、全て `state=active timeout=15`。 | 5/5。達成。 |
+| stop | 5/5 reset、marker→reset の中央値は 14.242 秒（13.979〜14.543 秒）、restart message は 0/5、second boot ready は 5/5。reset→ready は中央値 30.258 秒（29.610〜31.659 秒）。 | 5/5。達成。 |
+| kill9 | 5/5 reset、marker→reset の中央値は 16.959 秒（16.808〜17.027 秒）、restart message は 0/5、second boot ready は 5/5。reset→ready は中央値 30.247 秒（29.793〜30.503 秒）。 | 5/5。達成。 |
+| reboot | 5/5 で restart message、reset、second boot ready を確認した。marker→reset は中央値 7.626 秒（7.549〜7.841 秒）、restart message→reset は 1.566 秒（1.514〜1.588 秒）、reset→ready は 28.967 秒（28.740〜29.589 秒）。 | 5/5。達成。 |
+| poweroff | 5/5 で reset せず QEMU が status 0 で終了した。marker→exit は中央値 5.983 秒（5.940〜6.281 秒）。 | 5/5。達成。 |
+| term | 5/5 で 60 秒以内に reset しなかった。 | 観察のみ。pass/fail 判定なし。 |
+| default boot regression | `QEMU_WATCHDOG` unset で `test-boot.sh` は exit 0、34 秒で ready になった。 | exit 0。達成。 |
+
+v1 の stop / kill9 は initial marker から 40 秒の制限内に second boot ready へ到達しなかった。該当試行では reset 後 23〜26 秒で QEMU を host 側から終了した。reboot 試行では reset 後 28.215〜29.307 秒で ready に到達した。v1 の測定値と判定は失敗試行として保持し、v2 の待ち時間だけを Amendment 1 のとおり変更した。
 
 term は 5/5 で観測時間内に reset しなかった。この結果は magic close `V` の仮説と整合するが、serial log から close の方式そのものは確認できない。
 
@@ -143,9 +160,9 @@ v1 では stop 5/5 と kill9 5/5 が second-ready 基準を満たさず、全体
 
 ## 結論
 
-QEMU 11.1.2 の watchdog timer は、stop / kill9 後の reset、Linux reboot 後の reset、poweroff による QEMU 終了を観測できた。none では watchdog が active のまま 60 秒 reset せず、term でも 60 秒 reset しなかった。stop / kill9 の reset 自体は全試行で観測したが、second boot ready の基準は満たしていないため、この実験の基準全体は未達である。
+v1 は観測窓の設定誤りにより stop / kill9 の second boot ready を確認できず、基準未達だった。修正した v2 では 6 mode × 5 回を実行し、stop / kill9 を含む全ての判定対象 mode で基準を満たした。stop / kill9 は reset 後 120 秒以内に各 5/5 回 ready となった。製品設定は変更していない。
 
-これは QEMU TCG の結果であり、実機の watchdog 動作を示すものではない。BCM2837 / CardputerZero 実機での reset と poweroff は未確認である。
+none では watchdog が active のまま 60 秒 reset せず、term でも 60 秒 reset しなかった。term の結果は magic close `V` の仮説と整合するが、close の方式そのものは確認できない。これらは QEMU TCG の結果であり、実機の watchdog 動作を示すものではない。BCM2837 / CardputerZero 実機での reset と poweroff は未確認である。
 
 ## 未確認の点
 
@@ -195,3 +212,7 @@ QEMU は GPU firmware と tryboot を持たず、`-kernel` による再起動は
 | smoke/work/image-20261020T215703-1/unsquashfs.log | `a4d0d19bcd68ddb7366a878a90beaca09904f86eb201fb2bc78fc456c474b9d9` |
 | smoke/work/image-20261020T215703-1/mksquashfs.log | `4e3da4b52b38842334df9e5400fb32fd4d126755ccc2e08f0ca40c8ded7447d3` |
 | regression/serial-mmcblk0p5.log | `8f839720704b1783839ae3dcc7cc4ba447c8b207e2e7c9f262dd5f2a5` |
+
+v2 の 30 serial log、rootfs 作成ログ、driver log、default boot regression log、Buildroot の defconfig・失敗した build・成功した build の SHA-256 は、永続 `s11-logs` の root にある `s11-v2-20261021T162713Z.sha256` にまとめた。この manifest は commit せず、SHA-256 は `1fc88cdfdc463d5745f2c15eacb0202c4c5a326f66f7ae6db685091c55ee9eb1`。v2 build log の SHA-256 は defconfig `5920c8bf8bad8df1d3e8211d8c02c284bf5db6c13ec377cfd420746c5f5a5da4`、metadata 不足で失敗した初回 build `5f7399bd11fbe97d5ab6a15b0b49110a2956e5835dc64d5f5b6ebe6960e64eaa`、成功した再試行 `75dfbe93f67050a1fe569e0bdc9d3919adb641ecb1c52c2c1dfc6fdef075e15a`。
+
+v2 の base image は `output/images/sdcard.img` で SHA-256 `e9be1675b865f51f321209340f692b47869d4deb1ee038cfac681c7e78987165`、rootfs は `db6d3437d9b6b8324c030a31e9b03eb66947a85e0851c77802b9012bc1dbf8c4`、kernel `Image` は `3f3abfcbd8c0ce8c4f8beb230d2661b8fec745f80979837ee2d9917c377edcf4` だった。
