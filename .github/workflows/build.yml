@@ -218,7 +218,9 @@ jobs:
           # shellcheck disable=SC2016
           docker/msd-dev bash -c '
             make -C output host-ccache
-            CCACHE_DIR="${BR2_CCACHE_DIR}" output/host/bin/ccache -z
+            ccache_bin=output/host/bin/ccache
+            [ -x "$ccache_bin" ] || ccache_bin=output/per-package/host-ccache/host/bin/ccache
+            CCACHE_DIR="${BR2_CCACHE_DIR}" "$ccache_bin" -z
             make -C output -j"$(nproc)"
             make -C output legal-info
           '
@@ -409,6 +411,12 @@ jobs:
             printf '=ci-meta=\tccache\tmissing\n'
           else
             sed 's/^/=ci-meta=\tccache\t/' "$RUNNER_TEMP/msd-ccache.log"
+          fi
+          if [[ -f output/build/build-time.log ]]; then
+            python3 .github/scripts/summarize-build-time.py output/build/build-time.log ||
+              printf '=br-time=\tfailed\n'
+          else
+            printf '=br-time=\tmissing\n'
           fi
           {
             printf '| # | Step | Started at | Completed at | Seconds | Conclusion |\n'
