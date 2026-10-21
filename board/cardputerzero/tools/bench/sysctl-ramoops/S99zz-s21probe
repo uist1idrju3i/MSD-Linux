@@ -1,0 +1,82 @@
+#!/bin/sh
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+console()
+{
+	printf '%s\n' "$*" >/dev/console
+}
+
+mode="$(cat /etc/s21-test-mode 2>/dev/null)"
+
+read_sysctl()
+{
+	key="$1"
+	value="$(sysctl -n "$key" 2>&1)"
+	status=$?
+	console "s21: sysctl key=${key} value=${value} status=${status}"
+}
+
+case "$mode" in
+	readback)
+		for key in \
+			kernel.kptr_restrict \
+			kernel.dmesg_restrict \
+			kernel.sysrq \
+			fs.protected_fifos \
+			fs.protected_regular \
+			fs.protected_hardlinks \
+			fs.protected_symlinks \
+			net.core.bpf_jit_harden \
+			net.ipv4.conf.all.accept_redirects \
+			net.ipv4.conf.default.accept_redirects \
+			net.ipv4.conf.all.send_redirects \
+			net.ipv4.conf.default.accept_source_route \
+			net.ipv4.conf.all.rp_filter \
+			net.ipv4.conf.all.log_martians \
+			net.ipv4.conf.default.log_martians
+		do
+			read_sysctl "$key"
+		done
+		;;
+	panic|panic-pstore)
+		if [ -e /data/.s21-stage ]; then
+			console 's21: second boot'
+			if [ "$mode" = panic-pstore ]; then
+				mkdir -p /sys/fs/pstore
+				mounted=no
+				if grep -Fq ' pstore /sys/fs/pstore ' /proc/mounts; then
+					mounted=yes
+				fi
+				mount_status=0
+				if [ "$mounted" != yes ]; then
+					mount -t pstore pstore /sys/fs/pstore
+					mount_status=$?
+				fi
+				console "s21: pstore mount status=${mount_status}"
+				for file in /sys/fs/pstore/*; do
+					[ -f "$file" ] || continue
+					console "s21: pstore file=${file##*/}"
+					while IFS= read -r line || [ -n "$line" ]; do
+						console "s21: record=${line}"
+					done <"$file"
+				done
+			fi
+			exit 0
+		fi
+
+		printf 'triggered\n' >/data/.s21-stage
+		sync
+		console 's21: panic marker'
+		if ! echo c >/proc/sysrq-trigger; then
+			console 's21: sysrq trigger failed'
+		fi
+		;;
+	*)
+		console "s21: unknown mode=${mode}"
+		exit 1
+		;;
+esac
