@@ -77,6 +77,21 @@ def main() -> int:
     failed = False
     for condition, expected in EXPECTED_COUNTS.items():
         selected = [row for row in rows if row["condition"] == condition]
+        if condition == "P0":
+            replacement = [
+                row
+                for row in selected
+                if row["run_id"].startswith("s21-P0-amendment2-")
+            ]
+            if replacement:
+                excluded = [row for row in selected if row not in replacement]
+                print(
+                    f"P0 pre-amendment2 attempts excluded={len(excluded)} "
+                    f"amendment2 replacement trials={len(replacement)}"
+                )
+                if len(excluded) != 9 or len(replacement) != expected:
+                    failed = True
+                selected = replacement
         if condition == "R1":
             replacement = [
                 row

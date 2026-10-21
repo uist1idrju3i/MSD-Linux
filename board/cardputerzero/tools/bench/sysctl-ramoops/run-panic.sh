@@ -7,9 +7,99 @@ qemu_runner="${repo_root}/board/cardputerzero/qemu/run-qemu.sh"
 append_row="${script_dir}/append-row.py"
 output_dir="${OUTPUT_DIR:-${repo_root}/output}"
 log_root="${QEMU_LOG_DIR:?set QEMU_LOG_DIR to the persistent S21 log directory}"
-variant_root="${S21_VARIANT_ROOT:-${log_root}/variants}"
-csv="${S21_CSV:-${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv}"
+variant_root="${log_root}/variants"
+csv="${repo_root}/docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.csv"
 base_dtb="${output_dir}/images/bcm2710-rpi-cm0.dtb"
+run_tag=
+modes=(P0 P1 R0 R1)
+
+usage() {
+	printf 'Usage: %s [--modes MODE[,MODE...]] [--run-tag TAG] [--variant-root DIR] [--csv FILE]\n' "$0"
+}
+
+while (($#)); do
+	case "$1" in
+		--modes)
+			(($# >= 2)) || { usage >&2; exit 2; }
+			IFS=, read -r -a modes <<<"$2"
+			shift 2
+			;;
+		--run-tag)
+			(($# >= 2)) || { usage >&2; exit 2; }
+			run_tag="$2"
+			shift 2
+			;;
+		--variant-root)
+			(($# >= 2)) || { usage >&2; exit 2; }
+			variant_root="$2"
+			shift 2
+			;;
+		--csv)
+			(($# >= 2)) || { usage >&2; exit 2; }
+			csv="$2"
+			shift 2
+			;;
+		--help)
+			usage
+			exit 0
+			;;
+		*)
+			printf 'Unknown argument: %s\n' "$1" >&2
+			usage >&2
+			exit 2
+			;;
+	esac
+done
+
+if ((${#modes[@]} == 0)); then
+	printf 'At least one mode is required.\n' >&2
+	exit 2
+fi
+declare -A selected_modes=()
+run_ids=()
+for mode in "${modes[@]}"; do
+	case "$mode" in
+		P0|P1|R0|R1) ;;
+		*)
+			printf 'Unsupported mode: %s\n' "$mode" >&2
+			exit 2
+			;;
+	esac
+	if [[ -v "selected_modes[$mode]" ]]; then
+		printf 'Duplicate mode: %s\n' "$mode" >&2
+		exit 2
+	fi
+	selected_modes["$mode"]=1
+	for trial in 1 2 3 4 5; do
+		run_id="s21-${mode}-${trial}"
+		if [[ -n "$run_tag" ]]; then
+			run_id="s21-${mode}-${run_tag}-${trial}"
+		fi
+		run_ids+=("$run_id")
+	done
+done
+
+python3 - "$csv" "$log_root" "${run_ids[@]}" <<'PY'
+import csv
+import pathlib
+import sys
+
+csv_path = pathlib.Path(sys.argv[1])
+log_root = pathlib.Path(sys.argv[2])
+run_ids = sys.argv[3:]
+existing = set()
+if csv_path.exists():
+    with csv_path.open(newline="", encoding="utf-8") as source:
+        existing = {row["run_id"] for row in csv.DictReader(source)}
+collisions = [
+    run_id
+    for run_id in run_ids
+    if (log_root / run_id).exists() or run_id in existing
+]
+if collisions:
+    print("Refusing to overwrite existing run IDs: " + ", ".join(collisions), file=sys.stderr)
+    raise SystemExit(2)
+PY
 
 sha256_file() {
 	sha256sum "$1" | awk '{print $1}'
@@ -97,7 +187,6 @@ run_trial() {
 	local condition="$mode"
 	local panic_arg=panic=0
 	local dtb="$base_dtb"
-	local run_tag="${S21_RUN_TAG:-}"
 	local run_id="s21-${mode}-${trial}"
 	local run_dir="${log_root}/${run_id}"
 	local image="${variant_root}/${variant}/sdcard.img"
@@ -254,15 +343,7 @@ PY
 		"$ready" "$registration" "$record_sysrq" "$record_panic" "$criteria"
 }
 
-read -r -a modes <<<"${S21_MODES:-P0 P1 R0 R1}"
 for mode in "${modes[@]}"; do
-	case "$mode" in
-		P0|P1|R0|R1) ;;
-		*)
-			printf 'Unsupported mode: %s\n' "$mode" >&2
-			exit 2
-			;;
-	esac
 	for trial in 1 2 3 4 5; do
 		run_trial "$mode" "$trial"
 	done

@@ -60,14 +60,18 @@ log root, and waits up to 120 seconds for the second boot to reach ready. The
 R1 device tree is decompiled and compiled by Buildroot's `dtc` from inside the
 same container.
 
-For an amended R1 replacement set, run only that fixed five-trial condition
-with distinct run IDs:
+For amended replacement sets, select the fixed five-trial condition with
+distinct run IDs:
 
 ```sh
-S21_MODES=R1 S21_RUN_TAG=amendment1 OUTPUT_DIR="$OUTPUT_DIR" \
-  QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
-  board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh
+OUTPUT_DIR="$OUTPUT_DIR" QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
+  board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh \
+  --modes R1 --run-tag amendment1 --variant-root "$VARIANTS"
+OUTPUT_DIR="$OUTPUT_DIR" QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
+  board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh \
+  --modes P0 --run-tag amendment2 --variant-root "$VARIANTS"
 ```
 
 The R1 runner waits for `s21: pstore collection complete` after second-boot
-ready before it terminates QEMU.
+ready before it terminates QEMU. Before starting, it refuses any run whose log
+directory or CSV run ID already exists.

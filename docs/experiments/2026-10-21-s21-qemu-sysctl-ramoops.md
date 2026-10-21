@@ -72,6 +72,14 @@ QEMU は system reset をまたいで RAM を保持する。実機の watchdog r
 
 原因は runner が `s21: second boot` と 2 回目の `MSD/Linux ready` を確認した直後に QEMU を終了し、S99 hook の pstore 収集完了を待っていなかったことだった。初回 5 行と log は失敗した試行として保持する。test-only hook に収集完了 marker を追加し、runner がその marker を最大 120 秒待つようにしたうえで、R1 を同じ DTB、image、`panic=5`、watchdog 条件で 5 回置き換えて測る。置き換えた 5 行を事前登録の R1 5 試行として評価し、初回 5 行は不完全な実行として合否集計から除外する。条件、値、基準は変えず、ほかの条件は再実行しない。
 
+## Amendment 2（2026-10-21T22:35:33Z、再試行前）
+
+Amendment 1 の R1 再試行では、`docker/msd-dev` が環境変数の `S21_MODES`、`S21_RUN_TAG`、`S21_VARIANT_ROOT` を転送しなかったため、指定した R1 ではなく既定の P0 から runner が始まった。runner は既存 run ID の上書きを拒否しなかった。
+
+元の P0-1〜P0-3 の serial log は上書きされた。対応する元の CSV 行は変更せず残すが、記録された log SHA-256 と現在の log SHA-256 が一致しないため、P0 の判定には使わない。誤実行の P0-1〜P0-4 の追加 CSV 行と P0-4 の不完全な log も保持し、合否集計から除外する。P0-5 の現在の log も元の CSV の hash と一致せず、途中で切れた内容が残るため、元の P0-5 行も判定に使わない。P0-5 の誤実行への到達経路は記録だけでは確定できない。
+
+runner は選択 mode、run tag、variant root、CSV path を CLI 引数で受け取り、実行前に全 run ID の log directory と CSV 行の重複を検査するようにする。誤実行行と元の P0 行はそのまま残す。P0 は `amendment2` tag で元と同じ条件・基準の 5 試行を行い、この 5 行で P0 の判定を行う。R1 は Amendment 1 の手順で `amendment1` tag の 5 試行を行う。指定済みの値、条件、基準は変えない。
+
 ## 条件
 
 | 項目 | 値 |
