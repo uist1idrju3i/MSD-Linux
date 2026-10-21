@@ -73,6 +73,23 @@ wait_for_second_boot_ready() {
 	return 1
 }
 
+wait_for_pstore_collection() {
+	local log="$1"
+	local pid="$2"
+	local timeout="$3"
+	local deadline=$((SECONDS + timeout))
+	while ((SECONDS <= deadline)); do
+		if grep -Fq 's21: pstore collection complete' "$log" 2>/dev/null; then
+			return 0
+		fi
+		if ! kill -0 "$pid" 2>/dev/null; then
+			return 1
+		fi
+		sleep 0.1
+	done
+	return 1
+}
+
 run_trial() {
 	local mode="$1"
 	local trial="$2"
@@ -80,6 +97,7 @@ run_trial() {
 	local condition="$mode"
 	local panic_arg=panic=0
 	local dtb="$base_dtb"
+	local run_tag="${S21_RUN_TAG:-}"
 	local run_id="s21-${mode}-${trial}"
 	local run_dir="${log_root}/${run_id}"
 	local image="${variant_root}/${variant}/sdcard.img"
@@ -92,7 +110,15 @@ run_trial() {
 	local panic_seen=no reboot_seen=no registration=no
 	local pstore_status=missing pstore_files=
 	local record_sysrq=no record_panic=no valid=0 criteria=fail note=
+	local pstore_complete=no
 	local cmdline=panic=0
+
+	if [[ -n "$run_tag" ]]; then
+		run_id="s21-${mode}-${run_tag}-${trial}"
+		run_dir="${log_root}/${run_id}"
+		disk="${run_dir}/sdcard.img"
+		log="${run_dir}/serial.log"
+	fi
 
 	if [[ "$mode" == P1 || "$mode" == R0 || "$mode" == R1 ]]; then
 		panic_arg=panic=5
@@ -127,6 +153,13 @@ PY
 			if wait_for_second_boot_ready "$log" "$qemu_pid" 120
 			then
 				ready=yes
+				if [[ "$mode" == R1 ]]; then
+					if wait_for_pstore_collection "$log" "$qemu_pid" 120; then
+						pstore_complete=yes
+					else
+						note=pstore-collection-timeout
+					fi
+				fi
 			fi
 		else
 			marker_to_reset=
@@ -182,7 +215,7 @@ PY
 				;;
 			R1)
 				if awk -v value="$marker_to_reset" 'BEGIN {exit !(value >= 3 && value <= 10)}' &&
-					[[ "$reboot_seen" == yes && "$registration" == yes &&
+					[[ "$pstore_complete" == yes && "$reboot_seen" == yes && "$registration" == yes &&
 						"$record_sysrq" == yes && "$record_panic" == yes ]]
 				then
 					criteria=pass
@@ -221,7 +254,15 @@ PY
 		"$ready" "$registration" "$record_sysrq" "$record_panic" "$criteria"
 }
 
-for mode in P0 P1 R0 R1; do
+read -r -a modes <<<"${S21_MODES:-P0 P1 R0 R1}"
+for mode in "${modes[@]}"; do
+	case "$mode" in
+		P0|P1|R0|R1) ;;
+		*)
+			printf 'Unsupported mode: %s\n' "$mode" >&2
+			exit 2
+			;;
+	esac
 	for trial in 1 2 3 4 5; do
 		run_trial "$mode" "$trial"
 	done

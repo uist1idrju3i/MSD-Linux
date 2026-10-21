@@ -66,6 +66,12 @@ R0 は同じ test image と trigger を使い、base DTB を使う。R1 は R0 �
 
 QEMU は system reset をまたいで RAM を保持する。実機の watchdog reset 後に Raspberry Pi firmware が RAM を保持するか、指定 address が `gpu_mem` の領域と競合しないかは実機でしか確かめられない。製品への採否は未決定とする。
 
+## Amendment 1（2026-10-21T22:27:52Z、R1 再試行前）
+
+初回の R1 5 試行では、panic、reset、2 回目の ready、ramoops 登録を確認したが、pstore の mount 状態と record を取得できなかった。`s21-R1-1` の serial log は `MSD/Linux ready`、`s21: second boot` の直後に `qemu-system-aarch64: terminating on signal 15 from pid 1 (bash)` で終わっていた。ほかの R1 4 試行も同じく pstore collector の出力前に終了していた。
+
+原因は runner が `s21: second boot` と 2 回目の `MSD/Linux ready` を確認した直後に QEMU を終了し、S99 hook の pstore 収集完了を待っていなかったことだった。初回 5 行と log は失敗した試行として保持する。test-only hook に収集完了 marker を追加し、runner がその marker を最大 120 秒待つようにしたうえで、R1 を同じ DTB、image、`panic=5`、watchdog 条件で 5 回置き換えて測る。置き換えた 5 行を事前登録の R1 5 試行として評価し、初回 5 行は不完全な実行として合否集計から除外する。条件、値、基準は変えず、ほかの条件は再実行しない。
+
 ## 条件
 
 | 項目 | 値 |

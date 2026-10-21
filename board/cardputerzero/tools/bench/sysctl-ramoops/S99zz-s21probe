@@ -64,6 +64,7 @@ case "$mode" in
 						console "s21: record=${line}"
 					done <"$file"
 				done
+				console 's21: pstore collection complete'
 			fi
 			exit 0
 		fi

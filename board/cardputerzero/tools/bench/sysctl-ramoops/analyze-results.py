@@ -77,6 +77,21 @@ def main() -> int:
     failed = False
     for condition, expected in EXPECTED_COUNTS.items():
         selected = [row for row in rows if row["condition"] == condition]
+        if condition == "R1":
+            replacement = [
+                row
+                for row in selected
+                if row["run_id"].startswith("s21-R1-amendment1-")
+            ]
+            if replacement:
+                initial = [row for row in selected if row not in replacement]
+                print(
+                    f"R1 initial incomplete attempts={len(initial)} "
+                    f"amendment1 replacement trials={len(replacement)}"
+                )
+                if len(initial) != 5 or len(replacement) != expected:
+                    failed = True
+                selected = replacement
         passed = sum(row["criteria_result"] == "pass" for row in selected)
         expected_negative = sum(
             row["criteria_result"] == "expected-negative" for row in selected
