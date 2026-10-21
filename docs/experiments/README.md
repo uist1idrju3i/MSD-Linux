@@ -17,3 +17,5 @@
 | [2026-10-20-qemu-powerfail-gpio6](2026-10-20-qemu-powerfail-gpio6.md) | なし | 2026-10-20 | 完了 | 1.5 秒・5 秒の各 5 試行と post-rebase integrity は基準を満たした。SIGKILL による試験であり、実機では未確認。 |
 | [2026-10-21-qemu-data-noexec](2026-10-21-qemu-data-noexec.md) | なし | 2026-10-21 | 完了 | QEMU のみ。`/data` に `noexec` を足しても起動と `/data` の準備は 5/5 で変わらず、直接実行だけが拒否された。`sh` 経由と `/etc` overlay 経由の実行は防げない。製品の設定は未変更。 |
 | [2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md) | なし | 2026-10-21 | 完了 | QEMU のみ。製品イメージを Lynis 3.1.7 で 3 回監査し、3 回とも同じ結果（hardening index 60、warning 1、suggestion 24）。指摘を当てはまる・当てはまらない・実機に分けた |
+| [2026-10-21-ci8-ppd-control](2026-10-21-ci8-ppd-control.md) | なし | 2026-10-21 | 完了（予備） | 同じ commit のローカル build を PPD あり・なしで 1 回ずつ比べた。PPD の top-level make は約 23.5 % 短かった。target の差は署名・時刻・生成鍵・埋め込み path・libv4l の locale のほか、原因未特定の gconv 2 ファイル。採否は未決定。 |
+| [2026-10-21-ci8-ppd-ci](2026-10-21-ci8-ppd-ci.md) | なし | 2026-10-21 | 実施中 | CI の標準 runner で C0 と C1（PPD）を warm-up 1 回と本番 5 回ずつ比べる。計画と採否の基準は事前登録済み。 |
