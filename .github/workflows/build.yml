@@ -110,6 +110,7 @@ jobs:
       - name: Run tests in the development image
         run: |
           docker/msd-dev tests/msd-update/run.sh
+          docker/msd-dev tests/init-scripts/run.sh
           docker/msd-dev tests/msd-hwinfo/run.sh
           docker/msd-dev tests/msd-data-grow/run.sh
           docker/msd-dev tests/qemu-log-check/run.sh

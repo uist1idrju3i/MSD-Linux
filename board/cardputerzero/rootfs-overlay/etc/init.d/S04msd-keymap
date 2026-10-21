@@ -1,5 +1,10 @@
 #!/bin/sh
 
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
 keymap=/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map
 
 if ! loadkeys -C /dev/tty0 -q "$keymap"; then
