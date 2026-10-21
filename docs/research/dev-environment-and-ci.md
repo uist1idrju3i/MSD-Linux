@@ -60,7 +60,7 @@ CI 実行 [39308965520](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/3
 
 この結果だけでは C1 を採用しません。追加反復と target 差の評価が必要です。registry cache、変更検知、cache の分割、job 分割、150 分の timeout も見直し候補です。有料の上位 runner は採用しません。
 
-標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たしました。legal-info の package/version 13 組は一致しましたが、`v4l2-compliance` と `v4l2-ctl` の `.rodata` に説明できない差が残るため、採否は保留です。run/job ID と計測値は [CI 比較の実験記録](../experiments/2026-10-21-ci8-ppd-ci.md)、target 差の調査は[非 PPD 対照 build の記録](../experiments/2026-10-21-ci8-ppd-control.md)を参照してください。
+標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たしました。legal-info の package/version 13 組はすべて一致する結果でした。後日の path-map 追試では、`v4l2-compliance` と `v4l2-ctl` に残った 217 B と 11,669 B の差を、埋め込まれる host path の長さで説明でき、成果物基準 3 も満たしました。製品 build に `-ffile-prefix-map` を入れない場合、PPD の binary は path length に応じて異なります。`BR2_REPRODUCIBLE` の `$(BASE_DIR)=buildroot` map は per-package の suffix を残すため、この差を解消しません。PPD の採否は利用者が判断します。判断に先立つ post-build の seedrng 処理の修正が前提となります。run/job ID と計測値は [CI 比較の実験記録](../experiments/2026-10-21-ci8-ppd-ci.md)、成果物差の検証は [path-map 追試の記録](../experiments/2026-10-21-ci8-ppd-pathmap.md)、target 差の調査は [非 PPD 対照 build の記録](../experiments/2026-10-21-ci8-ppd-control.md)を参照してください。
 
 ## Bootlin toolchain
 
