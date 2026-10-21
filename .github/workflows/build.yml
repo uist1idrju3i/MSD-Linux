@@ -85,6 +85,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      actions: read
       packages: read
       attestations: read
     steps:
@@ -102,10 +103,11 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure
+        run: docker/msd-dev ensure 2>&1 | tee "$RUNNER_TEMP/msd-ensure.log"
 
       - name: Run tests in the development image
         run: |
@@ -117,6 +119,37 @@ jobs:
           docker/msd-dev tests/msd-dev/run.sh
           docker/msd-dev tests/trivy-gate/run.sh
 
+      - name: Summarize step timings
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MSD_JOB_NAME: MSD tests in development image
+        run: |
+          # shellcheck disable=SC2016
+          step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
+            .jobs[] | select(.name == env.MSD_JOB_NAME) as $job |
+            "=ci-meta=\tjob_started_at\t\($job.started_at)",
+            ($job.steps[] | select(.completed_at != null) |
+              "=step-time=\t\(.number)\t\(.name)\t\(.started_at)\t\(.completed_at)\t\(if .started_at == null then "unknown" else ((.completed_at | fromdateiso8601) - (.started_at | fromdateiso8601)) end)\t\(.conclusion)")
+          ' 2>/dev/null)" || step_lines=""
+          if [[ -n "$step_lines" ]]; then
+            printf '%s\n' "$step_lines"
+          else
+            printf '=ci-meta=\tjob_started_at\tunknown\n'
+          fi
+          ensure_log="$RUNNER_TEMP/msd-ensure.log"
+          if [[ ! -f "$ensure_log" ]]; then ensure_state=missing
+          elif grep -Fq 'Published image' "$ensure_log" && grep -Fq 'found.' "$ensure_log"; then ensure_state=published
+          elif grep -Fq 'building locally' "$ensure_log"; then ensure_state=local-build
+          else ensure_state=unknown; fi
+          printf '=ci-meta=\tensure\t%s\n' "$ensure_state"
+          {
+            printf '| # | Step | Started at | Completed at | Seconds | Conclusion |\n'
+            printf '|---:|---|---|---|---:|---|\n'
+            printf '%s\n' "$step_lines" | awk -F '\t' '$1 == "=step-time=" { printf "| %s | %s | %s | %s | %s | %s |\n", $2, $3, $4, $5, $6, $7 }'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   build:
     needs: changes
     if: needs.changes.outputs.build == 'true'
@@ -124,6 +157,7 @@ jobs:
     timeout-minutes: 150
     permissions:
       contents: read
+      actions: read
       packages: read
       attestations: read
     steps:
@@ -142,10 +176,11 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure
+        run: docker/msd-dev ensure 2>&1 | tee "$RUNNER_TEMP/msd-ensure.log"
 
       - id: dl-restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -267,6 +302,7 @@ jobs:
           PY
 
       - name: Show ccache statistics
+        shell: bash
         if: always()
         env:
           BR2_CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -278,7 +314,7 @@ jobs:
             else
               echo "ccache binary is not available"
             fi
-          '
+          ' 2>&1 | tee "$RUNNER_TEMP/msd-ccache.log"
 
       - name: Check image partition layout
         run: docker/msd-dev board/cardputerzero/check-image-layout.sh output/images/sdcard.img
@@ -343,6 +379,42 @@ jobs:
         with:
           path: .ccache
           key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
+
+      - name: Summarize step timings
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MSD_JOB_NAME: build
+        run: |
+          # shellcheck disable=SC2016
+          step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
+            .jobs[] | select(.name == env.MSD_JOB_NAME) as $job |
+            "=ci-meta=\tjob_started_at\t\($job.started_at)",
+            ($job.steps[] | select(.completed_at != null) |
+              "=step-time=\t\(.number)\t\(.name)\t\(.started_at)\t\(.completed_at)\t\(if .started_at == null then "unknown" else ((.completed_at | fromdateiso8601) - (.started_at | fromdateiso8601)) end)\t\(.conclusion)")
+          ' 2>/dev/null)" || step_lines=""
+          if [[ -n "$step_lines" ]]; then
+            printf '%s\n' "$step_lines"
+          else
+            printf '=ci-meta=\tjob_started_at\tunknown\n'
+          fi
+          ensure_log="$RUNNER_TEMP/msd-ensure.log"
+          if [[ ! -f "$ensure_log" ]]; then ensure_state=missing
+          elif grep -Fq 'Published image' "$ensure_log" && grep -Fq 'found.' "$ensure_log"; then ensure_state=published
+          elif grep -Fq 'building locally' "$ensure_log"; then ensure_state=local-build
+          else ensure_state=unknown; fi
+          printf '=ci-meta=\tensure\t%s\n' "$ensure_state"
+          if [[ ! -f "$RUNNER_TEMP/msd-ccache.log" ]]; then
+            printf '=ci-meta=\tccache\tmissing\n'
+          else
+            sed 's/^/=ci-meta=\tccache\t/' "$RUNNER_TEMP/msd-ccache.log"
+          fi
+          {
+            printf '| # | Step | Started at | Completed at | Seconds | Conclusion |\n'
+            printf '|---:|---|---|---|---:|---|\n'
+            printf '%s\n' "$step_lines" | awk -F '\t' '$1 == "=step-time=" { printf "| %s | %s | %s | %s | %s | %s |\n", $2, $3, $4, $5, $6, $7 }'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
