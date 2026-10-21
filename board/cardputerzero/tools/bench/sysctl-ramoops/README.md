@@ -66,12 +66,14 @@ distinct run IDs:
 ```sh
 OUTPUT_DIR="$OUTPUT_DIR" QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
   board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh \
-  --modes R1 --run-tag amendment1 --variant-root "$VARIANTS"
+  --modes R1 --run-tag amendment3 \
+  --variant-root "$LOG_ROOT/variants-amendment3"
 OUTPUT_DIR="$OUTPUT_DIR" QEMU_LOG_DIR="$LOG_ROOT" docker/msd-dev \
   board/cardputerzero/tools/bench/sysctl-ramoops/run-panic.sh \
   --modes P0 --run-tag amendment2 --variant-root "$VARIANTS"
 ```
 
 The R1 runner waits for `s21: pstore collection complete` after second-boot
-ready before it terminates QEMU. Before starting, it refuses any run whose log
+ready before it terminates QEMU, and removes NUL bytes from the serial log
+before parsing pstore records. Before starting, it refuses any run whose log
 directory or CSV run ID already exists.

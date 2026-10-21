@@ -80,6 +80,14 @@ Amendment 1 の R1 再試行では、`docker/msd-dev` が環境変数の `S21_MO
 
 runner は選択 mode、run tag、variant root、CSV path を CLI 引数で受け取り、実行前に全 run ID の log directory と CSV 行の重複を検査するようにする。誤実行行と元の P0 行はそのまま残す。P0 は `amendment2` tag で元と同じ条件・基準の 5 試行を行い、この 5 行で P0 の判定を行う。R1 は Amendment 1 の手順で `amendment1` tag の 5 試行を行う。指定済みの値、条件、基準は変えない。
 
+## Amendment 3（2026-10-21T23:01:56Z、R1 再試行前）
+
+R1 の `amendment1` 5 試行では、second boot ready まで到達したが、runner の log に `pstore-collection-timeout` が記録された。調査すると、実行に使った `variants/R1/rootfs.squashfs` 内の `S99zz-s21probe` に、commit 済み hook の `s21: pstore collection complete` marker が含まれていなかった。5 log すべてにも marker がなく、runner は Amendment 1 が要求する収集完了を確認できなかった。これらの CSV 行と log は不完全な試行として保持し、R1 の判定から除外する。raw log には pstore mount status 0、`console-ramoops-0` と `dmesg-ramoops-0`、および必要な record 内容があるが、完了 marker の欠落を補うものとしては使わない。
+
+また、serial log に NUL byte が含まれ、従来の `grep` と `sed` が dmesg-ramoops record を正しく抽出しないことを確認した。runner は NUL byte を除いて pstore status、file list、record marker を解析するように修正し、既存の raw log で `sysrq: Trigger a crash` と `Kernel panic` を抽出できることを確認する。
+
+既存の R1 variant は保持し、現在の hook を含む R1 rootfs と SD image を別の `variants-amendment3` directory に作り直す。新しい DTB copy は引き続き `msd-dev` 内の `dtc` で生成する。この条件で R1 を `amendment3` tag の別 run ID で 5 回測り直し、その 5 行を R1 の判定に使う。試行条件、値、合否基準は変えない。P0 の `amendment2` 結果は変更しない。
+
 ## 条件
 
 | 項目 | 値 |

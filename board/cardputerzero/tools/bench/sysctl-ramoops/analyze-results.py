@@ -96,15 +96,15 @@ def main() -> int:
             replacement = [
                 row
                 for row in selected
-                if row["run_id"].startswith("s21-R1-amendment1-")
+                if row["run_id"].startswith("s21-R1-amendment3-")
             ]
             if replacement:
                 initial = [row for row in selected if row not in replacement]
                 print(
-                    f"R1 initial incomplete attempts={len(initial)} "
-                    f"amendment1 replacement trials={len(replacement)}"
+                    f"R1 incomplete attempts excluded={len(initial)} "
+                    f"amendment3 replacement trials={len(replacement)}"
                 )
-                if len(initial) != 5 or len(replacement) != expected:
+                if len(initial) != 10 or len(replacement) != expected:
                     failed = True
                 selected = replacement
         passed = sum(row["criteria_result"] == "pass" for row in selected)

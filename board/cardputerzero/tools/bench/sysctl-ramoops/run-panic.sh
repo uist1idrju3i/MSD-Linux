@@ -116,7 +116,7 @@ wait_for_text() {
 	local timeout="$4"
 	local deadline=$((SECONDS + timeout))
 	while ((SECONDS <= deadline)); do
-		if grep -Fq -- "$text" "$log" 2>/dev/null; then
+		if grep -aFq -- "$text" "$log" 2>/dev/null; then
 			return 0
 		fi
 		if ! kill -0 "$pid" 2>/dev/null; then
@@ -133,7 +133,7 @@ wait_for_second_kernel() {
 	local timeout="$3"
 	local deadline=$((SECONDS + timeout))
 	while ((SECONDS <= deadline)); do
-		if (( $(grep -Fc 'Booting Linux on physical CPU' "$log" 2>/dev/null || true) >= 2 )); then
+		if (( $(grep -aFc 'Booting Linux on physical CPU' "$log" 2>/dev/null || true) >= 2 )); then
 			return 0
 		fi
 		if ! kill -0 "$pid" 2>/dev/null; then
@@ -150,8 +150,8 @@ wait_for_second_boot_ready() {
 	local timeout="$3"
 	local deadline=$((SECONDS + timeout))
 	while ((SECONDS <= deadline)); do
-		if grep -Fq 's21: second boot' "$log" 2>/dev/null &&
-			(( $(grep -Fc 'MSD/Linux ready' "$log" 2>/dev/null || true) >= 2 ))
+		if grep -aFq 's21: second boot' "$log" 2>/dev/null &&
+			(( $(grep -aFc 'MSD/Linux ready' "$log" 2>/dev/null || true) >= 2 ))
 		then
 			return 0
 		fi
@@ -169,7 +169,7 @@ wait_for_pstore_collection() {
 	local timeout="$3"
 	local deadline=$((SECONDS + timeout))
 	while ((SECONDS <= deadline)); do
-		if grep -Fq 's21: pstore collection complete' "$log" 2>/dev/null; then
+		if grep -aFq 's21: pstore collection complete' "$log" 2>/dev/null; then
 			return 0
 		fi
 		if ! kill -0 "$pid" 2>/dev/null; then
@@ -261,19 +261,23 @@ PY
 		note=panic-marker-timeout
 	fi
 
-	if grep -Fq 'Kernel panic' "$log"; then panic_seen=yes; fi
-	if grep -Fq 'Rebooting in 5 seconds' "$log"; then reboot_seen=yes; fi
-	if grep -Fq 'ramoops: using 0x100000@0x1f000000' "$log"; then
+	if grep -aFq 'Kernel panic' "$log"; then panic_seen=yes; fi
+	if grep -aFq 'Rebooting in 5 seconds' "$log"; then reboot_seen=yes; fi
+	if grep -aFq 'ramoops: using 0x100000@0x1f000000' "$log"; then
 		registration=yes
 	fi
-	pstore_status="$(sed -n \
-		's/.*s21: pstore mount status=\([^ ]*\).*/\1/p' "$log" | tail -n 1)"
-	pstore_files="$(sed -n \
-		's/.*s21: pstore file=\([^ ]*\).*/\1/p' "$log" | paste -sd ';' -)"
-	if grep -F 's21: record=' "$log" | grep -Fq 'sysrq: Trigger a crash'; then
+	pstore_status="$(tr -d '\000' <"$log" | sed -n \
+		's/.*s21: pstore mount status=\([^ ]*\).*/\1/p' | tail -n 1)"
+	pstore_files="$(tr -d '\000' <"$log" | sed -n \
+		's/.*s21: pstore file=\([^ ]*\).*/\1/p' | paste -sd ';' -)"
+	if tr -d '\000' <"$log" | grep -F 's21: record=' |
+		grep -F 'sysrq: Trigger a crash' >/dev/null
+	then
 		record_sysrq=yes
 	fi
-	if grep -F 's21: record=' "$log" | grep -Fq 'Kernel panic'; then
+	if tr -d '\000' <"$log" | grep -F 's21: record=' |
+		grep -F 'Kernel panic' >/dev/null
+	then
 		record_panic=yes
 	fi
 
