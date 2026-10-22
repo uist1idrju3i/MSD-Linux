@@ -111,7 +111,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
 | zram（QEMU のみ） | zstd・lz4 とも `modprobe` から `swapon -p 100` まで動き、zswap は無効のまま。圧縮できないデータでは OOM になる。CPU の負荷は実機で確認する | [2026-10-21-qemu-zram](../experiments/2026-10-21-qemu-zram.md) |
-| S21 sysctl・powerfail・panic・ramoops（QEMU のみ） | Y1 の sysctl・A/B・powerfail と P0/P1/R0/R1 は基準を満たした。Y2 は `kernel.sysrq=0` でも `SysRq U` marker が出た。実 remount と実機動作は未確認 | [2026-10-21-s21-qemu-sysctl-ramoops](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
+| S21 sysctl・powerfail・panic・ramoops（QEMU のみ） | 修正計測器で Y1 は実 remount 5/5、Y2 は 0/5。QEMUでは `kernel.sysrq=0` がremountを止め、32は保つ。実機 ramoops retention 等と製品採否は未確認 | [2026-10-21-s21-qemu-sysctl-ramoops](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
 
 #### QEMU で検証できるが未実施
 

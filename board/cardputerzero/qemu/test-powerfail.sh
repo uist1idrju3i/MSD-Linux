@@ -15,7 +15,9 @@ QEMU_GPIO_PATH="${QEMU_GPIO_PATH:-/machine/soc/peripherals/gpio}"
 CURRENT_PID=""
 COMPOSED_DTB=""
 TEST_TEMPLATE=""
-CSV_FILE="${CSV_FILE:-${REPO_ROOT}/docs/experiments/2026-10-20-qemu-powerfail-gpio6.csv}"
+CSV_DIR="${REPO_ROOT}/docs/experiments"
+CSV_BASENAME='2026-10-20-qemu-powerfail-gpio6.csv'
+CSV_FILE="${CSV_FILE:-${CSV_DIR}/${CSV_BASENAME}}"
 
 case "$QEMU_MACHINE" in
 	raspi3b)

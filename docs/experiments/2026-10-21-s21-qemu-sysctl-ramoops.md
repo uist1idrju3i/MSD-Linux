@@ -128,21 +128,23 @@ Y0 の最初の 2 回を事前登録どおり A/A 確認に使った。両方で
 
 ## 結果
 
-CSV は 60 行、44 列である。全列を監査し、条件別の選定、試行回数、sysctl の読み戻し、判定、ログ hash を照合した。Amendment 2 の P0 5 回と Amendment 3 の R1 5 回を、それぞれ判定対象とする。元の P0 5 行、誤実行の P0 4 行、R1 の初回 5 行と Amendment 1 の 5 行は保持し、判定から除外する。
+CSV は 70 行、44 列である。全列を監査し、既存60行がbyte単位で不変であること、Amendment 4 の10行、読み戻し値、判定、log hashを照合した。P0のAmendment 2、R1のAmendment 3、Y1/Y2 powerfailのAmendment 4を判定対象とする。旧行と失敗試行は保持して判定から除外する。
 
 | 条件 | 結果 | 判定 |
 |---|---|---|
 | Y0 boot | 5/5 回で ready。34〜36 秒 | 観測のみ。ready 中央値の差は合否に使わない |
 | Y1 boot | 5/5 回で ready。全 key の読み戻し値と `Running sysctl: OK` を確認 | pass |
 | Y1 A/B | 1/1 回で pass。ready は 35 秒 | pass |
-| Y1 powerfail | 5/5 回で `SysRq U` marker と powerfail script の基準を確認 | pass |
-| Y2 powerfail | 5/5 回とも `kernel.sysrq=0` を読み戻したが、`SysRq U` marker と remount の観測値があった | 事前登録の期待と矛盾し、5/5 回 fail |
+| Y1 powerfail（Amendment 4） | 5/5 回で kernel action line、marker、fsck 0、回復なし。実測遅延の中央値 1.568659 秒（1.565893〜1.569166 秒） | pass |
+| Y2 powerfail（Amendment 4） | 5/5 回で `kernel.sysrq=0`、marker あり、kernel action line なし。fsck 0、回復あり。実測遅延の中央値 1.567515 秒（1.565354〜1.570446 秒） | 期待どおりの負の対照 |
 | P0 | Amendment 2 の 5/5 回で watchdog reset と second-boot ready を確認。marker から reset までの中央値 13.606 秒（13.497〜14.902 秒） | pass |
 | P1 | 5/5 回で `Rebooting in 5 seconds` と second-boot ready を確認。marker から reset までの中央値 6.825 秒（6.711〜6.932 秒） | pass |
 | R0 | 5/5 回で reset 後に ramoops record がないことを確認。marker から reset までの中央値 6.719 秒（6.704〜6.820 秒） | pass |
 | R1 | Amendment 3 の 5/5 回で reset、ramoops 登録、pstore collection 完了、必要な 2 record を確認。marker から reset までの中央値 6.809 秒（6.687〜6.919 秒） | pass |
 
-Y1 と Y2 の `powerfail_remount_from_event_seconds` はそれぞれ −0.302〜−0.243 秒、−0.226〜−0.202 秒であった。列名に反して負の値であり、event 後の所要時間として解釈しない。Y2 の marker は実際の remount を単独では証明しない。カーネルの `__handle_sysrq` は `sysrq_on()` で gate され、`sysrq_always_enabled` の実行時値は確かめていないため、実 remount の有無は未確定である。判定は事前登録どおり marker の有無に基づく。
+旧 Y1/Y2 10 行は変更せず、旧計測器で記録した verdict（Y1 pass、Y2 5/5 fail）も保持する。Amendment 4 の新しい 10 行を verdict に用いる。Y1 は kernel action 5/5、Y2 は 0/5 であり、driver marker は両条件で 5/5 出た。新しい `powerfail_remount_from_event_seconds` も負値となる場合があり、event 後の所要時間として解釈しない。新旧すべての対象 log に `sysrq_always_enabled` はなかった。
+
+再測定後、runner が wide CSV の `run_id` に内部 integrity log ID を使っていたことが分かった。10 行の測定値は変更せず、`run_id` のみ外側の `s21-{Y1|Y2}-powerfail-amendment4-{trial}` に訂正し、内部 ID は `note` に保持した。serial log hash の区切りもセミコロンに訂正した。元の60行は byte 単位で変更していない。
 
 元の P0 5 行の記録値は 13.392〜14.945 秒、中央値 13.914 秒であり、Amendment 2 の 5 行は 13.497〜14.902 秒、中央値 13.606 秒であった。中央値の差は 0.308 秒で、範囲は大きく重なるため概ね整合する。ただし元の最小値と最大値は新しい範囲の外にあり、値が一致したわけではない。元の P0 log hash は全 5 行で現存 log と一致しないため、古い値は判定に用いない。
 
@@ -165,7 +167,7 @@ make: *** [Makefile:23: _all] Error 2
 
 ## 結論
 
-Y1 の hardening drop-in は QEMU 起動、A/B、powerfail の条件で動作したが、Y2 の負の対照は事前登録の期待を満たさなかった。P0、P1、R0、R1 の panic と ramoops の条件は、指定した QEMU image でそれぞれ 5/5 回基準を満たした。QEMU の system reset をまたぐ ramoops record の保持は確認したが、実機の watchdog reset 後の保持、ramoops address と firmware の `gpu_mem` の競合、`panic_on_oops` は未確認である。製品への採否は利用者が判断する。
+QEMU では `kernel.sysrq=0` が emergency remount を止め、`32` は remount を保った。Y1 の hardening drop-in は起動、A/B、powerfail で動作した。P0、P1、R0、R1 もそれぞれ 5/5 回基準を満たした。実機の watchdog reset 後の ramoops retention、ramoops address と firmware の `gpu_mem` の競合、`panic_on_oops` は未確認である。製品への採否は未決定である。
 
 ## 未確認の点
 
@@ -176,4 +178,4 @@ Y1 の hardening drop-in は QEMU 起動、A/B、powerfail の条件で動作し
 
 ## ログ
 
-生ログ、失敗試行の log、variant artifact は repository 外のローカル `s21-logs/` に保存した。全列監査は `s21-final-csv-audit.txt`、CSV と証拠 hash の照合は `s21-final-review.txt` に保存した。manifest `s21-final-20261022.sha256` は manifest 自身を除く全 236 file（57,216,398,175 byte）を含み、SHA-256 は `dd09fa30d82b19306a437bbf3b26273438380b997184978c1562b20335b935ed` である。ログ本体は commit しない。
+生ログ、失敗試行、variant artifact は repository 外の `~/work/s21-logs/` に保存した。Amendment 4 の全列監査は `s21-amendment4-all-columns-final.txt`、CSV hash 監査は `s21-final-review.txt` に保存した。最新 manifest `s21-amendment4-final.sha256` は自身を除く317 file（43,229 byte）を含み、SHA-256 は `eb483666c2c8d85a119f30d0de994eee82045b0daf8bae7503e5cbf0c82b4fe8` である。ログ本体は commit しない。

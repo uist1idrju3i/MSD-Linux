@@ -120,7 +120,7 @@ prepare_staging_output() {
 run_variant() {
 	local variant="$1"
 	local expected_remount="$2"
-	local stage trial run_id run_log test_log exit_status
+	local stage trial run_id powerfail_run_id run_log test_log exit_status
 	local metric_csv work_dir metric status event remount sysrq_requested marker fsck recovery
 	local target_delay actual_delay remount_delta firstboot reboot_wall total_wall
 	local template_hash rootfs_hash card_hash log_hash metric_hash criteria valid note
@@ -146,11 +146,11 @@ run_variant() {
 		else
 			exit_status=$?
 		fi
-		run_id="$(sed -n 's/^run=\([^ ]*\) .*/\1/p' "$test_log" | tail -n 1)"
-		[[ -n "$run_id" ]] ||
-			run_id="s21-${variant}-powerfail-${trial}-failed-$(date -u +%Y%m%dT%H%M%SZ)"
+		powerfail_run_id="$(sed -n 's/^run=\([^ ]*\) .*/\1/p' "$test_log" | tail -n 1)"
+		[[ -n "$powerfail_run_id" ]] ||
+			powerfail_run_id="s21-${variant}-powerfail-${trial}-failed-$(date -u +%Y%m%dT%H%M%SZ)"
 		parsed=1
-		if metric="$(python3 - "$metric_csv" "$run_id" <<'PY'
+		if metric="$(python3 - "$metric_csv" "$powerfail_run_id" <<'PY'
 import csv
 import sys
 
@@ -206,7 +206,7 @@ PY
 				-exec cp -t "${run_log}/build-logs" {} +
 		fi
 		card_hash="$(sha256_file "${variant_root}/${variant}/sdcard.img")"
-		first_log="${log_root}/powerfail/${run_id}/firstboot.log"
+		first_log="${log_root}/powerfail/${powerfail_run_id}/firstboot.log"
 		sysctl_values=
 		running_sysctl=missing
 		ready=no
@@ -221,7 +221,7 @@ PY
 				ready=yes
 			fi
 		fi
-		log_hash="serial=$(find "$log_root/powerfail/$run_id" -maxdepth 1 -type f -name '*.log' -exec sha256sum {} \; | awk '{printf "%s%s",$1,(NR==1?"":";")}')"
+		log_hash="serial=$(find "$log_root/powerfail/$powerfail_run_id" -maxdepth 1 -type f -name '*.log' -exec sha256sum {} \; | awk '{print $1}' | paste -sd ';' -)"
 		metric_hash=missing
 		if [[ -f "$metric_csv" ]]; then
 			metric_hash="$(sha256_file "$metric_csv")"
@@ -244,7 +244,7 @@ PY
 		then
 			criteria=expected-negative
 		fi
-		note="powerfail_run=${run_id};sysrq_u_requested=${sysrq_requested};template_sdcard_sha256=${template_hash};log=${run_id}"
+		note="powerfail_run=${powerfail_run_id};sysrq_u_requested=${sysrq_requested};template_sdcard_sha256=${template_hash};log=${powerfail_run_id}"
 		python3 "$append_row" "$csv" \
 			"run_id=${run_id}" \
 			"condition=${variant}-powerfail" "trial=${trial}" \
