@@ -98,6 +98,8 @@ GPIO6 を low にして QMP が応答した時刻と、ホストが SIGKILL を�
 
 0.7 秒の 5 件すべてで、シリアルログには `Power fail detected; notifying userspace`、SysRq-U、ext4 の read-only remount があり、`msd-powerfail: power-fail event received` はありません。CSV と 5 件のログも 0/5 を示します。途中の報告にあった 1/5 は保存済みログで裏付けられず、ここでは 0/5 に訂正しました。通知文を出すのはカーネルではなく、`board/cardputerzero/post-build.sh` が登録する mdev ルールから起動する `/usr/libexec/msd/powerfail-notify` です。このスクリプトは `/dev/kmsg` への書き込みと `sync` をバックグラウンドで実行します。短い猶予時間内に userspace handler またはシリアル出力が完了しなかった可能性はありますが、試験ログから原因を確定できないため仮説として扱います。
 
+CSV の `remount_seen=yes` 19 試行を事後確認し、全 run の log に `sysrq: Emergency Remount R/O` と `Emergency Remount complete` があった。旧 metric は実 remount と一致していた。
+
 QEMU の SIGKILL は実際の電源断ではありません。ホストの page cache に、ゲストから送信済みの書き込みが残ることがあります。この試験から SD card の FTL や実機の電源保持時間は判断できません。
 
 ## 未確認の点

@@ -63,6 +63,8 @@
 | カメラ電源の GPIO 割当て | 「カメラの power-enable GPIO は回路図から特定できない」 | 以前の記述は PDF の文字列だけを抽出し、回路図を読まずに結論づけていました。C154 V0.6.1 p.10 は `CAM_3V3`、`SSP7615-33DFR`、`R190 100K`、`R192 NC` を示し、LDO の EN は VSYS_5V に pull-up されています。p.5 は CM0 pin 44 と JP5 pin 17 を `CAM_GPIO` と表示します。CM0 DTS は GPIO40 を `CAM_GPIO` と名付け、`&cam1_reg` に `gpio = <&gpio 40 GPIO_ACTIVE_HIGH>` を設定するため、既定の cam1 IMX219 overlay が正しい pin を使います。v5 の GPIO16 は `G16_PY32_RST` で、M5 Makefile の GPIO16-high camera overlay は非 V0_5 側だけで追加されます。v5 に追加 GPIO hog は不要です。【一次】 | [C154 V0.6.1 schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)<br>[CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts)<br>[M5 CardputerZero Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile) 【一次】 |
 | S11 v2 QEMU の patch provenance | v2 の結果を commit 済み QEMU patch の結果として扱った | v2 image は prebuilt layer の QEMU を含み、commit 済み patch から build されたものと確認できません。v2 の測定値は invalid とはせず、別 build の参考値として保持し、patch 適用可能な `c01f6e7` の QEMU で v3 を再測定しました | [S11 記録](../experiments/2026-10-20-s11-qemu-watchdog.md) |
 
+| S21 SysRq-U marker と remount | driver marker は実 remount の証拠 | `dev_emerg()` marker は `handle_sysrq('u')` より前に出ます。kernel action line で判定した再測定では `kernel.sysrq=0` は remount なし 5/5、32 は remount 5/5 でした。製品採否は未決定 | [S21 記録](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
+
 ## 個別訂正の補足
 
 | 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |
