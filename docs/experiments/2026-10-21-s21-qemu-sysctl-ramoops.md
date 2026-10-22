@@ -178,4 +178,4 @@ QEMU では `kernel.sysrq=0` が emergency remount を止め、`32` は remount 
 
 ## ログ
 
-生ログ、失敗試行、variant artifact は repository 外の `~/work/s21-logs/` に保存した。Amendment 4 の全列監査は `s21-amendment4-all-columns-final.txt`、CSV hash 監査は `s21-final-review.txt` に保存した。最新 manifest `s21-amendment4-final.sha256` は自身を除く317 file（43,229 byte）を含み、SHA-256 は `eb483666c2c8d85a119f30d0de994eee82045b0daf8bae7503e5cbf0c82b4fe8` である。ログ本体は commit しない。
+生ログ、失敗試行、variant artifact は repository 外の `~/work/s21-logs/` に保存した。Amendment 4 の全列監査は `s21-amendment4-all-columns-final.txt`、CSV hash 監査は `s21-final-review.txt` に保存した。最新 manifest `s21-amendment4-final.sha256` は自身を除く317ファイルのhashを記録し、SHA-256 は `eb483666c2c8d85a119f30d0de994eee82045b0daf8bae7503e5cbf0c82b4fe8` である。ログ本体は commit しない。
