@@ -15,7 +15,9 @@ QEMU_GPIO_PATH="${QEMU_GPIO_PATH:-/machine/soc/peripherals/gpio}"
 CURRENT_PID=""
 COMPOSED_DTB=""
 TEST_TEMPLATE=""
-CSV_FILE="${REPO_ROOT}/docs/experiments/2026-10-20-qemu-powerfail-gpio6.csv"
+CSV_DIR="${REPO_ROOT}/docs/experiments"
+CSV_BASENAME='2026-10-20-qemu-powerfail-gpio6.csv'
+CSV_FILE="${CSV_FILE:-${CSV_DIR}/${CSV_BASENAME}}"
 
 case "$QEMU_MACHINE" in
 	raspi3b)
@@ -302,6 +304,7 @@ run_integrity_trial() {
 	local failure="" event_time="" remount_time="" event_to_remount=""
 	local firstboot_wall="" reboot_wall="" total_wall=""
 	local recovery=no fsck_status="" marker=no event=no remount=no
+	local sysrq_u_requested=no
 	local status=ok
 
 	TRIAL_ACTUAL_DELAY=""
@@ -312,6 +315,20 @@ run_integrity_trial() {
 	TRIAL_FSCK_STATUS=""
 	TRIAL_RECOVERY=no
 	TRIAL_FAILURE=""
+
+	if [[ -e "$run_dir" ]]; then
+		printf 'Refusing to overwrite powerfail log directory %s\n' \
+			"$run_dir" >&2
+		return 1
+	fi
+	if [[ -f "$CSV_FILE" ]] &&
+		awk -F, -v id="$run_id" '$1 == id { found=1 } END { exit !found }' \
+			"$CSV_FILE"
+	then
+		printf 'Refusing to append existing run ID %s to %s\n' \
+			"$run_id" "$CSV_FILE" >&2
+		return 1
+	fi
 
 	mkdir -p "$run_dir"
 	start_wall_ns="$(now_ns)"
@@ -389,6 +406,9 @@ run_integrity_trial() {
 		event=yes
 	fi
 	if grep -Fq -- 'SysRq U: emergency remount filesystems readonly' "$first_log"; then
+		sysrq_u_requested=yes
+	fi
+	if grep -Fq -- 'sysrq: Emergency Remount R/O' "$first_log"; then
 		remount=yes
 	fi
 	if [[ -f "$reboot_log" ]] &&
@@ -409,7 +429,7 @@ run_integrity_trial() {
 		event_time="$(log_timestamp "$first_log" \
 			'msd-powerfail: power-fail event received')"
 		remount_time="$(log_timestamp "$first_log" \
-			'SysRq U: emergency remount filesystems readonly')"
+			'sysrq: Emergency Remount R/O')"
 	fi
 	if [[ -n "$event_time" && -n "$remount_time" ]]; then
 		event_to_remount="$(python3 - "$event_time" "$remount_time" <<'PY'
@@ -441,6 +461,8 @@ PY
 		"$TRIAL_ACTUAL_DELAY" s "$valid" ""
 	csv_row "$run_id" "$variant" "$repeat" event_logged "$event" bool "$valid" ""
 	csv_row "$run_id" "$variant" "$repeat" remount_seen "$remount" bool "$valid" ""
+	csv_row "$run_id" "$variant" "$repeat" sysrq_u_requested \
+		"$sysrq_u_requested" bool "$valid" ""
 	csv_row "$run_id" "$variant" "$repeat" remount_from_event_seconds \
 		"$event_to_remount" s "$valid" ""
 	csv_row "$run_id" "$variant" "$repeat" marker_present_after_reboot \
@@ -456,9 +478,9 @@ PY
 	csv_row "$run_id" "$variant" "$repeat" total_wall_seconds \
 		"$total_wall" s "$valid" ""
 
-	printf 'run=%s status=%s event=%s remount=%s marker=%s fsck=%s recovery=%s delay=%s logs=%s\n' \
-		"$run_id" "$status" "$event" "$remount" "$marker" "$fsck_status" \
-		"$recovery" "$TRIAL_ACTUAL_DELAY" "$run_dir"
+	printf 'run=%s status=%s event=%s remount=%s sysrq_u_requested=%s marker=%s fsck=%s recovery=%s delay=%s logs=%s\n' \
+		"$run_id" "$status" "$event" "$remount" "$sysrq_u_requested" \
+		"$marker" "$fsck_status" "$recovery" "$TRIAL_ACTUAL_DELAY" "$run_dir"
 	if [[ "$status" == ok ]]; then
 		rm -f "$disk"
 	fi

@@ -111,6 +111,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
 | zram（QEMU のみ） | zstd・lz4 とも `modprobe` から `swapon -p 100` まで動き、zswap は無効のまま。圧縮できないデータでは OOM になる。CPU の負荷は実機で確認する | [2026-10-21-qemu-zram](../experiments/2026-10-21-qemu-zram.md) |
+| S21 sysctl・powerfail・panic・ramoops（QEMU のみ） | 修正計測器で Y1 は実 remount 5/5、Y2 は 0/5。QEMUでは `kernel.sysrq=0` がremountを止め、32は保つ。実機 ramoops retention 等と製品採否は未確認 | [2026-10-21-s21-qemu-sysctl-ramoops](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
 
 #### QEMU で検証できるが未実施
 
@@ -121,8 +122,6 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | 中 |
 | 温度 | QEMU に温度の値を足し、読み出しと記録の経路を確かめる | 小 |
 | S15 QEMU の版の比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
-| sysctl の候補 | `kernel.sysrq=32` でも電源断時の remount が動くこと、`panic=` と `panic_on_oops` と watchdog の経路、情報漏えい対策の値 | 小 |
-| ramoops | panic のログを再起動後に読めるか（QEMU で RAM が保たれる範囲） | 小 |
 | S12 SquashFS の圧縮方式と block size、EROFS | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | 中 |
 | S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（ビルドだけで約 1 日の見込み） |
 | S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 中（S1 と同じ仕組みで測る） |
@@ -146,10 +145,12 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 
 #### 実施順（2026-10-20 時点）
 
+2026-10-22 時点の残りのタスクは、[作業の振り返りと残タスク](retrospective-2026-10.md) の 4 節にまとめています。
+
 下の「次の作業計画（2026-10-19 時点）」を次の順に置き換えます。
 
 1. S11 watchdog と init script の stop 処理
-2. 小さい項目: S10、温度、sysctl の候補、ramoops、S15
+2. 小さい項目: S10、温度、S15
 3. S12 と EROFS
 4. S1・S14 の本番（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む）と、任意機能のドライバーのモジュール化
 5. S13
