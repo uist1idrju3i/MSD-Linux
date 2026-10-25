@@ -30,7 +30,7 @@ Buildroot の既定 `BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW=y` は、`/etc/inittab
 |---|---|
 | 変更前 | `b4b1745`（#103 のマージ後の main）を新しく clone して `make` した |
 | 変更後 | `0b197bd`（`b4b1745` に defconfig の 1 行と、`make-case.sh` の 0 行を許す変更を足した）を `make` した |
-| PR の commit | 測定の後で `775cdfd`（カーネル 6.18.58）の上に rebase した。rebase の後の commit ではビルドも QEMU の試験もしていない |
+| PR の commit | 測定の後で `775cdfd`（カーネル 6.18.58）の上に rebase した。rebase の後の commit `a3bec00` は、後からビルドし直して一部の試験をやり直した（「PR の commit での再試験」） |
 | 開発用イメージ | `msd-dev:local`（image ID `2a2c70d17140`）。QEMU 11.1.2、`raspi3ap` |
 | カーネル | `6.18.57-v8`（両方とも） |
 | DTB | `run-qemu.sh` の既定（Bluetooth を無効にした QEMU 用の DTB。#105） |
@@ -92,6 +92,22 @@ dm-verity は、変更後の側で `output/images` の `Image`、`rootfs.squashf
 - [2026-10-25-rootfs-stay-ro-boottime.csv](2026-10-25-rootfs-stay-ro-boottime.csv): 起動時間の全行（`variant` が `before` か `after`）
 - [2026-10-25-rootfs-stay-ro-powerfail.csv](2026-10-25-rootfs-stay-ro-powerfail.csv): 電源断の integrity の全行（`side` で区別）
 
+### PR の commit での再試験
+
+測った後で、branch を #106（カーネル 6.18.58）のマージ後の main に rebase した。そのため、PR の commit `a3bec0010f609da461e9437e674e7d9ac28c0a8b` を空の `output` からビルドし直し、基準 1、3、4 を同じ手順でもう一度確かめた。起動時間、ファイルの一覧、dm-verity は測り直していない。
+
+| 項目 | 結果 |
+|---|---|
+| カーネル | `Image` の文字列は `Linux version 6.18.58-v8` |
+| `sdcard.img` の SHA-256 | `dddeff533718454c768c08ee873e66395e1652690e513d809c2faf6c283744e5` |
+| `rootfs.squashfs` の SHA-256 | `007ef8bb35b9b0de993f4cdfe1792603a5ca79b426b7e1fc59102fa9fff7b47c` |
+| `Image` の SHA-256 | `25caa8e7c94d767a28f0fcc127fcaf4e2fae782c010b8dc6e47da3e29159aaf1` |
+| 1. inittab | 有効な `::sysinit:/bin/mount -o remount,rw /` の行は 0 行 |
+| 3. test-boot、test-ab | 両方とも終了コード 0 |
+| 4. 電源断の smoke、integrity | 両方とも終了コード 0。integrity は `status=ok`、`fsck_exit_status=0`、`fs_recovery_messages=no` |
+
+integrity の行は、[2026-10-25-rootfs-stay-ro-powerfail.csv](2026-10-25-rootfs-stay-ro-powerfail.csv) に `side` を `pr` として足した。
+
 ## 所見
 
 1. `.ko.xz` の大きさの差は、絶対値で 4〜12 byte だった（増えたものと減ったものがある）。カーネルの設定は `CONFIG_MODULE_SIG_ALL=y` で、署名の鍵（`certs/signing_key.pem`）は build ごとに作られる。`Image` の SHA-256 も変わっている。そのため、module の署名が変わって xz の圧縮後の大きさが変わったものと考えている。module を比べて確かめてはいない（推測）。inittab の変更とは関係しない見込みだが、基準 2 は書いたとおりには満たしていない。
@@ -105,6 +121,6 @@ QEMU では、`remount,rw` をやめても、起動、A/B の切り替え、電�
 ## 限界
 
 - 実機では試していない。
-- 測ったのは `b4b1745` の上の変更で、カーネルは 6.18.57 である。PR の commit（6.18.58 の上に rebase したもの）では、QEMU の試験をしていない。
+- 起動時間、ファイルの一覧、dm-verity を測ったのは `b4b1745` の上の変更で、カーネルは 6.18.57 である。PR の commit（6.18.58 の上）では、inittab、test-boot、test-ab、電源断の smoke と integrity だけを確かめた。
 - 電源断の `--experiment` と、dm-verity の起動（所見 2）は行っていない。
 - 開発用に ext4 の root で build した場合は、root が書き込み可能にならない。必要なら手で `mount -o remount,rw /` を実行する。
