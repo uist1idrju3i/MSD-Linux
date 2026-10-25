@@ -105,6 +105,7 @@ docker run --rm --user 0:0 --env HOME=/tmp/home \
 
 - 最初は S12 の worktree の中で runner を実行しようとしました。開発用イメージの中から worktree の `.git` が指す先が見えず、`fatal: not a git repository` で `git_head` を取れませんでした。そこで止め、runner の commit を別の場所に clone して実行しました。この試行の値は使っていません。
 - 測定中に、同じホストで別の QEMU 試験（[PR #95](https://github.com/uist1idrju3i/MSD-Linux/pull/95) の確認、[tty->count の記録](2026-10-25-qemu-tty-count.md) の本番）を走らせた時間があります。icount の仮想時間はホストの負荷に左右されないので、判定の値はそのまま使います。QEMU wall はその影響を受けるので、判定には使いません。
+- runner の commit `703beec` は、記録を出す前に main へ rebase したので、ブランチ上では `1a11956` になりました。`s12-squashfs-codec.sh` と `boottime/` の中身は同じです。`run-qemu.sh` には、測定の後に [PR #95](https://github.com/uist1idrju3i/MSD-Linux/pull/95) の provenance の行が入りました。測定に使った `703beec` にはこの行がないため、ログに `run-qemu: sha256` の行はありません。QEMU の SHA-256 は image から直接取りました。
 - QEMU の binary の出どころを確かめるため、測定の後に、現在の main（`cf60569`）から開発用イメージの QEMU の段（`docker build --target qemu`）を手元で作りました。できた binary の SHA-256 は `7199b846…` で、測定に使った GHCR の image の `a1dfa3b6…` とは違いました。`7199b846…` は、S11 v3 で手元で作った binary と同じ値です。QEMU の段の入力（Dockerfile の QEMU の部分と patch）は、`703beec` から main まで変わっていません。手元と CI の build で binary が一致しないと考えられますが、確かめてはいません。測定に使った image が `703beec` の入力から作られたことは、image の tag で確かめました。
 
 ## 結論
