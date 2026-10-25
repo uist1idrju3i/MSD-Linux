@@ -61,7 +61,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 | QEMU とホストで完了（SD I/O と RAM は実機待ち）。icount の `t_ready` で差があったのは xz（+24 %、rootfs −6.1 %）だけで、既定の zstd・128 KiB は変えない | — | [2026-10-25-s12-squashfs-codec](../experiments/2026-10-25-s12-squashfs-codec.md) |
 | S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 | 未着手 | — | — |
 | S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 未着手 | — | — |
-| S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | 未着手 | — | — |
+| S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | QEMU 実験済み | 11.0.2 → 11.1.2 で `t_ready` +4.1 %（差あり）。build、machine、plugin は差なし | [2026-10-25-s15-qemu-versions](../experiments/2026-10-25-s15-qemu-versions.md) |
 | S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | 設計のみ | #24 | — |
 | S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | 調査のみ | #24 | — |
 

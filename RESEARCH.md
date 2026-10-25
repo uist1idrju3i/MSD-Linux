@@ -79,6 +79,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [CI・Issue・リポジトリ設定の点検（2026-10-20）](docs/research/repo-operations-review.md)
 - [作業の振り返りと残タスク（2026-10-22）](docs/research/retrospective-2026-10.md)
+- [作業の振り返りと残タスク（2026-10-25）](docs/research/retrospective-2026-10-25.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
 - [ファイルシステムの候補と設計例](docs/research/fs-candidates.md)
 - [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
