@@ -60,7 +60,7 @@
 | S13 | ユーザーランドの `-O2`・`-Os`・LTO |
 | ファイルシステム | S16 → S4・S5・S17 |
 | ファイルアクセス | 起動時のファイルアクセスを観測し、`mksquashfs -sort` を試す |
-| tty の警告 | QEMU の console で出る `tty_open: tty->count` の警告の原因を調べる |
+| tty の警告 | QEMU の console で出る `tty_open: tty->count` の警告の原因を調べる。2026-10-25 に [原因を確かめた](../experiments/2026-10-25-qemu-tty-count.md)。QEMU 用の DTB で Bluetooth を無効にする案は判断待ち |
 
 ### 保守と小さな修正
 
