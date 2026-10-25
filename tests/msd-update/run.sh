@@ -12,6 +12,7 @@ LOG_FILE="${TEST_DIR}/output"
 FSYNC_LOG="${TEST_DIR}/fsync.log"
 UPDATE_PRIVATE_KEY="${TEST_DIR}/update-private.pem"
 UPDATE_PUBLIC_KEY="${TEST_DIR}/update-public.pem"
+RUNNING_VERSION="${TEST_DIR}/version"
 
 cleanup() {
 	rm -rf "$TEST_DIR"
@@ -56,6 +57,7 @@ run_update() {
 	MSD_UPDATE_STATE_DIR="$STATE_DIR" \
 	MSD_UPDATE_PARTITION_PREFIX="$PARTITION_PREFIX" \
 	MSD_UPDATE_KEY_PATH="$UPDATE_PUBLIC_KEY" \
+	MSD_UPDATE_VERSION_PATH="$RUNNING_VERSION" \
 	/bin/sh "$UPDATER" "$@"
 }
 
@@ -70,6 +72,7 @@ expect_failure() {
 }
 
 mkdir -p "$DT_DIR" "$P1_DIR" "$STATE_DIR"
+printf '100\n' > "$RUNNING_VERSION"
 mkdir -p "$TEST_DIR/bin"
 openssl genpkey -algorithm Ed25519 -out "$UPDATE_PRIVATE_KEY"
 openssl pkey -in "$UPDATE_PRIVATE_KEY" -pubout -out "$UPDATE_PUBLIC_KEY"
@@ -126,7 +129,7 @@ printf 'ok - install rejects a bad SHA-256 without writing slots\n'
 mkdir -p "$TEST_DIR/good" "$TEST_DIR/bin"
 printf 'verified-rootfs\n' > "$TEST_DIR/good/rootfs.squashfs"
 printf 'verified-boot\n' > "$TEST_DIR/good/boot.vfat"
-(cd "$TEST_DIR/good" && sha256sum rootfs.squashfs boot.vfat > manifest)
+(cd "$TEST_DIR/good" && { printf 'version 200\n'; sha256sum rootfs.squashfs boot.vfat; } > manifest)
 sign_manifest "$UPDATE_PRIVATE_KEY" "$TEST_DIR/good"
 tar -cf "$TEST_DIR/good.tar" -C "$TEST_DIR/good" rootfs.squashfs boot.vfat manifest manifest.sig
 run_update install "$TEST_DIR/good.tar" > "$LOG_FILE"
@@ -167,6 +170,91 @@ expect_failure install "$TEST_DIR/tampered.tar"
 [ "$(cat "${PARTITION_PREFIX}6")" = 'old-rootfs' ] || fail "tampered manifest changed the inactive rootfs"
 [ "$(cat "${PARTITION_PREFIX}3")" = 'old-boot' ] || fail "tampered manifest changed the inactive boot slot"
 printf 'ok - tampered manifests are rejected before writing slots\n'
+
+# make_versioned NAME VERSION_LINES: sign a bundle with the good images and the given version lines.
+make_versioned() {
+	mkdir -p "$TEST_DIR/$1"
+	cp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/good/boot.vfat" "$TEST_DIR/$1/"
+	(cd "$TEST_DIR/$1" && { printf '%b' "$2"; sha256sum rootfs.squashfs boot.vfat; } > manifest)
+	sign_manifest "$UPDATE_PRIVATE_KEY" "$TEST_DIR/$1"
+	tar -cf "$TEST_DIR/$1.tar" -C "$TEST_DIR/$1" rootfs.squashfs boot.vfat manifest manifest.sig
+}
+
+reset_slot_b() {
+	set_dt 2 0
+	printf 'old-rootfs\n' > "${PARTITION_PREFIX}6"
+	printf 'old-boot\n' > "${PARTITION_PREFIX}3"
+	rm -f "$STATE_DIR/installed"
+}
+
+expect_slot_b_unchanged() {
+	[ "$(cat "${PARTITION_PREFIX}6")" = 'old-rootfs' ] || fail "$1 changed the inactive rootfs"
+	[ "$(cat "${PARTITION_PREFIX}3")" = 'old-boot' ] || fail "$1 changed the inactive boot slot"
+	[ ! -e "$STATE_DIR/installed" ] || fail "$1 recorded an install"
+}
+
+expect_slot_b_installed() {
+	dd if="${PARTITION_PREFIX}6" bs=4M iflag=count_bytes count="$root_bytes" 2>/dev/null > "$TEST_DIR/root-readback"
+	cmp "$TEST_DIR/good/rootfs.squashfs" "$TEST_DIR/root-readback" || fail "$1 did not install the rootfs"
+	[ "$(cat "$STATE_DIR/installed")" = 3 ] || fail "$1 did not record the install"
+}
+
+make_versioned same 'version 100\n'
+reset_slot_b
+run_update install "$TEST_DIR/same.tar" > "$LOG_FILE"
+expect_slot_b_installed "same-version bundle"
+printf 'ok - a bundle with the running version installs\n'
+
+make_versioned older 'version 99\n'
+reset_slot_b
+expect_failure install "$TEST_DIR/older.tar"
+grep -Fq 'older than running version 100' "$LOG_FILE" || fail "older bundle was not rejected as a downgrade"
+expect_slot_b_unchanged "older bundle"
+printf 'ok - an older bundle is rejected before writing slots\n'
+
+run_update install --allow-downgrade "$TEST_DIR/older.tar" > "$LOG_FILE" 2>&1
+grep -Fq 'downgrading from version 100 to 99' "$LOG_FILE" || fail "downgrade was not reported"
+expect_slot_b_installed "allowed downgrade"
+printf 'ok - --allow-downgrade installs an older bundle\n'
+
+make_versioned unversioned ''
+reset_slot_b
+expect_failure install "$TEST_DIR/unversioned.tar"
+grep -Fq 'bundle has no version' "$LOG_FILE" || fail "unversioned bundle was not rejected for its version"
+expect_slot_b_unchanged "unversioned bundle"
+run_update install --allow-downgrade "$TEST_DIR/unversioned.tar" > "$LOG_FILE" 2>&1
+expect_slot_b_installed "allowed unversioned bundle"
+printf 'ok - a bundle without a version needs --allow-downgrade\n'
+
+for case_name in duplicate:'version 200\nversion 201\n' word:'version abc\n' zero:'version 0200\n' long:'version 1234567890123456789\n'; do
+	make_versioned "bad-version-${case_name%%:*}" "${case_name#*:}"
+	reset_slot_b
+	expect_failure install --allow-downgrade "$TEST_DIR/bad-version-${case_name%%:*}.tar"
+	expect_slot_b_unchanged "bad version (${case_name%%:*})"
+done
+printf 'ok - malformed manifest versions are rejected even with --allow-downgrade\n'
+
+mkdir -p "$TEST_DIR/version-tampered"
+cp "$TEST_DIR/older/rootfs.squashfs" "$TEST_DIR/older/boot.vfat" "$TEST_DIR/older/manifest.sig" "$TEST_DIR/version-tampered/"
+sed 's/^version 99$/version 300/' "$TEST_DIR/older/manifest" > "$TEST_DIR/version-tampered/manifest"
+tar -cf "$TEST_DIR/version-tampered.tar" -C "$TEST_DIR/version-tampered" rootfs.squashfs boot.vfat manifest manifest.sig
+reset_slot_b
+expect_failure install "$TEST_DIR/version-tampered.tar"
+grep -Fq 'signature verification failed' "$LOG_FILE" || fail "raised version was not caught by the signature"
+expect_slot_b_unchanged "version-tampered bundle"
+printf 'ok - raising the version breaks the signature\n'
+
+mv "$RUNNING_VERSION" "$RUNNING_VERSION.saved"
+reset_slot_b
+expect_failure install "$TEST_DIR/good.tar"
+grep -Fq 'cannot read the running version' "$LOG_FILE" || fail "missing running version was not reported"
+expect_slot_b_unchanged "missing running version"
+mv "$RUNNING_VERSION.saved" "$RUNNING_VERSION"
+printf 'ok - install refuses when the running version is unknown\n'
+
+expect_failure install --allow-downgrade
+expect_failure install --force "$TEST_DIR/good.tar"
+printf 'ok - install rejects a missing bundle and unknown options\n'
 
 printf 'old-rootfs-a\n' > "${PARTITION_PREFIX}5"
 printf 'old-boot-a\n' > "${PARTITION_PREFIX}2"

@@ -205,4 +205,22 @@ mkdir -p "$target_dir/etc/msd-update"
 	-out "$target_dir/etc/msd-update/update-key.pem"
 printf '%s\n' "$key_origin" > "$target_dir/etc/msd-update/key-origin"
 
+# msd-update refuses bundles older than this number unless --allow-downgrade is given.
+update_version="${MSD_UPDATE_VERSION:-}"
+if [ -z "$update_version" ]; then
+	update_version="$(git -C "$(dirname "$0")" log -1 --format=%ct HEAD 2>/dev/null || true)"
+fi
+case "$update_version" in
+	'' | *[!0-9]* | 0?*)
+		printf 'Cannot determine the update version (%s); set MSD_UPDATE_VERSION to a decimal integer\n' \
+			"$update_version" >&2
+		exit 1
+		;;
+esac
+if [ "${#update_version}" -gt 18 ]; then
+	printf 'MSD_UPDATE_VERSION must have at most 18 digits: %s\n' "$update_version" >&2
+	exit 1
+fi
+printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
+
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"

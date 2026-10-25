@@ -49,7 +49,11 @@ genimage \
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot.vfat" "$UPDATE_DIR/"
 (
 	cd "$UPDATE_DIR"
-	sha256sum rootfs.squashfs boot.vfat > manifest
+	update_version="$(cat "${TARGET_DIR:?Buildroot must pass TARGET_DIR}/etc/msd-update/version")"
+	{
+		printf 'version %s\n' "$update_version"
+		sha256sum rootfs.squashfs boot.vfat
+	} > manifest
 	host_openssl="${HOST_DIR:-}/bin/openssl"
 	if [ ! -x "$host_openssl" ]; then
 		printf 'Required Buildroot host OpenSSL binary is missing: %s\n' "$host_openssl" >&2

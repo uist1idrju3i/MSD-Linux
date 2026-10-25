@@ -36,12 +36,21 @@ boot_partition=3
 
 `msd-update status` は `/proc/device-tree/chosen/bootloader/partition` と `tryboot` を読み、現在の A/B スロットと試験起動中かどうかを表示します。値は 32 bit big-endian です。BusyBox の `od` には `--endian=big` がないため、`od -An -v -t x1` でバイト列を読み、16 進数として変換します。
 
-post-image スクリプトは `output/images/msd-update-bundle.tar` を生成します。更新 bundle は次の 3 ファイルをルートに含む tar アーカイブです。manifest は `sha256sum` と同じ形式で、各イメージの SHA-256 を記載します。
+post-image スクリプトは `output/images/msd-update-bundle.tar` を生成します。更新 bundle は次の 4 ファイルをルートに含む tar アーカイブです。`manifest.sig` は `manifest` の Ed25519 署名です。
 
 ```text
 rootfs.squashfs
 boot.vfat
 manifest
+manifest.sig
+```
+
+`manifest` の 1 行目は `version <番号>` で、2 行目以降は `sha256sum` と同じ形式の各イメージの SHA-256 です。番号は 10 進の整数で、build ごとに増やします。post-build は環境変数 `MSD_UPDATE_VERSION` を使い、指定がなければ本リポジトリの HEAD の commit 時刻（UNIX 時間）を使います。同じ番号を rootfs の `/etc/msd-update/version` にも書きます。
+
+```text
+version 1761400000
+<SHA-256>  rootfs.squashfs
+<SHA-256>  boot.vfat
 ```
 
 同一の `boot.vfat` を p2 と p3 のどちらにも使います。両方の cmdline を含み、選択中の boot partition に応じて root を p5 または p6 に切り替えます。`install` はこの boot image を非アクティブなブートパーティションへそのまま転送するため、同じ bundle を A/B のどちらにも適用可能です。
@@ -51,10 +60,11 @@ manifest
 ```sh
 msd-update status
 msd-update install /data/update.tar
+msd-update install --allow-downgrade /data/old-update.tar
 msd-update try
 ```
 
-`install` は稼働中の rootfs/boot を維持し、非アクティブスロットを更新先にする処理です。bundle のメンバー名と SHA-256 を確認後、`dd conv=fsync` でイメージを転送します。同じバイト数を読み戻し、ハッシュが一致することを確かめます。双方の検証後、`/data/msd-update/installed` に試験対象を記録する流れです。電子署名の検証は未実装です。
+`install` は稼働中の rootfs/boot を維持し、非アクティブスロットを更新先にする処理です。bundle のメンバー名、署名、SHA-256 を確かめ、`manifest` の番号を稼働中の `/etc/msd-update/version` と比べます。番号が稼働中より小さい bundle と、番号のない bundle は、既定では書き込まずに拒否します。古いバージョンへ戻すときだけ、`--allow-downgrade` を付けてください。番号が同じ bundle は受け入れる仕様です。確認後、`dd conv=fsync` でイメージを転送します。同じバイト数を読み戻し、ハッシュが一致することを確かめます。双方の検証後、`/data/msd-update/installed` に試験対象を記録する流れです。
 
 `try` は検証済み更新の状態ファイルと `autoboot.txt` のスロット指定が一致する場合だけ、`reboot '0 tryboot'` を実行します。firmware は p1 の `[tryboot]` で指定されたブート領域を一度だけ選びます。次回の通常起動では tryboot が解除されるため、試験中に再起動しても未コミットの更新へ固定されません。
 
@@ -74,7 +84,7 @@ p7 は初期イメージで 64 MiB です。初回起動時の自動拡張は未
 
 | 方法 | 確認する内容 | 制約 |
 |---|---|---|
-| `tests/msd-update/run.sh` | DT 値の読み取り、commit の拒否条件、2↔3 の切り替え、bundle の SHA-256 検証、非アクティブスロットへの書き込み | 一時ディレクトリ上のホストテスト。実デバイスの電源断耐性は確認しない |
+| `tests/msd-update/run.sh` | DT 値の読み取り、commit の拒否条件、2↔3 の切り替え、bundle の署名と SHA-256 の検証、番号の比較と `--allow-downgrade`、非アクティブスロットへの書き込み | 一時ディレクトリ上のホストテスト。実デバイスの電源断耐性は確認しない |
 | `board/cardputerzero/qemu/test-ab.sh` | QEMU で p6 を rootfs として起動し、marker と login prompt を確認 | 検出後に QEMU を停止する。GPU firmware の tryboot は実行されず、firmware の A/B 選択や自動フォールバックを確認しない |
 | CardputerZero 実機 | firmware tryboot、rootfs 起動、watchdog、更新中の電源断、LCD・キーボード | 実機での検証が必要 |
 
