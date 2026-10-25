@@ -2,7 +2,8 @@
 # Usage (inside docker/msd-dev): run-tty-count.sh LOG_DIR CSV [RUNS]
 # Boots the unmodified image with the stock DTB ("stock") and with the
 # Bluetooth serdev child of the PL011 disabled ("bt-off"), logs in on the
-# serial console, and counts the kernel tty->count warnings.
+# serial console, and counts the kernel tty->count warnings. "default" boots
+# the stock DTB without QEMU_DTB_BLUETOOTH=1, so run-qemu.sh disables the node.
 set -uo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../../../../.." && pwd)"
@@ -29,14 +30,15 @@ wait_for() { # log pattern pid timeout
 	return 1
 }
 
-for variant in stock bt-off; do
+for variant in ${TTY_VARIANTS:-stock bt-off default}; do
 	dtb="$stock_dtb"; [[ "$variant" == bt-off ]] && dtb="$bt_off_dtb"
+	keep_bt=1; [[ "$variant" == default ]] && keep_bt=0
 	for repeat in $(seq 1 "$runs"); do
 		run_id="$(date -u +%Y%m%dT%H%M%SZ)-${variant}-${repeat}"
 		log="${log_dir}/${run_id}.log"
 		fifo="${log_dir}/${run_id}.in"
 		mkfifo "$fifo"
-		DTB_IMAGE="$dtb" "${REPO_ROOT}/board/cardputerzero/qemu/run-qemu.sh" \
+		QEMU_DTB_BLUETOOTH="$keep_bt" DTB_IMAGE="$dtb" "${REPO_ROOT}/board/cardputerzero/qemu/run-qemu.sh" \
 			<"$fifo" >"$log" 2>&1 &
 		pid=$!
 		exec 3>"$fifo"
