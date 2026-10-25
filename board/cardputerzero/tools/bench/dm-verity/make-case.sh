@@ -42,7 +42,7 @@ if [[ "$case_kind" == T0 ]]; then
 	inittab="${rootfs_tree}/etc/inittab"
 	remount_line='::sysinit:/bin/mount -o remount,rw /'
 	before_count="$(grep -Fxc -- "$remount_line" "$inittab" || true)"
-	[[ "$before_count" == 1 ]]
+	[[ "$before_count" == 0 || "$before_count" == 1 ]]
 	sed -i '\|^::sysinit:/bin/mount -o remount,rw /$|d' "$inittab"
 	after_count="$(grep -Fxc -- "$remount_line" "$inittab" || true)"
 	[[ "$after_count" == 0 ]]
