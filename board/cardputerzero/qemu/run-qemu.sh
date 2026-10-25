@@ -81,6 +81,26 @@ if [ -n "${QEMU_QMP_SOCKET:-}" ]; then
 	qemu_args+=(-qmp "unix:${QEMU_QMP_SOCKET},server=on,wait=off")
 fi
 
+case "${QEMU_HASH_IMAGE:-1}" in
+	0 | 1) ;;
+	*)
+		printf 'QEMU_HASH_IMAGE must be 0 or 1: %s\n' "$QEMU_HASH_IMAGE" >&2
+		exit 2
+		;;
+esac
+qemu_path="$(command -v "$QEMU")"
+provenance_files=("$qemu_path" "$KERNEL" "$DTB")
+if [ "${QEMU_HASH_IMAGE:-1}" = 1 ]; then
+	provenance_files+=("$IMAGE")
+fi
+# Record what this run used so experiment logs carry their own provenance.
+{
+	printf 'run-qemu: version=%s\n' "$("$QEMU" --version | head -n 1)"
+	printf 'run-qemu: machine=%s memory=%s icount=%s\n' \
+		"$QEMU_MACHINE" "$QEMU_MEMORY" "${QEMU_ICOUNT:-off}"
+	sha256sum -- "${provenance_files[@]}" | sed 's/^/run-qemu: sha256 /'
+} >&2
+
 # Both Pi 3 DTBs map the PL011 to ttyAMA1; enable the QEMU watchdog model only on request.
 exec "$QEMU" "${qemu_args[@]}" -M "$QEMU_MACHINE" -m "$QEMU_MEMORY" \
 	-kernel "$KERNEL" \
