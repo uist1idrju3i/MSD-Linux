@@ -77,7 +77,7 @@ Buildroot の BusyBox パッケージは、`CONFIG_BB_SYSCTL=y` で procps-ng �
 | I/O スケジューラーを `none` にする | 実機で測る | 記事の対象は SSD 上の virtio-blk です。カーネルは単一キューのデバイスに `mq-deadline` を選びます（`elevator.c`）。SD 上の rootfs はほぼ読むだけなので、差は小さいと見ています。【推測】SquashFS の読み込みには `read_ahead_kb` のほうが効く可能性があります。【推測】 |
 | `noatime`、`compress=zstd:1`（Btrfs） | 対応済み・対象外 | `/data` はすでに `noatime` で、rootfs は SquashFS です。Btrfs は使いません。 |
 | マウントオプションの強化（`nodev`、`nosuid`、`noexec`） | 一部対応済み | `fstab` の `/data` は `noatime,nodev,nosuid,data=ordered,errors=remount-ro`、`/tmp` と `/run` は `nosuid,nodev` です。`/data` の `noexec` は互換性の確認が要るため未採用で、[セキュリティ・ハードニング](security-hardening.md)の研究項目に残っています。QEMU での確認結果は [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) にあります。 |
-| SSH 強化（tcp_wrappers、鍵認証のみ、ed25519 のホスト鍵、待受アドレスの限定、レート制限） | 対象外 | SSH を実装しない方針です（[ユーザー空間・SSH/VPN 調査](userspace-and-security.md)）。将来、開発用イメージに SSH を入れる場合の確認項目として残します。 |
+| SSH 強化（tcp_wrappers、鍵認証のみ、ed25519 のホスト鍵、待受アドレスの限定、レート制限） | 対象外 | SSH を実装しない方針です（[SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md)）。将来、開発用イメージに SSH を入れる場合の確認項目として残します。 |
 | unattended-upgrades とサービスの自動再起動 | 対象外 | 更新は `msd-update` による A/B 方式です。 |
 | ufw、DNS over TLS、chrony | 対象外（今は） | 待ち受けるサービスがなく、ネットワーク機能を起動時に使っていません。Wi-Fi を使う段階で改めて検討します。 |
 | Falco、Suricata | 不採用 | 512 MB の端末には重すぎます。 |

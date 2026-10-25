@@ -92,7 +92,7 @@
 | A/B 方式 | MBR + tryboot / autoboot.txt + RAUC custom、U-Boot 系、Rugix を候補とします。tryboot と watchdog が CM0 で動作するか未確認です。FAT の boot 領域が単一障害点となる可能性があります（推測）。 | 未決 |
 | カーネル版 | Linux 6.18.y、7.2.y、7.3.y を候補とします。7.2.y / 7.3.y の PREEMPT は LAZY / FULL のみです。7.1 で DRM API が変わり、7.3 の alias unmap 再適用後の CM0 起動は未確認です。 | 未決 |
 | 開発中のログ | 開発ビルドでは ext4 に記録し、電断試験時は専用領域または pstore に切り替える案です。完全 read-only との両立方法と、測定条件の差を記録する必要があります。 | 未決 |
-| SSH / VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を候補とします。SSH サーバーは起動完了後に socket activation で起動する案です。[関連資料](userspace-and-security.md) | 未決 |
+| SSH / VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を候補とします。SSH サーバーは起動完了後に socket activation で起動する案です。[関連資料](ssh-vpn-and-keys.md) | 未決 |
 | 名称 | MSD/Linux の由来は [RESEARCH.md](../../RESEARCH.md) に記載しています。 | — |
 
 ### 判断と関連資料
@@ -103,7 +103,7 @@
 | rootfs・init・libc | [ユーザー空間・セキュリティ調査](userspace-and-security.md) |
 | A/B・電源断 | [電源・更新方式の調査](power-and-updates.md) |
 | 開発中のログ | [開発中の観測手段](#開発中の観測手段) |
-| SSH / VPN | [ユーザー空間・セキュリティ調査](userspace-and-security.md) |
+| SSH / VPN | [SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md) |
 | 名称の由来 | [RESEARCH.md](../../RESEARCH.md) |
 
 ---
@@ -178,7 +178,7 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | microSD の FTL・電断耐性に関する一次情報 | URL未取得。microSD 仕様書と電断試験で確認します。 |
 | MCUboot の arm64 実績 | URL未取得。公開ソースと対応ボード一覧で確認します。 |
 | BCM2837 に AES / SHA 命令がないことのメーカー一次仕様。A53 の Crypto Extension がオプションであることは DDI 0501F で確認済みですが、BCM2837 が実際に搭載していないことの一次仕様は未取得です。二次情報として Raspberry Pi forum の報告があります。 | URL未取得。Arm DDI 0501F と BCM2837 のメーカー資料を照合します。 |
-| SSH / VPN / PQ の CM0 実測、古いクライアントとの PQ 互換性、OpenVPN で ML-KEM を使えるか | [ユーザー空間・セキュリティ調査](userspace-and-security.md)、実機測定は未実施です。 |
+| SSH / VPN / PQ の CM0 実測、古いクライアントとの PQ 互換性、OpenVPN で ML-KEM を使えるか | [SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md)、実機測定は未実施です。 |
 | Linux 7.3（alias unmap 再適用後）の CM0 起動、7.x での M5 モジュールのビルド可否、Linux 7.2 / 7.3 の PREEMPT 値 | [起動・カーネル調査](boot-and-kernel.md) |
 | M5Stack の名称利用ガイドライン原文（`docs.m5stack.com/en/brand` は 404） | https://docs.m5stack.com/en/brand |
 | Kickstarter（403）、Raspberry Pi forum `t=207888` / `263234` / `376022`（403 / 取得不可）、TechFeed（タイトルのみ）など、取得できなかった公開ページ | [公開出典一覧](sources.md) |
@@ -190,7 +190,7 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | rpi-6.12.y の同じパスは HTTP 404。6.12 系全体にヘッダーがないか、rpi-6.13〜6.17 に存在するか | https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.12.y/include/drm/clients/drm_client_setup.h<br>https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.18.y/include/drm/clients/drm_client_setup.h |
 | `powerfail_suo` の `disabled-gpios = <&m5ioe1 11 1>` が M5IOE1 の PYG12（LCD_RST、documentation 記載）に当たるか。index+1 の推論で未確認です。GPIO6=SW_DET と PYG6=MIC_SW は別物で、混同しません。 | https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts |
 | RX8130 の I2C アドレス。CardputerZero overlay は 0x32、単体 `modules/rx8130` は 0x68（実機未確認） | [起動・カーネル調査](boot-and-kernel.md) |
-| OpenVPN 2.7.6 + OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、CM0 での所要時間も未測定です。 | [ユーザー空間・セキュリティ調査](userspace-and-security.md) |
+| OpenVPN 2.7.6 + OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、CM0 での所要時間も未測定です。 | [SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md) |
 | WP-1 の Pi 3B+ ログにある kernel `Loaded` 4.131 s から `Device tree loaded` 6.760 s までの 2.63 s の内訳、GPU 段とカーネルサイズの関係。同一構成でサイズを変えて実機測定する必要があります。 | https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-1-Optimising%20boot%20time.pdf |
 | Newlib に Linux 用の sys ディレクトリがないか（sourceware の取得ができていません） | URL未取得。公開ソースで確認する必要があります。 |
 | Raspberry Pi OS Trixie 2026-10-06 の kernel 版は 6.18.50 です。公式 release notes で確認済みですが、イメージ内の実際のカーネルパッケージ版は実機・イメージ展開で未確認です。 | https://downloads.raspberrypi.com/raspios_arm64/release_notes.txt<br>https://downloads.raspberrypi.com/os_list_imagingutility_v4.json |

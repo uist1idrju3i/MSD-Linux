@@ -136,7 +136,7 @@
       "purpose": "脅威モデル、採用済みの対策、費用対効果で分類した候補（カーネル、sysctl、マウントオプション、更新署名、無線と USB）を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md のセキュリティに関する節、docs/research/userspace-and-security.md、docs/research/security-hardening.md を根拠にしてください。"
+          "content": "RESEARCH.md のセキュリティに関する節、docs/research/userspace-and-security.md、docs/research/ssh-vpn-and-keys.md、docs/research/security-hardening.md を根拠にしてください。"
         }
       ]
     },
