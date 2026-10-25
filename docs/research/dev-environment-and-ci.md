@@ -13,7 +13,7 @@
 | Arch Linux `base-devel` | 約308.6 MB | amd64 のみ | arm64 イメージがないため対象外です。 |
 | Alpine 3.23 | 約3.8 MB | musl | Bootlin toolchain は glibc バイナリーのため対象外です。 |
 
-Debian で使う QEMU 版は trixie-backports の Packages index にあるバイナリーパッケージ版を基準にします。`sources.debian.org` のソース一覧には `11.1.2~bpo13` と表示されましたが、Packages index の版は `1:11.0.2+ds-2~bpo13+1` です。
+Debian で使う QEMU のバージョンは trixie-backports の Packages index にあるバイナリーパッケージのバージョンを基準にします。`sources.debian.org` のソース一覧には `11.1.2~bpo13` と表示されましたが、Packages index のバージョンは `1:11.0.2+ds-2~bpo13+1` です。
 
 ## 開発イメージと CI の方針
 

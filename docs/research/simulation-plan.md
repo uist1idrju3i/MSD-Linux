@@ -121,7 +121,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | PR #77 で修正済み |
 | S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | 中 |
 | 温度 | QEMU に温度の値を足し、読み出しと記録の経路を確かめる | 小 |
-| S15 QEMU の版の比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
+| S15 QEMU のバージョンの比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
 | S12 SquashFS の圧縮方式と block size、EROFS | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | 中 |
 | S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（ビルドだけで約 1 日の見込み） |
 | S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 中（S1 と同じ仕組みで測る） |
@@ -131,7 +131,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S16 `/etc` と `/data` を通常は読み取り専用にする | 各 writer が書き込み可能な期間だけで動くか | 中 |
 | S4 ext4・F2FS・btrfs、S5 OverlayFS の方式 | 同じ負荷での fsck、mount、SIGKILL 後の回復、書き込み量 | 大 |
 | S17 ストレージの障害と速度の模擬 | dm-log-writes の再生、dm-flakey、QEMU の blkdebug | 大 |
-| 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残した版で） | 中 |
+| 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番（ftrace を残したビルドで） | 中 |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
 | BusyBox の applet を減らす、静的リンク | QEMU で静的リンクと 63 applet を比較した。製品用 applet の範囲は未決である（[記録](../experiments/2026-10-21-qemu-busybox.md)）。 | 中 |
 
@@ -169,7 +169,7 @@ S2（#36）を出した時点での残りの作業と、その順番です。セ
 | 4 | S1・S14 本番 | 80 候補の総当たり。始める前に `kernel-variant-sweep.sh` を直し、QEMU が失敗した試行のログを残す（今は一時ディレクトリごと消える）。`NUMA=n` はログを残して測り直す。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
 | 5 | S10・S11 | 更新の署名が不正・破損・古い場合に拒否されることの試験と、watchdog による hang からの復帰の QEMU 試験。 |
 | 6 | S16 → S4・S5・S17 | `/etc` と `/data` を通常は読み取り専用にする設計を QEMU の電源断で確かめ、その上で FS（ext4・F2FS）と overlayfs の方式を比べる。ストレージの障害と速度の模擬（S17）を同じ枠組みで使う。 |
-| 7 | S12・S13・S15 | SquashFS の圧縮方式と block size、ユーザーランドの `-O2`・`-Os`・LTO、QEMU の版の比較。 |
+| 7 | S12・S13・S15 | SquashFS の圧縮方式と block size、ユーザーランドの `-O2`・`-Os`・LTO、QEMU のバージョンの比較。 |
 | 8 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
 
 保留: libcamera と VideoCore の ISP（カメラの tier B）は、VCHIQ と firmware の変更が必要で、起動時間と RAM への影響が大きいため、使う場面が決まるまで入れません。Raspberry Pi Zero 2 W は用意しません。CardputerZero が手に入らない場合に限り、代わりの実機として検討します。

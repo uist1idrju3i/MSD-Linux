@@ -70,7 +70,7 @@ Buildroot の BusyBox パッケージは、`CONFIG_BB_SYSCTL=y` で procps-ng �
 | `unprivileged_bpf_disabled = 1`、`io_uring_disabled = 2`、`kexec_load_disabled = 1` | 候補（S1 と合わせて判断） | 現在は `BPF_UNPRIV_DEFAULT_OFF=y`（実行時の値は 2）です。BPF と io_uring を Kconfig で外す案は S1 の削減候補と重なるので、外すか sysctl で止めるかを一緒に決めます。基底の defconfig に kexec の設定は見つかっていません。 |
 | `kernel.sysrq = 0` | 不採用 | 上記のとおり電源断時の remount が止まります。絞るなら 32 です。 |
 | `kernel.panic = 60`、`panic_on_oops = 1` | 候補 | 無人で動く端末に合います。tryboot の試し起動中に panic すると、再起動で元のスロットに戻るので、A/B 更新の失敗検知にも使えます。秒数は watchdog（`S01msd-watchdog` の `-T 15`）と合わせて決めます。現在の cmdline に `panic=` はありません。 |
-| `rp_filter`、redirect と source route の拒否、`icmp_echo_ignore_broadcasts` など | 候補 | Wi-Fi や USB ネットワークのクライアントとして使う場合に効きます。値を書くだけで済みます。 |
+| `rp_filter`、redirect と source route の拒否、`icmp_echo_ignore_broadcasts` など | 候補 | Wi-Fi や USB ネットワークのクライアントとして使う場合に、送信元を偽った packet、経路の書き換え、broadcast 宛ての ping への応答を防げます。値を書くだけで済みます。 |
 | 既定値と同じ値も明示して固定する方針 | 候補 | カーネルの更新で既定値が変わっても設定が変わらないようにする考え方で、固定版の更新確認と同じ発想です。 |
 | BBR + fq、TCP バッファー 8 MB、backlog 系、keepalive | 不採用 | サーバー向けの値で、512 MB の端末には大きすぎます。基底の defconfig では `TCP_CONG_BBR=m`、`NET_SCH_FQ=m` です。 |
 | zswap | 不採用 | SD 上の swap が前提で、電源断への耐性と書き込み寿命に反します。使うなら zram にします（[電源断耐性・A/B 更新](power-and-updates.md)）。 |
