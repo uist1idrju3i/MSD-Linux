@@ -190,7 +190,7 @@ QEMU の `raspi3ap` と `raspi3b` は BCM2837 SoC をエミュレートします
 ## カーネル
 
 - `kernel8.img` は `pigz -11 -n` で作成し、gunzip 後に `Image` と一致することを検査する。実サイズはビルドログの `Kernel compression sizes` 行に記録する。この文書では未測定値を記載しない。
-- 基準は `rpi-6.18.y` とします。RPi kernel 6.18.57、Buildroot 2026.08 の 2026-09-04 版を公開情報で確認しました。カーネルと M5 driver は commit 固定します。
+- 基準は `rpi-6.18.y` とします。RPi kernel 6.18.57（2026-10-25 に 6.18.58 へ更新）、Buildroot 2026.08 の 2026-09-04 版を公開情報で確認しました。カーネルと M5 driver は commit 固定します。
 - M5 DRM panel API が 7.1 で削除され、7.0 で ASoC API が変更されたとの情報は未確認です。確認には M5 driver と Raspberry Pi kernel の公開 tree をバージョンごとに比較する必要があります。M5 driver をそのまま build できるかは未確認です。6.18 を基準、7.2 は同一構成での比較候補とします。
 - 6.18 から 7.2 で BCM2835 SD host / KASLR / 圧縮展開コードの変更がないとの調査。ただし BCM2837 の実測差はない。6.18 以降の起動時間に関係しそうな公開変更は条件付き、未マージ、または x86 / 大容量向けで、CM0 に適用できる証拠は乏しい。
 - 6.18 arm64 は PREEMPT_NONE が既定で VOLUNTARY 選択可能との調査。7.2 では arm64 の PREEMPT_LAZY 機能により NONE / VOLUNTARY を選べないとの調査。起動時間への影響は未測定。PREEMPT_RT は対象外。
