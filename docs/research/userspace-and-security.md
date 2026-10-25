@@ -121,7 +121,7 @@
 | 自己 exec(静的)musl 234μs / uClibc 245μs / dietlibc 272μs / glibc 457μs。動的は 446/590/675/864μs | musl 1.1.5、uClibc 0.9.33.2、dietlibc 0.32、glibc 2.19、**Intel Atom N280(32bit x86)**、著者注記「近似値」 | https://www.etalabs.net/compare_libcs.html | 二次(musl 作者のページ) |
 | fork+exec:動的 131μs/静的 31μs(Core i5-6600K)、動的 1762μs/静的 507μs(Celeron N3060。**ChromeOS の Crostini VM 上での測定** で、実機と同列には比べられない。gist 本文で確認) | **x86_64、libc 比較ではなく静的/動的の比較**(musl-gcc でビルド) | https://gist.github.com/hadrianw/ad07a76f338f09565703ae6ea35993c8 | 二次 |
 | Zero 2 W、Buildroot 2024.02.1、**フル glibc**、カーネル大幅削減・非圧縮・initramfs なしで電源投入からユーザー空間まで約 3.5 秒（カーネル実行約 400 ms） | 個人ブログ（電源投入から GPIO トグルまで。KASLR・Spectre 緩和・sound / USB などを無効化） | https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/ | 二次 |
-- **aarch64 / Cortex-A53 / 現行版（musl 1.2.6、glibc 2.44）での公表比較は確認できていません（未確認。否定ではありません）。対象 SoC と libc の版を明記した公開測定で確認する必要があります。**
+- **aarch64 / Cortex-A53 / 現行バージョン（musl 1.2.6、glibc 2.44）での公表比較は確認できていません（未確認。否定ではありません）。対象 SoC と libc のバージョンを明記した公開測定で確認する必要があります。**
 
 ### 17.4 アロケータ(jemalloc / mimalloc など)
 - mimalloc README は、自社ベンチで他の主要アロケータを上回ると主張する一方、ベンチには合成的なものが含まれ、結果を注意して解釈するよう注記しています。CM0・起動時間の数値はありません。jemalloc は未調査です。https://github.com/microsoft/mimalloc/blob/main/readme.md 【一次（README の記載）】
@@ -177,7 +177,7 @@
 
 ### 21.5 ポスト量子（PQ）鍵交換と SSH / VPN の既定暗号
 
-Devin が 2026-10-18 JST に各実装の既定値を定義するファイルを公開資料で確認しました。Buildroot 2026.08（コミット d5180309）の同梱版は、各 `package/*/*.mk` に記載された版です。https://github.com/buildroot/buildroot/commit/d5180309 **CM0 での実行時間・スループットは公表値が見つからず、実機未測定です。**
+Devin が 2026-10-18 JST に各実装の既定値を定義するファイルを公開資料で確認しました。Buildroot 2026.08（コミット d5180309）に同梱されたバージョンは、各 `package/*/*.mk` に記載されたバージョンです。https://github.com/buildroot/buildroot/commit/d5180309 **CM0 での実行時間・スループットは公表値が見つからず、実機未測定です。**
 
 | 実装(版:何の版か) | 既定の暗号・鍵交換(定義ファイル) | PQ ハイブリッド | コスト(出典にある範囲) | 出典 |
 |---|---|---|---|---|

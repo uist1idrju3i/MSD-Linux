@@ -63,7 +63,7 @@ GPIO6 の立下りを 500 ms デバウンスして SysRq-U を実行します。
 
 ## 7. OTA / A-B
 
-### 7.1 各ツールの版
+### 7.1 各ツールのバージョン
 | ツール(何の版か) | 版(日付) | 確認度 | 出典URL |
 |---|---|---|---|
 | RAUC | v1.15.2（2026-03-27） | 一次（公式 releases API、2026-10-18 に公開資料で確認） | https://api.github.com/repos/rauc/rauc/releases/latest |
