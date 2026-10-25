@@ -116,6 +116,7 @@ jobs:
           docker/msd-dev tests/msd-hwinfo/run.sh
           docker/msd-dev tests/msd-data-grow/run.sh
           docker/msd-dev tests/qemu-log-check/run.sh
+          docker/msd-dev tests/powerfail-log/run.sh
           docker/msd-dev tests/msd-dev/run.sh
           docker/msd-dev tests/trivy-gate/run.sh
 
