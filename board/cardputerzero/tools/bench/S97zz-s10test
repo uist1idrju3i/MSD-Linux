@@ -31,6 +31,7 @@ else
 	export MSD_UPDATE_DT_DIR="$dt"
 	console "dt=substitute partition=2 tryboot=0"
 fi
+console "running_version=$(cat /etc/msd-update/version 2>/dev/null || echo none)"
 console "root=$(sed -n 's/.*root=\([^ ]*\).*/\1/p' /proc/cmdline) openssl=$(openssl version | tr ' ' '_')"
 
 for bundle in "$DIR"/T*.tar; do
@@ -38,7 +39,10 @@ for bundle in "$DIR"/T*.tar; do
 	rm -f /data/msd-update/installed
 	root_before="$(head_hash /dev/mmcblk0p6)"
 	boot_before="$(head_hash /dev/mmcblk0p3)"
-	msd-update install "$bundle" >/tmp/msd-s10.out 2>&1
+	case "$name" in
+		*-allow) msd-update install --allow-downgrade "$bundle" >/tmp/msd-s10.out 2>&1 ;;
+		*) msd-update install "$bundle" >/tmp/msd-s10.out 2>&1 ;;
+	esac
 	status=$?
 	root_after="$(head_hash /dev/mmcblk0p6)"
 	boot_after="$(head_hash /dev/mmcblk0p3)"
