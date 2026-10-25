@@ -11,7 +11,7 @@ QEMU_SYSTEM_AARCH64="${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}"
 QEMU_BOOT_TIMEOUT="${QEMU_BOOT_TIMEOUT:-1800}"
 
 usage() {
-	printf 'Usage: %s --variant NAME --runs N --csv PATH --log-dir DIR [--mode icount|tcg] [--kernel Image] [--dtb file]\n' "$0" >&2
+	printf 'Usage: %s --variant NAME --runs N --csv PATH --log-dir DIR [--mode icount|tcg] [--kernel Image] [--dtb file] [--squashfs-comp NAME] [--squashfs-block BYTES]\n' "$0" >&2
 }
 
 variant=
@@ -21,6 +21,8 @@ log_dir=
 mode=icount
 kernel_option=
 dtb_option=
+squashfs_comp_option=
+squashfs_block_option=
 while (($#)); do
 	case "$1" in
 		--variant)
@@ -56,6 +58,16 @@ while (($#)); do
 		--dtb)
 			(($# >= 2)) || { usage; exit 2; }
 			dtb_option="$2"
+			shift 2
+			;;
+		--squashfs-comp)
+			(($# >= 2)) || { usage; exit 2; }
+			squashfs_comp_option="$2"
+			shift 2
+			;;
+		--squashfs-block)
+			(($# >= 2)) || { usage; exit 2; }
+			squashfs_block_option="$2"
 			shift 2
 			;;
 		*)
@@ -143,6 +155,8 @@ if [[ -z "$compression" || -z "$block_size" ]]; then
 	printf 'Could not read SquashFS options from %s\n' "$base_rootfs" >&2
 	exit 1
 fi
+compression="${squashfs_comp_option:-$compression}"
+block_size="${squashfs_block_option:-$block_size}"
 "$mksquashfs" "$target_dir" "$test_rootfs" -noappend -all-root \
 	-no-xattrs -no-progress -comp "$compression" -b "$block_size" \
 	>"${image_build_dir}/mksquashfs.log" 2>&1
@@ -193,6 +207,9 @@ qemu_version="${qemu_version_output%%$'\n'*}"
 	printf 'sha256_test_rootfs=%s\n' \
 		"$(sha256sum "$test_rootfs" | awk '{print $1}')"
 	printf 'qemu_version=%s\n' "$qemu_version"
+	printf 'squashfs_compression=%s\n' "$compression"
+	printf 'squashfs_block_size=%s\n' "$block_size"
+	printf 'test_rootfs_bytes=%s\n' "$rootfs_bytes"
 } >"${log_dir}/image-build.txt"
 
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${variant}-${mode}"
