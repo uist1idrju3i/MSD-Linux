@@ -26,6 +26,6 @@ for ((i = 1; i <= RUNS; i++)); do
 	QEMU_LOG_DIR="$dir" QEMU_SYSTEM_AARCH64="${SCRIPT_DIR}/qemu-trace-wrap.sh" \
 		"${REPO_DIR}/board/cardputerzero/qemu/test-boot.sh" "$IMAGE" >"${dir}/test-boot.log" 2>&1 || status=$?
 	printf 'boot%s exit=%s trace_lines=%s\n' "$i" "$status" \
-		"$(grep -c sdcard_read_block "${dir}/sd-trace.log" 2>/dev/null || echo 0)" >>"${LOG_ROOT}/conditions.log"
+		"$(grep -c sdcard_read_block "${dir}/sd-trace.log" 2>/dev/null || true)" >>"${LOG_ROOT}/conditions.log"
 done
 cat "${LOG_ROOT}/conditions.log"
