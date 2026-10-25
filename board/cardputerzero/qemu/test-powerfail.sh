@@ -33,8 +33,6 @@ case "$QEMU_MACHINE" in
 esac
 BASE_DTB="${DTB_IMAGE:-${IMAGES_DIR}/${default_dtb}}"
 
-mkdir -p "$LOG_DIR" "$WORK_ROOT"
-
 usage() {
 	printf 'Usage: %s [--smoke|--integrity|--experiment]\n' "$0" >&2
 }
@@ -50,17 +48,6 @@ terminate_qemu() {
 		CURRENT_PID=""
 	fi
 }
-
-trap 'terminate_qemu TERM' EXIT
-trap 'terminate_qemu INT; exit 130' INT
-trap 'terminate_qemu TERM; exit 143' TERM
-
-for required in "$POWERFAIL_IMAGE" "$KERNEL" "$BASE_DTB"; do
-	if [[ ! -f "$required" ]]; then
-		printf 'Required file not found: %s\n' "$required" >&2
-		exit 1
-	fi
-done
 
 prepare_overlay() {
 	local dtc="${OUTPUT_DIR}/host/bin/dtc"
@@ -151,6 +138,59 @@ with open(path, encoding="utf-8", errors="replace") as log:
                 print(match.group(1))
                 break
 PY
+}
+
+# Derives the per-trial verdicts from the saved serial logs; tests/powerfail-log covers it.
+classify_trial_logs() {
+	local first_log="$1"
+	local reboot_log="$2"
+	local event=no sysrq_u_requested=no remount=no marker=no recovery=no
+	local fsck_status="" event_time="" remount_time="" event_to_remount=""
+
+	if grep -Fq -- 'msd-powerfail: power-fail event received' "$first_log"; then
+		event=yes
+	fi
+	if grep -Fq -- 'SysRq U: emergency remount filesystems readonly' "$first_log"; then
+		sysrq_u_requested=yes
+	fi
+	if grep -Fq -- 'sysrq: Emergency Remount R/O' "$first_log"; then
+		remount=yes
+	fi
+	if [[ -f "$reboot_log" ]] &&
+		grep -Fq -- 'S3CUT_MARKER_PRESENT=1' "$reboot_log"; then
+		marker=yes
+	fi
+	if [[ -f "$reboot_log" ]] &&
+		grep -Eiq 'EXT4-fs.*(recover|orphan)|recovering journal|recovery complete' \
+			"$reboot_log"; then
+		recovery=yes
+	fi
+	if [[ -f "$reboot_log" ]]; then
+		fsck_status="$(sed -n \
+			's/.*S3CUT_FSCK_STATUS=\([0-9][0-9]*\).*/\1/p' \
+			"$reboot_log" | tail -n 1)"
+	fi
+	if [[ -n "$first_log" && -f "$first_log" ]]; then
+		event_time="$(log_timestamp "$first_log" \
+			'msd-powerfail: power-fail event received')"
+		remount_time="$(log_timestamp "$first_log" \
+			'sysrq: Emergency Remount R/O')"
+	fi
+	if [[ -n "$event_time" && -n "$remount_time" ]]; then
+		event_to_remount="$(python3 - "$event_time" "$remount_time" <<'PY'
+import sys
+print(f"{float(sys.argv[2]) - float(sys.argv[1]):.6f}")
+PY
+		)"
+	fi
+
+	CLASS_EVENT="$event"
+	CLASS_SYSRQ_U="$sysrq_u_requested"
+	CLASS_REMOUNT="$remount"
+	CLASS_MARKER="$marker"
+	CLASS_RECOVERY="$recovery"
+	CLASS_FSCK_STATUS="$fsck_status"
+	CLASS_EVENT_TO_REMOUNT="$event_to_remount"
 }
 
 run_smoke() {
@@ -301,7 +341,7 @@ run_integrity_trial() {
 	local qmp_socket="${run_dir}/qmp.sock"
 	local start_wall_ns firstboot_done_ns reboot_start_ns reboot_done_ns
 	local gpio_response_ns="" cut_start_ns="" kill_ns="" qmp_result=""
-	local failure="" event_time="" remount_time="" event_to_remount=""
+	local failure="" event_to_remount=""
 	local firstboot_wall="" reboot_wall="" total_wall=""
 	local recovery=no fsck_status="" marker=no event=no remount=no
 	local sysrq_u_requested=no
@@ -402,42 +442,14 @@ run_integrity_trial() {
 		status="failed-run"
 	fi
 
-	if grep -Fq -- 'msd-powerfail: power-fail event received' "$first_log"; then
-		event=yes
-	fi
-	if grep -Fq -- 'SysRq U: emergency remount filesystems readonly' "$first_log"; then
-		sysrq_u_requested=yes
-	fi
-	if grep -Fq -- 'sysrq: Emergency Remount R/O' "$first_log"; then
-		remount=yes
-	fi
-	if [[ -f "$reboot_log" ]] &&
-		grep -Fq -- 'S3CUT_MARKER_PRESENT=1' "$reboot_log"; then
-		marker=yes
-	fi
-	if [[ -f "$reboot_log" ]] &&
-		grep -Eiq 'EXT4-fs.*(recover|orphan)|recovering journal|recovery complete' \
-			"$reboot_log"; then
-		recovery=yes
-	fi
-	if [[ -f "$reboot_log" ]]; then
-		fsck_status="$(sed -n \
-			's/.*S3CUT_FSCK_STATUS=\([0-9][0-9]*\).*/\1/p' \
-			"$reboot_log" | tail -n 1)"
-	fi
-	if [[ -n "$first_log" && -f "$first_log" ]]; then
-		event_time="$(log_timestamp "$first_log" \
-			'msd-powerfail: power-fail event received')"
-		remount_time="$(log_timestamp "$first_log" \
-			'sysrq: Emergency Remount R/O')"
-	fi
-	if [[ -n "$event_time" && -n "$remount_time" ]]; then
-		event_to_remount="$(python3 - "$event_time" "$remount_time" <<'PY'
-import sys
-print(f"{float(sys.argv[2]) - float(sys.argv[1]):.6f}")
-PY
-		)"
-	fi
+	classify_trial_logs "$first_log" "$reboot_log"
+	event="$CLASS_EVENT"
+	sysrq_u_requested="$CLASS_SYSRQ_U"
+	remount="$CLASS_REMOUNT"
+	marker="$CLASS_MARKER"
+	recovery="$CLASS_RECOVERY"
+	fsck_status="$CLASS_FSCK_STATUS"
+	event_to_remount="$CLASS_EVENT_TO_REMOUNT"
 
 	TRIAL_STATUS="$status"
 	TRIAL_EVENT="$event"
@@ -559,6 +571,22 @@ PY
 	printf 'A/A timing-difference threshold: 0.050000 s\n'
 }
 
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+	return 0
+fi
+
+trap 'terminate_qemu TERM' EXIT
+trap 'terminate_qemu INT; exit 130' INT
+trap 'terminate_qemu TERM; exit 143' TERM
+
+for required in "$POWERFAIL_IMAGE" "$KERNEL" "$BASE_DTB"; do
+	if [[ ! -f "$required" ]]; then
+		printf 'Required file not found: %s\n' "$required" >&2
+		exit 1
+	fi
+done
+
+mkdir -p "$LOG_DIR" "$WORK_ROOT"
 mode="${1:---integrity}"
 if [[ "$#" -gt 1 ]]; then
 	usage
