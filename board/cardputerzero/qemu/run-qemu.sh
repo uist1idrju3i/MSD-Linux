@@ -58,6 +58,34 @@ case "$QEMU_COPY_IMAGE" in
 		;;
 esac
 
+# The CM0 and Pi 3 DTBs give the PL011 to a Bluetooth serdev child, but QEMU
+# uses the PL011 as the console. hci_uart then holds the tty, swallows serial
+# input and makes every console open warn about tty->count. QEMU has no
+# Bluetooth chip, so disable the node in a copy of the DTB unless asked not to.
+case "${QEMU_DTB_BLUETOOTH:-0}" in
+	0)
+		fdtput="${OUTPUT_DIR:-${REPO_ROOT}/output}/host/bin/fdtput"
+		[ -x "$fdtput" ] || fdtput="$(command -v fdtput || true)"
+		if [ -z "$fdtput" ]; then
+			printf 'fdtput is required to disable Bluetooth in the QEMU DTB (set QEMU_DTB_BLUETOOTH=1 to keep it)\n' >&2
+			exit 1
+		fi
+		DTB_DIR="$(mktemp -d)"
+		# shellcheck disable=SC2064
+		trap "rm -rf '${WORK_DIR:-}' '${DTB_DIR}'" EXIT
+		cp "$DTB" "${DTB_DIR}/qemu.dtb"
+		"$fdtput" -t s "${DTB_DIR}/qemu.dtb" /soc/serial@7e201000/bluetooth status disabled
+		printf 'run-qemu: dtb bluetooth=disabled base_sha256=%s\n' \
+			"$(sha256sum -- "$DTB" | cut -d ' ' -f 1)" >&2
+		DTB="${DTB_DIR}/qemu.dtb"
+		;;
+	1) ;;
+	*)
+		printf 'QEMU_DTB_BLUETOOTH must be 0 or 1: %s\n' "$QEMU_DTB_BLUETOOTH" >&2
+		exit 2
+		;;
+esac
+
 append_args=(
 	"earlycon=pl011,mmio32,0x3f201000"
 	"console=ttyAMA1,115200"
