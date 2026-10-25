@@ -94,3 +94,27 @@
 | sysctl の hardening（Y1） | 起動、A/B、電源断が通った。`kernel.sysrq=32` で emergency remount は保たれる | 実機での確認 |
 | `panic=` の値 | `panic=0` は watchdog による reset、`panic=5` は kernel による再起動 | どちらの経路にするかの方針 |
 | ramoops の予約 | QEMU では reset のあとも記録が読めた | 実機での保持と、メモリ配置 |
+
+## 6. 保守項目の状態（2026-10-25）
+
+4 節の「保守と小さな修正」と 3 節の提案について、2026-10-25 に行ったことと、提案にとどめたことをまとめます。
+
+| 項目 | 状態 | 根拠と次の手順 |
+|---|---|---|
+| 提案 1（QEMU などの SHA-256） | [PR #95](https://github.com/uist1idrju3i/MSD-Linux/pull/95) | `run-qemu.sh` が、QEMU、Image、DTB、image の SHA-256 を先頭に出す |
+| 提案 3（電源断の判定のホストテスト） | [PR #97](https://github.com/uist1idrju3i/MSD-Linux/pull/97) | `classify_trial_logs` を足し、保存したログで 7 つの場合を試す |
+| 提案 2、4、5 | 未着手 | 提案 4 はスキルを変えるので、計画をお見せしてから進める |
+| check-pins の Trivy の誤検知 | [PR #93](https://github.com/uist1idrju3i/MSD-Linux/pull/93) | YAML の引用符を外してから比べる |
+| Go 1.27.3 | [PR #96](https://github.com/uist1idrju3i/MSD-Linux/pull/96) | 開発用イメージの actionlint の builder だけを上げる |
+| seedrng（#32） | [PR #94](https://github.com/uist1idrju3i/MSD-Linux/pull/94) | 同じ内容のファイルが両方にあるときだけ、古い側を消す。PPD を採るかどうかは別に決める |
+| カーネルの pin | 提案にとどめる | 固定している 2341883 は 6.18.57（2026-10-16）。`rpi-6.18.y` の先頭 aeadd6e は 6.18.58（2026-10-18）で、78 commit 先にある。`rpi-6.18.y` は raspberrypi/linux の既定ブランチのまま。上げるときは vendor-update の手順で変更履歴を読み、ビルド、test-boot、test-ab、電源断の試験を通す |
+| inittab の `remount,rw` | 提案にとどめる | 下に書く |
+| devcontainer | 計画をチャットで共有した | 計画はリポジトリに置かない |
+
+### 6.1 inittab の `remount,rw`
+
+- 行を足しているのは Buildroot です。`BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW` の既定は `y` で、defconfig はこの値を書いていません。`system/system.mk` は、`y` なら `/etc/inittab` の `mount -o remount,rw /` を有効にし、`n` ならコメントにします。
+- root は SquashFS です。dm-verity の実験（[2026-10-21-qemu-dm-verity.md](../experiments/2026-10-21-qemu-dm-verity.md)）では、通常の SquashFS root ではこの行は何も変えず、read-only の dm device では `-EACCES` で失敗しました。
+- `/var` の下は、`/var/lib` の中も含め、すべて `/tmp` か `/run` へのリンクです。どちらも fstab で tmpfs を mount します。root を書き込み可能にしなくても、`/var` に書けます。
+
+提案: defconfig に `# BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set` を足します。製品の起動の手順が変わるので、採るかどうかを決めていただいてから進めます。採る場合は、test-boot、test-ab、電源断の試験、起動時間（icount の 5 回）で前後を比べ、`docs/experiments/` に記録します。
