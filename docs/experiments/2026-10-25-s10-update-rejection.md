@@ -105,6 +105,7 @@ QEMU には Raspberry Pi の firmware が作る `/proc/device-tree/chosen/bootlo
 - 署名なし、別の鍵、改ざん、途中で切れた bundle は、ゲストの `msd-update` が書き込みの前に拒否する。非 active スロットと状態ファイルは変わらない（QEMU とホストで各 5 回）。
 - 同じ鍵で署名した bundle は、中身が古くても受け入れる。`manifest` にバージョンがなく、バージョンを比べる処理もないためである。署名済みの古い bundle を使えば、既知の不具合があるバージョンへ戻せる。対策（`manifest` に単調に増える番号を入れ、`/data` などに記録した番号と比べる）の採否は利用者が判断する。案は [power-and-updates.md の 7.8](../research/power-and-updates.md#78-bundle-の検証と巻き戻しs10) にある。
 - QEMU での結果であり、実機の microSD と firmware での結果ではない。
+- その後、#103 で番号の比較を入れた。同じ runner で取り直した結果は [S10 v2](2026-10-25-s10-version-check.md) にある。
 
 ## 未確認の点
 
