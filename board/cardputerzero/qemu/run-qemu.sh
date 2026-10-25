@@ -95,10 +95,10 @@ if [ "${QEMU_HASH_IMAGE:-1}" = 1 ]; then
 fi
 # Record what this run used so experiment logs carry their own provenance.
 {
-	printf 'msd-qemu: version=%s\n' "$("$QEMU" --version | head -n 1)"
-	printf 'msd-qemu: machine=%s memory=%s icount=%s\n' \
+	printf 'run-qemu: version=%s\n' "$("$QEMU" --version | head -n 1)"
+	printf 'run-qemu: machine=%s memory=%s icount=%s\n' \
 		"$QEMU_MACHINE" "$QEMU_MEMORY" "${QEMU_ICOUNT:-off}"
-	sha256sum -- "${provenance_files[@]}" | sed 's/^/msd-qemu: sha256 /'
+	sha256sum -- "${provenance_files[@]}" | sed 's/^/run-qemu: sha256 /'
 } >&2
 
 # Both Pi 3 DTBs map the PL011 to ttyAMA1; enable the QEMU watchdog model only on request.
