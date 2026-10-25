@@ -59,3 +59,35 @@ git の `hint: … default branch` と、security の `confdata.c` の warning �
 
 - 固定版の更新確認と `site-status` の定期実行の結果（次の月曜）。
 - ルールセット以外の GitHub の設定（classic branch protection、Pages の詳細）は、権限がなく読めていません。
+
+## 8. 2026-10-25 の追加点検
+
+2026-10-20 以降の run を読み直しました。
+
+### 8.1 対象と方法
+
+- 公開 API で、2026-10-20 14:36 UTC から 2026-10-25 09:10 UTC までの run 300 件を取りました。内訳は success 284 件、failure 8 件、cancelled 8 件です。failure の run は、job ログをすべて読みました。
+- Issue は #59 だけで、まだ開いています。最終更新は 2026-10-21 23:49 UTC です。
+- `pins-check`（固定版の更新確認）と `security` の最後の run は、どちらも 2026-10-19 の定期実行です。次の定期実行は 2026-10-26 です。`site-status` は一度も動いていません。
+
+### 8.2 見つかったこと
+
+| # | 見つかったこと | 根拠 | 改善案 |
+|---|---|---|---|
+| 1 | QEMU の watchdog の PR（S11）で、`0003-hw-misc-bcm2835_powermgt-add-watchdog-timer.patch` を当てられなかった（`2 out of 8 hunks FAILED`）。開発用イメージを作れなかったため、必須チェックの `lint`、`zizmor`、`MSD tests in development image`、`build` の 4 つが同じ理由で失敗した。どの job も、開発用イメージを手元で作り直していた（`ensure local-build`） | run 39641440561、39641440481、39641441138 | `docker/qemu-patches/` を変えたときだけ動く短い job を足し、QEMU の tarball に `patch --dry-run` を当てる。失敗したら、ほかの job より先に原因を示せる |
+| 2 | 同じ run で、`build` の `Show ccache statistics` が `Unable to find image 'msd-dev:local'` で失敗した。`if: always()` なので、イメージがないときも動く | run 39641440481 の build job | `if:` に、開発用イメージの準備が成功したことを条件として加える。本当の原因（パッチ）が埋もれにくくなる |
+| 3 | `agent-docs` の失敗 4 件は、どれもマージの前に文書の不備を止めたものだった。内訳は、VM のパスが 2 件、実験の一覧に載っていない記録が 1 件、追跡していないファイルへのリンクが 1 件 | run 39699188533、39699030891、39539945796、39525236708 | 検査は意図どおり動いている。必須チェックではないので、5 節の提案どおり必須に加えると、見落としてマージする余地がなくなる |
+| 4 | `Lint` の失敗（run 39520933606）は、`build.yml` の jq 式に対する ShellCheck SC2016 だった | run 39520933606 | `# shellcheck disable=SC2016` で対処済み |
+| 5 | cancelled 8 件はすべて `Buildroot build and QEMU smoke test`。PR の 5 件は、`concurrency` の `cancel-in-progress` で、新しい push に置き換えられたものと見ている。main の push の 3 件（run 39561756635、39536931697、39536893420）は、`cancel-in-progress` が PR だけで有効になる設定なので、別の理由で止まったはず | `build.yml` の `concurrency` | main の 3 件の理由は確かめていない。手動で止めたのか、timeout なのかを run の詳細で確かめる |
+| 6 | 2026-10-21 に更新された Issue #59 の本文も、3 節の形のまま（検出 1,956 件、公開ゲート対象 1 件、先頭は LOW が並ぶ） | Issue #59 | 3 節の改善案のとおり |
+
+### 8.3 この点検の間に、手元で見つかったこと
+
+- `git worktree` で作った checkout では、`docker/msd-dev` の中の `git rev-parse HEAD` が submodule で失敗します。submodule の `.git` が checkout の外を指し、そこはコンテナーに mount されていないからです。そのため `M5STACK_CARDPUTERZERO_VERSION` が空になり、ビルドが止まります。通常の clone では起きません。worktree を使う手順を書くなら、この点を注記します。
+- yomiyasu の upstream の試験（2,352 件）は、Buildroot のビルドと同時に走らせると 1 件が失敗しました。その 1 件は、単独で再実行すると通りました。6 節の 2026-10-20 の観察（時間を測る試験が負荷の下で失敗する）と同じ傾向です。[PR #89](https://github.com/uist1idrju3i/MSD-Linux/pull/89) で v2.4.0 に上げると、6 節の「v2.1.0」は古くなります。
+- この点検に使った VM では、blueprint で入れるはずの ShellCheck が `PATH` にありませんでした。開発用イメージの中の ShellCheck（`docker/msd-dev shellcheck`）で代わりに検査しました。
+
+### 8.4 まだ確かめていないこと
+
+- 2026-10-26 の `pins-check`、`security`、`site-status` の定期実行の結果。
+- main の push で cancelled になった 3 件の理由。
