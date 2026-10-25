@@ -76,12 +76,16 @@ fi
 seedrng_init="$target_dir/etc/init.d/S01seedrng"
 seedrng_late_init="$target_dir/etc/init.d/S05seedrng"
 if [ -f "$seedrng_init" ]; then
-	if [ -e "$seedrng_late_init" ]; then
-		printf 'Both seedrng init paths exist: %s and %s\n' \
+	if [ ! -e "$seedrng_late_init" ]; then
+		mv "$seedrng_init" "$seedrng_late_init"
+	elif cmp -s "$seedrng_init" "$seedrng_late_init"; then
+		# Per-package directories merge the package's S01seedrng again on rebuilds.
+		rm "$seedrng_init"
+	else
+		printf 'Both seedrng init paths exist and differ: %s and %s\n' \
 			"$seedrng_init" "$seedrng_late_init" >&2
 		exit 1
 	fi
-	mv "$seedrng_init" "$seedrng_late_init"
 elif [ ! -f "$seedrng_late_init" ]; then
 	printf 'Buildroot seedrng init script is missing: %s\n' "$seedrng_init" >&2
 	exit 1
