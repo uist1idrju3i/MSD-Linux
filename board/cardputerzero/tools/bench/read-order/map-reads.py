@@ -55,14 +55,22 @@ def main():
     parser.add_argument("--trace", required=True)
     parser.add_argument("--image", required=True)
     parser.add_argument("--rootfs-map", required=True)
+    parser.add_argument("--rootfs-squashfs", required=True, help="checked byte for byte against the partition")
     parser.add_argument("--rootfs-partition", type=int, default=5)
     parser.add_argument("--csv", required=True)
+    parser.add_argument("--order-csv", required=True, help="first read of each name, in order")
     args = parser.parse_args()
 
     parts = partitions(args.image)
     starts = [p[1] for p in parts]
     root = next(p for p in parts if p[0] == args.rootfs_partition)
     rows, row_starts = load_map(args.rootfs_map)
+    with open(args.rootfs_squashfs, "rb") as f:
+        expected = f.read()
+    with open(args.image, "rb") as f:
+        f.seek(root[1])
+        if f.read(len(expected)) != expected:
+            raise SystemExit("rootfs partition does not match --rootfs-squashfs")
 
     runs = []
     with open(args.trace, errors="replace") as f:
@@ -106,6 +114,11 @@ def main():
                     if name not in seen:
                         seen.add(name)
                         first_order.append((seq, name))
+    with open(args.order_csv, "w", newline="") as out:
+        writer = csv.writer(out, lineterminator="\n")
+        writer.writerow(["rank", "seq", "name"])
+        for rank, (seq, name) in enumerate(first_order):
+            writer.writerow([rank, seq, name])
     print("bytes_by_partition=" + ";".join(f"p{k}:{v}" for k, v in sorted(totals.items())))
     print(f"read_runs={len(runs)} distinct_names={len(first_order)}")
 
