@@ -1,6 +1,6 @@
 # QEMU の console で出る `tty->count` の警告
 
-- 状態: 完了
+- 状態: 完了（2026-10-25 に、`run-qemu.sh` の既定で無効にしたあとの測り直しを追加）
 - 日付: 2026-10-25
 - 担当: Devin
 - 関連: [振り返り](../research/retrospective-2026-10.md) の残タスク「tty の警告」、[2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md)
@@ -81,7 +81,45 @@ stock のログからは、次のことを読み取りました。
 
 製品の cmdline は `console=tty1 console=serial0,115200` で、DTB の `serial0` は mini UART（`serial@7e215040`）です。製品では PL011 を Bluetooth が、mini UART を console が使うので、同じ衝突は起きない見込みです。ただし実機では試していません。
 
-改善案（未実装、判断待ち）: QEMU の試験だけで使う DTB で、PL011 の子の Bluetooth を `disabled` にする（`test-powerfail.sh` が DTB に overlay を当てるのと同じ方法）。この案では、QEMU の試験で `hci_uart` と btbcm の probe が行われなくなります。ただ、いまも QEMU には chip がないため、初期化は失敗しています。
+改善案: QEMU の試験だけで使う DTB で、PL011 の子の Bluetooth を `disabled` にする。この案では、QEMU の試験で `hci_uart` と btbcm の probe が行われなくなります。ただ、いまも QEMU には chip がないため、初期化は失敗しています。利用者がこの案を採ると決めたので、`run-qemu.sh` の既定にしました。結果は次の節にあります。
+
+## 2 回目の本番: `run-qemu.sh` の既定で無効にしたあと
+
+`run-qemu.sh` は、`QEMU_DTB_BLUETOOTH` が `0`（既定）のとき、DTB の複製を作り、`fdtput` で `/soc/serial@7e201000/bluetooth` の `status` を `disabled` にしたうえで、`run-qemu: dtb bluetooth=disabled base_sha256=<元の DTB>` をログに出します。`QEMU_DTB_BLUETOOTH=1` のときは、DTB をそのまま使います。変えるのは QEMU に渡す複製だけで、製品の DTB と SD カードの image の中身はそのままです。
+
+runner に 3 つ目の条件 `default` を足し、3 条件を 5 回ずつ測り直しました。
+
+- 変えた条件: stock は `QEMU_DTB_BLUETOOTH=1` で stock の DTB を使う。bt-off は、外で作った bt-off の DTB を `QEMU_DTB_BLUETOOTH=1` で渡す。default は、stock の DTB を既定のまま渡す（`run-qemu.sh` が無効にする）。
+- 採否の基準（本番の前に決めた）: default の 5 回すべてで、bt-off と同じ値（`warnings_total` が 0、`serdev_registered` が 0、`shell_probe` が yes）になること。また、`run-qemu.sh` が渡した DTB の SHA-256 が bt-off の DTB（`b3e809de…`）と一致すること。stock は 1 回目の本番と同じ値になること（計測器の陽性の対照）。
+- runner と `run-qemu.sh`: commit 23d9846（その後 main に rebase して 5a5de39 にしたが、この 2 ファイルの中身は同じ）。image、kernel、QEMU は 1 回目と同じ（`sdcard.img` `5610e093…`、`Image` `1c085405…`、`qemu-system-aarch64` `a1dfa3b6…`）。
+
+```sh
+QEMU_LOG_DIR=output/tty-default docker/msd-dev \
+  board/cardputerzero/tools/bench/tty-count/run-tty-count.sh \
+  output/tty-default/logs output/tty-default/tty-count.csv 5
+```
+
+生の値は [2026-10-25-qemu-tty-count-default.csv](2026-10-25-qemu-tty-count-default.csv) にあります。
+
+| 条件 | 回数 | `warnings_total` | `serdev_registered` | `hci_uart_loaded` | シェルの応答 | `valid` |
+|---|---|---|---|---|---|---|
+| stock | 5 | 7（5 回とも） | 1（5 回とも） | none（シェルに入れず読めない） | 5 回とも no | 5 回とも 0 |
+| bt-off | 5 | 0（5 回とも） | 0（5 回とも） | 0（5 回とも） | 5 回とも yes | 5 回とも 1 |
+| default | 5 | 0（5 回とも） | 0（5 回とも） | 0（5 回とも） | 5 回とも yes | 5 回とも 1 |
+
+- default の 5 本のログすべてに `run-qemu: dtb bluetooth=disabled base_sha256=e035db23…` が出た。stock と bt-off のログには出なかった。
+- default で QEMU に渡した DTB の SHA-256 は、5 回とも `b3e809de…` だった。外で作った bt-off の DTB と同じ binary になる。
+- stock の値は 1 回目の本番と同じだった。計測器は警告を数えられている。
+
+結果は基準を満たしました。`run-qemu.sh` を使う QEMU の試験では、既定で警告が出なくなり、シリアルからログインできます。
+
+5a5de39 で、既存の QEMU の試験も通しました。ready までの秒数は、カーネルのビルドと同時に走らせた値で、比較には使いません。
+
+| 試験 | 結果 | `tty->count` の警告 | `dtb bluetooth=disabled` の行 |
+|---|---|---|---|
+| `test-boot.sh` | 通った（ready 33 秒、root `/dev/mmcblk0p5`、`login:` あり） | 0 行 | 1 行 |
+| `test-ab.sh` | 通った（ready 47 秒、root `/dev/mmcblk0p6`、`login:` あり） | 0 行 | 1 行 |
+| `tests/qemu-log-check/run.sh` | 通った（serial log の陰性の試験） | - | - |
 
 ## 未確認の点
 
