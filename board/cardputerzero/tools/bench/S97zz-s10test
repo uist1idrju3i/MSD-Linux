@@ -1,0 +1,53 @@
+#!/bin/sh
+# Test-only init hook for S10 (update rejection). Installed only by
+# s10-update-rejection.sh into a disposable image copy.
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+grep -q 'msd.s10test=1' /proc/cmdline || exit 0
+
+DIR=/usr/share/msd-s10
+console()
+{
+	printf 'msd-s10: %s\n' "$*" >/dev/console
+}
+
+head_hash()
+{
+	dd if="$1" bs=1048576 count=2 2>/dev/null | sha256sum | cut -d' ' -f1
+}
+
+dt=/proc/device-tree/chosen/bootloader
+if [ -r "$dt/partition" ] && [ -r "$dt/tryboot" ]; then
+	console "dt=real partition=$(od -An -tx1 "$dt/partition" | tr -d ' \n') tryboot=$(od -An -tx1 "$dt/tryboot" | tr -d ' \n')"
+else
+	dt=/tmp/msd-s10-dt
+	mkdir -p "$dt"
+	printf '\000\000\000\002' >"$dt/partition"
+	printf '\000\000\000\000' >"$dt/tryboot"
+	export MSD_UPDATE_DT_DIR="$dt"
+	console "dt=substitute partition=2 tryboot=0"
+fi
+console "root=$(sed -n 's/.*root=\([^ ]*\).*/\1/p' /proc/cmdline) openssl=$(openssl version | tr ' ' '_')"
+
+for bundle in "$DIR"/T*.tar; do
+	name="$(basename "$bundle" .tar)"
+	rm -f /data/msd-update/installed
+	root_before="$(head_hash /dev/mmcblk0p6)"
+	boot_before="$(head_hash /dev/mmcblk0p3)"
+	msd-update install "$bundle" >/tmp/msd-s10.out 2>&1
+	status=$?
+	root_after="$(head_hash /dev/mmcblk0p6)"
+	boot_after="$(head_hash /dev/mmcblk0p3)"
+	root_changed=0
+	boot_changed=0
+	[ "$root_before" = "$root_after" ] || root_changed=1
+	[ "$boot_before" = "$boot_after" ] || boot_changed=1
+	state="$(cat /data/msd-update/installed 2>/dev/null || echo none)"
+	message="$(grep 'msd-update:' /tmp/msd-s10.out | tail -n 1 | tr ',' ';')"
+	console "case=$name exit=$status root_changed=$root_changed boot_changed=$boot_changed state=$state message=$message"
+done
+console finished

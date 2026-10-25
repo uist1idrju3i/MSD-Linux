@@ -56,7 +56,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 | 未着手 | — | — |
 | S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 | 未着手 | — | — |
 | S9 | power-fail shutdown | 実電源を切る前後の `powerfail_suo`、shutdown deadline、filesystem recovery を反復測定する。QEMU は GPIO/電源回路を代替しない。 | 未着手 | — | — |
-| S10 | update signature rejection | 署名不正・破損・古い bundle を host test と QEMU で与え、非 active slot と state が変化しないことを確認する。 | 未着手 | — | — |
+| S10 | update signature rejection | 署名不正・破損・古い bundle を host test と QEMU で与え、非 active slot と state が変化しないことを確認する。 | 完了（QEMU とホスト。実機未確認） | — | [2026-10-25-s10-update-rejection](../experiments/2026-10-25-s10-update-rejection.md) |
 | S11 | watchdog fallback | 起動中 hang、health failure、watchdog reset 後の slot selection と recovery を QEMU・実機で分けて確認する。 | commit `c01f6e7` の patch から build した QEMU で v3 の 6 mode × 5 回を実施し、判定対象 mode は全て基準を満たした。slot selection と実機は未確認。v2 は別 build の参考値として保持。 | — | [S11 watchdog 実験](../experiments/2026-10-20-s11-qemu-watchdog.md) |
 | S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 | 未着手 | — | — |
 | S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 | 未着手 | — | — |
@@ -119,7 +119,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 |---|---|---|
 | S11 watchdog | 給餌が止まったときの reset、reboot、poweroff | QEMU で完了（実機未確認） |
 | init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | PR #77 で修正済み |
-| S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | 中 |
+| S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | QEMU で完了（実機未確認）。同じ鍵で署名した古い bundle は受け入れる |
 | 温度 | QEMU に温度の値を足し、読み出しと記録の経路を確かめる | 小 |
 | S15 QEMU の版の比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
 | S12 SquashFS の圧縮方式と block size、EROFS | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | 中 |

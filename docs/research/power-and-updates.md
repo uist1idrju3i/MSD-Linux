@@ -123,6 +123,12 @@ Devin が 2026-10-18 に公開資料で確認しました。
 - 【一次・一部未確認】raspberrypi/linux の `rpi-6.12.y` は 6.12.113、`rpi-7.2.y` は 7.2.11 との情報があります。`rpi-6.12.y` の HEAD SHA は branches API で確認でき、6.12.113 は kernel.org の longterm 値です。https://www.kernel.org/releases.json<br>https://api.github.com/repos/raspberrypi/linux/branches/rpi-6.12.y
 - 【一次】Mender Client 6.1.0 は supported-releases で 2026-10 時点の Supported です。https://docs.mender.io/release-information/supported-releases
 
+### 7.8 bundle の検証と巻き戻し（S10）
+
+`msd-update install` は、bundle の 4 ファイルの構成、`manifest.sig` の Ed25519 署名、`manifest` の SHA-256 の順に確かめてから、非 active スロットに書きます。S10 で、署名なし、別の鍵、改ざん、途中で切れた bundle を QEMU のゲストとホストで 5 回ずつ与えました。どれも書き込みの前に拒否され、非 active スロットと状態ファイルは変わりませんでした（[記録](../experiments/2026-10-25-s10-update-rejection.md)）。
+
+一方、`manifest` にはバージョンや通し番号がなく、`msd-update` はバージョンを比べません。同じ鍵で署名した bundle なら、古いものでも受け入れます。署名済みの古い bundle を入手した人は、既知の不具合があるバージョンへ戻せます。対策の案（未実装・未測定）は、`manifest` に単調に増える番号を入れて署名し、`/data` に記録した番号より小さい bundle を拒否することです。`/data` を消すと記録も消えるので、強い保証には OTP などの書き換えられない領域が要ります。採否は利用者が判断します。
+
 ---
 
 ## 18. 失敗検知と自動復旧（A/B）

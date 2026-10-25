@@ -1,0 +1,361 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+qemu,T0-valid,1,exit,0,code,1,
+qemu,T0-valid,1,root_changed,1,bool,1,
+qemu,T0-valid,1,boot_changed,1,bool,1,
+qemu,T0-valid,1,state,3,partition,1,
+qemu,T1-unsigned,1,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,1,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,1,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,1,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T3-tampered-rootfs,1,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,1,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,1,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,1,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+qemu,T4-tampered-manifest,1,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,1,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T5-truncated-half,1,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,1,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,1,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,1,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T6-truncated-tail,1,exit,0,code,1,
+qemu,T6-truncated-tail,1,root_changed,0,bool,1,
+qemu,T6-truncated-tail,1,boot_changed,0,bool,1,
+qemu,T6-truncated-tail,1,state,3,partition,1,
+qemu,T6b-truncated-member,1,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,1,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,1,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,1,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T7-other-signed,1,exit,0,code,1,
+qemu,T7-other-signed,1,root_changed,1,bool,1,
+qemu,T7-other-signed,1,boot_changed,1,bool,1,
+qemu,T7-other-signed,1,state,3,partition,1,
+qemu,T0-valid,2,exit,0,code,1,
+qemu,T0-valid,2,root_changed,1,bool,1,
+qemu,T0-valid,2,boot_changed,1,bool,1,
+qemu,T0-valid,2,state,3,partition,1,
+qemu,T1-unsigned,2,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,2,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,2,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,2,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T3-tampered-rootfs,2,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,2,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,2,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,2,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+qemu,T4-tampered-manifest,2,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,2,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T5-truncated-half,2,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,2,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,2,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,2,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T6-truncated-tail,2,exit,0,code,1,
+qemu,T6-truncated-tail,2,root_changed,0,bool,1,
+qemu,T6-truncated-tail,2,boot_changed,0,bool,1,
+qemu,T6-truncated-tail,2,state,3,partition,1,
+qemu,T6b-truncated-member,2,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,2,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,2,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,2,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T7-other-signed,2,exit,0,code,1,
+qemu,T7-other-signed,2,root_changed,1,bool,1,
+qemu,T7-other-signed,2,boot_changed,1,bool,1,
+qemu,T7-other-signed,2,state,3,partition,1,
+qemu,T0-valid,3,exit,0,code,1,
+qemu,T0-valid,3,root_changed,1,bool,1,
+qemu,T0-valid,3,boot_changed,1,bool,1,
+qemu,T0-valid,3,state,3,partition,1,
+qemu,T1-unsigned,3,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,3,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,3,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,3,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T3-tampered-rootfs,3,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,3,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,3,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,3,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+qemu,T4-tampered-manifest,3,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,3,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T5-truncated-half,3,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,3,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,3,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,3,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T6-truncated-tail,3,exit,0,code,1,
+qemu,T6-truncated-tail,3,root_changed,0,bool,1,
+qemu,T6-truncated-tail,3,boot_changed,0,bool,1,
+qemu,T6-truncated-tail,3,state,3,partition,1,
+qemu,T6b-truncated-member,3,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,3,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,3,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,3,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T7-other-signed,3,exit,0,code,1,
+qemu,T7-other-signed,3,root_changed,1,bool,1,
+qemu,T7-other-signed,3,boot_changed,1,bool,1,
+qemu,T7-other-signed,3,state,3,partition,1,
+qemu,T0-valid,4,exit,0,code,1,
+qemu,T0-valid,4,root_changed,1,bool,1,
+qemu,T0-valid,4,boot_changed,1,bool,1,
+qemu,T0-valid,4,state,3,partition,1,
+qemu,T1-unsigned,4,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,4,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,4,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,4,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T3-tampered-rootfs,4,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,4,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,4,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,4,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+qemu,T4-tampered-manifest,4,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,4,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T5-truncated-half,4,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,4,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,4,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,4,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T6-truncated-tail,4,exit,0,code,1,
+qemu,T6-truncated-tail,4,root_changed,0,bool,1,
+qemu,T6-truncated-tail,4,boot_changed,0,bool,1,
+qemu,T6-truncated-tail,4,state,3,partition,1,
+qemu,T6b-truncated-member,4,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,4,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,4,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,4,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T7-other-signed,4,exit,0,code,1,
+qemu,T7-other-signed,4,root_changed,1,bool,1,
+qemu,T7-other-signed,4,boot_changed,1,bool,1,
+qemu,T7-other-signed,4,state,3,partition,1,
+qemu,T0-valid,5,exit,0,code,1,
+qemu,T0-valid,5,root_changed,1,bool,1,
+qemu,T0-valid,5,boot_changed,1,bool,1,
+qemu,T0-valid,5,state,3,partition,1,
+qemu,T1-unsigned,5,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T1-unsigned,5,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,5,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T2-wrongkey,5,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T3-tampered-rootfs,5,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,5,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,5,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+qemu,T3-tampered-rootfs,5,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+qemu,T4-tampered-manifest,5,exit,1,code,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+qemu,T4-tampered-manifest,5,state,none,partition,1,msd-update: bundle signature verification failed
+qemu,T5-truncated-half,5,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,5,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,5,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T5-truncated-half,5,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T6-truncated-tail,5,exit,0,code,1,
+qemu,T6-truncated-tail,5,root_changed,0,bool,1,
+qemu,T6-truncated-tail,5,boot_changed,0,bool,1,
+qemu,T6-truncated-tail,5,state,3,partition,1,
+qemu,T6b-truncated-member,5,exit,1,code,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,5,root_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,5,boot_changed,0,bool,1,msd-update: bundle must contain exactly four files
+qemu,T6b-truncated-member,5,state,none,partition,1,msd-update: bundle must contain exactly four files
+qemu,T7-other-signed,5,exit,0,code,1,
+qemu,T7-other-signed,5,root_changed,1,bool,1,
+qemu,T7-other-signed,5,boot_changed,1,bool,1,
+qemu,T7-other-signed,5,state,3,partition,1,
+host,T0-valid,1,exit,0,code,1,
+host,T0-valid,1,root_changed,1,bool,1,
+host,T0-valid,1,boot_changed,1,bool,1,
+host,T0-valid,1,state,3,partition,1,
+host,T1-unsigned,1,exit,1,code,1,msd-update: bundle signature verification failed
+host,T1-unsigned,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,1,state,none,partition,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,1,exit,1,code,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,1,state,none,partition,1,msd-update: bundle signature verification failed
+host,T3-tampered-rootfs,1,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,1,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,1,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,1,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+host,T4-tampered-manifest,1,exit,1,code,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,1,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,1,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,1,state,none,partition,1,msd-update: bundle signature verification failed
+host,T5-truncated-half,1,exit,1,code,1,msd-update: cannot list bundle
+host,T5-truncated-half,1,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,1,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,1,state,none,partition,1,msd-update: cannot list bundle
+host,T6-truncated-tail,1,exit,0,code,1,
+host,T6-truncated-tail,1,root_changed,1,bool,1,
+host,T6-truncated-tail,1,boot_changed,1,bool,1,
+host,T6-truncated-tail,1,state,3,partition,1,
+host,T6b-truncated-member,1,exit,1,code,1,msd-update: cannot list bundle
+host,T6b-truncated-member,1,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,1,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,1,state,none,partition,1,msd-update: cannot list bundle
+host,T7-other-signed,1,exit,0,code,1,
+host,T7-other-signed,1,root_changed,1,bool,1,
+host,T7-other-signed,1,boot_changed,1,bool,1,
+host,T7-other-signed,1,state,3,partition,1,
+host,T0-valid,2,exit,0,code,1,
+host,T0-valid,2,root_changed,1,bool,1,
+host,T0-valid,2,boot_changed,1,bool,1,
+host,T0-valid,2,state,3,partition,1,
+host,T1-unsigned,2,exit,1,code,1,msd-update: bundle signature verification failed
+host,T1-unsigned,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,2,state,none,partition,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,2,exit,1,code,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,2,state,none,partition,1,msd-update: bundle signature verification failed
+host,T3-tampered-rootfs,2,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,2,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,2,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,2,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+host,T4-tampered-manifest,2,exit,1,code,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,2,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,2,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,2,state,none,partition,1,msd-update: bundle signature verification failed
+host,T5-truncated-half,2,exit,1,code,1,msd-update: cannot list bundle
+host,T5-truncated-half,2,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,2,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,2,state,none,partition,1,msd-update: cannot list bundle
+host,T6-truncated-tail,2,exit,0,code,1,
+host,T6-truncated-tail,2,root_changed,1,bool,1,
+host,T6-truncated-tail,2,boot_changed,1,bool,1,
+host,T6-truncated-tail,2,state,3,partition,1,
+host,T6b-truncated-member,2,exit,1,code,1,msd-update: cannot list bundle
+host,T6b-truncated-member,2,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,2,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,2,state,none,partition,1,msd-update: cannot list bundle
+host,T7-other-signed,2,exit,0,code,1,
+host,T7-other-signed,2,root_changed,1,bool,1,
+host,T7-other-signed,2,boot_changed,1,bool,1,
+host,T7-other-signed,2,state,3,partition,1,
+host,T0-valid,3,exit,0,code,1,
+host,T0-valid,3,root_changed,1,bool,1,
+host,T0-valid,3,boot_changed,1,bool,1,
+host,T0-valid,3,state,3,partition,1,
+host,T1-unsigned,3,exit,1,code,1,msd-update: bundle signature verification failed
+host,T1-unsigned,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,3,state,none,partition,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,3,exit,1,code,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,3,state,none,partition,1,msd-update: bundle signature verification failed
+host,T3-tampered-rootfs,3,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,3,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,3,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,3,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+host,T4-tampered-manifest,3,exit,1,code,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,3,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,3,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,3,state,none,partition,1,msd-update: bundle signature verification failed
+host,T5-truncated-half,3,exit,1,code,1,msd-update: cannot list bundle
+host,T5-truncated-half,3,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,3,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,3,state,none,partition,1,msd-update: cannot list bundle
+host,T6-truncated-tail,3,exit,0,code,1,
+host,T6-truncated-tail,3,root_changed,1,bool,1,
+host,T6-truncated-tail,3,boot_changed,1,bool,1,
+host,T6-truncated-tail,3,state,3,partition,1,
+host,T6b-truncated-member,3,exit,1,code,1,msd-update: cannot list bundle
+host,T6b-truncated-member,3,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,3,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,3,state,none,partition,1,msd-update: cannot list bundle
+host,T7-other-signed,3,exit,0,code,1,
+host,T7-other-signed,3,root_changed,1,bool,1,
+host,T7-other-signed,3,boot_changed,1,bool,1,
+host,T7-other-signed,3,state,3,partition,1,
+host,T0-valid,4,exit,0,code,1,
+host,T0-valid,4,root_changed,1,bool,1,
+host,T0-valid,4,boot_changed,1,bool,1,
+host,T0-valid,4,state,3,partition,1,
+host,T1-unsigned,4,exit,1,code,1,msd-update: bundle signature verification failed
+host,T1-unsigned,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,4,state,none,partition,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,4,exit,1,code,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,4,state,none,partition,1,msd-update: bundle signature verification failed
+host,T3-tampered-rootfs,4,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,4,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,4,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,4,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+host,T4-tampered-manifest,4,exit,1,code,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,4,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,4,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,4,state,none,partition,1,msd-update: bundle signature verification failed
+host,T5-truncated-half,4,exit,1,code,1,msd-update: cannot list bundle
+host,T5-truncated-half,4,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,4,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,4,state,none,partition,1,msd-update: cannot list bundle
+host,T6-truncated-tail,4,exit,0,code,1,
+host,T6-truncated-tail,4,root_changed,1,bool,1,
+host,T6-truncated-tail,4,boot_changed,1,bool,1,
+host,T6-truncated-tail,4,state,3,partition,1,
+host,T6b-truncated-member,4,exit,1,code,1,msd-update: cannot list bundle
+host,T6b-truncated-member,4,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,4,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,4,state,none,partition,1,msd-update: cannot list bundle
+host,T7-other-signed,4,exit,0,code,1,
+host,T7-other-signed,4,root_changed,1,bool,1,
+host,T7-other-signed,4,boot_changed,1,bool,1,
+host,T7-other-signed,4,state,3,partition,1,
+host,T0-valid,5,exit,0,code,1,
+host,T0-valid,5,root_changed,1,bool,1,
+host,T0-valid,5,boot_changed,1,bool,1,
+host,T0-valid,5,state,3,partition,1,
+host,T1-unsigned,5,exit,1,code,1,msd-update: bundle signature verification failed
+host,T1-unsigned,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T1-unsigned,5,state,none,partition,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,5,exit,1,code,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T2-wrongkey,5,state,none,partition,1,msd-update: bundle signature verification failed
+host,T3-tampered-rootfs,5,exit,1,code,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,5,root_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,5,boot_changed,0,bool,1,msd-update: bundle SHA-256 verification failed
+host,T3-tampered-rootfs,5,state,none,partition,1,msd-update: bundle SHA-256 verification failed
+host,T4-tampered-manifest,5,exit,1,code,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,5,root_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,5,boot_changed,0,bool,1,msd-update: bundle signature verification failed
+host,T4-tampered-manifest,5,state,none,partition,1,msd-update: bundle signature verification failed
+host,T5-truncated-half,5,exit,1,code,1,msd-update: cannot list bundle
+host,T5-truncated-half,5,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,5,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T5-truncated-half,5,state,none,partition,1,msd-update: cannot list bundle
+host,T6-truncated-tail,5,exit,0,code,1,
+host,T6-truncated-tail,5,root_changed,1,bool,1,
+host,T6-truncated-tail,5,boot_changed,1,bool,1,
+host,T6-truncated-tail,5,state,3,partition,1,
+host,T6b-truncated-member,5,exit,1,code,1,msd-update: cannot list bundle
+host,T6b-truncated-member,5,root_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,5,boot_changed,0,bool,1,msd-update: cannot list bundle
+host,T6b-truncated-member,5,state,none,partition,1,msd-update: cannot list bundle
+host,T7-other-signed,5,exit,0,code,1,
+host,T7-other-signed,5,root_changed,1,bool,1,
+host,T7-other-signed,5,boot_changed,1,bool,1,
+host,T7-other-signed,5,state,3,partition,1,
