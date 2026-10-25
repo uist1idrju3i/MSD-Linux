@@ -76,7 +76,7 @@ quote	<exact-path>	<characters>	<reason>
 
 ## 固定版の整合性と更新確認
 
-`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーの版（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot の版、チェックアウト済み Buildroot における defconfig 選択中の Bootlin ツールチェーンです。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。Bootlin の新しい安定版は、最新の安定版 Buildroot ブランチが提供しているかも確認します。Buildroot のポイントリリースは、`.gitmodules` の系列に属する最新タグの commit と submodule の gitlink の比較です。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新します。「Buildroot 安定版待ち」は情報表示のみで Issue の対象にせず、ほかに対応が必要な行がなければ Issue を閉じます。
+`lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーのバージョン（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot のバージョン、チェックアウト済み Buildroot における defconfig 選択中の Bootlin ツールチェーンです。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。Bootlin の新しい安定版は、最新の安定版 Buildroot ブランチが提供しているかも確認します。Buildroot のポイントリリースは、`.gitmodules` の系列に属する最新タグの commit と submodule の gitlink の比較です。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新します。「Buildroot 安定版待ち」は情報表示のみで Issue の対象にせず、ほかに対応が必要な行がなければ Issue を閉じます。
 
 ## 公開サイトの状態確認
 

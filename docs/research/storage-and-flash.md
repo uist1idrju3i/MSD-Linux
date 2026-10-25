@@ -64,7 +64,7 @@ CI artifact の 64 MiB `/data` ext4 は `dumpe2fs` の `Block size: 1024` から
 
 CI log は Buildroot host tool の `output/host/sbin/mke2fs` と `output/host/etc/mke2fs.conf` の install を記録します。Buildroot の `vendor/buildroot/Makefile:487` にある `BR_PATH` は `$(HOST_DIR)/bin:$(HOST_DIR)/sbin:$(PATH)` という検索順です。genimage の呼び出しも `mke2fs 1.47.4` と記録されるため、`data.ext4` を作った実行ファイルは Buildroot host の `output/host/sbin/mke2fs` と判断できます。genimage 設定に `mke2fs-conf` の指定はありません。e2fsprogs 1.47.4 の `misc/mke2fs.c:1311` は既定 path を `ROOT_SYSCONFDIR "/mke2fs.conf"` とし、CI log の host tool configure/install path は `output/host/etc` です。`MKE2FS_CONFIG` 環境変数による override は CI log で記録されていないため、実ファイルの open 自体は未観測ですが、既定 path から Buildroot host の `output/host/etc/mke2fs.conf` が選ばれたと判断できます。【一次】【推測】[CI run 39204900529](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529)／[Buildroot Makefile](https://github.com/buildroot/buildroot/blob/2026.08/Makefile#L487)／[e2fsprogs v1.47.4 `mke2fs.c`](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.c)／[genimage v20 `image-ext2.c`](https://github.com/pengutronix/genimage/blob/v20/image-ext2.c)
 
-Buildroot host `output/host/etc/mke2fs.conf` は `[defaults] blocksize = 4096` と、`[fs_types] small` の `blocksize = 1024`、`inode_ratio = 4096` を持ちます。e2fsprogs 1.47.4 の `misc/mke2fs.c:1489-1493` は `fs_blocks_count < 512 * meg` の場合に `small` を選ぶ実装です。64 MiB image はこの条件に該当し、明示的な `-b` もないため、`small` の 1 KiB block size が適用されます。workflow の裸の `mke2fs -V` は `mke2fs 1.47.2 (1-Jan-2025)` を表示しますが、これは genimage が使った Buildroot host binary の版とは異なります。【一次】【実測】[e2fsprogs v1.47.4 `mke2fs.c`](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.c)／[e2fsprogs v1.47.4 `mke2fs.conf`](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.conf.in)／[CI run 39204900529](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529)
+Buildroot host `output/host/etc/mke2fs.conf` は `[defaults] blocksize = 4096` と、`[fs_types] small` の `blocksize = 1024`、`inode_ratio = 4096` を持ちます。e2fsprogs 1.47.4 の `misc/mke2fs.c:1489-1493` は `fs_blocks_count < 512 * meg` の場合に `small` を選ぶ実装です。64 MiB image はこの条件に該当し、明示的な `-b` もないため、`small` の 1 KiB block size が適用されます。workflow の裸の `mke2fs -V` は `mke2fs 1.47.2 (1-Jan-2025)` を表示しますが、これは genimage が使った Buildroot host binary のバージョンとは異なります。【一次】【実測】[e2fsprogs v1.47.4 `mke2fs.c`](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.c)／[e2fsprogs v1.47.4 `mke2fs.conf`](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/mke2fs.conf.in)／[CI run 39204900529](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529)
 
 `genimage.cfg` の `extraargs = "-b 4096"` と `S02msd-data` の fallback formatter は新規 filesystem の block size を 4 KiB に固定します。genimage v20 の source は `cfg_getstr(image->imagesec, "extraargs")` で項目を読み、`mke2fs` に渡す実装です。既存デバイスの 1 KiB filesystem は再作成も移行もせず、新しい mount option で使い続けます。【一次】[genimage v20 `image-ext2.c`](https://github.com/pengutronix/genimage/blob/v20/image-ext2.c#L67-L95)／[genimage v20 README](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[実行時 formatter](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)
 
@@ -88,7 +88,7 @@ SquashFS／EROFS の圧縮ブロックサイズと rootfs の比較は、既存�
 
 大きなクラスタやブロックは、割り当て情報の数や管理処理を減らし、連続した大きな読み書きで効率が上がる可能性があります。一方、小さいファイルほど末尾の未使用領域が増えます。SD カード内の書込み増幅や速度が必ず改善するとは言えず、効果はカード、負荷、ファイルシステム、実装に依存するため【推測】です。LWN が紹介した microSD 1 枚の測定では小さい書込みが遅く、整列した大きめの書込みが速い例がありますが、これはカード固有の二次情報であり、全カードの性質ではありません。【二次】[LWN flashbench 記事](https://lwn.net/Articles/428584/)
 
-### 既定値と機能の版
+### 既定値と機能のバージョン
 
 | 項目 | 版・既定値 | 確認した内容 |
 |---|---|---|
@@ -130,7 +130,7 @@ ext4 の使用量には 10,000 個の inode と directory、journal、bitmap 等
 
 ### 実機での比較手順
 
-1. 同じカードで 1 KiB／4 KiB ext4 と `inline_data`、必要なら既定／指定 cluster の FAT／exFAT を作り、formatter の版、mount option、block／cluster size、partition と FAT data-area の offset を記録します。
+1. 同じカードで 1 KiB／4 KiB ext4 と `inline_data`、必要なら既定／指定 cluster の FAT／exFAT を作り、formatter のバージョン、mount option、block／cluster size、partition と FAT data-area の offset を記録します。
 2. 同一の file tree で作成・読込み・更新・削除を反復し、使用量、fsck 時間、連続 I/O、4 KiB random I/O、同期書込みの throughput と latency を測ります。
 3. カード型番・容量・使用量・温度・電源条件を記録し、カードを替えて再測定します。`blockdev`／sysfs の論理・物理・最適 I/O サイズはカードが公開する値として記録し、内部 NAND の値とは扱いません。
 4. 速度差だけで結論づけず、rootfs 起動時の I/O と `/data` の代表 workload、e2fsck、電断後の整合性を別々に確認します。SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認のため、仕様上の AU 整列を前提にしません。【推測】【未確認】[実機測定計画](measurement-and-planning.md)
