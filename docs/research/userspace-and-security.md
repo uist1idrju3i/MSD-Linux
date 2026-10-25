@@ -65,6 +65,8 @@
 
 【推測】手順案：(1) 開発ビルドで fanotify（または strace）を使ってアクセス一覧を採取、(2) 初回アクセス順に優先度を付けた SORT-FILE を生成（起動に使うファイルほど高い優先度で先頭付近に置く想定）、(3) `mksquashfs -sort` で再パック、(4) blktrace で読込がシーケンシャルに近づいたか確認、(5) [起動時間の測定](measurement-and-planning.md)と比較します。`-sort` は優先度の高いものが先に書かれます（sort.c に基づく一次情報）。実イメージ上の物理配置と SD の読込改善は未測定です。
 
+2026-10-25 に、手順案の (1) にあたる観測を QEMU で行いました。fanotify と blktrace の代わりに、QEMU の SD の trace（`sdcard_read_block`）を使っています。起動で読む rootfs は 16.5 % で、data block を全部読むファイルは 13 個でした（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。(2) 以降は実施していません。
+
 #### (c) EROFS との比較(一次)
 | 観点 | EROFS | SquashFS | 出典URL |
 |---|---|---|---|
