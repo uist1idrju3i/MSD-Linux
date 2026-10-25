@@ -36,6 +36,8 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig があり、CI で Buildroot のフルビルドと、QEMU での A スロット・B スロットの起動を確かめています。QEMU の標準設定は `raspi3ap`（512 MiB、CM0 DTB）で、ASB パッチを含む開発用イメージ内の QEMU が必要です。1 GiB の `raspi3b` と Pi 3 DTB は `QEMU_MACHINE=raspi3b` で選べます。
 
+CI とは別に、QEMU で実験を重ねています。watchdog による再起動、QEMU の強制終了で模した電源断からの回復、`/data` の ext4 の設定、dm-verity による改ざんの検出、zram などです。条件、生の値、結論は [docs/experiments/](docs/experiments/) にあります。dm-verity と zram は QEMU で試しただけで、製品の設定には入れていません。
+
 QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できません。これらは実機で確かめます。CardputerZero の出荷は 2026 年 11 月に始まる予定です（M5Stack の Kickstarter の更新 13 による。[最新動向](docs/research/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。実機での起動はまだ試していません。
 
 ## 予定している構成
