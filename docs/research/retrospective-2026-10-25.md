@@ -42,6 +42,6 @@
 |---|---|
 | 採否の項目の Issue（S10 の downgrade の方針、QEMU 用 DTB、`remount,rw`） | 本文は用意したが、認証がなく作れていない |
 | RESEARCH.md の大きさ | 43 KB。全体の目次なので、これ以上分けるかは利用者が決める |
-| `remount,rw` を外した PR の commit での再試験 | #109 の commit（6.18.58 の上）で test-boot、test-ab、電源断の試験をやり直す |
+| `remount,rw` を外した PR の commit での再試験 | #109 の commit `a3bec00`（6.18.58 の上）をビルドし直し、inittab、test-boot、test-ab、電源断の smoke と integrity が通った。起動時間は測り直していない |
 | 実機 | 起動、A/B の切り替え、電源断、起動時の読み出し順（`mksquashfs -sort` の効果）は、どれも実機で試していない |
 | 前回からの残り | 温度、S1・S14、S13、ドライバーのモジュール化（[2026-10-22](retrospective-2026-10.md) の 4 節） |
