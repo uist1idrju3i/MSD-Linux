@@ -54,7 +54,7 @@
 | 温度 | QEMU に温度の property を足し、高温時の動作を試す |
 | S15 | QEMU 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数を正式に比べる |
 | S10 | 不正・破損・古い bundle で、非 active slot と状態が変わらないことを確かめる |
-| S12 | SquashFS の圧縮方式と block size、EROFS |
+| S12 | SquashFS の圧縮方式と block size、EROFS。2026-10-25 に圧縮方式と block size を [QEMU で測った](../experiments/2026-10-25-s12-squashfs-codec.md)。差があったのは xz だけで、EROFS は未着手 |
 | S1・S14 | カーネル option の本番 sweep（S6 tier B、`quiet`・`lpj=`・PREEMPT、カーネルの圧縮方式を含む） |
 | ドライバー | 任意機能のドライバーのモジュール化を icount で比べる |
 | S13 | ユーザーランドの `-O2`・`-Os`・LTO |
