@@ -25,7 +25,7 @@ class Image:
         self.data = data
         fields = struct.unpack_from("<IIIIIHHHHHHQQQQQQQQ", data, 0)
         (magic, self.inode_count, _mtime, self.block_size, self.fragment_count,
-         self.compression, _block_log, _flags, _id_count, major, minor,
+         self.compression, _block_log, _flags, self.id_count, major, minor,
          self.root_inode, self.bytes_used, self.id_table, self.xattr_table,
          self.inode_table, self.directory_table, self.fragment_table,
          self.export_table) = fields
@@ -130,6 +130,15 @@ def build(path):
     for i, (start, size) in enumerate(fragments):
         img.ranges.append((start, start + size, "fragment", ";".join(fragment_users.get(i, [])), f"fragment {i}"))
     img.ranges.append((0, 96, "superblock", "", ""))
+    tables = [("id-table", img.id_table, (img.id_count + 2047) // 2048 * 8)]
+    if img.export_table != unset:
+        tables.append(("export-table", img.export_table, (img.inode_count + 1023) // 1024 * 8))
+    if img.xattr_table != unset:
+        tables.append(("xattr-table", img.xattr_table, 16))
+    for kind, start, index_len in tables:
+        meta = img.table_pointer(start)
+        img.ranges.append((meta, start, kind, "", "metadata"))
+        img.ranges.append((start, start + index_len, kind, "", "index"))
     img.ranges.sort()
     return img
 
@@ -144,7 +153,19 @@ def main():
         writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["start", "end", "kind", "path", "detail"])
         writer.writerows(img.ranges)
-    print(f"ranges={len(img.ranges)} bytes_used={img.bytes_used}", file=sys.stderr)
+    gaps = overlaps = 0
+    covered = 0
+    for start, end, *_ in img.ranges:
+        if start > covered:
+            gaps += 1
+        elif start < covered:
+            overlaps += 1
+        covered = max(covered, end)
+    if covered != img.bytes_used:
+        gaps += 1
+    print(f"ranges={len(img.ranges)} bytes_used={img.bytes_used} covered={covered} gaps={gaps} overlaps={overlaps}", file=sys.stderr)
+    if gaps or overlaps:
+        sys.exit("map does not cover the image exactly once")
 
 
 if __name__ == "__main__":
