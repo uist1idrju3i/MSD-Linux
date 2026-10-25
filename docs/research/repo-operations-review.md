@@ -87,7 +87,19 @@ git の `hint: … default branch` と、security の `confdata.c` の warning �
 - yomiyasu の upstream の試験（2,352 件）は、Buildroot のビルドと同時に走らせると 1 件が失敗しました。その 1 件は、単独で再実行すると通りました。6 節の 2026-10-20 の観察（時間を測る試験が負荷の下で失敗する）と同じ傾向です。[PR #89](https://github.com/uist1idrju3i/MSD-Linux/pull/89) で v2.4.0 に上げると、6 節の「v2.1.0」は古くなります。
 - この点検に使った VM では、blueprint で入れるはずの ShellCheck が `PATH` にありませんでした。開発用イメージの中の ShellCheck（`docker/msd-dev shellcheck`）で代わりに検査しました。
 
-### 8.4 まだ確かめていないこと
+### 8.4 設定の再点検（DeepWiki、GitHub、AGENTS.md、Actions）
+
+4〜6 節の指摘が 2026-10-25 にも残っているかを、公開 API とリポジトリのファイルで確かめました。
+
+| 対象 | 2026-10-25 の状態 | 改善案 |
+|---|---|---|
+| DeepWiki | `.devin/wiki.json` の 2 か所が、まだ `raspi3b` での起動確認と書いている。ページは 21 件で、開発用コンテナー、QEMU のパッチ、実験の記録、文書の検査のページはまだない | 4 節の改善案のとおり。`docs/research/` は 33 本に増えたので、「調査記録の読み方」のページに、分割後に最初に読む文書（RESEARCH.md）を書く |
+| ルールセット | `pull_request` の `allowed_merge_methods` は merge、squash、rebase のまま。`required_linear_history` もあるので、merge commit を選ぶと失敗する。必須チェックは `build`、`changes`、`lint`、`zizmor`、`check`、`MSD tests in development image` の 6 つで、`agent-docs` は入っていない | 5 節の改善案のとおり（利用者の操作） |
+| 必須チェックの `build` | 文書だけの PR では skipped になる。skipped は必須チェックを満たすので、マージできる | 意図した動きとして、`docs/` か AGENTS.md に一行書いておく |
+| AGENTS.md | 8 節の確認コマンドは、通常の clone を前提にしている。`git worktree` の checkout では、`docker/msd-dev` の中で git が動かず、ビルドに使った commit の記録や `shellcheck-tracked.py` が失敗する | 8 節に「worktree ではなく clone を使う」と注記する。変更の前に計画をお見せする |
+| Actions | `actions/attest-sbom` は非推奨で、`actions/attest` に移るよう案内されている | `actions/attest` に移る。vendor-update の手順で、出力の形が同じかを確かめる |
+
+### 8.5 まだ確かめていないこと
 
 - 2026-10-26 の `pins-check`、`security`、`site-status` の定期実行の結果。
 - main の push で cancelled になった 3 件の理由。
