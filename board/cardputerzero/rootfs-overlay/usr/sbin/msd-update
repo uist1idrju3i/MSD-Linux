@@ -8,6 +8,7 @@ P1_DIR_OVERRIDE="${MSD_UPDATE_P1_DIR:-}"
 STATE_DIR="${MSD_UPDATE_STATE_DIR:-/data/msd-update}"
 PARTITION_PREFIX="${MSD_UPDATE_PARTITION_PREFIX:-/dev/mmcblk0p}"
 UPDATE_KEY="${MSD_UPDATE_KEY_PATH:-/etc/msd-update/update-key.pem}"
+VERSION_FILE="${MSD_UPDATE_VERSION_PATH:-/etc/msd-update/version}"
 WORK_DIR=
 P1_MOUNTED=0
 
@@ -35,6 +36,13 @@ read_be32() {
 		*[!0123456789abcdefABCDEF]*) die "invalid 32-bit value in $1" ;;
 	esac
 	printf '%d\n' "0x$hex"
+}
+
+is_version() {
+	case "$1" in
+		'' | *[!0123456789]* | 0?*) return 1 ;;
+	esac
+	[ "${#1}" -le 18 ]
 }
 
 slot_name() {
@@ -113,8 +121,16 @@ validate_bundle() {
 
 	root_hash=
 	boot_hash=
+	bundle_version=
 	manifest_entries=0
+	: > "$WORK_DIR/sums"
 	while IFS=' ' read -r hash name; do
+		if [ "$hash" = version ]; then
+			[ -z "$bundle_version" ] || die "duplicate version in manifest"
+			is_version "$name" || die "invalid version in manifest"
+			bundle_version="$name"
+			continue
+		fi
 		[ "${#hash}" -eq 64 ] || die "invalid hash in manifest"
 		case "$hash" in
 			*[!0123456789abcdefABCDEF]*) die "invalid hash in manifest" ;;
@@ -130,14 +146,30 @@ validate_bundle() {
 				;;
 			*) die "unexpected manifest entry: $name" ;;
 		esac
+		printf '%s  %s\n' "$hash" "$name" >> "$WORK_DIR/sums"
 		manifest_entries=$((manifest_entries + 1))
 	done < "$WORK_DIR/manifest"
 	[ "$manifest_entries" -eq 2 ] && [ -n "$root_hash" ] && [ -n "$boot_hash" ] ||
 		die "manifest must contain hashes for rootfs.squashfs and boot.vfat"
 
-	(cd "$WORK_DIR" && sha256sum -c manifest) || die "bundle SHA-256 verification failed"
+	(cd "$WORK_DIR" && sha256sum -c sums) || die "bundle SHA-256 verification failed"
 	[ -f "$WORK_DIR/rootfs.squashfs" ] && [ -f "$WORK_DIR/boot.vfat" ] ||
 		die "bundle images are missing"
+}
+
+check_version() {
+	[ -r "$VERSION_FILE" ] || die "cannot read the running version from $VERSION_FILE"
+	running_version="$(cat "$VERSION_FILE")"
+	is_version "$running_version" || die "invalid running version in $VERSION_FILE"
+	if [ -z "$bundle_version" ]; then
+		[ "$1" -eq 1 ] || die "bundle has no version; use --allow-downgrade to install it"
+		printf 'msd-update: installing a bundle without a version (--allow-downgrade)\n' >&2
+	elif [ "$bundle_version" -lt "$running_version" ]; then
+		[ "$1" -eq 1 ] ||
+			die "bundle version $bundle_version is older than running version $running_version; use --allow-downgrade to install it"
+		printf 'msd-update: downgrading from version %s to %s (--allow-downgrade)\n' \
+			"$running_version" "$bundle_version" >&2
+	fi
 }
 
 readback_hash() {
@@ -145,7 +177,12 @@ readback_hash() {
 }
 
 install_command() {
-	[ "$#" -eq 1 ] || die "usage: msd-update install <bundle.tar>"
+	allow_downgrade=0
+	if [ "${1:-}" = --allow-downgrade ]; then
+		allow_downgrade=1
+		shift
+	fi
+	[ "$#" -eq 1 ] || die "usage: msd-update install [--allow-downgrade] <bundle.tar>"
 	tryboot="$(read_be32 "$DT_DIR/tryboot")"
 	[ "$tryboot" -eq 0 ] || die "cannot install during a tryboot"
 	current_partition="$(read_be32 "$DT_DIR/partition")"
@@ -161,6 +198,7 @@ install_command() {
 	done
 
 	validate_bundle "$1"
+	check_version "$allow_downgrade"
 	root_bytes="$(wc -c < "$WORK_DIR/rootfs.squashfs" | tr -d '[:space:]')"
 	boot_bytes="$(wc -c < "$WORK_DIR/boot.vfat" | tr -d '[:space:]')"
 	[ "$root_bytes" -gt 0 ] && [ "$root_bytes" -le 268435456 ] || die "rootfs image exceeds the 256 MiB slot"
@@ -243,5 +281,5 @@ case "$command" in
 	install) install_command "$@" ;;
 	try) try_command "$@" ;;
 	commit) commit_command "$@" ;;
-	*) die "usage: msd-update {status|install <bundle.tar>|try|commit}" ;;
+	*) die "usage: msd-update {status|install [--allow-downgrade] <bundle.tar>|try|commit}" ;;
 esac
