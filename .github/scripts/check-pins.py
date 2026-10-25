@@ -171,7 +171,7 @@ def parse_latest_go_version(data: str) -> str:
 def workflow_env(root: Path, workflow: str, key: str) -> str:
     text = (root / workflow).read_text()
     match = re.search(rf"^\s+{re.escape(key)}:\s*([^\s#]+)", text, re.M)
-    return match.group(1) if match else ""
+    return match.group(1).strip("\"'") if match else ""
 
 
 def docker_arg(root: Path, name: str) -> str:

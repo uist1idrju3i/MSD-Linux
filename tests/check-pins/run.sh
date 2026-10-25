@@ -245,6 +245,13 @@ assert module.parse_buildroot_branch(
     '[submodule "vendor/buildroot"]\n path = vendor/buildroot\n url = x\n branch = 2026.08.x\n'
 ) == "2026.08.x"
 assert module.parse_release('{"tag_name":"v1.2.3"}') == "v1.2.3"
+quoted_env = fixture()
+(quoted_env / ".github/workflows/publish-dev-image.yml").write_text(
+    "env:\n  TRIVY_VERSION: \"0.76.0\"\n  OTHER: 'v1'\n  PLAIN: 2.0\n"
+)
+assert module.workflow_env(quoted_env, ".github/workflows/publish-dev-image.yml", "TRIVY_VERSION") == "0.76.0"
+assert module.workflow_env(quoted_env, ".github/workflows/publish-dev-image.yml", "OTHER") == "v1"
+assert module.workflow_env(quoted_env, ".github/workflows/publish-dev-image.yml", "PLAIN") == "2.0"
 assert module.parse_latest_go_version(
     json.dumps(
         [
