@@ -10,6 +10,10 @@
 | 試験が機能を動かしていない | QEMU の起動試験がモジュールを使わない範囲しか通らず、`modules.dep` が空のまま出荷されかけた | 対象の機能を実際に呼び出し、ログで確かめる |
 | エラーを読まない | post-build の `grep: invalid option` が出てもビルドは成功し、mdev のルールが重複していた | ログのエラーと警告を読む。結果の不変条件（重複がないことなど）を検査する |
 | 結果が PR 本文にしかない | S1 の試行結果が文書になかった | 結果は docs/experiments/ に書き、PR からリンクする |
+| 測った binary が commit と違う | S11 v2 で使った QEMU は、commit した patch からではなく、image の `COPY` の層にあった作り置きの binary だった。commit した patch は、そのままでは当たらなかった（[S11 の Amendment 1](../../../../docs/experiments/2026-10-20-s11-qemu-watchdog.md)） | binary の SHA-256 と、作った commit または image の層を記録し、commit から作り直した binary と照らし合わせる |
+| 条件の選択が届かない | S21 の再試行で、`docker/msd-dev` が `S21_MODES` などの環境変数を渡さず、runner が既定の P0 から始まった。runner は既存の run ID の上書きを拒否しなかった（[S21 の Amendment 1](../../../../docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.md)） | 条件の選択は CLI 引数で受け取る。既存のログや CSV があれば止める |
+| 判定の行がゲートより前に出る | 電源断の試験で、driver の `SysRq U` の行は `handle_sysrq('u')` より前に出るため、SysRq を無効にした負の対照でも出た。正しい結果が矛盾に見えた（[S21 の Amendment 4](../../../../docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.md)） | 判定に使う行がどこで出るかをソースで確かめ、負の対照で出ないことを見る |
+| 新しい行が既存の検査に当たる | `run-qemu.sh` の provenance の行を `msd-qemu:` で始めたところ、DTB のパス（`powerfail-raspi3ap.dtb`）の `fail` がログ検査の `msd-*` の規則に当たり、CI が失敗した（[PR #95](https://github.com/uist1idrju3i/MSD-Linux/pull/95)） | ログに新しく出す行は既存の検査に通し、検査の回帰試験に加える |
 | 根拠が個人環境に依存 | 調査文書が個人の VM 上にあるファイルだけを根拠にしていた | リポジトリ内のファイル、CI の成果物、公開 URL を示す |
 
 ## 一般的な規則
