@@ -103,3 +103,39 @@ git の `hint: … default branch` と、security の `confdata.c` の warning �
 
 - 2026-10-26 の `pins-check`、`security`、`site-status` の定期実行の結果。
 - main の push で cancelled になった 3 件の理由。
+
+## 9. devcontainer の調査（実装しない）
+
+2026-10-25 に、VS Code の Dev Containers と GitHub Codespaces で `docker/msd-dev` と同じ固定ツールを使う方法を調べました。利用者は、devcontainer は不要と判断しました。このため、`.devcontainer/` は作らず、調べた結果だけをここに残します。
+
+目的として考えたのは、エディターの拡張機能が使う ShellCheck や actionlint を、CI と同じバージョンにすることです。いまは `docker/msd-dev <command>` でコマンドを 1 つずつコンテナーに渡しており、エディターの拡張機能はホストに入れたものを使います。
+
+前提として、次のことを確かめました。
+
+- `docker/msd-dev.Dockerfile` の最終段は、digest で固定した `debian:trixie-slim` です。ユーザーは `builder`（uid 1000、gid 1000）、`WORKDIR` は `/work` です。
+- `docker/msd-dev` は、リポジトリを `/work` に mount し、`--cap-drop ALL`、`--security-opt no-new-privileges`、`HOME=/tmp/home` で動かします。イメージの tag は、入力ファイルのハッシュから作る `inputs-<16 桁>` です。
+- `git worktree` の checkout では、コンテナーの中で git が動きません（8.3 節）。devcontainer でも同じ制約があります。
+
+| 案 | 内容 | 長所 | 短所 |
+|---|---|---|---|
+| A | `devcontainer.json` の `build.dockerfile` に `docker/msd-dev.Dockerfile` を指定する | Dockerfile が 1 つのままで、バージョンの固定がそのまま効く | 初回に QEMU をソースから build するので時間がかかる（測っていない） |
+| B | `image` に `ghcr.io/uist1idrju3i/msd-dev@sha256:...` を書く | 起動が速い | Dockerfile を変えるたびに digest の更新が要り、check-pins の監視対象が増える |
+| C | Dev Container Features で ShellCheck などを入れる | 設定が短い | バージョンが CI と別になり、目的に合わない |
+
+採るなら案 A を考えていました。設定の要点は次のとおりです。
+
+- `remoteUser: builder` と `updateRemoteUserUID: true`
+- `workspaceFolder` は `/work`
+- `runArgs` は `docker/msd-dev` と同じ権限の制限
+- `postCreateCommand` は `git submodule update --init`
+- Buildroot の出力と download は named volume に置く
+
+検証では、次のことを確かめる予定でした。
+
+- amd64 と arm64 で `devcontainer build` が通るか
+- AGENTS.md の 8 節のコマンドが CI と同じ結果になるか
+- ツールのバージョンの表示が `docker/msd-dev` と一致するか
+
+どれも実行していません。
+
+不要と判断した理由は、`docker/msd-dev` で CI と同じツールをすでに使えることです。また、devcontainer を足すと、イメージを作る設定が `docker/msd-dev` と `devcontainer.json` の 2 か所になり、監視する固定値も増えます。エディターの検査のバージョンをそろえる必要が出たときは、この節の案 A から検討します。
