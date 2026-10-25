@@ -1,0 +1,13 @@
+variant,repeat,metric,value,unit,valid,note
+q1102insn,0,plugin_total_insns,2583621885,insn,1,plugin=libinsn.so
+q1102insn,1,plugin_total_insns,2571899296,insn,1,plugin=libinsn.so
+q1102insn,2,plugin_total_insns,2571567337,insn,1,plugin=libinsn.so
+q1102insn,3,plugin_total_insns,2568280876,insn,1,plugin=libinsn.so
+q1102insn,4,plugin_total_insns,2568504389,insn,1,plugin=libinsn.so
+q1102insn,5,plugin_total_insns,2574728931,insn,1,plugin=libinsn.so
+q1112insn,0,plugin_total_insns,2687347994,insn,1,plugin=libinsn.so
+q1112insn,1,plugin_total_insns,2694697012,insn,1,plugin=libinsn.so
+q1112insn,2,plugin_total_insns,2680906918,insn,1,plugin=libinsn.so
+q1112insn,3,plugin_total_insns,2694112120,insn,1,plugin=libinsn.so
+q1112insn,4,plugin_total_insns,2727170050,insn,1,plugin=libinsn.so
+q1112insn,5,plugin_total_insns,2703186824,insn,1,plugin=libinsn.so
