@@ -108,7 +108,7 @@
 | Go 1.27.3 | [PR #96](https://github.com/uist1idrju3i/MSD-Linux/pull/96) | 開発用イメージの actionlint の builder だけを上げる |
 | seedrng（#32） | [PR #94](https://github.com/uist1idrju3i/MSD-Linux/pull/94) | 同じ内容のファイルが両方にあるときだけ、古い側を消す。PPD を採るかどうかは別に決める |
 | カーネルの pin | 提案にとどめる | 固定している 2341883 は 6.18.57（2026-10-16）。`rpi-6.18.y` の先頭 aeadd6e は 6.18.58（2026-10-18）で、78 commit 先にある。`rpi-6.18.y` は raspberrypi/linux の既定ブランチのまま。上げるときは vendor-update の手順で変更履歴を読み、ビルド、test-boot、test-ab、電源断の試験を通す |
-| inittab の `remount,rw` | 提案にとどめる | 下に書く |
+| inittab の `remount,rw` | 外すことにした（2026-10-25 の利用者の判断） | 下に書く。前後の比較は [2026-10-25-rootfs-stay-ro.md](../experiments/2026-10-25-rootfs-stay-ro.md) |
 | devcontainer | 計画をチャットで共有した | 計画はリポジトリに置かない |
 
 ### 6.1 inittab の `remount,rw`
@@ -118,3 +118,5 @@
 - `/var` の下は、`/var/lib` の中も含め、すべて `/tmp` か `/run` へのリンクです。どちらも fstab で tmpfs を mount します。root を書き込み可能にしなくても、`/var` に書けます。
 
 提案: defconfig に `# BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set` を足します。製品の起動の手順が変わるので、採るかどうかを決めていただいてから進めます。採る場合は、test-boot、test-ab、電源断の試験、起動時間（icount の 5 回）で前後を比べ、`docs/experiments/` に記録します。
+
+結果: 利用者の判断で外しました。QEMU では、test-boot、test-ab、電源断の smoke と integrity、icount の起動時間（5 回）に差は見られませんでした。実機では試していません。記録は [2026-10-25-rootfs-stay-ro.md](../experiments/2026-10-25-rootfs-stay-ro.md) にあります。
