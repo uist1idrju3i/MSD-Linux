@@ -108,6 +108,10 @@ fi
 if [ -n "${QEMU_QMP_SOCKET:-}" ]; then
 	qemu_args+=(-qmp "unix:${QEMU_QMP_SOCKET},server=on,wait=off")
 fi
+if [ -n "${QEMU_EXTRA_ARGS:-}" ]; then
+	read -r -a qemu_extra_args <<< "$QEMU_EXTRA_ARGS"
+	qemu_args+=("${qemu_extra_args[@]}")
+fi
 
 case "${QEMU_HASH_IMAGE:-1}" in
 	0 | 1) ;;

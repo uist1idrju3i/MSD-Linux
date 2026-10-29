@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] hw/misc/bcm2835_thermal: Make the temperature settable
+
+The dummy sensor always reports ~25 C. Add a "temp" device property
+(in degrees Celsius, default 25) so tests can inject arbitrary
+temperatures, e.g. -global bcm2835-thermal.temp=90.
+
+---
+ hw/misc/bcm2835_thermal.c        | 21 +++++++++++++++++++--
+ include/hw/misc/bcm2835_thermal.h |  1 +
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/hw/misc/bcm2835_thermal.c b/hw/misc/bcm2835_thermal.c
+index 1111111..2222222 100644
+--- a/hw/misc/bcm2835_thermal.c
++++ b/hw/misc/bcm2835_thermal.c
+@@ -10,6 +10,7 @@
+ #include "qemu/osdep.h"
+ #include "qemu/log.h"
+ #include "qapi/error.h"
++#include "hw/core/qdev-properties.h"
+ #include "hw/misc/bcm2835_thermal.h"
+ #include "hw/core/registerfields.h"
+ #include "migration/vmstate.h"
+@@ -45,9 +46,9 @@ static uint64_t bcm2835_thermal_read(void *opaque, hwaddr addr, unsigned size)
+     case A_CTL:
+         val = s->ctl;
+         break;
+     case A_STAT:
+-        /* Temperature is constantly 25°C. */
+-        val = FIELD_DP32(bcm2835_thermal_temp2adc(25), STAT, VALID, true);
++        val = FIELD_DP32(bcm2835_thermal_temp2adc(s->temp_c),
++                         STAT, VALID, true);
+         break;
+     default:
+         /* MemoryRegionOps are aligned, so this can not happen. */
+@@ -107,10 +107,11 @@ static void bcm2835_thermal_realize(DeviceState *dev, Error **errp)
+ 
+ static const VMStateDescription bcm2835_thermal_vmstate = {
+     .name = "bcm2835_thermal",
+-    .version_id = 1,
++    .version_id = 2,
+     .minimum_version_id = 1,
+     .fields = (const VMStateField[]) {
+         VMSTATE_UINT32(ctl, Bcm2835ThermalState),
++        VMSTATE_INT32_V(temp_c, Bcm2835ThermalState, 2),
+         VMSTATE_END_OF_LIST()
+     }
+ };
+@@ -118,6 +120,10 @@ static const VMStateDescription bcm2835_thermal_vmstate = {
+     }
+ };
+ 
++static const Property bcm2835_thermal_props[] = {
++    DEFINE_PROP_INT32("temp", Bcm2835ThermalState, temp_c, 25),
++    DEFINE_PROP_END_OF_LIST(),
++};
++
+ static void bcm2835_thermal_class_init(ObjectClass *klass, const void *data)
+ {
+     DeviceClass *dc = DEVICE_CLASS(klass);
+@@ -125,6 +131,7 @@ static void bcm2835_thermal_class_init(ObjectClass *klass, const void *data)
+     dc->realize = bcm2835_thermal_realize;
+     device_class_set_legacy_reset(dc, bcm2835_thermal_reset);
+     dc->vmsd = &bcm2835_thermal_vmstate;
++    device_class_set_props(dc, bcm2835_thermal_props);
+ }
+ 
+ static const TypeInfo bcm2835_thermal_info = {
+     .name = TYPE_BCM2835_THERMAL,
+     .parent = TYPE_SYS_BUS_DEVICE,
+     .instance_size = sizeof(Bcm2835ThermalState),
+     .class_init = bcm2835_thermal_class_init,
+ };
+diff --git a/include/hw/misc/bcm2835_thermal.h b/include/hw/misc/bcm2835_thermal.h
+index 1111111..2222222 100644
+--- a/include/hw/misc/bcm2835_thermal.h
++++ b/include/hw/misc/bcm2835_thermal.h
+@@ -20,6 +20,7 @@ struct Bcm2835ThermalState {
+     /*< public >*/
+     MemoryRegion iomem;
+     uint32_t ctl;
++    int32_t temp_c;
+ };
+ 
+ #endif
