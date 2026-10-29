@@ -9,8 +9,9 @@ CANDIDATES="${REPO_ROOT}/board/cardputerzero/tools/kernel-candidates.txt"
 CSV="${SWEEP_CSV:-${OUTPUT_DIR}/kernel-sweep.csv}"
 ONLY=
 NO_QEMU=false
-SDCARD="${SWEEP_SDCARD:-${HOME}/work/sweep/artifacts/latest-main/images/sdcard.img}"
-DTB="${SWEEP_DTB:-${HOME}/work/sweep/artifacts/latest-main/images/bcm2710-rpi-3-b.dtb}"
+SDCARD="${SWEEP_SDCARD:-${OUTPUT_DIR}/images/sdcard.img}"
+DTB="${SWEEP_DTB:-${OUTPUT_DIR}/images/bcm2710-rpi-3-b.dtb}"
+SWEEP_LOG_DIR="${SWEEP_LOG_DIR:-${OUTPUT_DIR}/kernel-sweep-logs}"
 
 while [ "$#" -gt 0 ]; do
 	case "$1" in
@@ -136,7 +137,7 @@ while read -r symbol value category _reason || [ -n "${symbol:-}" ]; do
 				qemu_status=0
 				if QEMU_LOG_DIR="$logdir" OUTPUT_DIR="$OUTPUT_DIR" \
 					KERNEL_IMAGE="$IMAGE" DTB_IMAGE="$DTB" \
-					QEMU_ICOUNT=shift=0 QEMU_EXTRA_APPEND='initcall_debug printk.time=1 msd.sweep=1' \
+					QEMU_ICOUNT='shift=0,sleep=off' QEMU_EXTRA_APPEND='initcall_debug printk.time=1 msd.sweep=1' \
 					"${REPO_ROOT}/board/cardputerzero/qemu/test-boot.sh" "$SDCARD"; then
 					:
 				else
@@ -168,6 +169,8 @@ while read -r symbol value category _reason || [ -n "${symbol:-}" ]; do
 				fi
 				if [ "$qemu_status" -ne 0 ]; then
 					status=QEMU_FAILED
+					mkdir -p "$SWEEP_LOG_DIR"
+					cp -a "$logdir" "${SWEEP_LOG_DIR}/${symbol}" 2>/dev/null || true
 				fi
 			fi
 		fi
