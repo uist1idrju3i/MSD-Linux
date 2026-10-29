@@ -120,9 +120,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY --from=actionlint /go/bin/actionlint /usr/local/bin/actionlint
 COPY --from=qemu /opt/qemu /opt/qemu
 
+ARG QEMU_VERSION
+ARG QEMU_SHA256
 LABEL org.opencontainers.image.source="https://github.com/uist1idrju3i/MSD-Linux" \
       org.opencontainers.image.description="MSD/Linux development tools and test environment" \
-      org.opencontainers.image.licenses="GPL-2.0-or-later"
+      org.opencontainers.image.licenses="GPL-2.0-or-later" \
+      msd.qemu.version="${QEMU_VERSION}" \
+      msd.qemu.tarball.sha256="${QEMU_SHA256}"
 
 # Bootstrap CA roots from the default deb.debian.org source before using HTTPS snapshots.
 RUN apt-get -o Acquire::Retries=5 update \
@@ -144,6 +148,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
         ca-certificates \
         cmake \
         cpio \
+        cryptsetup \
         curl \
         debianutils \
         device-tree-compiler \

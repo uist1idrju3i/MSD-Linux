@@ -15,8 +15,8 @@ QEMU_GPIO_PATH="${QEMU_GPIO_PATH:-/machine/soc/peripherals/gpio}"
 CURRENT_PID=""
 COMPOSED_DTB=""
 TEST_TEMPLATE=""
-CSV_DIR="${REPO_ROOT}/docs/experiments"
-CSV_BASENAME='2026-10-20-qemu-powerfail-gpio6.csv'
+CSV_DIR="${CSV_DIR:-${REPO_ROOT}/output/qemu-powerfail}"
+CSV_BASENAME='qemu-powerfail-gpio6.csv'
 CSV_FILE="${CSV_FILE:-${CSV_DIR}/${CSV_BASENAME}}"
 
 case "$QEMU_MACHINE" in
@@ -321,6 +321,7 @@ csv_row() {
 	local note="${8//,/;}"
 
 	if [[ ! -e "$CSV_FILE" ]]; then
+		mkdir -p "$(dirname -- "$CSV_FILE")"
 		printf 'run_id,variant,repeat,metric,value,unit,valid,note\n' >"$CSV_FILE"
 	fi
 	printf '%s,%s,%s,%s,%s,%s,%s,%s\n' \
