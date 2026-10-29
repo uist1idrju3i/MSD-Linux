@@ -157,19 +157,19 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 6. S16 → S4・S5・S17
 7. 起動時のファイルアクセスを観測し、`mksquashfs -sort` と小項目（zram、dm-verity、BusyBox、Lynis）の記録を進める
 
-### 次の作業計画（2026-10-19 時点）
+### 次の作業計画（2026-10-29 時点）
 
-S2（#36）を出した時点での残りの作業と、その順番です。セッションをまたいでも抜けないように、ここを正とします。各項目は experiment-record スキルに従って記録し、結果が出たら上の表の「状態」を更新します。
+2026-10-29 のラウンドで済んだもの: 依存更新（Buildroot 2026.08.1、m5stack-dtoverlays、Trivy 0.76.1、Debian digest、fonttools 4.68.0）、cryptsetup（veritysetup）の dev イメージへの追加と QEMU の SHA-256 ラベル化（#116）、sweep ツール修正と icount `sleep=off`（#118 に同梱）、Lite 判定の QEMU 確認（#118）、QEMU 11.1.2 の icount 実時間 8 倍問題の原因絞り込み（#119）、温度模擬（#120）。カーネルは 6.18.58 のまま（依存側の新バージョン対応を確認してから別 PR で上げる方針）。
 
 | 順 | 作業 | 内容と完了の条件 |
 |---|---|---|
-| 1 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す（#36 の実験記録では、ツール類が展開後で約 3.1 MB）。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する（`dmesg` のセンサー ID、`media-ctl -p`、`v4l2-ctl --list-formats-ext`、`--stream-mmap` での raw の取得、PC での RAW10 の現像）。 |
-| 2 | S6 tier B | 下の「S6 tier B の分類」の 3 を、サイズと QEMU の命令数での起動コストを測ってから採否を決める。1 と 2 は根拠を確かめて S6 の記録に「対処しない理由」として残す。 |
-| 3 | S7 → S9 → S8 | S7 IR（M5 の Makefile は v3・v5 の両方で、受信に `gpio-ir,gpio_pin=13,gpio_pull=up`、送信に `gpio-ir-tx,gpio_pin=12` を追加する。v0.6.1 の回路図を画像で読み、GPIO12・13 の配線を確かめてから入れる）。S9 powerfail の正常 shutdown を設定で選べるようにし、QEMU で uevent を注入して試す。S8 IP2315 の driver を調べる。 |
-| 4 | S1・S14 本番 | 80 候補の総当たり。始める前に `kernel-variant-sweep.sh` を直し、QEMU が失敗した試行のログを残す（今は一時ディレクトリごと消える）。`NUMA=n` はログを残して測り直す。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
-| 5 | S10・S11 | 更新の署名が不正・破損・古い場合に拒否されることの試験と、watchdog による hang からの復帰の QEMU 試験。 |
-| 6 | S16 → S4・S5・S17 | `/etc` と `/data` を通常は読み取り専用にする設計を QEMU の電源断で確かめ、その上で FS（ext4・F2FS）と overlayfs の方式を比べる。ストレージの障害と速度の模擬（S17）を同じ枠組みで使う。 |
-| 7 | S12・S13・S15 | SquashFS の圧縮方式と block size、ユーザーランドの `-O2`・`-Os`・LTO、QEMU のバージョンの比較。 |
+| 1 | S1・S14 本番 | 80 候補の総当たりを修正済み `kernel-variant-sweep.sh` で実行中。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
+| 2 | S6 tier B、`quiet`・`lpj=`・PREEMPT、ドライバーのモジュール化 | sweep 完了後、同じ仕組みでサイズと icount での起動コストを測る。「S6 tier B の分類」の 3 は測って採否、1 と 2 は根拠を S6 の記録に残す。 |
+| 3 | EROFS・S13 | 全体の再ビルドが複数回必要。EROFS は S12 の延長、S13 は userland の `-O2`・`-Os`・LTO。 |
+| 4 | S16 → S4・S5・S17 | `/etc` と `/data` を通常は読み取り専用にする設計を QEMU の電源断で確かめ、その上で FS（ext4・F2FS）と overlayfs の方式を比べる。ストレージの障害と速度の模擬（S17）を同じ枠組みで使う。 |
+| 5 | QEMU 11.1.2 の icount 実時間問題 | 原因の特定には bisect（約 10 ビルド）か upstream への報告が必要（#119 の記録参照）。優先度は他の実験より低い。 |
+| 6 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する。 |
+| 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード。 |
 | 8 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
 
 保留: libcamera と VideoCore の ISP（カメラの tier B）は、VCHIQ と firmware の変更が必要で、起動時間と RAM への影響が大きいため、使う場面が決まるまで入れません。Raspberry Pi Zero 2 W は用意しません。CardputerZero が手に入らない場合に限り、代わりの実機として検討します。
