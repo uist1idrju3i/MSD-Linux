@@ -30,6 +30,7 @@ dtoverlay=cardputerzero-v5-overlay
 # Load the v5 battery gauge overlay.
 dtoverlay=bq27220_v5
 # Load the v5 IMU overlay.
+# Standard models have a BMI270+BMM150 IMU; its missing-sensor probe failure is harmless on Lite.
 dtoverlay=bmi270_bmm150_overlay
 # Standard models have an IMX219; its missing-sensor probe failure is harmless on Lite.
 camera_auto_detect=0
