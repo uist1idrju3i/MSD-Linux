@@ -47,11 +47,11 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 | ID | 対象 | 主な方法・成果物 | 状態 | PR | 記録 |
 |---|---|---|---|---|---|
-| S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツールのみ・本番未実施 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
+| S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツール修正済み・本番 sweep 実行中 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | S2 | camera | Unicam + IMX219 raw V4L2 path と utilities を実装し、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化。C154 V0.6.1 は CAM_3V3 LDO の EN を VSYS_5V に pull-up し、CM0 DTS は CAM_GPIO を GPIO40 に割り当てます。v5 の GPIO16 は PY32 reset 用で、追加 camera GPIO overlay は適用しません。【一次】Lite 版の probe failure は想定内ですが、実際の kernel message は未確認。統制 QEMU 再測定は相対中央値 +0.0510% で +1.0% 基準内のため tier A を採用。実機では sensor ID、topology、2-lane raw capture、Lite の probe-failure message を確認します。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
 | S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
 | S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
-| S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 未着手 | — | — |
+| S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 現行構成の QEMU 確認済み（xattr・full-root・A/B 差し替えは未検証） | #24 | `2026-10-29-s5-overlayfs`（#124 で追加） |
 | S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 | 完了 | #31; #28 | [2026-10-19-s06-kernel-hardening](../experiments/2026-10-19-s06-kernel-hardening.md); [2026-10-19-s06-modules-dep-xz](../experiments/2026-10-19-s06-modules-dep-xz.md)（#28） |
 | S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 | 未着手 | — | — |
 | S8 | charger IC | IC driver/DT、状態読み出し、充電状態・電圧表示を実機で検証する。 | 未着手 | — | — |
@@ -62,8 +62,8 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 | 未着手 | — | — |
 | S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 未着手 | — | — |
 | S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | QEMU 実験済み | 11.0.2 → 11.1.2 で `t_ready` +4.1 %（差あり）。build、machine、plugin は差なし | [2026-10-25-s15-qemu-versions](../experiments/2026-10-25-s15-qemu-versions.md) |
-| S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | 設計のみ | #24 | — |
-| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | 調査のみ | #24 | — |
+| S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | QEMU で writer 失敗様式・window primitive・電断差を確認（init 設計の実装は未着手） | #24 | `2026-10-29-s16-ro-mounts`（#122 で追加） |
+| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | QMP throttle の速度模擬のみ QEMU で確認（error 注入は dmsetup・kernel config が要る） | #24 | `2026-10-29-s17-qmp-throttle`（#125 で追加） |
 
 ### S2 実機カメラ確認チェックリスト
 
