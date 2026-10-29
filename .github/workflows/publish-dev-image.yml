@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  TRIVY_VERSION: "0.76.0"
-  TRIVY_DIGEST: "sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222"
+  TRIVY_VERSION: "0.76.1"
+  TRIVY_DIGEST: "sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c"
 
 jobs:
   plan:
