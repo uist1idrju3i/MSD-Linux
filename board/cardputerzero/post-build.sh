@@ -228,11 +228,18 @@ printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
 # SquashFS sort: Buildroot não expõe -sort do mksquashfs (COMP_OPTS é
 # calculado sem prompt), então um wrapper em $HOST_DIR injeta a ordem de
 # leitura medida em QEMU (docs/experiments/2026-10-25-qemu-boot-read-order).
-# A ordem se aplica a todas as imagens squashfs montadas nesta árvore.
-sort_file="$(dirname "$0")/squashfs-sort.txt"
+# O token @KVER@ é resolvido para a versão real do kernel a cada build.
+sort_src="$(dirname "$0")/squashfs-sort.txt"
+sort_file="$base_dir/build/squashfs-sort.resolved"
+krel_file="$base_dir/build/linux-custom/include/config/kernel.release"
+if [ -f "$sort_src" ] && [ -f "$krel_file" ]; then
+	sed "s|@KVER@|$(cat "$krel_file")|g" "$sort_src" > "$sort_file"
+fi
 mksq="${HOST_DIR:?HOST_DIR must be set}/bin/mksquashfs"
-if [ -f "$sort_file" ] && [ -f "$mksq" ] && [ ! -f "$mksq.orig" ]; then
-	mv "$mksq" "$mksq.orig"
+if [ -f "$sort_file" ] && [ -f "$mksq" ]; then
+	[ -f "$mksq.orig" ] || mv "$mksq" "$mksq.orig"
 	printf '#!/bin/sh\nexec "%s" "$@" -sort "%s"\n' "$mksq.orig" "$sort_file" > "$mksq"
 	chmod 755 "$mksq"
+elif [ -f "$mksq.orig" ]; then
+	mv "$mksq.orig" "$mksq"
 fi
