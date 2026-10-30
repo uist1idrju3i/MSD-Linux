@@ -124,3 +124,7 @@ QEMU の値は実機の値ではありません。
 ## ログ
 
 trace（1 回 483 KB ほど）と serial log はコミットしていません。手順のコマンドで作り直せます。SHA-256 は [2026-10-25-qemu-boot-read-order.sha256](2026-10-25-qemu-boot-read-order.sha256) にあります。
+
+## 製品採用（2026-10-30 追記）
+
+A ordem medida virou o arquivo `board/cardputerzero/squashfs-sort.txt` (prioridades = rank × 10), aplicado via `mksquashfs -sort`. O token `@KVER@` é resolvido no `post-build.sh` para a versão real do kernel a cada build. QEMU 回帰 na imagem resultante (kernel 6.18.58-v8 PREEMPT_RT + FTRACE off + squashfs ordenado, zstd -Xcompression-level 22): `MSD/Linux ready` 到達 e ext4 resize normal. Impacto no tempo de leitura da rootfs em SD real é efeito esperado da ordenação física — 実機では試していません.
