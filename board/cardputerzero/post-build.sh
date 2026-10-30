@@ -227,7 +227,7 @@ printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
 
 # SquashFS sort: Buildroot não expõe -sort do mksquashfs (COMP_OPTS é
 # calculado sem prompt), então um wrapper em $HOST_DIR injeta a ordem de
-# leitura medida em QEMU (docs/experiments/2026-10-25-qemu-boot-read-order).
+# leitura medida em QEMU (docs/experiments/2026-10-25-qemu-boot-read-order.md).
 # O token @KVER@ é resolvido para a versão real do kernel a cada build.
 sort_src="$(dirname "$0")/squashfs-sort.txt"
 sort_file="$base_dir/build/squashfs-sort.resolved"
