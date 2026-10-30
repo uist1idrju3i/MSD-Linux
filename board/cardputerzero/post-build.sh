@@ -224,3 +224,15 @@ fi
 printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
 
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"
+
+# SquashFS sort: Buildroot não expõe -sort do mksquashfs (COMP_OPTS é
+# calculado sem prompt), então um wrapper em $HOST_DIR injeta a ordem de
+# leitura medida em QEMU (docs/experiments/2026-10-25-qemu-boot-read-order).
+# A ordem se aplica a todas as imagens squashfs montadas nesta árvore.
+sort_file="$(dirname "$0")/squashfs-sort.txt"
+mksq="${HOST_DIR:?HOST_DIR must be set}/bin/mksquashfs"
+if [ -f "$sort_file" ] && [ -f "$mksq" ] && [ ! -f "$mksq.orig" ]; then
+	mv "$mksq" "$mksq.orig"
+	printf '#!/bin/sh\nexec "%s" "$@" -sort "%s"\n' "$mksq.orig" "$sort_file" > "$mksq"
+	chmod 755 "$mksq"
+fi
