@@ -50,7 +50,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S1 | Linux kernel option sweep | 一候補ずつ変更して baseline `.config` と依存差分、`Image` size、build log を保存する。 | ツール修正済み・本番 sweep 実行中 | #25 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | S2 | camera | Unicam + IMX219 raw V4L2 path と utilities を実装し、`camera_auto_detect=0` と `dtoverlay=imx219` を既定で有効化。C154 V0.6.1 は CAM_3V3 LDO の EN を VSYS_5V に pull-up し、CM0 DTS は CAM_GPIO を GPIO40 に割り当てます。v5 の GPIO16 は PY32 reset 用で、追加 camera GPIO overlay は適用しません。【一次】Lite 版の probe failure は想定内ですが、実際の kernel message は未確認。統制 QEMU 再測定は相対中央値 +0.0510% で +1.0% 基準内のため tier A を採用。実機では sensor ID、topology、2-lane raw capture、Lite の probe-failure message を確認します。 | 実装済み（実機未確認） | — | [2026-10-19-s02-camera](../experiments/2026-10-19-s02-camera.md) |
 | S3 | `/data` format/options | ext4 block size、`noatime`、`lazytime`、`data=`、mount flags の組合せを比較する。 | 完了 | #27 | [2026-10-19-s03-data-ext4-writes](../experiments/2026-10-19-s03-data-ext4-writes.md) |
-| S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | 未着手 | — | — |
+| S4 | ext4/F2FS/btrfs | 同じ data set と update/fsync workload で create, sync, mount, fsck, power-cut recovery、write volume を記録する。 | QEMU で mkfs・シーケンシャル読み書き・usable 容量を比較し ext4 維持を決定（fsck・電断回復は未検証） | — | [2026-10-30-s4-fs-compare](../experiments/2026-10-30-s4-fs-compare.md)（#128） |
 | S5 | OverlayFS mode | `/etc`-only、full-root、`/data` bind/symlink 案を比較し、xattr、whiteout、rename、A/B lower update を試す。 | 現行構成の QEMU 確認済み（xattr・full-root・A/B 差し替えは未検証） | #24 | `2026-10-29-s5-overlayfs`（#124 で追加） |
 | S6 | kernel hardening | `kernel-hardening-checker` を使い設定差を記録し、必要機能と boot regression を確認する。 | 完了 | #31; #28 | [2026-10-19-s06-kernel-hardening](../experiments/2026-10-19-s06-kernel-hardening.md); [2026-10-19-s06-modules-dep-xz](../experiments/2026-10-19-s06-modules-dep-xz.md)（#28） |
 | S7 | IR | IR driver/DT input/output、既存機能と競合する GPIO を調査し、実機送受信を確認する。 | 未着手 | — | — |
@@ -60,10 +60,10 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S11 | watchdog fallback | 起動中 hang、health failure、watchdog reset 後の slot selection と recovery を QEMU・実機で分けて確認する。 | commit `c01f6e7` の patch から build した QEMU で v3 の 6 mode × 5 回を実施し、判定対象 mode は全て基準を満たした。slot selection と実機は未確認。v2 は別 build の参考値として保持。 | — | [S11 watchdog 実験](../experiments/2026-10-20-s11-qemu-watchdog.md) |
 | S12 | SquashFS codec/block size | gzip/xz/zstd/lz4 と block size ごとに image size、decode throughput、SD I/O、RAM を記録する。 | QEMU とホストで完了（SD I/O と RAM は実機待ち）。icount の `t_ready` で差があったのは xz（+24 %、rootfs −6.1 %）だけで、既定の zstd・128 KiB は変えない | — | [2026-10-25-s12-squashfs-codec](../experiments/2026-10-25-s12-squashfs-codec.md) |
 | S13 | userland `-O2`/`-Os`/LTO | 同一 GCC/config で package/rootfs size、CPU workload、boot timing、build time を比較する。 | 未着手 | — | — |
-| S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 未着手 | — | — |
+| S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 本番 sweep 実行中（S1 と同一枠組み） | — | — |
 | S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | QEMU 実験済み | 11.0.2 → 11.1.2 で `t_ready` +4.1 %（差あり）。build、machine、plugin は差なし | [2026-10-25-s15-qemu-versions](../experiments/2026-10-25-s15-qemu-versions.md) |
 | S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | QEMU で writer 失敗様式・window primitive・電断差を確認（init 設計の実装は未着手） | #24 | `2026-10-29-s16-ro-mounts`（#122 で追加） |
-| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | QMP throttle の速度模擬のみ QEMU で確認（error 注入は dmsetup・kernel config が要る） | #24 | `2026-10-29-s17-qmp-throttle`（#125 で追加） |
+| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | QEMU で速度模擬（QMP throttle）と dm-flakey による error 注入（drop_writes・error_reads）を確認。dm-log-writes 再生と blkdebug は未実施 | #24 | [2026-10-29-s17-qmp-throttle](../experiments/2026-10-29-s17-qmp-throttle.md)（#125）; [2026-10-30-s17-error-injection](../experiments/2026-10-30-s17-error-injection.md)（#128） |
 
 ### S2 実機カメラ確認チェックリスト
 
@@ -109,6 +109,15 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](storage-and-flash.md)） |
 | Lynis による監査（QEMU のみ） | 製品イメージの監査を 3 回行い、結果が同じこと。指摘の分類。対応は sysctl 候補と S1・S14 で行う | [2026-10-21-qemu-lynis](../experiments/2026-10-21-qemu-lynis.md) |
 | S1（試運転だけ） | sweep ツールの動作。本番は未実施 | [2026-10-19-s01-kernel-sweep-trial](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
+| 温度 | bcm2835_thermal に `temp` プロパティを追加し任意温度を注入して読み出し経路を確認 | [2026-10-29-qemu-thermal-temp](../experiments/2026-10-29-qemu-thermal-temp.md) |
+| `quiet`・`lpj=` | icount での起動時間の差。`quiet` は実時間 −20%、`lpj=` は効果なし | [2026-10-29-quiet-lpj](../experiments/2026-10-29-quiet-lpj.md) |
+| PREEMPT モデル | `PREEMPT_NONE`・`PREEMPT`・`PREEMPT_RT` の Image と起動時間の比較 | [2026-10-30-preempt-models](../experiments/2026-10-30-preempt-models.md) |
+| 任意機能ドライバーのモジュール化 | `=m` 化で Image −3.6%。modalias 自動ロードを確認。現状は見送り | [2026-10-30-modularize-drivers](../experiments/2026-10-30-modularize-drivers.md) |
+| S16 `/etc`・`/data` の通常 RO | writer の失敗様式・maintenance window・電断差 | [2026-10-29-s16-ro-mounts](../experiments/2026-10-29-s16-ro-mounts.md) |
+| S4 ext4・F2FS・btrfs | mkfs・読み書き・usable 容量の比較 → ext4 維持 | [2026-10-30-s4-fs-compare](../experiments/2026-10-30-s4-fs-compare.md) |
+| S5 OverlayFS | write・whiteout・rename・lower 書き込みの確認 | [2026-10-29-s5-overlayfs](../experiments/2026-10-29-s5-overlayfs.md) |
+| S17 速度・エラー模擬 | QMP throttle と dm-flakey（drop_writes・error_reads） | [2026-10-29-s17-qmp-throttle](../experiments/2026-10-29-s17-qmp-throttle.md); [2026-10-30-s17-error-injection](../experiments/2026-10-30-s17-error-injection.md) |
+| EROFS rootfs | lz4hc では SquashFS+zstd より約 29% 増大・起動時間差なし → SquashFS 維持 | [2026-10-29-erofs-rootfs](../experiments/2026-10-29-erofs-rootfs.md) |
 | `/data` の `noexec`（QEMU のみ） | 起動・`/data` の準備・serial 検査が変わらないこと。直接実行は拒否されるが、`sh` 経由と `/etc` overlay 経由は防げないこと。アプリの互換性は実機で確認する | [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) |
 | zram（QEMU のみ） | zstd・lz4 とも `modprobe` から `swapon -p 100` まで動き、zswap は無効のまま。圧縮できないデータでは OOM になる。CPU の負荷は実機で確認する | [2026-10-21-qemu-zram](../experiments/2026-10-21-qemu-zram.md) |
 | S21 sysctl・powerfail・panic・ramoops（QEMU のみ） | 修正計測器で Y1 は実 remount 5/5、Y2 は 0/5。QEMUでは `kernel.sysrq=0` がremountを止め、32は保つ。実機 ramoops retention 等と製品採否は未確認 | [2026-10-21-s21-qemu-sysctl-ramoops](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
@@ -120,17 +129,12 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S11 watchdog | 給餌が止まったときの reset、reboot、poweroff | QEMU で完了（実機未確認） |
 | init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | PR #77 で修正済み |
 | S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | QEMU で完了（実機未確認）。同じ鍵で署名した古い bundle は受け入れる |
-| 温度 | QEMU に温度の値を足し、読み出しと記録の経路を確かめる | 小 |
-| S15 QEMU のバージョンの比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | 中 |
-| S12 SquashFS の圧縮方式と block size | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | QEMU で完了（[記録](../experiments/2026-10-25-s12-squashfs-codec.md)）。差があったのは xz だけ。EROFS は未着手 |
-| S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（ビルドだけで約 1 日の見込み） |
+| S15 QEMU のバージョンの比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | QEMU で完了（[記録](../experiments/2026-10-25-s15-qemu-versions.md)）。実時間の 8 倍問題は #119 で調査 |
+| S12 SquashFS の圧縮方式と block size | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | QEMU で完了（[記録](../experiments/2026-10-25-s12-squashfs-codec.md)）。差があったのは xz だけ。EROFS も完了（[記録](../experiments/2026-10-29-erofs-rootfs.md)） |
+| S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（実行中） |
 | S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 中（S1 と同じ仕組みで測る） |
-| `quiet`、`lpj=`、PREEMPT、printk | icount での起動時間の差 | 小（S1 と同じ仕組みで測る） |
-| 任意機能のドライバーをモジュールにする | K2 のあとに残る `dwc_otg_driver_init` などを遅らせたときの差。LCD とキーボードは実機で確かめる | 中 |
 | S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 大（全体の再ビルドが複数回） |
-| S16 `/etc` と `/data` を通常は読み取り専用にする | 各 writer が書き込み可能な期間だけで動くか | 中 |
-| S4 ext4・F2FS・btrfs、S5 OverlayFS の方式 | 同じ負荷での fsck、mount、SIGKILL 後の回復、書き込み量 | 大 |
-| S17 ストレージの障害と速度の模擬 | dm-log-writes の再生、dm-flakey、QEMU の blkdebug | 大 |
+| S17 の残り | dm-log-writes の再生、QEMU の blkdebug | 中（速度・dm-flakey エラー注入は完了） |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | 観測は QEMU で完了（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`-sort` の効果は実機で測る |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
 | BusyBox の applet を減らす、静的リンク | QEMU で静的リンクと 63 applet を比較した。製品用 applet の範囲は未決である（[記録](../experiments/2026-10-21-qemu-busybox.md)）。 | 中 |
@@ -159,14 +163,14 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 
 ### 次の作業計画（2026-10-29 時点）
 
-2026-10-29 のラウンドで済んだもの: 依存更新（Buildroot 2026.08.1、m5stack-dtoverlays、Trivy 0.76.1、Debian digest、fonttools 4.68.0）、cryptsetup（veritysetup）の dev イメージへの追加と QEMU の SHA-256 ラベル化（#116）、sweep ツール修正と icount `sleep=off`（#118 に同梱）、Lite 判定の QEMU 確認（#118）、QEMU 11.1.2 の icount 実時間 8 倍問題の原因絞り込み（#119）、温度模擬（#120）。カーネルは 6.18.58 のまま（依存側の新バージョン対応を確認してから別 PR で上げる方針）。
+2026-10-29/30 のラウンドで済んだもの: 依存更新（Buildroot 2026.08.1、m5stack-dtoverlays、Trivy 0.76.1、Debian digest、fonttools 4.68.0）、cryptsetup（veritysetup）の dev イメージへの追加と QEMU の SHA-256 ラベル化（#116）、sweep ツール修正と icount `sleep=off`（#118 に同梱）、Lite 判定の QEMU 確認（#118）、QEMU 11.1.2 の icount 実時間 8 倍問題の原因絞り込み（#119）、温度模擬（#120）、quiet/lpj（#123）、S5（#124）、S16（#122）、S17 速度模擬（#125）、EROFS（#126）、PREEMPT モデル比較（#127）、S4・S17 エラー注入（#128）、ドライバー・モジュール化（#129）。カーネルは 6.18.58 のまま（依存側の新バージョン対応を確認してから別 PR で上げる方針）。
 
 | 順 | 作業 | 内容と完了の条件 |
 |---|---|---|
 | 1 | S1・S14 本番 | 80 候補の総当たりを修正済み `kernel-variant-sweep.sh` で実行中。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
-| 2 | S6 tier B、`quiet`・`lpj=`・PREEMPT、ドライバーのモジュール化 | sweep 完了後、同じ仕組みでサイズと icount での起動コストを測る。「S6 tier B の分類」の 3 は測って採否、1 と 2 は根拠を S6 の記録に残す。 |
-| 3 | EROFS・S13 | 全体の再ビルドが複数回必要。EROFS は S12 の延長、S13 は userland の `-O2`・`-Os`・LTO。 |
-| 4 | S16 → S4・S5・S17 | `/etc` と `/data` を通常は読み取り専用にする設計を QEMU の電源断で確かめ、その上で FS（ext4・F2FS）と overlayfs の方式を比べる。ストレージの障害と速度の模擬（S17）を同じ枠組みで使う。 |
+| 2 | S6 tier B | sweep 完了後、同じ仕組みでサイズと icount での起動コストを測る。「S6 tier B の分類」の 3 は測って採否、1 と 2 は根拠を S6 の記録に残す。`quiet`・`lpj=`・PREEMPT・モジュール化は完了（#123、#127、#129）。 |
+| 3 | S13 | userland の `-O2`・`-Os`・LTO。全体の再ビルドが複数回必要。EROFS は完了（#126、SquashFS 維持）。 |
+| 4 | PREEMPT_RT の製品化 | `linux.fragment` に `CONFIG_PREEMPT_RT=y` を追加し QEMU 回帰を確認してから PR。実機でのレイテンシー評価は別途。 |
 | 5 | QEMU 11.1.2 の icount 実時間問題 | 原因の特定には bisect（約 10 ビルド）か upstream への報告が必要（#119 の記録参照）。優先度は他の実験より低い。 |
 | 6 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する。 |
 | 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード。 |
