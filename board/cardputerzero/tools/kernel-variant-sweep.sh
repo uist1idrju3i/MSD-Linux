@@ -135,8 +135,13 @@ while read -r symbol value category _reason || [ -n "${symbol:-}" ]; do
 				logdir="${tmp}/qemu"
 				mkdir -p "$logdir"
 				qemu_status=0
+				# sdcard 内のモジュールはベースラインカーネル由来のため、
+				# 差し替えた variant カーネルとは vermagic が必ず不一致になる。
+				# モジュールのロード検査は製品ビルドのゲートに任せ、sweep では
+				# QEMU_MODULE_TEST を空にして無効化する（SWEEP_MODULE_TEST で上書き可）。
 				if QEMU_LOG_DIR="$logdir" OUTPUT_DIR="$OUTPUT_DIR" \
 					KERNEL_IMAGE="$IMAGE" DTB_IMAGE="$DTB" \
+					QEMU_MODULE_TEST="${SWEEP_MODULE_TEST-}" \
 					QEMU_ICOUNT='shift=0,sleep=off' QEMU_EXTRA_APPEND='initcall_debug printk.time=1 msd.sweep=1' \
 					"${REPO_ROOT}/board/cardputerzero/qemu/test-boot.sh" "$SDCARD"; then
 					:
