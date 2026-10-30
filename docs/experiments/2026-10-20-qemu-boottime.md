@@ -191,3 +191,7 @@ D1 の目印の間隔です（通常起動 5 回の中央値）。目印は各�
 | `d1/icount/boot.csv` | `aa1477010c57b965d58dc2357dfc41e43200f5835306a607b8a5755b099af180` |
 | `k2/tcg/boot.csv` | `33cf693af12f7fb223829d89918c6389bcb0e3278e3a7ecf3c6874a481d3eabd` |
 | `k2/icount/boot.csv` | `fb52e0a120e37e673792e7e52fa1b8af0fc41c10cbe5c619b666e94e24092e72` |
+
+## 製品採用（2026-10-30 追記）
+
+K2 (`# CONFIG_FTRACE is not set`) foi adotado no `linux.fragment` — maior redução medida da série (initcall −37.9%). Perda aceita: tracing/ftrace não está disponível no kernel de produção; depuração usa build de desenvolvimento. QEMU 回帰 na imagem de produção resultante (6.18.58-v8, PREEMPT_RT + FTRACE off): `SMP PREEMPT_RT`, `MSD/Linux ready`, ext4 resize normal, Image 26.5→21.1 MB (-20%).
