@@ -505,3 +505,13 @@ CONFIG_VIDEO_IMX219=m
 # CONFIG_VIDEO_BCM2835 is not set
 # CONFIG_VIDEO_CODEC_BCM2835 is not set
 # CONFIG_VIDEO_ISP_BCM2835 is not set
+
+# S1/S14 sweep 採用: A53/BCM2837 で使用されない機能を OFF（2026-10-30-kernel-sweep-s1-s14 参照、gz 計 -244 KiB）
+# CONFIG_ARM64_USE_LSE_ATOMICS is not set
+# CONFIG_EROFS_FS is not set
+# CONFIG_ARCH_BRCMSTB is not set
+# CONFIG_ARM64_HW_AFDBM is not set
+# CONFIG_ARM64_BRBE is not set
+# CONFIG_ARM64_POE is not set
+# CONFIG_ARM64_TLB_RANGE is not set
+# CONFIG_NUMA_EMU is not set
