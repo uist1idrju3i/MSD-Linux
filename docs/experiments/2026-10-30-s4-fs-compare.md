@@ -32,7 +32,7 @@ QEMU 規模の計測では mkfs・シーケンシャル読み書きの差は小�
 
 - `mkfs.btrfs` は 128 MiB 未満を拒否（min 114,294,784 B ≒ 109 MiB）。96 MiB では `ERROR: '/dev/loop0' is too small`。
 - `mkfs.f2fs` の既定は既存 signature を拒否（exit 255）。`-f` が必要。
-- `CONFIG_MODULE_SIG_FORCE=y` の製品設定では未署名モジュールが拒否されるため、実験用ドライバは `=m` ではなく `=y` 組み込みにする必要がある（今回 dm-flakey・btrfs が該当）。
+- 製品設定 `CONFIG_MODULE_SIG_FORCE=y` の下では、モジュールはビルド時の署名鍵で検証される。別ビルドツリーのカーネルを起動すると rootfs 内モジュールは鍵不一致で拒否されるため、実験用ドライバは `=y` 組み込みにする方が安全。
 - カーネル側は `dm`・`dm-flakey`・`btrfs` を `=y` にしたが、ゲスト内 `/dev/mapper/control` が無いと dmsetup は失敗する（別途 dev node が必要、S17 記録参照）。
 - `docker run -i` の pipe stdin は QEMU の `mon:stdio` が tty 判定するため入力が届かない。`-serial unix:` ソケットでも同時接続は 1 クライアントのみで、双方向は同一接続を使う必要がある。交互入力より init.d フックの方が確実。
 

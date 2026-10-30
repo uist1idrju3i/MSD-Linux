@@ -25,7 +25,7 @@ S17 の error 注入側を `dm-flakey` で実施した。速度模擬は [2026-1
 
 ## 失敗した試行・注意点
 
-- `BLK_DEV_DM=m` では `/dev/mapper/control` が無く `dmsetup` は `open failed: No such device` で失敗する。`CONFIG_MODULE_SIG_FORCE=y` 環境では未署名モジュールを読めないため、実験用は `=y` 組み込みが必須（`BLK_DEV_DM=y`・`DM_FLAKEY=y`）。
+- `BLK_DEV_DM=m` の場合、カーネルが dm-mod を読めなければ `/dev/mapper/control` が作られず `dmsetup` は `open failed: No such device` で失敗する。`CONFIG_MODULE_SIG_FORCE=y` ではビルド時の署名鍵と一致しないモジュール（別ツリー由来のカーネル・rootfs 組み合わせ）が拒否されるため、実験用は `=y` 組み込みが確実（`BLK_DEV_DM=y`・`DM_FLAKEY=y`）。
 - flakey の up/down 窓が長いと高速な QEMU 書き込みが up 窓内に完了してエラーが出ない。確定的にエラーを出すには `up_time=0`（常時 down 窓）とする。
 - `dmsetup` の存在だけでは flakey は使えない。`CONFIG_DM_FLAKEY` がカーネルに必要（同様に `DM_DELAY` も追加済みだが今回は未使用）。
 
