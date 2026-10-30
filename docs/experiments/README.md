@@ -47,3 +47,4 @@
 | [2026-10-30-modularize-drivers](2026-10-30-modularize-drivers.md) | なし | 2026-10-30 | 完了（QEMU のみ・n=1） | F2FS・FAT 系・USB ストレージ・Bluetooth HCI を `=m` 化して Image を 860 KiB（-3.6%）縮小。QEMU は `ready` 到達、modalias 自動ロードで F2FS mount も正常。モジュールは rootfs へ移るため正味の節約は小さく、署名鍵ペア管理の複雑さを考えると現状は見送りが妥当。 |
 | [2026-10-30-s13-optimize](2026-10-30-s13-optimize.md) | S13 | 2026-10-30 | 完了（QEMU のみ） | ユーザーランド最適化を -O2/-Os/-O2+LTO で比較。squashfs は -Os で -22%、LTO で -17%。起動時間差はノイズ範囲。次の一手は -Os+LTO 併用。 |
 | [2026-10-30-kernel-sweep-s1-s14](2026-10-30-kernel-sweep-s1-s14.md) | S1・S14 | 2026-10-30 | 完了（QEMU のみ） | 80 候補の kernel config 総当たり。PASS 61・QEMU_FAILED 12・mismatch 5。採用候補は A53/BCM2837 非対応機能の OFF 8 件（gz 計 -244 KiB）。CC_OPTIMIZE_FOR_SIZE は -1.5 MB だが起動失敗で要調査。 |
+| [2026-10-30-s6-tierb-hardening](2026-10-30-s6-tierb-hardening.md) | S6 | 2026-10-30 | 完了（QEMU のみ） | hardening 24 候補を総当たり。起動時間への悪影響は 0 件、サイズ増は ZERO_CALL_USED_REGS（+1.19 MiB）のみ。QEMU_FAILED 4 件も誤検出（vermagic artifact）。採用候補 16 件・要検討 4 件に整理。 |
