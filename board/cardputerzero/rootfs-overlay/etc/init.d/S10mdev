@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Run the mdev daemon
+#
+# busybox 上流の S10mdev と同等だが、coldplug の modalias 走査を
+# /sys/devices に限定して起動を早くする（実験 U1: icount -3.09%、
+# TCG -3.05%、読み込むモジュールは同一、
+# docs/experiments/2026-10-20-qemu-boottime.md 参照）。
+
+DAEMON="mdev"
+PIDFILE="/var/run/$DAEMON.pid"
+
+start() {
+	printf 'Starting %s... ' "$DAEMON"
+	if start-stop-daemon -S -b -m -p "$PIDFILE" -x /sbin/mdev -- -df; then
+		echo "OK"
+	else
+		echo "ERROR"
+	fi
+
+	# coldplug modules（modalias は /sys/devices 配下にのみ存在する）
+	find /sys/devices -name modalias -print0 | \
+		xargs -0 sort -u | \
+		tr '\n' '\0' | \
+		xargs -0 modprobe -abq
+}
+
+stop() {
+	printf 'Stopping %s... ' "$DAEMON"
+	if start-stop-daemon -K -p "$PIDFILE"; then
+		echo "OK"
+	else
+		echo "ERROR"
+	fi
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start|stop|restart)
+	"$1"
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
