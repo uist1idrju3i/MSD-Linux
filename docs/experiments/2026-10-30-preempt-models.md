@@ -36,3 +36,7 @@
 - `make olddefconfig` に `ARCH=arm64` を付け忘れて作ったカーネルは起動即ハング（シリアル無出力）になった。カーネル `.config` の手動編集後は `make ARCH=arm64 olddefconfig` が必須。
 - `KERNEL_IMAGE` の既定は `output/images/Image` であり、別ビルドツリーのカーネルを試すときは環境変数で明示する。指定を忘れると output/ のカーネルが走り、測定対象が違うものになる。
 - QEMU 実行は `msd-dev:local` イメージで行う。`msd-qemu-test:local` には `qemu-system-aarch64` が PATH に無く（`/opt/qemu/bin` に存在）、run-qemu.sh が dtb 行の後に出力なく終了する。
+
+## 製品採用（2026-10-30 追記）
+
+PREEMPT_RT を製品構成に採用した（`linux.fragment` に `CONFIG_PREEMPT_RT=y` を追加）。採用時の QEMU 回帰: `SMP PREEMPT_RT` バナーで起動を確認し、`MSD/Linux ready` 到達・/data の ext4 拡張も正常（カーネル 6.18.58-v8、#9 SMP PREEMPT_RT、defconfig+fragment の製品ビルドで実測）。実機でのレイテンシー効果は未測定。
