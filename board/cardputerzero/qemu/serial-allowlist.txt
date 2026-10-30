@@ -1,5 +1,5 @@
 # QEMU lacks the Raspberry Pi firmware GPIO buffer; brcmvirt_gpio_probe warns while mapping that unavailable buffer.
-WARNING: CPU: [0-9]+ PID: [0-9]+ at arch/arm64/mm/ioremap\.c:27 __ioremap_prot\+0x70/0xc0
+WARNING: CPU: [0-9]+ PID: [0-9]+ at arch/arm64/mm/ioremap\.c:27 __ioremap_prot\+0x[0-9a-f]+/0x[0-9a-f]+
 # The GPIO6 power-fail smoke test intentionally emits the event and SysRq-U logs.
 (^|\] )msd-powerfail: power-fail event received
 (^|\] )SysRq U: emergency remount filesystems readonly

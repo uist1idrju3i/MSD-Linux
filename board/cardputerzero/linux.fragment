@@ -515,3 +515,13 @@ CONFIG_VIDEO_IMX219=m
 # CONFIG_ARM64_POE is not set
 # CONFIG_ARM64_TLB_RANGE is not set
 # CONFIG_NUMA_EMU is not set
+
+# S1/S14 sweep 採用（第2弾）: QEMU_FAILED は sweep 環境の誤検出（モジュール vermagic と allowlist オフセット固定）で、実際は全件 ready 到達
+# CONFIG_ARM64_SVE is not set
+# CONFIG_ARM64_SME is not set
+# CONFIG_ARM64_MTE is not set
+# CONFIG_ARM64_GCS is not set
+# CONFIG_ARM64_ERRATUM_4193714 is not set
+# CONFIG_NUMA is not set
+CONFIG_NODES_SHIFT=1
+CONFIG_CC_OPTIMIZE_FOR_SIZE=y
