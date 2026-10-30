@@ -12,17 +12,17 @@ RESEARCH.md から分割した節です。
 | 高速化 | [`start_cd.elf` / `fixup_cd.dat`](fastboot-ideas.md#高速化のアイデア一覧) | 小さいファームウェアの可能性 | 低 | GPU/ファームウェア互換 | QEMU: ファームウェア不可 / 実機: 起動 | P3 | 採用済み（実機未確認） |
 | 高速化 | [`boot_delay=0` / `disable_splash=1`](fastboot-ideas.md#高速化のアイデア一覧) | 不要な待機・表示を減らす | 低 | 診断情報を隠す可能性 | QEMU: Linux 部分のみ / 実機: 起動時間 | P2 | 採用済み（効果未実測） |
 | 高速化 | [未使用 dtoverlay の削除](fastboot-ideas.md#高速化のアイデア一覧) | 不要初期化探索を抑える | 中 | 必須機能喪失 | QEMU: DT / 実機: 全機能 | P2 | 未着手 |
-| 高速化 | [必須ドライバー組み込み、任意機能モジュール](fastboot-ideas.md#高速化のアイデア一覧) | 任意初期化探索を遅らせる | 中 | モジュール依存順・起動不能 | QEMU: 起動 / 実機: LCD・入力 | P1 | 未着手 |
-| 高速化 | [`quiet` / `lpj=` / `initcall_debug`](fastboot-ideas.md#高速化のアイデア一覧) | printk 負荷・遅い initcall の評価 | 低 | `lpj` 誤設定、測定付加負荷 | QEMU: log / 実機: 時間 | P2 | 一部採用（quiet のみ） |
+| 高速化 | [必須ドライバー組み込み、任意機能モジュール](fastboot-ideas.md#高速化のアイデア一覧) | 任意初期化探索を遅らせる | 中 | モジュール依存順・起動不能 | QEMU: 起動 / 実機: LCD・入力 | P1 | QEMU 測定済み（#129: Image -3.6%、ready 到達）。採否は積み上げ方針で再検討中 |
+| 高速化 | [`quiet` / `lpj=` / `initcall_debug`](fastboot-ideas.md#高速化のアイデア一覧) | printk 負荷・遅い initcall の評価 | 低 | `lpj` 誤設定、測定付加負荷 | QEMU: log / 実機: 時間 | P2 | quiet は採用済み（実時間 -20% を実測、#123）。lpj= は効果なしで不採用 |
 | 高速化 | [ST7789 DRM panel + fbcon](fastboot-ideas.md#高速化のアイデア一覧) | HDMI/GUI なしの CLI | 中 | console blank / 割当違い | QEMU: 不可 / 実機: LCD | P1 | 未着手 |
 | 高速化 | [initramfs を使わず `root=` を直接指定](fastboot-ideas.md#高速化のアイデア一覧) | 読込・展開・RAM を削減 | 中 | root ドライバー不足 | QEMU: 起動 / 実機: 起動時間 | P2 | 採用済み |
 | 高速化 | [`initramfs_async=`](fastboot-ideas.md#高速化のアイデア一覧) | 展開と他処理を重ねる可能性 | 低 | 効果が負荷条件依存 | QEMU: 比較 / 実機: 起動時間 | P3 | 対象外（initramfs なし） |
-| 軽量化 | [SquashFS と EROFS の比較](fastboot-ideas.md#高速化のアイデア一覧) | サイズ・読込・CPU の選択 | 中 | 圧縮・起動要件の差 | QEMU: 機能 / 実機: I/O・RAM | P2 | 未着手 |
+| 軽量化 | [SquashFS と EROFS の比較](fastboot-ideas.md#高速化のアイデア一覧) | サイズ・読込・CPU の選択 | 中 | 圧縮・起動要件の差 | QEMU: 機能 / 実機: I/O・RAM | P2 | QEMU 比較済み（#126）: lz4hc で +29% 増大・起動差なし → SquashFS 維持 |
 | 軽量化 | [BusyBox init + mdev](fastboot-ideas.md#高速化のアイデア一覧) | ユーザー空間/サービスを小さくする | 中 | udev ルール / systemd 依存 | QEMU: デバイス / 実機: 全機能 | P3 | 採用済み |
 | 高速化 | [読み取り専用 SquashFS と preload/readahead](fastboot-ideas.md#高速化のアイデア一覧) | 不要な先読みを避ける | 低 | 必要な読込まで遅れる | QEMU: I/O 観測 / 実機: 起動時間 | P3 | 一部採用（SquashFS rootfs、先読み未実施） |
 | 高速化 | [`mksquashfs -sort`](fastboot-ideas.md#高速化のアイデア一覧) | 起動ファイルの配置を最適化 | 低 | open 順と I/O 順が不一致 | QEMU: イメージ / 実機: SD 読込 | P3 | 未着手 |
-| 高速化 | [fanotify / strace / blktrace](fastboot-ideas.md#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 未着手 |
-| 軽量化 | [不要カーネル機能・DTB の削減](fastboot-ideas.md#高速化のアイデア一覧) | イメージと初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | 未着手 |
+| 高速化 | [fanotify / strace / blktrace](fastboot-ideas.md#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 起動時ファイルアクセス観測済み（rootfs の 16.5%、順序固定、2026-10-25-qemu-boot-read-order）。`-sort` の効果は実機で測る |
+| 軽量化 | [不要カーネル機能・DTB の削減](fastboot-ideas.md#高速化のアイデア一覧) | イメージと初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | S1・S14 sweep 実行中（約 80 候補） |
 | 高速化 | [Wi-Fi/camera/display 自動検出抑制](fastboot-ideas.md#高速化のアイデア一覧) | 未使用初期化探索を減らす可能性 | 中 | 全機能維持の柱と衝突するため遅延ロードで代替 | QEMU: 一部 / 実機: 対象機能 | P3 | 対象外（遅延ロードで代替） |
 | 高速化 | [`max_framebuffers` / ファームウェア KMS](fastboot-ideas.md#高速化のアイデア一覧) | HDMI 初期化を抑える可能性 | 低 | LCD/HDMI と競合 | QEMU: 限定 / 実機: 表示 | P3 | 未着手 |
 | 高速化 | [`core_freq` / `initial_turbo`](fastboot-ideas.md#高速化のアイデア一覧) | 起動ファームウェア読込時間を短縮する可能性 | 低 | 発熱・電力・UART clock | QEMU: 不可 / 実機: 時間・温度 | P3 | 未着手 |
@@ -33,7 +33,7 @@ RESEARCH.md から分割した節です。
 | 軽量化 | [libc / allocator 比較](fastboot-ideas.md#高速化のアイデア一覧) | 起動・RAM・サイズ最適化 | 高 | ABI/互換性・測定条件 | QEMU: 機能 / 実機: RAM・時間 | P3 | 未着手 |
 | 高速化 | [カーネル gzip / 非圧縮比較](fastboot-ideas.md#高速化のアイデア一覧) | 読込時間と展開時間を最適化 | 低 | ファームウェア対応形式 | QEMU: Linux / 実機: 起動経路 | P2 | 一部採用（gzip 方式の生成時比較、非圧縮実測なし） |
 | 高速化 | [GPU ファームウェアを省くブートローダー](fastboot-ideas.md#高速化のアイデア一覧) | ファームウェア段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
-| 高速化 | [PREEMPT / printk 比較](fastboot-ideas.md#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 未着手 |
+| 高速化 | [PREEMPT / printk 比較](fastboot-ideas.md#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 3 モデル比較済み（#127）。PREEMPT_RT 採用・製品化中 |
 | 信頼性 | [読み取り専用 SquashFS rootfs](power-and-updates.md) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
 | 信頼性 | [`align = 4M`](../../docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 採用（#19。`genimage.cfg` の `align = 4M` と、`check-image-layout.sh` の 8192 sector 境界の検査）。実機での性能と電断は未確認 |
 | 信頼性 | [FAT data-area offset の扱い](../../docs/research/storage-and-flash.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
@@ -80,7 +80,7 @@ RESEARCH.md から分割した節です。
 | 信頼性 | [ramoops の領域予約](../../docs/research/cpu-irq-and-sysctl.md#その他のチューニング要素) | panic の記録を再起動後に読む | DT／cmdline と試験 | RAM を少し使う | QEMU: 一部 / 実機 | P2 | QEMUでR1はrecord 5/5、R0はrecordなし5/5。実機 retention と `gpu_mem` との競合は未確認（[記録](../../docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.md)） |
 | 試験・保守 | [VPS 向け設定（BBR、fq、大きな TCP バッファー、Falco、Suricata、ufw）](../../docs/research/cpu-irq-and-sysctl.md#項目ごとの判断) | サーバー向けで、端末には不要 | - | RAM と保守の負担 | 不要 | - | 不採用 |
 | 高速化 | [SquashFS codec／block size の実機比較](../../docs/research/soc-memory-compression.md) | rootfs size と展開・読込時間を比較 | 複数 build と実機測定 | SD rate、cache、CPU clock に依存 | QEMU: 起動 / 実機: SD・CPU | P1 | image size 実測済み、速度未測定 |
-| 軽量化 | [kernel compressor / EROFS の削減比較](../../docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | 未着手 |
+| 軽量化 | [kernel compressor / EROFS の削減比較](../../docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | EROFS は QEMU 比較済み・不採用（#126）。kernel 圧縮方式の残り比較は S1 sweep に含む |
 | 高速化 | [Buildroot `-O2` / `-Os`、LTO / PGO](../../docs/research/soc-memory-compression.md) | userland size と CPU-bound workload を比較 | build time、profile 回収、再現性 | package 対応と stale profile | QEMU: 機能 / 実機: CPU・起動 | P2 | 未着手 |
 | 試験・保守 | [三段階 simulator 検証](simulation-plan.md#シミュレーターと検証基盤の比較) | QEMU 機能、TCG option 比較、実機 timing を分離 | hardware proxy と実機が必要 | QEMU / gem5 の時間を実機値と混同しない | QEMU・gem5・Zero 2 W・CM0 | P1 | 方針案 |
 | 開発・CI | [開発環境と CI](../../docs/research/dev-environment-and-ci.md) | ローカルと CI の toolchain をそろえ、検査・起動確認を再現する | 開発イメージと CI の保守 | CI 成果物との比較、速度改善は未確認 | QEMU: 機能確認 / CI: build・artifact | — | 開発イメージ採用、比較結果は予備的 |
