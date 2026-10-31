@@ -15,6 +15,19 @@ board/cardputerzero/tools/qemu-bisect/run-bisect.sh v11.1.2 v11.0.2
 - 判定は「`MSD/Linux ready` までの実時間が `BISECT_GOOD_LIMIT` 秒以内」（既定 45 秒）。超えた時点で QEMU を打ち切って bad とするため、bad 側のコミットも 1 分程度で判定できます。
 - `step.sh` の戻り値: 0=good、1=bad、125=skip（ビルド失敗・バイナリなし）。
 
+## 単一バージョンのビルド
+
+bisect ではなく特定バージョンの QEMU を 1 本だけビルドしたい場合（例: icount 計測を速い 11.0.2 で回す）:
+
+```sh
+board/cardputerzero/tools/qemu-bisect/build-qemu.sh v11.0.2
+# 成果物: output/qemu-bisect/build/qemu-system-aarch64
+QEMU_SYSTEM_AARCH64=output/qemu-bisect/build/qemu-system-aarch64 \
+  docker/msd-dev board/cardputerzero/qemu/test-boot.sh
+```
+
+パッチ適用の扱いは step.sh と同じです（0003 watchdog は 11.0.x 系では文脈がずれて適用できず省略になります）。
+
 ## 必要なもの
 
 - Docker（root 実行できる環境）
