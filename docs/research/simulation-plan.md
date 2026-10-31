@@ -129,11 +129,11 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S11 watchdog | 給餌が止まったときの reset、reboot、poweroff | QEMU で完了（実機未確認） |
 | init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | PR #77 で修正済み |
 | S10 更新の署名の拒否 | 不正・破損・古い bundle で、非 active slot と状態が変わらないこと | QEMU で完了（実機未確認）。同じ鍵で署名した古い bundle は受け入れる |
-| S15 QEMU のバージョンの比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | QEMU で完了（[記録](../experiments/2026-10-25-s15-qemu-versions.md)）。実時間の 8 倍問題は #119 で調査 |
+| S15 QEMU のバージョンの比較 | 11.0.2 と 11.1.2、`raspi3b` と `raspi3ap`、plugin の命令数 | QEMU で完了（[記録](../experiments/2026-10-25-s15-qemu-versions.md)）。実時間の 8 倍問題は bisect で `01b223f895`（A-profile WFE sleeping）と特定済み（[記録](../experiments/2026-10-31-qemu-1112-bisect.md)） |
 | S12 SquashFS の圧縮方式と block size | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | QEMU で完了（[記録](../experiments/2026-10-25-s12-squashfs-codec.md)）。差があったのは xz だけ。EROFS も完了（[記録](../experiments/2026-10-29-erofs-rootfs.md)） |
-| S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 大（実行中） |
-| S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 中（S1 と同じ仕組みで測る） |
-| S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 大（全体の再ビルドが複数回） |
+| S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 完了（[記録](../experiments/2026-10-30-kernel-sweep-s1-s14.md)、採用は #138・#139）。QEMU_FAILED 12 件は全件 sweep ツール側の誤検出（vermagic・allowlist）で、実機ビルドでは全件起動する |
+| S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 完了（[記録](../experiments/2026-10-30-s6-tierb-hardening.md)、15 件採用は #141。`BLK_DEV_WRITE_MOUNTED=n` は resize2fs を阻害するため撤回） |
+| S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 完了（[記録](../experiments/2026-10-30-s13-optimize.md)、-Os+LTO は #141 で採用） |
 | S17 の残り | dm-log-writes の再生、QEMU の blkdebug | 中（速度・dm-flakey エラー注入は完了） |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | 観測は QEMU で完了（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`-sort` の効果は実機で測る |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
@@ -141,7 +141,35 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 
 #### 実機でしか検証できない項目
 
-config.txt の設定（`boot_delay`、`start_cd.elf`、`gpu_mem`、`max_framebuffers`、`core_freq`、`initial_turbo`、`arm_boost`）、tryboot と A/B の slot 選択、firmware から OS への watchdog の引き継ぎ、CPU の governor と `maxcpus=1` と温度、I/O スケジューラーと `read_ahead_kb`、SD の速度と erase の単位、`get_throttled`、実際の電源断（S9 の残りと 200 回試験）、LCD の fbcon、カメラ（S2）、IR（S7）、充電 IC（S8）、CMA の量。
+##### 起動速度の確認（QEMU 採用済みの項目が実機で効くかの検証）
+
+| 項目 | 実機で確かめること | 採用・根拠 |
+|---|---|---|
+| `CC_OPTIMIZE_FOR_SIZE` | icount では ready 仮想時刻が 3.3s → 3.69s と微増。実機では命令密度の効果（SD 読み込み削減）が逆転する可能性がある。実機の起動時間で採否を再確認 | #139 で採用（gz −1.5 MB） |
+| `CONFIG_PREEMPT_RT` | 起動時間・スループットの回帰と、`cyclictest` でスケジューリングの最悪遅延を測る（RT の本来の効果は QEMU では評価不可） | #133 で採用（[比較記録](../experiments/2026-10-30-preempt-models.md)） |
+| `CONFIG_FTRACE=n` | icount −37.9 %（最大の削減）が実機でも再現するか | #135 で採用（[記録](../experiments/2026-10-20-qemu-boottime.md)） |
+| `quiet` | 実時間 −20 %（シリアル出力削減が主因）。実機の UART 速度・ログ量で効果を測る | 採用済み（[記録](../experiments/2026-10-29-quiet-lpj.md)） |
+| `mksquashfs -sort` + zstd レベル 22 | 起動時の読み順に並べた squashfs の、実機 SD 読み込み時間 | #134 で採用（[観測記録](../experiments/2026-10-25-qemu-boot-read-order.md)） |
+| userspace `-Os`+LTO、sweep 採用の kernel OFF（計 16 件+8 件） | squashfs −22.8 %・kernel gz の縮小が実機の起動時間に効くか | #138・#139・#141 で採用 |
+| 起動時間の内訳（initcall_debug） | `initcall_debug` の出力から、実機での時間配分を取り残りの削減余地を洗う | [QEMU の内訳](../experiments/2026-10-20-qemu-boottime.md) |
+| dwc_otg の deferred probe | QEMU では deferred probe が WARN を出す。実機で同じ経路を通るか、USB 初期化の遅延要因になるかを確認 | [bisect 記録の罠](../experiments/2026-10-31-qemu-1112-bisect.md) |
+| gzip 再圧縮 `kernel8.img` と `align=4M` | firmware が読み込む側の時間とパーティション境界効果 | 実装済み（#8・#19） |
+
+##### 動作・周辺機器の確認
+
+| 項目 | 実機で確かめること |
+|---|---|
+| tryboot と A/B の slot 選択 | autoboot.txt・tryboot の切り替え、更新後の B スロット起動 |
+| watchdog の引き継ぎ | firmware → OS の WDT 継続、給餌停止で reset（QEMU では 6 mode × 5 回済、[記録](../experiments/2026-10-20-s11-qemu-watchdog.md)） |
+| config.txt の設定 | `boot_delay`、`start_cd.elf`、`gpu_mem`、`max_framebuffers`、`core_freq`、`initial_turbo`、`arm_boost` |
+| CPU governor・`maxcpus=1`・温度 | 実温度・周波数と起動時間の関係。QEMU の `temp` プロパティは模擬のみ（[記録](../experiments/2026-10-29-qemu-thermal-temp.md)） |
+| I/O スケジューラー・`read_ahead_kb`・SD の速度と erase の単位 | SD の実測転送速度・消去単位との整合 |
+| `get_throttled` | 低電圧・熱制限の検出 |
+| 実際の電源断 | S9 の残りと 200 回試験（[GPIO6 経路は QEMU 済](../experiments/2026-10-20-qemu-powerfail-gpio6.md)） |
+| LCD の fbcon、カメラ（S2）、IR（S7）、充電 IC（S8） | 各周辺機器の動作 |
+| Lite 機判定 | BMI270/BMM150 を持たない Lite 機での `bmi270_bmm150_overlay` probe failure と msd-hwinfo の判定（QEMU では probe 失敗が無害であることを確認済み、[記録](../experiments/2026-10-29-qemu-lite-variants.md)） |
+| CMA の量 | graphics/camera 用途での確保量 |
+| 更新の署名検証・dm-verity・`/data` の拡張・ramoops | 実機での拒否・性能・復旧・retention（QEMU 済のものは記録参照） |
 
 #### 調査だけの項目と採用しない項目
 
@@ -167,11 +195,11 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 
 | 順 | 作業 | 内容と完了の条件 |
 |---|---|---|
-| 1 | S1・S14 本番 | 80 候補の総当たりを修正済み `kernel-variant-sweep.sh` で実行中。結果の文書の PR と、`linux.fragment` を削減する PR を分ける。S6 tier B の 5 は、ここで影響を測って決める。 |
-| 2 | S6 tier B | sweep 完了後、同じ仕組みでサイズと icount での起動コストを測る。「S6 tier B の分類」の 3 は測って採否、1 と 2 は根拠を S6 の記録に残す。`quiet`・`lpj=`・PREEMPT・モジュール化は完了（#123、#127、#129）。 |
-| 3 | S13 | userland の `-O2`・`-Os`・LTO。全体の再ビルドが複数回必要。EROFS は完了（#126、SquashFS 維持）。 |
-| 4 | PREEMPT_RT の製品化 | `linux.fragment` に `CONFIG_PREEMPT_RT=y` を追加し QEMU 回帰を確認してから PR。実機でのレイテンシー評価は別途。 |
-| 5 | QEMU 11.1.2 の icount 実時間問題 | 原因の特定には bisect（約 10 ビルド）か upstream への報告が必要（#119 の記録参照）。優先度は他の実験より低い。 |
+| 1 | S1・S14 本番 | 完了: 80 候補の記録 #137、採用 16 件は #138・#139。 |
+| 2 | S6 tier B | 完了: 24 候補の記録 #140、15 件採用は #141。`quiet`・`lpj=`・PREEMPT・モジュール化は完了（#123、#127、#129）。 |
+| 3 | S13 | 完了: #136 の記録、-Os+LTO 採用は #141。 |
+| 4 | PREEMPT_RT の製品化 | 完了: #133。実機でのレイテンシー評価は実機チェックリストへ。 |
+| 5 | QEMU 11.1.2 の icount 実時間問題 | 完了: bisect で `01b223f895`（A-profile WFE sleeping）と特定（#143）。ハーネスは `board/cardputerzero/tools/qemu-bisect/`。重い icount 計測は当面 11.0.2 を使い（`tools/qemu-bisect/build-qemu.sh` でビルド、pins-check で新版を検出したら遅延が解消したかを比較してから bump）。 |
 | 6 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する。 |
 | 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード。 |
 | 8 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |

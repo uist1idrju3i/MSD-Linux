@@ -9,6 +9,8 @@ CANDIDATES="${REPO_ROOT}/board/cardputerzero/tools/kernel-candidates.txt"
 CSV="${SWEEP_CSV:-${OUTPUT_DIR}/kernel-sweep.csv}"
 ONLY=
 NO_QEMU=false
+JOBS=${SWEEP_JOBS:-1}
+WORKER=${SWEEP_WORKER:-}
 SDCARD="${SWEEP_SDCARD:-${OUTPUT_DIR}/images/sdcard.img}"
 DTB="${SWEEP_DTB:-${OUTPUT_DIR}/images/bcm2710-rpi-3-b.dtb}"
 SWEEP_LOG_DIR="${SWEEP_LOG_DIR:-${OUTPUT_DIR}/kernel-sweep-logs}"
@@ -17,16 +19,68 @@ while [ "$#" -gt 0 ]; do
 	case "$1" in
 		--no-qemu) NO_QEMU=true; shift ;;
 		--only) ONLY="${2:?--only requires a symbol}"; shift 2 ;;
+		--jobs) JOBS="${2:?--jobs requires a count}"; shift 2 ;;
 		--candidates) CANDIDATES="${2:?--candidates requires a file}"; shift 2 ;;
 		*) printf 'Unknown option: %s\n' "$1" >&2; exit 2 ;;
 	esac
 done
+if ! [[ "$JOBS" =~ ^[0-9]+$ ]] || [ "$JOBS" -lt 1 ]; then
+	printf -- '--jobs must be a positive integer.\n' >&2
+	exit 2
+fi
 
 if [ ! -d "${OUTPUT_DIR}/build" ]; then
 	printf 'Run from a Buildroot output directory or set OUTPUT_DIR.\n' >&2
 	exit 2
 fi
 LINUX_DIR="${LINUX_DIR:-${OUTPUT_DIR}/build/linux-custom}"
+if [ ! -r "$CANDIDATES" ]; then
+	printf 'Candidate file must be readable: %s\n' "$CANDIDATES" >&2
+	exit 2
+fi
+
+# ドライバー: --jobs N>1 のときワーカーを N 本並列起動し、CSV を結合する。
+# 各ワーカーは linux-custom を複製した独立ツリーで動き（reflink 優先・なければ完全コピー）、
+# 候補は行番号の round-robin で分ける。共有 sdcard は QEMU_COPY_IMAGE=1 の既定により
+# 各起動で tmpdir に複製されるため並列 QEMU は衝突しない（QMP ソケットは未指定時なし）。
+if [ -z "$WORKER" ] && [ "$JOBS" -gt 1 ]; then
+	base_tree="$LINUX_DIR"
+	jobs_tmp="$(mktemp -d "${OUTPUT_DIR}/.kernel-sweep-jobs.XXXXXX")"
+	# 失敗時は jobs_tmp を残す（ワーカーログを調べるため）。成功時のみ掃除する。
+	trap 'if [ "$?" -eq 0 ]; then rm -rf "$jobs_tmp"; else printf "kept %s\n" "$jobs_tmp" >&2; fi' EXIT
+	printf 'kernel-variant-sweep: %d workers (trees under %s)\n' "$JOBS" "$jobs_tmp"
+	pids=()
+	for w in $(seq 0 "$((JOBS - 1))"); do
+		(
+			wtree="$jobs_tmp/linux-w$w"
+			cp -a --reflink=auto "$base_tree" "$wtree" 2>/dev/null || cp -a "$base_tree" "$wtree"
+			SWEEP_WORKER=$w SWEEP_JOBS_TOTAL=$JOBS \
+				LINUX_DIR="$wtree" \
+				SWEEP_CSV="$CSV.w$w" \
+				SWEEP_SDCARD="$SDCARD" SWEEP_DTB="$DTB" \
+				SWEEP_LOG_DIR="$SWEEP_LOG_DIR" \
+				"$0" --candidates "$CANDIDATES" \
+				${NO_QEMU:+--no-qemu}
+		) >"$jobs_tmp/worker$w.log" 2>&1 &
+		pids+=("$!")
+	done
+	fail=0
+	for p in "${pids[@]}"; do
+		if ! wait "$p"; then fail=1; fi
+	done
+	printf 'symbol,value,category,status,image_bytes,gz_bytes,delta_gz,collateral,qemu_ready_vtime,initcalls\n' > "$CSV"
+	for w in $(seq 0 "$((JOBS - 1))"); do
+		[ -f "$CSV.w$w" ] && tail -n +2 "$CSV.w$w" >> "$CSV"
+	done
+	if [ "$fail" -ne 0 ]; then
+		printf 'Some workers failed; logs in %s\n' "$jobs_tmp" >&2
+		exit 1
+	fi
+	rm -f "$CSV".w*
+	printf 'Sweep results: %s\n' "$CSV"
+	exit 0
+fi
+
 CONFIG="${LINUX_DIR}/.config"
 IMAGE="${LINUX_DIR}/arch/arm64/boot/Image"
 SCRIPTS_CONFIG="${LINUX_DIR}/scripts/config"
@@ -36,8 +90,8 @@ if [ ! -r "$CONFIG" ] || [ ! -x "$SCRIPTS_CONFIG" ] || [ ! -r "$IMAGE" ]; then
 	printf 'Linux build and .config are required in %s.\n' "$LINUX_DIR" >&2
 	exit 2
 fi
-if [ ! -r "$CANDIDATES" ] || [ ! -r "$KEEP" ]; then
-	printf 'Candidate and keep files must be readable.\n' >&2
+if [ ! -r "$KEEP" ]; then
+	printf 'Keep file must be readable.\n' >&2
 	exit 2
 fi
 if [ "$NO_QEMU" = false ] && { [ ! -r "$SDCARD" ] || [ ! -r "$DTB" ]; }; then
@@ -58,7 +112,7 @@ else
 		gzip -9 -c "$1" | wc -c
 	}
 fi
-	base_gz=$(compressed_size "$IMAGE")
+base_gz=$(compressed_size "$IMAGE")
 printf 'symbol,value,category,status,image_bytes,gz_bytes,delta_gz,collateral,qemu_ready_vtime,initcalls\n' > "$CSV"
 
 config_value() {
@@ -71,9 +125,17 @@ csv_field() {
 	printf '"%s"' "$value"
 }
 
+index=0
 while read -r symbol value category _reason || [ -n "${symbol:-}" ]; do
 	[ -n "${symbol:-}" ] || continue
 	[[ "$symbol" == \#* ]] && continue
+	if [ -n "${WORKER:-}" ]; then
+		if [ $((index % ${SWEEP_JOBS_TOTAL:-1})) -ne "$WORKER" ]; then
+			index=$((index + 1))
+			continue
+		fi
+		index=$((index + 1))
+	fi
 	if [ -n "$ONLY" ] && [ "$symbol" != "$ONLY" ]; then
 		continue
 	fi
