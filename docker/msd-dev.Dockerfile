@@ -1,5 +1,8 @@
 ARG ACTIONLINT_VERSION=1.7.12
 ARG DEBIAN_SNAPSHOT=20261019T190000Z
+# QEMU 11.1.x では icount 起動が約 8 倍遅い（第一 bad: 01b223f895、A-profile WFE sleeping。
+# docs/experiments/2026-10-31-qemu-1112-bisect.md）。pins-check が新版を検出したら
+# icount の ready 実時間を v11.0.2 と比較して遅延が解消されたか確認してから bump する。
 ARG QEMU_VERSION=11.1.2
 ARG QEMU_SHA256=731b5681e4bb18be313231579b8efd0296c5b015fa36dc533874b639ba838016
 ARG QEMU_SIGNING_FINGERPRINT=CEACC9E15534EBABB82D3FA03353C9CEF108B584
