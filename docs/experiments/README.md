@@ -48,3 +48,4 @@
 | [2026-10-30-s13-optimize](2026-10-30-s13-optimize.md) | S13 | 2026-10-30 | 完了（QEMU のみ） | ユーザーランド最適化を -O2/-Os/-O2+LTO で比較。squashfs は -Os で -22%、LTO で -17%。起動時間差はノイズ範囲。次の一手は -Os+LTO 併用。 |
 | [2026-10-30-kernel-sweep-s1-s14](2026-10-30-kernel-sweep-s1-s14.md) | S1・S14 | 2026-10-30 | 完了（QEMU のみ） | 80 候補の kernel config 総当たり。PASS 61・QEMU_FAILED 12・mismatch 5。採用候補は A53/BCM2837 非対応機能の OFF 8 件（gz 計 -244 KiB）。CC_OPTIMIZE_FOR_SIZE は -1.5 MB だが起動失敗で要調査。 |
 | [2026-10-30-s6-tierb-hardening](2026-10-30-s6-tierb-hardening.md) | S6 | 2026-10-30 | 完了（QEMU のみ） | hardening 24 候補を総当たり。起動時間への悪影響は 0 件、サイズ増は ZERO_CALL_USED_REGS（+1.19 MiB）のみ。QEMU_FAILED 4 件も誤検出（vermagic artifact）。採用候補 16 件・要検討 4 件に整理。 |
+| [2026-10-31-qemu-1112-bisect](2026-10-31-qemu-1112-bisect.md) | なし | 2026-10-31 | 完了 | QEMU 11.1.2 の icount 約 8 倍遅延を git bisect（パッチ適用・実時間 45 秒判定）で調査。第一 bad は `01b223f895`（A-profile の WFE sleeping）。upstream 報告は方針上しない。 |
