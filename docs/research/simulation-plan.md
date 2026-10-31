@@ -133,7 +133,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S12 SquashFS の圧縮方式と block size | image のサイズ、mount、A/B 起動、icount での起動時間。読み込み速度は実機で測る | QEMU で完了（[記録](../experiments/2026-10-25-s12-squashfs-codec.md)）。差があったのは xz だけ。EROFS も完了（[記録](../experiments/2026-10-29-erofs-rootfs.md)） |
 | S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 完了（[記録](../experiments/2026-10-30-kernel-sweep-s1-s14.md)、採用は #138・#139）。QEMU_FAILED 12 件は全件 sweep ツール側の誤検出（vermagic・allowlist）で、実機ビルドでは全件起動する |
 | S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 完了（[記録](../experiments/2026-10-30-s6-tierb-hardening.md)、15 件採用は #141。`BLK_DEV_WRITE_MOUNTED=n` は resize2fs を阻害するため撤回） |
-| S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 完了（[記録](../experiments/2026-10-30-s13-userspace-flags.md)、-Os+LTO は #141 で採用） |
+| S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 完了（[記録](../experiments/2026-10-30-s13-optimize.md)、-Os+LTO は #141 で採用） |
 | S17 の残り | dm-log-writes の再生、QEMU の blkdebug | 中（速度・dm-flakey エラー注入は完了） |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | 観測は QEMU で完了（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`-sort` の効果は実機で測る |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
