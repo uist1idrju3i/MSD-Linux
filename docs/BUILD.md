@@ -79,7 +79,9 @@ cd "$OUTPUT_DIR"
   --candidates "$REPO/board/cardputerzero/tools/kernel-candidates.txt"
 ```
 
-`--no-qemu` はビルドとサイズだけを測定し、`--only SYMBOL` は候補を一つに絞ります。出力 CSV は `symbol,value,category,status,image_bytes,gz_bytes,delta_gz,collateral,qemu_ready_vtime,initcalls` の列を持ちます。`collateral` は基準 `.config` から連動して変わった記号、`delta_gz` は基準との差です。`gz_bytes` は `pigz -11` があればその値、なければ `gzip -9` で測ります。QEMU の仮想時間は同一環境内の相対比較に限り、実機の起動時間を表しません。
+`--no-qemu` はビルドとサイズだけを測定し、`--only SYMBOL` は候補を一つに絞ります（`--jobs` と併用不可）。`--jobs N` は N 本のワーカーを並列に走らせます。各ワーカーは `linux-custom` を複製した独立ツリー（reflink 優先、なければ完全コピーで 1 本あたり数 GB）で動き、候補は行番号で分け、出力 CSV は `SWEEP_CSV.wN` に分けてから自動で結合します。QEMU 試験もワーカーごとに独立して走ります（QMP ソケット未指定・sdcard は起動ごとに複製）。CPU・メモリ・ディスクが余るなら `--jobs 2` から試してください。
+
+出力 CSV は `symbol,value,category,status,image_bytes,gz_bytes,delta_gz,collateral,qemu_ready_vtime,initcalls` の列を持ちます。`collateral` は基準 `.config` から連動して変わった記号、`delta_gz` は基準との差です。`gz_bytes` は `pigz -11` があればその値、なければ `gzip -9` で測ります。QEMU の仮想時間は同一環境内の相対比較に限り、実機の起動時間を表しません。
 
 QEMU 比較では `initcall_debug` と `printk.time=1` を付け、スイープ専用の `msd.sweep=1` で ready marker を printk 経由にして仮想時刻を記録します。通常起動では既存の console marker を維持します。`qemu_ready_vtime` が `~` で始まる場合は、旧 artifact の時刻なし ready marker より前に最後に出た kernel timestamp です。
 
