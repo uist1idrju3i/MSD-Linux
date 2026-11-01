@@ -54,6 +54,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
 - [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
 - [CardputerZero / Raspberry Pi CM0 エコシステム調査](docs/research/community-2026-11.md)
+- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
 - [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
 - [公式ソフトウェア構成](docs/research/official-software.md)
 - [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
