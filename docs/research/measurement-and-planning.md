@@ -194,3 +194,17 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | WP-1 の Pi 3B+ ログにある kernel `Loaded` 4.131 s から `Device tree loaded` 6.760 s までの 2.63 s の内訳、GPU 段とカーネルサイズの関係。同一構成でサイズを変えて実機測定する必要があります。 | https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-1-Optimising%20boot%20time.pdf |
 | Newlib に Linux 用の sys ディレクトリがないか（sourceware の取得ができていません） | URL未取得。公開ソースで確認する必要があります。 |
 | Raspberry Pi OS Trixie 2026-10-06 の kernel 版は 6.18.50 です。公式 release notes で確認済みですが、イメージ内の実際のカーネルパッケージ版は実機・イメージ展開で未確認です。 | https://downloads.raspberrypi.com/raspios_arm64/release_notes.txt<br>https://downloads.raspberrypi.com/os_list_imagingutility_v4.json |
+
+## ログと観測
+
+
+### 開発中の観測方法
+
+- UART: M5 の資料では HY2.0-4P と EXT 2.54-14P に G14 / G15 がある。G4 の切替で I2C1 / UART を切り替える。EXT の物理ピンは RX=12、TX=14。3.3 V logic。GPIO14/15 の最終 pinmux と UART 種別は M5 overlay / config 実機確認が必要。`enable_uart=1` が mini-UART の core frequency を固定する場合があり、速度測定に影響し得る。
+- USB gadget serial: `g_serial` で `/dev/ttyGS0` を作れる。右 USB-C が OTG slave のときのみ CM0 直結し、host 側の hub / Ethernet / USB-A は同時に使えない。公式 config は `dwc2,dr_mode=host` のため gadget 運用は別設定が必要との推測。
+- Ethernet SSH は実装しない。Ethernet は USB 2.0 の SR9900A、10/100 Mb/s。実際の USB ID とドライバは未確認。
+- pstore / ramoops は panic / watchdog 等の reset 再起動後のログ候補。完全な電源断では RAM が消える。予約領域と firmware のメモリ配置衝突は未確認。
+- 開発用 ext4 ログや専用 raw partition は候補だが、量産 rootfs に含めない。起動測定では無効にする。
+- 起動時間測定は UART 設定・ログ量を固定。電断試験は給電経路を分離。障害解析では UART + printk 全開を使う。
+
+出典: [CardputerZero docs](https://docs.m5stack.com/en/CardputerZero)、[USB gadget serial](https://docs.kernel.org/usb/gadget_serial.html)、[ramoops](https://docs.kernel.org/admin-guide/ramoops.html)、[SysRq](https://docs.kernel.org/admin-guide/sysrq.html)。

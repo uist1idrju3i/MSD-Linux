@@ -136,3 +136,36 @@
 - OpenSSH は glibc なら libxcrypt を選びます（Buildroot Config.in）。Dropbear は静的ビルドに向きます。https://github.com/buildroot/buildroot/blob/2026.08/package/openssh/Config.in 【一次】
 
 SSH・VPN、暗号拡張、鍵保管と A/B OTA の調査（21 節）は、[SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md) に分けました。
+
+## init・libc
+
+### init と周辺デバイス
+
+M5 の udev ルールは `ID_PATH` で LCD / input device を識別して symlink と seat tag を設定し、LED に `chgrp` を実行する。LCD の `fb_load.service` は systemd unit。LCD panel は `request_firmware()` で `<compatible>.bin` を読む。M5 モジュールに `MODULE_DEVICE_TABLE` があるため modalias 自動ロードの余地はあるが、udev / mdev / modprobe の設定が必要。
+
+BusyBox mdev は udev 形式のルールをそのまま使えない可能性があり、eudev を併用するか固定デバイスパスを使う必要がある。音声（ALSA / ASoC）、IMU（IIO）、カメラ（media / libcamera）、IR（rc-core）の上位ソフトがどこまで udev / systemd に依存するかは未調査。
+
+### init の比較
+
+| 観点 | systemd 最小化 | BusyBox init + mdev / eudev | 自作 init |
+|---|---|---|---|
+| M5 udev / unit 整合 | 高い | udev 移植または eudev が必要 | 全て自作 |
+| 全機能維持の実装コスト | 低い | 中程度 | 高い |
+| 並列起動 | 標準機能 | 自前で `::once` / background を設定 | 自由度は高いが自前 |
+| サイズ・診断 | 大きいが journal 等の診断あり | 小さい | 最小だが診断も自作 |
+| 起動時間の優位 | 未測定。unit 削減余地あり | 推測上大きい余地 | 推測上最大。ただし作り込み負担が大きい |
+
+### libc / toolchain の調査
+
+| 項目 | glibc | musl | uClibc-ng |
+|---|---|---|---|
+| Buildroot 2026.08 | 選択可能、systemd の Buildroot 設定で必須 | 選択可能 | 選択可能 |
+| 主な制約 | 大きめ | NSS / nss-systemd や DynamicUser 等の差。lazy binding なし、`dlclose` no-op、locale / iconv の範囲が異なる | aarch64 PIE 条件、SSP 既定値など要確認 |
+| ライセンス | LGPL-2.1+ | MIT | LGPL-2.1+ |
+| CM0 起動比較 | 現行 aarch64 の比較値なし | 同左 | 同左 |
+
+Buildroot 2026.08 の BusyBox 1.38.0、binutils 2.45.1、glibc 2.44、musl 1.2.6、uClibc-ng 1.0.59、systemd 258.7、RAUC 1.15.2、SWUpdate 2026.05.1 と、Yocto Wrynose 6.0 が glibc / musl を選べるとの情報は未確認です。確認先は [Buildroot 2026.08 package tree](https://github.com/buildroot/buildroot/tree/2026.08/package) と [Yocto release documentation](https://docs.yoctoproject.org/releases.html) です。
+
+公開 microbenchmark は Intel Atom N280 / x86 や x86_64 の値で、Cortex-A53 の比較にはできません。Zero 2 W の 3.5 秒事例は full glibc であり、特定 libc が起動を速める証拠ではありません。mimalloc は自社 benchmark の主張と合成 benchmark への注意書きがありますが、CM0 の起動時間値はありません。jemalloc は未調査です。静的 BusyBox + musl は軽量案、systemd と全 M5 udev / unit の流用を優先するなら glibc 案という設計案は推測です。
+
+出典: [Buildroot toolchain options](https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in)、[systemd Buildroot config](https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in)、[musl functional differences](https://wiki.musl-libc.org/functional-differences-from-glibc.html)、[musl comparison](https://www.etalabs.net/compare_libcs.html)、[uClibc-ng](https://uclibc-ng.org/)、[M5 udev / systemd files](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20/modules)。

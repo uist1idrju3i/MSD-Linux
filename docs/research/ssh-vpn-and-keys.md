@@ -63,3 +63,15 @@ Devin が 2026-10-18 JST に各実装の既定値を定義するファイルを�
 【推測・未測定】鍵交換は接続ごとに 1 回の計算なので、[起動完了条件](measurement-and-planning.md)の後に sshd / Dropbear を socket activation で起動すれば、起動時間への影響は小さいと見込まれます。実測では SSH 接続確立までの時間が重要です。CM0 の A53 での ML-KEM / X25519 の実測は、実機入手後に行う必要があります。PQ を使う場合のサーバー・クライアント双方の版要件（古いクライアントとの互換性）は未調査です。
 
 【未確認】OpenSSH の ML-KEM が CM0 でどの程度時間を要するか（公開値なし）、OpenVPN で ML-KEM 系グループが実際に使われるか（OpenSSL 3.6.4 の既定は `X25519MLKEM768` が先頭ですが、OpenVPN 2.7.6 は `--tls-groups` 未指定ならグループを設定しません。ソース確認のみで実接続は未確認）、`--tls-groups` に指定できる値、Buildroot での OpenSSH の `libcrypto` 構成は未確認です。実機測定と対象版の公開ソースで確認が必要です。
+
+## SSH・VPN（調査のみ・実装しない）
+
+この節は技術調査の保存のみを目的とし、MSD/Linux に SSH / VPN を実装する計画ではありません。
+
+- Arm Cortex-A53 の Crypto Extension は optional です。BCM2837 に AES / SHA / PMULL 命令があるかはメーカー一次仕様で確認できていません。CPU feature の二次資料では AES / SHA なし、CRC32 ありとされていますが、実機の `/proc/cpuinfo` で確認する必要があります。
+- WireGuard は ChaCha20-Poly1305 / Curve25519 / BLAKE2s / HKDF を使い、AES を使わない。ARM NEON 実装がある。CM0 の throughput 公開値なし。OpenVPN は既定 data cipher が AES-GCM を先頭にするため、AES 拡張がない場合は ChaCha20-Poly1305 を先頭に設定する案があるが、実装・性能は未検証。
+- Buildroot 2026.08 の調査時点の版: OpenSSH 10.5p1、Dropbear 2026.94、OpenVPN 2.7.6、WireGuard tools 1.0.20260223。OpenSSH は ChaCha20-Poly1305 が既定順の先頭で、ML-KEM-768 + X25519 のハイブリッド鍵交換が既定で先頭。Dropbear は ChaCha20-Poly1305 と ML-KEM / sntrup ハイブリッドを有効、AES-GCM は既定無効との調査。OpenVPN の実効 PQ 鍵交換は OpenSSL 版依存で、接続確認なし。WireGuard 標準プロトコルに PQ hybrid はなく、PSK は任意の追加層。
+- Dropbear は小型 SSH 実装で静的 build に向くとの調査。OpenSSH は標準的だが依存が多い。OpenVPN は userspace + OpenSSL、WireGuard は kernel と tools の組み合わせ。全て起動時間・CM0 throughput 未測定。
+- 将来実装を再検討する場合、鍵を A/B rootfs に格納せず個体ごとの永続領域に生成する案、初回起動で固有鍵を作る案がある。SD を物理的に取り出せるため暗号化なしの秘密鍵保護は未解決。署名鍵管理・ローテーション・古いクライアントとの PQ 互換も未調査。
+
+出典: [Arm Cortex-A53 TRM](https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token=)、[sbc-bench crypto extensions](https://github.com/ThomasKaiser/sbc-bench/blob/master/results/ARMv8-Crypto-Extensions.md)、[WireGuard protocol](https://www.wireguard.com/protocol/)、[WireGuard performance](https://www.wireguard.com/performance/)、[OpenSSH 10.0 release](https://www.openssh.org/txt/release-10.0)、[Dropbear defaults](https://raw.githubusercontent.com/mkj/dropbear/DROPBEAR_2026.94/src/default_options.h)、[OpenVPN 2.7 manual](https://openvpn.net/community-docs/community-articles/openvpn-2-7-manual.html)。
