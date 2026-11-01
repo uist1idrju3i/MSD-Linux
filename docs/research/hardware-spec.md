@@ -24,7 +24,7 @@ scope-and-hardware.md から分割した節です。
 | Bluetooth | `BT_HCIUART` / BCM。【一次】 | firmware と UART 設定。【一次】 | kernel module 対象。BlueZ の選択は確認できない。【一次】【未確認】 | 使用時まで遅延可能。【推測】 | 対象モジュール、UART 配線、BlueZ、pairing。【未確認】 |
 | USB hub | Linux USB hub core。【一次】 | GL852G は基板上の USB 2.0 hub。【一次】 | 汎用 USB core。専用 M5 module なし。【一次】 | USB 機器の列挙に必要で、個別遅延は対象外。【推測】 | host/device 切替、各ポートの列挙・給電。【未確認】 |
 | SR9900A Ethernet | upstream `USB_NET_SR9700` の ID 対応は SR9900A と同一ではない。【一次】【未確認】 | 専用 overlay なし。 | SR9700 module の存在だけでは SR9900A 対応を示さない。【一次】 | 対応が確認できた後は USB net module を遅延ロード可能。【推測】 | USB VID:PID とドライバーの対応、通信。【未確認】 |
-| HDMI | `DRM_VC4`。【一次】 | 現行 board config に HDMI 用 overlay の選択なし。【一次】 | kernel module を選択。【一次】 | HDMI を使うまで遅延可能。【推測】 | connector、モード、表示・音声、実機出力。【未確認】 |
+| HDMI | `DRM_VC4`。【一次】 | 現行 board config に HDMI 用 overlay の選択なし。【一次】 | kernel module を選択。【一次】 | HDMI を使うまで遅延可能。【推測】 | connector、モード、表示・音声、実機出力。【未確認】。詳細は[HDMI 外部ディスプレイ出力の調査](hdmi-output.md)。 |
 | EXT / Grove | GPIO、I²C、SPI と M5IOE1。【一次】 | v5 overlay に拡張端子・rail 用の設定。【一次】 | 関連 driver と overlay を含む。【一次】 | 使用する bus / rail に応じて可能。【推測】 | ピン mux、電圧、既定 UART/I²C、周辺互換性。【未確認】 |
 | LED／backlight | M5IOE1 GPIO/PWM と backlight 系統。【一次】 | v5 overlay。【一次】 | M5IOE1 と overlay 対象。【一次】 | 表示に必要な backlight は LCD 初期化時に必要。【推測】 | LED 数、極性、輝度制御、電源異常時の動作。【未確認】 |
 | buzzer | 専用 driver / Kconfig を確認できない。【未確認】 | 専用 overlay を確認できない。【未確認】 | 専用機能のビルドを確認できない。【未確認】 | 専用機能なし。 | ブザー搭載有無と制御経路。音声 codec／speaker と同一視しない。【未確認】 |
@@ -97,7 +97,7 @@ scope-and-hardware.md から分割した節です。
 | IR | TX G12 / RX G13 | — | https://docs.m5stack.com/en/CardputerZero<br>https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf |
 | 拡張 | HY2.0-4P、EXT 14pin | Cap はホットスワップ不可 | https://docs.m5stack.com/en/CardputerZero |
 | スイッチ検知 | SW_DET = G6 | [`powerfail_suo.c`](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c) が使用 | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c |
-| 映像出力 | **HDMI**(回路図 P10 J5、19pin、HDMI-001) | コネクタ形状(Type A か D か)は【**未確認**】。DSI/CVBS は未使用 | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf<br>(ページ P10 J5 の再照合は今回未実施) |
+| 映像出力 | **HDMI**(回路図 P10 J5、19pin、HDMI-001) | 公式仕様は 1080P 30fps【一次】。コネクタ形状(Type A か D か)は【**未確認**】。DSI は CM0 エッジピンに信号あり・外部コネクタは HDMI のみ。詳細は[HDMI 外部ディスプレイ出力の調査](hdmi-output.md) | https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf<br>https://docs.m5stack.com/en/CardputerZero |
 
 一次資料の抜粋: [C154 V0.6.1 回路図 p.10](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf) は `CAM_3V3`、U36 (`SSP7615-33DFR`)、R190 (`100K`)、R192 (`NC`) を示し、U36 の EN が VSYS_5V に pull-up された常時有効の構成です。p.5 では CM0 pin 44、p.10 では JP5 pin 17 がそれぞれ `CAM_GPIO` と表示されています。upstream [CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts) は GPIO40 の line name を `CAM_GPIO` とし、`&cam1_reg` の `gpio = <&gpio 40 GPIO_ACTIVE_HIGH>` を設定します。M5 の [CardputerZero Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile) は GPIO16-high camera overlay を非 V0_5 側でのみ追加する構成です。したがって既定の cam1 overlay は CAM_GPIO に GPIO40 を使い、v5 では追加 hog が不要です。【一次】
 
