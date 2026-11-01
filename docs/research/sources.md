@@ -127,3 +127,52 @@
 | Arm FVP | Fast Models 11.32、2026-07-30 | https://support.arm.com/tools-and-software/fixed-virtual-platforms/arm-architecture-fvps | Architecture FVP / Base RevC release list。license entitlement 未確認 | 【一次】【未確認】 |
 | Renode | 1.17.0、2026-09-07 | https://github.com/renode/renode/releases/tag/v1.17.0 | release page と platform tree。BCM2835/2837 model は未発見 | 【一次】【未確認】 |
 | Raspberry Pi Zero 2 W | 2026-10-19 取得 | https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/ | RP3A0、quad-core 1 GHz A53、512 MB LPDDR2 | 【一次・製品資料】 |
+
+## 出典一覧
+
+本書の各節に主要な根拠を記載しました。以下は本文で引用した主要な一次資料・技術資料です。版・取得日時に関する詳細は各節を参照してください。
+
+### 製品・M5 ドライバ
+
+- [CardputerZero 製品資料](https://docs.m5stack.com/en/CardputerZero)
+- [CardputerZero 回路図 V0.6.1](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)
+- [CardputerZero pi-gen](https://github.com/CardputerZero/pi-gen/commit/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)
+- [M5 Linux dtoverlays](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20)
+- [M5 powerfail_suo.c](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c)
+- [CardputerZero boot benchmark](https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md)
+
+### Raspberry Pi・Linux・Buildroot
+
+- [Raspberry Pi config.txt boot docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc)
+- [Raspberry Pi autoboot.txt docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc)
+- [Raspberry Pi EEPROM bootflow docs](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc)
+- [Raspberry Pi boot-time white paper](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf)
+- [Raspberry Pi resilient filesystem white paper](https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-3-Making%20a%20more%20resilient%20file%20system.pdf)
+- [Buildroot 2026.08 commit](https://github.com/buildroot/buildroot/commit/d5180309b1b66ef3b8eaccca70ad69be8e0729a1)
+- [Raspberry Pi kernel rpi-6.18.y](https://github.com/raspberrypi/linux/tree/rpi-6.18.y)
+- [SquashFS kernel docs](https://docs.kernel.org/filesystems/squashfs.html)
+- [EROFS FAQ](https://erofs.docs.kernel.org/en/latest/faq.html)
+- [EROFS kernel docs](https://docs.kernel.org/filesystems/erofs.html)
+- [overlayfs kernel docs](https://docs.kernel.org/filesystems/overlayfs.html)
+- [ext4 kernel docs](https://docs.kernel.org/admin-guide/ext4.html)
+- [Raspberry Pi rpi-image-gen](https://github.com/raspberrypi/rpi-image-gen)
+
+### 計測・userland・更新
+
+- [Kernel parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html)
+- [systemd-analyze](https://man7.org/linux/man-pages/man1/systemd-analyze.1.html)
+- [strace](https://man7.org/linux/man-pages/man1/strace.1.html)
+- [fanotify](https://man7.org/linux/man-pages/man7/fanotify.7.html)
+- [blktrace](https://man7.org/linux/man-pages/man8/blktrace.8.html)
+- [BusyBox FAQ](https://busybox.net/FAQ.html)
+- [RAUC](https://rauc.io/)
+- [SWUpdate](https://sbabic.github.io/swupdate/)
+- [Mender docs](https://docs.mender.io/)
+- [Rugix device support](https://rugix.org/docs/bakery/devices/)
+
+### 暗号
+
+- [Arm Cortex-A53 technical reference](https://documentation-service.arm.com/static/5e9077ee8259fe2368e2acf7?token=)
+- [WireGuard protocol](https://www.wireguard.com/protocol/)
+- [OpenSSH 10.0 release notes](https://www.openssh.org/txt/release-10.0)
+- [OpenVPN 2.7 manual](https://openvpn.net/community-docs/community-articles/openvpn-2-7-manual.html)

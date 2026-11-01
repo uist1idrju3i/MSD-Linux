@@ -49,4 +49,3 @@ raw NAND 用の JFFS2/UBIFS は MTD/eraseblock と UBI の管理モデルに依�
 | OpenWrt | 旧公式 wiki は embedded flash 上の SquashFS read-only rootfs と writable JFFS2 overlay の組み合わせを説明する。 | NOR/NAND で JFFS2/UBIFS 等。`/tmp` は tmpfs、`/var` は `/tmp` symlink と記載。 | flash layout と target に依存。kernel は separate raw partition の場合もある。 | 同 wiki の構成例では `/var` が tmpfs 由来なので volatile。 | overlay と flash type の依存を参考にするが、MTD 用 filesystem を managed-FTL SD に移植しない【二次・旧版: P11】。 |
 
 共通して参考にできるのは、immutable system image、明示的な persistent state area、inactive image update を別の責務として設計する点である。MSD/Linux では現在すでに SquashFS rootfs、raw A/B payload、p1 selector、`/data` update state が分離している。次の設計課題は `/data` writer の列挙、書き込み窓・同期・recovery の定義、`/data/etc` の古い設定が新 slot の既定値を隠す問題、`/var`/crash log の実際の mount である【推測】。
-
