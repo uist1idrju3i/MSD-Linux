@@ -28,6 +28,10 @@ if ! [[ "$JOBS" =~ ^[0-9]+$ ]] || [ "$JOBS" -lt 1 ]; then
 	printf -- '--jobs must be a positive integer.\n' >&2
 	exit 2
 fi
+if [ -n "$ONLY" ] && [ "$JOBS" -gt 1 ]; then
+	printf -- '--only is not supported with --jobs >1 (run a single-job sweep instead).\n' >&2
+	exit 2
+fi
 
 if [ ! -d "${OUTPUT_DIR}/build" ]; then
 	printf 'Run from a Buildroot output directory or set OUTPUT_DIR.\n' >&2
@@ -92,6 +96,12 @@ if [ ! -r "$CONFIG" ] || [ ! -x "$SCRIPTS_CONFIG" ] || [ ! -r "$IMAGE" ]; then
 fi
 if [ ! -r "$KEEP" ]; then
 	printf 'Keep file must be readable.\n' >&2
+	exit 2
+fi
+# ツールチェーンの事前確認: Bootlin 製 toolchain は glibc が新しい環境を要求する。
+# ホスト VM 等で動かない場合に各候補が OLDDEFCONFIG_FAILED になる前に止める。
+if ! "${CROSS_COMPILE}gcc" -dumpversion >/dev/null 2>&1; then
+	printf 'Cross-compiler %s is not runnable here (run inside docker/msd-dev).\n' "${CROSS_COMPILE}gcc" >&2
 	exit 2
 fi
 if [ "$NO_QEMU" = false ] && { [ ! -r "$SDCARD" ] || [ ! -r "$DTB" ]; }; then
