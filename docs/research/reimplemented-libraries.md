@@ -41,7 +41,7 @@
 | scudo | LLVM/compiler-rt 付属。セキュリティ志向のヒープ | なし | Android の既定ヒープ。隔離とヒープ攻撃緩和が効能。本機に常駐マルチスレッド server がない現状では優先度は低い |
 | rpmalloc | スレッドローカルヒープ型 | なし | 同上 |
 
-本機は glibc 内蔵の ptmalloc が現状で、常駐プロセスが少なく、更新系コマンドは短命です。フラグメンテーションや速度より、ライブラリ自体の追加コストが効いてくるため、アロケータ差し替えの利得は薄いと考えます【推測】。差し替え検討は「常駐プロセスのメモリ断片化」が観測されたときの対策として待つのが妥当です。
+本機は glibc 内蔵の ptmalloc が現状で、常駐プロセスが少なく、更新系コマンドは短命です。フラグメンテーションや速度より、ライブラリ自体の追加コストの方が支配的になるため、アロケータ差し替えの利得は薄いと考えます【推測】。差し替え検討は「常駐プロセスのメモリ断片化」が観測されたときの対策として待つのが妥当です。
 
 ## 4. JVM・ランタイムの再実装
 
@@ -68,10 +68,24 @@
 | openrsync | OpenBSD の rsync 再実装 | なし | 更新経路で rsync を使う場合の小さい選択肢 |
 | sudo-rs / uutils coreutils | Trifecta Tech の Rust 再実装（Ubuntu 25.10 で uutils が既定化） | なし | [セキュリティ強化項目の調査](security-2026-11-hardening-list.md) §15 を参照。本機は BusyBox アプレットで sudo・coreutils を持たず差し替え対象がない |
 
-## 6. 本機への適用まとめ
+## 6. ブラウザエンジンの再実装
+
+| 実装 | 元実装との関係 | Buildroot | 効能と本機への適用 |
+|---|---|---|---|
+| Servo | Mozilla 始まりの Rust 製ブラウザエンジンのスクラッチ再実装。現在は Linux Foundation Europe 傘下。v0.7.0（2026-10-05、月次リリース）を公開。SpiderMonkey は ESR 153 系。MPL-2.0、MSRV 1.88。`servo-aarch64-linux-ohos.so` などの組み込み向けライブラリ形態もあり、埋め込み用 API を公表している | なし | 「埋め込み可能な WebView」をうたう Rust 製エンジンとして最新状況を記録。ただし 512MB RAM の CM0 では実用サイズに届かない可能性が高く【推測】、レイアウト・JIT の重さから本機では対象外扱いが妥当。月次リリースが続く活発さを記録する |
+| NetSurf | 独立した小型ブラウザエンジン（独自レンダラ） | `BR2_PACKAGE_NETSURF` あり | フレームバッファ・SDL フロントエンドを持ち、組み込み最小構成で最も現実的な本格ブラウザ。JS 限定的だが、情報表示には十分【推測】 |
+| Dillo | C 製の超小型ブラウザ。GTK3 版もある | `BR2_PACKAGE_DILLO` あり | 最小ブラウザの代表格。JS 非対応。リーダー用途には合う |
+| links | テキスト/グラフィカルブラウザ | `BR2_PACKAGE_LINKS` あり | 最低限の描画で済む用途向け |
+| WebKitGTK / WPEWebKit | WebKit からの GTK/埋め込み向け分岐 | `BR2_PACKAGE_WEBKITGTK` / `WPEWEBKIT` あり | フル機能の WebView を入れる場合の実用候補だが、RAM・起動時間のコストが大きい |
+| Ladybird | SerenityOS 発の独立ブラウザエンジン（プロジェクト分離済み） | なし | 開発中の新実装。実用段階ではない |
+| qt-webkit-kiosk | Qt WebKit のキオスク実装 | `BR2_PACKAGE_QT_WEBKIT_KIOSK` あり | Qt ベースのキオスク用途 |
+
+**本機へのまとめ**: 物理 LCD へのリッチ表示を今後検討するなら、現実的な順位は NetSurf > Dillo/links > WPEWebKit。Servo は現在のリソース要件から見送りが妥当ですが、月次リリースで進化しているため定点観測の価値はあります。
+
+## 7. 本機への適用まとめ
 
 1. **置換の利得が見込める候補**: msd-update の Ed25519 検証を openssl から小さい実装（libsodium / monocypher 系）に分離できるか。署名・検証だけならイメージを削れる可能性。要・サイズ実測。
-2. **速度が効く候補**: libdeflate / zlib-ng（更新データの圧縮・展開を zlib 系でやっている場合）。
+2. **速度向上が見込める候補**: libdeflate / zlib-ng（更新データの圧縮・展開を zlib 系で行っている場合）。
 3. **観測待ち**: アロケータ差し替え（jemalloc/mimalloc）はフラグメンテーションの観測が前提。
 4. **評価不能・対象外**: Zephyr 4.5（`rpi_zero_2w` ボードは追加されたが SDHCI 未確認）、OpenJ9、picolibc（Linux hosted は試験用）、BoringSSL（配布を意図しない）。
 
