@@ -48,6 +48,8 @@ CI は Buildroot のダウンロードファイルと ccache をキャッシュ�
 
 `BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。`S05seedrng` は `S02msd-data` と `S03msd-etc-overlay` の後に起動し、`SEEDRNG_ARGS=--seed-dir=/data/seedrng` で乱数シードを永続領域に保存します。実機では `/var/lib` が読み取り専用 rootfs 上にあるため、seedrng の保存先を `/data` にしています。keymap の読み込みと symlink は実機未検証です。
 
+`BR2_PACKAGE_LIBV4L_UTILS` は meson の単一トグルで全 utility を target に入れるため、post-build で `v4l2-ctl`、`media-ctl`、`ir-keytable`、`ir-ctl` の 4 本だけを残し、CEC・RDS・TV tuner・compliance 系のツールと RC keymap・udev rule を削除します。削除する対象は `post-build.sh` に列挙しています。実機でのカメラ確認手順は [VERIFY.md](VERIFY.md) を参照してください。
+
 `/usr/sbin/msd-hwinfo` は Standard/Lite を判定し、起動時に `/run/msd/hardware` へ結果を書き、シリアルコンソールにも判定結果を出力します。この判定は実機未検証です。
 
 ## QEMU での起動確認

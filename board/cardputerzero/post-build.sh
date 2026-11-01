@@ -14,8 +14,11 @@ dd
 fsck.ext4
 fsync
 grep
+ir-ctl
+ir-keytable
 ln
 loadkeys
+media-ctl
 mkdir
 mkfs.ext4
 mount
@@ -40,6 +43,7 @@ tar
 touch
 tr
 umount
+v4l2-ctl
 watchdog
 wc
 '
@@ -112,6 +116,20 @@ done
 for data_dir in consolefonts consoletrans unimaps; do
 	rm -rf "${target_dir:?}/usr/share/$data_dir" "${target_dir:?}/usr/share/kbd/$data_dir"
 done
+
+# libv4l-utils は meson の単一トグルで全 utility を target に入れるため、
+# カメラ/IR の確認に必要な 4 本（v4l2-ctl, media-ctl, ir-keytable, ir-ctl）
+# 以外のツールと RC keymap・udev rule をここで削除する。
+for v4l_tool in cec-compliance cec-ctl cec-follower cx18-ctl decode_tm6000 \
+	edid-decode ivtv-ctl rds-ctl v4l2-compliance v4l2-dbg v4l2-sysfs-path; do
+	rm -f "${target_dir:?}/usr/bin/$v4l_tool" "${target_dir:?}/usr/sbin/$v4l_tool"
+done
+rm -rf "${target_dir:?}/lib/udev/rc_keymaps"
+rm -f "${target_dir:?}/etc/rc_maps.cfg" \
+	"${target_dir:?}/lib/udev/rules.d/70-infrared.rules"
+if [ -d "$target_dir/lib/udev" ]; then
+	find "$target_dir/lib/udev" -depth -type d -empty -delete
+fi
 
 mdev_conf="$target_dir/etc/mdev.conf"
 test -f "$mdev_conf"
