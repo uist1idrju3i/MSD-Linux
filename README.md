@@ -57,6 +57,7 @@ QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デ�
 | [docs/BUILD.md](docs/BUILD.md) | ビルドと QEMU 起動確認の手順 |
 | [docs/UPDATE.md](docs/UPDATE.md) | 更新手順と検証範囲 |
 | [docs/CI.md](docs/CI.md) | CI の構成と運用 |
+| [docs/VERIFY.md](docs/VERIFY.md) | 実機でのカメラ・周辺確認の手順 |
 | [docs/experiments/](docs/experiments/README.md) | 実験・測定の記録と生の値 |
 | [docker/README.md](docker/README.md) | CI と同じ開発用コンテナー |
 | [AGENTS.md](AGENTS.md) | 作業規約（AI エージェントと人間に共通） |

@@ -63,7 +63,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S14 | CPU specialization | `-mcpu`/`-mtune` と kernel CPU options を一つずつ変え、`Image`/package size、命令数、実機時間、全機能を検証する。 | 本番 sweep 実行中（S1 と同一枠組み） | — | — |
 | S15 | QEMU versions | version と machine/device model 差を記録し、同一 image/command line の機能・virtual-time regression を比較する。 | QEMU 実験済み | 11.0.2 → 11.1.2 で `t_ready` +4.1 %（差あり）。build、machine、plugin は差なし | [2026-10-25-s15-qemu-versions](../experiments/2026-10-25-s15-qemu-versions.md) |
 | S16 | normally-RO `/etc` and `/data` | boot、persistent config, seedrng, updater, fsck/recovery の各 writer が maintenance RW window だけで動くか試験する。 | QEMU で writer 失敗様式・window primitive・電断差を確認（init 設計の実装は未着手） | #24 | `2026-10-29-s16-ro-mounts`（#122 で追加） |
-| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | QEMU で速度模擬（QMP throttle）と dm-flakey による error 注入（drop_writes・error_reads）を確認。dm-log-writes 再生と blkdebug は未実施 | #24 | [2026-10-29-s17-qmp-throttle](../experiments/2026-10-29-s17-qmp-throttle.md)（#125）; [2026-10-30-s17-error-injection](../experiments/2026-10-30-s17-error-injection.md)（#128） |
+| S17 | storage fault/speed emulation | `dm-log-writes` + `replay-log`、`dm-flakey`/`dm-delay`、QEMU `blkdebug`/throttle/cache mode を使い、error/replay/prefix ごとに fsck・data invariant を記録する。実 card FTL/timing は含まない。 | QEMU で速度模擬（QMP throttle）と dm-flakey による error 注入（drop_writes・error_reads）を確認。blkdebug では注入が発火することをホスト側で確認したが、QEMU の SD モデルがエラーをゲストに伝播しないため、ゲスト観測型の障害注入は実機依存と確定。dm-log-writes 再生は 5 回とも完全一致 | #24 | [2026-10-29-s17-qmp-throttle](../experiments/2026-10-29-s17-qmp-throttle.md)（#125）; [2026-10-30-s17-error-injection](../experiments/2026-10-30-s17-error-injection.md)（#128）; 実験記録 `2026-11-01-s17-dmlw-blkdebug`（#160 で追加） |
 
 ### S2 実機カメラ確認チェックリスト
 
@@ -134,7 +134,7 @@ CM0 と Raspberry Pi Zero 2 W は RP3A0 SiP 系で、公開資料はどちらも
 | S1・S14 カーネル option の本番 | 約 80 候補を 1 つずつ変え、`Image` のサイズと icount での起動時間を比べる。NUMA、A53 以外の ISA、CM0 にない機能（NVMe、PCIe、KVM など）、`CC_OPTIMIZE_FOR_SIZE`、カーネルの圧縮方式を含む | 完了（[記録](../experiments/2026-10-30-kernel-sweep-s1-s14.md)、採用は #138・#139）。QEMU_FAILED 12 件は全件 sweep ツール側の誤検出（vermagic・allowlist）で、実機ビルドでは全件起動する |
 | S6 tier B | 低コストの hardening 候補の、サイズと icount での起動コスト | 完了（[記録](../experiments/2026-10-30-s6-tierb-hardening.md)、15 件採用は #141。`BLK_DEV_WRITE_MOUNTED=n` は resize2fs を阻害するため撤回） |
 | S13 ユーザーランドの `-O2`、`-Os`、LTO | rootfs のサイズと、icount での起動時間 | 完了（[記録](../experiments/2026-10-30-s13-optimize.md)、-Os+LTO は #141 で採用） |
-| S17 の残り | dm-log-writes の再生、QEMU の blkdebug | 中（速度・dm-flakey エラー注入は完了） |
+| S17 の残り | dm-log-writes の再生（実行中）、QEMU の blkdebug（発火はホスト側で確認。ゲストへの伝播は QEMU SD モデルの制約で不可能と確定） | 中（速度・dm-flakey エラー注入・blkdebug 発火確認は完了、ゲスト観測は実機依存） |
 | 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | 観測は QEMU で完了（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`-sort` の効果は実機で測る |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
 | BusyBox の applet を減らす、静的リンク | QEMU で静的リンクと 63 applet を比較した。製品用 applet の範囲は未決である（[記録](../experiments/2026-10-21-qemu-busybox.md)）。 | 中 |
@@ -189,9 +189,11 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 6. S16 → S4・S5・S17
 7. 起動時のファイルアクセスを観測し、`mksquashfs -sort` と小項目（zram、dm-verity、BusyBox、Lynis）の記録を進める
 
-### 次の作業計画（2026-10-29 時点）
+### 次の作業計画（2026-11-01 時点）
 
 2026-10-29/30 のラウンドで済んだもの: 依存更新（Buildroot 2026.08.1、m5stack-dtoverlays、Trivy 0.76.1、Debian digest、fonttools 4.68.0）、cryptsetup（veritysetup）の dev イメージへの追加と QEMU の SHA-256 ラベル化（#116）、sweep ツール修正と icount `sleep=off`（#118 に同梱）、Lite 判定の QEMU 確認（#118）、QEMU 11.1.2 の icount 実時間 8 倍問題の原因絞り込み（#119）、温度模擬（#120）、quiet/lpj（#123）、S5（#124）、S16（#122）、S17 速度模擬（#125）、EROFS（#126）、PREEMPT モデル比較（#127）、S4・S17 エラー注入（#128）、ドライバー・モジュール化（#129）。カーネルは 6.18.58 のまま（依存側の新バージョン対応を確認してから別 PR で上げる方針）。
+
+2026-10-31/11-01 のラウンドで済んだもの: v4l-utils 削減と実機カメラ確認手順（#156）、kernel rpi-6.18.y の b3495ea への更新（#157）、msd-dev の golang digest 更新（#158）、QEMU 11.1.3 の icount 比較（11.0.2 の 20 s に対し 150 s と 7.5 倍遅く、bisect 済みの WFE sleeping 修正でも解消しなかったため bump 見送り）、S17 blkdebug 障害注入（発火はホスト側で確認、QEMU SD モデルがエラーをゲストに伝播しないことを確定）。セキュリティ強化項目の調査を [security-2026-11-hardening-list](security-2026-11-hardening-list.md) にまとめた（実装は未着手、調査のみ）。
 
 | 順 | 作業 | 内容と完了の条件 |
 |---|---|---|
@@ -199,10 +201,11 @@ SSH と VPN（実装しない方針）、irqbalance、VPS 向けの設定、secu
 | 2 | S6 tier B | 完了: 24 候補の記録 #140、15 件採用は #141。`quiet`・`lpj=`・PREEMPT・モジュール化は完了（#123、#127、#129）。 |
 | 3 | S13 | 完了: #136 の記録、-Os+LTO 採用は #141。 |
 | 4 | PREEMPT_RT の製品化 | 完了: #133。実機でのレイテンシー評価は実機チェックリストへ。 |
-| 5 | QEMU 11.1.2 の icount 実時間問題 | 完了: bisect で `01b223f895`（A-profile WFE sleeping）と特定（#143）。ハーネスは `board/cardputerzero/tools/qemu-bisect/`。重い icount 計測は当面 11.0.2 を使い（`tools/qemu-bisect/build-qemu.sh` でビルド、pins-check で新版を検出したら遅延が解消したかを比較してから bump）。 |
-| 6 | S2 の続き | v4l-utils から `v4l2-ctl` と `media-ctl` だけを残し、ほかのツールと RC keymap を外す。S7 で `ir-keytable` を使うかを先に決める。実機でカメラを確かめるスクリプトと手順書を用意する。 |
-| 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード。 |
-| 8 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
+| 5 | QEMU の icount 実時間問題 | 完了: bisect で `01b223f895`（A-profile WFE sleeping）と特定（#143）。11.1.3 でも 7.5 倍遅いままのため QEMU は 11.0.2 を継続使用（`tools/qemu-bisect/build-qemu.sh` でビルド、pins-check で新版を検出したら遅延が解消したかを比較してから bump）。 |
+| 6 | S2 の続き | 完了: v4l-utils を `v4l2-ctl`・`media-ctl`・`ir-keytable`・`ir-ctl` の 4 本に削減し RC keymap を削除（#156）。実機カメラ確認は `tools/hw/camera-check.sh` と `docs/VERIFY.md` の手順で実機待ち。 |
+| 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード、ゲスト観測型のストレージ障害注入（QEMU の SD モデルはエラーをゲストに伝播しないため実機のみ）。 |
+| 8 | セキュリティ強化の実装（調査済み・未実装） | [security-2026-11-hardening-list](security-2026-11-hardening-list.md) の優先順位案に沿って、fstab の noexec/nosuid 追加、sysctl ファイル整備、cmdline 追加、nftables、DoT（unbound）、chrony+NTS、AppArmor プロファイルを段階導入。実装するか・順番はユーザー確認後。 |
+| 9 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
 
 保留: libcamera と VideoCore の ISP（カメラの tier B）は、VCHIQ と firmware の変更が必要で、起動時間と RAM への影響が大きいため、使う場面が決まるまで入れません。Raspberry Pi Zero 2 W は用意しません。CardputerZero が手に入らない場合に限り、代わりの実機として検討します。
 

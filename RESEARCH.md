@@ -51,6 +51,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
 - [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
 - [セキュリティ・ハードニング](docs/research/security-hardening.md)
+- [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
 - [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
 - [公式ソフトウェア構成](docs/research/official-software.md)
 - [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
