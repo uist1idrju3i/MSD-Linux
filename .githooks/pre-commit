@@ -1,0 +1,39 @@
+#!/bin/sh
+# MSD-Linux の pre-commit フック。CI と同じ文字・リンク検査をコミット前に回す。
+# 有効化: git config core.hooksPath .githooks
+set -u
+
+root="$(git rev-parse --show-toplevel)" || exit 1
+cd "$root" || exit 1
+
+# staged な追跡ファイル（追加・変更・改名）だけを対象にする
+staged="$(git diff --cached --name-only --diff-filter=ACMR)"
+[ -z "$staged" ] && exit 0
+
+fail=0
+
+# JIS X 0213:2004 範囲外の文字と無効な UTF-8（エラーはコミット中止）。
+# バイナリ（NUL 含む）と symlink は検査側がスキップする。
+files=$(printf '%s\n' "$staged" | grep -v '^vendor/' || true)
+if [ -n "$files" ]; then
+	if ! printf '%s\n' "$files" | xargs python3 .github/scripts/check-jisx0213.py; then
+		fail=1
+	fi
+fi
+
+# 追跡ファイルへのリンク（リポジトリ全体の検査。MSD_SKIP_LINKCHECK=1 で省略可）
+if [ "${MSD_SKIP_LINKCHECK:-0}" != 1 ]; then
+	if ! python3 .github/scripts/check-links.py; then
+		fail=1
+	fi
+fi
+
+# 日本語文書の推敲候補（警告のみ。コミットは止めない）
+docs=$(printf '%s\n' "$staged" | grep -E '^(docs|\.agents)/.*\.md$' || true)
+if [ -n "$docs" ] && [ -f .agents/skills/yomiyasu/scripts/yomiyasu_lint.py ]; then
+	printf '%s\n' "$docs" | while IFS= read -r f; do
+		python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py "$f" || true
+	done
+fi
+
+exit "$fail"
