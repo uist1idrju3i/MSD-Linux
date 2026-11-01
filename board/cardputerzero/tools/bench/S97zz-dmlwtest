@@ -1,0 +1,66 @@
+#!/bin/sh
+# Test-only init hook for S17 (dm-log-writes replay). Installed only by
+# s17-dm-log-writes.sh into a disposable experiment image. Captures a
+# deterministic write workload through a dm-log-writes device so the host can
+# replay the log and compare results.
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+grep -q 'msd.dmlwtest=1' /proc/cmdline || exit 0
+
+console()
+{
+	printf 'msd-dmlw: %s\n' "$*" >/dev/console
+}
+
+DISK=/data/dmlw-disk.img
+LOG=/data/dmlw-log.img
+SECTORS=32768   # 16 MiB
+
+rm -f "$DISK" "$LOG"
+dd if=/dev/zero of="$DISK" bs=1M count=16 2>/dev/null
+dd if=/dev/zero of="$LOG" bs=1M count=64 2>/dev/null
+
+LOOP0="$(losetup -f 2>/dev/null)"
+[ -n "$LOOP0" ] && losetup "$LOOP0" "$DISK" 2>/dev/null
+LOOP1="$(losetup -f 2>/dev/null)"
+[ -n "$LOOP1" ] && losetup "$LOOP1" "$LOG" 2>/dev/null
+console "loops=$LOOP0,$LOOP1"
+if [ -z "$LOOP0" ] || [ -z "$LOOP1" ]; then
+	console "loop_setup=fail"
+	console "finished"
+	exit 0
+fi
+
+if dmsetup create dmlw --table "0 $SECTORS log-writes $LOOP0 $LOOP1"; then
+	console "dm_create=ok"
+else
+	console "dm_create=fail"
+	console "finished"
+	exit 0
+fi
+
+# 決定的なワークロード: busybox の内容を 2 箇所に fsync 付きで書く
+dd if=/bin/busybox of=/dev/mapper/dmlw bs=4096 count=128 conv=notrunc,fsync 2>/dev/null
+dd if=/bin/busybox of=/dev/mapper/dmlw bs=4096 seek=200 count=64 conv=notrunc,fsync 2>/dev/null
+dd if=/dev/urandom of=/dev/mapper/dmlw bs=4096 seek=400 count=32 conv=notrunc,fsync 2>/dev/null
+sync
+sleep 1
+
+if dmsetup message dmlw 0 mark "done" 2>/dev/null; then
+	console "mark=ok"
+else
+	console "mark=fail"
+fi
+
+dmsetup remove dmlw
+losetup -d "$LOOP0"
+losetup -d "$LOOP1"
+sync
+
+console "disk_sha=$(sha256sum "$DISK" | cut -d' ' -f1)"
+console "log_size=$(wc -c < "$LOG")"
+console "finished"

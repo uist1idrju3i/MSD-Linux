@@ -1,0 +1,55 @@
+#!/bin/sh
+# Test-only init hook for S17 (QEMU blkdebug storage-error injection).
+# Installed only by s17-blkdebug.sh into a disposable image copy.
+# Reports whether writes/reads to /data and to the raw B-slot partition
+# succeed, so host-side blkdebug injection can be verified end to end.
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+grep -q 'msd.blkdbgtest=1' /proc/cmdline || exit 0
+
+console()
+{
+	printf 'msd-blkdbg: %s\n' "$*" >/dev/console
+}
+
+errf=/tmp/blkdbg-err
+
+console "data_mount=$(awk '$2 == "/data" { print $3 "," $4; exit }' /proc/mounts)"
+console "io_errors_before=$(dmesg | grep -c 'I/O error')"
+
+if dd if=/dev/zero of=/data/blkdbg-write bs=1M count=4 conv=fsync 2>"$errf"; then
+	sync
+	console "write_data=ok"
+else
+	console "write_data=fail err=$(tr '\n' ' ' <"$errf" | tr ' ' '_' | cut -c1-60)"
+fi
+
+# B スロット rootfs パーティションへの直接書き込み（更新書き込みの模擬）
+if dd if=/dev/zero of=/dev/mmcblk0p6 bs=1M count=2 conv=fsync 2>"$errf"; then
+	sync
+	console "write_p6=ok"
+else
+	console "write_p6=fail err=$(tr '\n' ' ' <"$errf" | tr ' ' '_' | cut -c1-60)"
+fi
+
+# page cache を落としてから読む（書いた直後のデータが cache に残ると
+# デバイスを読まずに成功してしまい、注入を検証できない）
+echo 3 >/proc/sys/vm/drop_caches
+if dd if=/data/blkdbg-write of=/dev/null bs=1M count=4 2>"$errf"; then
+	console "read_data=ok"
+else
+	console "read_data=fail err=$(tr '\n' ' ' <"$errf" | tr ' ' '_' | cut -c1-60)"
+fi
+
+if dd if=/dev/mmcblk0p5 of=/dev/null bs=1M count=2 2>"$errf"; then
+	console "read_p5=ok"
+else
+	console "read_p5=fail err=$(tr '\n' ' ' <"$errf" | tr ' ' '_' | cut -c1-60)"
+fi
+
+console "io_errors_after=$(dmesg | grep -c 'I/O error')"
+console "finished"
