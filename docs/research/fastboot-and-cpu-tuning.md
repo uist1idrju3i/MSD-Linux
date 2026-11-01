@@ -21,7 +21,7 @@ TechFeedの見出しは「Linuxを1秒で起動させる — たった1個のフ
 | initの置き換え | 1ファイルの静的`/init`がPID 1。devtmpfsをmountして仮想ディスクを読む | 可能だが、CardputerZeroのサービスを丸ごと置換できるわけではない | `configs/msd_cardputerzero_defconfig:13,15`でBusyBox initとmdevを採用し、起動スクリプトで機能を開始 | 立ち上がりは短くなる可能性があるが、②③④⑤⑥に高い影響。記事の単一initをそのまま移植しない | 各サービスの依存・起動時間、ホストテスト、実機全機能試験 |
 | デバイス探索・ドライバー | devtmpfsを使い、QEMUのATA diskを認識してから読む。Piのprobe時間を測っていない | Pi用のprobe停止・削減は可能でも、対象デバイスの機能を失うおそれ | カーネルはCM0向けDTSと周辺機能を含む。`initcall_debug`による実機内訳は未取得 | ①の改善候補だが、②③への回帰リスクが大きい | `initcall_debug`ログ、QEMU機能、実機UART |
 | 非同期probe・非同期起動 | 記事本文から使用を確認できず | 対応ドライバー単位で評価する必要 | 採用状況は未監査。設定だけで全probeの並列化を保証しない | 待ち時間を重ねる可能性【推測】。依存順の誤りは②③④の起動失敗につながる | boot traceで依存とクリティカルパスを確認 |
-| XIP、hibernate、snapshot boot | 記事本文から使用を確認できず | CM0の通常SD起動でXIPや休止状態復元を行う根拠なし | その採用を示す設定は確認できない | 対応ストレージ・firmware・RAM保存経路の追加コストが大きい。⑤に強い影響 | 対応条件の一次資料と実機試験が必要 |
+| XIP、hibernate、snapshot boot | 記事本文から使用を確認できず | SD（block device）はメモリマップできず XIP は適用不能。CONFIG_XIP_KERNEL は 32bit ARM+NOR 専用で arm64 対象外。AXFS は Buildroot が廃止【一次】 | その採用を示す設定は確認できない | 対応ストレージ・firmware・RAM保存経路の追加コストが大きい。⑤に強い影響 | 除外確定。[cramfs と XIP の調査](cramfs-xip.md) |
 | CPU周波数・時計 | 記事はKVM実行環境を指定するが、CPU型番・周波数・固定設定を報告しない | firmwareの設定範囲内で比較できるが、過電圧・overclockは別のリスク | `arm_boost=1`を指定。カーネルbase configはCPUFreqとondemand governorを有効にする | 高い周波数ならCPU-bound処理が短くなる可能性【推測】。熱・電力・安定性を損なうと⑤⑥に影響 | 周波数・温度・消費電力と起動区間を同時採取 |
 | ストレージの読み出し | 1 KiB block×1,024のrandom disk imageをQEMU仮想ATA diskとして読む。SDカード測定なし | SD速度・firmware・カード内部の挙動は再現しない | rootfsと`/data`はSD上。記事の速度値を転用できない | 低レイテンシ媒体なら記事と近づく可能性はあるが未測定。⑤の耐久性も別評価 | 実カードでcold/warm boot、読出しと同期書込みを測定 |
 | 実機手順 | UEFI boot用USBを作る説明はあるが、1秒の実機測定結果はなし | 対象機器はCM0ではない | 本リポジトリの実機測定なし | 記事のheadlineを性能目標の根拠にしない | 電源投入からUART、login、各機能readyの複数endpointを記録 |
