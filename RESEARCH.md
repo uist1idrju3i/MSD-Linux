@@ -58,6 +58,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [Raspberry Pi ファームウェア仕様の調査](docs/research/rpi-firmware-spec.md)
 - [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
 - [公式ソフトウェア構成](docs/research/official-software.md)
+- [フォントの調査](docs/research/fonts.md)
 - [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
 - [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
