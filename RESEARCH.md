@@ -65,6 +65,8 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
 - [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
 - [HDMI 外部ディスプレイ出力の調査](docs/research/hdmi-output.md)
+- [表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）](docs/research/display-servers.md)
+- [ウェブブラウザの調査](docs/research/web-browsers.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [未確認事項の追跡表](docs/research/open-questions.md)
 - [OS 候補の比較](docs/research/os-candidates.md)

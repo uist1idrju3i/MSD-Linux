@@ -42,7 +42,7 @@ Wayland・X11 は前提ではありません。表示先は fbdev（`/dev/fbN`�
 | PDF（pdf.js 代替） | `mutool draw`（mupdf）でページを PNG 化して fbv/fbi へ、`python-pymupdf` でページを直接 fb へ描画、`pdftoppm`（poppler）経由 | mupdf 1.23.9、python-pymupdf、poppler 25.10.0、qpdf、ghostscript 10.08.0 | AGPL-3.0+ / GPL-2.0+ | **pdf.js そのものは JS+DOM 依存で、duktape/mujs/quickjs では動かず現実的ではありません**。jfbview/fbpdf（fbdev PDF ビューア）は上流に存在するが未収録 |
 | リモートデスクトップ（装置の画面を外へ出す） | `kmsvnc`（KMS/DRM をキャプチャして VNC、未収録だが上流に実装あり）、`libvncserver`（自前サーバーの部品、0.9.15 収録）、`ffmpeg -f kmsgrab`（DRM プレーンキャプチャ→ストリーム送信、ffmpeg 収録）、`dispmanx_vnc`（FKMS 時のファームウェア面キャプチャ、未収録・KMS では効かない見込み） | libvncserver、ffmpeg | LGPL-2.1+ / GPL | x11vnc は X 前提で対象外 |
 | リモートデスクトップ（外部画面を装置に表示する） | `directvnc`（fbdev 上で動く VNC ビューア、未収録・上流に実装あり）、`sdl-freerdp`（FreeRDP の SDL クライアント、Buildroot の freerdp では SDL クライアント選択肢が無く要個別ビルド） | freerdp 2.11.8（X11/Wayland クライアントのみ） | Apache-2.0 | ビューア側は X/Wayland 前提のものが多く、fbdev 直結は薄い。freerdp の server/X11 client は X.Org 必須と Buildroot が明記 |
-| Web/文書系 | netsurf-fb（SDL framebuffer）、links `-g`（fbdev）、lynx/w3m+fbterm | 収録状況は [fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md) 参照 | 各種 | pdf.js 系の JS ブラウザは netsurf の JS 範囲では不十分見込み |
+| Web/文書系 | netsurf-fb（SDL framebuffer）、links `-g`（fbdev）、lynx/w3m+fbterm、cog（WPE WebKit、KMS/DRM 直） | 詳細は [web-browsers.md](web-browsers.md)、[fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md) 参照 | 各種 | pdf.js 系の JS ブラウザは netsurf の JS 範囲では不十分見込み |
 
 補足：
 
