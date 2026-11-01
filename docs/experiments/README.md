@@ -51,3 +51,4 @@
 | [2026-10-31-qemu-1112-bisect](2026-10-31-qemu-1112-bisect.md) | なし | 2026-10-31 | 完了 | QEMU 11.1.2 の icount 約 8 倍遅延を git bisect（パッチ適用・実時間 45 秒判定）で調査。第一 bad は `01b223f895`（A-profile の WFE sleeping）。upstream 報告は方針上しない。 |
 | [2026-10-31-cramfs-rootfs](2026-10-31-cramfs-rootfs.md) | なし | 2026-10-31 | 完了（QEMU のみ） | cramfs rootfs（`CONFIG_CRAMFS=y` + host-cramfs、p5 に dd 注入）を QEMU で起動。全ゲート通過・ready 177 s だが image は 25.2 MB で squashfs（22.3 MB）より約 13 % 増。file<16MB・gid 8bit・timestamp なしの制限もあり不採用を確定。 |
 | [2026-11-01-jobs-wallclock](2026-11-01-jobs-wallclock.md) | なし | 2026-11-01 | 完了 | `--jobs` の壁時計測定。jobs1=10421s、jobs2=1452s（ccache 温存で比較不可）。cold 推定は約 2 倍速。linux-custom 不在時に worker 全滅する欠陥を発見し preflight を追加。 |
+| [2026-11-01-s17-dmlw-blkdebug](2026-11-01-s17-dmlw-blkdebug.md) | S17 | 2026-11-01 | 完了（QEMU のみ） | dm-log-writes は 5 回とも replay 後イメージとゲスト計測 SHA-256 が完全一致（書き込み列の完全再生を確認）。blkdebug は注入範囲どおりに発火したが、QEMU の SD モデルがホスト側エラーをゲストに伝播しないことを確定（ゲスト観測型のストレージ障害検証は実機依存）。 |

@@ -1,0 +1,8 @@
+# S17 実験専用カーネル fragment（製品 linux.fragment には追加しない）
+# output2 などの実験ツリーで BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES に
+# linux.fragment と一緒に渡す（手順は docs/experiments の S17 記録を参照）。
+CONFIG_BLK_DEV_LOOP=y
+CONFIG_BLK_DEV_DM=y
+CONFIG_DM_FLAKEY=y
+CONFIG_DM_DELAY=y
+CONFIG_DM_LOG_WRITES=y

@@ -137,6 +137,6 @@ fi
 exec "$QEMU" "${qemu_args[@]}" -M "$QEMU_MACHINE" -m "$QEMU_MEMORY" \
 	-kernel "$KERNEL" \
 	-dtb "$DTB" \
-	-drive "file=${QEMU_IMAGE},if=sd,format=raw" \
+	-drive "file=${QEMU_DRIVE_FILE:-${QEMU_IMAGE}},if=sd,format=${QEMU_DRIVE_FORMAT:-raw}" \
 	-append "${append_args[*]}" \
 	-nographic -serial mon:stdio
