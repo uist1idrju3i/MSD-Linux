@@ -48,7 +48,12 @@ fi
 # 候補は行番号の round-robin で分ける。共有 sdcard は QEMU_COPY_IMAGE=1 の既定により
 # 各起動で tmpdir に複製されるため並列 QEMU は衝突しない（QMP ソケットは未指定時なし）。
 if [ -z "$WORKER" ] && [ "$JOBS" -gt 1 ]; then
+	# ワーカーは base_tree を複製して動く。ツリーが無いと全ワーカーが cp で即死するため先に止める。
 	base_tree="$LINUX_DIR"
+	if [ ! -r "$base_tree/.config" ] || [ ! -r "$base_tree/arch/arm64/boot/Image" ]; then
+		printf 'Linux build and .config are required in %s before --jobs>1 (workers clone that tree).\n' "$base_tree" >&2
+		exit 2
+	fi
 	jobs_tmp="$(mktemp -d "${OUTPUT_DIR}/.kernel-sweep-jobs.XXXXXX")"
 	# 失敗時は jobs_tmp を残す（ワーカーログを調べるため）。成功時のみ掃除する。
 	trap 'if [ "$?" -eq 0 ]; then rm -rf "$jobs_tmp"; else printf "kept %s\n" "$jobs_tmp" >&2; fi' EXIT
