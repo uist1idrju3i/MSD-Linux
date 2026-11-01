@@ -16,6 +16,14 @@ docker/msd-dev bash
 
 イメージの選定理由、実行例、GHCR からの取得方法は[開発用コンテナーの説明](../docker/README.md)を参照してください。ホストに依存を導入する方法も引き続き利用できます。
 
+コミット前に CI と同じ文字・リンク検査をローカルで回すフックを用意しています。任意ですが、PR 到達後の往復を減らせます。
+
+```sh
+git config core.hooksPath .githooks
+```
+
+staged なファイルに JIS X 0213 の検査と、リポジトリ全体のリンク検査を実行します（`MSD_SKIP_LINKCHECK=1` でリンク検査を省略可）。`docs/` と `.agents/` の Markdown は yomiyasu の推敲候補も警告として出します。
+
 ## イメージのビルド
 
 リポジトリのルートで、Buildroot の defconfig を適用してビルドします。
