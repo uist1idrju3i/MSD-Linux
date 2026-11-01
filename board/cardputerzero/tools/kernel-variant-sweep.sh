@@ -43,6 +43,32 @@ if [ ! -r "$CANDIDATES" ]; then
 	exit 2
 fi
 
+# 計測の再現性: 実行時点の暖かさ（ccache 統計とビルドツリーの状態）を
+# CSV と同名の .meta sidecar に残し、後から warm/cold の混在を疑えるようにする。
+# ドライバーと各ワーカーがそれぞれ自分の CSV 名で 1 回だけ書く。
+write_meta() {
+	local meta=$1 cfg="${LINUX_DIR}/.config" img="${LINUX_DIR}/arch/arm64/boot/Image"
+	{
+		printf 'date_utc: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+		printf 'nproc: %s\n' "$(nproc 2>/dev/null || echo unknown)"
+		printf 'git_head: %s\n' "$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
+		printf 'jobs: %s\n' "$JOBS"
+		printf 'worker: %s\n' "${WORKER:-driver-or-single}"
+		printf 'no_qemu: %s\n' "$NO_QEMU"
+		printf 'candidates: %s\n' "$CANDIDATES"
+		printf 'output_dir: %s\n' "$OUTPUT_DIR"
+		printf 'linux_dir: %s\n' "$LINUX_DIR"
+		printf 'config_mtime_utc: %s\n' "$(stat -c %y "$cfg" 2>/dev/null | cut -d. -f1 || echo unknown)"
+		printf 'image_bytes: %s\n' "$(stat -c %s "$img" 2>/dev/null || echo unknown)"
+		if command -v ccache >/dev/null 2>&1; then
+			printf 'ccache_stats:\n'
+			ccache -s 2>/dev/null | sed 's/^/  /'
+		else
+			printf 'ccache_stats: unavailable\n'
+		fi
+	} > "$meta"
+}
+
 # ドライバー: --jobs N>1 のときワーカーを N 本並列起動し、CSV を結合する。
 # 各ワーカーは linux-custom を複製した独立ツリーで動き（reflink 優先・なければ完全コピー）、
 # 候補は行番号の round-robin で分ける。共有 sdcard は QEMU_COPY_IMAGE=1 の既定により
@@ -54,6 +80,7 @@ if [ -z "$WORKER" ] && [ "$JOBS" -gt 1 ]; then
 		printf 'Linux build and .config are required in %s before --jobs>1 (workers clone that tree).\n' "$base_tree" >&2
 		exit 2
 	fi
+	write_meta "${CSV}.meta"
 	jobs_tmp="$(mktemp -d "${OUTPUT_DIR}/.kernel-sweep-jobs.XXXXXX")"
 	# 失敗時は jobs_tmp を残す（ワーカーログを調べるため）。成功時のみ掃除する。
 	trap 'if [ "$?" -eq 0 ]; then rm -rf "$jobs_tmp"; else printf "kept %s\n" "$jobs_tmp" >&2; fi' EXIT
@@ -113,6 +140,7 @@ if [ "$NO_QEMU" = false ] && { [ ! -r "$SDCARD" ] || [ ! -r "$DTB" ]; }; then
 	printf 'QEMU image or DTB missing; use --no-qemu or set SWEEP_SDCARD/SWEEP_DTB.\n' >&2
 	exit 2
 fi
+write_meta "${CSV}.meta"
 
 tmp="$(mktemp -d "${OUTPUT_DIR}/.kernel-sweep.XXXXXX")"
 trap 'cp "$tmp/base.config" "$CONFIG"; cp "$tmp/base.Image" "$IMAGE"; rm -rf "$tmp"' EXIT
