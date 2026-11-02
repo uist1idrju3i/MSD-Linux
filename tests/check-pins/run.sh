@@ -13,11 +13,59 @@ import shutil
 import sys
 import tempfile
 from datetime import date
+from unittest.mock import patch
+from urllib.request import HTTPRedirectHandler
 
 root = pathlib.Path(sys.argv[1])
 spec = importlib.util.spec_from_file_location("check_pins", root / ".github/scripts/check-pins.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+
+requests = []
+
+
+def capture_request(request, timeout):
+    assert timeout == 20
+    requests.append(request)
+    return io.BytesIO(b"fixture")
+
+
+with patch.dict(module.os.environ, {"GITHUB_TOKEN": "fixture-token"}):
+    with patch.object(module, "urlopen", capture_request):
+        for url, authenticated in (
+            ("https://api.github.com/repos/example/project/releases/latest", True),
+            ("https://api.github.com:443/repos/example/project/releases/latest", True),
+            ("https://toolchains.bootlin.com/downloads/releases/toolchains/", False),
+            ("https://gitlab.com/buildroot.org/buildroot/-/raw/main/file", False),
+            ("https://raw.githubusercontent.com/actions/runner-images/main/README.md", False),
+            ("http://api.github.com/repos/example/project/releases/latest", False),
+            ("https://api.github.com:8443/repos/example/project/releases/latest", False),
+            ("https://api.github.com.example.test/releases/latest", False),
+            ("https://api.github.com@example.test/releases/latest", False),
+            ("https://example.test@api.github.com/releases/latest", False),
+        ):
+            assert module.fetch(url) == "fixture"
+            request = requests[-1]
+            assert request.get_header("Authorization") == (
+                "Bearer fixture-token" if authenticated else None
+            ), url
+            for code in (301, 302, 303, 307, 308):
+                for destination in (
+                    "https://example.test/redirected",
+                    "http://api.github.com/redirected",
+                    "https://api.github.com/redirected",
+                ):
+                    redirected = HTTPRedirectHandler().redirect_request(
+                        request, None, code, "redirect", {}, destination
+                    )
+                    assert redirected.get_header("Authorization") is None
+print("ok - GitHub credentials are restricted to the HTTPS API and never redirected")
+
+with patch.dict(module.os.environ, {"GITHUB_TOKEN": ""}):
+    with patch.object(module, "urlopen", capture_request):
+        assert module.fetch("https://api.github.com/repos/example/project") == "fixture"
+        assert requests[-1].get_header("Authorization") is None
+print("ok - unauthenticated GitHub requests remain supported")
 
 sha = "234188315037848e5b07d65b85d38edc64095caa"
 fixtures = []
