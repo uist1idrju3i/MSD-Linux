@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-02-release-key-audit](2026-11-02-release-key-audit.md) | なし | 2026-11-02 | host手順確認・本番運用は未実装 | 試験鍵5回・60コマンドで導出、署名、改変と別鍵の拒否を確認。Secret登録・設定変更・実機移行は未実施。 |
 | [2026-11-02-security-design-audit](2026-11-02-security-design-audit.md) | なし | 2026-11-02 | 静的監査・設計保存 | OpenBSD原則を処理・IPC・通信・拒否試験へ対応づけ、設定と強制の混同等を訂正。新policyと実機は未試験。 |
 | [2026-11-02-dev-image-scan](2026-11-02-dev-image-scan.md) | なし | 2026-11-02 | 報告器の確認完了・OCIは未更新 | 2184件中の公開ゲート対象1件が従来の本文では省略されていた。改修後のA/A 5回で全件JSONと本文のhashが一致。 |
 | [2026-11-02-sbom-generation](2026-11-02-sbom-generation.md) | なし | 2026-11-02 | 静的試験完了 | 通常buildのLinux版・CPEを補正し、show-infoと構成要素・依存を照合。5回同じhash。VMと開発用OCIのhost-tar差による失敗も保存。 |

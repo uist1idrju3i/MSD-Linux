@@ -1,5 +1,7 @@
 # A/B 更新と書き込み領域
 
+管理者が行うRelease保護と鍵の準備は [署名鍵の設定手順](RELEASE-SIGNING.md)、設計・未実装部分・確認結果は [Releaseの調査](research/release-security.md) を参照してください。以下のmanifest署名は、配布用SD image全体の署名ではありません。
+
 ## パーティション構成
 
 SD カードは MBR 形式です。p4 を拡張パーティションにし、p5 以降を論理パーティションとして配置します。

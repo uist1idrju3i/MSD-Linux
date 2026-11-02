@@ -79,6 +79,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### ユーザー空間・セキュリティ
 
 - [OpenBSDの考え方とLinuxの具体的な権限設計](docs/research/security/README.md) — 原則、処理別の権限・可変設定、通信開始前の防御、未実装部分の検証条件。
+- [Release保護・Ed25519鍵・署名job](docs/research/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
 - [セキュリティ・ハードニング](docs/research/security-hardening.md)
 - [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
 - [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)

@@ -1,0 +1,10 @@
+command,exit,bytes,sha256
+tests/check-doc-size/run.sh,0,803,52ecabadaa43aad40fc5e9640f9d96fecbc6d506aaf3cdf4ccc4a3c93b5bf56d
+tests/check-links/run.sh,0,838,ca508235dbe15e1702ee7a376a88f0b003affd776745ba2e3552642a258b5768
+tests/check-jisx0213/run.sh,0,1208,759dba7b239a9f28dedca71aef74850b6c6cc56a74fe0bc3c8f8ed404d0a85f0
+tests/check-site/run.sh,0,761,d8a545eda8318691be9688afe01445f052ea4c6e0f1ffbbcd750d2aaa8f0b330
+tests/msd-update/run.sh,0,1511,8af7b0a38ad8b4f12c39abdd0d475e5a1b8a1b01125815749c10969301c95321
+tests/check-pins/run.sh,0,1632,f2162d6a6bef6f75844f2690338ab5b9a4b12fcd0291cb7a88cbeb4896d226c3
+docker/msd-dev actionlint .github/workflows/*.yml,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+docker/msd-dev python3 .github/scripts/shellcheck-tracked.py,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+"""$HOME/.cache/msd-linux-zizmor/bin/zizmor"" --offline --format=github .github/workflows/",0,649,8106dbd117510a7e01e8858948f9dfe20c02d18c43cca5832e5a11a8b54c3f87
