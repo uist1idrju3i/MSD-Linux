@@ -1,5 +1,7 @@
 # 電源断耐性・A/B 更新
 
+現在のfilesystem・更新方式の比較は[保存領域](alternatives/filesystems.md)、[更新framework](alternatives/updates.md)、[TUF・Uptane](alternatives/update-metadata.md)にまとめています。以下の版情報・未確認事項は主に2026-10-18の調査記録であり、現行採用版・最新状態と混同しません。firmwareと電源断、S10の経緯はこの文書に残します。
+
 ## 6. 電源遮断耐性
 
 【一次】RPi Linux `rpi-6.18.y` は 2026-10-16 時点で 6.18.57 です（Makefile の SUBLEVEL=57）。参考値は mainline 7.3-rc7、stable 7.2.11 です。https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/Makefile#L2-L4<br>https://www.kernel.org/releases.json
@@ -63,7 +65,7 @@ GPIO6 の立下りを 500 ms デバウンスして SysRq-U を実行します。
 
 ## 7. OTA / A-B
 
-### 7.1 各ツールのバージョン
+### 7.1 2026-10-18時点の版の照合
 | ツール(何の版か) | 版(日付) | 確認度 | 出典URL |
 |---|---|---|---|
 | RAUC | v1.15.2（2026-03-27） | 一次（公式 releases API、2026-10-18 に公開資料で確認） | https://api.github.com/repos/rauc/rauc/releases/latest |
@@ -81,7 +83,7 @@ GPIO6 の立下りを 500 ms デバウンスして SysRq-U を実行します。
 - 【未確認】「Pi 3 / Zero 2 は tryboot 非対応」とする検索要約には裏付けがありません。Ubuntu 25.10 以降の piboot-try が Zero 2 W 対応表にあるものの、autoboot 方式ではないとの情報も確認できていません。
 
 ### 7.3 RAUC（custom bootloader backend）
-- 【未確認】custom backend は get-primary / set-primary / get-state / set-state を実装するとの情報があります。出典URLは特定できていません。
+- 【一次・2026-11-02追記】custom backendの`get-primary` / `set-primary` / `get-state` / `set-state`と終了値を、固定した公式integration資料で確認しました。契約と本機の未確認範囲は[更新framework比較](alternatives/updates.md#rauc-解消できた未確認と残る範囲)にまとめています。https://github.com/rauc/rauc/blob/e1b95d538c41178d3ac19069a2602988fe339fb8/docs/integration.rst
 - 【未確認】Rtone の raspberrypi-firmware-rauc-bootloader-backend は tryboot 用ですが、試行回数カウンターがなく、primary が起動できない場合に他スロットへフォールバックしないとの情報があります。HAOS の `rpi-tryboot.sh` は RPi 5 向けとの情報もあります。出典URLは特定できていません。
 - 【一次】RAUC の PR #1599「bootchooser: add Raspberry Pi firmware initial support」は、2026-10-18 に open（未マージ、merged=false）と確認されています。https://api.github.com/repos/rauc/rauc/pulls/1599<br>https://github.com/rauc/rauc/pull/1599
 - 【一次】`meta-rauc-community` の公開ツリーには RPi 向けの U-Boot 方式があります。tryboot の実装がないとの検索結果は未確認です。https://github.com/rauc/meta-rauc-community/tree/4d666ae4956f1cfacbd1a844f2e1794cb7784e2a

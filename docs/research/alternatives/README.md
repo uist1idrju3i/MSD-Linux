@@ -14,8 +14,11 @@
 | [init・service監視・device管理](init.md) | PID 1、supervision、readiness、権限制限を分け、s6、runit、OpenRC、systemd、Dinit等を比べる |
 | [暗号・TLS](crypto.md) | OpenSSLの保守期限、署名専用libraryとTLSの別々の選定、依存・license・旧算法の削減条件 |
 | [署名・鍵・配信の信頼境界](signing.md) | raw Ed25519の移植条件、manifest、鍵rotation、SemVerとanti-rollback、HTTPSと特権helperの分離 |
+| [保存領域と実行時検証](filesystems.md) | SquashFS/EROFS、ext4/F2FS、設定overlay、dm-verity/fs-verityの違いと移行条件 |
+| [A/B更新framework](updates.md) | 現行処理とRAUC・SWUpdate・Mender・Rugix・OSTree・bootc・sysupdateの責務、署名形式、CM0の未確認範囲 |
+| [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
 
-これは全使用コンポーネントの比較完了を示す索引ではありません。保存・更新framework、周辺機能、開発・CIの比較は、既存文書の再評価も含めて継続しています。鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
+これは全使用コンポーネントの比較完了を示す索引ではありません。network・周辺機能、開発・CIの比較は、既存文書の再評価も含めて継続しています。鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
 
 ## 判定をそろえる
 
