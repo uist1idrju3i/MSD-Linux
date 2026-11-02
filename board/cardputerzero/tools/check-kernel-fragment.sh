@@ -24,6 +24,7 @@ done < "$config"
 
 failures=0
 line_number=0
+declare -A requested=() first_line=()
 while IFS= read -r line || [ -n "$line" ]; do
 	line_number=$((line_number + 1))
 	symbol=
@@ -38,6 +39,16 @@ while IFS= read -r line || [ -n "$line" ]; do
 		continue
 	fi
 
+	if [[ -v "requested[$symbol]" ]]; then
+		printf '%s:%d: duplicate %s=%s (line %s requested %s)\n' \
+			"$fragment" "$line_number" "$symbol" "$expected" \
+			"${first_line[$symbol]}" "${requested[$symbol]}" >&2
+		failures=$((failures + 1))
+		continue
+	fi
+	requested["$symbol"]=$expected
+	first_line["$symbol"]=$line_number
+
 	got=${actual[$symbol]-n}
 	if [ "$got" != "$expected" ]; then
 		printf '%s:%d: expected %s=%s, got %s\n' \
@@ -47,7 +58,7 @@ while IFS= read -r line || [ -n "$line" ]; do
 done < "$fragment"
 
 if [ "$failures" -ne 0 ]; then
-	printf 'Kernel fragment check failed: %d mismatch(es).\n' "$failures" >&2
+	printf 'Kernel fragment check failed: %d duplicate(s) or mismatch(es).\n' "$failures" >&2
 	exit 1
 fi
 

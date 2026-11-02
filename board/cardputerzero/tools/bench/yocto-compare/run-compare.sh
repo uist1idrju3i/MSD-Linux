@@ -33,15 +33,32 @@ done
 for v in condition kernel dtb image root_dev root_fstype ready_marker mode runs out; do
 	[[ -n "${!v}" ]] || { usage; exit 2; }
 done
+[[ "$condition" =~ ^[A-Za-z0-9][A-Za-z0-9_.-]*$ ]] || { usage; exit 2; }
+for value in "$runs" "$timeout"; do
+	[[ "$value" =~ ^[1-9][0-9]{0,8}$ ]] || { usage; exit 2; }
+done
+for input in "$kernel" "$dtb" "$image"; do
+	[[ -f "$input" && -r "$input" && -s "$input" ]] || { printf 'Unreadable or empty input: %s\n' "$input" >&2; exit 2; }
+done
 case "$mode" in
 	icount) icount='shift=0,sleep=off' ;;
 	tcg) icount= ;;
 	*) usage; exit 2 ;;
 esac
 
-mkdir -p -- "$out"
+mkdir -- "$out" || { printf 'Output must be a new directory with an existing parent: %s\n' "$out" >&2; exit 2; }
 csv="${out}/results.csv"
-[[ -f "$csv" ]] || printf 'condition,mode,boot,first_boot,t_root,t_init,t_ready,login,wall_login_s,result\n' >"$csv"
+printf 'condition,mode,boot,first_boot,t_root,t_init,t_ready,login,wall_login_s,result\n' >"$csv"
+pid=''
+cleanup() {
+	if [[ -n "$pid" ]]; then
+		kill "$pid" 2>/dev/null || true
+		wait "$pid" 2>/dev/null || true
+	fi
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 work_image="${out}/${condition}-${mode}.img"
 cp --sparse=always -- "$image" "$work_image"
@@ -51,7 +68,10 @@ while ((padded < size)); do padded=$((padded * 2)); done
 truncate -s "$padded" "$work_image"
 {
 	printf 'condition=%s mode=%s icount=%s\n' "$condition" "$mode" "${icount:-off}"
-	sha256sum -- "$kernel" "$dtb" "$image"
+	printf 'runs=%s timeout=%s root_dev=%s root_fstype=%s ready_marker=%s\n' "$runs" "$timeout" "$root_dev" "$root_fstype" "$ready_marker"
+	git -C "$REPO_ROOT" rev-parse HEAD
+	git -C "$REPO_ROOT" status --short --untracked-files=no
+	sha256sum -- "$kernel" "$dtb" "$image" "$0" "$RUN_QEMU" "$SCRIPT_DIR/summarize.py" "$(command -v "${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}")"
 	"${QEMU_SYSTEM_AARCH64:-qemu-system-aarch64}" --version | head -n 1
 } >"${out}/${condition}-${mode}.provenance"
 
@@ -61,6 +81,7 @@ for ((boot = 0; boot <= runs; boot++)); do
 	start_ns="$(date +%s%N)"
 	env KERNEL_IMAGE="$kernel" DTB_IMAGE="$dtb" ROOT_DEVICE="$root_dev" \
 		ROOT_FSTYPE="$root_fstype" QEMU_COPY_IMAGE=0 QEMU_HASH_IMAGE=0 \
+		QEMU_DRIVE_FILE="$work_image" QEMU_DRIVE_FORMAT=raw \
 		QEMU_EXTRA_APPEND='printk.time=1 msd.sweep=1' QEMU_ICOUNT="$icount" \
 		"$RUN_QEMU" "$work_image" </dev/null >"$log" 2>&1 &
 	pid=$!
@@ -68,20 +89,26 @@ for ((boot = 0; boot <= runs; boot++)); do
 	deadline=$((SECONDS + timeout))
 	while ((SECONDS < deadline)); do
 		sleep 0.2
+		if ! kill -0 "$pid" 2>/dev/null; then
+			result=exited
+			break
+		fi
 		if grep -aFq -- "$ready_marker" "$log" && grep -aEq '(^|[[:space:]])[^[:space:]]* ?login:' "$log"; then
 			end_ns="$(date +%s%N)"
 			wall="$(awk -v a="$end_ns" -v b="$start_ns" 'BEGIN { printf "%.1f", (a - b) / 1e9 }')"
 			login=1 result=pass
 			break
 		fi
-		if ! kill -0 "$pid" 2>/dev/null; then
-			result=exited
-			break
-		fi
 	done
 	kill "$pid" 2>/dev/null || true
-	wait "$pid" 2>/dev/null || true
+	qemu_status=0
+	wait "$pid" 2>/dev/null || qemu_status=$?
+	if [[ "$result" == pass && "$qemu_status" != 0 && "$qemu_status" != 143 ]]; then
+		result=exited
+	fi
+	pid=''
 	python3 - "$log" "$ready_marker" "$csv" "$condition" "$mode" "$boot" "$login" "$wall" "$result" <<'PY'
+import csv as csv_module
 import re, sys
 log, marker, csv, cond, mode, boot, login, wall, result = sys.argv[1:]
 ts = re.compile(r"^\[\s*(\d+\.\d+)\]\s?(.*)$")
@@ -97,13 +124,14 @@ for line in open(log, errors="replace"):
         found["t_init"] = t
     if "t_ready" not in found and msg.strip() == marker:
         found["t_ready"] = t
-if result == "pass" and "t_ready" not in found:
-    result = "missing_t_ready"
+if result == "pass" and len(found) != 3:
+    result = "missing_timestamps"
 row = [cond, mode, boot, "1" if boot == "0" else "0", found.get("t_root", ""),
        found.get("t_init", ""), found.get("t_ready", ""), login, wall, result]
-with open(csv, "a") as f:
-    f.write(",".join(row) + "\n")
+with open(csv, "a", newline="") as f:
+    csv_module.writer(f, lineterminator="\n").writerow(row)
 print(",".join(row))
 PY
 done
+python3 "$SCRIPT_DIR/summarize.py" "$csv" --min-runs "$runs" >"${out}/summary.csv"
 rm -f -- "$work_image"
