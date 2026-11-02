@@ -19,7 +19,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 | rootfs | **SquashFS または EROFS の読み取り専用 rootfs + overlayfs（upper は tmpfs / zram）+ 小さな ext4 RW データ領域** | Raspberry Pi の公開ホワイトペーパーは、読み取り専用 rootfs と書き込み領域を分ける方式を推奨しています。 | https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-3-Making%20a%20more%20resilient%20file%20system.pdf |
 | A/B | **MBR + tryboot / autoboot.txt + RAUC custom バックエンド**（試行カウンターとフォールバックは自前） | Raspberry Pi の文書は tryboot を全モデル向けに説明していますが、BCM2837 での実動作は未確認です。U-Boot なしで追加段を避けられる可能性はあります（推測）。公式 image-rota は GPT を使い、対応モデルは Pi 4 / 5 です。代替候補の Rugix は Pi 3 で rpi-tryboot、Zero 2 W で rpi-uboot を示します。 | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/autoboot.adoc#L5-L60<br>https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.yaml#L2-L11<br>https://api.github.com/repos/rauc/rauc/pulls/1599<br>https://rugix.org/docs/bakery/devices/ |
 | UI | **CLI 専用を候補とし、HDMI / vc4 を外す構成を実測で評価** | ユーザー要件に基づく案です。HDMI / vc4 を外した実機での動作は未確認です。 | — |
-| 電源断 | 読み取り専用 rootfs に加え、GPIO6 の通知・同期を実装。正常停止は hold-up 時間の測定後に判断 | package patch が通知と同期を SysRq-U より前に実行します。バックライト消灯と disabled GPIO の処理は維持しています。 | [電源断処理](../power-and-updates.md#63-powerfail_suo) |
+| 電源断 | 読み取り専用 rootfs に加え、GPIO6 の通知・同期を実装。正常停止は hold-up 時間の測定後に判断 | package patch が通知と同期を SysRq-U より前に実行します。バックライト消灯と disabled GPIO の処理は維持しています。 | [電源断処理](../storage/power-loss.md#63-powerfail_suo) |
 
 ### 設計上の未決事項
 | 論点 | 選択肢・留保 | 状態 |
@@ -39,7 +39,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 | 起動完了条件・測定 | [実機で測る項目](hardware-measurements.md#実機が届いたら最初に測る項目優先順の案) |
 | カーネル・UI | [起動・カーネル調査](../boot/sequence.md) |
 | rootfs・init・libc | [ユーザー空間・セキュリティ調査](../userspace-and-security.md) |
-| A/B・電源断 | [電源・更新方式の調査](../power-and-updates.md) |
+| A/B・電源断 | [電源・更新方式の調査](../storage/README.md) |
 | 開発中のログ | [開発中の観測手段](observability.md#開発中の観測手段) |
 | SSH / VPN | [SSH・VPN・鍵保管の調査](../ssh-vpn-and-keys.md) |
 | 名称の由来 | [RESEARCH.md](../../../RESEARCH.md) |

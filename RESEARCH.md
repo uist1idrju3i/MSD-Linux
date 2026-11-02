@@ -75,10 +75,11 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### 保存・電源断・更新
 
 - [GitHub Releasesからの端末自己更新](docs/research/release-client/README.md) — TUF client・公開側tool、匿名取得、時刻・信頼状態・A/B復旧の設計。製品実装は未着手。
-- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
-- [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
-- [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
-- [ファイルシステムの候補と設計例](docs/research/fs-candidates.md)
+- [保存領域・電源断・A/Bの入口](docs/research/storage/README.md) — 現在のコードと過去の記録の読み分け。
+- [配置とフラッシュ境界](docs/research/storage/layout-and-flash.md)、[割当単位と小さいファイル](docs/research/storage/allocation-and-small-files.md)、[媒体の測定案](docs/research/storage/media-measurements.md)
+- [電源遮断の調査](docs/research/storage/power-loss.md)、[A/Bの設計履歴](docs/research/storage/ab-design-history.md)、[復旧とwatchdog](docs/research/storage/recovery-and-watchdog.md)
+- [読み取り専用領域・ファイルシステム・障害試験](docs/research/storage/write-policy-and-s3.md)
+- [ファイルシステムの候補と設計例](docs/research/storage/filesystem-candidates.md)
 
 #### ユーザー空間・セキュリティ
 
@@ -139,15 +140,15 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ## 電源断耐性
 
-読み取り専用 rootfs、永続領域、F2FS/btrfs/UBIFS/ext4 の採否、powerfail_suo、dm-verity、zram など電源断耐性の方針と候補、電源断試験の計画は、 [power-and-updates.md](docs/research/power-and-updates.md) に分けました。
+FS・FTL・powerfail_suo・zramなどの公開資料と当時の案は[電源遮断の調査](docs/research/storage/power-loss.md)、実カードで測る条件は[媒体の測定案](docs/research/storage/media-measurements.md)に分けました。現在の配置・書き込み経路は[保存領域の入口](docs/research/storage/README.md)で確認します。実カードの電断耐性を確認した結果ではありません。
 
 ## A/B 更新
 
-tryboot と制約、更新フレームワーク（SWUpdate / RAUC / Mender / rauc-hawkbit-updater）の比較は、 [power-and-updates.md](docs/research/power-and-updates.md) に分けました。
+現在の操作は[更新手順](docs/UPDATE.md)、最新の採否比較は[更新framework](docs/research/alternatives/updates.md)と[更新metadata](docs/research/alternatives/update-metadata.md)、当時のtryboot・framework・S10の経緯は[A/Bの設計履歴](docs/research/storage/ab-design-history.md)に分けました。失敗検知の未実装の案とS11の確認範囲は[復旧とwatchdog](docs/research/storage/recovery-and-watchdog.md)を参照します。
 
 ## ストレージとフラッシュの要点
 
-パーティションと FAT 内部の整列、ext4 のブロックサイズと journal、discard、SD カードの測定条件は [storage-and-flash.md](docs/research/storage-and-flash.md) にあります。記録中の 1,024 B ブロックなどは当時の値です。現行 CI は 4,096 B を検査しており、現在の生成条件は [build workflow](.github/workflows/build.yml) と [ボード設定](board/cardputerzero/) で確認します。整列だけで速度・寿命・電断耐性が向上したとは判断しません。
+パーティションとFAT内部の整列は[配置と境界](docs/research/storage/layout-and-flash.md)、ext4の作成条件と小さいファイルは[割当単位](docs/research/storage/allocation-and-small-files.md)、discardと実カードの条件は[媒体の測定案](docs/research/storage/media-measurements.md)にあります。記録中の1,024 Bブロックや「現行（整列なし）」は当時の値です。現在の`align = 4M`と4,096 Bの生成・検査は[genimage.cfg](board/cardputerzero/genimage.cfg)と[build workflow](.github/workflows/build.yml)で確認します。整列だけで速度・寿命・電断耐性が向上したとは判断しません。
 
 ## セキュリティとハードニングの要点
 

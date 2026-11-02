@@ -51,7 +51,7 @@ PR #150 の比較は、固定イメージとパッケージ管理の不一致、
 - RAUC の Raspberry Pi firmware 用 bootchooser（PR #1599）は、2026-11-02 の確認でも open のままで、最終更新は 2026-08-14 です【一次: https://github.com/rauc/rauc/pull/1599】。最新リリースは v1.15.2（2026-03-27）です【一次: https://github.com/rauc/rauc/releases】。
 - tryboot と組み合わせるなら、RAUC の custom bootloader backend で `autoboot.txt` を書き換える handler を作ることになります（[verification-and-ops.md](verification-and-ops.md) §2）。得られるのは、署名・検証済みの bundle 形式、slot の状態管理、Yocto の `bundle` レシピによる生成です。失うものは、`msd-update` の小ささと、BusyBox だけで完結する構成です【推測】。
 - 採否は実験で決めます。比べる指標は、更新途中の電源断から前の世代に戻れる割合（現行の電断試験と同じ回数）、イメージに増えるサイズと RAM、起動時間です。U-Boot を入れないことを前提条件にします。
-- SWUpdate と Mender は、既成の Raspberry Pi 構成が U-Boot を前提にしており、CM0 の構成もありません（[power-and-updates.md](../power-and-updates.md) §7.4）。Yocto に移っても、この前提は変わりません。
+- SWUpdate と Mender は、既成の Raspberry Pi 構成が U-Boot を前提にしており、CM0 の構成もありません（[power-and-updates.md](../storage/README.md) §7.4）。Yocto に移っても、この前提は変わりません。
 - `uki.bbclass` と `kernel-fit-image.bbclass` は Wrynose の oe-core にありますが、EFI か U-Boot を前提にしています【一次: oe-core `meta/classes-recipe/`】。firmware がカーネルを直接起動する MSD の経路には合いません。
 
 ### 2.3 dm-verity
@@ -64,7 +64,7 @@ BCM2837 には OTP の secure boot がないため、カードごと差し替え
 
 ### 2.4 ファイルシステム（EROFS・cramfs・F2FS・btrfs）
 
-EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../fs-candidates.md)、[cramfs-xip.md](../cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
+EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../storage/filesystem-candidates.md)、[cramfs-xip.md](../cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
 
 ### 2.5 init と libc（systemd・musl）
 

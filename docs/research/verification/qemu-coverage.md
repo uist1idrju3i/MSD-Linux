@@ -13,7 +13,7 @@ S1–S17は[試験台帳](experiment-catalog.md)だけで更新します。以�
 | 起動時間の内訳と K1・K2・U1 | initcall と init script ごとの時間。K2（ftrace の無効化）だけが基準を満たした | [2026-10-20-qemu-boottime](../../experiments/2026-10-20-qemu-boottime.md) |
 | 調整項目の既定値 | sysctl、ブロックデバイス、モジュールパラメーター | [2026-10-19-tunables-dump](../../experiments/2026-10-19-tunables-dump.md) |
 | `kernel8.img` の gzip 再圧縮 | 実装済み。`post-image.sh` が `pigz -11 -n` で圧縮し、展開結果を `cmp` で比べる。読み込み時間は実機で測る | #8（[BUILD.md](../../BUILD.md)） |
-| `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](../storage-and-flash.md)） |
+| `align = 4M` | 実装済み。CI の `check-image-layout.sh` が全開始位置の 8192 sector 境界を検査する。性能は実機で測る | #19（[ストレージ](../storage/README.md)） |
 | Lynis による監査（QEMU のみ） | 製品イメージの監査を 3 回行い、結果が同じこと。指摘の分類。対応は sysctl 候補と S1・S14 で行う | [2026-10-21-qemu-lynis](../../experiments/2026-10-21-qemu-lynis.md) |
 | 温度 | bcm2835_thermal に `temp` プロパティを追加し任意温度を注入して読み出し経路を確認 | [2026-10-29-qemu-thermal-temp](../../experiments/2026-10-29-qemu-thermal-temp.md) |
 | `quiet`・`lpj=` | icount での起動時間の差。`quiet` は実時間 −20%、`lpj=` は効果なし | [2026-10-29-quiet-lpj](../../experiments/2026-10-29-quiet-lpj.md) |

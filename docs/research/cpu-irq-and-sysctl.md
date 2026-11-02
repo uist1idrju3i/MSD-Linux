@@ -73,7 +73,7 @@ Buildroot の BusyBox パッケージは、`CONFIG_BB_SYSCTL=y` で procps-ng �
 | `rp_filter`、redirect と source route の拒否、`icmp_echo_ignore_broadcasts` など | 候補 | Wi-Fi や USB ネットワークのクライアントとして使う場合に、送信元を偽った packet、経路の書き換え、broadcast 宛ての ping への応答を防げます。値を書くだけで済みます。 |
 | 既定値と同じ値も明示して固定する方針 | 候補 | カーネルの更新で既定値が変わっても設定が変わらないようにする考え方で、固定版の更新確認と同じ発想です。 |
 | BBR + fq、TCP バッファー 8 MB、backlog 系、keepalive | 不採用 | サーバー向けの値で、512 MB の端末には大きすぎます。基底の defconfig では `TCP_CONG_BBR=m`、`NET_SCH_FQ=m` です。 |
-| zswap | 不採用 | SD 上の swap が前提で、電源断への耐性と書き込み寿命に反します。使うなら zram にします（[電源断耐性・A/B 更新](power-and-updates.md)）。 |
+| zswap | 不採用 | SD 上の swap が前提で、電源断への耐性と書き込み寿命に反します。使うなら zram にします（[電源断耐性・A/B 更新](storage/README.md)）。 |
 | I/O スケジューラーを `none` にする | 実機で測る | 記事の対象は SSD 上の virtio-blk です。カーネルは単一キューのデバイスに `mq-deadline` を選びます（`elevator.c`）。SD 上の rootfs はほぼ読むだけなので、差は小さいと見ています。【推測】SquashFS の読み込みには `read_ahead_kb` のほうが効く可能性があります。【推測】 |
 | `noatime`、`compress=zstd:1`（Btrfs） | 対応済み・対象外 | `/data` はすでに `noatime` で、rootfs は SquashFS です。Btrfs は使いません。 |
 | マウントオプションの強化（`nodev`、`nosuid`、`noexec`） | 一部対応済み | `fstab` の `/data` は `noatime,nodev,nosuid,data=ordered,errors=remount-ro`、`/tmp` と `/run` は `nosuid,nodev` です。`/data` の `noexec` は互換性の確認が要るため未採用で、[セキュリティ・ハードニング](security-hardening.md)の研究項目に残っています。QEMU での確認結果は [2026-10-21-qemu-data-noexec](../experiments/2026-10-21-qemu-data-noexec.md) にあります。 |
