@@ -78,3 +78,9 @@ tests/trivy-gate/run.sh
 ```
 
 この調査で、Cから手動構築したQEMUや外部toolchainの内包物まで、Trivyがすべて認識すると確認したわけではありません。package一覧、SBOM、固定版の更新確認、上流のadvisoryと併用します。
+
+## arm64に残ったRustビルド用キャッシュ
+
+[公開前検査のarm64 artifact](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41499766995/artifacts/13169865900)には、Brotli以外にも38件のblocking検出があった。対象はいずれも`root/.cache/puccinialin/cargo/registry/src/`内のlockfileであり、実行バイナリーの38件の脆弱性と同一視しない。
+
+同版のarm64 wheelは公開されていたが許可hashがなく、CIはsdistから構築していた。対応hashを加え、OCIではwheel限定・pip cache無効化・同じレイヤーでの不要cache除去と、除去後のoffline監査を行う。版・snapshot・脆弱性gateは変更しない。source lockfileとの照合、配布物のhash・license、回帰試験・変異試験・5回の選択結果と確認範囲は[検証記録](../experiments/2026-11-02-zizmor-wheel-cache.md)を参照する。

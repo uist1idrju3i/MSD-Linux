@@ -225,10 +225,17 @@ RUN target_arch="${TARGETARCH:-$(dpkg --print-architecture)}" \
 
 COPY .github/zizmor-requirements.txt /tmp/zizmor-requirements.txt
 RUN python3 -m venv /opt/zizmor \
-    && /opt/zizmor/bin/pip install --require-hashes -r /tmp/zizmor-requirements.txt \
+    && /opt/zizmor/bin/pip install --only-binary=:all: --no-cache-dir \
+        --require-hashes -r /tmp/zizmor-requirements.txt \
     && ln -s /opt/zizmor/bin/zizmor /usr/local/bin/zizmor \
     && rm -rf /opt/zizmor/bin/pip* /opt/zizmor/lib/python3.*/site-packages/pip* \
-    && rm -f /tmp/zizmor-requirements.txt
+    && rm -f /tmp/zizmor-requirements.txt \
+    && rm -rf /root/.cache \
+    && test ! -e /root/.cache \
+    && printf '%s\n' 'name: smoke' 'on: workflow_dispatch' 'permissions: {}' \
+        'jobs:' '  smoke:' '    runs-on: ubuntu-26.04' \
+        '    steps:' '      - run: echo ok' \
+        | /usr/local/bin/zizmor --offline --no-progress --format=json -
 
 RUN printf '\nUMASK 027\n' >> /etc/login.defs \
     && ln -s /opt/qemu/bin/qemu-system-aarch64 /usr/local/bin/qemu-system-aarch64 \

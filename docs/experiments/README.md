@@ -61,3 +61,4 @@
 | [2026-11-02-buildroot-yocto-artifacts](2026-11-02-buildroot-yocto-artifacts.md) | なし | 2026-11-02 | 完了（ビルドと QEMU、各 1 回） | Buildroot の完成イメージを cold で 3,280.65 s でビルドし、QEMU の A/B 試験に合格。Yocto の最小イメージは 7,444 s。同じ defconfig と fragment でもカーネルの `.config` は 544 項目違い、`CONFIG_THERMAL` が Yocto では `n`。 |
 | [2026-11-02-yocto-qemu-boot](2026-11-02-yocto-qemu-boot.md) | なし | 2026-11-02 | 完了（QEMU のみ） | Yocto の最小イメージが、getty を `ttyAMA1` に 1 行足した写しで、開発用 QEMU の `raspi3ap` と標準 QEMU の `raspi3b` のどちらでもログイン画面まで起動した（各 5 / 5）。標準 QEMU の `raspi3ap` は ASB が未実装で止まる。 |
 | [2026-11-02-yocto-wrynose-probe](2026-11-02-yocto-wrynose-probe.md) | なし | 2026-11-02 | 完了（ビルドのみ） | kas-container と rootless Docker で、仮置きの Wrynose 6.0.4 の最小イメージと M5 BSP（.ko 16 個、dtbo 3 個）がビルドできた。MSD のカーネル 6.18.59 と fragment でも通った。起動は未確認。 |
+| [2026-11-02-zizmor-wheel-cache](2026-11-02-zizmor-wheel-cache.md) | なし | 2026-11-02 | 実施中 | arm64のRust cache由来38検出をruntimeと分け、source lockfile・両CPUの同版wheel・許可hashを照合。native CIは確認中。 |
