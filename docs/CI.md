@@ -6,7 +6,7 @@
 |---|---|---|
 | `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
 | `publish-dev-image.yml` | 開発イメージの入力変更を含む PR、`main` への push、手動実行 | PR では amd64 と arm64 のイメージを作成して Trivy で検査します。修正版のある HIGH / CRITICAL の脆弱性と、HIGH / CRITICAL の秘密情報・設定不備を公開ゲートにします。`main` への push と手動実行では GHCR へ公開し、SBOM と provenance の attestation を付けます。手動実行では `dry_run` を有効にすると公開を省けます。 |
-| `dev-image-scan.yml` | 毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗せず、イメージがまだ公開されていない場合も検査を省きます。 |
+| `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
 | `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
@@ -69,6 +69,8 @@ quote	<exact-path>	<characters>	<reason>
 ## SBOM、VEX、カーネル設定
 
 開発用OCIの週次検査は、先頭100件を超える検出事項も`development-image-findings` artifactの`trivy-findings.json`に保存します。検出した秘密値やコードを含みうる元のTrivy JSONはアップロードしません。artifactには`image-provenance.json`、`trivy-version.txt`、Issueと同じ本文も含めます。検出の適用範囲と確認の限界は[開発用OCIの調査](research/development-image-security.md)を参照してください。
+
+公開前の`publish-dev-image.yml`も元のTrivy JSONをartifactへアップロードせず、選別した全件、レポート、image IDと検査器の版、SPDX SBOMを保存します。SBOMそのものの機密情報の有無を確認したという意味ではありません。[GitHub Actionsの監査](research/github-actions-audit.md)に権限・実行条件・監視漏れを記録しています。
 
 `build.yml` の成果物には CycloneDX SBOM とビルド時間ログを含めます。`security.yml` の `buildroot-security-report` 成果物には SBOM と VEX JSON を保存します。VEX の `analysis.state` は `exploitable`、`resolved`、`resolved_with_pedigree` などの判定です。ジョブサマリーにはコンポーネント別の exploitable 件数、CVSS 上位の CVE、解決済み件数を表示します。
 

@@ -292,7 +292,50 @@ assert module.parse_ls_remote(f"{sha}\trefs/heads/rpi-6.18.y\n") == {"rpi-6.18.y
 assert module.parse_buildroot_branch(
     '[submodule "vendor/buildroot"]\n path = vendor/buildroot\n url = x\n branch = 2026.08.x\n'
 ) == "2026.08.x"
-assert module.parse_release('{"tag_name":"v1.2.3"}') == "v1.2.3"
+version_calls = []
+
+
+def github_versions(url):
+    version_calls.append(url)
+    if url.endswith("&page=1"):
+        return json.dumps([{"tag_name": "v2.0.0"}] * 100)
+    return json.dumps([
+        {"tag_name": "v1.99.0"},
+        {"tag_name": "v10.0.0"},
+        {"tag_name": "v11.0.0", "draft": True},
+        {"tag_name": "v12.0.0", "prerelease": True},
+        {"tag_name": "v99.0.0-rc1"},
+        {"tag_name": None},
+    ])
+
+
+with patch.object(module, "fetch", github_versions):
+    assert module.latest_github_version("example/tool") == "v10.0.0"
+assert version_calls == [
+    "https://api.github.com/repos/example/tool/releases?per_page=100&page=1",
+    "https://api.github.com/repos/example/tool/releases?per_page=100&page=2",
+]
+with patch.object(module, "fetch", return_value=json.dumps([
+    {"name": "v0.6.9"}, {"name": "v0.6.17.1"}, {"name": "v0.7.0-rc1"},
+])) as fetch_tags:
+    assert module.latest_github_version("example/tool", tags=True) == "v0.6.17.1"
+    assert "/tags?" in fetch_tags.call_args.args[0]
+for response in ('[]', '{}', '[1]', '[{"tag_name":"nightly"}]'):
+    with patch.object(module, "fetch", return_value=response):
+        try:
+            module.latest_github_version("example/tool")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid or empty versions must remain unknown")
+with patch.object(module, "fetch", return_value=json.dumps([{"tag_name": "v1.0"}] * 100)):
+    try:
+        module.latest_github_version("example/tool")
+    except ValueError as error:
+        assert "pagination limit" in str(error)
+    else:
+        raise AssertionError("truncated pagination must not produce a latest version")
+print("ok - selects numeric stable versions across pages and majors, including tag-only projects")
 quoted_env = fixture()
 (quoted_env / ".github/workflows/publish-dev-image.yml").write_text(
     "env:\n  TRIVY_VERSION: \"0.76.0\"\n  OTHER: 'v1'\n  PLAIN: 2.0\n"
@@ -436,15 +479,16 @@ def fake_fetch(url):
             '  bool "aarch64 glibc stable 2025.08-1"\n'
         )
     if "rhysd/actionlint" in url:
-        return '{"tag_name":"1.7.12"}'
+        return '[{"tag_name":"1.7.12"}]'
     if "koalaman/shellcheck" in url:
-        return '{"tag_name":"0.11.0"}'
+        return '[{"tag_name":"0.11.0"}]'
     if "hadolint/hadolint" in url:
-        return '{"tag_name":"v2.15.1"}'
+        return '[{"tag_name":"v2.15.1"}]'
     if "kernel-hardening-checker" in url:
-        return '{"tag_name":"v0.6.17.1"}'
+        assert "/tags?" in url
+        return '[{"name":"v0.6.17.1"}]'
     if "aquasecurity/trivy" in url:
-        return '{"tag_name":"v0.76.0"}'
+        return '[{"tag_name":"v0.76.0"}]'
     return "| `ubuntu-26.04` | current image |\n"
 
 

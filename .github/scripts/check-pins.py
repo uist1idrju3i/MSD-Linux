@@ -28,11 +28,6 @@ def parse_ls_remote(text: str) -> dict[str, str]:
     return result
 
 
-def parse_release(data: str) -> str:
-    value = json.loads(data)
-    return str(value.get("tag_name") or value.get("name") or "")
-
-
 def parse_runner_labels(text: str) -> list[tuple[str, str]]:
     labels: list[tuple[str, str]] = []
     for line in text.splitlines():
@@ -402,6 +397,28 @@ def fetch_dockerhub_digest(repository: str, tag: str) -> str:
     return str(data.get("digest") or "")
 
 
+def latest_github_version(repository: str, *, tags: bool = False) -> str:
+    endpoint = "tags" if tags else "releases"
+    versions: list[str] = []
+    for page in range(1, 101):
+        entries = json.loads(fetch(
+            f"https://api.github.com/repos/{repository}/{endpoint}?per_page=100&page={page}"
+        ))
+        if not isinstance(entries, list) or any(not isinstance(item, dict) for item in entries):
+            raise ValueError("GitHub version listing must be an array of objects")
+        for entry in entries:
+            if not tags and (entry.get("draft") or entry.get("prerelease")):
+                continue
+            version = entry.get("name" if tags else "tag_name")
+            if isinstance(version, str) and re.fullmatch(r"v?\d+(?:\.\d+)+", version):
+                versions.append(version)
+        if len(entries) < 100:
+            if not versions:
+                raise ValueError("No stable numeric GitHub versions found")
+            return max(versions, key=branch_key)
+    raise ValueError("GitHub version pagination limit reached")
+
+
 def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     rows: list[tuple[str, str, str, str, str]] = []
     fixed = "unknown"
@@ -604,13 +621,15 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
             )
             if commit:
                 pinned_value = f"{pin} ({commit})"
+        tags = env_name == "KHC_TAG"
+        source = f"https://github.com/{repository}/{'tags' if tags else 'releases'}"
         try:
-            latest = parse_release(fetch(f"https://api.github.com/repos/{repository}/releases/latest"))
+            latest = latest_github_version(repository, tags=tags)
             status = "最新" if pin.lstrip("v") == latest.lstrip("v") else "更新あり"
         except (OSError, URLError, ValueError) as exc:
             print(f"{name}: upstream check unavailable: {exc}", file=sys.stderr)
             latest, status = "確認できず", "確認できず"
-        rows.append((name, pinned_value, latest, status, f"https://github.com/{repository}/releases"))
+        rows.append((name, pinned_value, latest, status, source))
 
     qemu_pin = docker_arg(root, "QEMU_VERSION") or "未設定"
     qemu_url = "https://download.qemu.org/"
@@ -644,9 +663,7 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     )
     trivy_url = "https://github.com/aquasecurity/trivy/releases"
     try:
-        latest_trivy = parse_release(
-            fetch("https://api.github.com/repos/aquasecurity/trivy/releases/latest")
-        )
+        latest_trivy = latest_github_version("aquasecurity/trivy")
         trivy_status = (
             "最新"
             if trivy_pin.lstrip("v") == latest_trivy.lstrip("v")
