@@ -1,0 +1,8 @@
+run_id,stage,try,start_utc,end_utc,exit,errors,warnings,result,note
+E-1,core-image-minimal,1,2026-11-02T00:26:10Z,2026-11-02T00:26:11Z,1,1,0,fail,PermissionError /work/build: kas-container did not detect rootless Docker (docker context default)
+E-2,core-image-minimal,2,2026-11-02T00:27:32Z,2026-11-02T02:31:36Z,0,0,3,pass,cold build; warnings: shared sstate + 2 fetch fallbacks to MIRRORS
+B1-1,m5stack-cardputerzero-probe,1,,2026-11-02T02:34:54Z,2,1,0,fail,local layer path resolved under KAS_WORK_DIR
+B1-2,m5stack-cardputerzero-probe,2,,2026-11-02T02:37:15Z,2,1,0,fail,do_qa_patch: Missing Upstream-Status [patch-status]
+B1-3,m5stack-cardputerzero-probe,3,,2026-11-02T02:38:10Z,2,1,0,fail,same QA error right after adding Upstream-Status; cause not identified
+B1-4,m5stack-cardputerzero-probe,4,,2026-11-02T02:42:12Z,0,0,1,pass,16 ko + 3 dtbo + 2 fw + keymap; vermagic 6.18.33-v8
+B2-1,m5stack-cardputerzero-probe+msd-kernel,1,,2026-11-02T03:03:50Z,0,0,1,pass,kernel 6.18.59 (b3495ea) + linux.fragment; 16 ko vermagic 6.18.59-v8 preempt_rt
