@@ -1,0 +1,11 @@
+architecture,repeat,filename,sha256,status
+aarch64,1,zizmor-1.31.1-py3-none-manylinux_2_24_aarch64.whl,d9b36840c560a8abe39d9ef3d077239aabf6d572c5c2b629c970592a617dbf6f,passed
+aarch64,2,zizmor-1.31.1-py3-none-manylinux_2_24_aarch64.whl,d9b36840c560a8abe39d9ef3d077239aabf6d572c5c2b629c970592a617dbf6f,passed
+aarch64,3,zizmor-1.31.1-py3-none-manylinux_2_24_aarch64.whl,d9b36840c560a8abe39d9ef3d077239aabf6d572c5c2b629c970592a617dbf6f,passed
+aarch64,4,zizmor-1.31.1-py3-none-manylinux_2_24_aarch64.whl,d9b36840c560a8abe39d9ef3d077239aabf6d572c5c2b629c970592a617dbf6f,passed
+aarch64,5,zizmor-1.31.1-py3-none-manylinux_2_24_aarch64.whl,d9b36840c560a8abe39d9ef3d077239aabf6d572c5c2b629c970592a617dbf6f,passed
+x86_64,1,zizmor-1.31.1-py3-none-manylinux_2_28_x86_64.whl,58e878eb2dbd2c6183c105e1ac28c14f7dd1eca44a783f1fe2a69647d012c410,passed
+x86_64,2,zizmor-1.31.1-py3-none-manylinux_2_28_x86_64.whl,58e878eb2dbd2c6183c105e1ac28c14f7dd1eca44a783f1fe2a69647d012c410,passed
+x86_64,3,zizmor-1.31.1-py3-none-manylinux_2_28_x86_64.whl,58e878eb2dbd2c6183c105e1ac28c14f7dd1eca44a783f1fe2a69647d012c410,passed
+x86_64,4,zizmor-1.31.1-py3-none-manylinux_2_28_x86_64.whl,58e878eb2dbd2c6183c105e1ac28c14f7dd1eca44a783f1fe2a69647d012c410,passed
+x86_64,5,zizmor-1.31.1-py3-none-manylinux_2_28_x86_64.whl,58e878eb2dbd2c6183c105e1ac28c14f7dd1eca44a783f1fe2a69647d012c410,passed

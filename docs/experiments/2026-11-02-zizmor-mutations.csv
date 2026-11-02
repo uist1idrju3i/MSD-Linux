@@ -1,0 +1,6 @@
+mutation,exit_status,result
+allow_source,1,detected
+allow_pip_cache,1,detected
+keep_build_cache,1,detected
+late_cleanup_layer,1,detected
+skip_runtime_smoke,1,detected
