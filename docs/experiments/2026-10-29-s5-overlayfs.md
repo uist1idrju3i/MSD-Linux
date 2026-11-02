@@ -22,7 +22,7 @@
 
 - 現行構成で whiteout・rename・新規作成はすべて tmpfs upper で完結し、lower（squashfs `/etc` と `/data/etc`）は起動中に書き込まれない。
 - `/data/etc` への直接書き込みは稼働中の merged view に即時反映された。永続設定の書き込み経路として機能するが、Linux の overlayfs 文書は「マウント中の lower の変更は未定義」としているため、運用時の書き込みは maintenance window 中など参照がないタイミングに限定するのが安全。
-- 永続化が必要な設定は「`/data/etc` への書き込み + merged への即時反映」で実現可能。A/B 更新で image 側 `/etc` の既定値が `/data/etc` の同名ファイルに隠される問題は、schema/version migration か個別管理の設計判断が残る（[調査文書](../research/readonly-data-and-fs.md) の【推測】項目）。
+- 永続化が必要な設定は「`/data/etc` への書き込み + merged への即時反映」で実現可能。A/B 更新で image 側 `/etc` の既定値が `/data/etc` の同名ファイルに隠される問題は、schema/version migration か個別管理の設計判断が残る（[調査文書](../research/storage/write-policy-and-s3.md) の【推測】項目）。
 - xattr の挙動は BusyBox に `setfattr`/`getfattr` がなく未検証。
 
 ## 失敗した試行・注意
