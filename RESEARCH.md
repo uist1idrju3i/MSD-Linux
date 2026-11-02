@@ -95,12 +95,14 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### 開発・測定・未確認事項
 
 - [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
+- [全依存の一覧・最新版候補・版と脆弱性の監視範囲](docs/research/dependencies/README.md)
 - [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
 - [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。
 - [未確認事項と次の確認](docs/research/verification/open-questions.md) — 重複した問いを主題別に統合。元の記述は記録CSVに保持。
 - [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
+- [GitHub Actionsの権限・実行境界と監視の監査](docs/research/github-actions-audit.md)
 
 #### 比較・履歴・出典と意匠
 

@@ -1,0 +1,608 @@
+[
+  {
+    "ref": "msd-linux",
+    "dependsOn": [
+      "brcmfmac_sdio-firmware-rpi",
+      "busybox",
+      "host-dosfstools",
+      "host-e2fsprogs",
+      "host-fakeroot",
+      "host-genimage",
+      "host-gettext-tiny",
+      "host-libopenssl",
+      "host-libzlib",
+      "host-makedevs",
+      "host-mtools",
+      "host-patchelf",
+      "host-pigz",
+      "host-squashfs",
+      "ifupdown-scripts",
+      "initscripts",
+      "kbd",
+      "libopenssl",
+      "libv4l",
+      "libzlib",
+      "m5stack-cardputerzero",
+      "rpi-firmware",
+      "skeleton-init-sysv",
+      "toolchain-external-bootlin",
+      "urandom-scripts"
+    ]
+  },
+  {
+    "ref": "brcmfmac_sdio-firmware-rpi",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "busybox",
+    "dependsOn": [
+      "e2fsprogs",
+      "host-ccache",
+      "host-skeleton",
+      "kmod",
+      "skeleton-init-sysv",
+      "util-linux"
+    ]
+  },
+  {
+    "ref": "e2fsprogs",
+    "dependsOn": [
+      "host-ccache",
+      "host-pkgconf",
+      "host-skeleton",
+      "skeleton-init-sysv",
+      "util-linux"
+    ]
+  },
+  {
+    "ref": "host-acl",
+    "dependsOn": [
+      "host-attr",
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-attr",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-autoconf",
+    "dependsOn": [
+      "host-ccache",
+      "host-libtool",
+      "host-m4",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-autoconf-archive",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-automake",
+    "dependsOn": [
+      "host-autoconf",
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-bison",
+    "dependsOn": [
+      "host-ccache",
+      "host-m4",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-blake3",
+    "dependsOn": [
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-ccache",
+    "dependsOn": [
+      "host-blake3",
+      "host-hiredis",
+      "host-pkgconf",
+      "host-skeleton",
+      "host-xxhash",
+      "host-zstd"
+    ]
+  },
+  {
+    "ref": "host-dosfstools",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-dtc",
+    "dependsOn": [
+      "host-bison",
+      "host-ccache",
+      "host-flex",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-e2fsprogs",
+    "dependsOn": [
+      "host-ccache",
+      "host-libarchive",
+      "host-pkgconf",
+      "host-skeleton",
+      "host-util-linux"
+    ]
+  },
+  {
+    "ref": "host-expat",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-fakeroot",
+    "dependsOn": [
+      "host-acl",
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-flex",
+    "dependsOn": [
+      "host-autoconf",
+      "host-automake",
+      "host-ccache",
+      "host-libtool",
+      "host-m4",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-genimage",
+    "dependsOn": [
+      "host-ccache",
+      "host-libconfuse",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-gettext-tiny",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-hiredis",
+    "dependsOn": [
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-kmod",
+    "dependsOn": [
+      "host-ccache",
+      "host-meson",
+      "host-pkgconf",
+      "host-skeleton",
+      "host-xz"
+    ]
+  },
+  {
+    "ref": "host-libarchive",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-libconfuse",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-libffi",
+    "dependsOn": [
+      "host-autoconf",
+      "host-automake",
+      "host-ccache",
+      "host-libtool",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-libopenssl",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-libtool",
+    "dependsOn": [
+      "host-ccache",
+      "host-m4",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-libzlib",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-lz4",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-lzip",
+    "dependsOn": [
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-lzo",
+    "dependsOn": [
+      "host-ccache",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-m4",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-makedevs",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-meson",
+    "dependsOn": [
+      "host-ccache",
+      "host-ninja",
+      "host-python-installer",
+      "host-python-pypa-build",
+      "host-python-setuptools",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-mtools",
+    "dependsOn": [
+      "host-ccache",
+      "host-lzip",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-ninja",
+    "dependsOn": [
+      "host-ccache",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-patchelf",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-pigz",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-pkgconf",
+    "dependsOn": [
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-flit-core",
+    "dependsOn": [
+      "host-ccache",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-installer",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-flit-core",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-packaging",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-installer",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-pypa-build",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-installer",
+      "host-python-packaging",
+      "host-python-pyproject-hooks",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-pyproject-hooks",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-installer",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-setuptools",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-installer",
+      "host-python-pypa-build",
+      "host-python-wheel",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python-wheel",
+    "dependsOn": [
+      "host-ccache",
+      "host-python-flit-core",
+      "host-python-installer",
+      "host-python-pypa-build",
+      "host-python3",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-python3",
+    "dependsOn": [
+      "host-autoconf",
+      "host-autoconf-archive",
+      "host-automake",
+      "host-ccache",
+      "host-expat",
+      "host-libffi",
+      "host-libtool",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-skeleton",
+    "dependsOn": []
+  },
+  {
+    "ref": "host-squashfs",
+    "dependsOn": [
+      "host-ccache",
+      "host-lz4",
+      "host-lzo",
+      "host-skeleton",
+      "host-xz",
+      "host-zstd"
+    ]
+  },
+  {
+    "ref": "host-util-linux",
+    "dependsOn": [
+      "host-autoconf",
+      "host-automake",
+      "host-ccache",
+      "host-libtool",
+      "host-pkgconf",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-xxhash",
+    "dependsOn": [
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-xz",
+    "dependsOn": [
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "host-zstd",
+    "dependsOn": [
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "ifupdown-scripts",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "initscripts",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "kbd",
+    "dependsOn": [
+      "host-autoconf",
+      "host-automake",
+      "host-ccache",
+      "host-libtool",
+      "host-pkgconf",
+      "host-skeleton",
+      "libzlib",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "kmod",
+    "dependsOn": [
+      "host-ccache",
+      "host-meson",
+      "host-pkgconf",
+      "host-skeleton",
+      "libopenssl",
+      "libzlib",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "libopenssl",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "libzlib",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "libv4l",
+    "dependsOn": [
+      "host-ccache",
+      "host-meson",
+      "host-pkgconf",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "libzlib",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "linux",
+    "dependsOn": [
+      "host-bison",
+      "host-ccache",
+      "host-flex",
+      "host-kmod",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "m5stack-cardputerzero",
+    "dependsOn": [
+      "host-ccache",
+      "host-dtc",
+      "host-skeleton",
+      "linux",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "rpi-firmware",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "skeleton-init-common",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton"
+    ]
+  },
+  {
+    "ref": "skeleton-init-sysv",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-common"
+    ]
+  },
+  {
+    "ref": "toolchain-external-bootlin",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "urandom-scripts",
+    "dependsOn": [
+      "host-ccache",
+      "host-skeleton",
+      "skeleton-init-sysv"
+    ]
+  },
+  {
+    "ref": "util-linux",
+    "dependsOn": [
+      "host-autoconf",
+      "host-automake",
+      "host-ccache",
+      "host-libtool",
+      "host-pkgconf",
+      "host-skeleton",
+      "libzlib",
+      "skeleton-init-sysv"
+    ]
+  }
+]

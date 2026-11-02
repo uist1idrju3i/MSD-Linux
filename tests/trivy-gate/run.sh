@@ -6,7 +6,9 @@ repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 python3 - "${repo_root}" <<'PY'
 import importlib.util
 import json
+import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -201,4 +203,124 @@ print("ok - reports findings without gating in report mode")
 print("ok - command exits nonzero only for blocking findings")
 print("ok - blocking findings precede severity-sorted truncated details")
 print("ok - sanitized JSON preserves all findings and no secret payloads")
+
+
+def workflow_step(workflow, name):
+    match = re.search(rf"(?m)^\s+(?:- )?name: {re.escape(name)}\s*$",
+                      workflow.read_text())
+    assert match, name
+    body = workflow.read_text()[match.end():]
+    source = body.split("        run: |\n", 1)[1]
+    lines = []
+    for line in source.splitlines():
+        if line and not line.startswith("          "):
+            break
+        lines.append(line[10:] if line else "")
+    assert lines, name
+    return "\n".join(lines) + "\n"
+
+
+publisher = root / ".github/workflows/publish-dev-image.yml"
+artifact = publisher.read_text().split("name: msd-dev-trivy-${{ matrix.arch }}", 1)[1]
+artifact = artifact.split("\n      - ", 1)[0]
+paths = artifact.split("path: |\n", 1)[1].split("if-no-files-found:", 1)[0]
+assert {line.strip() for line in paths.splitlines() if line.strip()} == {
+    "${{ runner.temp }}/trivy-findings.json",
+    "${{ runner.temp }}/trivy-report.md",
+    "${{ runner.temp }}/image-provenance.json",
+    "${{ runner.temp }}/trivy-version.txt",
+    "${{ runner.temp }}/sbom.spdx.json",
+}
+
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    binary = temp / "bin"
+    binary.mkdir()
+    docker = binary / "docker"
+    docker.write_text('''#!/usr/bin/env python3
+import json
+import os
+from pathlib import Path
+import sys
+args = sys.argv[1:]
+with open(os.environ["DOCKER_CALLS"], "a") as log:
+    log.write(args[0] + "\\n")
+if args[0] == "pull":
+    if os.environ.get("PULL_FAILURE"):
+        print(os.environ["PULL_FAILURE"], file=sys.stderr)
+        sys.exit(1)
+elif args[:2] == ["image", "inspect"]:
+    if args[-1] == "{{.Id}}":
+        print("sha256:" + "a" * 64)
+    else:
+        print(json.dumps({"image_id": "sha256:" + "a" * 64}))
+elif args[0] == "save":
+    Path(args[args.index("--output") + 1]).write_bytes(b"fixture")
+elif args[0] == "run":
+    print("Version: fixture")
+else:
+    raise SystemExit("unexpected docker command")
+''', encoding="utf-8")
+    docker.chmod(0o755)
+    environment = dict(os.environ, PATH=f"{binary}:{os.environ['PATH']}")
+    pull_script = workflow_step(
+        root / ".github/workflows/dev-image-scan.yml", "Pull latest development image"
+    )
+    for index, failure in enumerate(("manifest unknown", "unauthorized", "network timeout", "")):
+        run_dir = temp / str(index)
+        run_dir.mkdir()
+        output = run_dir / "output"
+        calls = run_dir / "docker-calls"
+        env = dict(environment, RUNNER_TEMP=str(run_dir), GITHUB_OUTPUT=str(output),
+                   IMAGE="example.invalid/image:latest", DOCKER_CALLS=str(calls),
+                   PULL_FAILURE=failure)
+        pulled = subprocess.run(["bash", "-euo", "pipefail", "-c", pull_script],
+                                cwd=root, env=env, capture_output=True, text=True)
+        if failure:
+            assert pulled.returncode != 0
+            assert not output.exists()
+            assert calls.read_text() == "pull\n"
+        else:
+            assert pulled.returncode == 0, pulled.stderr
+            assert output.read_text() == "image_available=true\n"
+            assert (run_dir / "msd-dev.tar").is_file()
+            assert json.loads((run_dir / "image-provenance.json").read_text())["image_id"]
+
+    (temp / "trivy.json").write_text(json.dumps(report), encoding="utf-8")
+    prepared = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", workflow_step(publisher, "Prepare sanitized scan findings")],
+        cwd=root, env=dict(environment, RUNNER_TEMP=str(temp), DOCKER_CALLS=str(temp / "calls"),
+                           TRIVY_VERSION="fixture", TRIVY_DIGEST="sha256:" + "a" * 64),
+        capture_output=True, text=True,
+    )
+    assert prepared.returncode == 0, prepared.stderr
+    for name in ("trivy-findings.json", "trivy-report.md", "image-provenance.json", "trivy-version.txt"):
+        assert "AKIAFAKEMARKER" not in (temp / name).read_text()
+    selected = json.loads((temp / "trivy-findings.json").read_text())
+    assert selected["counts"] == counts and len(selected["findings"]) == 6
+    for payload, expected in ((report, 1), (clean_report, 0)):
+        (temp / "trivy.json").write_text(json.dumps(payload), encoding="utf-8")
+        summary = temp / "summary.md"
+        summary.write_text("", encoding="utf-8")
+        gated = subprocess.run(
+            ["bash", "-e", "-c", workflow_step(publisher, "Gate image findings")],
+            cwd=root, env=dict(os.environ, RUNNER_TEMP=str(temp), GITHUB_STEP_SUMMARY=str(summary)),
+            capture_output=True, text=True,
+        )
+        assert gated.returncode == expected, (gated.returncode, gated.stderr)
+        assert summary.read_text() == (temp / "trivy-gate.md").read_text()
+        assert summary.read_text() and "AKIAFAKEMARKER" not in summary.read_text()
+    (temp / "trivy.json").write_text("invalid JSON", encoding="utf-8")
+    failed_report = subprocess.run(
+        ["bash", "-e", "-c", workflow_step(
+            root / ".github/workflows/dev-image-scan.yml", "Report latest image findings")],
+        cwd=root, env=dict(os.environ, RUNNER_TEMP=str(temp),
+                           GITHUB_OUTPUT=str(temp / "report-output"),
+                           GITHUB_STEP_SUMMARY=str(temp / "report-summary")),
+        capture_output=True, text=True,
+    )
+    assert failed_report.returncode != 0
+print("ok - publisher artifacts exclude raw scan JSON and actual report step filters payloads")
+print("ok - pull failures stay failed; a successful pull records the image and enables scanning")
+print("ok - publisher gate preserves failures through tee under GitHub's default bash shell")
 PY

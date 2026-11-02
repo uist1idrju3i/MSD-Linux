@@ -116,6 +116,19 @@ jobs:
             --format json \
             --output /work/trivy.json
 
+      - name: Prepare sanitized scan findings
+        run: |
+          python3 .github/scripts/trivy-gate.py report "$RUNNER_TEMP/trivy.json" \
+            --findings-json "$RUNNER_TEMP/trivy-findings.json" \
+            > "$RUNNER_TEMP/trivy-report.md"
+          docker image inspect msd-dev:ci --format \
+            '{"image_id":{{json .Id}},"os":{{json .Os}},"architecture":{{json .Architecture}}}' \
+            > "$RUNNER_TEMP/image-provenance.json"
+          docker run --rm \
+            --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "ghcr.io/aquasecurity/trivy:${TRIVY_VERSION}@${TRIVY_DIGEST}" \
+            --version > "$RUNNER_TEMP/trivy-version.txt"
+
       - name: Generate SPDX SBOM
         env:
           TRIVY_IMAGE: ghcr.io/aquasecurity/trivy
@@ -132,12 +145,16 @@ jobs:
         with:
           name: msd-dev-trivy-${{ matrix.arch }}
           path: |
-            ${{ runner.temp }}/trivy.json
+            ${{ runner.temp }}/trivy-findings.json
+            ${{ runner.temp }}/trivy-report.md
+            ${{ runner.temp }}/image-provenance.json
+            ${{ runner.temp }}/trivy-version.txt
             ${{ runner.temp }}/sbom.spdx.json
           if-no-files-found: error
 
       - name: Gate image findings
         run: |
+          set -o pipefail
           python3 .github/scripts/trivy-gate.py gate "$RUNNER_TEMP/trivy.json" |
             tee "$RUNNER_TEMP/trivy-gate.md" >> "$GITHUB_STEP_SUMMARY"
 
