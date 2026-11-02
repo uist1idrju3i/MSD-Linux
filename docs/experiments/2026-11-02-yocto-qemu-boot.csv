@@ -1,0 +1,18 @@
+run_id,qemu,machine,mem,image,console,start_utc,init_s,login_wall_s,result,note
+Q1,stock-10.2.1,raspi3ap,512M,e.wic,ttyAMA0,,,,fail,synchronous external abort in bcm2835_power_probe at 4.34 s (ASB region unimplemented)
+Q2,msd-dev-11.1.2,raspi3ap,512M,e.wic,ttyAMA0,2026-11-02T03:51:21Z,5.621178,,no-userspace-output,no oops; kernel remounts / rw at 8.44 s; nothing from init on the serial port
+Q3,stock-10.2.1,raspi3b,1G,e.wic,ttyAMA0,,5.205898,,no-userspace-output,same as Q2 without ASB patch on raspi3b
+Q4,msd-dev-11.1.2,raspi3ap,512M,copy+getty ttyAMA0,ttyAMA0,,5.466861,,no-userspace-output,added getty did not appear
+Q5,msd-dev-11.1.2,raspi3ap,512M,copy+markers,ttyAMA0,,5.032975,,no-userspace-output,echo markers did not appear; PL011 registers as ttyAMA1 (log line 210)
+Q6,msd-dev-11.1.2,raspi3ap,512M,copy+markers,ttyAMA1,,5.475271,,partial,all sysinit entries and rcS ran; getty argument still ttyAMA0 (sed mistake)
+Q7,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,,5.392160,,pass,"raspberrypi0-2w-64 login:" shown
+P1,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,2026-11-02T04:03:47Z,5.397874,11.6,pass,
+P2,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,2026-11-02T04:03:59Z,5.606464,12.1,pass,
+P3,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,2026-11-02T04:04:12Z,5.842755,12.6,pass,
+P4,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,2026-11-02T04:04:24Z,5.202126,11.6,pass,
+P5,msd-dev-11.1.2,raspi3ap,512M,run7.wic,ttyAMA1,2026-11-02T04:04:36Z,5.935135,13.1,pass,
+S1,stock-10.2.1,raspi3b,1G,run7.wic,ttyAMA1,2026-11-02T04:04:50Z,5.819391,13.7,pass,
+S2,stock-10.2.1,raspi3b,1G,run7.wic,ttyAMA1,2026-11-02T04:05:04Z,5.247426,13.2,pass,
+S3,stock-10.2.1,raspi3b,1G,run7.wic,ttyAMA1,2026-11-02T04:05:18Z,5.475059,13.2,pass,
+S4,stock-10.2.1,raspi3b,1G,run7.wic,ttyAMA1,2026-11-02T04:05:31Z,5.304096,13.2,pass,
+S5,stock-10.2.1,raspi3b,1G,run7.wic,ttyAMA1,2026-11-02T04:05:45Z,5.536730,13.2,pass,

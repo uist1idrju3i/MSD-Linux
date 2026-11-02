@@ -1,5 +1,7 @@
 # Yocto Project への移行検討（Buildroot との比較）
 
+> 注記（2026-11-02）: 本書の結論「移行しない」は、2026-11-02 に利用者が Yocto Wrynose 6.0 LTS への移行を方針として決めたことで置き換わりました。本書は当時の判断の記録として残します。見直しの内容は [reevaluation.md](reevaluation.md)、計画は [migration-plan.md](migration-plan.md) にあります。
+
 CardputerZero の現行構成は Buildroot（BR2_EXTERNAL・msd_cardputerzero_defconfig・SquashFS+dm-verity・A/B tryboot・BusyBox init・msd-dev+QEMU ゲート）で成立している。Yocto Project（OpenEmbedded/bitbake）への移行の pros/cons を検討した。
 
 **結論: 移行の利点（パッケージ管理・レイヤー・sstate・SBOM/CVE・LTS 4 年）は本プロジェクトの要件（固定 rootfs・最小サイズ・起動最速・既存の QEMU 検証基盤）では効果が薄く、コスト（bitbake の複雑さ・長いビルド・検証基盤の再実装・サイズ増）が大きい。現行 Buildroot を維持する。**

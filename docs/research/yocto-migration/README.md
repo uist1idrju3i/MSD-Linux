@@ -12,6 +12,9 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | [porting-map.md](porting-map.md) | defconfig、パッケージ、init、BSP、後処理、wks、fragment の対応表 |
 | [verification-and-ops.md](verification-and-ops.md) | QEMU による起動確認、A/B 更新、ツールチェーンとハードニング、ライセンスと SBOM、CI、コミュニティ情報の収集結果 |
 | [dev-environment.md](dev-environment.md) | 開発環境の構築手法（kas、kas-container、bitbake-setup、CROPS、buildtools、`docker/msd-dev` の拡張）の比較 |
+| [reevaluation.md](reevaluation.md) | Buildroot で不採用・保留にした案の Yocto 前提での再評価 |
+| [migration-plan.md](migration-plan.md) | Wrynose 6.0 LTS を前提にしたゼロベースの移行計画（案・未着手） |
+| [pros-cons-2026-11.md](pros-cons-2026-11.md) | 2026-11-02 の成果物の比較に基づく Buildroot と Yocto の Pros/Cons |
 | [pros-cons-2026-10.md](pros-cons-2026-10.md) | 2026-10 に [PR #150](https://github.com/uist1idrju3i/MSD-Linux/pull/150) で行った Buildroot と Yocto の比較 |
 
 ## 2. 依頼の前提と調査結果の違い
@@ -37,17 +40,17 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 
 ## 3. フェーズ0の結論
 
-- リリース系列は未決定です。サポート期限、meta-raspberrypi の 6.18 カーネル、Ubuntu 26.04 対応の三点では、Wrynose 6.0 LTS が最も条件に合います【推測】。Scarthgap は meta-raspberrypi に 6.18 のレシピがありません。Blacksail は 2027-04 で終わり、meta-raspberrypi に専用ブランチがありません。
+- リリース系列は、2026-11-02 に利用者の判断で Wrynose 6.0 LTS に決まりました。以下はフェーズ0の時点の判断材料です。サポート期限、meta-raspberrypi の 6.18 カーネル、Ubuntu 26.04 対応の三点では、Wrynose 6.0 LTS が最も条件に合います【推測】。Scarthgap は meta-raspberrypi に 6.18 のレシピがありません。Blacksail は 2027-04 で終わり、meta-raspberrypi に専用ブランチがありません。
 - 構成管理は kas（YAML + ロックファイル）を第一候補にします（[dev-environment.md](dev-environment.md) §4）。
 - A/B 更新は、最初の段階では tryboot と `msd-update` をそのまま移すのが最も変更が少ないと考えます【推測】。
 - ツールチェーンは Poky 内部への切り替えが前提になり、起動時間とサイズの測り直しが要ります。
-- PR #150 の比較（[pros-cons-2026-10.md](pros-cons-2026-10.md)）は「移行しない」と結論しました。そこで挙げた不利な点（固定イメージとパッケージ管理の不一致、ビルドの重さ、検証基盤の作り直し）は、今回の調査でも解消していません。移行するかどうかの判断は、構築試験の結果を踏まえて改めて行います。
+- PR #150 の比較（[pros-cons-2026-10.md](pros-cons-2026-10.md)）は「移行しない」と結論しました。そこで挙げた不利な点（固定イメージとパッケージ管理の不一致、ビルドの重さ、検証基盤の作り直し）は、今回の調査でも解消していません。移行するかどうかの判断は、構築試験の結果を踏まえて改めて行います。2026-11-02 に移行の方向が決まり、これらの不利な点への対策は [reevaluation.md](reevaluation.md) §2.1 と [migration-plan.md](migration-plan.md) に書きました。
 
 ## 4. 決めることと次の作業
 
 | 項目 | 選択肢 | 決める時期 |
 |---|---|---|
-| リリース系列 | Wrynose 6.0 LTS / Scarthgap 5.0 LTS / Blacksail 6.1 | 構築試験と BSP 試験の後 |
+| リリース系列 | Wrynose 6.0 LTS / Scarthgap 5.0 LTS / Blacksail 6.1 | 決定済み（2026-11-02、Wrynose 6.0 LTS） |
 | 構成管理 | kas + ロックファイル / bitbake-setup / サブモジュール | フェーズ1の開始時 |
 | 開発コンテナ | kas-container / `docker/msd-dev` の拡張 | 構築試験の後 |
 | A/B 更新 | tryboot + `msd-update` の移植 / RAUC の custom backend / U-Boot を使う既成レイヤー | フェーズ2 |
@@ -55,6 +58,6 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | CI の実行場所 | hosted runner + 外部キャッシュ / セルフホスト / 軽い検査と手動実行に限る | フェーズ3 |
 | 不明ライセンスの M5 バイナリ | `CLOSED` + `LICENSE_FLAGS` / M5Stack への確認 | フェーズ2 |
 
-この VM での構築試験（kas-container、暫定の Wrynose 6.0.4、`raspberrypi0-2w-64` の最小イメージ）と、M5 の BSP のビルド試験は通りました。MSD のカーネル固定（6.18.59）と `linux.fragment` を加えた試験も通りました。手順と結果は [実験記録](../../experiments/2026-11-02-yocto-wrynose-probe.md) にあります。ビルドが通るかだけを見ており、起動は確かめていません【一次: 実験記録】。
+この VM での構築試験（kas-container、暫定の Wrynose 6.0.4、`raspberrypi0-2w-64` の最小イメージ）と、M5 の BSP のビルド試験は通りました。MSD のカーネル固定（6.18.59）と `linux.fragment` を加えた試験も通りました。手順と結果は [実験記録](../../experiments/2026-11-02-yocto-wrynose-probe.md) にあります。構築試験ではビルドが通るかだけを見ました【一次: 実験記録】。その後、E のイメージが QEMU でログイン画面まで起動することを確かめました（[QEMU 起動確認](../../experiments/2026-11-02-yocto-qemu-boot.md)。getty を 1 行足した写しを使用）。
 
 フェーズ4の受け入れ基準（六つの設計柱を退化させないこと）と、QEMU で確かめられる項目と実機でしか確かめられない項目の切り分けは、移植が進んでから [VERIFY.md](../../VERIFY.md) に書きます。

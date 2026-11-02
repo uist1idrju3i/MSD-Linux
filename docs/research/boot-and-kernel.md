@@ -152,7 +152,7 @@
 |---|---|---|
 | **6.18** | `Kconfig.preempt` の選択肢 `default PREEMPT_NONE`。`PREEMPT_VOLUNTARY` は `depends on !ARCH_NO_PREEMPT` と `!PREEMPT_RT` のみです。arm64 の Kconfig は `ARCH_NO_PREEMPT` を select していないため、VOLUNTARY は選択可能です。RPi の `bcm2711_defconfig` は `CONFIG_PREEMPT=y`（VOLUNTARY ではない）です。 | https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/kernel/Kconfig.preempt#L17-L52<br>https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig#L10 |
 | **7.2** | 既定は `default PREEMPT_LAZY if ARCH_HAS_PREEMPT_LAZY`（arm64 は `select ARCH_HAS_PREEMPT_LAZY`、arch/arm64/Kconfig L44）です。`PREEMPT_NONE` は `depends on ARCH_NO_PREEMPT`、`PREEMPT_VOLUNTARY` は `depends on !ARCH_HAS_PREEMPT_LAZY` です。arm64 は LAZY を持つため、NONE も VOLUNTARY も選べず、FULL / LAZY のみです。 | https://github.com/raspberrypi/linux/blob/61d337138d273f134f41ef06eb0dd97c90123934/kernel/Kconfig.preempt#L17-L45<br>https://github.com/raspberrypi/linux/blob/61d337138d273f134f41ef06eb0dd97c90123934/arch/arm64/Kconfig#L44 |
-- 【推測】起動時間のために VOLUNTARY / NONE を使う場合は 6.18 系に留まる必要があります。7.2 以降は PREEMPT_LAZY（または FULL）固定です。VOLUNTARY が起動時間に有利かは未測定です。PREEMPT_RT は採用しない方針です。
+- 【推測】起動時間のために VOLUNTARY / NONE を使う場合は 6.18 系に留まる必要があります。7.2 以降は PREEMPT_LAZY（または FULL）固定です。VOLUNTARY が起動時間に有利かは未測定です。PREEMPT_RT は採用済みです（2026-10-30）。
 - 注意: 7.2 の RPi defconfig は確認できていません。6.18 では `CONFIG_PREEMPT=y` です。
 - 7.0 の preempt モデル制限(コミット `7dadeaa6e851`)の外部報告:Graviton4(96vCPU)で pgbench 0.51x(スループット。**起動時間ではない・CM0 に不適用**)、LWN は「実は回帰ではない」と整理 https://lwn.net/Articles/1067029/ (二次)。
 
