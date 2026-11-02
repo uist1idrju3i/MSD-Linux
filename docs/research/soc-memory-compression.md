@@ -2,6 +2,8 @@
 
 調査日: 2026-10-19。製品仕様と公開ベンチマークは記載した版・条件の範囲で扱い、実機の周波数、SD速度、性能差は別途測定します。外部プロジェクトの値は本リポジトリでは試していません。
 
+2026-11 の追記: 本文の GPU memory split 欄は調査時点の記録です。その後、[config.txt](../../board/cardputerzero/config.txt) に `gpu_mem=16` を設定し、cut-down firmware の直接指定を削除しました。選択条件の根拠は [ファームウェア調査](rpi-firmware-spec.md) にあります。実機での split 値や起動成功を確認したものではありません。
+
 ## CM0 と CardputerZero
 
 | 項目 | 確認結果 |

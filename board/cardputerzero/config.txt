@@ -13,10 +13,8 @@ enable_uart=1
 disable_overscan=1
 # Enable the Raspberry Pi 3 CPU boost mode.
 arm_boost=1
-# Select the cut-down GPU firmware binary.
-start_file=start_cd.elf
-# Select the matching cut-down firmware fixup.
-fixup_file=fixup_cd.dat
+# Select the cut-down GPU firmware and matching fixup automatically.
+gpu_mem=16
 # Use the CardputerZero Compute Module device tree.
 device_tree=bcm2710-rpi-cm0.dtb
 # Enable the I2C controller used by CardputerZero peripherals.
