@@ -43,6 +43,8 @@ jobs:
           docker/msd-dev python3 .github/scripts/check-pins.py consistency
           docker/msd-dev tests/check-pins/run.sh
           docker/msd-dev tests/check-site-status/run.sh
+          docker/msd-dev tests/check-kernel-fragment/run.sh
+          docker/msd-dev tests/yocto-compare/run.sh
           docker/msd-dev python3 .github/scripts/shellcheck-tracked.py
 
   zizmor:

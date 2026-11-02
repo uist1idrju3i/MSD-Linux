@@ -1,6 +1,17 @@
 From: MSD/Linux maintainers
 Subject: [PATCH] cardputerzero: notify and sync before SysRq-U
 
+Use the MSD mountpoints /, /boot and /data for synchronous sync and notify
+userspace before requesting SysRq-U. Keep normal poweroff disabled until
+the hardware hold-up time has been measured.
+
+Based on vendor/m5stack-linux-dtoverlays at
+37b42d9451495b5597dd7e50cab502da8028f9c2. This is a local MSD policy;
+it has not been submitted upstream.
+
+Upstream: Not applicable [MSD-specific mountpoints and power-off policy]
+Upstream-Status: Inappropriate [MSD-specific mountpoints and power-off policy]
+
 ---
 diff --git a/modules/CardputerZero/powerfail_suo.c b/modules/CardputerZero/powerfail_suo.c
 --- a/modules/CardputerZero/powerfail_suo.c
