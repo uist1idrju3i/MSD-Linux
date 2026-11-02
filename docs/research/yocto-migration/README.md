@@ -1,8 +1,10 @@
-# Yocto Project 移行の事前調査
+# Yocto Project 移行の検討記録（移行見送り）
 
-MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の、フェーズ0（外部情報の収集）の記録です。対象は M5Stack CardputerZero（CM0、BCM2710 系、Cortex-A53、aarch64）で、確認日は 2026-11-02 です。
+<a id="yocto-project-移行の事前調査"></a>
 
-この段階では実装も移行もしていません。依頼どおり、リリース系列も決めていません。決める前に、開発環境での構築試験と、M5 の BSP がビルドできるかの試験を行います。
+2026-11-02 に、Yocto Project へは移行せず Buildroot（BR2_EXTERNAL）を維持すると決めました。[総まとめ](summary-2026-11.md)に判断の経緯、[Buildroot への還元](buildroot-lessons.md)に検討から取り込む知見を記載しています。対象は M5Stack CardputerZero（CM0、BCM2710 系、Cortex-A53、aarch64）です。[文書案内](../../README.md)へ戻れます。
+
+ここには、フェーズ0の調査、一時的な Wrynose 選定、VM 上の構築・QEMU 試験、中止した移行計画を残します。構築試験は行いましたが、Yocto の完成した CardputerZero イメージは作っていません。過去の計画にある今後の作業は、現在の実装予定ではありません。公開資料の版・サポート期間は調査当時の情報です。
 
 ## 1. 文書の一覧
 
@@ -13,8 +15,9 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | [verification-and-ops.md](verification-and-ops.md) | QEMU による起動確認、A/B 更新、ツールチェーンとハードニング、ライセンスと SBOM、CI、コミュニティ情報の収集結果 |
 | [dev-environment.md](dev-environment.md) | 開発環境の構築手法（kas、kas-container、bitbake-setup、CROPS、buildtools、`docker/msd-dev` の拡張）の比較 |
 | [summary-2026-11.md](summary-2026-11.md) | 総まとめ。2026-11-02 に移行せず Buildroot を維持すると決定 |
+| [buildroot-lessons.md](buildroot-lessons.md) | 証拠の再点検、Buildroot へ取り込む検査・監査、採用しない製品設定 |
 | [reevaluation.md](reevaluation.md) | Buildroot で不採用・保留にした案の Yocto 前提での再評価 |
-| [migration-plan.md](migration-plan.md) | Wrynose 6.0 LTS を前提にしたゼロベースの移行計画（案・未着手） |
+| [migration-plan.md](migration-plan.md) | Wrynose 6.0 LTS を前提にした移行計画（中止、履歴として保存） |
 | [pros-cons-2026-11.md](pros-cons-2026-11.md) | 2026-11-02 の成果物の比較に基づく Buildroot と Yocto の Pros/Cons |
 | [pros-cons-2026-10.md](pros-cons-2026-10.md) | 2026-10 に [PR #150](https://github.com/uist1idrju3i/MSD-Linux/pull/150) で行った Buildroot と Yocto の比較 |
 
@@ -41,6 +44,8 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 
 ## 3. フェーズ0の結論
 
+以下は当時の判断材料です。kas・移植・ツールチェーン切替の案は、Buildroot 維持を決めた後の実装予定ではありません。
+
 - 2026-11-02 に、移行せず Buildroot を維持すると決まりました（[総まとめ](summary-2026-11.md)）。その前に、系列は利用者の判断で Wrynose 6.0 LTS に決まっていました。以下はフェーズ0の時点の判断材料です。サポート期限、meta-raspberrypi の 6.18 カーネル、Ubuntu 26.04 対応の三点では、Wrynose 6.0 LTS が最も条件に合います【推測】。Scarthgap は meta-raspberrypi に 6.18 のレシピがありません。Blacksail は 2027-04 で終わり、meta-raspberrypi に専用ブランチがありません。
 - 構成管理は kas（YAML + ロックファイル）を第一候補にします（[dev-environment.md](dev-environment.md) §4）。
 - A/B 更新は、最初の段階では tryboot と `msd-update` をそのまま移すのが最も変更が少ないと考えます【推測】。
@@ -48,6 +53,8 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 - PR #150 の比較（[pros-cons-2026-10.md](pros-cons-2026-10.md)）は「移行しない」と結論しました。そこで挙げた不利な点（固定イメージとパッケージ管理の不一致、ビルドの重さ、検証基盤の作り直し）は、今回の調査でも解消していません。移行するかどうかの判断は、構築試験の結果を踏まえて改めて行います。2026-11-02 に移行の方向が決まり、これらの不利な点への対策は [reevaluation.md](reevaluation.md) §2.1 と [migration-plan.md](migration-plan.md) に書きました。
 
 ## 4. 決めることと次の作業
+
+以下は中止した移行の検討表です。「フェーズ1」以降は現在の予定ではなく、当時の案の段階を示します。
 
 | 項目 | 選択肢 | 決める時期 |
 |---|---|---|
@@ -61,4 +68,4 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 
 この VM での構築試験（kas-container、暫定の Wrynose 6.0.4、`raspberrypi0-2w-64` の最小イメージ）と、M5 の BSP のビルド試験は通りました。MSD のカーネル固定（6.18.59）と `linux.fragment` を加えた試験も通りました。手順と結果は [実験記録](../../experiments/2026-11-02-yocto-wrynose-probe.md) にあります。構築試験ではビルドが通るかだけを見ました【一次: 実験記録】。その後、E のイメージが QEMU でログイン画面まで起動することを確かめました（[QEMU 起動確認](../../experiments/2026-11-02-yocto-qemu-boot.md)。getty を 1 行足した写しを使用）。
 
-フェーズ4の受け入れ基準（六つの設計柱を退化させないこと）と、QEMU で確かめられる項目と実機でしか確かめられない項目の切り分けは、移植が進んでから [VERIFY.md](../../VERIFY.md) に書きます。
+当時は、フェーズ4の受け入れ基準を移植後に VERIFY へ書く想定でした。移行は中止したため、この作業は行いません。Buildroot の実機確認は [VERIFY.md](../../VERIFY.md)、Yocto 検討の還元は [buildroot-lessons.md](buildroot-lessons.md)を参照してください。

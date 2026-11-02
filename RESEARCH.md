@@ -19,6 +19,8 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 ### 概略アーキテクチャ案
 
+現行の実装は [BUILD.md](docs/BUILD.md) を正本とします。以下には設計候補も含み、実機で成立を確認した構成という意味ではありません。
+
 | 層 | 方針 |
 |---|---|
 | ビルド | Buildroot 2026.08、BR2_EXTERNAL として管理（Yocto への移行は検討の結果見送り） |
@@ -38,57 +40,75 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ### 詳細な調査記録
 
-本文の条件、数値、確認度、根拠 URL を含む調査記録は、次の文書に分割しています。
+本文の条件、数値、確認度、根拠 URL は主題文書にあります。操作は [文書案内](docs/README.md)、証拠は [実験一覧](docs/experiments/README.md)、更新する本文の置き場は [文書の配置](docs/research/document-map.md) を参照してください。
+
+#### 対象・ハードウェア・表示と入力
 
 - [調査の前提・ハードウェア・候補](docs/research/scope-and-hardware.md)
-- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
-- [起動時間の実測と分析](docs/research/boot-time-measurements.md)
-- [カーネル縮小](docs/research/kernel-size.md)
 - [ハードウェア仕様と機能対応表](docs/research/hardware-spec.md)
-- [シミュレーション検証計画](docs/research/simulation-plan.md)
-- [sysctl の既定値](docs/research/tunables-sysctl.md)
-- [モジュールパラメーター](docs/research/tunables-module-params.md)
-- [公式サイトの HTML・CSS](docs/research/site-html-css.md)
-- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
-- [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
-- [セキュリティ・ハードニング](docs/research/security-hardening.md)
-- [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
-- [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
 - [CardputerZero / Raspberry Pi CM0 エコシステム調査](docs/research/community-2026-11.md)
-- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
-- [Raspberry Pi ファームウェア仕様の調査](docs/research/rpi-firmware-spec.md)
 - [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
 - [公式ソフトウェア構成](docs/research/official-software.md)
 - [フォントの調査](docs/research/fonts.md)
-- [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
 - [フレームバッファ端末とテキストブラウザの調査](docs/research/fb-terminals-and-text-browsers.md)
-- [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
-- [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
-- [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
 - [HDMI 外部ディスプレイ出力の調査](docs/research/hdmi-output.md)
 - [表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）](docs/research/display-servers.md)
 - [ウェブブラウザの調査](docs/research/web-browsers.md)
-- [Yocto Project 移行の事前調査](docs/research/yocto-migration/README.md)
+
+#### 起動・カーネル・CPU とメモリ
+
+- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
+- [起動時間の実測と分析](docs/research/boot-time-measurements.md)
+- [カーネル縮小](docs/research/kernel-size.md)
+- [sysctl の既定値](docs/research/tunables-sysctl.md)
+- [モジュールパラメーター](docs/research/tunables-module-params.md)
+- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
+- [Raspberry Pi ファームウェア仕様の調査](docs/research/rpi-firmware-spec.md)
+- [カーネル版と起動方針](docs/research/kernel-policy.md)
+- [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
+- [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
+- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
+
+#### 保存・電源断・更新
+
+- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
+- [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
+- [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
+- [ファイルシステムの候補と設計例](docs/research/fs-candidates.md)
+
+#### ユーザー空間・セキュリティ
+
+- [セキュリティ・ハードニング](docs/research/security-hardening.md)
+- [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
+- [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
+- [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
+- [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
+- [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
+
+#### 開発・測定・未確認事項
+
+- [シミュレーション検証計画](docs/research/simulation-plan.md)
+- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
+- [未確認事項の追跡表](docs/research/open-questions.md)
+- [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
+
+#### 比較・履歴・出典と意匠
+
+- [公式サイトの HTML・CSS](docs/research/site-html-css.md)
+- [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
+- [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)
   - [総まとめ（2026-11、移行しないと決定）](docs/research/yocto-migration/summary-2026-11.md)
+  - [Buildroot への還元と証拠の確認範囲](docs/research/yocto-migration/buildroot-lessons.md)
   - [移行計画（案、中止）](docs/research/yocto-migration/migration-plan.md)
   - [Buildroot で見送った案の再評価](docs/research/yocto-migration/reevaluation.md)
   - [Buildroot と Yocto の Pros/Cons（2026-11）](docs/research/yocto-migration/pros-cons-2026-11.md)、[成果物の比較](docs/experiments/2026-11-02-buildroot-yocto-artifacts.md)、[QEMU での起動時間の比較](docs/experiments/2026-11-02-buildroot-yocto-boottime.md)
   - [構築試験（Wrynose、M5 BSP）](docs/experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](docs/experiments/2026-11-02-yocto-qemu-boot.md)
-- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
-- [未確認事項の追跡表](docs/research/open-questions.md)
 - [OS 候補の比較](docs/research/os-candidates.md)
-- [カーネル版と起動方針](docs/research/kernel-policy.md)
 - [訂正済み事項](docs/research/corrections.md)
 - [出典一覧と URL 取得記録](docs/research/sources.md)
-- [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
-- [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
-- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
-- [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [CI・Issue・リポジトリ設定の点検（2026-10-20）](docs/research/repo-operations-review.md)
 - [作業の振り返りと残タスク（2026-10-22）](docs/research/retrospective-2026-10.md)
 - [作業の振り返りと残タスク（2026-10-25）](docs/research/retrospective-2026-10-25.md)
-- [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
-- [ファイルシステムの候補と設計例](docs/research/fs-candidates.md)
 - [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
 
 ### この記録に含めないもの
@@ -113,11 +133,7 @@ tryboot と制約、更新フレームワーク（SWUpdate / RAUC / Mender / rau
 
 ## ストレージとフラッシュの要点
 
-現行 CI イメージの MBR パーティション開始セクターは p1–p7 = `1 / 32769 / 163841 / 294913 / 294914 / 819203 / 1343492` です。各値の 4 KiB 境界からの余りは `1 / 1 / 1 / 1 / 2 / 3 / 4` セクターで、4 MiB 境界からの余りも同じです（1 セクター = 512 bytes）。genimage v20 で測定した `align=4M` 案では全開始位置が 4 MiB 境界にそろい、イメージは 736 MiB（現行より約 16 MiB 増）になりました。速度・寿命・電断耐性への効果は実機で未確認です。【実測】【未確認】[詳細と比較表](docs/research/storage-and-flash.md)
-
-FAT データ領域はパーティション開始位置から 292 セクター（149,504 bytes）後に始まります。現行 p2 の絶対位置は 4 MiB 境界から 150,016 bytes ずれ、パーティション整列だけでは FAT 内部の BPB／データ領域 offset は変わりません。現行 `/data` は `data=journal` で、ext4 の現行文書はこの mode を非推奨とし、2028 年 1 月の削除予定を記載しています。`data=ordered` は移行候補ですが、アプリの `fsync`／rename と電断試験なしに同等の耐久性は主張できません。discard／fstrim、A1／A2、AU・消去単位はカードとホストで実測します。【一次】【実測】【推測】[用語、ext4、discard、測定計画](docs/research/storage-and-flash.md)
-
-CI artifact の `/data` ext4 は `dumpe2fs` で 1,024 B ブロックと実測しました。これは 4 KiB page より小さい設定です。genimage の `extraargs` と実行時 formatter の両方に `-b 4096` を指定する案がありますが、page 境界との整合が性能や耐久性を高めるかは未測定で、効果は【推測】です。[実測値と mke2fs の選択理由](docs/research/storage-and-flash.md)
+パーティションと FAT 内部の整列、ext4 のブロックサイズと journal、discard、SD カードの測定条件は [storage-and-flash.md](docs/research/storage-and-flash.md) にあります。記録中の 1,024 B ブロックなどは当時の値です。現行 CI は 4,096 B を検査しており、現在の生成条件は [build workflow](.github/workflows/build.yml) と [ボード設定](board/cardputerzero/) で確認します。整列だけで速度・寿命・電断耐性が向上したとは判断しません。
 
 ## セキュリティとハードニングの要点
 
@@ -174,4 +190,3 @@ MSD/Linux も同じように、開発場所の近くを流れる福岡県の室�
 ## 出典一覧
 
 本文で引用した主要な一次資料・技術資料の一覧と URL 取得記録は、 [sources.md](docs/research/sources.md) に分けました。
-

@@ -53,6 +53,7 @@ QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デ�
 
 | 文書 | 内容 |
 |---|---|
+| [docs/README.md](docs/README.md) | 利用・構築・検証・調査・実験の文書案内 |
 | [RESEARCH.md](RESEARCH.md) | 調査の要約、出典、未確認事項。節ごとの詳細は [docs/research/](docs/research/) |
 | [docs/BUILD.md](docs/BUILD.md) | ビルドと QEMU 起動確認の手順 |
 | [docs/UPDATE.md](docs/UPDATE.md) | 更新手順と検証範囲 |

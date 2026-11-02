@@ -1,6 +1,6 @@
 # Yocto Project への移行検討（Buildroot との比較）
 
-> 注記（2026-11-02）: 本書の結論「移行しない」は、2026-11-02 に利用者が Yocto Wrynose 6.0 LTS への移行を方針として決めたことで置き換わりました。本書は当時の判断の記録として残します。見直しの内容は [reevaluation.md](reevaluation.md)、計画は [migration-plan.md](migration-plan.md) にあります。
+> 注記（2026-11-02）: この後、一時的に Wrynose 6.0 LTS への移行を選びましたが、構築・比較の結果、最終的に Buildroot を維持すると決めました。現在の決定は [総まとめ](summary-2026-11.md)を参照してください。以下は当時の比較です。「SquashFS+dm-verity」など、現在の採用状況を示さない記述も含みます。[再評価](reevaluation.md)と[中止した移行計画](migration-plan.md)も履歴として残します。
 
 CardputerZero の現行構成は Buildroot（BR2_EXTERNAL・msd_cardputerzero_defconfig・SquashFS+dm-verity・A/B tryboot・BusyBox init・msd-dev+QEMU ゲート）で成立している。Yocto Project（OpenEmbedded/bitbake）への移行の pros/cons を検討した。
 

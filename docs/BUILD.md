@@ -77,6 +77,27 @@ QEMU の `raspi3ap` と `raspi3b` は BCM2837 をエミュレートしますが�
 
 CI では開発用イメージ内で Buildroot のフルビルド、QEMU の A/B 起動（p5/p6 とも成功）、テストを実行します。ローカル QEMU では、拡大イメージで p7 の ext4 拡張と `/data/seedrng/seed.credit` の作成を確認しました。実機起動、LCD・キーボード、tryboot、watchdog、更新署名は未検証です。
 
+## 最終カーネル設定の監査
+
+カーネル・Buildroot・ツールチェーンを更新したら、fragment で要求した行だけでなく最終 `.config` 全体を比較します。同じ defconfig と fragment でも、Yocto 比較では [544 項目の差](experiments/2026-11-02-buildroot-yocto-kconfig-diff.csv)がありました。`CONFIG_THERMAL` も fragment 外で変わりました。差の原因を説明できないまま機能が同等だとは判断しません。
+
+ビルドは git worktree ではなく単独の clone と固定の `docker/msd-dev` を使います。submodule の `.git` が外側を指す worktree はコンテナから見えず、[過去の BR1](experiments/2026-11-02-buildroot-yocto-artifacts.md#失敗した試行)で停止しました。
+
+1. 更新前の commit、submodule SHA、defconfig、fragment、Buildroot の `.config`、`output/build/linux-custom/.config`、入力・成果物の hash を新しい証拠ディレクトリへ保存する。
+2. 更新後は別の clean 出力を構築し、同じ一式を保存する。ccache、取得物、出力ツリーの cold/warm を記録する。
+3. Linux ソースの `scripts/diffconfig` で、保存した前後の最終 `.config` を比較する。`CONFIG_X=value` と `# CONFIG_X is not set` を区別し、未掲載と明示的な `n` の差も確認する。
+
+   ```sh
+   python3 output/build/linux-custom/scripts/diffconfig before.config after.config
+   board/cardputerzero/tools/check-kernel-fragment.sh \
+     board/cardputerzero/linux.fragment output/build/linux-custom/.config
+   ```
+
+4. 変更した項目だけでなく連動した差を調べる。特に thermal、watchdog、I2C/SPI、LCD/fbcon、入力、rootfs、暗号・署名、ハードニングをハードウェア対応表と照合する。
+5. モジュール依存、QEMU の A/B、ホストテストを実行し、実機でしか確認できない項目は未確認として残す。fragment の一致だけで全体の同等性や実機動作を主張しない。
+
+比較 runner とライセンス監査の扱いは [Buildroot への還元](research/yocto-migration/buildroot-lessons.md)を参照してください。
+
 ## カーネル候補のローカル測定
 
 `board/cardputerzero/tools/kernel-variant-sweep.sh` は、Linux のビルドが済んだ Buildroot output ディレクトリから実行します。総当たりビルドと QEMU 比較はローカル専用で、CI では実行しません。
