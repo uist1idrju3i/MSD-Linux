@@ -1,5 +1,7 @@
 # ユーザー空間・libc 調査
 
+以下には初期の選定案・当時の未確認事項を残しています。現在の[基本コマンド](alternatives/commands.md)・[init](alternatives/init.md)・[libc](alternatives/libc.md)・[Wi-Fiと接続管理の比較・計画](alternatives/network.md)では、固定版と最新の一次資料を分けて再評価しています。Wi-Fiのdriver/firmware選択はありますが、接続機能の実装・実機確認は未完了です。初期案の記載を現在の対応状況とは扱いません。
+
 ## 16. ユーザー空間の除去・遅延起動・init 選択
 
 ### 16.1 BusyBox 最小化と実使用の洗い出し

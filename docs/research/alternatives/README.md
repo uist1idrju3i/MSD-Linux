@@ -17,8 +17,9 @@
 | [保存領域と実行時検証](filesystems.md) | SquashFS/EROFS、ext4/F2FS、設定overlay、dm-verity/fs-verityの違いと移行条件 |
 | [A/B更新framework](updates.md) | 現行処理とRAUC・SWUpdate・Mender・Rugix・OSTree・bootc・sysupdateの責務、署名形式、CM0の未確認範囲 |
 | [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
+| [Wi-Fi・接続管理・通信防御](network.md) | 認証・IP・DNS・時刻・HTTPSとfirewallを分け、wpa_supplicant・iwd・各managerの条件と未実装機能の計画を比べる |
 
-これは全使用コンポーネントの比較完了を示す索引ではありません。network・周辺機能、開発・CIの比較は、既存文書の再評価も含めて継続しています。鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
+これは全使用コンポーネントの比較完了を示す索引ではありません。周辺機能、開発・CIの比較、最小特権とnetwork隔離の具体設計は、既存文書の再評価も含めて継続しています。鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
 
 ## 判定をそろえる
 
