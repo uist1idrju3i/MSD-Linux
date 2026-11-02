@@ -1,0 +1,1777 @@
+source_directory,help_line,option,first_line_description
+Python-3.14.8,11,"-h,",--help              display this help and exit
+Python-3.14.8,14,"-V,",--version           display version information and exit
+Python-3.14.8,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+Python-3.14.8,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+Python-3.14.8,18,"-n,",--no-create         do not create output files
+Python-3.14.8,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+Python-3.14.8,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+Python-3.14.8,35,--bindir=DIR,user executables [EPREFIX/bin]
+Python-3.14.8,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+Python-3.14.8,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+Python-3.14.8,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+Python-3.14.8,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+Python-3.14.8,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+Python-3.14.8,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+Python-3.14.8,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+Python-3.14.8,43,--includedir=DIR,C header files [PREFIX/include]
+Python-3.14.8,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+Python-3.14.8,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+Python-3.14.8,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+Python-3.14.8,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+Python-3.14.8,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+Python-3.14.8,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+Python-3.14.8,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/python]
+Python-3.14.8,51,--htmldir=DIR,html documentation [DOCDIR]
+Python-3.14.8,52,--dvidir=DIR,dvi documentation [DOCDIR]
+Python-3.14.8,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+Python-3.14.8,54,--psdir=DIR,ps documentation [DOCDIR]
+Python-3.14.8,57,--build=BUILD,configure for building on BUILD [guessed]
+Python-3.14.8,58,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+Python-3.14.8,61,--disable-option-checking,ignore unrecognized --enable/--with options
+Python-3.14.8,62,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+Python-3.14.8,63,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+Python-3.14.8,64,--enable-universalsdk[=SDKDIR],
+Python-3.14.8,68,--enable-framework[=INSTALLDIR],
+Python-3.14.8,73,--enable-wasm-dynamic-linking,
+Python-3.14.8,76,--enable-wasm-pthreads,Enable pthread emulation for WebAssembly (default is
+Python-3.14.8,78,--enable-shared,enable building a shared Python library (default is
+Python-3.14.8,80,--enable-profiling,enable C-level code profiling with gprof (default is
+Python-3.14.8,82,--disable-gil,enable support for running without the GIL (default
+Python-3.14.8,84,--enable-pystats,enable internal statistics gathering (default is no)
+Python-3.14.8,85,--enable-optimizations,"enable expensive, stable optimizations (PGO, etc.)"
+Python-3.14.8,87,--enable-bolt,enable usage of the llvm-bolt post-link optimizer
+Python-3.14.8,89,--enable-safety,enable usage of the security compiler options with
+Python-3.14.8,91,--enable-slower-safety,enable usage of the security compiler options with
+Python-3.14.8,93,--enable-experimental-jit[=no|yes|yes-off|interpreter],
+Python-3.14.8,96,--enable-loadable-sqlite-extensions,
+Python-3.14.8,99,--enable-ipv6,"enable ipv6 (with ipv4) support, see"
+Python-3.14.8,101,--enable-big-digits[=15|30],
+Python-3.14.8,104,--disable-test-modules,don't build nor install test modules
+Python-3.14.8,107,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+Python-3.14.8,108,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+Python-3.14.8,109,--with-build-python=python3.14,
+Python-3.14.8,112,--with-pkg-config=[yes|no|check],
+Python-3.14.8,115,--with-universal-archs=ARCH,
+Python-3.14.8,122,--with-framework-name=FRAMEWORK,
+Python-3.14.8,126,--with-app-store-compliance=[PATCH-FILE],
+Python-3.14.8,130,--with-suffix=SUFFIX,"set executable suffix to SUFFIX (default is empty,"
+Python-3.14.8,132,--without-static-libpython,
+Python-3.14.8,135,--with-pydebug,build with Py_DEBUG defined (default is no)
+Python-3.14.8,136,--with-trace-refs,enable tracing references for debugging purpose
+Python-3.14.8,138,--with-assertions,build with C assertions enabled (default is no)
+Python-3.14.8,139,--with-lto=[full|thin|no|yes],
+Python-3.14.8,142,--with-strict-overflow,"if 'yes', add -fstrict-overflow to CFLAGS, else add"
+Python-3.14.8,144,--with-dsymutil,link debug information into final executable with
+Python-3.14.8,146,--with-address-sanitizer,
+Python-3.14.8,149,--with-memory-sanitizer,"enable MemorySanitizer allocation error detector,"
+Python-3.14.8,151,--with-undefined-behavior-sanitizer,
+Python-3.14.8,154,--with-thread-sanitizer,"enable ThreadSanitizer data race detector, 'tsan'"
+Python-3.14.8,156,--with-hash-algorithm=[fnv|siphash13|siphash24],
+Python-3.14.8,159,--with-tzpath=<list,of absolute paths separated by pathsep>
+Python-3.14.8,162,--with-libs='lib1,...'  link against additional libs (default is no)
+Python-3.14.8,163,--with-system-expat,build pyexpat module using an installed expat
+Python-3.14.8,165,--with-system-libmpdec,build _decimal module using an installed mpdecimal
+Python-3.14.8,168,--with-decimal-contextvar,
+Python-3.14.8,171,--with-dbmliborder=db1:db2:...,
+Python-3.14.8,175,--with-doc-strings,enable documentation strings (default is yes)
+Python-3.14.8,176,--with-mimalloc,build with mimalloc memory allocator (default is yes
+Python-3.14.8,178,--with-pymalloc,enable specialized mallocs (default is yes)
+Python-3.14.8,179,--with-c-locale-coercion,
+Python-3.14.8,182,--with-valgrind,enable Valgrind support (default is no)
+Python-3.14.8,183,--with-dtrace,enable DTrace support (default is no)
+Python-3.14.8,184,--with-libm=STRING,override libm math library to STRING (default is
+Python-3.14.8,186,--with-libc=STRING,override libc C library to STRING (default is
+Python-3.14.8,188,--with-platlibdir=DIRNAME,
+Python-3.14.8,190,--with-wheel-pkg-dir=PATH,
+Python-3.14.8,193,--with(out)-readline[=editline|readline|no],
+Python-3.14.8,195,--with-computed-gotos,enable computed gotos in evaluation loop (enabled by
+Python-3.14.8,197,--with-tail-call-interp,enable tail-calling interpreter in evaluation loop
+Python-3.14.8,199,--with-remote-debug,enable remote debugging support (default is yes)
+Python-3.14.8,200,--with-ensurepip[=install|upgrade|no],
+Python-3.14.8,203,--with-openssl=DIR,root of the OpenSSL directory
+Python-3.14.8,204,--with-openssl-rpath=[DIR|auto|no],
+Python-3.14.8,209,--with-ssl-default-suites=[python|openssl|STRING],
+Python-3.14.8,215,"--with-builtin-hashlib-hashes=md5,sha1,sha2,sha3,blake2",
+acl-2.4.0,11,"-h,",--help              display this help and exit
+acl-2.4.0,14,"-V,",--version           display version information and exit
+acl-2.4.0,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+acl-2.4.0,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+acl-2.4.0,18,"-n,",--no-create         do not create output files
+acl-2.4.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+acl-2.4.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+acl-2.4.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+acl-2.4.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+acl-2.4.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+acl-2.4.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+acl-2.4.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+acl-2.4.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+acl-2.4.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+acl-2.4.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+acl-2.4.0,43,--includedir=DIR,C header files [PREFIX/include]
+acl-2.4.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+acl-2.4.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+acl-2.4.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+acl-2.4.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+acl-2.4.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+acl-2.4.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+acl-2.4.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/acl]
+acl-2.4.0,51,--htmldir=DIR,html documentation [DOCDIR]
+acl-2.4.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+acl-2.4.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+acl-2.4.0,54,--psdir=DIR,ps documentation [DOCDIR]
+acl-2.4.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+acl-2.4.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+acl-2.4.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+acl-2.4.0,62,--build=BUILD,configure for building on BUILD [guessed]
+acl-2.4.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+acl-2.4.0,66,--disable-option-checking,ignore unrecognized --enable/--with options
+acl-2.4.0,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+acl-2.4.0,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+acl-2.4.0,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+acl-2.4.0,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+acl-2.4.0,71,--enable-dependency-tracking,
+acl-2.4.0,73,--disable-dependency-tracking,
+acl-2.4.0,75,--disable-largefile,omit support for large files
+acl-2.4.0,76,--enable-shared[=PKGS],build shared libraries [default=yes]
+acl-2.4.0,77,--enable-static[=PKGS],build static libraries [default=yes]
+acl-2.4.0,78,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+acl-2.4.0,80,--enable-fast-install[=PKGS],
+acl-2.4.0,82,--enable-aix-soname=aix|svr4|both,
+acl-2.4.0,85,--disable-libtool-lock,avoid locking (might break parallel builds)
+acl-2.4.0,86,--disable-unsafe-restore-warnings,
+acl-2.4.0,88,--disable-nls,do not use Native Language Support
+acl-2.4.0,89,--disable-rpath,do not hardcode runtime library paths
+acl-2.4.0,90,--enable-debug,Enable extra debugging
+acl-2.4.0,91,--enable-year2038,support timestamps after 2038
+acl-2.4.0,94,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+acl-2.4.0,95,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+acl-2.4.0,96,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+acl-2.4.0,97,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+acl-2.4.0,99,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+acl-2.4.0,100,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+acl-2.4.0,101,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+acl-2.4.0,102,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+acl-2.4.0,103,--without-libintl-prefix,don't search for libintl in includedir and libdir
+attr-2.6.0,11,"-h,",--help              display this help and exit
+attr-2.6.0,14,"-V,",--version           display version information and exit
+attr-2.6.0,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+attr-2.6.0,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+attr-2.6.0,18,"-n,",--no-create         do not create output files
+attr-2.6.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+attr-2.6.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+attr-2.6.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+attr-2.6.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+attr-2.6.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+attr-2.6.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+attr-2.6.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+attr-2.6.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+attr-2.6.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+attr-2.6.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+attr-2.6.0,43,--includedir=DIR,C header files [PREFIX/include]
+attr-2.6.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+attr-2.6.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+attr-2.6.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+attr-2.6.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+attr-2.6.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+attr-2.6.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+attr-2.6.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/attr]
+attr-2.6.0,51,--htmldir=DIR,html documentation [DOCDIR]
+attr-2.6.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+attr-2.6.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+attr-2.6.0,54,--psdir=DIR,ps documentation [DOCDIR]
+attr-2.6.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+attr-2.6.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+attr-2.6.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+attr-2.6.0,62,--build=BUILD,configure for building on BUILD [guessed]
+attr-2.6.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+attr-2.6.0,66,--disable-option-checking,ignore unrecognized --enable/--with options
+attr-2.6.0,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+attr-2.6.0,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+attr-2.6.0,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+attr-2.6.0,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+attr-2.6.0,71,--enable-dependency-tracking,
+attr-2.6.0,73,--disable-dependency-tracking,
+attr-2.6.0,75,--disable-largefile,omit support for large files
+attr-2.6.0,76,--enable-shared[=PKGS],build shared libraries [default=yes]
+attr-2.6.0,77,--enable-static[=PKGS],build static libraries [default=yes]
+attr-2.6.0,78,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+attr-2.6.0,80,--enable-fast-install[=PKGS],
+attr-2.6.0,82,--enable-aix-soname=aix|svr4|both,
+attr-2.6.0,85,--disable-libtool-lock,avoid locking (might break parallel builds)
+attr-2.6.0,86,--disable-unsafe-restore-warnings,
+attr-2.6.0,88,--disable-nls,do not use Native Language Support
+attr-2.6.0,89,--disable-rpath,do not hardcode runtime library paths
+attr-2.6.0,90,--enable-debug,Enable extra debugging
+attr-2.6.0,91,--enable-year2038,support timestamps after 2038
+attr-2.6.0,94,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+attr-2.6.0,95,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+attr-2.6.0,96,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+attr-2.6.0,97,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+attr-2.6.0,99,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+attr-2.6.0,100,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+attr-2.6.0,101,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+attr-2.6.0,102,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+attr-2.6.0,103,--without-libintl-prefix,don't search for libintl in includedir and libdir
+autoconf-2.73,11,"-h,",--help              display this help and exit
+autoconf-2.73,14,"-V,",--version           display version information and exit
+autoconf-2.73,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+autoconf-2.73,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+autoconf-2.73,18,"-n,",--no-create         do not create output files
+autoconf-2.73,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+autoconf-2.73,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+autoconf-2.73,35,--bindir=DIR,user executables [EPREFIX/bin]
+autoconf-2.73,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+autoconf-2.73,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+autoconf-2.73,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+autoconf-2.73,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+autoconf-2.73,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+autoconf-2.73,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+autoconf-2.73,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+autoconf-2.73,43,--includedir=DIR,C header files [PREFIX/include]
+autoconf-2.73,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+autoconf-2.73,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+autoconf-2.73,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+autoconf-2.73,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+autoconf-2.73,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+autoconf-2.73,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+autoconf-2.73,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/autoconf]
+autoconf-2.73,51,--htmldir=DIR,html documentation [DOCDIR]
+autoconf-2.73,52,--dvidir=DIR,dvi documentation [DOCDIR]
+autoconf-2.73,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+autoconf-2.73,54,--psdir=DIR,ps documentation [DOCDIR]
+autoconf-2.73,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+autoconf-2.73,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+autoconf-2.73,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+autoconf-2.73,62,--build=BUILD,configure for building on BUILD [guessed]
+autoconf-2.73,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+autoconf-2.73,66,--disable-option-checking,ignore unrecognized --enable/--with options
+autoconf-2.73,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+autoconf-2.73,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+autoconf-2.73,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+autoconf-2.73,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+autoconf-2.73,73,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+autoconf-2.73,74,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+autoconf-2.73,75,--with-lispdir,override the default lisp directory
+autoconf-archive-2024.10.16,11,"-h,",--help              display this help and exit
+autoconf-archive-2024.10.16,14,"-V,",--version           display version information and exit
+autoconf-archive-2024.10.16,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+autoconf-archive-2024.10.16,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+autoconf-archive-2024.10.16,18,"-n,",--no-create         do not create output files
+autoconf-archive-2024.10.16,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+autoconf-archive-2024.10.16,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+autoconf-archive-2024.10.16,35,--bindir=DIR,user executables [EPREFIX/bin]
+autoconf-archive-2024.10.16,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+autoconf-archive-2024.10.16,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+autoconf-archive-2024.10.16,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+autoconf-archive-2024.10.16,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+autoconf-archive-2024.10.16,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+autoconf-archive-2024.10.16,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+autoconf-archive-2024.10.16,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+autoconf-archive-2024.10.16,43,--includedir=DIR,C header files [PREFIX/include]
+autoconf-archive-2024.10.16,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+autoconf-archive-2024.10.16,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+autoconf-archive-2024.10.16,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+autoconf-archive-2024.10.16,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+autoconf-archive-2024.10.16,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+autoconf-archive-2024.10.16,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+autoconf-archive-2024.10.16,50,--docdir=DIR,documentation root
+autoconf-archive-2024.10.16,52,--htmldir=DIR,html documentation [DOCDIR]
+autoconf-archive-2024.10.16,53,--dvidir=DIR,dvi documentation [DOCDIR]
+autoconf-archive-2024.10.16,54,--pdfdir=DIR,pdf documentation [DOCDIR]
+autoconf-archive-2024.10.16,55,--psdir=DIR,ps documentation [DOCDIR]
+autoconf-archive-2024.10.16,58,--program-prefix=PREFIX,prepend PREFIX to installed program names
+autoconf-archive-2024.10.16,59,--program-suffix=SUFFIX,append SUFFIX to installed program names
+autoconf-archive-2024.10.16,60,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+autoconf-archive-2024.10.16,63,--disable-option-checking,ignore unrecognized --enable/--with options
+autoconf-archive-2024.10.16,64,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+autoconf-archive-2024.10.16,65,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+autoconf-archive-2024.10.16,66,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+autoconf-archive-2024.10.16,67,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+automake-1.16.5,11,"-h,",--help              display this help and exit
+automake-1.16.5,14,"-V,",--version           display version information and exit
+automake-1.16.5,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+automake-1.16.5,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+automake-1.16.5,18,"-n,",--no-create         do not create output files
+automake-1.16.5,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+automake-1.16.5,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+automake-1.16.5,35,--bindir=DIR,user executables [EPREFIX/bin]
+automake-1.16.5,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+automake-1.16.5,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+automake-1.16.5,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+automake-1.16.5,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+automake-1.16.5,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+automake-1.16.5,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+automake-1.16.5,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+automake-1.16.5,43,--includedir=DIR,C header files [PREFIX/include]
+automake-1.16.5,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+automake-1.16.5,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+automake-1.16.5,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+automake-1.16.5,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+automake-1.16.5,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+automake-1.16.5,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+automake-1.16.5,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/automake]
+automake-1.16.5,51,--htmldir=DIR,html documentation [DOCDIR]
+automake-1.16.5,52,--dvidir=DIR,dvi documentation [DOCDIR]
+automake-1.16.5,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+automake-1.16.5,54,--psdir=DIR,ps documentation [DOCDIR]
+automake-1.16.5,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+automake-1.16.5,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+automake-1.16.5,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+automake-1.16.5,62,--build=BUILD,configure for building on BUILD [guessed]
+automake-1.16.5,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+automake-1.16.5,66,--disable-option-checking,ignore unrecognized --enable/--with options
+automake-1.16.5,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+automake-1.16.5,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+automake-1.16.5,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+automake-1.16.5,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+bison-3.8.2,11,"-h,",--help              display this help and exit
+bison-3.8.2,14,"-V,",--version           display version information and exit
+bison-3.8.2,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+bison-3.8.2,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+bison-3.8.2,18,"-n,",--no-create         do not create output files
+bison-3.8.2,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+bison-3.8.2,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+bison-3.8.2,35,--bindir=DIR,user executables [EPREFIX/bin]
+bison-3.8.2,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+bison-3.8.2,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+bison-3.8.2,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+bison-3.8.2,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+bison-3.8.2,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+bison-3.8.2,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+bison-3.8.2,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+bison-3.8.2,43,--includedir=DIR,C header files [PREFIX/include]
+bison-3.8.2,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+bison-3.8.2,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+bison-3.8.2,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+bison-3.8.2,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+bison-3.8.2,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+bison-3.8.2,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+bison-3.8.2,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/bison]
+bison-3.8.2,51,--htmldir=DIR,html documentation [DOCDIR]
+bison-3.8.2,52,--dvidir=DIR,dvi documentation [DOCDIR]
+bison-3.8.2,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+bison-3.8.2,54,--psdir=DIR,ps documentation [DOCDIR]
+bison-3.8.2,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+bison-3.8.2,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+bison-3.8.2,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+bison-3.8.2,62,--build=BUILD,configure for building on BUILD [guessed]
+bison-3.8.2,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+bison-3.8.2,66,--disable-option-checking,ignore unrecognized --enable/--with options
+bison-3.8.2,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+bison-3.8.2,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+bison-3.8.2,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+bison-3.8.2,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+bison-3.8.2,71,--enable-dependency-tracking,
+bison-3.8.2,73,--disable-dependency-tracking,
+bison-3.8.2,75,--disable-largefile,omit support for large files
+bison-3.8.2,76,--disable-year2038,omit support for timestamps past the year 2038
+bison-3.8.2,77,--enable-threads={isoc|posix|isoc+posix|windows},
+bison-3.8.2,79,--disable-threads,build without multithread safety
+bison-3.8.2,80,--disable-rpath,do not hardcode runtime library paths
+bison-3.8.2,81,--enable-gcc-warnings,turn on lots of GCC warnings (not recommended).
+bison-3.8.2,84,--disable-yacc,do not build a yacc command or an -ly library
+bison-3.8.2,85,--enable-cross-guesses={conservative|risky},
+bison-3.8.2,87,--disable-assert,turn off assertions
+bison-3.8.2,88,--enable-relocatable,install a package that can be moved in the file
+bison-3.8.2,90,--disable-nls,do not use Native Language Support
+bison-3.8.2,93,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+bison-3.8.2,94,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+bison-3.8.2,95,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+bison-3.8.2,96,--with-libtextstyle-prefix[=DIR],search for libtextstyle in DIR/include and DIR/lib
+bison-3.8.2,97,--without-libtextstyle-prefix,don't search for libtextstyle in includedir and libdir
+bison-3.8.2,98,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+bison-3.8.2,99,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+bison-3.8.2,100,--with-libreadline-prefix[=DIR],search for libreadline in DIR/include and DIR/lib
+bison-3.8.2,101,--without-libreadline-prefix,don't search for libreadline in includedir and libdir
+bison-3.8.2,102,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+bison-3.8.2,103,--without-libintl-prefix,don't search for libintl in includedir and libdir
+confuse-3.3,11,"-h,",--help              display this help and exit
+confuse-3.3,14,"-V,",--version           display version information and exit
+confuse-3.3,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+confuse-3.3,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+confuse-3.3,18,"-n,",--no-create         do not create output files
+confuse-3.3,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+confuse-3.3,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+confuse-3.3,35,--bindir=DIR,user executables [EPREFIX/bin]
+confuse-3.3,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+confuse-3.3,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+confuse-3.3,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+confuse-3.3,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+confuse-3.3,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+confuse-3.3,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+confuse-3.3,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+confuse-3.3,43,--includedir=DIR,C header files [PREFIX/include]
+confuse-3.3,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+confuse-3.3,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+confuse-3.3,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+confuse-3.3,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+confuse-3.3,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+confuse-3.3,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+confuse-3.3,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/confuse]
+confuse-3.3,51,--htmldir=DIR,html documentation [DOCDIR]
+confuse-3.3,52,--dvidir=DIR,dvi documentation [DOCDIR]
+confuse-3.3,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+confuse-3.3,54,--psdir=DIR,ps documentation [DOCDIR]
+confuse-3.3,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+confuse-3.3,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+confuse-3.3,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+confuse-3.3,62,--build=BUILD,configure for building on BUILD [guessed]
+confuse-3.3,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+confuse-3.3,66,--disable-option-checking,ignore unrecognized --enable/--with options
+confuse-3.3,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+confuse-3.3,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+confuse-3.3,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+confuse-3.3,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+confuse-3.3,71,--enable-dependency-tracking,
+confuse-3.3,73,--disable-dependency-tracking,
+confuse-3.3,75,--enable-shared[=PKGS],build shared libraries [default=yes]
+confuse-3.3,76,--enable-static[=PKGS],build static libraries [default=yes]
+confuse-3.3,77,--enable-fast-install[=PKGS],
+confuse-3.3,79,--disable-libtool-lock,avoid locking (might break parallel builds)
+confuse-3.3,80,--disable-examples,don't build examples in examples
+confuse-3.3,81,--disable-nls,do not use Native Language Support
+confuse-3.3,82,--disable-rpath,do not hardcode runtime library paths
+confuse-3.3,85,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+confuse-3.3,86,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+confuse-3.3,87,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+confuse-3.3,89,--with-aix-soname=aix|svr4|both,
+confuse-3.3,92,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+confuse-3.3,93,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+confuse-3.3,95,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+confuse-3.3,96,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+confuse-3.3,97,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+confuse-3.3,98,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+confuse-3.3,99,--without-libintl-prefix,don't search for libintl in includedir and libdir
+dosfstools-4.2,11,"-h,",--help              display this help and exit
+dosfstools-4.2,14,"-V,",--version           display version information and exit
+dosfstools-4.2,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+dosfstools-4.2,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+dosfstools-4.2,18,"-n,",--no-create         do not create output files
+dosfstools-4.2,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+dosfstools-4.2,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+dosfstools-4.2,35,--bindir=DIR,user executables [EPREFIX/bin]
+dosfstools-4.2,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+dosfstools-4.2,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+dosfstools-4.2,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+dosfstools-4.2,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+dosfstools-4.2,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+dosfstools-4.2,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+dosfstools-4.2,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+dosfstools-4.2,43,--includedir=DIR,C header files [PREFIX/include]
+dosfstools-4.2,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+dosfstools-4.2,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+dosfstools-4.2,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+dosfstools-4.2,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+dosfstools-4.2,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+dosfstools-4.2,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+dosfstools-4.2,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/dosfstools]
+dosfstools-4.2,51,--htmldir=DIR,html documentation [DOCDIR]
+dosfstools-4.2,52,--dvidir=DIR,dvi documentation [DOCDIR]
+dosfstools-4.2,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+dosfstools-4.2,54,--psdir=DIR,ps documentation [DOCDIR]
+dosfstools-4.2,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+dosfstools-4.2,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+dosfstools-4.2,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+dosfstools-4.2,62,--build=BUILD,configure for building on BUILD [guessed]
+dosfstools-4.2,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+dosfstools-4.2,66,--disable-option-checking,ignore unrecognized --enable/--with options
+dosfstools-4.2,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+dosfstools-4.2,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+dosfstools-4.2,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+dosfstools-4.2,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+dosfstools-4.2,71,--enable-compat-symlinks,
+dosfstools-4.2,73,--enable-atari-check,enable legacy check to let tools switch to Atari
+dosfstools-4.2,76,--enable-dependency-tracking,
+dosfstools-4.2,78,--disable-dependency-tracking,
+dosfstools-4.2,80,--disable-largefile,omit support for large files
+dosfstools-4.2,81,--disable-rpath,do not hardcode runtime library paths
+dosfstools-4.2,84,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+dosfstools-4.2,85,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+dosfstools-4.2,86,--without-iconv,build without iconv support
+dosfstools-4.2,87,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+dosfstools-4.2,88,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+dosfstools-4.2,89,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+e2fsprogs-1.47.4,11,"-h,",--help              display this help and exit
+e2fsprogs-1.47.4,14,"-V,",--version           display version information and exit
+e2fsprogs-1.47.4,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+e2fsprogs-1.47.4,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+e2fsprogs-1.47.4,18,"-n,",--no-create         do not create output files
+e2fsprogs-1.47.4,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+e2fsprogs-1.47.4,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+e2fsprogs-1.47.4,35,--bindir=DIR,user executables [EPREFIX/bin]
+e2fsprogs-1.47.4,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+e2fsprogs-1.47.4,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+e2fsprogs-1.47.4,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+e2fsprogs-1.47.4,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+e2fsprogs-1.47.4,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+e2fsprogs-1.47.4,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+e2fsprogs-1.47.4,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+e2fsprogs-1.47.4,43,--includedir=DIR,C header files [PREFIX/include]
+e2fsprogs-1.47.4,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+e2fsprogs-1.47.4,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+e2fsprogs-1.47.4,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+e2fsprogs-1.47.4,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+e2fsprogs-1.47.4,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+e2fsprogs-1.47.4,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+e2fsprogs-1.47.4,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/PACKAGE]
+e2fsprogs-1.47.4,51,--htmldir=DIR,html documentation [DOCDIR]
+e2fsprogs-1.47.4,52,--dvidir=DIR,dvi documentation [DOCDIR]
+e2fsprogs-1.47.4,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+e2fsprogs-1.47.4,54,--psdir=DIR,ps documentation [DOCDIR]
+e2fsprogs-1.47.4,57,--build=BUILD,configure for building on BUILD [guessed]
+e2fsprogs-1.47.4,58,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+e2fsprogs-1.47.4,61,--disable-option-checking,ignore unrecognized --enable/--with options
+e2fsprogs-1.47.4,62,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+e2fsprogs-1.47.4,63,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+e2fsprogs-1.47.4,64,--enable-maintainer-mode,
+e2fsprogs-1.47.4,66,--enable-symlink-install,
+e2fsprogs-1.47.4,68,--enable-relative-symlinks,
+e2fsprogs-1.47.4,71,--enable-symlink-build,use symlinks while building instead of hard links
+e2fsprogs-1.47.4,72,--enable-verbose-makecmds,
+e2fsprogs-1.47.4,74,--enable-elf-shlibs,select ELF shared libraries
+e2fsprogs-1.47.4,75,--enable-bsd-shlibs,select BSD shared libraries
+e2fsprogs-1.47.4,76,--enable-profile,build profiling libraries
+e2fsprogs-1.47.4,77,--enable-gcov,build for coverage testing using gcov
+e2fsprogs-1.47.4,78,--enable-hardening,build with hardening flags such as fortify
+e2fsprogs-1.47.4,79,--enable-jbd-debug,enable journal debugging
+e2fsprogs-1.47.4,80,--enable-blkid-debug,enable blkid debugging
+e2fsprogs-1.47.4,81,--disable-testio-debug,disable the use of the test I/O manager for
+e2fsprogs-1.47.4,83,--enable-developer-features,
+e2fsprogs-1.47.4,85,--enable-libuuid,build and use private uuid library
+e2fsprogs-1.47.4,86,--enable-libblkid,build and use private blkid library
+e2fsprogs-1.47.4,87,--enable-subset,enable subset-only build
+e2fsprogs-1.47.4,88,--disable-backtrace,disable use backtrace
+e2fsprogs-1.47.4,89,--disable-debugfs,disable support of debugfs program
+e2fsprogs-1.47.4,90,--disable-imager,disable support of e2image program
+e2fsprogs-1.47.4,91,--disable-resizer,disable support of e2resize program
+e2fsprogs-1.47.4,92,--disable-defrag,disable support of e4defrag program
+e2fsprogs-1.47.4,93,--enable-fsck,build fsck wrapper program
+e2fsprogs-1.47.4,94,--enable-e2initrd-helper,
+e2fsprogs-1.47.4,96,--disable-tls,disable use of thread local support
+e2fsprogs-1.47.4,97,--disable-uuidd,disable building the uuid daemon
+e2fsprogs-1.47.4,98,--disable-mmp,"disable support mmp, Multi Mount Protection"
+e2fsprogs-1.47.4,99,--disable-tdb,disable tdb support
+e2fsprogs-1.47.4,100,--disable-bmap-stats,disable collection of bitmap stats
+e2fsprogs-1.47.4,101,--enable-bmap-stats-ops,enable collection of additional bitmap stats
+e2fsprogs-1.47.4,102,--disable-nls,do not use Native Language Support
+e2fsprogs-1.47.4,103,--disable-rpath,do not hardcode runtime library paths
+e2fsprogs-1.47.4,104,--disable-largefile,omit support for large files
+e2fsprogs-1.47.4,105,--disable-fuse2fs,do not build fuse2fs
+e2fsprogs-1.47.4,106,--enable-lto,enable link time optimization
+e2fsprogs-1.47.4,107,--enable-ubsan,enable undefined behavior sanitizer
+e2fsprogs-1.47.4,108,--enable-addrsan,enable address sanitizer
+e2fsprogs-1.47.4,109,--enable-threadsan,enable thread sanitizer
+e2fsprogs-1.47.4,110,--enable-fuzzing,enable fuzzing sanitizer
+e2fsprogs-1.47.4,111,--enable-year2038,support timestamps after 2038
+e2fsprogs-1.47.4,114,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+e2fsprogs-1.47.4,115,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+e2fsprogs-1.47.4,116,--with-diet-libc,use diet libc
+e2fsprogs-1.47.4,117,--with-cc,"no longer supported, use CC= instead"
+e2fsprogs-1.47.4,118,--with-ccopts,"no longer supported, use CFLAGS= instead"
+e2fsprogs-1.47.4,119,--with-ldopts,"no longer supported, use LDFLAGS= instead"
+e2fsprogs-1.47.4,120,--with-root-prefix=PREFIX,
+e2fsprogs-1.47.4,123,--without-pthread,disable use of pthread support
+e2fsprogs-1.47.4,124,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+e2fsprogs-1.47.4,125,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+e2fsprogs-1.47.4,126,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+e2fsprogs-1.47.4,127,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+e2fsprogs-1.47.4,128,--without-libintl-prefix,don't search for libintl in includedir and libdir
+e2fsprogs-1.47.4,129,--without-libarchive,disable use of libarchive
+e2fsprogs-1.47.4,130,--with-multiarch=ARCH,specify the multiarch triplet
+e2fsprogs-1.47.4,131,--with-udev-rules-dir[=DIR],
+e2fsprogs-1.47.4,133,--with-crond-dir[=DIR],Install system crontabs into DIR.
+e2fsprogs-1.47.4,134,--with-systemd-unit-dir[=DIR],
+expat-2.9.0,11,"-h,",--help              display this help and exit
+expat-2.9.0,14,"-V,",--version           display version information and exit
+expat-2.9.0,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+expat-2.9.0,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+expat-2.9.0,18,"-n,",--no-create         do not create output files
+expat-2.9.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+expat-2.9.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+expat-2.9.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+expat-2.9.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+expat-2.9.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+expat-2.9.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+expat-2.9.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+expat-2.9.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+expat-2.9.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+expat-2.9.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+expat-2.9.0,43,--includedir=DIR,C header files [PREFIX/include]
+expat-2.9.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+expat-2.9.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+expat-2.9.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+expat-2.9.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+expat-2.9.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+expat-2.9.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+expat-2.9.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/expat]
+expat-2.9.0,51,--htmldir=DIR,html documentation [DOCDIR]
+expat-2.9.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+expat-2.9.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+expat-2.9.0,54,--psdir=DIR,ps documentation [DOCDIR]
+expat-2.9.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+expat-2.9.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+expat-2.9.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+expat-2.9.0,62,--build=BUILD,configure for building on BUILD [guessed]
+expat-2.9.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+expat-2.9.0,66,--disable-option-checking,ignore unrecognized --enable/--with options
+expat-2.9.0,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+expat-2.9.0,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+expat-2.9.0,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+expat-2.9.0,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+expat-2.9.0,71,--disable-maintainer-mode,
+expat-2.9.0,74,--enable-dependency-tracking,
+expat-2.9.0,76,--disable-dependency-tracking,
+expat-2.9.0,78,--enable-shared[=PKGS],build shared libraries [default=yes]
+expat-2.9.0,79,--enable-static[=PKGS],build static libraries [default=yes]
+expat-2.9.0,80,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+expat-2.9.0,82,--enable-cxx-stdlib[=PKGS],
+expat-2.9.0,86,--enable-fast-install[=PKGS],
+expat-2.9.0,88,--enable-aix-soname=aix|svr4|both,
+expat-2.9.0,91,--disable-libtool-lock,avoid locking (might break parallel builds)
+expat-2.9.0,92,--enable-symbol-versioning,
+expat-2.9.0,96,--enable-xml-context,[COUNT]
+expat-2.9.0,99,--disable-xml-context,Do not retain context around the current parse point
+expat-2.9.0,102,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+expat-2.9.0,103,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+expat-2.9.0,104,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+expat-2.9.0,105,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+expat-2.9.0,107,--without-xmlwf,do not build xmlwf
+expat-2.9.0,108,--without-examples,do not build examples [default=included]
+expat-2.9.0,109,--without-tests,do not build tests [default=included]
+expat-2.9.0,110,--with-arc4random,enforce the use of arc4random function in the system
+expat-2.9.0,112,--without-arc4random,skip auto detect of arc4random [default=check]
+expat-2.9.0,113,--with-arc4random-buf,enforce the use of arc4random_buf function in the
+expat-2.9.0,115,--without-arc4random-buf,
+expat-2.9.0,117,--with-getentropy,enforce the use of getentropy function in the system
+expat-2.9.0,119,--without-getentropy,skip auto detect of getentropy [default=check]
+expat-2.9.0,120,--with-getrandom,enforce the use of getrandom function in the system
+expat-2.9.0,122,--without-getrandom,skip auto detect of getrandom [default=check]
+expat-2.9.0,123,--with-sys-getrandom,enforce the use of syscall SYS_getrandom function in
+expat-2.9.0,125,--without-sys-getrandom,skip auto detect of syscall SYS_getrandom
+expat-2.9.0,127,--with-dev-urandom,enforce the use of /dev/urandom in the system
+expat-2.9.0,129,--without-dev-urandom,enforce not using /dev/urandom in the system
+expat-2.9.0,131,--with-docbook,enforce XML to man page compilation [default=check]
+expat-2.9.0,132,--without-docbook,skip XML to man page compilation [default=check]
+fakeroot-1.37.2,11,"-h,",--help              display this help and exit
+fakeroot-1.37.2,14,"-V,",--version           display version information and exit
+fakeroot-1.37.2,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+fakeroot-1.37.2,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+fakeroot-1.37.2,18,"-n,",--no-create         do not create output files
+fakeroot-1.37.2,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+fakeroot-1.37.2,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+fakeroot-1.37.2,35,--bindir=DIR,user executables [EPREFIX/bin]
+fakeroot-1.37.2,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+fakeroot-1.37.2,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+fakeroot-1.37.2,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+fakeroot-1.37.2,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+fakeroot-1.37.2,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+fakeroot-1.37.2,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+fakeroot-1.37.2,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+fakeroot-1.37.2,43,--includedir=DIR,C header files [PREFIX/include]
+fakeroot-1.37.2,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+fakeroot-1.37.2,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+fakeroot-1.37.2,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+fakeroot-1.37.2,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+fakeroot-1.37.2,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+fakeroot-1.37.2,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+fakeroot-1.37.2,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/fakeroot]
+fakeroot-1.37.2,51,--htmldir=DIR,html documentation [DOCDIR]
+fakeroot-1.37.2,52,--dvidir=DIR,dvi documentation [DOCDIR]
+fakeroot-1.37.2,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+fakeroot-1.37.2,54,--psdir=DIR,ps documentation [DOCDIR]
+fakeroot-1.37.2,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+fakeroot-1.37.2,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+fakeroot-1.37.2,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+fakeroot-1.37.2,62,--build=BUILD,configure for building on BUILD [guessed]
+fakeroot-1.37.2,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+fakeroot-1.37.2,64,--target=TARGET,configure for building compilers for TARGET [HOST]
+fakeroot-1.37.2,67,--disable-option-checking,ignore unrecognized --enable/--with options
+fakeroot-1.37.2,68,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+fakeroot-1.37.2,69,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+fakeroot-1.37.2,70,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+fakeroot-1.37.2,71,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+fakeroot-1.37.2,72,--enable-maintainer-mode,
+fakeroot-1.37.2,75,--enable-dependency-tracking,
+fakeroot-1.37.2,77,--disable-dependency-tracking,
+fakeroot-1.37.2,79,--enable-shared[=PKGS],build shared libraries [default=yes]
+fakeroot-1.37.2,80,--enable-static[=PKGS],build static libraries [default=yes]
+fakeroot-1.37.2,81,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+fakeroot-1.37.2,83,--enable-fast-install[=PKGS],
+fakeroot-1.37.2,85,--enable-aix-soname=aix|svr4|both,
+fakeroot-1.37.2,88,--disable-libtool-lock,avoid locking (might break parallel builds)
+fakeroot-1.37.2,91,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+fakeroot-1.37.2,92,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+fakeroot-1.37.2,93,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+fakeroot-1.37.2,94,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+fakeroot-1.37.2,96,--with-ipc[=IPCTYPE],method of IPC to use: either sysv (default) or tcp
+fakeroot-1.37.2,97,--with-dbformat[=DBFORMAT],
+flex-2.6.4,11,"-h,",--help              display this help and exit
+flex-2.6.4,14,"-V,",--version           display version information and exit
+flex-2.6.4,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+flex-2.6.4,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+flex-2.6.4,18,"-n,",--no-create         do not create output files
+flex-2.6.4,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+flex-2.6.4,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+flex-2.6.4,35,--bindir=DIR,user executables [EPREFIX/bin]
+flex-2.6.4,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+flex-2.6.4,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+flex-2.6.4,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+flex-2.6.4,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+flex-2.6.4,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+flex-2.6.4,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+flex-2.6.4,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+flex-2.6.4,43,--includedir=DIR,C header files [PREFIX/include]
+flex-2.6.4,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+flex-2.6.4,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+flex-2.6.4,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+flex-2.6.4,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+flex-2.6.4,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+flex-2.6.4,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+flex-2.6.4,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/flex]
+flex-2.6.4,51,--htmldir=DIR,html documentation [DOCDIR]
+flex-2.6.4,52,--dvidir=DIR,dvi documentation [DOCDIR]
+flex-2.6.4,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+flex-2.6.4,54,--psdir=DIR,ps documentation [DOCDIR]
+flex-2.6.4,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+flex-2.6.4,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+flex-2.6.4,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+flex-2.6.4,62,--build=BUILD,configure for building on BUILD [guessed]
+flex-2.6.4,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+flex-2.6.4,66,--disable-option-checking,ignore unrecognized --enable/--with options
+flex-2.6.4,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+flex-2.6.4,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+flex-2.6.4,69,--enable-shared[=PKGS],build shared libraries [default=yes]
+flex-2.6.4,70,--enable-static[=PKGS],build static libraries [default=yes]
+flex-2.6.4,71,--enable-fast-install[=PKGS],
+flex-2.6.4,73,--disable-libtool-lock,avoid locking (might break parallel builds)
+flex-2.6.4,74,--enable-dependency-tracking,
+flex-2.6.4,76,--disable-dependency-tracking,
+flex-2.6.4,78,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+flex-2.6.4,79,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+flex-2.6.4,80,--disable-nls,do not use Native Language Support
+flex-2.6.4,81,--disable-rpath,do not hardcode runtime library paths
+flex-2.6.4,82,--enable-warnings,enable a bunch of compiler warning flags (defaults
+flex-2.6.4,84,--disable-libfl,do not build -lfl runtime support library
+flex-2.6.4,85,--disable-bootstrap,don't perform a bootstrap when building flex
+flex-2.6.4,88,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+flex-2.6.4,89,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+flex-2.6.4,90,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+flex-2.6.4,92,--with-aix-soname=aix|svr4|both,
+flex-2.6.4,95,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+flex-2.6.4,96,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+flex-2.6.4,98,--with-gnu-ld,assume the C compiler uses GNU ld default=no
+flex-2.6.4,99,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+flex-2.6.4,100,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+flex-2.6.4,101,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+flex-2.6.4,102,--without-libintl-prefix,don't search for libintl in includedir and libdir
+genimage-20,11,"-h,",--help              display this help and exit
+genimage-20,14,"-V,",--version           display version information and exit
+genimage-20,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+genimage-20,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+genimage-20,18,"-n,",--no-create         do not create output files
+genimage-20,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+genimage-20,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+genimage-20,35,--bindir=DIR,user executables [EPREFIX/bin]
+genimage-20,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+genimage-20,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+genimage-20,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+genimage-20,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+genimage-20,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+genimage-20,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+genimage-20,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+genimage-20,43,--includedir=DIR,C header files [PREFIX/include]
+genimage-20,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+genimage-20,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+genimage-20,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+genimage-20,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+genimage-20,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+genimage-20,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+genimage-20,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/genimage]
+genimage-20,51,--htmldir=DIR,html documentation [DOCDIR]
+genimage-20,52,--dvidir=DIR,dvi documentation [DOCDIR]
+genimage-20,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+genimage-20,54,--psdir=DIR,ps documentation [DOCDIR]
+genimage-20,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+genimage-20,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+genimage-20,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+genimage-20,62,--build=BUILD,configure for building on BUILD [guessed]
+genimage-20,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+genimage-20,66,--disable-option-checking,ignore unrecognized --enable/--with options
+genimage-20,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+genimage-20,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+genimage-20,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+genimage-20,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+genimage-20,71,--enable-dependency-tracking,
+genimage-20,73,--disable-dependency-tracking,
+genimage-20,75,--disable-largefile,omit support for large files
+genimage-20,76,--enable-shared[=PKGS],build shared libraries [default=yes]
+genimage-20,77,--enable-static[=PKGS],build static libraries [default=yes]
+genimage-20,78,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+genimage-20,80,--enable-fast-install[=PKGS],
+genimage-20,82,--enable-aix-soname=aix|svr4|both,
+genimage-20,85,--disable-libtool-lock,avoid locking (might break parallel builds)
+genimage-20,86,--enable-debug,enable debug messages [default=disabled]
+genimage-20,87,--disable-hide,do not hide all internal symbols [default=enabled]
+genimage-20,88,--enable-year2038,support timestamps after 2038
+genimage-20,91,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+genimage-20,92,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+genimage-20,93,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+genimage-20,94,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+genimage-20,96,--with-shell,default shell to execute commands [default=/bin/sh]
+gettext-0.22.4,11,"-h,",--help              display this help and exit
+gettext-0.22.4,14,"-V,",--version           display version information and exit
+gettext-0.22.4,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+gettext-0.22.4,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+gettext-0.22.4,18,"-n,",--no-create         do not create output files
+gettext-0.22.4,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+gettext-0.22.4,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+gettext-0.22.4,35,--bindir=DIR,user executables [EPREFIX/bin]
+gettext-0.22.4,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+gettext-0.22.4,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+gettext-0.22.4,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+gettext-0.22.4,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+gettext-0.22.4,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+gettext-0.22.4,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+gettext-0.22.4,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+gettext-0.22.4,43,--includedir=DIR,C header files [PREFIX/include]
+gettext-0.22.4,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+gettext-0.22.4,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+gettext-0.22.4,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+gettext-0.22.4,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+gettext-0.22.4,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+gettext-0.22.4,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+gettext-0.22.4,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/gettext]
+gettext-0.22.4,51,--htmldir=DIR,html documentation [DOCDIR]
+gettext-0.22.4,52,--dvidir=DIR,dvi documentation [DOCDIR]
+gettext-0.22.4,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+gettext-0.22.4,54,--psdir=DIR,ps documentation [DOCDIR]
+gettext-0.22.4,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+gettext-0.22.4,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+gettext-0.22.4,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+gettext-0.22.4,62,--build=BUILD,configure for building on BUILD [guessed]
+gettext-0.22.4,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+gettext-0.22.4,66,--disable-option-checking,ignore unrecognized --enable/--with options
+gettext-0.22.4,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+gettext-0.22.4,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+gettext-0.22.4,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+gettext-0.22.4,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+gettext-0.22.4,71,--enable-dependency-tracking,
+gettext-0.22.4,73,--disable-dependency-tracking,
+gettext-0.22.4,75,--disable-java,do not build Java sources
+gettext-0.22.4,76,--enable-csharp[=IMPL],choose preferred C# implementation (mono)
+gettext-0.22.4,77,--disable-c++,do not build C++ sources
+gettext-0.22.4,78,--disable-largefile,omit support for large files
+gettext-0.22.4,79,--enable-threads={isoc|posix|isoc+posix|windows},
+gettext-0.22.4,81,--disable-threads,build without multithread safety
+gettext-0.22.4,82,--enable-more-warnings,enable additional compiler warnings beyond -Wall
+gettext-0.22.4,83,--disable-more-warnings,obey exactly the warning options specified in
+gettext-0.22.4,85,--enable-shared[=PKGS],build shared libraries
+gettext-0.22.4,87,--enable-static[=PKGS],build static libraries
+gettext-0.22.4,89,--enable-fast-install[=PKGS],
+gettext-0.22.4,92,--disable-libtool-lock,avoid locking (might break parallel builds)
+gettext-0.22.4,93,--disable-nls,do not use Native Language Support
+gettext-0.22.4,94,--disable-rpath,do not hardcode runtime library paths
+gettext-0.22.4,95,--enable-cross-guesses={conservative|risky},
+gettext-0.22.4,97,--enable-relocatable,install a package that can be moved in the file
+gettext-0.22.4,99,--disable-libasprintf,do not build libasprintf
+gettext-0.22.4,100,--enable-year2038,support timestamps after 2038
+gettext-0.22.4,101,--disable-curses,"do not use libncurses, libtermcap even if they exist"
+gettext-0.22.4,102,--disable-namespacing,build a library that exports undesired symbols
+gettext-0.22.4,103,--disable-openmp,do not use OpenMP
+gettext-0.22.4,104,--disable-acl,do not support ACLs
+gettext-0.22.4,105,--disable-xattr,do not support extended attributes
+gettext-0.22.4,108,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+gettext-0.22.4,109,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+gettext-0.22.4,110,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+gettext-0.22.4,112,--with-aix-soname=aix|svr4|both,
+gettext-0.22.4,116,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+gettext-0.22.4,117,--with-sysroot=DIR,Search for dependent libraries within DIR (or the
+gettext-0.22.4,119,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+gettext-0.22.4,120,--with-included-gettext,use the GNU gettext library included here
+gettext-0.22.4,121,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+gettext-0.22.4,122,--without-libintl-prefix,don't search for libintl in includedir and libdir
+gettext-0.22.4,123,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+gettext-0.22.4,124,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+gettext-0.22.4,125,--with-libncurses-prefix[=DIR],search for libncurses in DIR/include and DIR/lib
+gettext-0.22.4,126,--without-libncurses-prefix,don't search for libncurses in includedir and libdir
+gettext-0.22.4,127,--with-libtermcap-prefix[=DIR],search for libtermcap in DIR/include and DIR/lib
+gettext-0.22.4,128,--without-libtermcap-prefix,don't search for libtermcap in includedir and libdir
+gettext-0.22.4,129,--with-libxcurses-prefix[=DIR],search for libxcurses in DIR/include and DIR/lib
+gettext-0.22.4,130,--without-libxcurses-prefix,don't search for libxcurses in includedir and libdir
+gettext-0.22.4,131,--with-libcurses-prefix[=DIR],search for libcurses in DIR/include and DIR/lib
+gettext-0.22.4,132,--without-libcurses-prefix,don't search for libcurses in includedir and libdir
+gettext-0.22.4,133,--with-libtextstyle-prefix[=DIR],search for libtextstyle in DIR/include and DIR/lib
+gettext-0.22.4,134,--without-libtextstyle-prefix,don't search for libtextstyle in includedir and libdir
+gettext-0.22.4,135,--with-bison-prefix=DIR,search for bison's runtime data in DIR/share
+gettext-0.22.4,136,--with-included-libunistring,use the libunistring parts included here
+gettext-0.22.4,137,--with-libunistring-prefix[=DIR],search for libunistring in DIR/include and DIR/lib
+gettext-0.22.4,138,--without-libunistring-prefix,don't search for libunistring in includedir and libdir
+gettext-0.22.4,139,--with-included-libxml,use the libxml2 included here
+gettext-0.22.4,140,--with-libxml2-prefix[=DIR],search for libxml2 in DIR/include and DIR/lib
+gettext-0.22.4,141,--without-libxml2-prefix,don't search for libxml2 in includedir and libdir
+gettext-0.22.4,142,--without-included-regex,
+gettext-0.22.4,146,--without-emacs,"do not use Emacs, don't install po-mode"
+gettext-0.22.4,147,--with-lispdir,override the default lisp directory
+gettext-0.22.4,148,--without-git,don't use git to compress the infrastructure archive
+gettext-0.22.4,149,--with-cvs,use cvs to compress the infrastructure archive
+gettext-0.22.4,151,--without-bzip2,don't use bzip2 to compress the infrastructure archive
+gettext-0.22.4,152,--without-xz,don't use xz to compress the infrastructure archive
+kbd-2.9.0,11,"-h,",--help              display this help and exit
+kbd-2.9.0,14,"-V,",--version           display version information and exit
+kbd-2.9.0,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+kbd-2.9.0,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+kbd-2.9.0,18,"-n,",--no-create         do not create output files
+kbd-2.9.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+kbd-2.9.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+kbd-2.9.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+kbd-2.9.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+kbd-2.9.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+kbd-2.9.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+kbd-2.9.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+kbd-2.9.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+kbd-2.9.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+kbd-2.9.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+kbd-2.9.0,43,--includedir=DIR,C header files [PREFIX/include]
+kbd-2.9.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+kbd-2.9.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+kbd-2.9.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+kbd-2.9.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+kbd-2.9.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+kbd-2.9.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+kbd-2.9.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/kbd]
+kbd-2.9.0,51,--htmldir=DIR,html documentation [DOCDIR]
+kbd-2.9.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+kbd-2.9.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+kbd-2.9.0,54,--psdir=DIR,ps documentation [DOCDIR]
+kbd-2.9.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+kbd-2.9.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+kbd-2.9.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+kbd-2.9.0,62,--build=BUILD,configure for building on BUILD [guessed]
+kbd-2.9.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+kbd-2.9.0,66,--disable-option-checking,ignore unrecognized --enable/--with options
+kbd-2.9.0,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+kbd-2.9.0,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+kbd-2.9.0,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+kbd-2.9.0,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+kbd-2.9.0,71,--enable-dependency-tracking,
+kbd-2.9.0,73,--disable-dependency-tracking,
+kbd-2.9.0,75,--enable-shared[=PKGS],build shared libraries [default=yes]
+kbd-2.9.0,76,--enable-static[=PKGS],build static libraries [default=yes]
+kbd-2.9.0,77,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+kbd-2.9.0,79,--enable-fast-install[=PKGS],
+kbd-2.9.0,81,--enable-aix-soname=aix|svr4|both,
+kbd-2.9.0,84,--disable-libtool-lock,avoid locking (might break parallel builds)
+kbd-2.9.0,85,--disable-nls,do not use Native Language Support
+kbd-2.9.0,86,--disable-rpath,do not hardcode runtime library paths
+kbd-2.9.0,87,--enable-code-coverage,Whether to enable code coverage support
+kbd-2.9.0,88,--enable-werror,turn on -Werror for some kind of warnings
+kbd-2.9.0,89,--enable-optional-progs,Build and install a optional programs
+kbd-2.9.0,90,--enable-libkeymap,Build and install a libkeymap
+kbd-2.9.0,91,--enable-libkfont,Build and install a libkfont
+kbd-2.9.0,92,--disable-compress,Do not compress fonts and keymaps when they are
+kbd-2.9.0,94,--disable-vlock,do not build vlock
+kbd-2.9.0,95,--disable-tests,do not build tests
+kbd-2.9.0,96,--disable-memcheck,do not run memory checks (e.g. leak detection)
+kbd-2.9.0,100,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+kbd-2.9.0,101,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+kbd-2.9.0,102,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+kbd-2.9.0,103,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+kbd-2.9.0,105,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+kbd-2.9.0,106,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+kbd-2.9.0,107,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+kbd-2.9.0,108,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+kbd-2.9.0,109,--without-libintl-prefix,don't search for libintl in includedir and libdir
+kbd-2.9.0,110,--with-gcov=GCOV,use given GCOV for coverage (GCOV=gcov).
+kbd-2.9.0,111,--with-zlib,support zlib compression [default=auto]
+kbd-2.9.0,112,--with-bzip2,support bzip2 compression [default=auto]
+kbd-2.9.0,113,--with-lzma,support lzma compression [default=auto]
+kbd-2.9.0,114,--with-zstd,support zstd compression [default=auto]
+kmod-34.2,11,"-h,",--help              display this help and exit
+kmod-34.2,14,"-V,",--version           display version information and exit
+kmod-34.2,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+kmod-34.2,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+kmod-34.2,18,"-n,",--no-create         do not create output files
+kmod-34.2,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+kmod-34.2,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+kmod-34.2,35,--bindir=DIR,user executables [EPREFIX/bin]
+kmod-34.2,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+kmod-34.2,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+kmod-34.2,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+kmod-34.2,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+kmod-34.2,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+kmod-34.2,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+kmod-34.2,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+kmod-34.2,43,--includedir=DIR,C header files [PREFIX/include]
+kmod-34.2,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+kmod-34.2,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+kmod-34.2,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+kmod-34.2,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+kmod-34.2,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+kmod-34.2,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+kmod-34.2,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/kmod]
+kmod-34.2,51,--htmldir=DIR,html documentation [DOCDIR]
+kmod-34.2,52,--dvidir=DIR,dvi documentation [DOCDIR]
+kmod-34.2,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+kmod-34.2,54,--psdir=DIR,ps documentation [DOCDIR]
+kmod-34.2,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+kmod-34.2,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+kmod-34.2,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+kmod-34.2,62,--build=BUILD,configure for building on BUILD [guessed]
+kmod-34.2,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+kmod-34.2,66,--disable-option-checking,ignore unrecognized --enable/--with options
+kmod-34.2,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+kmod-34.2,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+kmod-34.2,69,--disable-largefile,omit support for large files
+kmod-34.2,70,--disable-maintainer-mode,
+kmod-34.2,73,--enable-dependency-tracking,
+kmod-34.2,75,--disable-dependency-tracking,
+kmod-34.2,77,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+kmod-34.2,78,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+kmod-34.2,79,--enable-static[=PKGS],build static libraries [default=no]
+kmod-34.2,80,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+kmod-34.2,82,--enable-shared[=PKGS],build shared libraries [default=yes]
+kmod-34.2,83,--enable-fast-install[=PKGS],
+kmod-34.2,85,--enable-aix-soname=aix|svr4|both,
+kmod-34.2,88,--disable-libtool-lock,avoid locking (might break parallel builds)
+kmod-34.2,89,--disable-tools,disable building tools that provide same
+kmod-34.2,91,--disable-manpages,disable manpages [default=enabled]
+kmod-34.2,92,--disable-logging,disable system logging [default=enabled]
+kmod-34.2,93,--enable-debug,enable debug messages [default=disabled]
+kmod-34.2,94,--enable-coverage,enable test coverage [default=disabled]
+kmod-34.2,95,--enable-gtk-doc,use gtk-doc to build documentation [[default=no]]
+kmod-34.2,96,--enable-gtk-doc-html,build documentation in html format [[default=yes]]
+kmod-34.2,97,--enable-gtk-doc-pdf,build documentation in pdf format [[default=no]]
+kmod-34.2,98,--enable-year2038,support timestamps after 2038
+kmod-34.2,101,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+kmod-34.2,102,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+kmod-34.2,103,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+kmod-34.2,104,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+kmod-34.2,106,--with-distconfdir=DIR,directory to search for distribution configuration
+kmod-34.2,108,--with-module-directory=DIR,
+kmod-34.2,111,--with-zstd,handle Zstandard-compressed modules
+kmod-34.2,113,--with-xz,handle Xz-compressed modules [default=disabled]
+kmod-34.2,114,--with-zlib,handle gzipped modules [default=disabled]
+kmod-34.2,115,--with-openssl,handle PKCS7 signatures [default=disabled]
+kmod-34.2,116,--with-bashcompletiondir=DIR,
+kmod-34.2,118,--with-fishcompletiondir=DIR,
+kmod-34.2,120,--with-zshcompletiondir=DIR,
+kmod-34.2,122,--with-html-dir=PATH,path to installed docs
+kmod-34.2,123,--with-pkgconfigdir,pkg-config installation directory
+kmod-34.2,125,--with-noarch-pkgconfigdir,
+libarchive-3.8.9,11,"-h,",--help              display this help and exit
+libarchive-3.8.9,14,"-V,",--version           display version information and exit
+libarchive-3.8.9,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+libarchive-3.8.9,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+libarchive-3.8.9,18,"-n,",--no-create         do not create output files
+libarchive-3.8.9,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+libarchive-3.8.9,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+libarchive-3.8.9,35,--bindir=DIR,user executables [EPREFIX/bin]
+libarchive-3.8.9,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+libarchive-3.8.9,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+libarchive-3.8.9,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+libarchive-3.8.9,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+libarchive-3.8.9,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+libarchive-3.8.9,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+libarchive-3.8.9,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+libarchive-3.8.9,43,--includedir=DIR,C header files [PREFIX/include]
+libarchive-3.8.9,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+libarchive-3.8.9,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+libarchive-3.8.9,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+libarchive-3.8.9,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+libarchive-3.8.9,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+libarchive-3.8.9,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+libarchive-3.8.9,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/libarchive]
+libarchive-3.8.9,51,--htmldir=DIR,html documentation [DOCDIR]
+libarchive-3.8.9,52,--dvidir=DIR,dvi documentation [DOCDIR]
+libarchive-3.8.9,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+libarchive-3.8.9,54,--psdir=DIR,ps documentation [DOCDIR]
+libarchive-3.8.9,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+libarchive-3.8.9,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+libarchive-3.8.9,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+libarchive-3.8.9,62,--build=BUILD,configure for building on BUILD [guessed]
+libarchive-3.8.9,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+libarchive-3.8.9,66,--disable-option-checking,ignore unrecognized --enable/--with options
+libarchive-3.8.9,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+libarchive-3.8.9,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+libarchive-3.8.9,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+libarchive-3.8.9,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+libarchive-3.8.9,71,--disable-maintainer-mode,
+libarchive-3.8.9,74,--enable-dependency-tracking,
+libarchive-3.8.9,76,--disable-dependency-tracking,
+libarchive-3.8.9,78,--enable-shared[=PKGS],build shared libraries [default=yes]
+libarchive-3.8.9,79,--enable-static[=PKGS],build static libraries [default=yes]
+libarchive-3.8.9,80,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+libarchive-3.8.9,82,--enable-fast-install[=PKGS],
+libarchive-3.8.9,84,--enable-aix-soname=aix|svr4|both,
+libarchive-3.8.9,87,--disable-libtool-lock,avoid locking (might break parallel builds)
+libarchive-3.8.9,88,--enable-bsdtar,enable build of bsdtar (default)
+libarchive-3.8.9,91,--disable-bsdtar,disable build of bsdtar
+libarchive-3.8.9,92,--enable-bsdcat,enable build of bsdcat (default)
+libarchive-3.8.9,95,--disable-bsdcat,disable build of bsdcat
+libarchive-3.8.9,96,--enable-bsdcpio,enable build of bsdcpio (default)
+libarchive-3.8.9,99,--disable-bsdcpio,disable build of bsdcpio
+libarchive-3.8.9,100,--enable-bsdunzip,enable build of bsdunzip (default)
+libarchive-3.8.9,106,--disable-rpath,do not hardcode runtime library paths
+libarchive-3.8.9,107,--enable-posix-regex-lib,
+libarchive-3.8.9,120,--disable-xattr,Disable Extended Attributes support (default: check)
+libarchive-3.8.9,121,--disable-acl,Disable ACL support (default: check)
+libarchive-3.8.9,122,--disable-largefile,omit support for large files
+libarchive-3.8.9,123,--enable-year2038,support timestamps after 2038
+libarchive-3.8.9,126,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+libarchive-3.8.9,127,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+libarchive-3.8.9,128,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+libarchive-3.8.9,129,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+libarchive-3.8.9,131,--without-zlib,Don't build support for gzip through zlib
+libarchive-3.8.9,132,--without-bz2lib,Don't build support for bzip2 through bz2lib
+libarchive-3.8.9,133,--without-libb2,Don't build support for BLAKE2 through libb2
+libarchive-3.8.9,134,--without-iconv,Don't try to link against iconv
+libarchive-3.8.9,135,--with-gnu-ld,assume the C compiler uses GNU ld default=no
+libarchive-3.8.9,136,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+libarchive-3.8.9,137,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+libarchive-3.8.9,138,--without-lz4,Don't build support for lz4 through liblz4
+libarchive-3.8.9,139,--without-zstd,Don't build support for zstd through libzstd
+libarchive-3.8.9,140,--without-lzma,Don't build support for xz through lzma
+libarchive-3.8.9,141,--with-lzo2,Build with LZO support from liblzo2
+libarchive-3.8.9,142,--without-cng,Don't build support of CNG(Crypto Next Generation)
+libarchive-3.8.9,143,--with-mbedtls,Build with crypto support from mbed TLS
+libarchive-3.8.9,144,--with-nettle,Build with crypto support from Nettle
+libarchive-3.8.9,145,--without-openssl,Don't build support for mtree and xar hashes through
+libarchive-3.8.9,147,--without-xml2,Don't build support for xar through libxml2
+libarchive-3.8.9,148,--without-expat,Don't build support for xar through expat
+libffi-3.8.0,11,"-h,",--help              display this help and exit
+libffi-3.8.0,14,"-V,",--version           display version information and exit
+libffi-3.8.0,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+libffi-3.8.0,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+libffi-3.8.0,18,"-n,",--no-create         do not create output files
+libffi-3.8.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+libffi-3.8.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+libffi-3.8.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+libffi-3.8.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+libffi-3.8.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+libffi-3.8.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+libffi-3.8.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+libffi-3.8.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+libffi-3.8.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+libffi-3.8.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+libffi-3.8.0,43,--includedir=DIR,C header files [PREFIX/include]
+libffi-3.8.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+libffi-3.8.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+libffi-3.8.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+libffi-3.8.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+libffi-3.8.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+libffi-3.8.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+libffi-3.8.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/libffi]
+libffi-3.8.0,51,--htmldir=DIR,html documentation [DOCDIR]
+libffi-3.8.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+libffi-3.8.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+libffi-3.8.0,54,--psdir=DIR,ps documentation [DOCDIR]
+libffi-3.8.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+libffi-3.8.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+libffi-3.8.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+libffi-3.8.0,62,--build=BUILD,configure for building on BUILD [guessed]
+libffi-3.8.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+libffi-3.8.0,64,--target=TARGET,configure for building compilers for TARGET [HOST]
+libffi-3.8.0,67,--disable-option-checking,ignore unrecognized --enable/--with options
+libffi-3.8.0,68,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+libffi-3.8.0,69,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+libffi-3.8.0,70,--disable-builddir,disable automatic build in subdir of sources
+libffi-3.8.0,72,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+libffi-3.8.0,73,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+libffi-3.8.0,74,--enable-dependency-tracking,
+libffi-3.8.0,76,--disable-dependency-tracking,
+libffi-3.8.0,78,--enable-shared[=PKGS],build shared libraries [default=yes]
+libffi-3.8.0,79,--enable-static[=PKGS],build static libraries [default=yes]
+libffi-3.8.0,80,--enable-fast-install[=PKGS],
+libffi-3.8.0,82,--disable-libtool-lock,avoid locking (might break parallel builds)
+libffi-3.8.0,83,--enable-portable-binary,
+libffi-3.8.0,86,--enable-maintainer-mode,
+libffi-3.8.0,89,--enable-pax_emutramp,enable pax emulated trampolines (experimental)
+libffi-3.8.0,90,--disable-docs,Disable building of docs (default: no)
+libffi-3.8.0,91,--enable-debug,debugging mode
+libffi-3.8.0,92,--disable-structs,omit code for struct support
+libffi-3.8.0,93,--disable-raw-api,make the raw api unavailable
+libffi-3.8.0,94,--disable-exec-static-tramp,disable use of static exec trampolines (enabled by default)
+libffi-3.8.0,95,--enable-purify-safety,purify-safe mode
+libffi-3.8.0,96,--disable-multi-os-directory,
+libffi-3.8.0,98,--enable-symvers=STYLE,enables symbol versioning of the shared library
+libffi-3.8.0,102,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+libffi-3.8.0,103,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+libffi-3.8.0,104,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+libffi-3.8.0,106,--with-aix-soname=aix|svr4|both,
+libffi-3.8.0,109,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+libffi-3.8.0,110,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+libffi-3.8.0,112,--with-gcc-arch=<arch>,"use architecture <arch> for gcc -march/-mtune,"
+libtool-2.5.4,11,"-h,",--help              display this help and exit
+libtool-2.5.4,14,"-V,",--version           display version information and exit
+libtool-2.5.4,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+libtool-2.5.4,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+libtool-2.5.4,18,"-n,",--no-create         do not create output files
+libtool-2.5.4,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+libtool-2.5.4,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+libtool-2.5.4,35,--bindir=DIR,user executables [EPREFIX/bin]
+libtool-2.5.4,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+libtool-2.5.4,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+libtool-2.5.4,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+libtool-2.5.4,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+libtool-2.5.4,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+libtool-2.5.4,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+libtool-2.5.4,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+libtool-2.5.4,43,--includedir=DIR,C header files [PREFIX/include]
+libtool-2.5.4,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+libtool-2.5.4,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+libtool-2.5.4,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+libtool-2.5.4,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+libtool-2.5.4,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+libtool-2.5.4,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+libtool-2.5.4,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/libtool]
+libtool-2.5.4,51,--htmldir=DIR,html documentation [DOCDIR]
+libtool-2.5.4,52,--dvidir=DIR,dvi documentation [DOCDIR]
+libtool-2.5.4,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+libtool-2.5.4,54,--psdir=DIR,ps documentation [DOCDIR]
+libtool-2.5.4,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+libtool-2.5.4,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+libtool-2.5.4,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+libtool-2.5.4,62,--build=BUILD,configure for building on BUILD [guessed]
+libtool-2.5.4,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+libtool-2.5.4,66,--disable-option-checking,ignore unrecognized --enable/--with options
+libtool-2.5.4,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+libtool-2.5.4,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+libtool-2.5.4,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+libtool-2.5.4,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+libtool-2.5.4,71,--disable-ltdl-install,do not install libltdl
+libtool-2.5.4,72,--enable-dependency-tracking,
+libtool-2.5.4,74,--disable-dependency-tracking,
+libtool-2.5.4,76,--enable-shared[=PKGS],build shared libraries [default=yes]
+libtool-2.5.4,77,--enable-static[=PKGS],build static libraries [default=yes]
+libtool-2.5.4,78,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+libtool-2.5.4,80,--enable-fast-install[=PKGS],
+libtool-2.5.4,82,--enable-aix-soname=aix|svr4|both,
+libtool-2.5.4,85,--disable-libtool-lock,avoid locking (might break parallel builds)
+libtool-2.5.4,86,--enable-ltdl-install,install libltdl
+libtool-2.5.4,87,--enable-cross-guesses={conservative|risky},
+libtool-2.5.4,91,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+libtool-2.5.4,92,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+libtool-2.5.4,93,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+libtool-2.5.4,94,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+lzip-1.25,7,"-h,",--help            display this help and exit
+lzip-1.25,8,"-V,",--version         output version information and exit
+lzip-1.25,9,--srcdir=DIR,find the source code in DIR [. or ..]
+lzip-1.25,10,--prefix=DIR,install into DIR [/usr/local]
+lzip-1.25,11,--exec-prefix=DIR,base directory for arch-dependent files [$(prefix)]
+lzip-1.25,12,--bindir=DIR,user executables directory [$(exec_prefix)/bin]
+lzip-1.25,13,--datarootdir=DIR,base directory for doc and data [$(prefix)/share]
+lzip-1.25,14,--infodir=DIR,info files directory [$(datarootdir)/info]
+lzip-1.25,15,--mandir=DIR,man pages directory [$(datarootdir)/man]
+lzip-1.25,16,--build,build in one step without using 'make'
+lzip-1.25,17,--check,"check without using 'make', implies --build"
+lzip-1.25,18,--installdir=BINDIR,"install without using 'make', implies --build"
+lzo-2.10,11,"-h,",--help              display this help and exit
+lzo-2.10,14,"-V,",--version           display version information and exit
+lzo-2.10,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+lzo-2.10,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+lzo-2.10,18,"-n,",--no-create         do not create output files
+lzo-2.10,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+lzo-2.10,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+lzo-2.10,35,--bindir=DIR,user executables [EPREFIX/bin]
+lzo-2.10,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+lzo-2.10,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+lzo-2.10,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+lzo-2.10,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+lzo-2.10,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+lzo-2.10,41,--libdir=DIR,object code libraries [EPREFIX/lib]
+lzo-2.10,42,--includedir=DIR,C header files [PREFIX/include]
+lzo-2.10,43,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+lzo-2.10,44,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+lzo-2.10,45,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+lzo-2.10,46,--infodir=DIR,info documentation [DATAROOTDIR/info]
+lzo-2.10,47,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+lzo-2.10,48,--mandir=DIR,man documentation [DATAROOTDIR/man]
+lzo-2.10,49,--docdir=DIR,documentation root [DATAROOTDIR/doc/lzo]
+lzo-2.10,50,--htmldir=DIR,html documentation [DOCDIR]
+lzo-2.10,51,--dvidir=DIR,dvi documentation [DOCDIR]
+lzo-2.10,52,--pdfdir=DIR,pdf documentation [DOCDIR]
+lzo-2.10,53,--psdir=DIR,ps documentation [DOCDIR]
+lzo-2.10,56,--program-prefix=PREFIX,prepend PREFIX to installed program names
+lzo-2.10,57,--program-suffix=SUFFIX,append SUFFIX to installed program names
+lzo-2.10,58,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+lzo-2.10,61,--build=BUILD,configure for building on BUILD [guessed]
+lzo-2.10,62,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+lzo-2.10,63,--target=TARGET,configure for building compilers for TARGET [HOST]
+lzo-2.10,66,--disable-option-checking,ignore unrecognized --enable/--with options
+lzo-2.10,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+lzo-2.10,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+lzo-2.10,69,--enable-maintainer-mode,
+lzo-2.10,72,--enable-dependency-tracking,
+lzo-2.10,74,--disable-dependency-tracking,
+lzo-2.10,76,--disable-largefile,omit support for large files
+lzo-2.10,77,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+lzo-2.10,78,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+lzo-2.10,79,--enable-static[=PKGS],build static libraries [default=yes]
+lzo-2.10,80,--enable-shared[=PKGS],build shared libraries [default=no]
+lzo-2.10,81,--enable-fast-install[=PKGS],
+lzo-2.10,83,--disable-libtool-lock,avoid locking (might break parallel builds)
+lzo-2.10,84,--disable-asm,disable assembly versions
+lzo-2.10,87,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+lzo-2.10,88,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+lzo-2.10,89,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+lzo-2.10,91,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+lzo-2.10,92,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+lzo-2.10,94,--with-pkgconfigdir,pkg-config installation directory
+m4-1.4.21,11,"-h,",--help              display this help and exit
+m4-1.4.21,14,"-V,",--version           display version information and exit
+m4-1.4.21,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+m4-1.4.21,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+m4-1.4.21,18,"-n,",--no-create         do not create output files
+m4-1.4.21,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+m4-1.4.21,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+m4-1.4.21,35,--bindir=DIR,user executables [EPREFIX/bin]
+m4-1.4.21,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+m4-1.4.21,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+m4-1.4.21,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+m4-1.4.21,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+m4-1.4.21,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+m4-1.4.21,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+m4-1.4.21,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+m4-1.4.21,43,--includedir=DIR,C header files [PREFIX/include]
+m4-1.4.21,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+m4-1.4.21,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+m4-1.4.21,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+m4-1.4.21,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+m4-1.4.21,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+m4-1.4.21,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+m4-1.4.21,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/m4]
+m4-1.4.21,51,--htmldir=DIR,html documentation [DOCDIR]
+m4-1.4.21,52,--dvidir=DIR,dvi documentation [DOCDIR]
+m4-1.4.21,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+m4-1.4.21,54,--psdir=DIR,ps documentation [DOCDIR]
+m4-1.4.21,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+m4-1.4.21,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+m4-1.4.21,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+m4-1.4.21,62,--build=BUILD,configure for building on BUILD [guessed]
+m4-1.4.21,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+m4-1.4.21,66,--disable-option-checking,ignore unrecognized --enable/--with options
+m4-1.4.21,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+m4-1.4.21,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+m4-1.4.21,69,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+m4-1.4.21,70,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+m4-1.4.21,71,--enable-dependency-tracking,
+m4-1.4.21,73,--disable-dependency-tracking,
+m4-1.4.21,75,--enable-c++,also build C++ sources
+m4-1.4.21,76,--disable-largefile,omit support for large files
+m4-1.4.21,77,--enable-threads={isoc|posix|isoc+posix|windows},
+m4-1.4.21,79,--disable-threads,build without multithread safety
+m4-1.4.21,80,--enable-gcc-warnings,turn on lots of GCC warnings (for developers)
+m4-1.4.21,81,--enable-cross-guesses={conservative|risky},
+m4-1.4.21,83,--disable-assert,turn off assertions
+m4-1.4.21,84,--disable-rpath,do not hardcode runtime library paths
+m4-1.4.21,85,--enable-changeword,enable -W and changeword() builtin
+m4-1.4.21,86,--disable-nls,do not use Native Language Support
+m4-1.4.21,87,--enable-year2038,support timestamps after 2038
+m4-1.4.21,90,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+m4-1.4.21,91,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+m4-1.4.21,92,--with-libsigsegv,"use the GNU libsigsegv library, when present,"
+m4-1.4.21,94,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+m4-1.4.21,95,--with-libsigsegv-prefix[=DIR],search for libsigsegv in DIR/include and DIR/lib
+m4-1.4.21,96,--without-libsigsegv-prefix,don't search for libsigsegv in includedir and libdir
+m4-1.4.21,97,--with-gnulib-prefix=DIR,search for gnulib's runtime data in DIR/share
+m4-1.4.21,98,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+m4-1.4.21,99,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+m4-1.4.21,100,--without-included-regex,
+m4-1.4.21,104,--with-packager,String identifying the packager of this software
+m4-1.4.21,105,--with-packager-version,Packager-specific version information
+m4-1.4.21,106,--with-packager-bug-reports,
+m4-1.4.21,108,--with-syscmd-shell,shell used by syscmd [/bin/sh]
+m4-1.4.21,109,--with-dmalloc,"use dmalloc, as in dmalloc.tar.gz from"
+m4-1.4.21,111,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+m4-1.4.21,112,--without-libintl-prefix,don't search for libintl in includedir and libdir
+patchelf-0.13.20210805.a949ff2,11,"-h,",--help              display this help and exit
+patchelf-0.13.20210805.a949ff2,14,"-V,",--version           display version information and exit
+patchelf-0.13.20210805.a949ff2,15,"-q,","--quiet, --silent   do not print `checking ...' messages"
+patchelf-0.13.20210805.a949ff2,17,"-C,",--config-cache      alias for `--cache-file=config.cache'
+patchelf-0.13.20210805.a949ff2,18,"-n,",--no-create         do not create output files
+patchelf-0.13.20210805.a949ff2,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+patchelf-0.13.20210805.a949ff2,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+patchelf-0.13.20210805.a949ff2,35,--bindir=DIR,user executables [EPREFIX/bin]
+patchelf-0.13.20210805.a949ff2,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+patchelf-0.13.20210805.a949ff2,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+patchelf-0.13.20210805.a949ff2,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+patchelf-0.13.20210805.a949ff2,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+patchelf-0.13.20210805.a949ff2,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+patchelf-0.13.20210805.a949ff2,41,--libdir=DIR,object code libraries [EPREFIX/lib]
+patchelf-0.13.20210805.a949ff2,42,--includedir=DIR,C header files [PREFIX/include]
+patchelf-0.13.20210805.a949ff2,43,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+patchelf-0.13.20210805.a949ff2,44,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+patchelf-0.13.20210805.a949ff2,45,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+patchelf-0.13.20210805.a949ff2,46,--infodir=DIR,info documentation [DATAROOTDIR/info]
+patchelf-0.13.20210805.a949ff2,47,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+patchelf-0.13.20210805.a949ff2,48,--mandir=DIR,man documentation [DATAROOTDIR/man]
+patchelf-0.13.20210805.a949ff2,49,--docdir=DIR,documentation root [DATAROOTDIR/doc/patchelf]
+patchelf-0.13.20210805.a949ff2,50,--htmldir=DIR,html documentation [DOCDIR]
+patchelf-0.13.20210805.a949ff2,51,--dvidir=DIR,dvi documentation [DOCDIR]
+patchelf-0.13.20210805.a949ff2,52,--pdfdir=DIR,pdf documentation [DOCDIR]
+patchelf-0.13.20210805.a949ff2,53,--psdir=DIR,ps documentation [DOCDIR]
+patchelf-0.13.20210805.a949ff2,56,--program-prefix=PREFIX,prepend PREFIX to installed program names
+patchelf-0.13.20210805.a949ff2,57,--program-suffix=SUFFIX,append SUFFIX to installed program names
+patchelf-0.13.20210805.a949ff2,58,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+patchelf-0.13.20210805.a949ff2,61,--disable-option-checking,ignore unrecognized --enable/--with options
+patchelf-0.13.20210805.a949ff2,62,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+patchelf-0.13.20210805.a949ff2,63,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+patchelf-0.13.20210805.a949ff2,64,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+patchelf-0.13.20210805.a949ff2,65,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+patchelf-0.13.20210805.a949ff2,66,--enable-dependency-tracking,
+patchelf-0.13.20210805.a949ff2,68,--disable-dependency-tracking,
+patchelf-0.13.20210805.a949ff2,72,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+patchelf-0.13.20210805.a949ff2,73,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+patchelf-0.13.20210805.a949ff2,74,--with-page-size=SIZE,Specify default pagesize (default auto)
+patchelf-0.13.20210805.a949ff2,75,--with-asan,Link with libasan
+pkgconf-2.3.0,11,"-h,",--help              display this help and exit
+pkgconf-2.3.0,14,"-V,",--version           display version information and exit
+pkgconf-2.3.0,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+pkgconf-2.3.0,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+pkgconf-2.3.0,18,"-n,",--no-create         do not create output files
+pkgconf-2.3.0,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+pkgconf-2.3.0,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+pkgconf-2.3.0,35,--bindir=DIR,user executables [EPREFIX/bin]
+pkgconf-2.3.0,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+pkgconf-2.3.0,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+pkgconf-2.3.0,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+pkgconf-2.3.0,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+pkgconf-2.3.0,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+pkgconf-2.3.0,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+pkgconf-2.3.0,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+pkgconf-2.3.0,43,--includedir=DIR,C header files [PREFIX/include]
+pkgconf-2.3.0,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+pkgconf-2.3.0,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+pkgconf-2.3.0,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+pkgconf-2.3.0,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+pkgconf-2.3.0,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+pkgconf-2.3.0,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+pkgconf-2.3.0,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/pkgconf]
+pkgconf-2.3.0,51,--htmldir=DIR,html documentation [DOCDIR]
+pkgconf-2.3.0,52,--dvidir=DIR,dvi documentation [DOCDIR]
+pkgconf-2.3.0,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+pkgconf-2.3.0,54,--psdir=DIR,ps documentation [DOCDIR]
+pkgconf-2.3.0,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+pkgconf-2.3.0,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+pkgconf-2.3.0,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+pkgconf-2.3.0,62,--build=BUILD,configure for building on BUILD [guessed]
+pkgconf-2.3.0,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+pkgconf-2.3.0,66,--disable-option-checking,ignore unrecognized --enable/--with options
+pkgconf-2.3.0,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+pkgconf-2.3.0,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+pkgconf-2.3.0,69,--enable-dependency-tracking,
+pkgconf-2.3.0,71,--disable-dependency-tracking,
+pkgconf-2.3.0,73,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+pkgconf-2.3.0,74,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+pkgconf-2.3.0,75,--enable-shared[=PKGS],build shared libraries [default=yes]
+pkgconf-2.3.0,76,--enable-static[=PKGS],build static libraries [default=yes]
+pkgconf-2.3.0,77,--enable-fast-install[=PKGS],
+pkgconf-2.3.0,79,--disable-libtool-lock,avoid locking (might break parallel builds)
+pkgconf-2.3.0,80,--disable-largefile,omit support for large files
+pkgconf-2.3.0,81,--enable-year2038,support timestamps after 2038
+pkgconf-2.3.0,84,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+pkgconf-2.3.0,85,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+pkgconf-2.3.0,86,--with-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+pkgconf-2.3.0,88,--with-aix-soname=aix|svr4|both,
+pkgconf-2.3.0,91,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+pkgconf-2.3.0,92,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+pkgconf-2.3.0,94,--with-personality-dir,specify the place where cross-compile personality
+pkgconf-2.3.0,96,--with-pkg-config-dir,specify the place where pc files will be found
+pkgconf-2.3.0,97,--with-system-libdir,specify the system library directory (default
+pkgconf-2.3.0,99,--with-system-includedir,
+util-linux-2.41.5,11,"-h,",--help              display this help and exit
+util-linux-2.41.5,14,"-V,",--version           display version information and exit
+util-linux-2.41.5,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+util-linux-2.41.5,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+util-linux-2.41.5,18,"-n,",--no-create         do not create output files
+util-linux-2.41.5,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+util-linux-2.41.5,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+util-linux-2.41.5,35,--bindir=DIR,user executables [EPREFIX/bin]
+util-linux-2.41.5,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+util-linux-2.41.5,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+util-linux-2.41.5,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+util-linux-2.41.5,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+util-linux-2.41.5,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+util-linux-2.41.5,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+util-linux-2.41.5,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+util-linux-2.41.5,43,--includedir=DIR,C header files [PREFIX/include]
+util-linux-2.41.5,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+util-linux-2.41.5,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+util-linux-2.41.5,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+util-linux-2.41.5,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+util-linux-2.41.5,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+util-linux-2.41.5,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+util-linux-2.41.5,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/util-linux]
+util-linux-2.41.5,51,--htmldir=DIR,html documentation [DOCDIR]
+util-linux-2.41.5,52,--dvidir=DIR,dvi documentation [DOCDIR]
+util-linux-2.41.5,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+util-linux-2.41.5,54,--psdir=DIR,ps documentation [DOCDIR]
+util-linux-2.41.5,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+util-linux-2.41.5,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+util-linux-2.41.5,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+util-linux-2.41.5,62,--build=BUILD,configure for building on BUILD [guessed]
+util-linux-2.41.5,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+util-linux-2.41.5,66,--disable-option-checking,ignore unrecognized --enable/--with options
+util-linux-2.41.5,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+util-linux-2.41.5,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+util-linux-2.41.5,69,--enable-dependency-tracking,
+util-linux-2.41.5,71,--disable-dependency-tracking,
+util-linux-2.41.5,73,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+util-linux-2.41.5,74,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+util-linux-2.41.5,75,--enable-werror,make all compiler warnings into errors
+util-linux-2.41.5,76,--enable-asan,compile with Address Sanitizer
+util-linux-2.41.5,77,--enable-ubsan,compile with UBsan
+util-linux-2.41.5,78,--enable-fuzzing-engine,compile with fuzzing engine
+util-linux-2.41.5,79,--enable-coverage,compile with gcov
+util-linux-2.41.5,80,--enable-shared[=PKGS],build shared libraries [default=yes]
+util-linux-2.41.5,81,--enable-static[=PKGS],build static libraries [default=yes]
+util-linux-2.41.5,82,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+util-linux-2.41.5,84,--enable-fast-install[=PKGS],
+util-linux-2.41.5,86,--enable-aix-soname=aix|svr4|both,
+util-linux-2.41.5,89,--disable-libtool-lock,avoid locking (might break parallel builds)
+util-linux-2.41.5,90,--disable-symvers,disable library symbol versioning [default=auto]
+util-linux-2.41.5,91,--enable-gtk-doc,use gtk-doc to build documentation [[default=no]]
+util-linux-2.41.5,92,--disable-largefile,omit support for large files
+util-linux-2.41.5,93,--disable-assert,turn off assertions
+util-linux-2.41.5,94,--disable-nls,do not use Native Language Support
+util-linux-2.41.5,95,--disable-rpath,do not hardcode runtime library paths
+util-linux-2.41.5,96,--enable-static-programs=LIST,
+util-linux-2.41.5,100,--disable-all-programs,"disable everything, might be overridden by"
+util-linux-2.41.5,102,--disable-asciidoc,do not generate man pages from asciidoc
+util-linux-2.41.5,103,--disable-poman,do not generate translated man pages
+util-linux-2.41.5,104,--disable-tls,disable use of thread local support
+util-linux-2.41.5,105,--disable-widechar,do not compile wide character support
+util-linux-2.41.5,106,--disable-libuuid,do not build libuuid and uuid utilities
+util-linux-2.41.5,107,--enable-libuuid-force-uuidd,
+util-linux-2.41.5,109,--disable-liblastlog2,do not build liblastlog2 and lastlog2 utilities
+util-linux-2.41.5,110,--disable-pam-lastlog2,do not build PAM lastlog2 module
+util-linux-2.41.5,111,--disable-libblkid,do not build libblkid and many related utilities
+util-linux-2.41.5,112,--disable-libmount,do not build libmount
+util-linux-2.41.5,113,--disable-libmount-mountfd-support,
+util-linux-2.41.5,115,--disable-libsmartcols,do not build libsmartcols
+util-linux-2.41.5,116,--disable-libfdisk,do not build libfdisk
+util-linux-2.41.5,117,--disable-fdisks,"do not build fdisk(8), sfdisk(8) and cfdisk(8)"
+util-linux-2.41.5,118,--disable-mount,do not build mount(8) and umount(8)
+util-linux-2.41.5,119,--disable-losetup,do not build losetup
+util-linux-2.41.5,120,--disable-zramctl,do not build zramctl
+util-linux-2.41.5,121,--disable-fsck,do not build fsck
+util-linux-2.41.5,122,--disable-partx,"do not build addpart, delpart, partx"
+util-linux-2.41.5,123,--disable-uuidd,do not build the uuid daemon
+util-linux-2.41.5,124,--disable-uuidgen,do not build uuidgen
+util-linux-2.41.5,125,--disable-blkid,do not build blkid(8)
+util-linux-2.41.5,126,--disable-wipefs,do not build wipefs
+util-linux-2.41.5,127,--disable-mountpoint,do not build mountpoint
+util-linux-2.41.5,128,--disable-fallocate,do not build fallocate
+util-linux-2.41.5,129,--disable-unshare,do not build unshare
+util-linux-2.41.5,130,--disable-nsenter,do not build nsenter
+util-linux-2.41.5,131,--disable-setpriv,do not build setpriv
+util-linux-2.41.5,132,--disable-hardlink,do not build hardlink
+util-linux-2.41.5,133,--disable-eject,do not build eject
+util-linux-2.41.5,134,--disable-agetty,do not build agetty
+util-linux-2.41.5,135,--disable-plymouth_support,
+util-linux-2.41.5,138,--disable-cramfs,"do not build fsck.cramfs, mkfs.cramfs"
+util-linux-2.41.5,139,--disable-bfs,do not build mkfs.bfs
+util-linux-2.41.5,140,--disable-minix,"do not build fsck.minix, mkfs.minix"
+util-linux-2.41.5,141,--enable-fdformat,build fdformat
+util-linux-2.41.5,142,--disable-hwclock,do not build hwclock
+util-linux-2.41.5,143,--disable-hwclock-cmos,do not use CMOS clock
+util-linux-2.41.5,144,--disable-hwclock-gplv3,do not use datetime parsing GPLv3 code
+util-linux-2.41.5,145,--disable-mkfs,do not build mkfs(8)
+util-linux-2.41.5,146,--disable-fstrim,do not build fstrim(8)
+util-linux-2.41.5,147,--disable-swapon,do not build swapon(8) and swapoff(8)
+util-linux-2.41.5,148,--disable-lsblk,do not build lsblk
+util-linux-2.41.5,149,--disable-lscpu,do not build lscpu
+util-linux-2.41.5,150,--disable-lsfd,do not build lsfd
+util-linux-2.41.5,151,--disable-lslogins,do not build lslogins
+util-linux-2.41.5,152,--disable-wdctl,do not build wdctl
+util-linux-2.41.5,153,--disable-cal,do not build cal
+util-linux-2.41.5,154,--disable-logger,do not build logger
+util-linux-2.41.5,155,--disable-whereis,do not build whereis
+util-linux-2.41.5,156,--disable-pipesz,do not build pipesz
+util-linux-2.41.5,157,--disable-waitpid,do not build waitpid
+util-linux-2.41.5,158,--disable-enosys,do not build enosys
+util-linux-2.41.5,159,--disable-switch_root,do not build switch_root
+util-linux-2.41.5,160,--disable-pivot_root,do not build pivot_root
+util-linux-2.41.5,161,--disable-lsmem,do not build lsmem
+util-linux-2.41.5,162,--disable-chmem,do not build chmem
+util-linux-2.41.5,163,--disable-ipcmk,do not build ipcmk
+util-linux-2.41.5,164,--disable-ipcrm,do not build ipcrm
+util-linux-2.41.5,165,--disable-ipcs,do not build ipcs
+util-linux-2.41.5,166,--disable-irqtop,do not build irqtop
+util-linux-2.41.5,167,--disable-lsirq,do not build lsirq
+util-linux-2.41.5,168,--disable-lsns,do not build lsns
+util-linux-2.41.5,169,--disable-rfkill,do not build rfkill
+util-linux-2.41.5,170,--disable-dmesg,do not build dmesg
+util-linux-2.41.5,171,--disable-exch,do not build exch
+util-linux-2.41.5,172,--disable-scriptutils,"do not build script, scriptreplay and scriptlive"
+util-linux-2.41.5,173,--disable-bits,do not build bits
+util-linux-2.41.5,174,--disable-hexdump,do not build hexdump
+util-linux-2.41.5,175,--enable-tunelp,build tunelp
+util-linux-2.41.5,176,--disable-kill,do not build kill
+util-linux-2.41.5,177,--disable-last,do not build last
+util-linux-2.41.5,178,--disable-utmpdump,do not build utmpdump
+util-linux-2.41.5,179,--enable-line,build line
+util-linux-2.41.5,180,--disable-mesg,do not build mesg
+util-linux-2.41.5,181,--disable-raw,do not build raw
+util-linux-2.41.5,182,--disable-rename,do not build rename
+util-linux-2.41.5,183,--enable-vipw,build vipw
+util-linux-2.41.5,184,--enable-newgrp,build newgrp
+util-linux-2.41.5,185,--disable-chfn-chsh-password,
+util-linux-2.41.5,188,--disable-chfn-chsh,do not build chfn and chsh
+util-linux-2.41.5,189,--disable-chsh-only-listed,
+util-linux-2.41.5,191,--disable-login,do not build login
+util-linux-2.41.5,192,--enable-login-chown-vcs,
+util-linux-2.41.5,194,--enable-login-stat-mail,
+util-linux-2.41.5,196,--enable-login-lastlog,program login writes lastlog entries
+util-linux-2.41.5,197,--disable-nologin,do not build nologin
+util-linux-2.41.5,198,--disable-sulogin,do not build sulogin
+util-linux-2.41.5,199,--disable-su,do not build su
+util-linux-2.41.5,200,--disable-runuser,do not build runuser
+util-linux-2.41.5,201,--disable-ul,do not build ul
+util-linux-2.41.5,202,--disable-more,do not build more
+util-linux-2.41.5,203,--enable-pg,build pg
+util-linux-2.41.5,204,--disable-setterm,do not build setterm
+util-linux-2.41.5,205,--disable-schedutils,"do not build chrt, ionice, taskset, coresched"
+util-linux-2.41.5,206,--disable-wall,do not build wall
+util-linux-2.41.5,207,--enable-write,build write
+util-linux-2.41.5,208,--disable-bash-completion,
+util-linux-2.41.5,210,--disable-pylibmount,do not build pylibmount
+util-linux-2.41.5,211,--disable-pg-bell,let pg not ring the bell on invalid keys
+util-linux-2.41.5,212,--enable-fs-paths-default=paths,
+util-linux-2.41.5,215,--enable-fs-paths-extra=paths,
+util-linux-2.41.5,217,--disable-use-tty-group,do not install wall and write setgid tty
+util-linux-2.41.5,218,--enable-sulogin-emergency-mount,
+util-linux-2.41.5,220,--enable-usrdir-path,use only /usr paths in PATH env. variable
+util-linux-2.41.5,223,--disable-makeinstall-chown,
+util-linux-2.41.5,226,--disable-makeinstall-setuid,
+util-linux-2.41.5,229,--disable-makeinstall-tty-setgid,
+util-linux-2.41.5,232,--disable-colors-default,
+util-linux-2.41.5,234,--disable-year2038,don't support timestamps after 2038
+util-linux-2.41.5,237,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+util-linux-2.41.5,238,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+util-linux-2.41.5,239,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+util-linux-2.41.5,240,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+util-linux-2.41.5,242,--with-pkgconfigdir,pkg-config installation directory
+util-linux-2.41.5,244,--with-html-dir=PATH,path to installed docs
+util-linux-2.41.5,245,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+util-linux-2.41.5,246,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+util-linux-2.41.5,247,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+util-linux-2.41.5,248,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+util-linux-2.41.5,249,--without-libintl-prefix,don't search for libintl in includedir and libdir
+util-linux-2.41.5,250,--without-util,compile without libutil
+util-linux-2.41.5,251,--with-selinux,compile with SELinux support
+util-linux-2.41.5,252,--with-audit,compile with audit support
+util-linux-2.41.5,253,--without-udev,compile without udev support
+util-linux-2.41.5,254,--without-ncursesw,do not build with wide-char ncurses
+util-linux-2.41.5,255,--with-ncurses,build with non-wide ncurses
+util-linux-2.41.5,256,--with-slang,compile cfdisk with slang rather than ncurses
+util-linux-2.41.5,257,--without-tinfo,compile without libtinfo
+util-linux-2.41.5,258,--without-readline,do not build with GNU Readline support
+util-linux-2.41.5,259,--with-utempter,compile script(1) with libutempter
+util-linux-2.41.5,260,--without-cap-ng,compile without libcap-ng
+util-linux-2.41.5,261,--without-libz,compile without libz
+util-linux-2.41.5,262,--without-libmagic,compile without libmagic
+util-linux-2.41.5,263,--without-user,compile without libuser (remote chsh)
+util-linux-2.41.5,264,--without-btrfs,do not build with btrfs support
+util-linux-2.41.5,265,--without-systemd,do not build with systemd support
+util-linux-2.41.5,266,--with-systemdsystemunitdir=DIR,
+util-linux-2.41.5,269,--with-tmpfilesdir=DIR,directory for tmpfiles. See tmpfiles.d(5) for
+util-linux-2.41.5,271,--with-sysusersdir=DIR,directory for sysusers. See sysusers.d(5) for
+util-linux-2.41.5,273,--with-smack,build with SMACK support
+util-linux-2.41.5,274,--without-econf,do not use libeconf
+util-linux-2.41.5,275,--with-vendordir=DIR,Directory for distribution provided configuration
+util-linux-2.41.5,277,--with-bashcompletiondir=DIR,
+util-linux-2.41.5,279,--without-python,"do not build python bindings, use"
+util-linux-2.41.5,281,--with-python-sys-prefix,
+util-linux-2.41.5,283,--with-python_prefix,override the default PYTHON_PREFIX
+util-linux-2.41.5,284,--with-python_exec_prefix,
+util-linux-2.41.5,286,--with-cryptsetup,compile with cryptsetup support
+xz-5.8.4,11,"-h,",--help              display this help and exit
+xz-5.8.4,14,"-V,",--version           display version information and exit
+xz-5.8.4,15,"-q,","--quiet, --silent   do not print 'checking ...' messages"
+xz-5.8.4,17,"-C,",--config-cache      alias for '--cache-file=config.cache'
+xz-5.8.4,18,"-n,",--no-create         do not create output files
+xz-5.8.4,22,--prefix=PREFIX,install architecture-independent files in PREFIX
+xz-5.8.4,24,--exec-prefix=EPREFIX,install architecture-dependent files in EPREFIX
+xz-5.8.4,35,--bindir=DIR,user executables [EPREFIX/bin]
+xz-5.8.4,36,--sbindir=DIR,system admin executables [EPREFIX/sbin]
+xz-5.8.4,37,--libexecdir=DIR,program executables [EPREFIX/libexec]
+xz-5.8.4,38,--sysconfdir=DIR,read-only single-machine data [PREFIX/etc]
+xz-5.8.4,39,--sharedstatedir=DIR,modifiable architecture-independent data [PREFIX/com]
+xz-5.8.4,40,--localstatedir=DIR,modifiable single-machine data [PREFIX/var]
+xz-5.8.4,41,--runstatedir=DIR,modifiable per-process data [LOCALSTATEDIR/run]
+xz-5.8.4,42,--libdir=DIR,object code libraries [EPREFIX/lib]
+xz-5.8.4,43,--includedir=DIR,C header files [PREFIX/include]
+xz-5.8.4,44,--oldincludedir=DIR,C header files for non-gcc [/usr/include]
+xz-5.8.4,45,--datarootdir=DIR,read-only arch.-independent data root [PREFIX/share]
+xz-5.8.4,46,--datadir=DIR,read-only architecture-independent data [DATAROOTDIR]
+xz-5.8.4,47,--infodir=DIR,info documentation [DATAROOTDIR/info]
+xz-5.8.4,48,--localedir=DIR,locale-dependent data [DATAROOTDIR/locale]
+xz-5.8.4,49,--mandir=DIR,man documentation [DATAROOTDIR/man]
+xz-5.8.4,50,--docdir=DIR,documentation root [DATAROOTDIR/doc/xz]
+xz-5.8.4,51,--htmldir=DIR,html documentation [DOCDIR]
+xz-5.8.4,52,--dvidir=DIR,dvi documentation [DOCDIR]
+xz-5.8.4,53,--pdfdir=DIR,pdf documentation [DOCDIR]
+xz-5.8.4,54,--psdir=DIR,ps documentation [DOCDIR]
+xz-5.8.4,57,--program-prefix=PREFIX,prepend PREFIX to installed program names
+xz-5.8.4,58,--program-suffix=SUFFIX,append SUFFIX to installed program names
+xz-5.8.4,59,--program-transform-name=PROGRAM,run sed PROGRAM on installed program names
+xz-5.8.4,62,--build=BUILD,configure for building on BUILD [guessed]
+xz-5.8.4,63,--host=HOST,cross-compile to build programs to run on HOST [BUILD]
+xz-5.8.4,66,--disable-option-checking,ignore unrecognized --enable/--with options
+xz-5.8.4,67,--disable-FEATURE,do not include FEATURE (same as --enable-FEATURE=no)
+xz-5.8.4,68,--enable-FEATURE[=ARG],include FEATURE [ARG=yes]
+xz-5.8.4,69,--enable-debug,Enable debugging code.
+xz-5.8.4,70,--enable-encoders=LIST,Comma-separated list of encoders to build.
+xz-5.8.4,73,--enable-decoders=LIST,Comma-separated list of decoders to build.
+xz-5.8.4,76,--enable-match-finders=LIST,
+xz-5.8.4,81,--enable-checks=LIST,Comma-separated list of integrity checks to build.
+xz-5.8.4,84,--enable-external-sha256,
+xz-5.8.4,87,--disable-microlzma,Do not build MicroLZMA encoder and decoder. It is
+xz-5.8.4,90,--disable-lzip-decoder,Disable decompression support for .lz (lzip) files.
+xz-5.8.4,91,--disable-assembler,Do not use assembler optimizations even if such
+xz-5.8.4,93,--disable-clmul-crc,Do not use carryless multiplication for CRC
+xz-5.8.4,95,--disable-arm64-crc32,Do not use ARM64 CRC32 instructions even if support
+xz-5.8.4,97,--disable-loongarch-crc32,
+xz-5.8.4,100,--enable-small,Make liblzma smaller and a little slower. This is
+xz-5.8.4,102,--enable-threads=METHOD,"Supported METHODS are 'yes', 'no', 'posix', 'win95',"
+xz-5.8.4,106,--enable-assume-ram=SIZE,
+xz-5.8.4,110,--disable-xz,do not build the xz tool
+xz-5.8.4,111,--disable-xzdec,do not build xzdec
+xz-5.8.4,112,--disable-lzmadec,do not build lzmadec (it exists primarily for LZMA
+xz-5.8.4,114,--disable-lzmainfo,do not build lzmainfo (it exists primarily for LZMA
+xz-5.8.4,116,--disable-lzma-links,do not create symlinks for LZMA Utils compatibility
+xz-5.8.4,117,--disable-scripts,"do not install the scripts xzdiff, xzgrep, xzless,"
+xz-5.8.4,119,--disable-doc,do not install documentation files to docdir (man
+xz-5.8.4,122,--enable-doxygen,generate HTML version of the liblzma API
+xz-5.8.4,125,--enable-sandbox=METHOD,"Sandboxing METHOD can be 'auto', 'no', 'capsicum',"
+xz-5.8.4,129,--enable-path-for-scripts=PREFIX,
+xz-5.8.4,134,--enable-silent-rules,"less verbose build output (undo: ""make V=1"")"
+xz-5.8.4,135,--disable-silent-rules,"verbose build output (undo: ""make V=0"")"
+xz-5.8.4,136,--enable-dependency-tracking,
+xz-5.8.4,138,--disable-dependency-tracking,
+xz-5.8.4,140,--enable-shared[=PKGS],build shared libraries [default=yes]
+xz-5.8.4,141,--enable-static[=PKGS],build static libraries [default=yes]
+xz-5.8.4,142,--enable-pic[=PKGS],try to use only PIC/non-PIC objects [default=use
+xz-5.8.4,144,--enable-cxx-stdlib[=PKGS],
+xz-5.8.4,148,--enable-fast-install[=PKGS],
+xz-5.8.4,150,--enable-aix-soname=aix|svr4|both,
+xz-5.8.4,153,--disable-libtool-lock,avoid locking (might break parallel builds)
+xz-5.8.4,154,--enable-symbol-versions,
+xz-5.8.4,158,--disable-nls,do not use Native Language Support
+xz-5.8.4,159,--disable-rpath,do not hardcode runtime library paths
+xz-5.8.4,160,--disable-largefile,omit support for large files
+xz-5.8.4,161,--enable-unaligned-access,
+xz-5.8.4,168,--enable-unsafe-type-punning,
+xz-5.8.4,174,--enable-werror,Enable -Werror to abort compilation on all compiler
+xz-5.8.4,176,--enable-year2038,support timestamps after 2038
+xz-5.8.4,179,--with-PACKAGE[=ARG],use PACKAGE [ARG=yes]
+xz-5.8.4,180,--without-PACKAGE,do not use PACKAGE (same as --with-PACKAGE=no)
+xz-5.8.4,181,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+xz-5.8.4,182,--with-sysroot[=DIR],Search for dependent libraries within DIR (or the
+xz-5.8.4,184,--with-gnu-ld,assume the C compiler uses GNU ld [default=no]
+xz-5.8.4,185,--with-libiconv-prefix[=DIR],search for libiconv in DIR/include and DIR/lib
+xz-5.8.4,186,--without-libiconv-prefix,don't search for libiconv in includedir and libdir
+xz-5.8.4,187,--with-libintl-prefix[=DIR],search for libintl in DIR/include and DIR/lib
+xz-5.8.4,188,--without-libintl-prefix,don't search for libintl in includedir and libdir

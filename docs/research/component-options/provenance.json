@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "collection_repository_commit": "641a6f5d1d31081832a5ea2da04ef89a6d681f4b",
+  "buildroot_commit": "8b238854d909c9cce32ef9671d968b03e323b55d",
+  "development_image": "ghcr.io/uist1idrju3i/msd-dev@sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77",
+  "artifact_url": "https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41486595026/artifacts/13163313182",
+  "inputs": {
+    "package_info": {
+      "file": "pr182-buildroot-show-info.json",
+      "bytes": 68258,
+      "sha256": "9e7fec46ef77c2ac8c1886bc2c1695391a02c41b37acef9f276b609a70be3dfb",
+      "artifact_member": "images/buildroot-show-info.json"
+    },
+    "sbom": {
+      "file": "pr182-sbom.cdx.json",
+      "bytes": 221187,
+      "sha256": "3907f0f3436f893efeb13af32fe6d9ba5cad1ca87a140df4ebad52c367498477",
+      "artifact_member": "images/sbom.cdx.json"
+    },
+    "configuration": {
+      "file": ".config",
+      "bytes": 134715,
+      "sha256": "0b56b0e600dc9727f5d9fc3cc95526d0f783a6162eddd5bab51d2131f55b97f3"
+    },
+    "variables": {
+      "file": "component-expanded-vars.json",
+      "bytes": 11787170,
+      "sha256": "fa42fdb4adac9edf055a5aef9610912fee71dea84c22eb4dde83dbc64c7de68a"
+    },
+    "kernel_config": {
+      "file": "component-kernel-final.config",
+      "bytes": 229125,
+      "sha256": "74d625a1c9dad65fd2999abd0b0a572874a39b32dbd1d685edcb3153ea8a0739",
+      "artifact_member": "build/linux-custom/.config"
+    },
+    "apt_surfaces": {
+      "file": "apt-surfaces.csv",
+      "bytes": 37894,
+      "sha256": "9aae3b82e6ccdc0b62c9265059aacda789867f3b621641eb1d0bb750f789d69a"
+    },
+    "configure_status": {
+      "file": "status.json",
+      "bytes": 4403,
+      "sha256": "622fc49b70f36571015f8dbaf176b9d4d3d688c42f69d15e326a1663c2934cef"
+    },
+    "partial_configure_status": {
+      "file": "status.json",
+      "bytes": 4363,
+      "sha256": "3773e899262af19e5a67ed37af95a006f426e5496e75574b5c82a918dd638ff0"
+    },
+    "gcc_common": {
+      "file": "component-sdk-gcc-common-Os-a53.txt",
+      "bytes": 30085,
+      "sha256": "be73c912727830545c7e99542a8dffefcdaec27f1f193cc089c16963f6bc8249"
+    },
+    "gcc_warnings": {
+      "file": "component-sdk-gcc-warnings-Os-a53.txt",
+      "bytes": 21474,
+      "sha256": "e4d33ba5d6b251059d7aada87ed4166206de3f22264c5102c8737192a0a1ea26"
+    },
+    "gcc_params": {
+      "file": "component-sdk-gcc-params-Os-a53.txt",
+      "bytes": 13351,
+      "sha256": "6a4619f6d0710673f634d40541946e3919eaeedc556980f78827d918c349c0c4"
+    },
+    "gcc_optimizers": {
+      "file": "component-sdk-gcc-optimizers-Os-a53.txt",
+      "bytes": 12095,
+      "sha256": "51ded970643b5c47ccb157e41461d6e617cf069c0c8e39c995d8c12da4273205"
+    },
+    "gcc_target": {
+      "file": "component-sdk-gcc-target-Os-a53.txt",
+      "bytes": 2068,
+      "sha256": "d2025ad426e867c8edb456563cdfafc1c58b313d9aaf60e2251d0e4a49adab65"
+    }
+  },
+  "source_archives": 56,
+  "fully_extracted_archives": 52,
+  "configure_help": {
+    "sources": 28,
+    "complete_source_exit_zero": 28,
+    "partial_source_exit_zero": 9,
+    "partial_source_nonzero": 19
+  },
+  "tool_help": [
+    {
+      "name": "actionlint",
+      "command": [
+        "actionlint",
+        "-help"
+      ],
+      "returncode": 0,
+      "sha256": "ff369323e8caf9302d9137a9fcf518518d0394d6b8862c8433e31f7c5f13c250",
+      "bytes": 2137
+    },
+    {
+      "name": "shellcheck",
+      "command": [
+        "shellcheck",
+        "--help"
+      ],
+      "returncode": 0,
+      "sha256": "9e087ec8dea4c1bb176a932926d21fe32679efbb9a03af327ae5ee861d790e4e",
+      "bytes": 1617
+    },
+    {
+      "name": "zizmor",
+      "command": [
+        "zizmor",
+        "--help"
+      ],
+      "returncode": 0,
+      "sha256": "be18bf7c538629ce5e2dfae90fd0fb5bba6c0e8817dad218650f2cf7ebbd8459",
+      "bytes": 6543
+    },
+    {
+      "name": "qemu",
+      "command": [
+        "qemu-system-aarch64",
+        "-help"
+      ],
+      "returncode": 0,
+      "sha256": "ff9342efd65ac57578c2ab01ec1b61a72f7cd4656b59cf9b4adb5e1f2a7e026c",
+      "bytes": 33377
+    },
+    {
+      "name": "qemu-machines",
+      "command": [
+        "qemu-system-aarch64",
+        "-machine",
+        "help"
+      ],
+      "returncode": 0,
+      "sha256": "a85f31501f5efc24d50957809c7e954d1d90ee988bac2ed9b9a69d4bb912657a",
+      "bytes": 6367
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "--help"
+      ],
+      "returncode": 0,
+      "sha256": "6e5859fdcdeea67b8caed6817663f347bc5d70dbc48f16e301f7f0ec33163c88",
+      "bytes": 2548
+    },
+    {
+      "name": "cmake",
+      "command": [
+        "cmake",
+        "--help"
+      ],
+      "returncode": 0,
+      "sha256": "42c89e9a42ef05ef277d84e9e95d6985d27b23117c56066e80fa8ace68c9d553",
+      "bytes": 8968
+    },
+    {
+      "name": "ninja",
+      "command": [
+        "ninja",
+        "--help"
+      ],
+      "returncode": null,
+      "reason": "not-installed"
+    },
+    {
+      "name": "dtc",
+      "command": [
+        "dtc",
+        "--help"
+      ],
+      "returncode": 0,
+      "sha256": "40335d27c9fed8ec40c6c0c4313beeba36a00980eff6bca1d3c806dfb5b678a3",
+      "bytes": 2131
+    },
+    {
+      "name": "openssl",
+      "command": [
+        "openssl",
+        "help"
+      ],
+      "returncode": 0,
+      "sha256": "eba98f588dd7f8d4f5c1d01435a2d459cf6694509c7be94641a02d19b3fc494a",
+      "bytes": 2963
+    }
+  ]
+}
