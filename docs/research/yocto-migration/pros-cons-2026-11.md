@@ -2,7 +2,7 @@
 
 2026-11-02 に同じホストで作った成果物を並べ、Buildroot（現行）と Yocto（Wrynose 6.0.4）の長所と短所をまとめ直しました。数値は [成果物の比較](../../experiments/2026-11-02-buildroot-yocto-artifacts.md)、[構築試験](../../experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](../../experiments/2026-11-02-yocto-qemu-boot.md) によります。2026-10 の比較（[pros-cons-2026-10.md](pros-cons-2026-10.md)）は当時の記録として残します。
 
-Yocto 側には、まだ CardputerZero の完成イメージがありません。そのため、起動時間とイメージのサイズは比べていません。Buildroot と同じ形を目指すのではなく、Yocto で何が得られ、MSD/Linux の設計柱のどこに手当てが要るかを見ます。
+Yocto 側には、まだ CardputerZero の完成イメージがありません。そのため、イメージのサイズは比べていません。起動時間は、カーネルと rootfs を入れ替えた組み合わせで QEMU で比べました（[起動時間の比較](../../experiments/2026-11-02-buildroot-yocto-boottime.md)）。Buildroot と同じ形を目指すのではなく、Yocto で何が得られ、MSD/Linux の設計柱のどこに手当てが要るかを見ます。
 
 凡例: 【実測】本リポジトリで確かめた、【一次】公開資料・upstream のソース、【推測】未検証。
 
@@ -18,6 +18,7 @@ Yocto 側には、まだ CardputerZero の完成イメージがありません�
 | ライセンス・SBOM | `legal-info`（13 パッケージ）と CI の CycloneDX【実測】 | `license.manifest`（16 パッケージ）、SPDX 3.0.1（9,119 ファイル）、`sbom-cve-check`、archiver【実測・一次】 | Yocto |
 | 再現性 | defconfig、URL と SHA-256 の固定、Docker digest | kas のロック、`SOURCE_DATE_EPOCH` の既定、再現性の試験（oeqa）【一次】 | Yocto（仕組みが標準） |
 | カーネル | defconfig と fragment で最終 `.config` が決まる | 同じ defconfig と fragment でも 544 項目が違い、`CONFIG_THERMAL` が `n` になった【実測】 | Buildroot（Yocto では差を潰す作業が要る） |
+| 起動時間（QEMU） | 同じソースと fragment のカーネルなら差は見えない【実測】 | 同左。既定のカーネル設定のままだと icount で `t_init` が約 1 s 長い【実測】 | 同等。完成イメージでは未比較 |
 | init と rootfs | BusyBox init、mdev、自前の読み取り専用設定 | `mdev-busybox` が動く【実測】。`read-only-rootfs`、`overlayfs-etc` の仕組みがある【一次】 | 同等。Yocto は init を変えた比較が容易 |
 | A/B 更新 | tryboot と `msd-update` が動いている（QEMU の A/B 試験に合格）【実測】 | 既成のレイヤーは U-Boot 前提。tryboot は自前のレシピにする | Buildroot（Yocto では移植が要る） |
 | QEMU の起動確認 | `test-boot.sh`・`test-ab.sh` がある | 同じ考え方で起動確認できた。ASB パッチと `ttyAMA1` の扱いは同じく必要【実測】 | 同等。試験の移植が要る |
