@@ -58,6 +58,9 @@ jobs:
       - name: 文書リンク検査のテスト
         run: tests/check-links/run.sh
 
+      - name: 設定調査の変換と証拠の区別をテストする
+        run: python3 -m unittest discover -s docs/research/component-options -p 'test_*.py' -v
+
       - name: 文書の大きさが粒度の目安の範囲内にある
         run: python3 .github/scripts/check-doc-size.py
 

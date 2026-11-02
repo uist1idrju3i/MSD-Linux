@@ -1,0 +1,30 @@
+{
+  "TARGET_CFLAGS": {
+    "expanded": "-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os -g0 -D_FORTIFY_SOURCE=3",
+    "raw": "$(TARGET_CPPFLAGS) $(TARGET_ABI) $(TARGET_OPTIMIZATION) $(TARGET_DEBUGGING) $(TARGET_HARDENED)"
+  },
+  "TARGET_CXXFLAGS": {
+    "expanded": "-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os -g0 -D_FORTIFY_SOURCE=3",
+    "raw": "$(TARGET_CFLAGS)"
+  },
+  "TARGET_LDFLAGS": {
+    "expanded": "",
+    "raw": "$(call qstrip,$(BR2_TARGET_LDFLAGS))"
+  },
+  "HOST_CFLAGS": {
+    "expanded": "-O2 -I@OUTPUT@/host/include",
+    "raw": "-O2 $(HOST_CPPFLAGS)"
+  },
+  "HOST_LDFLAGS": {
+    "expanded": "-L@OUTPUT@/host/lib -Wl,-rpath,@OUTPUT@/host/lib",
+    "raw": "-L$(HOST_DIR)/lib -Wl,-rpath,$(HOST_DIR)/lib"
+  },
+  "TOOLCHAIN_WRAPPER_ARGS": {
+    "expanded": " -DBR_SYSROOT='\"aarch64-buildroot-linux-gnu/sysroot\"' -DBR_ADDITIONAL_CFLAGS='\"-Wl,-z,max-page-size=4096\", \"-Wl,-z,common-page-size=4096\", \"-fstack-protector-strong\",' -DBR_CCACHE -DBR_CCACHE_BASEDIR='\"@OUTPUT@\"' -DBR2_PIC_PIE -DBR2_RELRO_FULL",
+    "raw": "$($(PKG)_TOOLCHAIN_WRAPPER_ARGS) -DBR_SYSROOT='\"$(STAGING_SUBDIR)\"' -DBR_ADDITIONAL_CFLAGS='$(foreach f,$(TOOLCHAIN_WRAPPER_OPTS),\"$(f)\"$(comma))' -DBR_CCACHE -DBR_CCACHE_BASEDIR='\"$(BASE_DIR)\"' -DBR2_PIC_PIE -DBR2_RELRO_FULL"
+  },
+  "TOOLCHAIN_WRAPPER_OPTS": {
+    "expanded": "-Wl,-z,max-page-size=4096 -Wl,-z,common-page-size=4096 -fstack-protector-strong ",
+    "raw": "$(ARCH_TOOLCHAIN_WRAPPER_OPTS) $(call qstrip,$(BR2_SSP_OPTION)) $(call qstrip,$(BR2_TARGET_OPTIMIZATION))"
+  }
+}

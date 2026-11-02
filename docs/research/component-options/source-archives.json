@@ -1,0 +1,338 @@
+[
+  {
+    "artifact_path": "legal-info/host-sources/expat-2.9.0/expat-2.9.0.tar.xz",
+    "basename": "expat-2.9.0.tar.xz",
+    "bytes": 534052,
+    "sha256": "1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/automake-1.16.5/automake-1.16.5.tar.xz",
+    "basename": "automake-1.16.5.tar.xz",
+    "bytes": 1601740,
+    "sha256": "f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/dtc-1.7.2/dtc-1.7.2.tar.xz",
+    "basename": "dtc-1.7.2.tar.xz",
+    "bytes": 169668,
+    "sha256": "92d8ca769805ae1f176204230438fe52808f4e1c7944053c9eec0e649b237539"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libzlib-1.3.2/zlib-1.3.2.tar.xz",
+    "basename": "zlib-1.3.2.tar.xz",
+    "bytes": 1320064,
+    "sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/e2fsprogs-1.47.4/e2fsprogs-1.47.4.tar.xz",
+    "basename": "e2fsprogs-1.47.4.tar.xz",
+    "bytes": 7337236,
+    "sha256": "fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/dosfstools-4.2/dosfstools-4.2.tar.gz",
+    "basename": "dosfstools-4.2.tar.gz",
+    "bytes": 320917,
+    "sha256": "64926eebf90092dca21b14259a5301b7b98e7b1943e8a201c7d726084809b527"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/fakeroot-1.37.2/fakeroot_1.37.2.orig.tar.gz",
+    "basename": "fakeroot_1.37.2.orig.tar.gz",
+    "bytes": 595964,
+    "sha256": "0eea60fbe89771b88fcf415c8f2f0a6ccfe9edebbcf3ba5dc0212718d98884db"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-installer-1.0.0/installer-1.0.0.tar.gz",
+    "basename": "installer-1.0.0.tar.gz",
+    "bytes": 462685,
+    "sha256": "c6d691331621cf3fec4822f5c6f83cab3705f79b316225dc454127411677c71f"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-pypa-build-1.3.0/build-1.3.0.tar.gz",
+    "basename": "build-1.3.0.tar.gz",
+    "bytes": 48544,
+    "sha256": "698edd0ea270bde950f53aed21f3a0135672206f3911e0176261a31e0e07b397"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-setuptools-80.9.0/setuptools-80.9.0.tar.gz",
+    "basename": "setuptools-80.9.0.tar.gz",
+    "bytes": 1319958,
+    "sha256": "f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/lzip-1.25/lzip-1.25.tar.gz",
+    "basename": "lzip-1.25.tar.gz",
+    "bytes": 115640,
+    "sha256": "09418a6d8fb83f5113f5bd856e09703df5d37bae0308c668d0f346e3d3f0a56f"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/util-linux-2.41.5/util-linux-2.41.5.tar.xz",
+    "basename": "util-linux-2.41.5.tar.xz",
+    "bytes": 9474992,
+    "sha256": "f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/meson-1.11.1/meson-1.11.1.tar.gz",
+    "basename": "meson-1.11.1.tar.gz",
+    "bytes": 5190321,
+    "sha256": "6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/m4-1.4.21/m4-1.4.21.tar.xz",
+    "basename": "m4-1.4.21.tar.xz",
+    "bytes": 2080016,
+    "sha256": "f25c6ab51548a73a75558742fb031e0625d6485fe5f9155949d6486a2408ab66"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/squashfs-4.7.5/squashfs-tools-4.7.5.tar.gz",
+    "basename": "squashfs-tools-4.7.5.tar.gz",
+    "bytes": 412571,
+    "sha256": "547b7b7f4d2e44bf91b6fc554664850c69563701deab9fd9cd7e21f694c88ea6"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/kmod-34.2/kmod-34.2.tar.xz",
+    "basename": "kmod-34.2.tar.xz",
+    "bytes": 443748,
+    "sha256": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libopenssl-3.6.5/openssl-3.6.5.tar.gz",
+    "basename": "openssl-3.6.5.tar.gz",
+    "bytes": 55078161,
+    "sha256": "a2157c2830efdec3788939b00c9b0638306d3f0bbb76dc4832ee503bb397df98"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-flit-core-3.12.0/flit_core-3.12.0.tar.gz",
+    "basename": "flit_core-3.12.0.tar.gz",
+    "bytes": 53690,
+    "sha256": "18f63100d6f94385c6ed57a72073443e1a71a4acb4339491615d0f16d6ff01b2"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libconfuse-3.3/confuse-3.3.tar.xz",
+    "basename": "confuse-3.3.tar.xz",
+    "bytes": 485140,
+    "sha256": "1dd50a0320e135a55025b23fcdbb3f0a81913b6d0b0a9df8cc2fdf3b3dc67010"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/attr-2.6.0/attr-2.6.0.tar.xz",
+    "basename": "attr-2.6.0.tar.xz",
+    "bytes": 343608,
+    "sha256": "6c8a2148a7b85043b68492bce43316b0e2e214fc4e628c7ede078e76e216330b"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-wheel-0.47.0/wheel-0.47.0.tar.gz",
+    "basename": "wheel-0.47.0.tar.gz",
+    "bytes": 63854,
+    "sha256": "cc72bd1009ba0cf63922e28f94d9d83b920aa2bb28f798a31d0691b02fa3c9b3"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/flex-2.6.4/flex-2.6.4.tar.gz",
+    "basename": "flex-2.6.4.tar.gz",
+    "bytes": 1419096,
+    "sha256": "e87aae032bf07c26f85ac0ed3250998c37621d95f8bd748b31f15b33c45ee995"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/xz-5.8.4/xz-5.8.4.tar.bz2",
+    "basename": "xz-5.8.4.tar.bz2",
+    "bytes": 2061621,
+    "sha256": "3340ae48f88665abc78d71dc43446fb3f7e70b48fd59844ac0e14958cef6e00b"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/pigz-2.8/pigz-2.8.tar.gz",
+    "basename": "pigz-2.8.tar.gz",
+    "bytes": 121304,
+    "sha256": "eb872b4f0e1f0ebe59c9f7bd8c506c4204893ba6a8492de31df416f0d5170fd0"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libtool-2.5.4/libtool-2.5.4.tar.xz",
+    "basename": "libtool-2.5.4.tar.xz",
+    "bytes": 1056924,
+    "sha256": "f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/blake3-1.8.3/blake3-1.8.3.tar.gz",
+    "basename": "blake3-1.8.3.tar.gz",
+    "bytes": 266132,
+    "sha256": "5a11e3f834719b6c1cae7aced1e848a37013f6f10f97272e7849aa0da769f295"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/pkgconf-2.3.0/pkgconf-2.3.0.tar.xz",
+    "basename": "pkgconf-2.3.0.tar.xz",
+    "bytes": 316160,
+    "sha256": "3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/acl-2.4.0/acl-2.4.0.tar.xz",
+    "basename": "acl-2.4.0.tar.xz",
+    "bytes": 384828,
+    "sha256": "e661131456d2708a01c614a0f400e11d7d1bfaeb6f3e74b75bb980b72f0161a3"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/patchelf-0.13/patchelf-0.13.tar.bz2",
+    "basename": "patchelf-0.13.tar.bz2",
+    "bytes": 172499,
+    "sha256": "4c7ed4bcfc1a114d6286e4a0d3c1a90db147a4c3adda1814ee0eee0f9ee917ed"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libffi-3.8.0/libffi-3.8.0.tar.gz",
+    "basename": "libffi-3.8.0.tar.gz",
+    "bytes": 1581626,
+    "sha256": "7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/ccache-4.13.6/ccache-4.13.6.tar.xz",
+    "basename": "ccache-4.13.6.tar.xz",
+    "bytes": 538628,
+    "sha256": "a7de667ca08cf67c3c8af9f213f6aa701a1188a2b3163fb74483858ce5e79fbb"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/lz4-1.10.0/lz4-1.10.0.tar.gz",
+    "basename": "lz4-1.10.0.tar.gz",
+    "bytes": 387114,
+    "sha256": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/xxhash-0.8.3/xxhash-0.8.3.tar.gz",
+    "basename": "xxhash-0.8.3.tar.gz",
+    "bytes": 1147630,
+    "sha256": "aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/mtools-4.0.49/mtools-4.0.49.tar.lz",
+    "basename": "mtools-4.0.49.tar.lz",
+    "bytes": 397000,
+    "sha256": "76dfea98d923dfc9806ce34bd1786aa9b5a39d70f56f26c0670a348c664f1d2a"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/hiredis-1.3.0/hiredis-1.3.0.tar.gz",
+    "basename": "hiredis-1.3.0.tar.gz",
+    "bytes": 124013,
+    "sha256": "25cee4500f359cf5cad3b51ed62059aadfc0939b05150c1f19c7e2829123631c"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/libarchive-3.8.9/libarchive-3.8.9.tar.xz",
+    "basename": "libarchive-3.8.9.tar.xz",
+    "bytes": 6617696,
+    "sha256": "888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/autoconf-archive-2024.10.16/autoconf-archive-2024.10.16.tar.xz",
+    "basename": "autoconf-archive-2024.10.16.tar.xz",
+    "bytes": 677768,
+    "sha256": "7bcd5d001916f3a50ed7436f4f700e3d2b1bade3ed803219c592d62502a57363"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/gettext-tiny-0.3.3/gettext-tiny-0.3.3.tar.gz",
+    "basename": "gettext-tiny-0.3.3.tar.gz",
+    "bytes": 296129,
+    "sha256": "daff8b4a7863745710ec0b02657fd20bda2d90398f54945751259bb94d6ebffd"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/gettext-tiny-0.3.3/gettext-0.22.4.tar.xz",
+    "basename": "gettext-0.22.4.tar.xz",
+    "bytes": 10255384,
+    "sha256": "29217f1816ee2e777fa9a01f9956a14139c0c23cc1b20368f06b2888e8a34116"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/zstd-1.5.7/zstd-1.5.7.tar.gz",
+    "basename": "zstd-1.5.7.tar.gz",
+    "bytes": 2434947,
+    "sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-pyproject-hooks-1.2.0/pyproject_hooks-1.2.0.tar.gz",
+    "basename": "pyproject_hooks-1.2.0.tar.gz",
+    "bytes": 19228,
+    "sha256": "1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python-packaging-26.2/packaging-26.2.tar.gz",
+    "basename": "packaging-26.2.tar.gz",
+    "bytes": 228134,
+    "sha256": "ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/autoconf-2.73/autoconf-2.73.tar.xz",
+    "basename": "autoconf-2.73.tar.xz",
+    "bytes": 1417428,
+    "sha256": "9fd672b1c8425fac2fa67fa0477b990987268b90ff36d5f016dae57be0d6b52e"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/lzo-2.10/lzo-2.10.tar.gz",
+    "basename": "lzo-2.10.tar.gz",
+    "bytes": 600622,
+    "sha256": "c0f892943208266f9b6543b3ae308fab6284c5c90e627931446fb49b4221a072"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/genimage-20/genimage-20.tar.xz",
+    "basename": "genimage-20.tar.xz",
+    "bytes": 340784,
+    "sha256": "397545be2fa52d482c5fba9a11897c61324bfc559ea0efb700b9edba7a807b55"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/python3-3.14.8/Python-3.14.8.tar.xz",
+    "basename": "Python-3.14.8.tar.xz",
+    "bytes": 24130644,
+    "sha256": "c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/bison-3.8.2/bison-3.8.2.tar.xz",
+    "basename": "bison-3.8.2.tar.xz",
+    "bytes": 2817324,
+    "sha256": "9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2"
+  },
+  {
+    "artifact_path": "legal-info/host-sources/ninja-1.13.2/ninja-1.13.2.tar.gz",
+    "basename": "ninja-1.13.2.tar.gz",
+    "bytes": 292385,
+    "sha256": "974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17"
+  },
+  {
+    "artifact_path": "legal-info/sources/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2.tar.gz",
+    "basename": "brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2.tar.gz",
+    "bytes": 1932762,
+    "sha256": "d9835b33bea65cf15f41753e215a11e5eca818a6e3bfacaa750aeac12456c24f"
+  },
+  {
+    "artifact_path": "legal-info/sources/libv4l-1.32.0/v4l-utils-1.32.0.tar.xz",
+    "basename": "v4l-utils-1.32.0.tar.xz",
+    "bytes": 1384024,
+    "sha256": "6828828a17775526eb93fb258a9294d1d1073d633c344dd71ecd4e7a1ffb7dfc"
+  },
+  {
+    "artifact_path": "legal-info/sources/linux-custom/linux-b3495ea401d709af0701a85babcba5e3d788a602.tar.gz",
+    "basename": "linux-b3495ea401d709af0701a85babcba5e3d788a602.tar.gz",
+    "bytes": 257635475,
+    "sha256": "d3857e3906878c52719da06328a2db27784f6fb8055b570e8d8207eef3a12a14"
+  },
+  {
+    "artifact_path": "legal-info/sources/kbd-2.9.0/kbd-2.9.0.tar.xz",
+    "basename": "kbd-2.9.0.tar.xz",
+    "bytes": 1527388,
+    "sha256": "fb3197f17a99eb44d22a3a1a71f755f9622dd963e66acfdea1a45120951b02ed"
+  },
+  {
+    "artifact_path": "legal-info/sources/busybox-1.38.0/busybox-1.38.0.tar.bz2",
+    "basename": "busybox-1.38.0.tar.bz2",
+    "bytes": 2695723,
+    "sha256": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2"
+  },
+  {
+    "artifact_path": "legal-info/sources/toolchain-external-bootlin-2025.08-1/aarch64--glibc--stable-2025.08-1.tar.xz",
+    "basename": "aarch64--glibc--stable-2025.08-1.tar.xz",
+    "bytes": 91735136,
+    "sha256": "dfb47eee874eef9e8a7fc042eee4e0a183f444b6bcde6a82fef8f009918389c9"
+  },
+  {
+    "artifact_path": "legal-info/sources/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz",
+    "basename": "rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz",
+    "bytes": 199499772,
+    "sha256": "812cb64617d6ffbc76f9b8dce8237b31159a1216b31845faec1bb75b6b6b291f"
+  },
+  {
+    "artifact_path": "legal-info/sources/m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2/m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2.tar.gz",
+    "basename": "m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2.tar.gz",
+    "bytes": 14748340,
+    "sha256": "dafb73c88e74ad9254321b3a135cafc5b86aa8093100139a7c3ed399a69a39b2"
+  }
+]

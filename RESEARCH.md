@@ -87,6 +87,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 開発・測定・未確認事項
 
+- [固定コンポーネントの機能・設定・引数と現行値](docs/research/component-options/README.md)
 - [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
 - [シミュレーション検証計画](docs/research/simulation-plan.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
