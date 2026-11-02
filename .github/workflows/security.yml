@@ -28,15 +28,19 @@ jobs:
       - name: Generate SBOM
         run: |
           mkdir -p output/images
-          set -o pipefail
-          make -s -C output show-info |
-            python3 vendor/buildroot/utils/generate-cyclonedx \
+          set -euo pipefail
+          make -s -C output show-info > output/images/buildroot-show-info.json
+          python3 vendor/buildroot/utils/generate-cyclonedx \
+              --in-file output/images/buildroot-show-info.json \
               --project-name msd-linux \
               --project-version "$GITHUB_SHA" \
               > output/images/sbom.cdx.json
 
       - name: Set kernel version in SBOM
-        run: python3 .github/scripts/set-kernel-version.py output/images/sbom.cdx.json
+        run: |
+          python3 .github/scripts/set-kernel-version.py output/images/sbom.cdx.json \
+            --show-info output/images/buildroot-show-info.json \
+            --project-version "$GITHUB_SHA"
 
       - id: iso-week
         name: Determine NVD cache week
@@ -89,5 +93,6 @@ jobs:
           name: buildroot-security-report
           path: |
             output/images/sbom.cdx.json
+            output/images/buildroot-show-info.json
             output/images/vex.cdx.json
           if-no-files-found: ignore

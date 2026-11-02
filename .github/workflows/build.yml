@@ -119,6 +119,7 @@ jobs:
           docker/msd-dev tests/powerfail-log/run.sh
           docker/msd-dev tests/msd-dev/run.sh
           docker/msd-dev tests/trivy-gate/run.sh
+          docker/msd-dev tests/check-sbom/run.sh
 
       - name: Summarize step timings
         if: always()
@@ -249,12 +250,17 @@ jobs:
         run: |
           # shellcheck disable=SC2016
           docker/msd-dev bash -c '
-            set -o pipefail
-            make -s -C output show-info |
-              python3 vendor/buildroot/utils/generate-cyclonedx \
+            set -euo pipefail
+            make -s -C output show-info > output/images/buildroot-show-info.json
+            python3 vendor/buildroot/utils/generate-cyclonedx \
+                --in-file output/images/buildroot-show-info.json \
                 --project-name msd-linux \
                 --project-version "$GITHUB_SHA" \
                 > output/images/sbom.cdx.json
+            python3 .github/scripts/set-kernel-version.py output/images/sbom.cdx.json \
+              --kernel-makefile output/build/linux-custom/Makefile \
+              --show-info output/images/buildroot-show-info.json \
+              --project-version "$GITHUB_SHA"
           '
 
       - name: Run kernel hardening checker
@@ -369,6 +375,7 @@ jobs:
             output/images/bcm2710-rpi-cm0.dtb
             output/build/linux-*/.config
             output/images/sbom.cdx.json
+            output/images/buildroot-show-info.json
             output/legal-info.tar.gz
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

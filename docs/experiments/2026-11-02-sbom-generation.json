@@ -1,0 +1,68 @@
+{
+  "original_ci_run": "https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658",
+  "original_artifact": 13160230834,
+  "base_commit": "916a45e",
+  "tested_script_sha256": "ac7bd58d020089c4d7d3ef493ff5bb2af64f6b8ec8309adb154fc813fa52b59c",
+  "reconstructed_dev_image_show_info_sha256": "9e7fec46ef77c2ac8c1886bc2c1695391a02c41b37acef9f276b609a70be3dfb",
+  "components": 67,
+  "component_br_type": {
+    "target": 18,
+    "host": 49
+  },
+  "dependency_records": 68,
+  "dependency_edges": 267,
+  "components_with_purl": 0,
+  "components_with_direct_hashes": 0,
+  "components_with_external_reference_hashes": 59,
+  "components_with_license_field": 67,
+  "regression_test_methods": 11,
+  "show_info_record_counts": {
+    "vm": 79,
+    "dev_image": 78
+  },
+  "vm_only_package": "host-tar",
+  "repeats": [
+    {
+      "run_id": "vm-inventory",
+      "status": "failed",
+      "exit_code": 1,
+      "sha256": "8173ae3f8d26ccc6cb932dd39fce9e505cec3eb825a5fe63a8078a1cebf0092a",
+      "message": "SBOM coverage mismatch: missing=['host-tar'], extra=[]"
+    },
+    {
+      "run_id": "local-1",
+      "status": "passed",
+      "exit_code": "0",
+      "sha256": "aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4",
+      "message": "Set the Linux component version and CPE version to 6.18.59"
+    },
+    {
+      "run_id": "local-2",
+      "status": "passed",
+      "exit_code": "0",
+      "sha256": "aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4",
+      "message": "Set the Linux component version and CPE version to 6.18.59"
+    },
+    {
+      "run_id": "local-3",
+      "status": "passed",
+      "exit_code": "0",
+      "sha256": "aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4",
+      "message": "Set the Linux component version and CPE version to 6.18.59"
+    },
+    {
+      "run_id": "local-4",
+      "status": "passed",
+      "exit_code": "0",
+      "sha256": "aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4",
+      "message": "Set the Linux component version and CPE version to 6.18.59"
+    },
+    {
+      "run_id": "local-5",
+      "status": "passed",
+      "exit_code": "0",
+      "sha256": "aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4",
+      "message": "Set the Linux component version and CPE version to 6.18.59"
+    }
+  ]
+}
