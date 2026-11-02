@@ -68,7 +68,7 @@ sha256sum "$OUT/selected/"*.whl
 
 ## 新しいOCIとnative両CPUの結果
 
-Docker入力が`inputs-fcf14a3abc4d89ac`の変更commit `7632e6af9dc31b9af0e33cf9c1f4f0b64594bfae`を確認した。ローカルamd64もDockerfile全体から新規構築し、Python `3.13.5`とzizmor `1.31.1`を実行した。実行ファイルのSHA-256はwheelから取り出したものと同じ`5c7ded5347e2f3c96046457668405dffbceda2ad065a26abd59717252c51686f`である。
+Docker入力が`inputs-fcf14a3abc4d89ac`の変更commit `7632e6af9dc31b9af0e33cf9c1f4f0b64594bfae`を確認した。native CIの実際のcheckoutはPR用のmerge commit `19be7a0f332a2129c359ee72049471d36cd45e8b`で、Git treeは変更commitと同じだった。CSVでは両方のcommitを記録する。ローカルamd64もDockerfile全体から新規構築し、Python `3.13.5`とzizmor `1.31.1`を実行した。実行ファイルのSHA-256はwheelから取り出したものと同じ`5c7ded5347e2f3c96046457668405dffbceda2ad065a26abd59717252c51686f`である。
 
 ローカルimage IDは`sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9`だった。networkなしで起動し、cacheが監査の前後に存在せず、offline監査の結果が空配列になることを[5回確認](2026-11-02-zizmor-runtime.csv)した。同じimageのTrivy検出は2,184件、blockingはBrotliの1件で、cache由来は0件だった。公開ゲート用コマンドも終了状態1を返した。
 
