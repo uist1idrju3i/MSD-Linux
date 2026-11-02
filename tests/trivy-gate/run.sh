@@ -298,6 +298,29 @@ else:
         assert "AKIAFAKEMARKER" not in (temp / name).read_text()
     selected = json.loads((temp / "trivy-findings.json").read_text())
     assert selected["counts"] == counts and len(selected["findings"]) == 6
+    for payload, expected in ((report, 1), (clean_report, 0)):
+        (temp / "trivy.json").write_text(json.dumps(payload), encoding="utf-8")
+        summary = temp / "summary.md"
+        summary.write_text("", encoding="utf-8")
+        gated = subprocess.run(
+            ["bash", "-e", "-c", workflow_step(publisher, "Gate image findings")],
+            cwd=root, env=dict(os.environ, RUNNER_TEMP=str(temp), GITHUB_STEP_SUMMARY=str(summary)),
+            capture_output=True, text=True,
+        )
+        assert gated.returncode == expected, (gated.returncode, gated.stderr)
+        assert summary.read_text() == (temp / "trivy-gate.md").read_text()
+        assert summary.read_text() and "AKIAFAKEMARKER" not in summary.read_text()
+    (temp / "trivy.json").write_text("invalid JSON", encoding="utf-8")
+    failed_report = subprocess.run(
+        ["bash", "-e", "-c", workflow_step(
+            root / ".github/workflows/dev-image-scan.yml", "Report latest image findings")],
+        cwd=root, env=dict(os.environ, RUNNER_TEMP=str(temp),
+                           GITHUB_OUTPUT=str(temp / "report-output"),
+                           GITHUB_STEP_SUMMARY=str(temp / "report-summary")),
+        capture_output=True, text=True,
+    )
+    assert failed_report.returncode != 0
 print("ok - publisher artifacts exclude raw scan JSON and actual report step filters payloads")
 print("ok - pull failures stay failed; a successful pull records the image and enables scanning")
+print("ok - publisher gate preserves failures through tee under GitHub's default bash shell")
 PY

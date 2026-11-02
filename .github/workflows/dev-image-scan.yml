@@ -81,6 +81,7 @@ jobs:
         name: Report latest image findings
         if: steps.pull.outputs.image_available == 'true'
         run: |
+          set -o pipefail
           python3 .github/scripts/trivy-gate.py report "$RUNNER_TEMP/trivy.json" \
             --findings-json "$RUNNER_TEMP/trivy-findings.json" \
             --github-output "$GITHUB_OUTPUT" |

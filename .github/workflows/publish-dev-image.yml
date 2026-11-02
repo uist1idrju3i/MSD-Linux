@@ -154,6 +154,7 @@ jobs:
 
       - name: Gate image findings
         run: |
+          set -o pipefail
           python3 .github/scripts/trivy-gate.py gate "$RUNNER_TEMP/trivy.json" |
             tee "$RUNNER_TEMP/trivy-gate.md" >> "$GITHUB_STEP_SUMMARY"
 

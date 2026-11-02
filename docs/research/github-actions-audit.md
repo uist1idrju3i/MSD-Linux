@@ -29,3 +29,11 @@
 修正後の`tests/check-pins/run.sh`では、タグだけを公開する上流、複数ページ・メジャー、未完成のページ、draft、pre-release、壊れた応答の検査が通った。`tests/trivy-gate/run.sh`では、週次image取得の3種類の失敗と成功、公開フローのartifact選択、および秘密値を含む模擬入力からの安全な出力を検査した。開発用OCI内でactionlint、ShellCheck、zizmor offlineとPython構文検査を実行した。公開されたCIの実行結果は別途確認する。
 
 次に、公開権限をmainへ限定する運用判断と、PR用OCIジョブの権限分離に必要な転送費用を比較する。続いてBuildroot CVEをIssueへ通知する条件、残る依存の監視漏れ、Pagesのfork動作を確認する。監視に失敗したことと脆弱性が0件であることを同じ状態にしない。
+
+## CI生成物による追加確認
+
+[PR #185のamd64実行](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41497577953/job/125456551427)は`d5f4f5d`の段階で成功したが、[保存したartifact](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41497577953/artifacts/13167557308)には2,184件の脆弱性と1件の公開ゲート対象があった。対象は`libbrotli1 1.1.0-2+b7`の`CVE-2026-111497`。Trivyは0.76.1、DBの更新日時は2026-11-02 13:15:56 UTC、image IDは`sha256:f5b68684722c8e1eb157693695e69e9aba1053e932179e6590f7e4fff6bb4d63`だった。
+
+未指定のrun shellは`bash -e`で、ゲートの非ゼロ終了をパイプ末尾の`tee`が隠していた。この成功をゲート合格とは扱わない。公開ゲートと週次報告に`set -o pipefail`を追加し、実際のステップを`bash -e`で実行する回帰試験を加えた。ゲート対象ありでは失敗、対象なしでは成功、週次報告のJSONが壊れていたら失敗することを検査する。`build.yml`のensureステップは既に`shell: bash`を明示しており、この問題とは異なる。
+
+artifact内は選別済みJSON、報告、image情報、Trivy版、SPDXの5ファイルだけで、未加工のTrivy JSONはなかった。Brotliの更新は利用者の指定で延期しており、この修正で公開ゲートが失敗することは未対応の検出を正しく示す。除外やゲート緩和は行わない。
