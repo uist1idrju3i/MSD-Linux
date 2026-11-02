@@ -96,7 +96,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 比較・履歴・出典と意匠
 
-- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libcから順に再評価。全分野の比較は継続中）
+- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libc、基本コマンド、init・監視を再評価。全分野の比較は継続中）
 - [公式サイトの HTML・CSS](docs/research/site-html-css.md)
 - [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)
