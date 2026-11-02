@@ -10,7 +10,7 @@
 
 | 対象 | 固定値・確認方法 |
 |---|---|
-| 生成元 | [commit 84ca145](https://github.com/uist1idrju3i/MSD-Linux/commit/84ca145032216b696a8944d54b4f820edc1ac565)、[run 41477653658](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658) |
+| 生成元 | [CI checkout c96e5fa](https://github.com/uist1idrju3i/MSD-Linux/commit/c96e5faf015c828a213c8ea64f613b4a429196c7)、[PR head 84ca145](https://github.com/uist1idrju3i/MSD-Linux/commit/84ca145032216b696a8944d54b4f820edc1ac565)、[run 41477653658](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658) |
 | 成果物 | [msd-cardputerzero-build / artifact 13160230834](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658/artifacts/13160230834)、785,839,842 bytes、2026-11-02T16:20:22Z作成 |
 | kernel | 固定Linux `b3495ea401d709af0701a85babcba5e3d788a602`、実物のmodule vermagicは `6.18.59-v8 SMP preempt_rt mod_unload modversions aarch64` |
 | M5 | submodule `37b42d9451495b5597dd7e50cab502da8028f9c2`、local patch適用あり |
@@ -19,6 +19,8 @@
 | 代替ツールでの失敗 | ホストDTC 1.6.1はIMX219合成で `FDT_ERR_NOTFOUND`。下記に失敗も保存 |
 
 入力hash、16 M5 modulesの署名者・vermagic・alias・依存、合成DTの選択nodeは [JSON](2026-11-02-hardware-artifact-audit.json)、終了状態は [CSV](2026-11-02-hardware-artifact-audit.csv) にある。hashはこの生成物を識別する値で、別のbuildを再現した証明ではない。自動生成鍵を使うため、ビルドをやり直したmoduleのhashが常に一致するとは限らない。
+
+CIはPRのheadではなくGitHubのmerge ref `c96e5faf015c828a213c8ea64f613b4a429196c7` をcheckoutした。ログとGitHubのcommit情報で確認した両commitのtreeは `61584002a3ee682ff6b7f7d891d705a5fce079be` で一致する。SBOMのproject versionはこのmerge commitを指す。commitの同一性と、source treeの一致を区別する。
 
 ## 再確認の手順
 

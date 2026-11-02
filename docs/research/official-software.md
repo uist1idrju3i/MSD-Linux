@@ -15,7 +15,7 @@ GPIO、電源保持、reset、Ethernetには実機でしか解決できない項
 | P | `CardputerZero/pi-gen`、`cardputerzero_v1.0`、`791a985d4efca7327ae1fdb6c48230ac0d1ee1bc` | [ソース](https://github.com/CardputerZero/pi-gen/tree/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc)。取得時のbranch HEAD |
 | M | `m5stack-linux-dtoverlays`、`37b42d9451495b5597dd7e50cab502da8028f9c2` | [ソース](https://github.com/m5stack/m5stack-linux-dtoverlays/tree/37b42d9451495b5597dd7e50cab502da8028f9c2)。MSD/Linuxのsubmodule固定値と取得時のmain HEADが一致 |
 | K | Raspberry Pi Linux、`b3495ea401d709af0701a85babcba5e3d788a602`、`6.18.59` | [ソース](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602)。MSD/Linuxのdefconfig固定値 |
-| D | MSD/Linux、`84ca145032216b696a8944d54b4f820edc1ac565` | [CI run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658)。確認したimageの生成元。別commitの検証とは扱わない |
+| D | MSD/Linux、CI checkout `c96e5faf015c828a213c8ea64f613b4a429196c7`、PR head `84ca145032216b696a8944d54b4f820edc1ac565` | [CI run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658)。両者のtree `61584002a3ee682ff6b7f7d891d705a5fce079be` は一致。headと実際のcheckoutは区別する |
 
 PとKの取得ファイルのURL・bytes・SHA-256は [ソース取得記録](official-software-sources.json)、Dのimage・DTBO・モジュールの値は [生成物の記録](../experiments/2026-11-02-hardware-artifact-audit.json) に保存した。旧調査のM5 `7551854`、Linux `2341883`は現在の固定値ではない。回路図の版と製品差は [ハードウェア監査](hardware-wiring-audit.md) を参照する。
 
