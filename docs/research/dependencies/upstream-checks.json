@@ -1,0 +1,2182 @@
+[
+  {
+    "name": "acl",
+    "pinned": "2.4.0",
+    "checked_at": "2026-11-02T17:00:09.659508+00:00",
+    "latest": "2.4.0",
+    "version_candidates": [
+      "2.2.53",
+      "2.3.0",
+      "2.3.1",
+      "2.3.2",
+      "2.4.0"
+    ],
+    "url": "https://download.savannah.nongnu.org/releases/acl/",
+    "effective_url": "https://download.savannah.nongnu.org/releases/acl/",
+    "http_status": 200,
+    "sha256": "f7b16eb28df6f8cc62163daa2009a345e160a6aca07ad028ac1f77df3276297e",
+    "status": "read"
+  },
+  {
+    "name": "attr",
+    "pinned": "2.6.0",
+    "checked_at": "2026-11-02T17:00:09.660204+00:00",
+    "latest": "2.6.0",
+    "version_candidates": [
+      "2.4.48",
+      "2.5.0",
+      "2.5.1",
+      "2.5.2",
+      "2.6.0"
+    ],
+    "url": "https://download.savannah.nongnu.org/releases/attr/",
+    "effective_url": "https://download.savannah.nongnu.org/releases/attr/",
+    "http_status": 200,
+    "sha256": "23725763675d39021e0876915b1cdf64ccf326ce06159a6a16a55b180d3bfcf3",
+    "status": "read"
+  },
+  {
+    "name": "autoconf",
+    "pinned": "2.73",
+    "checked_at": "2026-11-02T17:00:09.660706+00:00",
+    "latest": "2.73",
+    "version_candidates": [
+      "2.62",
+      "2.63",
+      "2.64",
+      "2.65",
+      "2.66",
+      "2.67",
+      "2.68",
+      "2.69",
+      "2.70",
+      "2.71",
+      "2.72",
+      "2.73"
+    ],
+    "url": "https://ftp.gnu.org/gnu/autoconf/",
+    "effective_url": "https://ftp.gnu.org/gnu/autoconf/",
+    "http_status": 200,
+    "sha256": "5897c1449f911c0598f805e35ecaec10fbc356744583b29bd5fe996d902c0a3f",
+    "status": "read"
+  },
+  {
+    "name": "autoconf-archive",
+    "pinned": "2024.10.16",
+    "checked_at": "2026-11-02T17:00:09.661131+00:00",
+    "latest": "2024.10.16",
+    "version_candidates": [
+      "2015.09.25",
+      "2016.03.20",
+      "2016.09.16",
+      "2017.03.21",
+      "2017.09.28",
+      "2018.03.13",
+      "2019.01.06",
+      "2021.02.19",
+      "2022.02.11",
+      "2022.09.03",
+      "2023.02.20",
+      "2024.10.16"
+    ],
+    "url": "https://ftp.gnu.org/gnu/autoconf-archive/",
+    "effective_url": "https://ftp.gnu.org/gnu/autoconf-archive/",
+    "http_status": 200,
+    "sha256": "f3ffe0ca4b6d69547f2ae60af9c942bf302c7e6c500c4dddba411739605cd2e5",
+    "status": "read"
+  },
+  {
+    "name": "automake",
+    "pinned": "1.16.5",
+    "checked_at": "2026-11-02T17:00:10.106805+00:00",
+    "latest": "1.19",
+    "version_candidates": [
+      "1.15",
+      "1.15.1",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.18",
+      "1.18.1",
+      "1.19"
+    ],
+    "url": "https://ftp.gnu.org/gnu/automake/",
+    "effective_url": "https://ftp.gnu.org/gnu/automake/",
+    "http_status": 200,
+    "sha256": "c216db2af121216a38e3706d955ddac14bf831362dd76d226617d0a33a2115d9",
+    "status": "read"
+  },
+  {
+    "name": "bison",
+    "pinned": "3.8.2",
+    "checked_at": "2026-11-02T17:00:10.113594+00:00",
+    "latest": "3.8.2",
+    "version_candidates": [
+      "3.6.3",
+      "3.6.4",
+      "3.7",
+      "3.7.1",
+      "3.7.2",
+      "3.7.3",
+      "3.7.4",
+      "3.7.5",
+      "3.7.6",
+      "3.8",
+      "3.8.1",
+      "3.8.2"
+    ],
+    "url": "https://ftp.gnu.org/gnu/bison/",
+    "effective_url": "https://ftp.gnu.org/gnu/bison/",
+    "http_status": 200,
+    "sha256": "c9ad8efd9918fd19376777f9f8ada1b38ca537a5c50a723f78765b8a71b65ff7",
+    "status": "read"
+  },
+  {
+    "name": "blake3",
+    "pinned": "1.8.3",
+    "checked_at": "2026-11-02T17:00:10.466844+00:00",
+    "latest": "1.8.7",
+    "stable_releases": [
+      {
+        "tag": "1.8.7",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.7"
+      },
+      {
+        "tag": "1.8.6",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.6"
+      },
+      {
+        "tag": "1.8.5",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.5"
+      },
+      {
+        "tag": "1.8.4",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.4"
+      },
+      {
+        "tag": "1.8.3",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.3"
+      },
+      {
+        "tag": "1.8.2",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.2"
+      },
+      {
+        "tag": "1.8.1",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.1"
+      },
+      {
+        "tag": "1.8.0",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.8.0"
+      },
+      {
+        "tag": "1.7.0",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.7.0"
+      },
+      {
+        "tag": "1.6.1",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.6.1"
+      },
+      {
+        "tag": "1.6.0",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.6.0"
+      },
+      {
+        "tag": "1.5.5",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.5"
+      },
+      {
+        "tag": "1.5.4",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.4"
+      },
+      {
+        "tag": "1.5.3",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.3"
+      },
+      {
+        "tag": "1.5.2",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.2"
+      },
+      {
+        "tag": "1.5.1",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.1"
+      },
+      {
+        "tag": "1.5.0",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.5.0"
+      },
+      {
+        "tag": "1.4.1",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.4.1"
+      },
+      {
+        "tag": "1.4.0",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.4.0"
+      },
+      {
+        "tag": "1.3.3",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/releases/tag/1.3.3"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/BLAKE3-team/BLAKE3/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/BLAKE3-team/BLAKE3/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "d734818fcf2772838a94440c4e52c13bde091dfaf0fe6b347ce93317a804931d",
+    "status": "read"
+  },
+  {
+    "name": "brcmfmac_sdio-firmware-rpi",
+    "pinned": "6596d332eaadd63e2413e3937715a084f61c39e2",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "status": "read",
+    "reason": "Pinned commit; compare the selected branch and firmware policy separately",
+    "latest": "6596d332eaadd63e2413e3937715a084f61c39e2",
+    "url": "https://github.com/LibreELEC/brcmfmac_sdio-firmware-rpi.git",
+    "latest_scope": "default-branch-HEAD",
+    "sha256": "7c4dd9a05a930afa85d85ea0a73f4d23abf81e5d11c29bb65cc01b36a2e0f71a"
+  },
+  {
+    "name": "busybox",
+    "pinned": "1.38.0",
+    "checked_at": "2026-11-02T17:00:10.485783+00:00",
+    "latest": "1.38.0",
+    "version_candidates": [
+      "1.32.0",
+      "1.32.1",
+      "1.33.0",
+      "1.33.1",
+      "1.33.2",
+      "1.34.0",
+      "1.34.1",
+      "1.35.0",
+      "1.36.0",
+      "1.36.1",
+      "1.37.0",
+      "1.38.0"
+    ],
+    "url": "https://www.busybox.net/downloads/",
+    "effective_url": "https://www.busybox.net/downloads/",
+    "http_status": 200,
+    "sha256": "c4339a0c4ae0be0ccc8e9add3d56edd7a3f8620093fac6bf21425ea071daa116",
+    "status": "read"
+  },
+  {
+    "name": "ccache",
+    "pinned": "4.13.6",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "latest": "v4.14.2",
+    "stable_releases": [
+      {
+        "tag": "v4.14.2",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.14.2"
+      },
+      {
+        "tag": "v4.14.1",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.14.1"
+      },
+      {
+        "tag": "v4.14",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.14"
+      },
+      {
+        "tag": "v4.13.6",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.6"
+      },
+      {
+        "tag": "v4.13.5",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.5"
+      },
+      {
+        "tag": "v4.13.4",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.4"
+      },
+      {
+        "tag": "v4.13.3",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.3"
+      },
+      {
+        "tag": "v4.13.2",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.2"
+      },
+      {
+        "tag": "v4.13.1",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13.1"
+      },
+      {
+        "tag": "v4.13",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.13"
+      },
+      {
+        "tag": "v4.12.3",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.12.3"
+      },
+      {
+        "tag": "v4.12.2",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.12.2"
+      },
+      {
+        "tag": "v4.12.1",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.12.1"
+      },
+      {
+        "tag": "v4.12",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.12"
+      },
+      {
+        "tag": "v4.11.3",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.11.3"
+      },
+      {
+        "tag": "v4.11.2",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.11.2"
+      },
+      {
+        "tag": "v4.11.1",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.11.1"
+      },
+      {
+        "tag": "v4.11",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.11"
+      },
+      {
+        "tag": "v4.10.2",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.10.2"
+      },
+      {
+        "tag": "v4.10.1",
+        "url": "https://github.com/ccache/ccache/releases/tag/v4.10.1"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/ccache/ccache/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/ccache/ccache/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "640679ea8feaeeab5eed2f2bb9756432e0f26ff709b5048cbb77dd885d86b072",
+    "status": "read",
+    "bytes": 1831598,
+    "proof_format": "gh-api-paginated-json",
+    "pages": 2
+  },
+  {
+    "name": "dosfstools",
+    "pinned": "4.2",
+    "checked_at": "2026-11-02T17:00:11.051444+00:00",
+    "latest": "v4.2",
+    "stable_releases": [
+      {
+        "tag": "v4.2",
+        "url": "https://github.com/dosfstools/dosfstools/releases/tag/v4.2"
+      },
+      {
+        "tag": "v4.1",
+        "url": "https://github.com/dosfstools/dosfstools/releases/tag/v4.1"
+      },
+      {
+        "tag": "v4.0",
+        "url": "https://github.com/dosfstools/dosfstools/releases/tag/v4.0"
+      },
+      {
+        "tag": "v3.0.28",
+        "url": "https://github.com/dosfstools/dosfstools/releases/tag/v3.0.28"
+      },
+      {
+        "tag": "v3.0.27",
+        "url": "https://github.com/dosfstools/dosfstools/releases/tag/v3.0.27"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/dosfstools/dosfstools/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/dosfstools/dosfstools/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "0558d457a61089b1949be4a93b953661f94563220d0aa76223ab8273b604bc6d",
+    "status": "read"
+  },
+  {
+    "name": "dtc",
+    "pinned": "1.7.2",
+    "checked_at": "2026-11-02T17:00:11.358349+00:00",
+    "latest": "1.8.1",
+    "version_candidates": [
+      "1.4.5",
+      "1.4.6",
+      "1.4.7",
+      "1.5.0",
+      "1.5.1",
+      "1.6.0",
+      "1.6.1",
+      "1.7.0",
+      "1.7.1",
+      "1.7.2",
+      "1.8.0",
+      "1.8.1"
+    ],
+    "url": "https://www.kernel.org/pub/software/utils/dtc/",
+    "effective_url": "https://www.kernel.org/pub/software/utils/dtc/",
+    "http_status": 200,
+    "sha256": "7076b5ed3f4abea850369853c3e7ad0776765089f3e2285473e4c85831d44614",
+    "status": "read"
+  },
+  {
+    "name": "e2fsprogs",
+    "pinned": "1.47.4",
+    "checked_at": "2026-11-02T17:00:11.392373+00:00",
+    "latest": "1.47.4",
+    "version_candidates": [
+      "1.46.0",
+      "1.46.1",
+      "1.46.2",
+      "1.46.3",
+      "1.46.4",
+      "1.46.5",
+      "1.46.6",
+      "1.47.0",
+      "1.47.1",
+      "1.47.2",
+      "1.47.3",
+      "1.47.4"
+    ],
+    "url": "https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/",
+    "effective_url": "https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/",
+    "http_status": 200,
+    "sha256": "eca41c1c4dd25a9eebb7f5d5504e85bfa8091d536f5fc163e5adbc0e2d6162f9",
+    "status": "read"
+  },
+  {
+    "name": "expat",
+    "pinned": "2.9.0",
+    "checked_at": "2026-11-02T17:00:11.462915+00:00",
+    "latest": "R_2_10_0",
+    "stable_releases": [
+      {
+        "tag": "R_2_10_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_10_0"
+      },
+      {
+        "tag": "R_2_9_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_9_0"
+      },
+      {
+        "tag": "R_2_8_5",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_5"
+      },
+      {
+        "tag": "R_2_8_4",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_4"
+      },
+      {
+        "tag": "R_2_8_3",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_3"
+      },
+      {
+        "tag": "R_2_8_2",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_2"
+      },
+      {
+        "tag": "R_2_8_1",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_1"
+      },
+      {
+        "tag": "R_2_8_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_8_0"
+      },
+      {
+        "tag": "R_2_7_5",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_5"
+      },
+      {
+        "tag": "R_2_7_4",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_4"
+      },
+      {
+        "tag": "R_2_7_3",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_3"
+      },
+      {
+        "tag": "R_2_7_2",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_2"
+      },
+      {
+        "tag": "R_2_7_1",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_1"
+      },
+      {
+        "tag": "R_2_7_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_7_0"
+      },
+      {
+        "tag": "R_2_6_4",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_6_4"
+      },
+      {
+        "tag": "R_2_6_3",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_6_3"
+      },
+      {
+        "tag": "R_2_6_2",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_6_2"
+      },
+      {
+        "tag": "R_2_6_1",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_6_1"
+      },
+      {
+        "tag": "R_2_6_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_6_0"
+      },
+      {
+        "tag": "R_2_5_0",
+        "url": "https://github.com/libexpat/libexpat/releases/tag/R_2_5_0"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/libexpat/libexpat/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/libexpat/libexpat/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "c58b57eab574a3183eb206e04aa45937469e1c87fda233c543f306ff39136753",
+    "status": "read"
+  },
+  {
+    "name": "fakeroot",
+    "pinned": "1.37.2",
+    "checked_at": "2026-11-02T17:03:35.477076+00:00",
+    "status": "read",
+    "reason": "No primary release endpoint selected yet",
+    "latest": "2.1.4",
+    "url": "https://deb.debian.org/debian/pool/main/f/fakeroot/",
+    "sha256": "d0411c6096c92804910accb20496172ac36d945da09332560a4c8b60c23ec478",
+    "latest_scope": "debian-source-pool-candidate"
+  },
+  {
+    "name": "flex",
+    "pinned": "2.6.4",
+    "checked_at": "2026-11-02T17:00:11.465357+00:00",
+    "latest": "v2.6.4",
+    "stable_releases": [
+      {
+        "tag": "v2.6.4",
+        "url": "https://github.com/westes/flex/releases/tag/v2.6.4"
+      },
+      {
+        "tag": "v2.6.3",
+        "url": "https://github.com/westes/flex/releases/tag/v2.6.3"
+      },
+      {
+        "tag": "v2.6.2",
+        "url": "https://github.com/westes/flex/releases/tag/v2.6.2"
+      },
+      {
+        "tag": "v2.6.1",
+        "url": "https://github.com/westes/flex/releases/tag/v2.6.1"
+      },
+      {
+        "tag": "v2.6.0",
+        "url": "https://github.com/westes/flex/releases/tag/v2.6.0"
+      },
+      {
+        "tag": "flex-2.5.39",
+        "url": "https://github.com/westes/flex/releases/tag/flex-2.5.39"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/westes/flex/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/westes/flex/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "3206cd56afab6287ed1988a6ad3a78e0602e765d6fff4839899322ff83dc29f5",
+    "status": "read"
+  },
+  {
+    "name": "fonttools",
+    "pinned": "4.68.0",
+    "checked_at": "2026-11-02T17:00:11.499102+00:00",
+    "latest": "4.68.0",
+    "requires_python": ">=3.11",
+    "url": "https://pypi.org/pypi/fonttools/json",
+    "effective_url": "https://pypi.org/pypi/fonttools/json",
+    "http_status": 200,
+    "sha256": "f9a350e698aaa0f750f5fea3b179a5b43034935e20ac7e20283fefc8e4d153bc",
+    "status": "read"
+  },
+  {
+    "name": "genimage",
+    "pinned": "20",
+    "checked_at": "2026-11-02T17:00:11.612333+00:00",
+    "latest": "v20",
+    "stable_releases": [
+      {
+        "tag": "v20",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v20"
+      },
+      {
+        "tag": "v19",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v19"
+      },
+      {
+        "tag": "v18",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v18"
+      },
+      {
+        "tag": "v17",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v17"
+      },
+      {
+        "tag": "v16",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v16"
+      },
+      {
+        "tag": "v15",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v15"
+      },
+      {
+        "tag": "v14",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v14"
+      },
+      {
+        "tag": "v13",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v13"
+      },
+      {
+        "tag": "v12",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v12"
+      },
+      {
+        "tag": "v11",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v11"
+      },
+      {
+        "tag": "v10",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v10"
+      },
+      {
+        "tag": "v9",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v9"
+      },
+      {
+        "tag": "v8",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v8"
+      },
+      {
+        "tag": "v7",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v7"
+      },
+      {
+        "tag": "v6",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v6"
+      },
+      {
+        "tag": "v5",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v5"
+      },
+      {
+        "tag": "v4",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v4"
+      },
+      {
+        "tag": "v3",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v3"
+      },
+      {
+        "tag": "v2",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v2"
+      },
+      {
+        "tag": "v1",
+        "url": "https://github.com/pengutronix/genimage/releases/tag/v1"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/pengutronix/genimage/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/pengutronix/genimage/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "daf5752fb0c74312c8d0f45d3113def592454688418f4d4df066b8d663deec78",
+    "status": "read"
+  },
+  {
+    "name": "gettext-tiny",
+    "pinned": "0.3.3",
+    "checked_at": "2026-11-02T17:00:11.901015+00:00",
+    "latest": "v0.3.3",
+    "stable_releases": [
+      {
+        "tag": "v0.3.3",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.3.3"
+      },
+      {
+        "tag": "v0.3.2",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.3.2"
+      },
+      {
+        "tag": "v0.3.1",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.3.1"
+      },
+      {
+        "tag": "v0.3.0",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.3.0"
+      },
+      {
+        "tag": "v0.2.0",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.2.0"
+      },
+      {
+        "tag": "v0.1.0",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.1.0"
+      },
+      {
+        "tag": "v0.0.5",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/releases/tag/v0.0.5"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/sabotage-linux/gettext-tiny/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/sabotage-linux/gettext-tiny/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "a141e6a857d259c4e42c853ac3c91ccd6b4fceb7e78811e2c65af6ebdf9e024b",
+    "status": "read"
+  },
+  {
+    "name": "hiredis",
+    "pinned": "1.3.0",
+    "checked_at": "2026-11-02T17:00:12.072589+00:00",
+    "latest": "v1.5.0",
+    "stable_releases": [
+      {
+        "tag": "v1.5.0",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.5.0"
+      },
+      {
+        "tag": "v1.4.1",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.4.1"
+      },
+      {
+        "tag": "v1.3.1",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.3.1"
+      },
+      {
+        "tag": "v1.2.1",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.2.1"
+      },
+      {
+        "tag": "v1.1.1",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.1.1"
+      },
+      {
+        "tag": "v1.4.0",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.4.0"
+      },
+      {
+        "tag": "v1.3.0",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.3.0"
+      },
+      {
+        "tag": "v1.2.0",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.2.0"
+      },
+      {
+        "tag": "v1.1.0",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.1.0"
+      },
+      {
+        "tag": "v1.0.2",
+        "url": "https://github.com/redis/hiredis/releases/tag/v1.0.2"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/redis/hiredis/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/redis/hiredis/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "be577293591cbae1fc668cad8458a38e41e2d5532e413a35fa0ca854d1d56adb",
+    "status": "read"
+  },
+  {
+    "name": "kbd",
+    "pinned": "2.9.0",
+    "checked_at": "2026-11-02T17:00:12.087204+00:00",
+    "latest": "2.10.0",
+    "version_candidates": [
+      "2.5.0",
+      "2.5.1",
+      "2.6.0",
+      "2.6.1",
+      "2.6.2",
+      "2.6.3",
+      "2.6.4",
+      "2.7",
+      "2.7.1",
+      "2.8.0",
+      "2.9.0",
+      "2.10.0"
+    ],
+    "url": "https://www.kernel.org/pub/linux/utils/kbd/",
+    "effective_url": "https://www.kernel.org/pub/linux/utils/kbd/",
+    "http_status": 200,
+    "sha256": "5a946776b74883d46fda06ccc05d3a34a8676f4b767f6f667903a3921950b2af",
+    "status": "read"
+  },
+  {
+    "name": "kmod",
+    "pinned": "34.2",
+    "checked_at": "2026-11-02T17:00:12.120142+00:00",
+    "latest": "34.3",
+    "version_candidates": [
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "34.1",
+      "34.2",
+      "34.3"
+    ],
+    "url": "https://www.kernel.org/pub/linux/utils/kernel/kmod/",
+    "effective_url": "https://www.kernel.org/pub/linux/utils/kernel/kmod/",
+    "http_status": 200,
+    "sha256": "070863e6cbf4cb09a806fffd116ee79647cd2c19026aace6be66e9139b751d4f",
+    "status": "read"
+  },
+  {
+    "name": "libarchive",
+    "pinned": "3.8.9",
+    "checked_at": "2026-11-02T17:00:12.157005+00:00",
+    "latest": "3.8.10",
+    "version_candidates": [
+      "3.7.9",
+      "3.8.0",
+      "3.8.1",
+      "3.8.2",
+      "3.8.3",
+      "3.8.4",
+      "3.8.5",
+      "3.8.6",
+      "3.8.7",
+      "3.8.8",
+      "3.8.9",
+      "3.8.10"
+    ],
+    "url": "https://www.libarchive.de/downloads/",
+    "effective_url": "https://www.libarchive.de/downloads/",
+    "http_status": 200,
+    "sha256": "38c09d19a79a748d9fb7b33d548d897bdc49292591f8ee558c6367d8f54d2e9e",
+    "status": "read"
+  },
+  {
+    "name": "libconfuse",
+    "pinned": "3.3",
+    "checked_at": "2026-11-02T17:00:12.288560+00:00",
+    "latest": "v3.4",
+    "stable_releases": [
+      {
+        "tag": "v3.4",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.4"
+      },
+      {
+        "tag": "v3.3",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.3"
+      },
+      {
+        "tag": "v3.2.2",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.2.2"
+      },
+      {
+        "tag": "v3.2.1",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.2.1"
+      },
+      {
+        "tag": "v3.2",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.2"
+      },
+      {
+        "tag": "v3.1",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.1"
+      },
+      {
+        "tag": "v3.0",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v3.0"
+      },
+      {
+        "tag": "v2.8",
+        "url": "https://github.com/libconfuse/libconfuse/releases/tag/v2.8"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/libconfuse/libconfuse/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/libconfuse/libconfuse/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "6446ba161c2f3ffe96a0f54b9e6dcdbb17e4bedbb70eaa648622970f6f829b3a",
+    "status": "read"
+  },
+  {
+    "name": "libffi",
+    "pinned": "3.8.0",
+    "checked_at": "2026-11-02T17:00:12.329316+00:00",
+    "latest": "v3.8.0",
+    "stable_releases": [
+      {
+        "tag": "v3.8.0",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.8.0"
+      },
+      {
+        "tag": "v3.7.1",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.7.1"
+      },
+      {
+        "tag": "v3.7.0",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.7.0"
+      },
+      {
+        "tag": "v3.6.0",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.6.0"
+      },
+      {
+        "tag": "v3.5.2",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.5.2"
+      },
+      {
+        "tag": "v3.5.1",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.5.1"
+      },
+      {
+        "tag": "v3.5.0",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.5.0"
+      },
+      {
+        "tag": "v3.4.8",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.8"
+      },
+      {
+        "tag": "v3.4.7",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.7"
+      },
+      {
+        "tag": "v3.4.6",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.6"
+      },
+      {
+        "tag": "v3.4.5",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.5"
+      },
+      {
+        "tag": "v3.4.4",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.4"
+      },
+      {
+        "tag": "v3.4.3",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.3"
+      },
+      {
+        "tag": "v3.4.2",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.4.2"
+      },
+      {
+        "tag": "v3.3",
+        "url": "https://github.com/libffi/libffi/releases/tag/v3.3"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/libffi/libffi/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/libffi/libffi/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "ae355f1de0ddc313ccd9e7ad149f8fa51855d9ac9d4eda5d3b519ed2f2d12dcf",
+    "status": "read"
+  },
+  {
+    "name": "libopenssl",
+    "pinned": "3.6.5",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "latest": "openssl-4.1.0",
+    "stable_releases": [
+      {
+        "tag": "openssl-4.1.0",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-4.1.0"
+      },
+      {
+        "tag": "openssl-4.0.3",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.3"
+      },
+      {
+        "tag": "openssl-3.6.5",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.6.5"
+      },
+      {
+        "tag": "openssl-3.5.9",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.9"
+      },
+      {
+        "tag": "openssl-3.4.8",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.4.8"
+      },
+      {
+        "tag": "openssl-4.0.2",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.2"
+      },
+      {
+        "tag": "openssl-3.6.4",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.6.4"
+      },
+      {
+        "tag": "openssl-3.5.8",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.8"
+      },
+      {
+        "tag": "openssl-3.4.7",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.4.7"
+      },
+      {
+        "tag": "openssl-3.0.22",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.0.22"
+      },
+      {
+        "tag": "openssl-4.0.1",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.1"
+      },
+      {
+        "tag": "openssl-3.6.3",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.6.3"
+      },
+      {
+        "tag": "openssl-3.5.7",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.7"
+      },
+      {
+        "tag": "openssl-3.4.6",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.4.6"
+      },
+      {
+        "tag": "openssl-3.0.21",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.0.21"
+      },
+      {
+        "tag": "openssl-4.0.0",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-4.0.0"
+      },
+      {
+        "tag": "openssl-3.6.2",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.6.2"
+      },
+      {
+        "tag": "openssl-3.5.6",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.6"
+      },
+      {
+        "tag": "openssl-3.4.5",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.4.5"
+      },
+      {
+        "tag": "openssl-3.3.7",
+        "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.3.7"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "8be80ebac5c334d6761626d52b25cec9d2edaefcb46f37d669ff810fca293ed9",
+    "status": "read",
+    "bytes": 2790754,
+    "proof_format": "gh-api-paginated-json",
+    "pages": 4
+  },
+  {
+    "name": "libtool",
+    "pinned": "2.5.4",
+    "checked_at": "2026-11-02T17:00:12.774396+00:00",
+    "latest": "2.6.2",
+    "version_candidates": [
+      "2.2.8",
+      "2.2.10",
+      "2.4",
+      "2.4.2",
+      "2.4.3",
+      "2.4.4",
+      "2.4.5",
+      "2.4.6",
+      "2.4.7",
+      "2.5.3",
+      "2.5.4",
+      "2.6.2"
+    ],
+    "url": "https://ftp.gnu.org/gnu/libtool/",
+    "effective_url": "https://ftp.gnu.org/gnu/libtool/",
+    "http_status": 200,
+    "sha256": "fc7c33c650afaecf2ab5c3ef3dccae00af9b7b2ab2192624f0e50e893fd0b3d6",
+    "status": "read"
+  },
+  {
+    "name": "libv4l",
+    "pinned": "1.32.0",
+    "checked_at": "2026-11-02T17:03:36.377523+00:00",
+    "latest": "v4l-utils-1.32.0",
+    "version_candidates": [],
+    "url": "https://api.github.com/repos/gjasny/v4l-utils/tags?per_page=100",
+    "effective_url": "https://linuxtv.org/downloads/v4l-utils/",
+    "http_status": 200,
+    "sha256": "c459ebc4cddf10aea5bf442f6832cfc135cfd0f9c4ea9e99a9ddb3d16d825d09",
+    "status": "read",
+    "latest_scope": "upstream-stable"
+  },
+  {
+    "name": "libzlib",
+    "pinned": "1.3.2",
+    "checked_at": "2026-11-02T17:03:36.388571+00:00",
+    "latest": "v1.3.2",
+    "version_candidates": [],
+    "url": "https://api.github.com/repos/madler/zlib/releases?per_page=100",
+    "effective_url": "https://www.zlib.net/",
+    "http_status": 200,
+    "sha256": "0cd1274d94af6a9d19c18526d3d3ee58f7fb96c1e39a59c73c656efeedd2f3e6",
+    "status": "read",
+    "latest_scope": "upstream-stable"
+  },
+  {
+    "name": "linux",
+    "pinned": "6.18.59",
+    "checked_at": "2026-11-02T17:00:13.118809+00:00",
+    "status": "read",
+    "reason": "Pinned commit; compare the selected branch and firmware policy separately",
+    "latest": "6.18.59",
+    "latest_scope": "selected-rpi-6.18.y-branch",
+    "url": "https://github.com/raspberrypi/linux",
+    "pinned_commit": "b3495ea401d709af0701a85babcba5e3d788a602",
+    "evidence": "check-pins report; newest observed series is rpi-7.3.y"
+  },
+  {
+    "name": "lz4",
+    "pinned": "1.10.0",
+    "checked_at": "2026-11-02T17:00:13.118838+00:00",
+    "latest": "v1.10.0",
+    "stable_releases": [
+      {
+        "tag": "v1.10.0",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.10.0"
+      },
+      {
+        "tag": "v1.9.4",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.9.4"
+      },
+      {
+        "tag": "v1.9.3",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.9.3"
+      },
+      {
+        "tag": "v1.9.2",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.9.2"
+      },
+      {
+        "tag": "v1.9.1",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.9.1"
+      },
+      {
+        "tag": "v1.8.3",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.8.3"
+      },
+      {
+        "tag": "v1.8.2",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.8.2"
+      },
+      {
+        "tag": "v1.8.1.2",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.8.1.2"
+      },
+      {
+        "tag": "v1.8.0",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.8.0"
+      },
+      {
+        "tag": "v1.7.5",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.7.5"
+      },
+      {
+        "tag": "v1.7.4.2",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.7.4.2"
+      },
+      {
+        "tag": "v1.7.4",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.7.4"
+      },
+      {
+        "tag": "v1.7.3",
+        "url": "https://github.com/lz4/lz4/releases/tag/v1.7.3"
+      },
+      {
+        "tag": "r131",
+        "url": "https://github.com/lz4/lz4/releases/tag/r131"
+      },
+      {
+        "tag": "r130",
+        "url": "https://github.com/lz4/lz4/releases/tag/r130"
+      },
+      {
+        "tag": "r129",
+        "url": "https://github.com/lz4/lz4/releases/tag/r129"
+      },
+      {
+        "tag": "r128",
+        "url": "https://github.com/lz4/lz4/releases/tag/r128"
+      },
+      {
+        "tag": "r127",
+        "url": "https://github.com/lz4/lz4/releases/tag/r127"
+      },
+      {
+        "tag": "r126",
+        "url": "https://github.com/lz4/lz4/releases/tag/r126"
+      },
+      {
+        "tag": "r125",
+        "url": "https://github.com/lz4/lz4/releases/tag/r125"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/lz4/lz4/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/lz4/lz4/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "5719026f3a7f8587fa5f82c03741a63b3001d902fd1d8b99c0f8a86e069bf66c",
+    "status": "read",
+    "correction": "Historical integer/date tags excluded; raw release data retained"
+  },
+  {
+    "name": "lzip",
+    "pinned": "1.25",
+    "checked_at": "2026-11-02T17:00:13.170992+00:00",
+    "latest": "1.26",
+    "version_candidates": [
+      "1.16",
+      "1.17",
+      "1.18",
+      "1.19",
+      "1.20",
+      "1.21",
+      "1.22",
+      "1.23",
+      "1.24",
+      "1.24.1",
+      "1.25",
+      "1.26"
+    ],
+    "url": "https://download.savannah.nongnu.org/releases/lzip/",
+    "effective_url": "https://download.savannah.nongnu.org/releases/lzip/",
+    "http_status": 200,
+    "sha256": "7ea95c07fd7ba129e7fa04bc5c646f47c233b36a63d465d9e1659cd3e44d85f5",
+    "status": "read"
+  },
+  {
+    "name": "lzo",
+    "pinned": "2.10",
+    "checked_at": "2026-11-02T17:00:13.234396+00:00",
+    "latest": "2.10",
+    "version_candidates": [
+      "2.00",
+      "2.01",
+      "2.02",
+      "2.03",
+      "2.04",
+      "2.05",
+      "2.06",
+      "2.07",
+      "2.08",
+      "2.09",
+      "2.10"
+    ],
+    "url": "https://www.oberhumer.com/opensource/lzo/download/",
+    "effective_url": "https://www.oberhumer.com/opensource/lzo/download/",
+    "http_status": 200,
+    "sha256": "c12080c392650b0e6215d62af7527c480b74a106fb48435ce075e5d9a7d866cf",
+    "status": "read"
+  },
+  {
+    "name": "m4",
+    "pinned": "1.4.21",
+    "checked_at": "2026-11-02T17:00:13.515844+00:00",
+    "latest": "1.4.21",
+    "version_candidates": [
+      "1.4.10",
+      "1.4.11",
+      "1.4.12",
+      "1.4.13",
+      "1.4.14",
+      "1.4.15",
+      "1.4.16",
+      "1.4.17",
+      "1.4.18",
+      "1.4.19",
+      "1.4.20",
+      "1.4.21"
+    ],
+    "url": "https://ftp.gnu.org/gnu/m4/",
+    "effective_url": "https://ftp.gnu.org/gnu/m4/",
+    "http_status": 200,
+    "sha256": "ca7adf3265138686d33c45162ec62345a3e6a10b9134699e5e61893224d78410",
+    "status": "read"
+  },
+  {
+    "name": "m5stack-cardputerzero",
+    "pinned": "37b42d9451495b5597dd7e50cab502da8028f9c2",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "status": "read",
+    "reason": "No primary release endpoint selected yet",
+    "latest": "37b42d9451495b5597dd7e50cab502da8028f9c2",
+    "url": "https://github.com/m5stack/m5stack-linux-dtoverlays.git",
+    "latest_scope": "default-branch-HEAD",
+    "sha256": "18307ff9e8241a9be9bbd3c59e5609f50e2c275db75b4f76be80324af92f4798"
+  },
+  {
+    "name": "meson",
+    "pinned": "1.11.1",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "latest": "1.12.1",
+    "stable_releases": [
+      {
+        "tag": "1.12.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.12.1"
+      },
+      {
+        "tag": "1.12.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.12.0"
+      },
+      {
+        "tag": "1.11.2",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.11.2"
+      },
+      {
+        "tag": "1.11.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.11.1"
+      },
+      {
+        "tag": "1.11.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.11.0"
+      },
+      {
+        "tag": "1.10.2",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.10.2"
+      },
+      {
+        "tag": "1.10.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.10.1"
+      },
+      {
+        "tag": "1.10.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.10.0"
+      },
+      {
+        "tag": "1.9.2",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.9.2"
+      },
+      {
+        "tag": "1.8.5",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.5"
+      },
+      {
+        "tag": "1.9.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.9.1"
+      },
+      {
+        "tag": "1.9.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.9.0"
+      },
+      {
+        "tag": "1.8.4",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.4"
+      },
+      {
+        "tag": "1.8.3",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.3"
+      },
+      {
+        "tag": "1.8.2",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.2"
+      },
+      {
+        "tag": "1.8.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.1"
+      },
+      {
+        "tag": "1.8.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.8.0"
+      },
+      {
+        "tag": "1.7.2",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.7.2"
+      },
+      {
+        "tag": "1.7.1",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.7.1"
+      },
+      {
+        "tag": "1.7.0",
+        "url": "https://github.com/mesonbuild/meson/releases/tag/1.7.0"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/mesonbuild/meson/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/mesonbuild/meson/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "dfecac6963f8f5814fde2231d4574b6d7ca9cd768e17607238f3b409b450be9f",
+    "status": "read",
+    "bytes": 1419397,
+    "proof_format": "gh-api-paginated-json",
+    "pages": 2
+  },
+  {
+    "name": "mtools",
+    "pinned": "4.0.49",
+    "checked_at": "2026-11-02T17:00:13.817365+00:00",
+    "latest": "4.0.50",
+    "version_candidates": [
+      "4.0.39",
+      "4.0.40",
+      "4.0.41",
+      "4.0.42",
+      "4.0.43",
+      "4.0.44",
+      "4.0.45",
+      "4.0.46",
+      "4.0.47",
+      "4.0.48",
+      "4.0.49",
+      "4.0.50"
+    ],
+    "url": "https://ftp.gnu.org/gnu/mtools/",
+    "effective_url": "https://ftp.gnu.org/gnu/mtools/",
+    "http_status": 200,
+    "sha256": "d731667799e8b5efed7cecccac2668dd3ae4f5e86e0c9d21528ebeb249822dec",
+    "status": "read"
+  },
+  {
+    "name": "ninja",
+    "pinned": "1.13.2",
+    "checked_at": "2026-11-02T17:00:13.915358+00:00",
+    "latest": "v1.13.2",
+    "stable_releases": [
+      {
+        "tag": "v1.13.2",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.13.2"
+      },
+      {
+        "tag": "v1.13.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.13.1"
+      },
+      {
+        "tag": "v1.13.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.13.0"
+      },
+      {
+        "tag": "v1.12.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.12.1"
+      },
+      {
+        "tag": "v1.12.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.12.0"
+      },
+      {
+        "tag": "v1.11.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.11.1"
+      },
+      {
+        "tag": "v1.11.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.11.0"
+      },
+      {
+        "tag": "v1.10.2",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.10.2"
+      },
+      {
+        "tag": "v1.10.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.10.1"
+      },
+      {
+        "tag": "v1.10.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.10.0"
+      },
+      {
+        "tag": "v1.9.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.9.0"
+      },
+      {
+        "tag": "v1.8.2",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.8.2"
+      },
+      {
+        "tag": "v1.7.2",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.7.2"
+      },
+      {
+        "tag": "v1.7.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.7.1"
+      },
+      {
+        "tag": "v1.6.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.6.0"
+      },
+      {
+        "tag": "v1.5.3",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.5.3"
+      },
+      {
+        "tag": "v1.5.1",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.5.1"
+      },
+      {
+        "tag": "v1.4.0",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.4.0"
+      },
+      {
+        "tag": "v1.3.4",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.3.4"
+      },
+      {
+        "tag": "v1.3.3",
+        "url": "https://github.com/ninja-build/ninja/releases/tag/v1.3.3"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/ninja-build/ninja/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/ninja-build/ninja/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "a5e4f1d59a8f5a860523c11af5af8af030759f6619b80e3c215ea4b6e6641aa4",
+    "status": "read",
+    "correction": "Historical integer/date tags excluded; raw release data retained"
+  },
+  {
+    "name": "patchelf",
+    "pinned": "0.13",
+    "checked_at": "2026-11-02T17:00:14.255889+00:00",
+    "latest": "0.19.3",
+    "stable_releases": [
+      {
+        "tag": "0.19.3",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.19.3"
+      },
+      {
+        "tag": "0.19.2",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.19.2"
+      },
+      {
+        "tag": "0.19.1",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.19.1"
+      },
+      {
+        "tag": "0.19.0",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.19.0"
+      },
+      {
+        "tag": "0.15.5",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.5"
+      },
+      {
+        "tag": "0.15.4",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.4"
+      },
+      {
+        "tag": "0.15.3",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.3"
+      },
+      {
+        "tag": "0.15.2",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.2"
+      },
+      {
+        "tag": "0.15.1",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.1"
+      },
+      {
+        "tag": "0.18.0",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.18.0"
+      },
+      {
+        "tag": "0.17.2",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.17.2"
+      },
+      {
+        "tag": "0.17.1",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.17.1"
+      },
+      {
+        "tag": "0.17.0",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.17.0"
+      },
+      {
+        "tag": "0.16.1",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.16.1"
+      },
+      {
+        "tag": "0.16.0",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.16.0"
+      },
+      {
+        "tag": "0.15.0",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.15.0"
+      },
+      {
+        "tag": "0.14.5",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.14.5"
+      },
+      {
+        "tag": "0.14.4",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.14.4"
+      },
+      {
+        "tag": "0.14.3",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.14.3"
+      },
+      {
+        "tag": "0.14.2",
+        "url": "https://github.com/NixOS/patchelf/releases/tag/0.14.2"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/NixOS/patchelf/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/NixOS/patchelf/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "ba8c42e25f871254ece1d5e1aab970c01d59b432753903c43e2c4a792183c4e3",
+    "status": "read"
+  },
+  {
+    "name": "pigz",
+    "pinned": "2.8",
+    "checked_at": "2026-11-02T17:03:36.013516+00:00",
+    "latest": "v2.8",
+    "version_candidates": [],
+    "url": "https://api.github.com/repos/madler/pigz/tags?per_page=100",
+    "effective_url": "https://zlib.net/pigz/",
+    "http_status": 200,
+    "sha256": "9ac1265dc0d46071f82a54fdabf58ca73a9bddf92ba7a9e7ad5f83447a29c729",
+    "status": "read",
+    "latest_scope": "upstream-stable"
+  },
+  {
+    "name": "pkgconf",
+    "pinned": "2.3.0",
+    "checked_at": "2026-11-02T17:00:14.397542+00:00",
+    "latest": "3.0.10",
+    "version_candidates": [
+      "2.9.99",
+      "3.0.0",
+      "3.0.1",
+      "3.0.2",
+      "3.0.3",
+      "3.0.4",
+      "3.0.5",
+      "3.0.6",
+      "3.0.7",
+      "3.0.8",
+      "3.0.9",
+      "3.0.10"
+    ],
+    "url": "https://distfiles.ariadne.space/pkgconf/",
+    "effective_url": "https://distfiles.ariadne.space/pkgconf/",
+    "http_status": 200,
+    "sha256": "e661e250bee5520927c19b1d6f55a50afa8ef5c304fd6c31ad8eab3b15520b5a",
+    "status": "read"
+  },
+  {
+    "name": "python-flit-core",
+    "pinned": "3.12.0",
+    "checked_at": "2026-11-02T17:00:14.487954+00:00",
+    "latest": "4.2.0",
+    "requires_python": ">=3.8",
+    "url": "https://pypi.org/pypi/flit-core/json",
+    "effective_url": "https://pypi.org/pypi/flit-core/json",
+    "http_status": 200,
+    "sha256": "07daeb411eef51f410041ecbcc7de98167efb0cbb19b4b23bfe2f46f77bf69c3",
+    "status": "read"
+  },
+  {
+    "name": "python-installer",
+    "pinned": "1.0.0",
+    "checked_at": "2026-11-02T17:00:14.531037+00:00",
+    "latest": "1.1.0",
+    "requires_python": ">=3.10",
+    "url": "https://pypi.org/pypi/installer/json",
+    "effective_url": "https://pypi.org/pypi/installer/json",
+    "http_status": 200,
+    "sha256": "a07eab0a3d531db1bb200afb05b3188270c1ebb8d2bcb4d04967d4b63bb2186b",
+    "status": "read"
+  },
+  {
+    "name": "python-packaging",
+    "pinned": "26.2",
+    "checked_at": "2026-11-02T17:00:14.563636+00:00",
+    "latest": "26.3",
+    "requires_python": ">=3.9",
+    "url": "https://pypi.org/pypi/packaging/json",
+    "effective_url": "https://pypi.org/pypi/packaging/json",
+    "http_status": 200,
+    "sha256": "9d7a2885e9e79296598f8c943e0a94c2468e21c800abd26ed13c633465a78835",
+    "status": "read"
+  },
+  {
+    "name": "python-pypa-build",
+    "pinned": "1.3.0",
+    "checked_at": "2026-11-02T17:00:14.593892+00:00",
+    "latest": "1.6.1",
+    "requires_python": ">=3.10",
+    "url": "https://pypi.org/pypi/build/json",
+    "effective_url": "https://pypi.org/pypi/build/json",
+    "http_status": 200,
+    "sha256": "1f23d3112e2d03277e2cdc3902b216387b30fea87b01f1b2d16877d785feeb44",
+    "status": "read"
+  },
+  {
+    "name": "python-pyproject-hooks",
+    "pinned": "1.2.0",
+    "checked_at": "2026-11-02T17:00:14.604611+00:00",
+    "latest": "1.3.3",
+    "requires_python": ">=3.8",
+    "url": "https://pypi.org/pypi/pyproject-hooks/json",
+    "effective_url": "https://pypi.org/pypi/pyproject-hooks/json",
+    "http_status": 200,
+    "sha256": "afc7607e4b9aecb6f18f1e60f964a2d51f3276c61cc77559543ba519266b4ca4",
+    "status": "read"
+  },
+  {
+    "name": "python-setuptools",
+    "pinned": "80.9.0",
+    "checked_at": "2026-11-02T17:00:14.634301+00:00",
+    "latest": "84.2.1",
+    "requires_python": ">=3.10",
+    "url": "https://pypi.org/pypi/setuptools/json",
+    "effective_url": "https://pypi.org/pypi/setuptools/json",
+    "http_status": 200,
+    "sha256": "1b84d1a1e6d5469d9ac64f06e612b57d2d049b73df26f46e29771eaf34ed7006",
+    "status": "read"
+  },
+  {
+    "name": "python-wheel",
+    "pinned": "0.47.0",
+    "checked_at": "2026-11-02T17:00:14.696092+00:00",
+    "latest": "0.48.0",
+    "requires_python": ">=3.9",
+    "url": "https://pypi.org/pypi/wheel/json",
+    "effective_url": "https://pypi.org/pypi/wheel/json",
+    "http_status": 200,
+    "sha256": "113f8abc907676e530c9dca238f3b2bd26e2b142747d16d7d4775810e1155980",
+    "status": "read"
+  },
+  {
+    "name": "python3",
+    "pinned": "3.14.8",
+    "checked_at": "2026-11-02T17:03:36.028615+00:00",
+    "latest": "3.15.0",
+    "version_candidates": [
+      "3.14.5",
+      "3.14.6",
+      "3.14.7",
+      "3.14.8",
+      "3.14.9",
+      "3.14.10",
+      "3.15.0",
+      "3.15.1",
+      "3.15.2",
+      "3.16.0",
+      "32",
+      "1999"
+    ],
+    "url": "https://www.python.org/ftp/python/3.15.0/",
+    "effective_url": "https://www.python.org/ftp/python/",
+    "http_status": 200,
+    "sha256": "004be8d24ce0b5934ba62cc98708ad224a797e61700787e9c03db9fd7013e82f",
+    "status": "read",
+    "correction": "Directory names alone do not prove a final release; 1999 is not a CPython version",
+    "latest_scope": "upstream-stable"
+  },
+  {
+    "name": "rpi-firmware",
+    "pinned": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+    "checked_at": "2026-11-02T17:48:00.179084+00:00",
+    "status": "read",
+    "reason": "Pinned commit; compare the selected branch and firmware policy separately",
+    "latest": "ab5c7f86283ceb58b7adb269cae1d16092a31bf6",
+    "url": "https://github.com/raspberrypi/firmware.git",
+    "latest_scope": "default-branch-HEAD",
+    "sha256": "c27e97edf09da25fb026c3d84a68472066799e2f43fd0e1c4e34d5b62d994795"
+  },
+  {
+    "name": "squashfs",
+    "pinned": "4.7.5",
+    "checked_at": "2026-11-02T17:00:14.710894+00:00",
+    "latest": "4.7.5",
+    "stable_releases": [
+      {
+        "tag": "4.7.5",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7.5"
+      },
+      {
+        "tag": "4.7.4",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7.4"
+      },
+      {
+        "tag": "4.7.3",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7.3"
+      },
+      {
+        "tag": "4.7.2",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7.2"
+      },
+      {
+        "tag": "4.7.1",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7.1"
+      },
+      {
+        "tag": "4.7",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.7"
+      },
+      {
+        "tag": "4.6.1",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.6.1"
+      },
+      {
+        "tag": "4.6",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.6"
+      },
+      {
+        "tag": "4.5.1",
+        "url": "https://github.com/plougher/squashfs-tools/releases/tag/4.5.1"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/plougher/squashfs-tools/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/plougher/squashfs-tools/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "175d4b849ec3c0e3a2747ed36fff41580fa2625c542de85a32aa93fbaa10ad67",
+    "status": "read"
+  },
+  {
+    "name": "toolchain-external-bootlin",
+    "pinned": "2025.08-1",
+    "checked_at": "2026-11-02T17:00:14.744015+00:00",
+    "status": "read",
+    "reason": "No primary release endpoint selected yet",
+    "latest": "2026.08-1",
+    "url": "https://toolchains.bootlin.com/releases_aarch64.html",
+    "latest_scope": "aarch64-glibc-stable; not selectable in pinned Buildroot stable branch"
+  },
+  {
+    "name": "util-linux",
+    "pinned": "2.41.5",
+    "checked_at": "2026-11-02T17:03:36.307085+00:00",
+    "latest": "2.42.4",
+    "version_candidates": [
+      "2.31",
+      "2.32",
+      "2.33",
+      "2.34",
+      "2.35",
+      "2.36",
+      "2.37",
+      "2.38",
+      "2.39",
+      "2.40",
+      "2.41",
+      "2.42"
+    ],
+    "url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.42/",
+    "effective_url": "https://www.kernel.org/pub/linux/utils/util-linux/",
+    "http_status": 200,
+    "sha256": "6d0981a237e5f7fc07e652a42a1b6983557832dc59182f417a4dd4189a4e6a73",
+    "status": "read",
+    "correction": "Directory names alone do not prove a final release; 1999 is not a CPython version",
+    "latest_scope": "upstream-stable"
+  },
+  {
+    "name": "xxhash",
+    "pinned": "0.8.3",
+    "checked_at": "2026-11-02T17:00:14.746919+00:00",
+    "latest": "v0.8.4",
+    "stable_releases": [
+      {
+        "tag": "v0.8.4",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.4"
+      },
+      {
+        "tag": "v0.8.3",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.3"
+      },
+      {
+        "tag": "v0.8.2",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.2"
+      },
+      {
+        "tag": "v0.8.1",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.1"
+      },
+      {
+        "tag": "v0.8.0",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.8.0"
+      },
+      {
+        "tag": "v0.7.4",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.7.4"
+      },
+      {
+        "tag": "v0.7.3",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.7.3"
+      },
+      {
+        "tag": "v0.7.2",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.7.2"
+      },
+      {
+        "tag": "v0.7.1",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.7.1"
+      },
+      {
+        "tag": "v0.7.0",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.7.0"
+      },
+      {
+        "tag": "v0.6.5",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.5"
+      },
+      {
+        "tag": "v0.6.4",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.4"
+      },
+      {
+        "tag": "v0.6.3",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.3"
+      },
+      {
+        "tag": "v0.6.2",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.2"
+      },
+      {
+        "tag": "v0.6.1",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.1"
+      },
+      {
+        "tag": "v0.6.0",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.6.0"
+      },
+      {
+        "tag": "v0.5.1",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.5.1"
+      },
+      {
+        "tag": "v0.5.0",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/v0.5.0"
+      },
+      {
+        "tag": "r42",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/r42"
+      },
+      {
+        "tag": "r41",
+        "url": "https://github.com/Cyan4973/xxHash/releases/tag/r41"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/Cyan4973/xxHash/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/Cyan4973/xxHash/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "bec3bcfe36d488e8ccf10048c61163ac38118979c16fe5a7f2817e9d145aa549",
+    "status": "read",
+    "correction": "Historical integer/date tags excluded; raw release data retained"
+  },
+  {
+    "name": "xz",
+    "pinned": "5.8.4",
+    "checked_at": "2026-11-02T17:00:14.771569+00:00",
+    "latest": "v5.8.4",
+    "stable_releases": [
+      {
+        "tag": "v5.8.4",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.4"
+      },
+      {
+        "tag": "v5.8.3",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.3"
+      },
+      {
+        "tag": "v5.8.2",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.2"
+      },
+      {
+        "tag": "v5.8.1",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.1"
+      },
+      {
+        "tag": "v5.8.0",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.8.0"
+      },
+      {
+        "tag": "v5.6.4",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.6.4"
+      },
+      {
+        "tag": "v5.6.3",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.6.3"
+      },
+      {
+        "tag": "v5.6.2",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.6.2"
+      },
+      {
+        "tag": "v5.4.7",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.7"
+      },
+      {
+        "tag": "v5.2.13",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.2.13"
+      },
+      {
+        "tag": "v5.4.6",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.6"
+      },
+      {
+        "tag": "v5.4.5",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.5"
+      },
+      {
+        "tag": "v5.4.4",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.4"
+      },
+      {
+        "tag": "v5.4.3",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.3"
+      },
+      {
+        "tag": "v5.2.12",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.2.12"
+      },
+      {
+        "tag": "v5.4.2",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.2"
+      },
+      {
+        "tag": "v5.2.11",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.2.11"
+      },
+      {
+        "tag": "v5.4.1",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.1"
+      },
+      {
+        "tag": "v5.4.0",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.4.0"
+      },
+      {
+        "tag": "v5.2.10",
+        "url": "https://github.com/tukaani-project/xz/releases/tag/v5.2.10"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/tukaani-project/xz/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/tukaani-project/xz/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "3b84cf42adc209d309bd7cabb4975254a2968288b51e1e97df93a7d755fac169",
+    "status": "read"
+  },
+  {
+    "name": "zizmor",
+    "pinned": "1.31.1",
+    "checked_at": "2026-11-02T17:00:14.852572+00:00",
+    "latest": "1.31.1",
+    "requires_python": ">=3.11",
+    "url": "https://pypi.org/pypi/zizmor/json",
+    "effective_url": "https://pypi.org/pypi/zizmor/json",
+    "http_status": 200,
+    "sha256": "1ced035b615477d8814ba82bd816389937af2c6ab0878869aeb65935ec99aa9a",
+    "status": "read"
+  },
+  {
+    "name": "zstd",
+    "pinned": "1.5.7",
+    "checked_at": "2026-11-02T17:00:14.917191+00:00",
+    "latest": "v1.5.7",
+    "stable_releases": [
+      {
+        "tag": "v1.5.7",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.7"
+      },
+      {
+        "tag": "v1.5.6",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.6"
+      },
+      {
+        "tag": "v1.5.5",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.5"
+      },
+      {
+        "tag": "v1.5.4",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.4"
+      },
+      {
+        "tag": "v1.5.2",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.2"
+      },
+      {
+        "tag": "v1.5.1",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.1"
+      },
+      {
+        "tag": "v1.5.0",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.5.0"
+      },
+      {
+        "tag": "v1.4.9",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.9"
+      },
+      {
+        "tag": "v1.4.8",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.8"
+      },
+      {
+        "tag": "v1.4.7",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.7"
+      },
+      {
+        "tag": "v1.4.5",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.5"
+      },
+      {
+        "tag": "v1.4.4",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.4"
+      },
+      {
+        "tag": "v1.4.3",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.3"
+      },
+      {
+        "tag": "v1.4.2",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.2"
+      },
+      {
+        "tag": "v1.4.1",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.1"
+      },
+      {
+        "tag": "v1.4.0",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.4.0"
+      },
+      {
+        "tag": "v1.3.8",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.3.8"
+      },
+      {
+        "tag": "v1.3.7",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.3.7"
+      },
+      {
+        "tag": "v1.3.6",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.3.6"
+      },
+      {
+        "tag": "v1.3.5",
+        "url": "https://github.com/meta/zstd/releases/tag/v1.3.5"
+      }
+    ],
+    "pages_exhausted": true,
+    "url": "https://api.github.com/repos/facebook/zstd/releases?per_page=100",
+    "effective_url": "https://api.github.com/repos/facebook/zstd/releases?per_page=100",
+    "http_status": 200,
+    "sha256": "86b993b3f51a0f0630922eb5dfc2af14235093d5b2fc4fd33f99b36a57a1cc2e",
+    "status": "read"
+  }
+]

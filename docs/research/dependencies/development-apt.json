@@ -1,0 +1,3074 @@
+{
+  "schema_version": 1,
+  "keyring_sha256": "506b815cbb32d9b6066b4a2aa524071e071761e7e7f68c3ac74f3061ba852017",
+  "gpgv_version": "gpgv (GnuPG) 2.2.27",
+  "sources": {
+    "trixie": {
+      "release": {
+        "url": "https://deb.debian.org/debian/dists/trixie/InRelease",
+        "checked_at": "2026-11-02T17:36:42.527528+00:00",
+        "sha256": "0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675",
+        "bytes": 140421
+      },
+      "index": {
+        "url": "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz",
+        "checked_at": "2026-11-02T17:36:43.505790+00:00",
+        "sha256": "7778d3e3f303b7ddb8ce0fe7c8d57473a076c6bf2e8f241f75421d2396352498",
+        "bytes": 9678380
+      },
+      "gpgv_exit": 0,
+      "date": [
+        "Sat, 12 Sep 2026 07:55:41 UTC"
+      ],
+      "valid_until": []
+    },
+    "trixie-updates": {
+      "release": {
+        "url": "https://deb.debian.org/debian/dists/trixie-updates/InRelease",
+        "checked_at": "2026-11-02T17:36:42.515846+00:00",
+        "sha256": "34507e00782424756b7c4d46b1717e6c055722b59dac6e713f3f88b0505a476f",
+        "bytes": 47340
+      },
+      "index": {
+        "url": "https://deb.debian.org/debian/dists/trixie-updates/main/binary-amd64/Packages.xz",
+        "checked_at": "2026-11-02T17:36:42.686495+00:00",
+        "sha256": "7b52592d46eb9bf694ffd99b90fb521064a6bfd1d0a9f69f22cabf31cb7ea38e",
+        "bytes": 1108
+      },
+      "gpgv_exit": 0,
+      "date": [
+        "Mon, 02 Nov 2026 14:10:08 UTC"
+      ],
+      "valid_until": [
+        "Mon, 09 Nov 2026 14:10:08 UTC"
+      ]
+    },
+    "trixie-security": {
+      "release": {
+        "url": "https://security.debian.org/debian-security/dists/trixie-security/InRelease",
+        "checked_at": "2026-11-02T17:36:42.521320+00:00",
+        "sha256": "0796dd8165e0abf519d5159e23cb762b4c8bc35b45a71272d0951c01fdcb659a",
+        "bytes": 43409
+      },
+      "index": {
+        "url": "https://security.debian.org/debian-security/dists/trixie-security/main/binary-amd64/Packages.xz",
+        "checked_at": "2026-11-02T17:36:42.724442+00:00",
+        "sha256": "1ad4745db3be309e6840ed9991d840799accf2675a693c1a6339de343cf44473",
+        "bytes": 296896
+      },
+      "gpgv_exit": 0,
+      "date": [
+        "Mon, 02 Nov 2026 16:23:48 UTC"
+      ],
+      "valid_until": [
+        "Mon, 09 Nov 2026 16:23:48 UTC"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "name": "apt",
+      "installed_version": "3.0.3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "apt",
+        "version": "3.0.3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "base-files",
+      "installed_version": "13.8+deb13u7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "base-files",
+        "version": "13.8+deb13u7",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "base-passwd",
+      "installed_version": "3.6.7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "base-passwd",
+        "version": "3.6.7",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "bash",
+      "installed_version": "5.2.37-2+b10",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "bash",
+        "version": "5.2.37-2+b10",
+        "architecture": "amd64",
+        "source": "bash (5.2.37-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "bc",
+      "installed_version": "1.07.1-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "bc",
+        "version": "1.07.1-4",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "binutils",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "binutils",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "binutils-common:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "binutils-common",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "binutils-x86-64-linux-gnu",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "binutils-x86-64-linux-gnu",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "bison",
+      "installed_version": "2:3.8.2+dfsg-1+b2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "bison",
+        "version": "2:3.8.2+dfsg-1+b2",
+        "architecture": "amd64",
+        "source": "bison (2:3.8.2+dfsg-1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "bsdutils",
+      "installed_version": "1:2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "bsdutils",
+        "version": "1:2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux (2.41.5-0+deb13u1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "build-essential",
+      "installed_version": "12.12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "build-essential",
+        "version": "12.12",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "bzip2",
+      "installed_version": "1.0.8-6",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "bzip2",
+        "version": "1.0.8-6",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "ca-certificates",
+      "installed_version": "20250419+deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "ca-certificates",
+        "version": "20250419+deb13u1",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cmake",
+      "installed_version": "3.31.6-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cmake",
+        "version": "3.31.6-2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cmake-data",
+      "installed_version": "3.31.6-2",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "cmake-data",
+        "version": "3.31.6-2",
+        "architecture": "all",
+        "source": "cmake",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "coreutils",
+      "installed_version": "9.7-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "coreutils",
+        "version": "9.7-3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cpio",
+      "installed_version": "2.15+dfsg-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cpio",
+        "version": "2.15+dfsg-2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cpp",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cpp",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cpp-14",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cpp-14",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cpp-14-x86-64-linux-gnu",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cpp-14-x86-64-linux-gnu",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cpp-x86-64-linux-gnu",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cpp-x86-64-linux-gnu",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cryptsetup",
+      "installed_version": "2:2.7.5-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cryptsetup",
+        "version": "2:2.7.5-2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "cryptsetup-bin",
+      "installed_version": "2:2.7.5-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "cryptsetup-bin",
+        "version": "2:2.7.5-2",
+        "architecture": "amd64",
+        "source": "cryptsetup",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "curl",
+      "installed_version": "8.14.1-2+deb13u7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "curl",
+        "version": "8.14.1-2+deb13u7",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "dash",
+      "installed_version": "0.5.12-12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "dash",
+        "version": "0.5.12-12",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "debconf",
+      "installed_version": "1.5.91",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "debconf",
+        "version": "1.5.91",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "debian-archive-keyring",
+      "installed_version": "2025.1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "debian-archive-keyring",
+        "version": "2025.1",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "debianutils",
+      "installed_version": "5.23.2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "debianutils",
+        "version": "5.23.2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "device-tree-compiler",
+      "installed_version": "1.7.2-2+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "device-tree-compiler",
+        "version": "1.7.2-2+b1",
+        "architecture": "amd64",
+        "source": "device-tree-compiler (1.7.2-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "diffutils",
+      "installed_version": "1:3.10-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "diffutils",
+        "version": "1:3.10-4",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "dmsetup",
+      "installed_version": "2:1.02.205-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "dmsetup",
+        "version": "2:1.02.205-2",
+        "architecture": "amd64",
+        "source": "lvm2 (2.03.31-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "dosfstools",
+      "installed_version": "4.2-1.2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "dosfstools",
+        "version": "4.2-1.2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "dpkg",
+      "installed_version": "1.22.22",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "dpkg",
+        "version": "1.22.22",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "dpkg-dev",
+      "installed_version": "1.22.22",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "dpkg-dev",
+        "version": "1.22.22",
+        "architecture": "all",
+        "source": "dpkg",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "e2fsprogs",
+      "installed_version": "1.47.2-3+b12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "e2fsprogs",
+        "version": "1.47.2-3+b12",
+        "architecture": "amd64",
+        "source": "e2fsprogs (1.47.2-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "fdisk",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "fdisk",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "file",
+      "installed_version": "1:5.46-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "file",
+        "version": "1:5.46-5",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "findutils",
+      "installed_version": "4.10.0-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "findutils",
+        "version": "4.10.0-3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "flex",
+      "installed_version": "2.6.4-8.2+b4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "flex",
+        "version": "2.6.4-8.2+b4",
+        "architecture": "amd64",
+        "source": "flex (2.6.4-8.2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "g++",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "g++",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "g++-14",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "g++-14",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "g++-14-x86-64-linux-gnu",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "g++-14-x86-64-linux-gnu",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "g++-x86-64-linux-gnu",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "g++-x86-64-linux-gnu",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gawk",
+      "installed_version": "1:5.2.1-2+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gawk",
+        "version": "1:5.2.1-2+b1",
+        "architecture": "amd64",
+        "source": "gawk (1:5.2.1-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gcc",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gcc",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gcc-14",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gcc-14",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gcc-14-base:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gcc-14-base",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gcc-14-x86-64-linux-gnu",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gcc-14-x86-64-linux-gnu",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gcc-x86-64-linux-gnu",
+      "installed_version": "4:14.2.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gcc-x86-64-linux-gnu",
+        "version": "4:14.2.0-1",
+        "architecture": "amd64",
+        "source": "gcc-defaults (1.220)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "git",
+      "installed_version": "1:2.47.3-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "git",
+        "version": "1:2.47.3-0+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "git-man",
+      "installed_version": "1:2.47.3-0+deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "git-man",
+        "version": "1:2.47.3-0+deb13u1",
+        "architecture": "all",
+        "source": "git",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "grep",
+      "installed_version": "3.11-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "grep",
+        "version": "3.11-4",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "gzip",
+      "installed_version": "1.13-1+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "gzip",
+        "version": "1.13-1+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "hostname",
+      "installed_version": "3.25",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "hostname",
+        "version": "3.25",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "init-system-helpers",
+      "installed_version": "1.69~deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "init-system-helpers",
+        "version": "1.69~deb13u1",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libacl1:amd64",
+      "installed_version": "2.3.2-2+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libacl1",
+        "version": "2.3.2-2+b1",
+        "architecture": "amd64",
+        "source": "acl (2.3.2-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libapt-pkg7.0:amd64",
+      "installed_version": "3.0.3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libapt-pkg7.0",
+        "version": "3.0.3",
+        "architecture": "amd64",
+        "source": "apt",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libarchive13t64:amd64",
+      "installed_version": "3.7.4-4+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libarchive13t64",
+        "version": "3.7.4-4+deb13u1",
+        "architecture": "amd64",
+        "source": "libarchive",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libasan8:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libasan8",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libatomic1:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libatomic1",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libattr1:amd64",
+      "installed_version": "1:2.5.2-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libattr1",
+        "version": "1:2.5.2-3",
+        "architecture": "amd64",
+        "source": "attr",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libaudit-common",
+      "installed_version": "1:4.0.2-2+deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "libaudit-common",
+        "version": "1:4.0.2-2+deb13u1",
+        "architecture": "all",
+        "source": "audit",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libaudit1:amd64",
+      "installed_version": "1:4.0.2-2+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libaudit1",
+        "version": "1:4.0.2-2+deb13u1",
+        "architecture": "amd64",
+        "source": "audit",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libbinutils:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libbinutils",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libblkid1:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libblkid1",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libbrotli1:amd64",
+      "installed_version": "1.1.0-2+b7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libbrotli1",
+        "version": "1.1.0-2+deb13u1",
+        "architecture": "amd64",
+        "source": "brotli",
+        "suite": "trixie-security"
+      },
+      "status": "newer-distro-package"
+    },
+    {
+      "name": "libbsd0:amd64",
+      "installed_version": "0.12.2-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libbsd0",
+        "version": "0.12.2-2",
+        "architecture": "amd64",
+        "source": "libbsd",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libbz2-1.0:amd64",
+      "installed_version": "1.0.8-6",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libbz2-1.0",
+        "version": "1.0.8-6",
+        "architecture": "amd64",
+        "source": "bzip2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libc-bin",
+      "installed_version": "2.41-12+deb13u4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libc-bin",
+        "version": "2.41-12+deb13u4",
+        "architecture": "amd64",
+        "source": "glibc",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libc-dev-bin",
+      "installed_version": "2.41-12+deb13u4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libc-dev-bin",
+        "version": "2.41-12+deb13u4",
+        "architecture": "amd64",
+        "source": "glibc",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libc6:amd64",
+      "installed_version": "2.41-12+deb13u4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libc6",
+        "version": "2.41-12+deb13u4",
+        "architecture": "amd64",
+        "source": "glibc",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libc6-dev:amd64",
+      "installed_version": "2.41-12+deb13u4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libc6-dev",
+        "version": "2.41-12+deb13u4",
+        "architecture": "amd64",
+        "source": "glibc",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcap-ng0:amd64",
+      "installed_version": "0.8.5-4+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcap-ng0",
+        "version": "0.8.5-4+b1",
+        "architecture": "amd64",
+        "source": "libcap-ng (0.8.5-4)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcap2:amd64",
+      "installed_version": "1:2.75-10+deb13u1+b3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcap2",
+        "version": "1:2.75-10+deb13u1+b3",
+        "architecture": "amd64",
+        "source": "libcap2 (1:2.75-10+deb13u1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcc1-0:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcc1-0",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcom-err2:amd64",
+      "installed_version": "1.47.2-3+b12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcom-err2",
+        "version": "1.47.2-3+b12",
+        "architecture": "amd64",
+        "source": "e2fsprogs (1.47.2-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcrypt-dev:amd64",
+      "installed_version": "1:4.4.38-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcrypt-dev",
+        "version": "1:4.4.38-1",
+        "architecture": "amd64",
+        "source": "libxcrypt",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcrypt1:amd64",
+      "installed_version": "1:4.4.38-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcrypt1",
+        "version": "1:4.4.38-1",
+        "architecture": "amd64",
+        "source": "libxcrypt",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcryptsetup12:amd64",
+      "installed_version": "2:2.7.5-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcryptsetup12",
+        "version": "2:2.7.5-2",
+        "architecture": "amd64",
+        "source": "cryptsetup",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libctf-nobfd0:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libctf-nobfd0",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libctf0:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libctf0",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcurl3t64-gnutls:amd64",
+      "installed_version": "8.14.1-2+deb13u7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcurl3t64-gnutls",
+        "version": "8.14.1-2+deb13u7",
+        "architecture": "amd64",
+        "source": "curl",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libcurl4t64:amd64",
+      "installed_version": "8.14.1-2+deb13u7",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libcurl4t64",
+        "version": "8.14.1-2+deb13u7",
+        "architecture": "amd64",
+        "source": "curl",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libdb5.3t64:amd64",
+      "installed_version": "5.3.28+dfsg2-9",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libdb5.3t64",
+        "version": "5.3.28+dfsg2-9",
+        "architecture": "amd64",
+        "source": "db5.3",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libdebconfclient0:amd64",
+      "installed_version": "0.280",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libdebconfclient0",
+        "version": "0.280",
+        "architecture": "amd64",
+        "source": "cdebconf",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libdevmapper1.02.1:amd64",
+      "installed_version": "2:1.02.205-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libdevmapper1.02.1",
+        "version": "2:1.02.205-2",
+        "architecture": "amd64",
+        "source": "lvm2 (2.03.31-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libdpkg-perl",
+      "installed_version": "1.22.22",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "libdpkg-perl",
+        "version": "1.22.22",
+        "architecture": "all",
+        "source": "dpkg",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libelf-dev:amd64",
+      "installed_version": "0.192-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libelf-dev",
+        "version": "0.192-4",
+        "architecture": "amd64",
+        "source": "elfutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libelf1t64:amd64",
+      "installed_version": "0.192-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libelf1t64",
+        "version": "0.192-4",
+        "architecture": "amd64",
+        "source": "elfutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liberror-perl",
+      "installed_version": "0.17030-1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "liberror-perl",
+        "version": "0.17030-1",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libexpat1:amd64",
+      "installed_version": "2.9.0-1~deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libexpat1",
+        "version": "2.9.0-1~deb13u1",
+        "architecture": "amd64",
+        "source": "expat",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libext2fs2t64:amd64",
+      "installed_version": "1.47.2-3+b12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libext2fs2t64",
+        "version": "1.47.2-3+b12",
+        "architecture": "amd64",
+        "source": "e2fsprogs (1.47.2-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libfdisk1:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libfdisk1",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libfdt1:amd64",
+      "installed_version": "1.7.2-2+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libfdt1",
+        "version": "1.7.2-2+b1",
+        "architecture": "amd64",
+        "source": "device-tree-compiler (1.7.2-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libffi8:amd64",
+      "installed_version": "3.4.8-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libffi8",
+        "version": "3.4.8-2",
+        "architecture": "amd64",
+        "source": "libffi",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgcc-14-dev:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgcc-14-dev",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgcc-s1:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgcc-s1",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgdbm-compat4t64:amd64",
+      "installed_version": "1.24-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgdbm-compat4t64",
+        "version": "1.24-2",
+        "architecture": "amd64",
+        "source": "gdbm",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgdbm6t64:amd64",
+      "installed_version": "1.24-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgdbm6t64",
+        "version": "1.24-2",
+        "architecture": "amd64",
+        "source": "gdbm",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libglib2.0-0t64:amd64",
+      "installed_version": "2.84.4-3~deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libglib2.0-0t64",
+        "version": "2.84.4-3~deb13u5",
+        "architecture": "amd64",
+        "source": "glib2.0",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgmp10:amd64",
+      "installed_version": "2:6.3.0+dfsg-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgmp10",
+        "version": "2:6.3.0+dfsg-3",
+        "architecture": "amd64",
+        "source": "gmp",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgnutls30t64:amd64",
+      "installed_version": "3.8.9-3+deb13u4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgnutls30t64",
+        "version": "3.8.9-3+deb13u4",
+        "architecture": "amd64",
+        "source": "gnutls28",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgomp1:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgomp1",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgprofng0:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgprofng0",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libgssapi-krb5-2:amd64",
+      "installed_version": "1.21.3-5+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libgssapi-krb5-2",
+        "version": "1.21.3-5+deb13u1",
+        "architecture": "amd64",
+        "source": "krb5",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libhogweed6t64:amd64",
+      "installed_version": "3.10.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libhogweed6t64",
+        "version": "3.10.1-1",
+        "architecture": "amd64",
+        "source": "nettle",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libhwasan0:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libhwasan0",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libidn2-0:amd64",
+      "installed_version": "2.3.8-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libidn2-0",
+        "version": "2.3.8-2",
+        "architecture": "amd64",
+        "source": "libidn2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libisl23:amd64",
+      "installed_version": "0.27-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libisl23",
+        "version": "0.27-1",
+        "architecture": "amd64",
+        "source": "isl",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libitm1:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libitm1",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libjansson4:amd64",
+      "installed_version": "2.14-2+b3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libjansson4",
+        "version": "2.14-2+b3",
+        "architecture": "amd64",
+        "source": "jansson (2.14-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libjson-c5:amd64",
+      "installed_version": "0.18+ds-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libjson-c5",
+        "version": "0.18+ds-1",
+        "architecture": "amd64",
+        "source": "json-c",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libjsoncpp26:amd64",
+      "installed_version": "1.9.6-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libjsoncpp26",
+        "version": "1.9.6-3",
+        "architecture": "amd64",
+        "source": "libjsoncpp",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libk5crypto3:amd64",
+      "installed_version": "1.21.3-5+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libk5crypto3",
+        "version": "1.21.3-5+deb13u1",
+        "architecture": "amd64",
+        "source": "krb5",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libkeyutils1:amd64",
+      "installed_version": "1.6.3-6",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libkeyutils1",
+        "version": "1.6.3-6",
+        "architecture": "amd64",
+        "source": "keyutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libkrb5-3:amd64",
+      "installed_version": "1.21.3-5+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libkrb5-3",
+        "version": "1.21.3-5+deb13u1",
+        "architecture": "amd64",
+        "source": "krb5",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libkrb5support0:amd64",
+      "installed_version": "1.21.3-5+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libkrb5support0",
+        "version": "1.21.3-5+deb13u1",
+        "architecture": "amd64",
+        "source": "krb5",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liblastlog2-2:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "liblastlog2-2",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libldap2:amd64",
+      "installed_version": "2.6.10+dfsg-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libldap2",
+        "version": "2.6.10+dfsg-1",
+        "architecture": "amd64",
+        "source": "openldap",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liblsan0:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "liblsan0",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liblz4-1:amd64",
+      "installed_version": "1.10.0-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "liblz4-1",
+        "version": "1.10.0-4",
+        "architecture": "amd64",
+        "source": "lz4",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liblzma5:amd64",
+      "installed_version": "5.8.1-1+deb13u2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "liblzma5",
+        "version": "5.8.1-1+deb13u2",
+        "architecture": "amd64",
+        "source": "xz-utils",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "liblzo2-2:amd64",
+      "installed_version": "2.10-3+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "liblzo2-2",
+        "version": "2.10-3+b1",
+        "architecture": "amd64",
+        "source": "lzo2 (2.10-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmagic-mgc",
+      "installed_version": "1:5.46-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmagic-mgc",
+        "version": "1:5.46-5",
+        "architecture": "amd64",
+        "source": "file",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmagic1t64:amd64",
+      "installed_version": "1:5.46-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmagic1t64",
+        "version": "1:5.46-5",
+        "architecture": "amd64",
+        "source": "file",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmd0:amd64",
+      "installed_version": "1.1.0-2+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmd0",
+        "version": "1.1.0-2+b1",
+        "architecture": "amd64",
+        "source": "libmd (1.1.0-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmount1:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmount1",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmpc3:amd64",
+      "installed_version": "1.3.1-1+b3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmpc3",
+        "version": "1.3.1-1+b3",
+        "architecture": "amd64",
+        "source": "mpclib3 (1.3.1-1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libmpfr6:amd64",
+      "installed_version": "4.2.2-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libmpfr6",
+        "version": "4.2.2-1",
+        "architecture": "amd64",
+        "source": "mpfr4",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libncurses-dev:amd64",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libncurses-dev",
+        "version": "6.5+20250216-2",
+        "architecture": "amd64",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libncurses6:amd64",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libncurses6",
+        "version": "6.5+20250216-2",
+        "architecture": "amd64",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libncursesw6:amd64",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libncursesw6",
+        "version": "6.5+20250216-2",
+        "architecture": "amd64",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libnettle8t64:amd64",
+      "installed_version": "3.10.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libnettle8t64",
+        "version": "3.10.1-1",
+        "architecture": "amd64",
+        "source": "nettle",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libnghttp2-14:amd64",
+      "installed_version": "1.64.0-1.1+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libnghttp2-14",
+        "version": "1.64.0-1.1+deb13u1",
+        "architecture": "amd64",
+        "source": "nghttp2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libnghttp3-9:amd64",
+      "installed_version": "1.8.0-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libnghttp3-9",
+        "version": "1.8.0-1",
+        "architecture": "amd64",
+        "source": "nghttp3",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libngtcp2-16:amd64",
+      "installed_version": "1.11.0-1+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libngtcp2-16",
+        "version": "1.11.0-1+deb13u1",
+        "architecture": "amd64",
+        "source": "ngtcp2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libngtcp2-crypto-gnutls8:amd64",
+      "installed_version": "1.11.0-1+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libngtcp2-crypto-gnutls8",
+        "version": "1.11.0-1+deb13u1",
+        "architecture": "amd64",
+        "source": "ngtcp2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libp11-kit0:amd64",
+      "installed_version": "0.25.5-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libp11-kit0",
+        "version": "0.25.5-3",
+        "architecture": "amd64",
+        "source": "p11-kit",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpam-modules:amd64",
+      "installed_version": "1.7.0-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpam-modules",
+        "version": "1.7.0-5",
+        "architecture": "amd64",
+        "source": "pam",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpam-modules-bin",
+      "installed_version": "1.7.0-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpam-modules-bin",
+        "version": "1.7.0-5",
+        "architecture": "amd64",
+        "source": "pam",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpam-runtime",
+      "installed_version": "1.7.0-5",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "libpam-runtime",
+        "version": "1.7.0-5",
+        "architecture": "all",
+        "source": "pam",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpam0g:amd64",
+      "installed_version": "1.7.0-5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpam0g",
+        "version": "1.7.0-5",
+        "architecture": "amd64",
+        "source": "pam",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpcre2-8-0:amd64",
+      "installed_version": "10.46-1~deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpcre2-8-0",
+        "version": "10.46-1~deb13u3",
+        "architecture": "amd64",
+        "source": "pcre2",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libperl5.40:amd64",
+      "installed_version": "5.40.1-6+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libperl5.40",
+        "version": "5.40.1-6+deb13u1",
+        "architecture": "amd64",
+        "source": "perl",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpixman-1-0:amd64",
+      "installed_version": "0.44.0-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpixman-1-0",
+        "version": "0.44.0-3",
+        "architecture": "amd64",
+        "source": "pixman",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpopt0:amd64",
+      "installed_version": "1.19+dfsg-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpopt0",
+        "version": "1.19+dfsg-2",
+        "architecture": "amd64",
+        "source": "popt",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libproc2-0:amd64",
+      "installed_version": "2:4.0.4-9",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libproc2-0",
+        "version": "2:4.0.4-9",
+        "architecture": "amd64",
+        "source": "procps",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpsl5t64:amd64",
+      "installed_version": "0.21.2-1.1+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpsl5t64",
+        "version": "0.21.2-1.1+b1",
+        "architecture": "amd64",
+        "source": "libpsl (0.21.2-1.1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpython3-stdlib:amd64",
+      "installed_version": "3.13.5-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpython3-stdlib",
+        "version": "3.13.5-1",
+        "architecture": "amd64",
+        "source": "python3-defaults",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpython3.13-minimal:amd64",
+      "installed_version": "3.13.5-2+deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpython3.13-minimal",
+        "version": "3.13.5-2+deb13u5",
+        "architecture": "amd64",
+        "source": "python3.13",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libpython3.13-stdlib:amd64",
+      "installed_version": "3.13.5-2+deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libpython3.13-stdlib",
+        "version": "3.13.5-2+deb13u5",
+        "architecture": "amd64",
+        "source": "python3.13",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libquadmath0:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libquadmath0",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libreadline8t64:amd64",
+      "installed_version": "8.2-6",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libreadline8t64",
+        "version": "8.2-6",
+        "architecture": "amd64",
+        "source": "readline",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "librhash1:amd64",
+      "installed_version": "1.4.5-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "librhash1",
+        "version": "1.4.5-1",
+        "architecture": "amd64",
+        "source": "rhash",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "librtmp1:amd64",
+      "installed_version": "2.4+20151223.gitfa8646d.1-2+b5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "librtmp1",
+        "version": "2.4+20151223.gitfa8646d.1-2+b5",
+        "architecture": "amd64",
+        "source": "rtmpdump (2.4+20151223.gitfa8646d.1-2)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsasl2-2:amd64",
+      "installed_version": "2.1.28+dfsg1-9",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsasl2-2",
+        "version": "2.1.28+dfsg1-9",
+        "architecture": "amd64",
+        "source": "cyrus-sasl2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsasl2-modules-db:amd64",
+      "installed_version": "2.1.28+dfsg1-9",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsasl2-modules-db",
+        "version": "2.1.28+dfsg1-9",
+        "architecture": "amd64",
+        "source": "cyrus-sasl2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libseccomp2:amd64",
+      "installed_version": "2.6.0-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libseccomp2",
+        "version": "2.6.0-2",
+        "architecture": "amd64",
+        "source": "libseccomp",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libselinux1:amd64",
+      "installed_version": "3.8.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libselinux1",
+        "version": "3.8.1-1",
+        "architecture": "amd64",
+        "source": "libselinux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsemanage-common",
+      "installed_version": "3.8.1-1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "libsemanage-common",
+        "version": "3.8.1-1",
+        "architecture": "all",
+        "source": "libsemanage",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsemanage2:amd64",
+      "installed_version": "3.8.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsemanage2",
+        "version": "3.8.1-1",
+        "architecture": "amd64",
+        "source": "libsemanage",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsepol2:amd64",
+      "installed_version": "3.8.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsepol2",
+        "version": "3.8.1-1",
+        "architecture": "amd64",
+        "source": "libsepol",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsframe1:amd64",
+      "installed_version": "2.44-3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsframe1",
+        "version": "2.44-3",
+        "architecture": "amd64",
+        "source": "binutils",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsigsegv2:amd64",
+      "installed_version": "2.14-1+b2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsigsegv2",
+        "version": "2.14-1+b2",
+        "architecture": "amd64",
+        "source": "libsigsegv (2.14-1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libslirp0:amd64",
+      "installed_version": "4.8.0-1+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libslirp0",
+        "version": "4.8.0-1+deb13u1",
+        "architecture": "amd64",
+        "source": "libslirp",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsmartcols1:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsmartcols1",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsqlite3-0:amd64",
+      "installed_version": "3.46.1-7+deb13u2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsqlite3-0",
+        "version": "3.46.1-7+deb13u2",
+        "architecture": "amd64",
+        "source": "sqlite3",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libss2:amd64",
+      "installed_version": "1.47.2-3+b12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libss2",
+        "version": "1.47.2-3+b12",
+        "architecture": "amd64",
+        "source": "e2fsprogs (1.47.2-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libssh2-1t64:amd64",
+      "installed_version": "1.11.1-1+deb13u2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libssh2-1t64",
+        "version": "1.11.1-1+deb13u2",
+        "architecture": "amd64",
+        "source": "libssh2",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libssl-dev:amd64",
+      "installed_version": "3.5.7-1~deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libssl-dev",
+        "version": "3.5.7-1~deb13u3",
+        "architecture": "amd64",
+        "source": "openssl",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libssl3t64:amd64",
+      "installed_version": "3.5.7-1~deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libssl3t64",
+        "version": "3.5.7-1~deb13u3",
+        "architecture": "amd64",
+        "source": "openssl",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libstdc++-14-dev:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libstdc++-14-dev",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libstdc++6:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libstdc++6",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libsystemd0:amd64",
+      "installed_version": "257.13-1~deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libsystemd0",
+        "version": "257.13-1~deb13u1",
+        "architecture": "amd64",
+        "source": "systemd",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libtasn1-6:amd64",
+      "installed_version": "4.20.0-2+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libtasn1-6",
+        "version": "4.20.0-2+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libtinfo6:amd64",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libtinfo6",
+        "version": "6.5+20250216-2",
+        "architecture": "amd64",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libtsan2:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libtsan2",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libubsan1:amd64",
+      "installed_version": "14.2.0-19",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libubsan1",
+        "version": "14.2.0-19",
+        "architecture": "amd64",
+        "source": "gcc-14",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libudev1:amd64",
+      "installed_version": "257.13-1~deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libudev1",
+        "version": "257.13-1~deb13u1",
+        "architecture": "amd64",
+        "source": "systemd",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libunistring5:amd64",
+      "installed_version": "1.3-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libunistring5",
+        "version": "1.3-2",
+        "architecture": "amd64",
+        "source": "libunistring",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libuuid1:amd64",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libuuid1",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libuv1t64:amd64",
+      "installed_version": "1.50.0-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libuv1t64",
+        "version": "1.50.0-2",
+        "architecture": "amd64",
+        "source": "libuv1",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libxml2:amd64",
+      "installed_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libxml2",
+        "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libxxhash0:amd64",
+      "installed_version": "0.8.3-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libxxhash0",
+        "version": "0.8.3-2",
+        "architecture": "amd64",
+        "source": "xxhash",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libyaml-0-2:amd64",
+      "installed_version": "0.2.5-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libyaml-0-2",
+        "version": "0.2.5-2",
+        "architecture": "amd64",
+        "source": "libyaml",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libzstd-dev:amd64",
+      "installed_version": "1.5.7+dfsg-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libzstd-dev",
+        "version": "1.5.7+dfsg-1",
+        "architecture": "amd64",
+        "source": "libzstd",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "libzstd1:amd64",
+      "installed_version": "1.5.7+dfsg-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "libzstd1",
+        "version": "1.5.7+dfsg-1",
+        "architecture": "amd64",
+        "source": "libzstd",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "linux-libc-dev",
+      "installed_version": "6.12.113-1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "linux-libc-dev",
+        "version": "6.12.115-2",
+        "architecture": "all",
+        "source": "linux",
+        "suite": "trixie-security"
+      },
+      "status": "newer-distro-package"
+    },
+    {
+      "name": "login",
+      "installed_version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "login",
+        "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux (2.41.5-0+deb13u1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "login.defs",
+      "installed_version": "1:4.17.4-2",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "login.defs",
+        "version": "1:4.17.4-2",
+        "architecture": "all",
+        "source": "shadow",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "logsave",
+      "installed_version": "1.47.2-3+b12",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "logsave",
+        "version": "1.47.2-3+b12",
+        "architecture": "amd64",
+        "source": "e2fsprogs (1.47.2-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "m4",
+      "installed_version": "1.4.19-8",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "m4",
+        "version": "1.4.19-8",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "make",
+      "installed_version": "4.4.1-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "make",
+        "version": "4.4.1-2",
+        "architecture": "amd64",
+        "source": "make-dfsg",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "mawk",
+      "installed_version": "1.3.4.20250131-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "mawk",
+        "version": "1.3.4.20250131-1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "media-types",
+      "installed_version": "13.0.0",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "media-types",
+        "version": "13.0.0",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "mount",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "mount",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "util-linux",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "mtools",
+      "installed_version": "4.0.48-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "mtools",
+        "version": "4.0.48-1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "ncurses-base",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "ncurses-base",
+        "version": "6.5+20250216-2",
+        "architecture": "all",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "ncurses-bin",
+      "installed_version": "6.5+20250216-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "ncurses-bin",
+        "version": "6.5+20250216-2",
+        "architecture": "amd64",
+        "source": "ncurses",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "netbase",
+      "installed_version": "6.5",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "netbase",
+        "version": "6.5",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "openssl",
+      "installed_version": "3.5.7-1~deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "openssl",
+        "version": "3.5.7-1~deb13u3",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "openssl-provider-legacy",
+      "installed_version": "3.5.7-1~deb13u3",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "openssl-provider-legacy",
+        "version": "3.5.7-1~deb13u3",
+        "architecture": "amd64",
+        "source": "openssl",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "passwd",
+      "installed_version": "1:4.17.4-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "passwd",
+        "version": "1:4.17.4-2",
+        "architecture": "amd64",
+        "source": "shadow",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "patch",
+      "installed_version": "2.8-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "patch",
+        "version": "2.8-2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "perl",
+      "installed_version": "5.40.1-6+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "perl",
+        "version": "5.40.1-6+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "perl-base",
+      "installed_version": "5.40.1-6+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "perl-base",
+        "version": "5.40.1-6+deb13u1",
+        "architecture": "amd64",
+        "source": "perl",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "perl-modules-5.40",
+      "installed_version": "5.40.1-6+deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "perl-modules-5.40",
+        "version": "5.40.1-6+deb13u1",
+        "architecture": "all",
+        "source": "perl",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "procps",
+      "installed_version": "2:4.0.4-9",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "procps",
+        "version": "2:4.0.4-9",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3",
+      "installed_version": "3.13.5-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3",
+        "version": "3.13.5-1",
+        "architecture": "amd64",
+        "source": "python3-defaults",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3-minimal",
+      "installed_version": "3.13.5-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3-minimal",
+        "version": "3.13.5-1",
+        "architecture": "amd64",
+        "source": "python3-defaults",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3-pip-whl",
+      "installed_version": "25.1.1+dfsg-1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "python3-pip-whl",
+        "version": "25.1.1+dfsg-1",
+        "architecture": "all",
+        "source": "python-pip",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3-setuptools-whl",
+      "installed_version": "78.1.1-0.1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "python3-setuptools-whl",
+        "version": "78.1.1-0.1",
+        "architecture": "all",
+        "source": "setuptools",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3-venv",
+      "installed_version": "3.13.5-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3-venv",
+        "version": "3.13.5-1",
+        "architecture": "amd64",
+        "source": "python3-defaults",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3.13",
+      "installed_version": "3.13.5-2+deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3.13",
+        "version": "3.13.5-2+deb13u5",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3.13-minimal",
+      "installed_version": "3.13.5-2+deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3.13-minimal",
+        "version": "3.13.5-2+deb13u5",
+        "architecture": "amd64",
+        "source": "python3.13",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "python3.13-venv",
+      "installed_version": "3.13.5-2+deb13u5",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "python3.13-venv",
+        "version": "3.13.5-2+deb13u5",
+        "architecture": "amd64",
+        "source": "python3.13",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "readline-common",
+      "installed_version": "8.2-6",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "readline-common",
+        "version": "8.2-6",
+        "architecture": "all",
+        "source": "readline",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "rpcsvc-proto",
+      "installed_version": "1.4.3-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "rpcsvc-proto",
+        "version": "1.4.3-1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "rsync",
+      "installed_version": "3.5.0+ds1-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "rsync",
+        "version": "3.5.0+ds1-0+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "sed",
+      "installed_version": "4.9-2+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "sed",
+        "version": "4.9-2+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "squashfs-tools",
+      "installed_version": "1:4.6.1-1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "squashfs-tools",
+        "version": "1:4.6.1-1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "sqv",
+      "installed_version": "1.3.0-3+b2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "sqv",
+        "version": "1.3.0-3+b2",
+        "architecture": "amd64",
+        "source": "rust-sequoia-sqv (1.3.0-3)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "sysvinit-utils",
+      "installed_version": "3.14-4",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "sysvinit-utils",
+        "version": "3.14-4",
+        "architecture": "amd64",
+        "source": "sysvinit",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "tar",
+      "installed_version": "1.35+dfsg-3.1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "tar",
+        "version": "1.35+dfsg-3.1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "tzdata",
+      "installed_version": "2026e-0+deb13u1",
+      "architecture": "all",
+      "latest_in_trixie": {
+        "package": "tzdata",
+        "version": "2026f-0+deb13u1",
+        "architecture": "all",
+        "source": "",
+        "suite": "trixie-updates"
+      },
+      "status": "newer-distro-package"
+    },
+    {
+      "name": "unzip",
+      "installed_version": "6.0-29+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "unzip",
+        "version": "6.0-29+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "util-linux",
+      "installed_version": "2.41.5-0+deb13u1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "util-linux",
+        "version": "2.41.5-0+deb13u1",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "wget",
+      "installed_version": "1.25.0-2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "wget",
+        "version": "1.25.0-2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "xz-utils",
+      "installed_version": "5.8.1-1+deb13u2",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "xz-utils",
+        "version": "5.8.1-1+deb13u2",
+        "architecture": "amd64",
+        "source": "",
+        "suite": "trixie-security"
+      },
+      "status": "same"
+    },
+    {
+      "name": "zlib1g:amd64",
+      "installed_version": "1:1.3.dfsg+really1.3.1-1+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "zlib1g",
+        "version": "1:1.3.dfsg+really1.3.1-1+b1",
+        "architecture": "amd64",
+        "source": "zlib (1:1.3.dfsg+really1.3.1-1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    },
+    {
+      "name": "zlib1g-dev:amd64",
+      "installed_version": "1:1.3.dfsg+really1.3.1-1+b1",
+      "architecture": "amd64",
+      "latest_in_trixie": {
+        "package": "zlib1g-dev",
+        "version": "1:1.3.dfsg+really1.3.1-1+b1",
+        "architecture": "amd64",
+        "source": "zlib (1:1.3.dfsg+really1.3.1-1)",
+        "suite": "trixie"
+      },
+      "status": "same"
+    }
+  ],
+  "scope": "latest Debian trixie distribution versions, not newest upstream project versions; no installs performed"
+}

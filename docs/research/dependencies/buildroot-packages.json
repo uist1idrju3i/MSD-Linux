@@ -1,0 +1,2158 @@
+[
+  {
+    "id": "brcmfmac_sdio-firmware-rpi",
+    "name": "brcmfmac_sdio-firmware-rpi",
+    "scope": "target",
+    "version": "6596d332eaadd63e2413e3937715a084f61c39e2",
+    "latest_observed": "6596d332eaadd63e2413e3937715a084f61c39e2",
+    "latest_scope": "default-branch-HEAD",
+    "comparison": "same",
+    "upstream_url": "https://github.com/LibreELEC/brcmfmac_sdio-firmware-rpi.git",
+    "licenses": [
+      {
+        "license": {
+          "name": "PROPRIETARY"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/LibreELEC/brcmfmac_sdio-firmware-rpi/archive/6596d332eaadd63e2413e3937715a084f61c39e2/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "d9835b33bea65cf15f41753e215a11e5eca818a6e3bfacaa750aeac12456c24f"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "busybox",
+    "name": "busybox",
+    "scope": "target",
+    "version": "1.38.0",
+    "latest_observed": "1.38.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://www.busybox.net/downloads/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      },
+      {
+        "license": {
+          "id": "bzip2-1.0.6"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:busybox:busybox:1.38.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://www.busybox.net/downloads/busybox-1.38.0.tar.bz2",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "e2fsprogs",
+    "name": "e2fsprogs",
+    "scope": "target",
+    "version": "1.47.4",
+    "latest_observed": "1.47.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      },
+      {
+        "license": {
+          "name": "MIT-like with advertising clause (libss and libet)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:e2fsprogs_project:e2fsprogs:1.47.4:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.47.4/e2fsprogs-1.47.4.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-acl",
+    "name": "acl",
+    "scope": "host",
+    "version": "2.4.0",
+    "latest_observed": "2.4.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://download.savannah.nongnu.org/releases/acl/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0+ (programs)"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libraries)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:acl_project:acl:2.4.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://download.savannah.nongnu.org/releases/acl/acl-2.4.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "e661131456d2708a01c614a0f400e11d7d1bfaeb6f3e74b75bb980b72f0161a3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-attr",
+    "name": "attr",
+    "scope": "host",
+    "version": "2.6.0",
+    "latest_observed": "2.6.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://download.savannah.nongnu.org/releases/attr/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0+ (programs)"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libraries)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:attr_project:attr:2.6.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "http://download.savannah.gnu.org/releases/attr/attr-2.6.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "6c8a2148a7b85043b68492bce43316b0e2e214fc4e628c7ede078e76e216330b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-autoconf",
+    "name": "autoconf",
+    "scope": "host",
+    "version": "2.73",
+    "latest_observed": "2.73",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://ftp.gnu.org/gnu/autoconf/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-3.0+ with exceptions"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/autoconf/autoconf-2.73.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "9fd672b1c8425fac2fa67fa0477b990987268b90ff36d5f016dae57be0d6b52e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-autoconf-archive",
+    "name": "autoconf-archive",
+    "scope": "host",
+    "version": "2024.10.16",
+    "latest_observed": "2024.10.16",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://ftp.gnu.org/gnu/autoconf-archive/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-3.0+ with exception"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2024.10.16.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-1",
+            "content": "74be8b0ae9b11535dc0dba3f559ac302061e3c7f"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "7bcd5d001916f3a50ed7436f4f700e3d2b1bade3ed803219c592d62502a57363"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-automake",
+    "name": "automake",
+    "scope": "host",
+    "version": "1.16.5",
+    "latest_observed": "1.19",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://ftp.gnu.org/gnu/automake/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:gnu:automake:1.16.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/automake/automake-1.16.5.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-bison",
+    "name": "bison",
+    "scope": "host",
+    "version": "3.8.2",
+    "latest_observed": "3.8.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://ftp.gnu.org/gnu/bison/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:gnu:bison:3.8.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/bison/bison-3.8.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-blake3",
+    "name": "blake3",
+    "scope": "host",
+    "version": "1.8.3",
+    "latest_observed": "1.8.7",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/BLAKE3-team/BLAKE3/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "Apache-2.0 or Apache-2.0 with exceptions or CC0-1.0"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/BLAKE3-team/BLAKE3/archive/1.8.3/blake3-1.8.3.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "5a11e3f834719b6c1cae7aced1e848a37013f6f10f97272e7849aa0da769f295"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-ccache",
+    "name": "ccache",
+    "scope": "host",
+    "version": "4.13.6",
+    "latest_observed": "v4.14.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/ccache/ccache/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      },
+      {
+        "license": {
+          "name": "others"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "a7de667ca08cf67c3c8af9f213f6aa701a1188a2b3163fb74483858ce5e79fbb"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-dosfstools",
+    "name": "dosfstools",
+    "scope": "host",
+    "version": "4.2",
+    "latest_observed": "v4.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/dosfstools/dosfstools/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:dosfstools_project:dosfstools:4.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/dosfstools/dosfstools/releases/download/v4.2/dosfstools-4.2.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "64926eebf90092dca21b14259a5301b7b98e7b1943e8a201c7d726084809b527"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-dtc",
+    "name": "dtc",
+    "scope": "host",
+    "version": "1.7.2",
+    "latest_observed": "1.8.1",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/software/utils/dtc/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0+ or BSD-2-Clause (library)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:dtc_project:dtc:1.7.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://www.kernel.org/pub/software/utils/dtc/dtc-1.7.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "92d8ca769805ae1f176204230438fe52808f4e1c7944053c9eec0e649b237539"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-e2fsprogs",
+    "name": "e2fsprogs",
+    "scope": "host",
+    "version": "1.47.4",
+    "latest_observed": "1.47.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      },
+      {
+        "license": {
+          "name": "MIT-like with advertising clause (libss and libet)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:e2fsprogs_project:e2fsprogs:1.47.4:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.47.4/e2fsprogs-1.47.4.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-expat",
+    "name": "expat",
+    "scope": "host",
+    "version": "2.9.0",
+    "latest_observed": "R_2_10_0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/libexpat/libexpat/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:libexpat_project:libexpat:2.9.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/libexpat/libexpat/releases/download/R_2_9_0/expat-2.9.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-fakeroot",
+    "name": "fakeroot",
+    "scope": "host",
+    "version": "1.37.2",
+    "latest_observed": "2.1.4",
+    "latest_scope": "debian-source-pool-candidate",
+    "comparison": "distribution-candidate-not-upstream-confirmed",
+    "upstream_url": "https://deb.debian.org/debian/pool/main/f/fakeroot/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://snapshot.debian.org/archive/debian/20260401T000000Z/pool/main/f/fakeroot/fakeroot_1.37.2.orig.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-1",
+            "content": "1a721c2b4093a4e83dc091dc41a028f19340c1b3"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "0eea60fbe89771b88fcf415c8f2f0a6ccfe9edebbcf3ba5dc0212718d98884db"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-flex",
+    "name": "flex",
+    "scope": "host",
+    "version": "2.6.4",
+    "latest_observed": "v2.6.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/westes/flex/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "FLEX"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:westes:flex:2.6.4:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/westes/flex/files/981163/flex-2.6.4.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "e87aae032bf07c26f85ac0ed3250998c37621d95f8bd748b31f15b33c45ee995"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-genimage",
+    "name": "genimage",
+    "scope": "host",
+    "version": "20",
+    "latest_observed": "v20",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/pengutronix/genimage/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/pengutronix/genimage/releases/download/v20/genimage-20.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "397545be2fa52d482c5fba9a11897c61324bfc559ea0efb700b9edba7a807b55"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-gettext-tiny",
+    "name": "gettext-tiny",
+    "scope": "host",
+    "version": "0.3.3",
+    "latest_observed": "v0.3.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/sabotage-linux/gettext-tiny/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      },
+      {
+        "license": {
+          "name": "GPL-3.0+ (extra gettext)"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/sabotage-linux/gettext-tiny/archive/v0.3.3/gettext-tiny-0.3.3.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "daff8b4a7863745710ec0b02657fd20bda2d90398f54945751259bb94d6ebffd"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-hiredis",
+    "name": "hiredis",
+    "scope": "host",
+    "version": "1.3.0",
+    "latest_observed": "v1.5.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/redis/hiredis/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "BSD-3-Clause"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:redis:hiredis:1.3.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/redis/hiredis/archive/v1.3.0/hiredis-1.3.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "25cee4500f359cf5cad3b51ed62059aadfc0939b05150c1f19c7e2829123631c"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-kmod",
+    "name": "kmod",
+    "scope": "host",
+    "version": "34.2",
+    "latest_observed": "34.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/linux/utils/kernel/kmod/",
+    "licenses": [
+      {
+        "license": {
+          "name": "LGPL-2.1+ (library)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:kernel:kmod:34.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/utils/kernel/kmod/kmod-34.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libarchive",
+    "name": "libarchive",
+    "scope": "host",
+    "version": "3.8.9",
+    "latest_observed": "3.8.10",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.libarchive.de/downloads/",
+    "licenses": [
+      {
+        "license": {
+          "id": "BSD-2-Clause"
+        }
+      },
+      {
+        "license": {
+          "id": "BSD-3-Clause"
+        }
+      },
+      {
+        "license": {
+          "id": "CC0-1.0"
+        }
+      },
+      {
+        "license": {
+          "id": "OpenSSL"
+        }
+      },
+      {
+        "license": {
+          "id": "Apache-2.0"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:libarchive:libarchive:3.8.9:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://www.libarchive.de/downloads/libarchive-3.8.9.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libconfuse",
+    "name": "libconfuse",
+    "scope": "host",
+    "version": "3.3",
+    "latest_observed": "v3.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/libconfuse/libconfuse/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "ISC"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:libconfuse_project:libconfuse:3.3:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/libconfuse/libconfuse/releases/download/v3.3/confuse-3.3.tar.xz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "a183cef2cecdd3783436ff8de500d274"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "1dd50a0320e135a55025b23fcdbb3f0a81913b6d0b0a9df8cc2fdf3b3dc67010"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libffi",
+    "name": "libffi",
+    "scope": "host",
+    "version": "3.8.0",
+    "latest_observed": "v3.8.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/libffi/libffi/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:libffi_project:libffi:3.8.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/libffi/libffi/releases/download/v3.8.0/libffi-3.8.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libopenssl",
+    "name": "libopenssl",
+    "scope": "host",
+    "version": "3.6.5",
+    "latest_observed": "openssl-4.1.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Apache-2.0"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:openssl:openssl:3.6.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.6.5/openssl-3.6.5.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "a2157c2830efdec3788939b00c9b0638306d3f0bbb76dc4832ee503bb397df98"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libtool",
+    "name": "libtool",
+    "scope": "host",
+    "version": "2.5.4",
+    "latest_observed": "2.6.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://ftp.gnu.org/gnu/libtool/",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0+ (libtool)"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libltdl)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:gnu:libtool:2.5.4:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/libtool/libtool-2.5.4.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-libzlib",
+    "name": "libzlib",
+    "scope": "host",
+    "version": "1.3.2",
+    "latest_observed": "v1.3.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/madler/zlib/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Zlib"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:zlib:zlib:1.3.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://www.zlib.net/zlib-1.3.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-lz4",
+    "name": "lz4",
+    "scope": "host",
+    "version": "1.10.0",
+    "latest_observed": "v1.10.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/lz4/lz4/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "BSD-2-Clause (library)"
+        }
+      },
+      {
+        "license": {
+          "name": "GPL-2.0+ (programs)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:lz4_project:lz4:1.10.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/lz4/lz4/archive/v1.10.0/lz4-1.10.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-lzip",
+    "name": "lzip",
+    "scope": "host",
+    "version": "1.25",
+    "latest_observed": "1.26",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://download.savannah.nongnu.org/releases/lzip/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "http://download.savannah.gnu.org/releases/lzip/lzip-1.25.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "09418a6d8fb83f5113f5bd856e09703df5d37bae0308c668d0f346e3d3f0a56f"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-lzo",
+    "name": "lzo",
+    "scope": "host",
+    "version": "2.10",
+    "latest_observed": "2.10",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://www.oberhumer.com/opensource/lzo/download/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:lzo_project:lzo:2.10:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-1",
+            "content": "4924676a9bae5db58ef129dc1cebce3baa3c4b5d"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "c0f892943208266f9b6543b3ae308fab6284c5c90e627931446fb49b4221a072"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-m4",
+    "name": "m4",
+    "scope": "host",
+    "version": "1.4.21",
+    "latest_observed": "1.4.21",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://ftp.gnu.org/gnu/m4/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:gnu:m4:1.4.21:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/m4/m4-1.4.21.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f25c6ab51548a73a75558742fb031e0625d6485fe5f9155949d6486a2408ab66"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-makedevs",
+    "name": "makedevs",
+    "scope": "host",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "host-meson",
+    "name": "meson",
+    "scope": "host",
+    "version": "1.11.1",
+    "latest_observed": "1.12.1",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/mesonbuild/meson/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Apache-2.0"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/mesonbuild/meson/releases/download/1.11.1/meson-1.11.1.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-mtools",
+    "name": "mtools",
+    "scope": "host",
+    "version": "4.0.49",
+    "latest_observed": "4.0.50",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://ftp.gnu.org/gnu/mtools/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://ftpmirror.gnu.org/mtools/mtools-4.0.49.tar.lz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "76dfea98d923dfc9806ce34bd1786aa9b5a39d70f56f26c0670a348c664f1d2a"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-ninja",
+    "name": "ninja",
+    "scope": "host",
+    "version": "1.13.2",
+    "latest_observed": "v1.13.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/ninja-build/ninja/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Apache-2.0"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/ninja-build/ninja/archive/v1.13.2/ninja-1.13.2.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-patchelf",
+    "name": "patchelf",
+    "scope": "host",
+    "version": "0.13",
+    "latest_observed": "0.19.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/NixOS/patchelf/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:patchelf_project:patchelf:0.13:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/NixOS/patchelf/releases/download/0.13/patchelf-0.13.tar.bz2",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "4c7ed4bcfc1a114d6286e4a0d3c1a90db147a4c3adda1814ee0eee0f9ee917ed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-pigz",
+    "name": "pigz",
+    "scope": "host",
+    "version": "2.8",
+    "latest_observed": "v2.8",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/madler/pigz/tags?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Zlib"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:zlib:pigz:2.8:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://zlib.net/pigz/pigz-2.8.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "eb872b4f0e1f0ebe59c9f7bd8c506c4204893ba6a8492de31df416f0d5170fd0"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-pkgconf",
+    "name": "pkgconf",
+    "scope": "host",
+    "version": "2.3.0",
+    "latest_observed": "3.0.10",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://distfiles.ariadne.space/pkgconf/",
+    "licenses": [
+      {
+        "license": {
+          "name": "pkgconf license"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:pkgconf:pkgconf:2.3.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://distfiles.ariadne.space/pkgconf/pkgconf-2.3.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-flit-core",
+    "name": "python-flit-core",
+    "scope": "host",
+    "version": "3.12.0",
+    "latest_observed": "4.2.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/flit-core/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "BSD-3-Clause"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/69/59/b6fc2188dfc7ea4f936cd12b49d707f66a1cb7a1d2c16172963534db741b/flit_core-3.12.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "c538415c1f27bd69cbbbf3cdd5135d39"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "18f63100d6f94385c6ed57a72073443e1a71a4acb4339491615d0f16d6ff01b2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-installer",
+    "name": "python-installer",
+    "scope": "host",
+    "version": "1.0.0",
+    "latest_observed": "1.1.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/installer/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/5f/ef/230b70e66db6ab01d5cbb93329688ed1f06b2b0618a74925e36384ff0fba/installer-1.0.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "fdf6be7db2ab6fdfbfacfdb208abc33a"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "c6d691331621cf3fec4822f5c6f83cab3705f79b316225dc454127411677c71f"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-packaging",
+    "name": "python-packaging",
+    "scope": "host",
+    "version": "26.2",
+    "latest_observed": "26.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/packaging/json",
+    "licenses": [
+      {
+        "license": {
+          "name": "Apache-2.0 or BSD-2-Clause"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/d7/f1/e7a6dd94a8d4a5626c03e4e99c87f241ba9e350cd9e6d75123f992427270/packaging-26.2.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "edae3d061c39a2ff713a97e133dbc50c"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-pypa-build",
+    "name": "python-pypa-build",
+    "scope": "host",
+    "version": "1.3.0",
+    "latest_observed": "1.6.1",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/build/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/25/1c/23e33405a7c9eac261dff640926b8b5adaed6a6eb3e1767d441ed611d0c0/build-1.3.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "48f7fbc11051430eab3c1abe216bed7a"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "698edd0ea270bde950f53aed21f3a0135672206f3911e0176261a31e0e07b397"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-pyproject-hooks",
+    "name": "python-pyproject-hooks",
+    "scope": "host",
+    "version": "1.2.0",
+    "latest_observed": "1.3.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/pyproject-hooks/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/e7/82/28175b2414effca1cdac8dc99f76d660e7a4fb0ceefa4b4ab8f5f6742925/pyproject_hooks-1.2.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "ed3dd1b984339e83e35f676d7169c192"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-setuptools",
+    "name": "python-setuptools",
+    "scope": "host",
+    "version": "80.9.0",
+    "latest_observed": "84.2.1",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/setuptools/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:python:setuptools:80.9.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "82e1d67883b713f9493659b50d13b436"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python-wheel",
+    "name": "python-wheel",
+    "scope": "host",
+    "version": "0.47.0",
+    "latest_observed": "0.48.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://pypi.org/pypi/wheel/json",
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:wheel_project:wheel:0.47.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://files.pythonhosted.org/packages/39/62/75f18a0f03b4219c456652c7780e4d749b929eb605c098ce3a5b6b6bc081/wheel-0.47.0.tar.gz",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "3e73dfac6b3b47a7d1cd52e81885618f"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "cc72bd1009ba0cf63922e28f94d9d83b920aa2bb28f798a31d0691b02fa3c9b3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-python3",
+    "name": "python3",
+    "scope": "host",
+    "version": "3.14.8",
+    "latest_observed": "3.15.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.python.org/ftp/python/3.15.0/",
+    "licenses": [
+      {
+        "license": {
+          "id": "Python-2.0"
+        }
+      },
+      {
+        "license": {
+          "name": "others"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:python:python:3.14.8:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://python.org/ftp/python/3.14.8/Python-3.14.8.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-skeleton",
+    "name": "skeleton",
+    "scope": "host",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "host-squashfs",
+    "name": "squashfs",
+    "scope": "host",
+    "version": "4.7.5",
+    "latest_observed": "4.7.5",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/plougher/squashfs-tools/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:squashfs_project:squashfs:4.7.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/plougher/squashfs-tools/releases/download/4.7.5/squashfs-tools-4.7.5.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "547b7b7f4d2e44bf91b6fc554664850c69563701deab9fd9cd7e21f694c88ea6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-util-linux",
+    "name": "util-linux",
+    "scope": "host",
+    "version": "2.41.5",
+    "latest_observed": "2.42.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.42/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      },
+      {
+        "license": {
+          "id": "BSD-4-Clause"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libblkid, libfdisk, libmount)"
+        }
+      },
+      {
+        "license": {
+          "name": "BSD-3-Clause (libuuid)"
+        }
+      },
+      {
+        "license": {
+          "name": "BSD-2-Clause (xxhash)"
+        }
+      },
+      {
+        "license": {
+          "name": "ISC (rfkill)"
+        }
+      },
+      {
+        "license": {
+          "name": "MIT (hardlink, flock)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:kernel:util-linux:2.41.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.5.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-xxhash",
+    "name": "xxhash",
+    "scope": "host",
+    "version": "0.8.3",
+    "latest_observed": "v0.8.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/Cyan4973/xxHash/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "BSD-2-Clause (library)"
+        }
+      },
+      {
+        "license": {
+          "name": "GPL-2.0+ (xxhsum)"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/Cyan4973/xxHash/archive/v0.8.3/xxhash-0.8.3.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-xz",
+    "name": "xz",
+    "scope": "host",
+    "version": "5.8.4",
+    "latest_observed": "v5.8.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/tukaani-project/xz/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "0BSD"
+        }
+      },
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      },
+      {
+        "license": {
+          "id": "GPL-3.0+"
+        }
+      },
+      {
+        "license": {
+          "id": "LGPL-2.1+"
+        }
+      },
+      {
+        "license": {
+          "id": "FSFUL"
+        }
+      },
+      {
+        "license": {
+          "id": "FSFULLR"
+        }
+      },
+      {
+        "license": {
+          "name": "Public Domain"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:tukaani:xz:5.8.4:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.bz2",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "3340ae48f88665abc78d71dc43446fb3f7e70b48fd59844ac0e14958cef6e00b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "host-zstd",
+    "name": "zstd",
+    "scope": "host",
+    "version": "1.5.7",
+    "latest_observed": "v1.5.7",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/facebook/zstd/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "BSD-3-Clause or GPL-2.0"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:facebook:zstandard:1.5.7:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ifupdown-scripts",
+    "name": "ifupdown-scripts",
+    "scope": "target",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "initscripts",
+    "name": "initscripts",
+    "scope": "target",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "kbd",
+    "name": "kbd",
+    "scope": "target",
+    "version": "2.9.0",
+    "latest_observed": "2.10.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/linux/utils/kbd/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:kbd-project:kbd:2.9.0:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/utils/kbd/kbd-2.9.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "fb3197f17a99eb44d22a3a1a71f755f9622dd963e66acfdea1a45120951b02ed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kmod",
+    "name": "kmod",
+    "scope": "target",
+    "version": "34.2",
+    "latest_observed": "34.3",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/linux/utils/kernel/kmod/",
+    "licenses": [
+      {
+        "license": {
+          "name": "LGPL-2.1+ (library)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:kernel:kmod:34.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/utils/kernel/kmod/kmod-34.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "libopenssl",
+    "name": "libopenssl",
+    "scope": "target",
+    "version": "3.6.5",
+    "latest_observed": "openssl-4.1.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/openssl/openssl/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Apache-2.0"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:openssl:openssl:3.6.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.6.5/openssl-3.6.5.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "a2157c2830efdec3788939b00c9b0638306d3f0bbb76dc4832ee503bb397df98"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "libv4l",
+    "name": "libv4l",
+    "scope": "target",
+    "version": "1.32.0",
+    "latest_observed": "v4l-utils-1.32.0",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://api.github.com/repos/gjasny/v4l-utils/tags?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0+ (utilities)"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libraries)"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://linuxtv.org/downloads/v4l-utils/v4l-utils-1.32.0.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "6828828a17775526eb93fb258a9294d1d1073d633c344dd71ecd4e7a1ffb7dfc"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "libzlib",
+    "name": "libzlib",
+    "scope": "target",
+    "version": "1.3.2",
+    "latest_observed": "v1.3.2",
+    "latest_scope": "upstream-stable",
+    "comparison": "same",
+    "upstream_url": "https://api.github.com/repos/madler/zlib/releases?per_page=100",
+    "licenses": [
+      {
+        "license": {
+          "id": "Zlib"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:zlib:zlib:1.3.2:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://www.zlib.net/zlib-1.3.2.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "linux",
+    "name": "linux",
+    "scope": "target",
+    "version": "6.18.59",
+    "latest_observed": "6.18.59",
+    "latest_scope": "selected-rpi-6.18.y-branch",
+    "comparison": "same",
+    "upstream_url": "https://github.com/raspberrypi/linux",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:o:linux:linux_kernel:6.18.59:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/raspberrypi/linux/archive/b3495ea401d709af0701a85babcba5e3d788a602/linux-b3495ea401d709af0701a85babcba5e3d788a602.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "d3857e3906878c52719da06328a2db27784f6fb8055b570e8d8207eef3a12a14"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "m5stack-cardputerzero",
+    "name": "m5stack-cardputerzero",
+    "scope": "target",
+    "version": "37b42d9451495b5597dd7e50cab502da8028f9c2",
+    "latest_observed": "37b42d9451495b5597dd7e50cab502da8028f9c2",
+    "latest_scope": "default-branch-HEAD",
+    "comparison": "same",
+    "upstream_url": "https://github.com/m5stack/m5stack-linux-dtoverlays.git",
+    "licenses": [
+      {
+        "license": {
+          "name": "GPL-2.0 (kernel modules)"
+        }
+      },
+      {
+        "license": {
+          "name": "unknown (cardputerzero,st7789v_lcd.bin)"
+        }
+      },
+      {
+        "license": {
+          "name": "unknown (bmi270-init-data.fw)"
+        }
+      },
+      {
+        "license": {
+          "name": "unknown (tca8418_keypad_m5stack_keymap.map)"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/m5stack/m5stack-linux-dtoverlays/tree/37b42d9451495b5597dd7e50cab502da8028f9c2"
+      }
+    ]
+  },
+  {
+    "id": "rpi-firmware",
+    "name": "rpi-firmware",
+    "scope": "target",
+    "version": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+    "latest_observed": "ab5c7f86283ceb58b7adb269cae1d16092a31bf6",
+    "latest_scope": "default-branch-HEAD",
+    "comparison": "different-commit-review-required",
+    "upstream_url": "https://github.com/raspberrypi/firmware.git",
+    "licenses": [
+      {
+        "license": {
+          "id": "BSD-3-Clause"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://github.com/raspberrypi/firmware/archive/063bcab6c8a90efb0d19f69d88cbbc7ec79cab68/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "812cb64617d6ffbc76f9b8dce8237b31159a1216b31845faec1bb75b6b6b291f"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "skeleton-init-common",
+    "name": "skeleton-init-common",
+    "scope": "target",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "skeleton-init-sysv",
+    "name": "skeleton-init-sysv",
+    "scope": "target",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "toolchain-external-bootlin",
+    "name": "toolchain-external-bootlin",
+    "scope": "target",
+    "version": "2025.08-1",
+    "latest_observed": "2026.08-1",
+    "latest_scope": "aarch64-glibc-stable; not selectable in pinned Buildroot stable branch",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://toolchains.bootlin.com/releases_aarch64.html",
+    "licenses": [
+      {
+        "license": {
+          "name": "unknown"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/aarch64--glibc--stable-2025.08-1.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "dfb47eee874eef9e8a7fc042eee4e0a183f444b6bcde6a82fef8f009918389c9"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "urandom-scripts",
+    "name": "urandom-scripts",
+    "scope": "target",
+    "version": "",
+    "latest_observed": null,
+    "latest_scope": "pinned-buildroot-source",
+    "comparison": "buildroot-internal-no-independent-version",
+    "upstream_url": null,
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0-or-later"
+        }
+      }
+    ],
+    "cpe": null,
+    "source_references": []
+  },
+  {
+    "id": "util-linux",
+    "name": "util-linux",
+    "scope": "target",
+    "version": "2.41.5",
+    "latest_observed": "2.42.4",
+    "latest_scope": "upstream-stable",
+    "comparison": "newer-version-observed",
+    "upstream_url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.42/",
+    "licenses": [
+      {
+        "license": {
+          "id": "GPL-2.0+"
+        }
+      },
+      {
+        "license": {
+          "id": "BSD-4-Clause"
+        }
+      },
+      {
+        "license": {
+          "name": "LGPL-2.1+ (libblkid, libfdisk, libmount)"
+        }
+      },
+      {
+        "license": {
+          "name": "BSD-3-Clause (libuuid)"
+        }
+      },
+      {
+        "license": {
+          "name": "BSD-2-Clause (xxhash)"
+        }
+      },
+      {
+        "license": {
+          "name": "ISC (rfkill)"
+        }
+      },
+      {
+        "license": {
+          "name": "MIT (hardlink, flock)"
+        }
+      }
+    ],
+    "cpe": "cpe:2.3:a:kernel:util-linux:2.41.5:-:*:*:*:*:*:*",
+    "source_references": [
+      {
+        "type": "source-distribution",
+        "url": "https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.5.tar.xz",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728"
+          }
+        ]
+      }
+    ]
+  }
+]
