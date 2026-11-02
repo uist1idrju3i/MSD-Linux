@@ -17,7 +17,7 @@ Buildroot から Yocto Project へ移るときに選ぶリリース系列と、�
 - 依頼文にあった Styhead・Walnascar・Whinlatter は、いずれも LTS ではなく、すでに EOL です。現在サポートされているのは Scarthgap 5.0 LTS、Wrynose 6.0 LTS、Blacksail 6.1 の三つです【一次】。
 - 公式サイトの releases ページと wiki の Releases 表では、最新版の記載が一部食い違います。wiki では Scarthgap が 5.0.18（2026-06）のまま、公式サイトは 5.0.21（2026-09）です。版は公式サイトを優先し、BitBake の対応は wiki から取りました。
 - 4 年 LTS の方針は wiki の注記に「Future LTS releases are planned for 4 years」とあります【一次】。
-- Wrynose 6.0 の主要部品は Linux 6.18、GCC 15.2、glibc 2.43、LLVM 22.1.2、systemd v258 です。Blacksail 6.1 は Linux 7.2、GCC 16.2、glibc 2.44 です【一次: 各リリースノート】。
+- Wrynose 6.0 の主要部品は Linux 6.18、GCC 15.2、glibc 2.43、LLVM 22.1.2、systemd v258 です。Blacksail 6.1 は Linux 7.2、GCC 16.2、glibc 2.44 です【一次: 各リリースノート】。6.0.4 で実際にビルドされた GCC は 15.3.0 でした【一次: 実験記録】。
 
 ## 2. 構成リポジトリ（Poky の扱いが変わった）
 

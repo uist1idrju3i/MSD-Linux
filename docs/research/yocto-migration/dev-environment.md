@@ -59,7 +59,10 @@ AgentCanvas と同居するような共用ホストでは、次の変数で負�
 | AppArmor | `apparmor_restrict_unprivileged_userns=1`、`/etc/apparmor.d/rootlesskit` あり |
 | 同居 | AgentCanvas。並列数と PSI の閾値を絞って試す |
 
-構築試験の手順、判定基準、結果は `docs/experiments/` に別途記録します。
+構築試験の手順、判定基準、結果は [実験記録](../../experiments/2026-11-02-yocto-wrynose-probe.md) にあります。
+
+- kas-container は、`docker context show` が `rootless` を返すときだけ rootless 用の処理をします。この VM は `DOCKER_HOST` で接続しており、コンテキストは `default` でした。そのままでは `/work/build` を作れずに止まります。`DOCKER_HOST` を外し、`DOCKER_CONTEXT=rootless` を指定すると動きました【一次: 実験記録】。
+- kas の `path:` は作業ディレクトリ基準で解かれます。設定ファイルと同じ場所のレイヤーは、`url` も `path` も書かない形で指定します【一次: 実験記録】。
 
 ## 出典（確認日 2026-11-02）
 

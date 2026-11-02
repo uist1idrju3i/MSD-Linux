@@ -55,6 +55,6 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | CI の実行場所 | hosted runner + 外部キャッシュ / セルフホスト / 軽い検査と手動実行に限る | フェーズ3 |
 | 不明ライセンスの M5 バイナリ | `CLOSED` + `LICENSE_FLAGS` / M5Stack への確認 | フェーズ2 |
 
-次の作業は、この VM での構築試験（kas-container、暫定の Wrynose、`raspberrypi0-2w-64` の最小イメージ）と、M5 の BSP のビルド試験です。結果は `docs/experiments/` に記録します。
+この VM での構築試験（kas-container、暫定の Wrynose 6.0.4、`raspberrypi0-2w-64` の最小イメージ）と、M5 の BSP のビルド試験は通りました。MSD のカーネル固定（6.18.59）と `linux.fragment` を加えた試験も通りました。手順と結果は [実験記録](../../experiments/2026-11-02-yocto-wrynose-probe.md) にあります。ビルドが通るかだけを見ており、起動は確かめていません【一次: 実験記録】。
 
 フェーズ4の受け入れ基準（六つの設計柱を退化させないこと）と、QEMU で確かめられる項目と実機でしか確かめられない項目の切り分けは、移植が進んでから [VERIFY.md](../../VERIFY.md) に書きます。
