@@ -52,7 +52,7 @@ CardputerZero単体のOSをGitHub Releasesから取得する用途では、車�
 
 取得した[Python-TUF README](https://github.com/theupdateframework/python-tuf/blob/e6cdfc90789a35f37addfc8c8ece0e637a5ec2cc/README.md)はmetadata API、`ngclient`、repository libraryを分け、repository libraryをstable APIの一部とはしないと記します。Python-TUFをhostのrepository生成・相互運用の比較対照に使い、target実装は別に選ぶこともできます。targetへPython一式を無条件で入れる提案ではありません。
 
-Rust/Go等の別TUF実装も候補ですが、この文書では各実装のfeature網羅・版・保守・Buildroot統合・サイズまでは照合していません。言語名だけで選ばず、仕様の世代、delegation、root rotation、metadata保存、負のtestへの対応を調べる必要があります。特定実装の採用決定はまだしません。
+追加の[端末自己更新の調査](../release-client/README.md)では、Python-TUF、go-tuf、tough、rust-tufと公開側tuf-on-ciの固定版・依存・検証／保存処理を静的に比較しました。metadataの仕様と実装、配信、時刻・永続状態・A/B復旧を分けて検討しています。全機能のconformance、Buildroot統合、最終サイズ・性能は未検証で、特定実装の採用決定はまだしません。
 
 ## GitHub Releasesへ結び付ける条件
 

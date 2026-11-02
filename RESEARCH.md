@@ -71,6 +71,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 保存・電源断・更新
 
+- [GitHub Releasesからの端末自己更新](docs/research/release-client/README.md) — TUF client・公開側tool、匿名取得、時刻・信頼状態・A/B復旧の設計。製品実装は未着手。
 - [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
 - [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)

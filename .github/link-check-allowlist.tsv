@@ -6,3 +6,6 @@ docs/research/alternatives/sources.json	docs/integration.rst	RAUCの固定refか
 docs/research/alternatives/sources.json	docs/advanced.rst	RAUCの固定refから取得した原文パスの記録であり、本リポジトリのリンクではない
 docs/research/alternatives/sources.json	docs/reference.rst	RAUCの固定refから取得した原文パスの記録であり、本リポジトリのリンクではない
 docs/research/alternatives/sources.json	docs/basic.rst	RAUCの固定refから取得した原文パスの記録であり、本リポジトリのリンクではない
+docs/research/release-client/sources.json	docs/SECURITY.md	Python-TUFの固定refにある原文パスの記録であり、本リポジトリのリンクではない
+docs/research/release-client/sources.json	docs/SIGNER-MANUAL.md	tuf-on-ciの固定refにある原文パスの記録であり、本リポジトリのリンクではない
+docs/research/release-client/sources.json	docs/REPOSITORY-MAINTENANCE.md	tuf-on-ciの固定refにある原文パスの記録であり、本リポジトリのリンクではない

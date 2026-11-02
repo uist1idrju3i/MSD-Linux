@@ -117,6 +117,8 @@ p7は初期イメージで64 MiBです。現在は `S02msd-data` が `msd-data-g
 
 ## 検証範囲
 
+GitHub Releasesを端末から取得して更新するclientは未実装です。下表は既存A/B処理の検証範囲であり、新しい配信・metadata検証を含みません。候補比較と実装前の条件は[端末自己更新の設計](research/release-client/README.md)にあります。
+
 | 方法 | 確認する内容 | 制約 |
 |---|---|---|
 | `tests/msd-update/run.sh` | DT 値の読み取り、commit の拒否条件、2↔3 の切り替え、bundle の署名と SHA-256 の検証、番号の比較と `--allow-downgrade`、非アクティブスロットへの書き込み | 一時ディレクトリ上のホストテスト。実デバイスの電源断耐性は確認しない |
