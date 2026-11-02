@@ -1,5 +1,7 @@
 # Buildroot と Yocto の Pros/Cons（2026-11、成果物の比較から）
 
+> 注記（2026-11-02）: 検討の結果、Yocto には移行せず Buildroot を維持すると決まりました（[総まとめ](summary-2026-11.md)）。本書は検討の記録として残します。
+
 2026-11-02 に同じホストで作った成果物を並べ、Buildroot（現行）と Yocto（Wrynose 6.0.4）の長所と短所をまとめ直しました。数値は [成果物の比較](../../experiments/2026-11-02-buildroot-yocto-artifacts.md)、[構築試験](../../experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](../../experiments/2026-11-02-yocto-qemu-boot.md) によります。2026-10 の比較（[pros-cons-2026-10.md](pros-cons-2026-10.md)）は当時の記録として残します。
 
 Yocto 側には、まだ CardputerZero の完成イメージがありません。そのため、イメージのサイズは比べていません。起動時間は、カーネルと rootfs を入れ替えた組み合わせで QEMU で比べました（[起動時間の比較](../../experiments/2026-11-02-buildroot-yocto-boottime.md)）。Buildroot と同じ形を目指すのではなく、Yocto で何が得られ、MSD/Linux の設計柱のどこに手当てが要るかを見ます。
