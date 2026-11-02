@@ -88,6 +88,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### 開発・測定・未確認事項
 
 - [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
+- [全依存の一覧・最新版候補・版と脆弱性の監視範囲](docs/research/dependencies/README.md)
 - [シミュレーション検証計画](docs/research/simulation-plan.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [未確認事項の追跡表](docs/research/open-questions.md)

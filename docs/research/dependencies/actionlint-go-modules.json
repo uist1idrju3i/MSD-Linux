@@ -1,0 +1,145 @@
+[
+  {
+    "module": "github.com/bmatcuk/doublestar/v4",
+    "installed": "v4.10.0",
+    "latest_for_module_path": "v4.10.4",
+    "proof": {
+      "name": "go-github.com-bmatcuk-doublestar-v4",
+      "url": "https://proxy.golang.org/github.com/bmatcuk/doublestar/v4/@latest",
+      "checked_at": "2026-11-02T17:03:35.673931+00:00",
+      "status": 200,
+      "sha256": "b6dad01b488b5723d8ac4b8d91de5185370646786d1e8a30ec6ac9e03f34ddce",
+      "bytes": 196
+    }
+  },
+  {
+    "module": "github.com/clipperhouse/uax29/v2",
+    "installed": "v2.7.0",
+    "latest_for_module_path": "v2.7.0",
+    "proof": {
+      "name": "go-github.com-clipperhouse-uax29-v2",
+      "url": "https://proxy.golang.org/github.com/clipperhouse/uax29/v2/@latest",
+      "checked_at": "2026-11-02T17:03:35.719430+00:00",
+      "status": 200,
+      "sha256": "ab382b26caf0f76ebe49db7fe4293ee05acd33edb2512549c36a11d0399943e9",
+      "bytes": 194
+    }
+  },
+  {
+    "module": "github.com/fatih/color",
+    "installed": "v1.19.0",
+    "latest_for_module_path": "v1.19.0",
+    "proof": {
+      "name": "go-github.com-fatih-color",
+      "url": "https://proxy.golang.org/github.com/fatih/color/@latest",
+      "checked_at": "2026-11-02T17:03:35.767830+00:00",
+      "status": 200,
+      "sha256": "f35dcbaa0616e5b5e9901e7187bc931a3949d064868c88a7b6d8c5efdf0c959f",
+      "bytes": 189
+    }
+  },
+  {
+    "module": "github.com/mattn/go-colorable",
+    "installed": "v0.1.14",
+    "latest_for_module_path": "v0.1.16",
+    "proof": {
+      "name": "go-github.com-mattn-go-colorable",
+      "url": "https://proxy.golang.org/github.com/mattn/go-colorable/@latest",
+      "checked_at": "2026-11-02T17:03:35.820296+00:00",
+      "status": 200,
+      "sha256": "702e9c445fa9077e68692aa306db1a10ace93eb91df1d09bf7f79eb679ec5c24",
+      "bytes": 196
+    }
+  },
+  {
+    "module": "github.com/mattn/go-isatty",
+    "installed": "v0.0.20",
+    "latest_for_module_path": "v0.0.24",
+    "proof": {
+      "name": "go-github.com-mattn-go-isatty",
+      "url": "https://proxy.golang.org/github.com/mattn/go-isatty/@latest",
+      "checked_at": "2026-11-02T17:03:35.868322+00:00",
+      "status": 200,
+      "sha256": "76aa6cee4d454b8565295124a808daaae4c805275a2787ef47ae489686d50cd1",
+      "bytes": 193
+    }
+  },
+  {
+    "module": "github.com/mattn/go-runewidth",
+    "installed": "v0.0.21",
+    "latest_for_module_path": "v0.0.31",
+    "proof": {
+      "name": "go-github.com-mattn-go-runewidth",
+      "url": "https://proxy.golang.org/github.com/mattn/go-runewidth/@latest",
+      "checked_at": "2026-11-02T17:03:35.876990+00:00",
+      "status": 200,
+      "sha256": "c2381d4d58f231e718f978b3b7809c2e60b8ad433cc703bbf7b038201131ef42",
+      "bytes": 196
+    }
+  },
+  {
+    "module": "github.com/mattn/go-shellwords",
+    "installed": "v1.0.12",
+    "latest_for_module_path": "v1.0.16",
+    "proof": {
+      "name": "go-github.com-mattn-go-shellwords",
+      "url": "https://proxy.golang.org/github.com/mattn/go-shellwords/@latest",
+      "checked_at": "2026-11-02T17:03:35.922582+00:00",
+      "status": 200,
+      "sha256": "a55283a2589f7acacf667d090011a4b685d0f85150593018347fd9b77cedb55b",
+      "bytes": 197
+    }
+  },
+  {
+    "module": "github.com/robfig/cron/v3",
+    "installed": "v3.0.1",
+    "latest_for_module_path": "v3.0.1",
+    "proof": {
+      "name": "go-github.com-robfig-cron-v3",
+      "url": "https://proxy.golang.org/github.com/robfig/cron/v3/@latest",
+      "checked_at": "2026-11-02T17:03:35.923475+00:00",
+      "status": 200,
+      "sha256": "d77bb3a69e5ec2f9973c97c94247338a00bceae56e96cbe6c70b6fa6aace6157",
+      "bytes": 50
+    }
+  },
+  {
+    "module": "go.yaml.in/yaml/v4",
+    "installed": "v4.0.0-rc.3",
+    "latest_for_module_path": "v4.0.0-rc.9",
+    "proof": {
+      "name": "go-go.yaml.in-yaml-v4",
+      "url": "https://proxy.golang.org/go.yaml.in/yaml/v4/@latest",
+      "checked_at": "2026-11-02T17:03:35.935625+00:00",
+      "status": 200,
+      "sha256": "f880d06256915ff0625493c1ef639cfe2cf1f57896b2e0bd8ee1373df0289225",
+      "bytes": 198
+    }
+  },
+  {
+    "module": "golang.org/x/sync",
+    "installed": "v0.20.0",
+    "latest_for_module_path": "v0.24.0",
+    "proof": {
+      "name": "go-golang.org-x-sync",
+      "url": "https://proxy.golang.org/golang.org/x/sync/@latest",
+      "checked_at": "2026-11-02T17:03:35.962328+00:00",
+      "status": 200,
+      "sha256": "d12e1a2d422a79235baceab349c3c55ab3de707214338884cade9af3bb1a5b70",
+      "bytes": 191
+    }
+  },
+  {
+    "module": "golang.org/x/sys",
+    "installed": "v0.42.0",
+    "latest_for_module_path": "v0.49.0",
+    "proof": {
+      "name": "go-golang.org-x-sys",
+      "url": "https://proxy.golang.org/golang.org/x/sys/@latest",
+      "checked_at": "2026-11-02T17:03:35.978902+00:00",
+      "status": 200,
+      "sha256": "b1eeba05824e4c555cee0454171f3dbc0b9bce51e322237b5bd98ceb14a62346",
+      "bytes": 190
+    }
+  }
+]
