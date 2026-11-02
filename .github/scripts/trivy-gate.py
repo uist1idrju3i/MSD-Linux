@@ -44,7 +44,6 @@ def evaluate(
                     title = str(
                         item.get("PkgName")
                         or item.get("Title")
-                        or item.get("Message")
                         or identifier
                     )
                 finding = {
@@ -53,7 +52,14 @@ def evaluate(
                     "title": title,
                     "severity": severity,
                     "target": target,
-                    "fixed_version": str(item.get("FixedVersion") or ""),
+                    "installed_version": (
+                        str(item.get("InstalledVersion") or "")
+                        if category == "Vulnerability" else ""
+                    ),
+                    "fixed_version": (
+                        str(item.get("FixedVersion") or "")
+                        if category == "Vulnerability" else ""
+                    ),
                 }
                 findings.append(finding)
 
@@ -100,7 +106,16 @@ def render_report(
         f"{gate_counts['credential_rules']} |",
         f"| 設定不備 | {counts['misconfigurations']} | {gate_counts['misconfigurations']} |",
     ]
-    reported = blockers if mode == "gate" else findings
+    severity_order = {name: rank for rank, name in enumerate(
+        ("CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN")
+    )}
+    reported = sorted(
+        blockers if mode == "gate" else findings,
+        key=lambda finding: (
+            finding not in blockers,
+            severity_order.get(finding["severity"], len(severity_order)),
+        ),
+    )
     if reported:
         lines.extend(("", "### 検出事項"))
         for finding in reported[:100]:
@@ -128,11 +143,26 @@ def write_github_output(path: Path, findings: list[dict[str, str]]) -> None:
         output.write(f"has_findings={'true' if findings else 'false'}\n")
 
 
+def write_findings_json(
+    path: Path,
+    counts: dict[str, int],
+    findings: list[dict[str, str]],
+    blockers: list[dict[str, str]],
+) -> None:
+    path.write_text(json.dumps({
+        "schema_version": 1,
+        "counts": counts,
+        "findings": findings,
+        "blockers": blockers,
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=("gate", "report"))
     parser.add_argument("report", type=Path)
     parser.add_argument("--github-output", type=Path)
+    parser.add_argument("--findings-json", type=Path)
     args = parser.parse_args()
 
     try:
@@ -144,6 +174,8 @@ def main() -> int:
         return 2
 
     counts, findings, blockers = evaluate(report)
+    if args.findings_json:
+        write_findings_json(args.findings_json, counts, findings, blockers)
     print(render_report(counts, findings, blockers, args.mode), end="")
     if args.github_output:
         write_github_output(args.github_output, findings)

@@ -92,6 +92,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [未確認事項の追跡表](docs/research/open-questions.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
+- [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
 
 #### 比較・履歴・出典と意匠
 
