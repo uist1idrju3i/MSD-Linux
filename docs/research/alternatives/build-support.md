@@ -52,7 +52,7 @@ Buildrootの構成要素には、製品で実行するlibraryだけでなく、h
 
 ## 根拠と残る検証
 
-固定Buildrootのrecipe・Kconfig、[sources.json](sources.json)のzlib-ng/libdeflate README・license、Meson、Ninja、ccacheの資料を照合しました。host-libraryの全内部APIを読み切った監査ではありません。別parser・別FFI・別Python backendの詳細比較と、親packageを含む代替buildは未実施です。67行の対応は比較対象を漏らさないための索引であり、全候補の同等性・license・securityの認定ではありません。
+固定Buildrootのrecipe・Kconfig、[sources.json](sources.json)のzlib-ng/libdeflate README・license、Meson、Ninja、ccacheの資料を照合しました。[XML・FFI・翻訳・Python構築の詳細](host-interfaces.md)では親package・API・backendの移植条件も比較します。host-libraryの全内部APIを読み切った監査ではなく、親packageを含む代替buildは本リポジトリでは試していません。67行の対応は比較対象を漏らさないための索引であり、全候補の同等性・license・securityの認定ではありません。
 
 削減実験では、選択package、host/targetの最終依存、生成物、SBOM、license、QEMUのboot/A-B、復旧tool、実機の機能を同じ基準で確認します。cacheの有無で少なくとも5回ずつ測り、cold/warmとCPU・I/O・networkを分けます。ソースの変更、未追跡logの消失、異なるbase imageを混ぜた比較は採用根拠にしません。
 

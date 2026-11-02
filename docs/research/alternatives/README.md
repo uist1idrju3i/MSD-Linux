@@ -19,10 +19,13 @@
 | [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
 | [Wi-Fi・接続管理・通信防御](network.md) | 認証・IP・DNS・時刻・HTTPSとfirewallを分け、wpa_supplicant・iwd・各managerの条件と未実装機能の計画を比べる |
 | [周辺機能・BSP・device API](peripherals.md) | LCD・入力・音声・camera・IMU・RTC・電池・GPIO等を、driverとlibraryの層を分けて比べる |
+| [周辺機能の利用部品](peripheral-userspace.md) | tinyalsa、SDL3、LIRC、BlueZ、libgpiod、libcameraのAPI・設定・license・保守と権限を比べる |
 | [圧縮・生成・host補助依存](build-support.md) | zlib互換性、image生成、build systemと内包libraryの置換条件を比べる |
+| [XML・FFI・翻訳・Python構築](host-interfaces.md) | Expatとlibxml2、libffiとdyncall、gettext、Python frontend/backend/installerの役割を比べる |
 | [構築基盤・開発・CI](development.md) | Buildrootと他の基盤、OCI、cache、QEMU、lint・scanner・SBOM・provenanceの責務と費用を比べる |
+| [PTXdist・Nix・Debian](system-builders.md) | hostの固定化、target OS、縮小rootfsの生成を分け、利点と移行費用を比べる |
 
-各分野の役割と代替・再検討条件を比較しましたが、全候補の機能・版・licenseや代替構成の実行確認を完了した索引ではありません。最小特権とnetwork隔離の具体設計、鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
+各分野の役割と代替・再検討条件を比較しましたが、全候補の全option・全licenseや代替構成の実行確認を完了した索引ではありません。最小特権とnetwork隔離の[具体設計](../security/README.md)、鍵・Releaseの[設定手順](../../RELEASE-SIGNING.md)は、実装・本番設定とは分けて保存しています。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
 
 ### 構成要素との対応
 

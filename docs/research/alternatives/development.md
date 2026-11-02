@@ -12,7 +12,7 @@
 |---|---|---|
 | Buildroot維持 / Yocto・OpenEmbedded | package単位の再構築、layer・SDK・license/SBOM等の仕組みを選べる | 現行はBuildrootを基準に維持。[過去の比較](../yocto-migration/README.md)には測定条件・未取得log・取りやめた計画がある。Yoctoは大きいという一般論だけでは排除しない。再現性、全周辺機能、A/B、time/RAM/storage、運用費用を同一条件で再実験する場合に候補へ戻す |
 | OpenWrt | network appliance向けの構成・package・運用の統合 | [公式build system](https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem)にはfeeds、toolchain、kernel、rootfsの構成がある。ただしCardputerZero全機能と現行更新形式への移植は別作業。network機能だけを理由に全面移行しない。router/AP用途を製品要件へ加える時に再評価 |
-| PTXdist、Nix系、Debian系の縮小構成 | 別の構成管理・再現性・binary package運用 | 深掘り候補として残すが、PTXdistの指定about URLは404。今回の資料だけでCM0対応・費用・現行機能の同等性を順位づけない。公式CardputerZero OSがDebian系である事実は、MSDのread-only/A-B契約と同じである証拠ではない |
+| PTXdist、Nix系、Debian系の縮小構成 | 別の構成管理・再現性・binary package運用 | [詳細比較](system-builders.md)でBSP、host固定化、target OS、rootfsの生成を分ける。PTXdistの旧about URLは404だが、公式download・manualは取得。いずれもCM0対応や現行read-only/A-B契約との同等性を証明するものではない |
 | 固定Debian OCI / Alpine・musl系 / distroless | package・runtimeを減らす可能性 | nativeの配布tool、Buildroot host tool、glibc前提、QEMU build dependencyとの互換を確認する必要がある。distrolessは配布時の実行imageという役割が異なり、多数のcompiler・shellを使う開発用OCIの直接の代替とはしない |
 | rootless Docker / Podman・Buildah系 | daemonやhost root権限の境界を見直せる | [Docker rootless](https://docs.docker.com/engine/security/rootless/)も利用候補。PodmanはOCI操作とrootlessを提供するが、CLI・socket・build cache・volume・UID mappingを無条件に互換とはしない。現在のwrapperを利用したbuild、bind mount、native両CPU試験、cache ownership、networkとエラー処理を独立検査してから選ぶ |
 | GitHub-hosted / self-hosted runner | native architectureやcacheの使い方を選べる | self-hostedは未信頼PR、永続cache、秘密値、daemon socket、横移動の運用費用を増やす。速さだけで採用しない。hostedでも可変runner imageの版を保存し、固定OCIだけでhost全体が再現可能とは扱わない |

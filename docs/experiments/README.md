@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-02-alternatives-followup-audit](2026-11-02-alternatives-followup-audit.md) | なし | 2026-11-02 | 追加調査・静的照合 | 出典225件中210取得と88 Git blobを5回照合し、3負対照を毎回拒否。代替build・実機は未試験。 |
 | [2026-11-02-release-client-audit](2026-11-02-release-client-audit.md) | なし | 2026-11-02 | 静的調査・提出前検査 | TUF実装4候補と公開側tool、Release配信・時刻・A/B復旧を比較。client実行・製品組込み・実機更新は未実施。 |
 | [2026-11-02-install-update-audit](2026-11-02-install-update-audit.md) | なし | 2026-11-02 | 静的照合・回帰検査 | CI成果物・自動拡張・自動commit・DTの状態を操作手順と照合。実カードと実機は未確認。 |
 | [2026-11-02-release-key-audit](2026-11-02-release-key-audit.md) | なし | 2026-11-02 | host手順確認・本番運用は未実装 | 試験鍵5回・60コマンドで導出、署名、改変と別鍵の拒否を確認。Secret登録・設定変更・実機移行は未実施。 |

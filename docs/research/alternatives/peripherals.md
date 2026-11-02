@@ -24,7 +24,7 @@ CardputerZeroの全機能を使う目標は維持します。ただし、ユー�
 | GPIO・共有reset・電源制御 | kernelの各subsystem / GPIO character device v2とlibgpiod / 旧sysfs GPIO | Linuxの資料は、適切なkernel driverがある機能をuserspace GPIOで置換しないよう求める。character deviceでもline競合・active-low・初期値の責務は残る | 正規driverを優先。保守用GPIO操作は用途を限定し、常用アプリへ全lineを許可しない。共有resetを誰がいつ操作するかは既存の未解決事項として残す |
 | USB・Ethernet・Wi-Fi・Bluetooth | kernel driver / 接続・pairing・role管理のuserspace | driver、firmware、認証、IP設定、USB gadget/hostは別。Bluetooth firmwareの収録はBlueZやpairingの実装を意味しない。network managerはEthernet driverを置換しない | [通信比較](network.md)と公式OS差異へ集約。無線を一括で常時onにせず、用途と起動順を決める。USB role、LAN、Wi-Fi、Bluetoothは各々実機確認 |
 
-上表の小型library、一般的なframework、kernelの同種driverは候補の粒度が異なります。「用途がある」と「同等の代替である」を区別します。特にtinyalsa、SDL、LIRCの本機向け機能・版・licenseの詳細監査は今回の取得だけでは完了していません。これらを推奨実装として確定しません。
+上表の小型library、一般的なframework、kernelの同種driverは候補の粒度が異なります。「用途がある」と「同等の代替である」を区別します。[利用部品の詳細比較](peripheral-userspace.md)でtinyalsa、SDL、LIRC、BlueZ、libgpiod、libcameraの機能・版・licenseと権限を整理しています。本機での動作確認や配布物全体のlicense監査とは区別し、推奨実装として確定しません。
 
 ## カメラはlibv4lとlibcameraの二者択一ではない
 

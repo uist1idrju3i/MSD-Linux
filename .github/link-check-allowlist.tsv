@@ -1,3 +1,5 @@
+docs/research/alternatives/sources.json	docs/README-linux.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
+docs/research/alternatives/sources.json	docs/README-kmsbsd.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
 # path	token	reason
 docs/research/sources-other-url-results.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
 docs/research/sources-url-reachability-more.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
