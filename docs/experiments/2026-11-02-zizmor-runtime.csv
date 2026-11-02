@@ -1,0 +1,6 @@
+environment,architecture,repeat,image_id,exit_status,cache_state,result
+local,amd64,1,sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9,0,absent-before-and-after,passed
+local,amd64,2,sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9,0,absent-before-and-after,passed
+local,amd64,3,sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9,0,absent-before-and-after,passed
+local,amd64,4,sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9,0,absent-before-and-after,passed
+local,amd64,5,sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9,0,absent-before-and-after,passed
