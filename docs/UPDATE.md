@@ -34,6 +34,24 @@ boot_partition=3
 
 参照資料は Raspberry Pi の [autoboot.txt と A/B 更新](https://www.raspberrypi.com/documentation/computers/configuration.html#autoboot-txt) と、リポジトリ外にある `documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc` です。後者は BCM2837 の ROM がブート元を調べて `bootcode.bin` を読み込む流れを説明していますが、「最初の FAT パーティション」と明記した記述は確認できませんでした。p1 への配置は、初期ブートパーティションを selector とし、SD の先頭に置く構成として採用しています。実機での起動確認が必要です。
 
+## 更新する前に
+
+**現行実装を説明する開発用手順です。実機のtryboot・自動復帰・更新中の電源断は未確認です。** [導入手順](INSTALL.md) のSD全体の書き込みはA/B更新とは異なり、`/data` も失います。
+
+- `/data` の重要なデータを別の媒体へ退避し、安定した電源と復旧用のPC・カードを用意します。A/Bは共有データや設定の変更まで巻き戻しません。
+- 端末に配置された公開鍵に対応する `msd-update-bundle.tar` を用意します。自分で構築した場合は `output/images/` に生成されます。現行の `msd-cardputerzero-build` artifactはSD image等を保存しますが、更新tarは保存しません。Releaseからの自動ダウンロードも未実装です。
+- `cat /etc/msd-update/key-origin` で由来を確認します。`development` は開発用鍵であり、本番配布の認証ではありません。未指定なら別のbuild出力で別の開発鍵になる場合があり、対応しないbundleは既存端末で拒否されます。
+- 公開鍵のDER表現のSHA-256を、信頼する発行者の公開鍵fingerprintと照合します。秘密鍵を端末にコピーせず、署名エラー時に公開鍵をbundle側のものへ差し替えたり、検証を迂回したりしません。
+
+  ```sh
+  openssl pkey -pubin -in /etc/msd-update/update-key.pem -outform DER |
+      openssl dgst -sha256
+  ```
+
+- bundleを手元で `/data/update.tar` に配置し、`df -h /data /tmp` で空き領域を確認します。現在はtarを一時ディレクトリへ展開して検証するため、保存先だけでなく通常tmpfsの `/tmp` にも展開分が必要です。512 MiB機で最大slot相当のbundleが扱える保証ではありません。
+
+公開SemVerと、現行manifestの10進整数の更新番号は別です。両者の対応は未確定であり、SemVer文字列を現行 `MSD_UPDATE_VERSION` に渡しません。
+
 ## 更新の流れ
 
 `msd-update status` は `/proc/device-tree/chosen/bootloader/partition` と `tryboot` を読み、現在の A/B スロットと試験起動中かどうかを表示します。値は 32 bit big-endian です。BusyBox の `od` には `--endian=big` がないため、`od -An -v -t x1` でバイト列を読み、16 進数として変換します。
@@ -57,12 +75,11 @@ version 1761400000
 
 同一の `boot.vfat` を p2 と p3 のどちらにも使います。両方の cmdline を含み、選択中の boot partition に応じて root を p5 または p6 に切り替えます。`install` はこの boot image を非アクティブなブートパーティションへそのまま転送するため、同じ bundle を A/B のどちらにも適用可能です。
 
-実行コマンドの例です。
+端末の管理権限で一行ずつ実行します。`install` が正常終了しなければ止め、`try` は実行しません。ほかの更新処理と同時に実行しないでください。
 
 ```sh
 msd-update status
 msd-update install /data/update.tar
-msd-update install --allow-downgrade /data/old-update.tar
 msd-update try
 ```
 
@@ -72,6 +89,22 @@ msd-update try
 
 tryboot 中に rootfs が SquashFS、`/data` が ext4 でマウント済みか、`MSD/Linux ready` marker があるかを確認するのが `S99msd-health` の役割です。条件成立後は `msd-update commit` が p1 を読み書き可能でマウントし、`autoboot.txt.new` を書いてから `autoboot.txt` への rename を実行します。BusyBox の `fsync` applet で新しいファイルと p1 のディレクトリを同期し、rename 後に p1 と更新状態のディレクトリを同期します。確認に失敗すると設定を変えずに通常再起動し、旧スロットに戻る設計です。早期起動が停止した場合に備え、BusyBox watchdog を `-T 15 -t 5` で起動します。
 
+## 試験起動後と失敗時
+
+`S99msd-health` は前述の条件が成立すると自動でcommitします。LCD・キーボード・Wi-Fi等の全機能を検査する処理でも、利用者の承認を待つ処理でもありません。成功した場合は、次を確認します。
+
+```sh
+msd-update status
+cat /data/msd-update/committed
+test ! -e /data/msd-update/installed
+```
+
+`committed` の値はboot partitionの番号2または3です。`status` の `partition` と一致するか確認します。`commit` は起動時のDTを変更しないため、その起動中は `tryboot=1` が続きます。通常の `reboot` 後も新しいslotで起動し、`tryboot=0` か確認します。現在の自動health処理を無効にして手動commitする手順は案内しません。
+
+未commitで通常再起動すると旧スロットへ戻す設計です。ただし、起動停止そのものをfirmwareが検出して即座に再起動する保証ではありません。watchdogが有効になる前の停止や実SDの障害は、電源操作や別媒体での復旧が必要になり得ます。旧slotへ戻っても共有の `/data` は以前の内容に戻りません。失敗した状態、console出力、更新番号、鍵fingerprintを保存し、検証やDTの読み取りを試験用の環境変数で迂回しません。
+
+`--allow-downgrade` は復旧のための例外であり、通常の手順には入れません。現行仕様は稼働中より小さい番号と番号なしを既定で拒否し、同じ番号は許可します。耐改ざん領域で記録するanti-rollbackではなく、全SDの交換や稼働中の状態の巻き戻しを防ぐ仕組みではありません。
+
 ## 書き込み可能な領域
 
 rootfs は Zstandard 圧縮 SquashFS で読み取り専用です。fstab が tmpfs としてマウントするのは `/dev/shm`、`/tmp`、`/run` です。`/var` 自体は tmpfs ではありません。Buildroot の skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` 配下を指し、`/var/lock`、`/var/run` が `/run` 配下を指します。`/var/lib/misc` も `/tmp` 配下を指します。
@@ -80,7 +113,7 @@ rootfs は Zstandard 圧縮 SquashFS で読み取り専用です。fstab が tmp
 
 `/etc` は overlayfs で構成します。`/etc` と `/data/etc` を lower layer、`/run` 上の tmpfs を upper/work layer とするため、通常の `/etc` への変更は再起動で消えます。再起動後も残す設定ファイルは `/data/etc` に保存してください。サービスがその場所を直接参照しない場合は、個別の bind mount などを追加します。
 
-p7 は初期イメージで 64 MiB です。初回起動時の自動拡張は未実装で、後続課題です。
+p7は初期イメージで64 MiBです。現在は `S02msd-data` が `msd-data-grow` を呼び、p4とp7の末尾をディスク末尾へ広げ、`resize2fs` を実行する実装があります。失敗時はエラーを出し、`/data` をマウントしたまま続けます。[構築手順](BUILD.md#現在の検証状況) には拡大imageでのローカルQEMU確認を記録していますが、実機での拡張は未確認です。以前の「自動拡張は未実装」という記述を訂正しました。
 
 ## 検証範囲
 

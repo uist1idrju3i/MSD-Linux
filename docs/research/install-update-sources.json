@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.raspberrypi.com/documentation/computers/getting-started.html",
+    "status": "failed",
+    "http_status": 403,
+    "note": "No response document was used; the fixed official GitHub source was read instead."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/raspberrypi/documentation/daf1ca791713d5f1346556122a2b6942bcc7b1d7/documentation/asciidoc/computers/getting-started/install.adoc",
+    "commit": "daf1ca791713d5f1346556122a2b6942bcc7b1d7",
+    "checked_at": "2026-11-02T21:49:05.044559+00:00",
+    "status": "retrieved",
+    "bytes": 18553,
+    "sha256": "bba81d6128b171f67007665d4418207619995470df0d13a4e71031e153117655",
+    "review_scope": "Install using Imager: local image, identifying storage, excluding system drives, skipping customisation, write and verify; Network Install prerequisites. No Imager GUI or physical SD test."
+  }
+]

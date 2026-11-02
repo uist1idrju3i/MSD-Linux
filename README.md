@@ -49,6 +49,49 @@ QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デ�
 | rootfs | Zstandard 圧縮の読み取り専用 SquashFS。書き込み領域に ext4 の `/data` を使用 |
 | A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う構成を追加。実機での確認は未実施 |
 
+## microSDへのインストール
+
+**開発用の手順です。CardputerZero実機での起動は未確認で、本番向けの署名済みSD imageはまだ提供していません。書き込みはカード全体を消去します。**
+
+1. PCで [構築手順](docs/BUILD.md) に従い、`output/images/sdcard.img` を作ります。CIの成果物を使う場合は、対象commitのBuildroot buildが成功した実行から `msd-cardputerzero-build` を取得し、ZIPと `sdcard.img.xz` を展開します。文書だけのPRではbuildが省略されるため、CIが緑でもimageがあるとは限りません。
+2. microSDの内容を別の媒体へバックアップし、ほかの外付けディスクを外します。[Raspberry Pi Imager](https://www.raspberrypi.com/software/) の **Use Custom** で `sdcard.img` を選び、容量・製品名を確認して書き込み先のmicroSDを選びます。**Exclude system drivesを無効にしないでください。** Raspberry Pi OS用のユーザー・Wi-Fi・SSHのカスタマイズは適用しません。
+3. imageと書き込み先を再確認し、書き込みと検証を最後まで行います。完了後はPCで安全に取り外し、電源を切ったCardputerZeroへ挿入して起動します。PCがカードの未認識パーティションのフォーマットを求めても拒否します。
+4. 起動できた場合は端末で次を確認します。操作できなければ成功とせず、[実機確認](docs/VERIFY.md) の記録を残します。Wi-Fiの接続管理とGitHubからの自動取得は未実装です。
+
+   ```sh
+   msd-update status
+   cat /etc/msd-update/key-origin
+   cat /etc/msd-update/version
+   df -h /data
+   ```
+
+書くのはSD全体用の `sdcard.img` です。`Image`、`kernel8.img`、`boot.vfat`、更新用tarを単独でSDへ書いてもインストールにはなりません。出所の確認、容量、初回起動、再導入時のデータ消去は [導入手順](docs/INSTALL.md) を参照してください。
+
+## A/Bアップデート
+
+**以下は現行実装の操作手順であり、実機のtryboot・自動復帰を確認したものではありません。SD全体の再書き込みはA/B更新ではなく、`/data` も失います。**
+
+1. `/data` のバックアップと安定した電源を用意します。端末が信頼する公開鍵に対応した `msd-update-bundle.tar` を準備し、手元で `/data/update.tar` に配置します。現行CIのSD image用artifactにはこのtarは含まれません。秘密鍵は端末へ置かず、署名エラー時に検証を無効にしないでください。
+2. 端末の管理権限で次を一行ずつ実行します。`install` が失敗したら止め、`try` は実行しません。
+
+   ```sh
+   msd-update status
+   df -h /data /tmp
+   msd-update install /data/update.tar
+   msd-update try
+   ```
+
+3. `install` は非稼働スロットへ書き、`try` は再起動します。試験起動後は `S99msd-health` がrootfs・`/data`・ready markerを確認し、合格すると **自動でcommit** します。利用者が周辺機能を確認するまで待つ仕組みではありません。
+4. 起動後に次を確認し、`committed` の番号が表示中の `partition` と一致し、保留中の `installed` がないことを確かめます。commit後もその起動中は `tryboot=1` のままです。その後、通常の `reboot` を行い、同じ新スロット・`tryboot=0` で起動するか確認します。
+
+   ```sh
+   msd-update status
+   cat /data/msd-update/committed
+   test ! -e /data/msd-update/installed
+   ```
+
+失敗時の復帰、鍵の照合、空き領域と更新番号の制限は [A/B更新の詳細](docs/UPDATE.md#更新する前に) を参照してください。古い番号や署名不一致の拒否を、通常手順で回避しません。公開バージョンはSemVerで運用する方針ですが、現行manifestの番号は整数であり、SemVer文字列をそのまま渡せません。
+
 ## 文書
 
 | 文書 | 内容 |

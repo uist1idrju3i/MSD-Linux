@@ -6,6 +6,8 @@
 
 ## 主題の本文と重複候補
 
+[導入手順](../INSTALL.md)はPCから全SD imageを書く操作、[更新手順](../UPDATE.md)は端末で既存のA/Bを更新する操作です。[照合記録](install-update-status.md)には、成果物の取得範囲、自動拡張、自動commitとDTの状態についてコードと照合した根拠を置きます。READMEには利用者の最初の手順を残し、管理者の鍵操作や実験の詳細は複製しません。
+
 [署名鍵の設定](../RELEASE-SIGNING.md)は管理者が行う操作、[Releaseの調査](release-security.md)は防御の役割と未実装部分、[更新操作](../UPDATE.md)は現行のA/B処理を説明します。鍵の内容や設定手順を調査本文へ重ねず、相互参照します。
 
 [権限設計](security/README.md)は、OpenBSDの原則をLinuxのservice・UID・device・IPC・通信開始・拒否試験へ対応づける本文です。既存のsecurity-hardeningは物理アクセスと費用、日付付き強化項目は当時の候補として区別し、現行の強制状態と誤読される記述は根拠付きで訂正します。新しい本文は原則・処理・通信・検証に分け、未実装を明記します。

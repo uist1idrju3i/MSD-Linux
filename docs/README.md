@@ -4,6 +4,7 @@
 
 | 目的 | 入口 | 本文の扱い |
 |---|---|---|
+| microSDへの導入・再導入 | [INSTALL.md](INSTALL.md) | PCから全SD imageを書く開発用手順。実機未確認とデータ消去を明記 |
 | 構築・成果物・QEMU 起動 | [BUILD.md](BUILD.md) | 現在の実装と実行手順 |
 | 実機での確認 | [VERIFY.md](VERIFY.md) | 実機試験の手順。収録済みなのはカメラで、他の試験が済んだという意味ではない |
 | 更新・署名・A/B | [UPDATE.md](UPDATE.md) | 現在の更新処理と、実機で確認する点 |
