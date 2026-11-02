@@ -1,0 +1,7 @@
+run_id,status,exit_code,sha256,message
+vm-inventory,failed,1,8173ae3f8d26ccc6cb932dd39fce9e505cec3eb825a5fe63a8078a1cebf0092a,"SBOM coverage mismatch: missing=['host-tar'], extra=[]"
+local-1,passed,0,aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4,Set the Linux component version and CPE version to 6.18.59
+local-2,passed,0,aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4,Set the Linux component version and CPE version to 6.18.59
+local-3,passed,0,aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4,Set the Linux component version and CPE version to 6.18.59
+local-4,passed,0,aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4,Set the Linux component version and CPE version to 6.18.59
+local-5,passed,0,aeb1af7a213ad1cb9ca7e2611259e48c12880565379dfccf97a79805f953fde4,Set the Linux component version and CPE version to 6.18.59
