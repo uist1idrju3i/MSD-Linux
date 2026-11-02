@@ -12,8 +12,10 @@
 | [Cライブラリー](libc.md) | glibc、musl、uClibc-ng、LLVM libc、newlib、picolibc、Bionic、klibcの適用範囲と再検討条件 |
 | [基本コマンド・シェル](commands.md) | BusyBox、Toybox、GNU coreutils、uutilsと、更新・起動・復旧で必要な引数と挙動 |
 | [init・service監視・device管理](init.md) | PID 1、supervision、readiness、権限制限を分け、s6、runit、OpenRC、systemd、Dinit等を比べる |
+| [暗号・TLS](crypto.md) | OpenSSLの保守期限、署名専用libraryとTLSの別々の選定、依存・license・旧算法の削減条件 |
+| [署名・鍵・配信の信頼境界](signing.md) | raw Ed25519の移植条件、manifest、鍵rotation、SemVerとanti-rollback、HTTPSと特権helperの分離 |
 
-これは全使用コンポーネントの比較完了を示す索引ではありません。暗号、保存・更新、周辺機能、開発・CIの比較は、既存文書の再評価も含めて継続しています。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
+これは全使用コンポーネントの比較完了を示す索引ではありません。保存・更新framework、周辺機能、開発・CIの比較は、既存文書の再評価も含めて継続しています。鍵・Releaseの利用者向け設定手順も未完了です。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
 
 ## 判定をそろえる
 
