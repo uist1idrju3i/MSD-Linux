@@ -43,7 +43,15 @@ description: Review and update MSD-Linux dependencies, read their complete chang
    - `tests/msd-update/run.sh`
    - `output/images/Image`、`rootfs.squashfs`、`sdcard.img` のサイズ
    - QEMU 起動から ready marker までの時間
-   - kernel `.config` の差分
-   - `make legal-info` の `manifest.csv` とライセンス差分
+   - kernel の正規化後の最終 `.config` 全体の差分。fragment で要求していない項目も確認し、設定の削除・依存による無効化・重複した指定を説明する
+   - `make legal-info` の `manifest.csv` とライセンス差分。外部ツールチェーンや firmware の `unknown`・不足したソースは、出典と未確認事項を残す。SBOM の生成成功を配布許諾の確認と扱わない
    - SBOM/VEX の exploitable CVE 件数
 6. PR 本文に、依存ごとの旧版 → 新版、変更履歴リンク、四分類の記録、回帰テストの比較結果を記載します。Dependabot PR にも同じ確認を行い、結果を確認した後に人間がマージします。
+
+## 更新を止める条件と完了の確認
+
+- shallow clone で履歴が不足したら、対象の tag・commit の範囲だけ取得します。差分を読めない状態で「変更なし」としません。
+- 自作パッチは適用元、目的、上流での扱いを記録し、Buildroot の patch 規約と `Upstream-Status` を確認します。ヘッダーだけの修正でも、同じ差分が適用されることを検査します。外部への投稿は承認を得てから行います。
+- 設定差の理由を説明できない、必須機能が消えた、ライセンス根拠が得られない場合は、解決または未確認として報告するまで採用を確定しません。
+- 固定 SHA や `SOURCE_DATE_EPOCH` の設定だけで「再現ビルド確認済み」としません。独立した出力を比較した範囲を書きます。
+- 完了時は、変更履歴の四分類、更新前後の成果物・最終設定・監査範囲、CI とログを確認し、実機未検証の項目を分けて報告します。

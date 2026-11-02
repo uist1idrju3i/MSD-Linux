@@ -18,6 +18,13 @@
 
 ## 一般的な規則
 
+Yocto 比較で分かった注意点は、[成果物比較](../../../../docs/experiments/2026-11-02-buildroot-yocto-artifacts.md)と[起動時間比較](../../../../docs/experiments/2026-11-02-buildroot-yocto-boottime.md)も参照します。
+
+- `docker/msd-dev` でビルドするとき、git worktree の submodule gitdir は mount の外になることがあります。単独 clone を使い、submodule の版を取得できることを確認します。
+- 同じ defconfig と fragment でも、最終 .config は同じとは限りません。比較元の全体設定と正規化後の設定を保存します。
+- 最小 rootfs と完成 rootfs、外部ツールチェーンと内部ビルドの所要時間を、ビルドシステムだけの性能差にしません。
+- console の指定だけでなく、実際の UART 登録名と getty を合わせます。Yocto の試行の `ttyAMA1` をすべての QEMU 構成へ一律に適用しません。
+
 | 規則 | 出典 |
 |---|---|
 | 改善する指標だけでなく、劣化しうる指標も測る。都合のよい部分だけを選ばない | Heiser, Systems Benchmarking Crimes A1・A2（https://gernot-heiser.org/benchmarking-crimes.html） |
