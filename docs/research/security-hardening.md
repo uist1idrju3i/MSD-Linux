@@ -1,5 +1,7 @@
 # セキュリティ対策と費用対効果
 
+[OpenBSDの原則と具体的な権限設計](security/README.md)では、最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、service、可変設定、IPC、通信開始前のpolicyと拒否試験に対応づけています。本稿は物理アクセスと費用の脅威モデルを扱い、kernel設定とruntime enforcementを区別します。専用userや新しいsandbox policyの製品実装は未完了です。
+
 ## 脅威モデル
 
 この製品は取り外し可能な microSD から起動します。カードを入手した攻撃者は、Linux が起動する前にブートファイル、カーネル、rootfs を置き換えられます。同じカード内にあるハッシュ、署名鍵、dm-verity の root digest だけでは、カード全体を交換する攻撃に対する信頼の起点になりません。【推測】[BCM2837 の legacy boot 文書](https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-legacy.adoc)／[Raspberry Pi secure-boot ガイド](https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md)
@@ -64,7 +66,7 @@ USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID �
 | 項目 | 確認方法 |
 |---|---|
 | CM0 の secure-boot／鍵登録経路 | Raspberry Pi の公開ガイドは Pi 4 以降を対象としています。BCM2837 の別経路があると推測せず、対象SoC・ファームウェアの公開仕様を確認します。【未確認】[secure-boot ガイド](https://github.com/raspberrypi/usbboot/blob/0fd2663f869b7f325f4481049c60d6394855260e/docs/secure-boot.md) |
-| 署名形式、鍵更新・失効、緊急復旧 | A/B と署名検証を含む設計・試験が未実施です。【未確認】[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) |
+| 署名形式、鍵更新・失効、緊急復旧 | 現行はOpenSSLのraw Ed25519署名とPEM公開鍵を使う実装で、既存host試験もあります。署名付きA/B全体を未実装とはしません。配布鍵の更新・失効、緊急復旧、可変etcが鍵を隠す境界は未解決です。【一次】【未確認】[更新処理](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)／[host試験](../../tests/msd-update/run.sh)／[鍵と可変設定](security/privileges.md) |
 | `/data` の `noexec`、USB gadget、無線の実効設定 | 最終 Buildroot 設定、マウント一覧、起動サービス、稼働中モジュールを確認し、機能回帰試験を行います。【未確認】 |
 | SSP／RELRO／PIE と BCM2837 の crypto HWCAP | 最終 ELF／kernel config と実機の CPU feature を確認します。【未確認】[Arm Cortex-A53 TRM](https://developer.arm.com/documentation/ddi0501/latest/) |
 | 攻撃者が持つ物理アクセスと復旧要件 | 製品要件として脅威境界を決めます。【未確認】 |

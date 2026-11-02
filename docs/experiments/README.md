@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-02-security-design-audit](2026-11-02-security-design-audit.md) | なし | 2026-11-02 | 静的監査・設計保存 | OpenBSD原則を処理・IPC・通信・拒否試験へ対応づけ、設定と強制の混同等を訂正。新policyと実機は未試験。 |
 | [2026-11-02-dev-image-scan](2026-11-02-dev-image-scan.md) | なし | 2026-11-02 | 報告器の確認完了・OCIは未更新 | 2184件中の公開ゲート対象1件が従来の本文では省略されていた。改修後のA/A 5回で全件JSONと本文のhashが一致。 |
 | [2026-11-02-sbom-generation](2026-11-02-sbom-generation.md) | なし | 2026-11-02 | 静的試験完了 | 通常buildのLinux版・CPEを補正し、show-infoと構成要素・依存を照合。5回同じhash。VMと開発用OCIのhost-tar差による失敗も保存。 |
 | [2026-11-02-hardware-artifact-audit](2026-11-02-hardware-artifact-audit.md) | なし | 2026-11-02 | 静的照合完了・実機未確認 | 固定CI生成物のDTBO、16 M5 modules、firmware、権限、最終configとA/Bログを照合。DTC 1.7.2で合成成功、1.6.1の失敗も記録。 |

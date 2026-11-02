@@ -1,5 +1,7 @@
 # セキュリティ強化項目の調査（2026-11-01）
 
+2026-11-02に、設定と実行時の強制を混同する箇所、署名と時刻、noexec等の記述を[訂正記録](corrections.md)に根拠を残して更新しました。採用方向という表現は導入方針であり、firewall・AppArmor profile等が製品で稼働しているという意味ではありません。具体的な権限・起動順・拒否試験は[権限設計](security/README.md)を参照してください。
+
 ユーザーから提示された強化項目を、MSD/Linux（Buildroot + BusyBox、systemd・deb 系なし、ターゲットは BCM2837 / 512 MiB RAM / microSD 起動 / RO SquashFS + A/B 更新）へ適用する観点で調査した。各項目について、現行構成との照合、適用可否、推奨、検証方法を示す。なお現在この機器には**ネットワーク設定自体が未導入**（`udhcpc` は busybox に入っているが interfaces・resolv.conf 系の設定がなく、起動時に net を上げる init もない）ため、ネットワーク前提の項目は「ネットワーク導入時の設計」として整理する。
 
 【一次】現行構成の一次情報は `configs/msd_cardputerzero_defconfig`、`board/cardputerzero/linux.fragment`、`board/cardputerzero/busybox.fragment`、`board/cardputerzero/rootfs-overlay/etc/fstab`、`cmdline_rootfs_{a,b}.txt`、およびビルド済み `output/build/{linux-custom,busybox-1.38.0}/.config` に基づく。
@@ -8,10 +10,10 @@
 
 **結論: 採用（ネットワーク導入時に nftables でデフォルト drop）。**
 
-- カーネル側は `CONFIG_NF_TABLES=m`・`CONFIG_NF_TABLES_INET=y` ほか多数の netfilter モジュールが defconfig 由来で既に入っており、足りないのは**ユーザーランドの `nft` だけ**。Buildroot は `BR2_PACKAGE_NFTABLES` を持つ。
-- 現在 listen しているサービスはない（inetd/dropbear なし）が、将来 Wi-Fi 導入後にサービスを足すたび個別判断するより、既定 drop + outbound accept のベースを先に作るほうが最小権限に合う。
-- BusyBox 環境のため `iptables` 系ではなく `nftables`（`nft` バイナリ + 静的ルールファイルを init で `nft -f`）が最も小さい構成。`BR2_PACKAGE_IPTABLES` も可能だが二重実装を避けるため nft 一本がよい。
-- 推奨ルール素案: `table inet filter { chain input { policy drop; ct state established,related accept; iif lo accept; icmpv6 type nd-* accept } chain forward { policy drop } chain output { policy accept } }`。機器固有の例外（NTP/DoT・更新用 HTTPS・将来の SSH）は穴を最小化して追記する設計にする。
+- 固定CIの最終kernel設定には`CONFIG_NF_TABLES=m`・`CONFIG_NF_TABLES_INET=y`等があります。必要module・hook、nft userland、IPv4/IPv6のruleset、起動順・hotplug・失敗時の制御と正負の試験が必要で、userlandを追加するだけでは強制されません。Buildrootには`BR2_PACKAGE_NFTABLES`があります。
+- inetd/dropbear等の構成選択と、実行中の全listenerの有無は別です。socket一覧の実行時監査は今回していません。不要な受信・転送を既定拒否する一方、output acceptは外向き通信を制限しないので、侵害済みserviceの対策は別に設計します。
+- 二重のpolicy管理を避けるためnftables一系統を第一候補とします。最小sizeや保守費用の優位は本リポジトリでは試していません。
+- 旧素案はloopback・確立済み通信・IPv6 NDを中心とする不完全な例でした。実行用rulesetとはせず、DHCP、RA/ND、必要なICMP/ICMPv6、出力・転送、複数interfaceとatomic replacementを[通信設計](security/network.md)で個別に定義します。
 - 検証: QEMU 上で `nft list ruleset`・外向き ping/wget・（listen を足した場合）拒否を確認。起動時間・RAM は実験で計測（nft テーブル投入は 1 回きりで数十 ms 見込み）。【推測】
 
 ## 2. `GRUB_CMDLINE_LINUX_DEFAULT` 最適設定
@@ -26,19 +28,19 @@
 | `init_on_alloc=1` / `init_on_free=1` | 未初期化メモリの悪用緩和 | security-hardening.md tier B に既挙。CPU 帯域コストあり、A53 での実測が前提。【推測】 |
 | `lockdown=confidentiality` | kernel ロックダウン | `SECURITY_LOCKDOWN_LSM` の有効化が前提（tier B 未採用）。firmware 書き込み系や kexec 系と相性が悪い場合があるため要実測。 |
 | `slab_merge=off` 相当（`slab_nomerge`） | heap 噴射攻撃の緩和 | KSPP 系の推奨だが RAM 使用量が増える。512 MiB 機器では tier B 評価。 |
-| `lsm=` の明示 | LSM 順序の固定 | カーネル側は `CONFIG_DEFAULT_SECURITY_APPARMOR=y`、`CONFIG_LSM` は全 LSM 名を列挙した既定文字列。AppArmor 以外の LSM は未コンパイルのため実害はないが、`lsm=landlock,lockdown,yama,apparmor,bpf` のように実在するものだけを明示する整理は検討余地あり。 |
+| `lsm=` の明示 | LSM順序の固定 | CONFIG_LSMの文字列、compileした機能、実行時の有効一覧は別です。AppArmor以外が全て未compileという旧説明は誤りで、YamaとLandlockも設定されています。lockdown等も名前だけで利用可能とせず、最終設定・起動引数・runtimeを照合して決めます。 |
 | `modules_disabled=1` | ロード封じ | **不採用**。署名強制済みだが、USB/Wi-Fi/Bluetooth の hotplug autoload を永久に殺す。既存結論と同じ。 |
 
 `quiet` 維持、`loglevel` は現行どおり。
 
 ## 3. AppArmor / SELinux を有効にしたい
 
-**結論: AppArmor を採用方向で進める。SELinux は本機では非推奨。**
+**結論: 固定kernelのAppArmorを再利用する案を第一候補とし、policyと運用費用を評価する。製品での強制は未実装。**
 
-- カーネルは既に `CONFIG_SECURITY_APPARMOR=y`・`CONFIG_DEFAULT_SECURITY_APPARMOR=y` で**カーネル側は有効済み**。足りないのはユーザーランド: `apparmor_parser`（Buildroot `BR2_PACKAGE_APPARMOR`）とプロファイル、`aa-status` 確認系。
-- BusyBox 環境ではサービス個別のプロファイルを自作する形になる。まずは complain モードで観測 → 実効プロファイルにする段階運用が現実的。主要対象は `msd-update`、ネットワーク系、init 系。
-- SELinux は kernel config もユーザーランドも入っておらず、refpolicy の持ち込み・BusyBox 連携のコストが大きい。小さい組み込みで AppArmor と SELinux を併用する実益はなく、**SELinux は不採用**を推奨。
-- Landlock（`CONFIG_SECURITY_LANDLOCK=y` 済）と Yama（`SECURITY_YAMA=y` 済）は既に有効。将来アプリ側から Landlock を使う設計余地はある。
+- 固定CIの最終設定には`CONFIG_SECURITY_APPARMOR=y`・`CONFIG_DEFAULT_SECURITY_APPARMOR=y`があります。profileの読込み、attachment・exec遷移、enforce状態、必須policy失敗時の起動停止、拒否試験が必要です。kernel設定やparserの存在だけでは保護済みにしません。
+- 上流の利用可能なprofileを先に調べ、必要なら対象serviceのprofileを作ります。complainは試験用の観測であり、製品のenforceを代替しません。root updaterをprofileで囲むだけで解析・認可・writerの分離が完成するわけでもありません。
+- SELinuxは固定CI kernelでは無効です。policy・Buildroot/BusyBox連携・保守費用を比較対象とし、恒久的に劣る方式と断定しません。major LSMの無条件な併用を前提にしません。
+- YamaとLandlockのkernel設定はありますが、Landlockは対象processによるruleset適用が必要です。上流の制限、ABI確認、拒否試験とYamaの既存証拠を[原則とLinux機構](security/principles.md)で分けて扱います。
 
 ## 4. acpid / irqbalance は不要か
 
@@ -71,7 +73,7 @@
 
 - 前提: `BR2_PACKAGE_CA_CERTIFICATES` が**現在未設定**で、TLS 検証に必要な CA bundle がない。DoT の採用と合わせて CA 証明書を必須依存にする。
 - 候補の実現度確認: `unbound` は `forward-zone { name: "."; forward-tls-upstream: yes; forward-addr: 9.9.9.9@853#dns.quad9.net; }` で実現できる。`stubby` は存在すればこれ一本で済む。Buildroot に `BR2_PACKAGE_STUBBY` があるかは要確認（ない場合 unbound が無難）。
-- フォールバック: DoT が失敗しても平文 UDP へ落ちないよう `do-udp: no` にする（平文化しないことが要件）。
+- 平文fallbackを禁止することが要件です。旧記述の`do-udp: no`だけで平文上流通信全体が止まるという保証は撤回します。upstream TLS強制、fallback、UDP/TCP両方、DNS初期化を設定とpacketで確認して採否を決めます。
 - 検証: QEMU で `kdig` 相当の問い合わせ結果、パケット解析で 853/TLS のみ確認。
 
 ## 9. 時刻合わせ: `time.cloudflare.com`、NTS 要検討
@@ -80,7 +82,7 @@
 
 - 現行 busybox config には `CONFIG_NTPD` がない（`ntpd` アプレット未導入）。
 - NTS（Network Time Security、RFC 8915）対応実装は `chrony`（4.0 以降）と `ntpsec`。Buildroot は `BR2_PACKAGE_CHRONY`・`BR2_PACKAGE_NTPSEC` を持つ。**chrony は NTS クライアントをサポート**し、サーバ設定に `server time.cloudflare.com nts` と書ける（Cloudflare は NTS を提供）。【一次: chrony 4.x ドキュメントの NTS 節、要 URL 検証】
-- 時刻がずれていると署名検証・TLS の時刻評価・ログ証拠が崩れるため、この機器では NTP/NTS は「あれば」ではなく設計上の要ピース。
+- 信頼する時刻はTLSの証明書期限、metadata期限、log、更新運用の判断に必要です。raw Ed25519署名の数学的検証自体は壁時計に依存しません。NTSを含む初期時刻・RTC・offline時の扱いは[通信設計](security/network.md)で別に設計します。
 - コスト: chrony 常駐で数百 KB〜1 MB 級 RAM、起動後の初期同期待ちは `chronyc waitsync` か makestep で扱う。【推測】
 - 代替: busybox `ntpd` を有効化する最小案は NTS なしの平文 NTP（UDP 123）になり、時刻ソースの真正性が弱いため推奨しない。
 
@@ -127,14 +129,14 @@
 - ハードウェア要件（公式）: 最小でも x86_64 デュアルコア + **1 GB RAM**（インストーラが 1 GB 未満を拒否）、レポート用 Elasticsearch がメモリを大量に消費し、推奨は 8 GB。本機は ARM64（BCM2837）+ 512 MiB のため**アーキテクチャ・RAM 両面で対象外**。【一次: [Zenarmor hardware requirements](https://www.zenarmor.com/docs/introduction/hardware-requirements)】
 - 管理面はクラウド（SaaS コンソール）前提で、本機のエアギャップ/最小構成と相性が悪い。
 - **効能（もし使えたら何を得るか）**: L3/L4 では識別できない「アプリケーション層」の可視性とポリシー（L7 DPI によるアプリ識別・ブロック）、カテゴリベースの Web フィルタリング、TLS SNI ベースのフィルタ（完全 MITM なしで接続先ドメイン単位の制御）、脅威インテリジェンス、詳細なレポート/可視化。
-- **本機での同等獲得方法**: 既知悪性ドメインの遮断は Quad9（本書 7/8 節）で DNS 層カバー済み。SNI ベース制御は必要になれば nftables では難しく、eBPF/透過プロキシを要するため範囲外。レポートは本機の syslog + ホスト側集約で代替する方向。**非採用・調査のみ**。
+- **本機で検討する代替策**: 悪性domainをfilterするresolverは候補で、Quad9等を使う接続・DNS設定は製品で稼働確認していません。domain filterとL7 DPIは別の保証です。SNI制御やlog集約も、必要性・暗号化通信での限界・RAMと運用費用を調べてから判断します。**非採用・調査のみ**。
 
 ### ClamAV（シグネチャ型マルウェア検知）
 
 - Buildroot に `BR2_PACKAGE_CLAMAV` あり（要 libstdcpp、rust host、json-c、libcurl、libmspack、libxml2、openssl）。
 - 実用面: `clamd`/`clamscan` はシグネチャ DB（main+daily cvd）をメモリに展開して動く設計で、常時 1 GB 級の RAM を要する傾向がある。**512 MiB ではデーモンも単発スキャンも現実的でない**。【推測、実測要】
 - **効能**: 既知マルウェアのシグネチャ検知、on-access スキャン（fanotify 経由）、フィッシング/PUA 検出、freshclam による日次シグネチャ更新。
-- **本機での整理**: 読み取り専用 rootfs は署名+dm-verity（tier B）で改ざん検知の対象になり、AV スキャンの対象外。唯一書き込める `/data` は `noexec` を決めれば「実行されないデータ置き場」になり、AV による検知の意義は薄い。検査が要るなら**デバイス側ではなく、更新物・持ち込み物を配布側/ホスト側でスキャン**する運用にするほうが、RAM と CPU を使わずに同じ効果が得られる。**非採用・調査のみ**。
+- **本機での整理**: 署名更新とRO rootfsはありますが、dm-verityは製品未導入です。noexecを加えてもinterpreterやetc overlayを経由する処理は止められず、dataが必ず実行されない保証にはなりません。[既存QEMU試験](../experiments/2026-10-21-qemu-data-noexec.md)を参照してください。配布・持込み前のhost側scanは端末の負担を抑える候補ですが、device実行時の検知と同じ効果とはしません。対象・検知漏れ・更新経路・費用を分けて判断します。**非採用・調査のみ**。
 
 ### Proofpoint ET Pro / ET Open（IDS ルールセット）
 
@@ -148,7 +150,7 @@
 - 本機に systemd はないため `ProtectSystem=`・`PrivateTmp=`・`NoNewPrivileges=` 等の directive は直接対象外。**調査のみ**。
 - 概念のマッピング（本機で使える同等物）:
   - `ProtectSystem=strict` → rootfs RO + `/data` 制限マウント（既に近い構造）
-  - `NoNewPrivileges` → 実行時の setuid 無効化は `nosuid` マウントと LSM で代替。BusyBox のサービス起動に `prctl(NO_NEW_PRIVS)` 相当を組み込む手段は別途要る（init スクリプト or 小さいラッパ）。
+  - `NoNewPrivileges`は`prctl(PR_SET_NO_NEW_PRIVS, 1, ...)`等に対応する機能で、nosuid mountやLSMとの単純な同等置換ではありません。既存daemonやlauncherでの適用経路、exec・profile遷移・保有権限との整合を先に確認します。
   - `PrivateTmp`/`ProtectHome`/`ProtectKernel*` → mount namespace での隔離が同等概念。BusyBox の `unshare`・`nsenter` アプレット有無を確認し、必要なら util-linux 系を足す。
   - LSM による sandbox 化は AppArmor（カーネル ON 済）のプロファイルとして実装する方向が現実的。
 

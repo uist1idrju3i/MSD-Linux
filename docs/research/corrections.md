@@ -1,5 +1,19 @@
 # 訂正済み事項
 
+## 2026-11-02 の権限設計と強化項目
+
+[日付付き強化項目](security-2026-11-hardening-list.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
+
+| 原記述 | 訂正と理由 | 根拠 |
+|---|---|---|
+| firewallにはnft userlandだけが不足、listenerなし、nftablesが最小 | 必要module・ruleset・起動順・hotplug・正負の試験も未実装。runtime socketとsize比較は未試験。output acceptは侵害済みserviceの外向き通信を止めない | [通信開始と検証](security/network.md) |
+| AppArmor以外のLSMは未compile、Landlock等は有効 | Yama/Landlockの設定もある。kernel設定・LSM名の一覧・実行時policyと強制を区別。AppArmorのprofile load・enforce、LandlockのABIとprocess側の適用が必要 | [固定CI設定の照合範囲](security/README.md)／[Linux機構](security/principles.md) |
+| SELinuxは一律不採用、AppArmor profileは自作 | 固定構成と保守費用を理由にAppArmorを第一候補とする比較に限定。上流のprofileやdaemonの既存privsepを先に評価し、major LSMの無条件併用も前提にしない | [原則と適用条件](security/principles.md) |
+| do-udp設定だけで平文fallbackを防ぐ、時刻の乱れが署名検証自体を崩す | 全平文通信の停止保証を撤回し、UDP/TCP・上流TLS・fallbackの確認を要件化。raw Ed25519の数学的検証は壁時計不要で、TLS・metadata期限・運用は別 | [DNS・時刻・更新](security/network.md) |
+| NoNewPrivilegesをnosuid/LSMで代替 | no_new_privsはexec時の昇格等に関する別のkernel機構。保有権限のdropやFD移譲制限の代用ではなく、LSM遷移との順序も試験する | [Linuxの仕組み](security/principles.md) |
+| Quad9でDNS層は対応済み、noexecならdataは実行されずhost AVと同じ効果 | DNS設定は未稼働。noexecはinterpreterやetc overlayを一般には防がず、dm-verityも製品未導入。hostでのscanとdevice実行時の検知は対象・限界が異なる | [通信設計](security/network.md)／[可変設定](security/privileges.md)／[既存noexec試験](../experiments/2026-10-21-qemu-data-noexec.md) |
+| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security-hardening.md)／[処理別設計](security/privileges.md) |
+
 ## 2026-11-02 の圧縮library比較
 
 | 原記述 | 訂正と理由 | 根拠 |
