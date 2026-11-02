@@ -19,6 +19,7 @@
 | arm_64bit の CM0 対応は未確認 | arm_64bit の CM0 対応は未確認 | 対応表に CM0 なし。`[cm0]` フィルタはある | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc#L26-L52<br>https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/conditional.adoc#L43 |
 | PREEMPT_RT の方針 | PREEMPT_RT は採用しない方針（boot-and-kernel.md の旧記述） | 2026-10-30 に製品構成に採用済みで、`linux.fragment` に `CONFIG_PREEMPT_RT=y` があります。Yocto の B2 でも vermagic に `preempt_rt` が出ました | [実験記録](../experiments/2026-10-30-preempt-models.md)<br>[構築試験](../experiments/2026-11-02-yocto-wrynose-probe.md) |
 | Yocto への移行の結論 | Buildroot を維持し、Yocto には移行しない（pros-cons-2026-10.md） | 2026-11-02 に利用者が Wrynose 6.0 LTS への移行を方針として決めました。移行作業は未着手です | [再評価](yocto-migration/reevaluation.md)<br>[移行計画（案）](yocto-migration/migration-plan.md) |
+| Yocto への移行（2026-11-02 の再決定） | Wrynose 6.0 LTS へ移行する方針 | 検証の結果、移行せず Buildroot を維持すると決めました | [総まとめ](yocto-migration/summary-2026-11.md) |
 | M5 kernel compatibility | kernel 版の前提に関する旧記述 | **panel-mipi-dbi-m.c の include は 6.12 で解決せず 6.18 で解決する（一次）。M5 code 全般が 6.18 以上必須とは言えません**。mainline panel-mipi-dbi 経路もありますが、実機確認は未確認 | https://raw.githubusercontent.com/m5stack/m5stack-linux-dtoverlays/75518549a2640486f5d13ea72ca4935b198d7c20/modules/st7789v-1.0/panel-mipi-dbi-m.c |
 
 

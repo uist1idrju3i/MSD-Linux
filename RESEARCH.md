@@ -9,7 +9,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 ### 決定済みの方針
 
 - 現行の実装のベースは Buildroot。M5 のドライバと Raspberry Pi カーネルを組み込む。
-- 2026-11-02 に、Yocto Project Wrynose 6.0 LTS への移行を方針として決めた。移行作業は未着手で、Buildroot は [移行計画（案）](docs/research/yocto-migration/migration-plan.md) の受け入れ基準を満たすまで残す。Buildroot で見送った案の見直しは [再評価](docs/research/yocto-migration/reevaluation.md) にある。
+- Yocto Project への移行を検討・検証した結果、2026-11-02 に移行せず Buildroot を維持すると決めた。経緯、分かったこと、理由、再検討の条件は [総まとめ](docs/research/yocto-migration/summary-2026-11.md) にある。
 - UI は LCD のテキストコンソールと内蔵キーボードによる CLI のみ。公式 LVGL ランチャー、公式アプリ、Debian `.deb` 互換は目標にしない。
 - 標準版と Lite 版を同じイメージで扱う。Lite 版にも microSD スロットはあるが、microSD カードは付属しない。
 - 起動を速くし、突然の電源断に備えて rootfs を読み取り専用にし、更新失敗時は A/B の前のスロットへ自動復帰することを目指す。
@@ -21,7 +21,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 | 層 | 方針 |
 |---|---|
-| ビルド | Buildroot 2026.08、BR2_EXTERNAL として管理（Yocto Wrynose 6.0 LTS への移行を計画中） |
+| ビルド | Buildroot 2026.08、BR2_EXTERNAL として管理（Yocto への移行は検討の結果見送り） |
 | カーネル | Raspberry Pi `rpi-6.18.y` を基準にし、コミットを固定 |
 | 起動 | Raspberry Pi firmware と `autoboot.txt` / `tryboot` による A/B を調査・実装する。CM0 実機で要検証 |
 | rootfs | SquashFS を読み取り専用で使う案を第一候補とし、EROFS と実機比較する |
@@ -69,7 +69,8 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）](docs/research/display-servers.md)
 - [ウェブブラウザの調査](docs/research/web-browsers.md)
 - [Yocto Project 移行の事前調査](docs/research/yocto-migration/README.md)
-  - [移行計画（案・未着手）](docs/research/yocto-migration/migration-plan.md)
+  - [総まとめ（2026-11、移行しないと決定）](docs/research/yocto-migration/summary-2026-11.md)
+  - [移行計画（案、中止）](docs/research/yocto-migration/migration-plan.md)
   - [Buildroot で見送った案の再評価](docs/research/yocto-migration/reevaluation.md)
   - [Buildroot と Yocto の Pros/Cons（2026-11）](docs/research/yocto-migration/pros-cons-2026-11.md)、[成果物の比較](docs/experiments/2026-11-02-buildroot-yocto-artifacts.md)、[QEMU での起動時間の比較](docs/experiments/2026-11-02-buildroot-yocto-boottime.md)
   - [構築試験（Wrynose、M5 BSP）](docs/experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](docs/experiments/2026-11-02-yocto-qemu-boot.md)

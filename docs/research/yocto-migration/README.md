@@ -12,6 +12,7 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | [porting-map.md](porting-map.md) | defconfig、パッケージ、init、BSP、後処理、wks、fragment の対応表 |
 | [verification-and-ops.md](verification-and-ops.md) | QEMU による起動確認、A/B 更新、ツールチェーンとハードニング、ライセンスと SBOM、CI、コミュニティ情報の収集結果 |
 | [dev-environment.md](dev-environment.md) | 開発環境の構築手法（kas、kas-container、bitbake-setup、CROPS、buildtools、`docker/msd-dev` の拡張）の比較 |
+| [summary-2026-11.md](summary-2026-11.md) | 総まとめ。2026-11-02 に移行せず Buildroot を維持すると決定 |
 | [reevaluation.md](reevaluation.md) | Buildroot で不採用・保留にした案の Yocto 前提での再評価 |
 | [migration-plan.md](migration-plan.md) | Wrynose 6.0 LTS を前提にしたゼロベースの移行計画（案・未着手） |
 | [pros-cons-2026-11.md](pros-cons-2026-11.md) | 2026-11-02 の成果物の比較に基づく Buildroot と Yocto の Pros/Cons |
@@ -40,7 +41,7 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 
 ## 3. フェーズ0の結論
 
-- リリース系列は、2026-11-02 に利用者の判断で Wrynose 6.0 LTS に決まりました。以下はフェーズ0の時点の判断材料です。サポート期限、meta-raspberrypi の 6.18 カーネル、Ubuntu 26.04 対応の三点では、Wrynose 6.0 LTS が最も条件に合います【推測】。Scarthgap は meta-raspberrypi に 6.18 のレシピがありません。Blacksail は 2027-04 で終わり、meta-raspberrypi に専用ブランチがありません。
+- 2026-11-02 に、移行せず Buildroot を維持すると決まりました（[総まとめ](summary-2026-11.md)）。その前に、系列は利用者の判断で Wrynose 6.0 LTS に決まっていました。以下はフェーズ0の時点の判断材料です。サポート期限、meta-raspberrypi の 6.18 カーネル、Ubuntu 26.04 対応の三点では、Wrynose 6.0 LTS が最も条件に合います【推測】。Scarthgap は meta-raspberrypi に 6.18 のレシピがありません。Blacksail は 2027-04 で終わり、meta-raspberrypi に専用ブランチがありません。
 - 構成管理は kas（YAML + ロックファイル）を第一候補にします（[dev-environment.md](dev-environment.md) §4）。
 - A/B 更新は、最初の段階では tryboot と `msd-update` をそのまま移すのが最も変更が少ないと考えます【推測】。
 - ツールチェーンは Poky 内部への切り替えが前提になり、起動時間とサイズの測り直しが要ります。
