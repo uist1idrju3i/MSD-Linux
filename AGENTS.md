@@ -44,7 +44,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 | `vendor-update` | 依存関係の変更履歴、採否、ライセンス、回帰テストの確認 |
 | `experiment-record` | 実験・測定・比較の計画、実行、再現できる記録 |
 | `site-review` | 公式サイトの見え方（テキストブラウザー、小さな画面、明暗）の確認 |
-| `document-structure` | 文書を適切な粒度で分割するときの判断、移動、サイズ検査 |
+| `document-structure` | 文書の棚卸し、現行と履歴の区別、重複の整理、分割とリンクの照合 |
 
 ## 6. yomiyasu（日本語推敲スキル）
 
@@ -59,6 +59,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 
 ## 7. 作業の進め方
 
+- 現行基盤は Buildroot です。Yocto 移行検討は見送りの記録であり、過去の移行計画を現在の作業指示として実行しません。現在の方針は [RESEARCH.md](RESEARCH.md)、判断の経緯は [Yocto 総まとめ](docs/research/yocto-migration/summary-2026-11.md) を確認します。
 - 自明でない作業は調査して深い計画を立ててから着手します。計画はリポジトリにコミットせず、チャットで共有します。
 - 実験・測定・比較を行うときは「experiment-record」スキルに従い、条件、手順、生の値、結論、失敗した試行を `docs/experiments/` に残します。結果を PR 本文だけに書きません。
 - `public_html/` は GitHub Pages で公開するサイト専用です。文書は `docs/` に置き、`public_html/` にはサイトのファイル以外を置きません。`public_html/` を変えたら「site-review」スキルで、テキストブラウザーと小さな画面での見え方を確かめます。
@@ -66,6 +67,10 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 - `output*/` など数 GB の untracked ディレクトリが常にあるため、`git stash -u` は使いません（走査で無応答になります）。ブランチ切替は対象ファイルを add/commit するだけで済ませ、untracked はそのまま残します。
 - `vendor/` submodule の dirty（ビルド由来の変更）は commit しません。
 - 変更は小さく、主題ごとにまとめます。
+- 調査では、現在の決定、当時の判断、一次資料、実測、推測、未確認を分けます。引用・生データ・失敗記録を、新しい検査に通すために書き換えません。文書の整理は「document-structure」スキルに従います。
+- 検証結果は、実行した commit、入力とバイナリ、変更した写しの範囲を示します。QEMU の起動成功を、LCD・キーボード・I2C・firmware tryboot・実機の電源断の検証と扱いません。
+- 実行中の実験スクリプトを編集しません。出力先を消す前に、追跡されていない証拠を永続的な場所に保存して照合します。再取得できないログは、未確認と明記します。
+- 完了報告では、依頼と計画の各項目を変更・検証・未確認に照らし合わせます。CI の合否とログを確認し、未実施の試験を実施済みとは書きません。
 - GitHub の stacked PR は、同一リポジトリ内で PR を積み重ね、先行 PR の変更を後続ブランチに含める運用です。各 PR の base は利用者が設定し、エージェントは指示なしに base を変更したり、PR を merge したりしません。https://docs.github.com/en/pull-requests/reference/stacked-pull-requests、https://docs.github.com/en/pull-requests/get-started/about-stacked-prs
 
 ## 8. 確認コマンド
@@ -79,9 +84,14 @@ tests/msd-update/run.sh                  # 更新処理のホストテスト
 board/cardputerzero/qemu/test-boot.sh    # A スロットの QEMU 起動確認
 board/cardputerzero/qemu/test-ab.sh      # B スロットの QEMU 起動確認
 python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py <file>  # 日本語文書の候補検査
-actionlint .github/workflows/*.yml
-git ls-files -z -- '*.sh' | xargs -0 shellcheck
-python3 -m venv "$HOME/.cache/msd-linux-zizmor"
-"$HOME/.cache/msd-linux-zizmor/bin/pip" install --require-hashes -r .github/zizmor-requirements.txt
-"$HOME/.cache/msd-linux-zizmor/bin/zizmor" --offline --format=github .github/workflows/
+python3 .github/scripts/check-skills.py && tests/check-skills/run.sh
+python3 .github/scripts/check-links.py && tests/check-links/run.sh
+python3 .github/scripts/check-doc-size.py && tests/check-doc-size/run.sh
+python3 .github/scripts/check-jisx0213.py && tests/check-jisx0213/run.sh
+python3 .github/scripts/check-site.py && tests/check-site/run.sh
+docker/msd-dev actionlint .github/workflows/*.yml
+docker/msd-dev python3 .github/scripts/shellcheck-tracked.py
+docker/msd-dev zizmor --offline --format=github .github/workflows/
 ```
+
+変更した対象の検査と、その検査器のテストを実行します。依存・イメージの変更は「vendor-update」のビルド・QEMU・監査結果も比較します。コマンドが通ることと、意味・見え方・実機動作の確認は区別します。

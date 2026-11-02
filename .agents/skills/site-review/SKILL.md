@@ -7,6 +7,8 @@ description: MSD-Linux の公式サイト（public_html/）の HTML・CSS・画�
 
 公式サイト（https://muromi.moe/ ）は、パソコンとスマートフォンのほか、CardputerZero のような小さな画面と遅い CPU、テキストブラウザー（w3m、lynx）、スクリーンリーダーから読まれる前提で作っています。`public_html/` を変えたら、次の手順で変更の前後を比べます。`check-site.py` の CI が見るのはファイルの一覧、CSP、参照先、URL だけで、見え方は見ません。
 
+入力は変更前後の commit、diff、使用するブラウザーの版です。文書やスキルだけを変え、サイトに影響がない場合は UI 試験を行う必要はありません。描画できない、必要な配色を試せない場合は、代わりの条件を合格とせず、未確認として報告します。
+
 ## 1. テキストブラウザー（必ず行う）
 
 変更前（`origin/main`）と変更後を文字で出し、差分を見ます。ファイルを直接読むので、サーバーは要りません。出力はリポジトリの外（`$TMPDIR` など）に置き、コミットしません。
@@ -24,6 +26,8 @@ for f in index.html 404.html; do
 done
 diff -u "$out/before-index.html.w3m40.txt" "$out/after-index.html.w3m40.txt"
 ```
+
+この出力先は一時作業用です。報告の根拠に使う画像・テキスト・版の記録は、削除する前に run ID ごとの永続的な場所へコピーして照合します。過去の証拠に同じ出力先を使い回しません。
 
 w3m と lynx がなければ、`sudo apt-get install w3m lynx` で入れます。版は `w3m -version` と `lynx -version` で確かめ、報告に書きます。
 
