@@ -25,6 +25,8 @@
 
 ## 監視対象と残る確認
 
+その後の通常buildの版補正と実artifactの再照合、全67 componentの最新版候補、開発用OCIとActionsの依存、監視の差分は[依存関係の一覧](dependencies/README.md)にまとめた。以下の初回調査と、その後の検証を区別する。
+
 - securityは補正後のSBOMをBuildroot `cve-check`へ渡し、NVD mirrorと照合してVEXを保存する。source packageのCPEによる照合なので、CPEのない配布物や外部ツールチェーン内部まで網羅するとはいえない。
 - `toolchain-external-bootlin`のlicenseはunknown。一部M5配布物もunknown、Wi-Fi firmwareはPROPRIETARYとして記録される。toolchain内部のGCC・binutils・glibcの版と許諾、個々のfirmwareの出典・許諾は別に確認する。
 - 通常buildのlegal-infoログには、LinuxのCOPYING等に対するhash欠落も記録されている。build成功を、これらのライセンスファイルのhash確認済みと読み替えない。

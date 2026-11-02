@@ -124,6 +124,22 @@ for line in dockerfile.splitlines():
 if pending:
     instructions.append(pending)
 
+zizmor_installs = [
+    instruction for instruction in instructions
+    if instruction.startswith("RUN ") and "/opt/zizmor/bin/pip install " in instruction
+]
+assert len(zizmor_installs) == 1, "expected one zizmor installation layer"
+zizmor_install = zizmor_installs[0]
+for required in (
+    "--require-hashes", "--only-binary=:all:", "--no-cache-dir",
+    "rm -rf /root/.cache", "test ! -e /root/.cache",
+    "/usr/local/bin/zizmor --offline --no-progress --format=json -",
+):
+    assert required in zizmor_install, f"missing zizmor installation constraint: {required}"
+assert zizmor_install.index("rm -rf /root/.cache") < zizmor_install.index(
+    "/usr/local/bin/zizmor --offline"), "zizmor must run after removing build caches"
+print("ok - zizmor uses pinned wheels and works without installer caches in the same layer")
+
 for instruction in instructions:
     if not re.match(r"^COPY\s+", instruction):
         continue

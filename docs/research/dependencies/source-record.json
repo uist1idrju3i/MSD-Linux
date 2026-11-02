@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-02T17:48:00.179084+00:00",
+  "repository_base": "1395e9d142a0970fc68e57818e51af02e2d99f2f",
+  "ci": {
+    "run_url": "https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41486595026",
+    "artifact_url": "https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41486595026/artifacts/13163313182",
+    "head_sha": "1147512a54f1f1b68f97ad1b5a7d053de644cb10",
+    "sbom_project_version": "d9ae8a33f348b6ff77d236d02c1d56e7ae81d70e",
+    "sbom": {
+      "sha256": "3907f0f3436f893efeb13af32fe6d9ba5cad1ca87a140df4ebad52c367498477",
+      "bytes": 221187
+    },
+    "show_info": {
+      "sha256": "9e7fec46ef77c2ac8c1886bc2c1695391a02c41b37acef9f276b609a70be3dfb",
+      "bytes": 68258
+    }
+  },
+  "development_image": "ghcr.io/uist1idrju3i/msd-dev@sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77",
+  "buildroot_commit": "8b238854d909c9cce32ef9671d968b03e323b55d",
+  "firmware_commits": {
+    "brcmfmac_sdio-firmware-rpi": {
+      "repository": "LibreELEC/brcmfmac_sdio-firmware-rpi",
+      "head": "6596d332eaadd63e2413e3937715a084f61c39e2",
+      "checked_at": "2026-11-02T17:48:00.179084+00:00"
+    },
+    "rpi-firmware": {
+      "repository": "raspberrypi/firmware",
+      "head": "ab5c7f86283ceb58b7adb269cae1d16092a31bf6",
+      "checked_at": "2026-11-02T17:48:00.179084+00:00"
+    },
+    "m5stack-cardputerzero": {
+      "repository": "m5stack/m5stack-linux-dtoverlays",
+      "head": "37b42d9451495b5597dd7e50cab502da8028f9c2",
+      "checked_at": "2026-11-02T17:48:00.179084+00:00"
+    }
+  },
+  "supplemental_sources": [
+    {
+      "name": "action-manifest-actions-attest-build-provenance",
+      "url": "https://raw.githubusercontent.com/actions/attest-build-provenance/4d101475d8b20a2381f78447822ac1eab6504dd8/action.yml",
+      "checked_at": "2026-11-02T17:03:34.259022+00:00",
+      "status": 200,
+      "sha256": "9fb3b3ecd703b994c45c0d18c62934ce095c6863b45240fc43a20d2dea58abc6",
+      "bytes": 4116
+    },
+    {
+      "name": "action-manifest-actions-attest-sbom",
+      "url": "https://raw.githubusercontent.com/actions/attest-sbom/c604332985a26aa8cf1bdc465b92731239ec6b9e/action.yml",
+      "checked_at": "2026-11-02T17:03:34.259891+00:00",
+      "status": 200,
+      "sha256": "a29c1f9ab9194487445b6972261261308cd752efa0bd66de32dfdadec0f99474",
+      "bytes": 3104
+    },
+    {
+      "name": "action-manifest-actions-cache-restore",
+      "url": "https://raw.githubusercontent.com/actions/cache/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/restore/action.yml",
+      "checked_at": "2026-11-02T17:03:34.260362+00:00",
+      "status": 200,
+      "sha256": "bb552a94cec165255080b7e13fe3d2051c6c79e321e99435b5859dc7de5e9057",
+      "bytes": 1589
+    },
+    {
+      "name": "action-manifest-actions-cache-save",
+      "url": "https://raw.githubusercontent.com/actions/cache/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/save/action.yml",
+      "checked_at": "2026-11-02T17:03:34.260892+00:00",
+      "status": 200,
+      "sha256": "5da400e1a7551cee617339fd1a5281483d71e6c56d86dd117fbd354f047308ec",
+      "bytes": 776
+    },
+    {
+      "name": "action-manifest-actions-checkout",
+      "url": "https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
+      "checked_at": "2026-11-02T17:03:34.341367+00:00",
+      "status": 200,
+      "sha256": "d59219cb79590abdb877deaa14e3b65a00c05318bf5a6f3b989b9162b5d08c35",
+      "bytes": 5144
+    },
+    {
+      "name": "action-manifest-actions-deploy-pages",
+      "url": "https://raw.githubusercontent.com/actions/deploy-pages/368f82528645a54fb793d4d04e342629a3f51346/action.yml",
+      "checked_at": "2026-11-02T17:03:34.347475+00:00",
+      "status": 200,
+      "sha256": "64c44539fba53559a157b5de16c01d3ab91dbc999c1b98b5c0b2fc3528d5d059",
+      "bytes": 1244
+    },
+    {
+      "name": "action-manifest-actions-upload-artifact",
+      "url": "https://raw.githubusercontent.com/actions/upload-artifact/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml",
+      "checked_at": "2026-11-02T17:03:34.375937+00:00",
+      "status": 200,
+      "sha256": "c5979822866a72362e609844b6ebe77d4b7e759af68cc1c2c425dcf51481fab4",
+      "bytes": 3603
+    },
+    {
+      "name": "action-manifest-actions-upload-pages-artifact",
+      "url": "https://raw.githubusercontent.com/actions/upload-pages-artifact/fc324d3547104276b827a68afc52ff2a11cc49c9/action.yml",
+      "checked_at": "2026-11-02T17:03:34.419440+00:00",
+      "status": 200,
+      "sha256": "f84e759011e0c497e696f5bce4ebb5fbe9bbdc5aea309b73795283fa139c1558",
+      "bytes": 2895
+    },
+    {
+      "name": "action-releases-actions-attest-build-provenance",
+      "url": "https://api.github.com/repos/actions/attest-build-provenance/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.420870+00:00",
+      "status": 200,
+      "sha256": "37be7e57ed97ea973db20fb6fc4576aa001985b4154d0c87248f18865b159c5f",
+      "bytes": 83735
+    },
+    {
+      "name": "action-releases-actions-attest-sbom",
+      "url": "https://api.github.com/repos/actions/attest-sbom/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.453491+00:00",
+      "status": 200,
+      "sha256": "5265673097060c7350e9824c066722b43bacafaac9661d77c6f89b17d364d9fd",
+      "bytes": 46276
+    },
+    {
+      "name": "action-releases-actions-cache",
+      "url": "https://api.github.com/repos/actions/cache/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.457439+00:00",
+      "status": 200,
+      "sha256": "c3e8f5f6f8724ca7126d4fe34967635f71b5e93c52992d9a1cac575d534df7e5",
+      "bytes": 170172
+    },
+    {
+      "name": "action-releases-actions-checkout",
+      "url": "https://api.github.com/repos/actions/checkout/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.524721+00:00",
+      "status": 200,
+      "sha256": "8b752060954f18c6205ca1eaccdc42d5851a02a689d3af629611efd1f9bdcb90",
+      "bytes": 137654
+    },
+    {
+      "name": "action-releases-actions-deploy-pages",
+      "url": "https://api.github.com/repos/actions/deploy-pages/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.917907+00:00",
+      "status": 200,
+      "sha256": "094a306c6fa7ecefbda7e3161bc3897bd6c87f97fa4e3dbdd2bf493c5a71a005",
+      "bytes": 98179
+    },
+    {
+      "name": "action-releases-actions-upload-artifact",
+      "url": "https://api.github.com/repos/actions/upload-artifact/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:34.944480+00:00",
+      "status": 200,
+      "sha256": "77ae9860565bd20a93bcc81bb267b72d59f1e034c86b2c8b3f88840e92211e53",
+      "bytes": 112861
+    },
+    {
+      "name": "action-releases-actions-upload-pages-artifact",
+      "url": "https://api.github.com/repos/actions/upload-pages-artifact/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:35.061086+00:00",
+      "status": 200,
+      "sha256": "9a2c663b4a7cbdb4488df6e05a131664fadc6ad1b4fa6b21af84b01b6c236d6b",
+      "bytes": 40506
+    },
+    {
+      "name": "binutils-index",
+      "url": "https://ftp.gnu.org/gnu/binutils/",
+      "checked_at": "2026-11-02T17:03:35.061642+00:00",
+      "status": 200,
+      "sha256": "092993dd1a3f8dc74b79cffcbe80f21618eae07288588abeb0f3783624863d14",
+      "bytes": 88649
+    },
+    {
+      "name": "fakeroot-index",
+      "url": "https://deb.debian.org/debian/pool/main/f/fakeroot/",
+      "checked_at": "2026-11-02T17:03:35.477076+00:00",
+      "status": 200,
+      "sha256": "d0411c6096c92804910accb20496172ac36d945da09332560a4c8b60c23ec478",
+      "bytes": 16662
+    },
+    {
+      "name": "gcc-releases",
+      "url": "https://gcc.gnu.org/releases.html",
+      "checked_at": "2026-11-02T17:03:35.489162+00:00",
+      "status": 200,
+      "sha256": "b0abef584052b55698ffb7e796a6be852d86162c50671b4125a496fd603aab25",
+      "bytes": 17688
+    },
+    {
+      "name": "gdb-index",
+      "url": "https://ftp.gnu.org/gnu/gdb/",
+      "checked_at": "2026-11-02T17:03:35.516026+00:00",
+      "status": 200,
+      "sha256": "1ee868009bfd6a1d84e32b6b4042834ef1a777c956839e7c76c2ec2903c202f9",
+      "bytes": 57718
+    },
+    {
+      "name": "glibc-index",
+      "url": "https://ftp.gnu.org/gnu/glibc/",
+      "checked_at": "2026-11-02T17:03:35.522094+00:00",
+      "status": 200,
+      "sha256": "666b912c53d256ba762240840d00bbb88831e000bef850a2cfc2832566d2e556",
+      "bytes": 116273
+    },
+    {
+      "name": "go-github.com-bmatcuk-doublestar-v4",
+      "url": "https://proxy.golang.org/github.com/bmatcuk/doublestar/v4/@latest",
+      "checked_at": "2026-11-02T17:03:35.673931+00:00",
+      "status": 200,
+      "sha256": "b6dad01b488b5723d8ac4b8d91de5185370646786d1e8a30ec6ac9e03f34ddce",
+      "bytes": 196
+    },
+    {
+      "name": "go-github.com-clipperhouse-uax29-v2",
+      "url": "https://proxy.golang.org/github.com/clipperhouse/uax29/v2/@latest",
+      "checked_at": "2026-11-02T17:03:35.719430+00:00",
+      "status": 200,
+      "sha256": "ab382b26caf0f76ebe49db7fe4293ee05acd33edb2512549c36a11d0399943e9",
+      "bytes": 194
+    },
+    {
+      "name": "go-github.com-fatih-color",
+      "url": "https://proxy.golang.org/github.com/fatih/color/@latest",
+      "checked_at": "2026-11-02T17:03:35.767830+00:00",
+      "status": 200,
+      "sha256": "f35dcbaa0616e5b5e9901e7187bc931a3949d064868c88a7b6d8c5efdf0c959f",
+      "bytes": 189
+    },
+    {
+      "name": "go-github.com-mattn-go-colorable",
+      "url": "https://proxy.golang.org/github.com/mattn/go-colorable/@latest",
+      "checked_at": "2026-11-02T17:03:35.820296+00:00",
+      "status": 200,
+      "sha256": "702e9c445fa9077e68692aa306db1a10ace93eb91df1d09bf7f79eb679ec5c24",
+      "bytes": 196
+    },
+    {
+      "name": "go-github.com-mattn-go-isatty",
+      "url": "https://proxy.golang.org/github.com/mattn/go-isatty/@latest",
+      "checked_at": "2026-11-02T17:03:35.868322+00:00",
+      "status": 200,
+      "sha256": "76aa6cee4d454b8565295124a808daaae4c805275a2787ef47ae489686d50cd1",
+      "bytes": 193
+    },
+    {
+      "name": "go-github.com-mattn-go-runewidth",
+      "url": "https://proxy.golang.org/github.com/mattn/go-runewidth/@latest",
+      "checked_at": "2026-11-02T17:03:35.876990+00:00",
+      "status": 200,
+      "sha256": "c2381d4d58f231e718f978b3b7809c2e60b8ad433cc703bbf7b038201131ef42",
+      "bytes": 196
+    },
+    {
+      "name": "go-github.com-mattn-go-shellwords",
+      "url": "https://proxy.golang.org/github.com/mattn/go-shellwords/@latest",
+      "checked_at": "2026-11-02T17:03:35.922582+00:00",
+      "status": 200,
+      "sha256": "a55283a2589f7acacf667d090011a4b685d0f85150593018347fd9b77cedb55b",
+      "bytes": 197
+    },
+    {
+      "name": "go-github.com-robfig-cron-v3",
+      "url": "https://proxy.golang.org/github.com/robfig/cron/v3/@latest",
+      "checked_at": "2026-11-02T17:03:35.923475+00:00",
+      "status": 200,
+      "sha256": "d77bb3a69e5ec2f9973c97c94247338a00bceae56e96cbe6c70b6fa6aace6157",
+      "bytes": 50
+    },
+    {
+      "name": "go-go.yaml.in-yaml-v4",
+      "url": "https://proxy.golang.org/go.yaml.in/yaml/v4/@latest",
+      "checked_at": "2026-11-02T17:03:35.935625+00:00",
+      "status": 200,
+      "sha256": "f880d06256915ff0625493c1ef639cfe2cf1f57896b2e0bd8ee1373df0289225",
+      "bytes": 198
+    },
+    {
+      "name": "go-golang.org-x-sync",
+      "url": "https://proxy.golang.org/golang.org/x/sync/@latest",
+      "checked_at": "2026-11-02T17:03:35.962328+00:00",
+      "status": 200,
+      "sha256": "d12e1a2d422a79235baceab349c3c55ab3de707214338884cade9af3bb1a5b70",
+      "bytes": 191
+    },
+    {
+      "name": "go-golang.org-x-sys",
+      "url": "https://proxy.golang.org/golang.org/x/sys/@latest",
+      "checked_at": "2026-11-02T17:03:35.978902+00:00",
+      "status": 200,
+      "sha256": "b1eeba05824e4c555cee0454171f3dbc0b9bce51e322237b5bd98ceb14a62346",
+      "bytes": 190
+    },
+    {
+      "name": "khc-tags",
+      "url": "https://api.github.com/repos/a13xp0p0v/kernel-hardening-checker/tags?per_page=100",
+      "checked_at": "2026-11-02T17:03:35.979764+00:00",
+      "status": 200,
+      "sha256": "6217c65e9c4e0f0bff8dd11b05fd88c847a351ab4f3785659b4f62d96d3cdd9b",
+      "bytes": 6576
+    },
+    {
+      "name": "node-schedule",
+      "url": "https://raw.githubusercontent.com/nodejs/Release/main/schedule.json",
+      "checked_at": "2026-11-02T17:03:35.980914+00:00",
+      "status": 200,
+      "sha256": "50fe35a4df02398f741fdffbc666aceca323fcdb7f46d05af93145bf610d0049",
+      "bytes": 3254
+    },
+    {
+      "name": "openssl-policy",
+      "url": "https://openssl-library.org/policies/releasestrat/",
+      "checked_at": "2026-11-02T17:03:36.012710+00:00",
+      "status": 200,
+      "sha256": "675a2850c7b35a7d2acd3ef0acca2065dcc51937a7da9ba8f1c60541380be17d",
+      "bytes": 36880
+    },
+    {
+      "name": "pigz-tags",
+      "url": "https://api.github.com/repos/madler/pigz/tags?per_page=100",
+      "checked_at": "2026-11-02T17:03:36.013516+00:00",
+      "status": 200,
+      "sha256": "9ac1265dc0d46071f82a54fdabf58ca73a9bddf92ba7a9e7ad5f83447a29c729",
+      "bytes": 14363
+    },
+    {
+      "name": "python-315",
+      "url": "https://www.python.org/ftp/python/3.15.0/",
+      "checked_at": "2026-11-02T17:03:36.028615+00:00",
+      "status": 200,
+      "sha256": "004be8d24ce0b5934ba62cc98708ad224a797e61700787e9c03db9fd7013e82f",
+      "bytes": 170153
+    },
+    {
+      "name": "python-316",
+      "url": "https://www.python.org/ftp/python/3.16.0/",
+      "checked_at": "2026-11-02T17:03:36.085252+00:00",
+      "status": 200,
+      "sha256": "b121267e5826268cd32c13e3cb0e5cb4ba069258a0ed0d959b854a2c4f45a370",
+      "bytes": 7705
+    },
+    {
+      "name": "python-downloads",
+      "url": "https://www.python.org/downloads/",
+      "checked_at": "2026-11-02T17:03:36.174963+00:00",
+      "status": 200,
+      "sha256": "c942274430346ca8fbee27e51fc0dfdec0d4d8adc2b880d929f07d47fb0894a2",
+      "bytes": 224618
+    },
+    {
+      "name": "python-support",
+      "url": "https://devguide.python.org/versions/",
+      "checked_at": "2026-11-02T17:03:36.222001+00:00",
+      "status": 200,
+      "sha256": "325386edb7f7c58aaa9d94fe27c13683c74acd98104eeaef5fe5a17620d6b699",
+      "bytes": 125309
+    },
+    {
+      "name": "util-linux-242",
+      "url": "https://www.kernel.org/pub/linux/utils/util-linux/v2.42/",
+      "checked_at": "2026-11-02T17:03:36.307085+00:00",
+      "status": 200,
+      "sha256": "6d0981a237e5f7fc07e652a42a1b6983557832dc59182f417a4dd4189a4e6a73",
+      "bytes": 5993
+    },
+    {
+      "name": "v4l-tags",
+      "url": "https://api.github.com/repos/gjasny/v4l-utils/tags?per_page=100",
+      "checked_at": "2026-11-02T17:03:36.377523+00:00",
+      "status": 200,
+      "sha256": "c459ebc4cddf10aea5bf442f6832cfc135cfd0f9c4ea9e99a9ddb3d16d825d09",
+      "bytes": 33111
+    },
+    {
+      "name": "zlib-releases",
+      "url": "https://api.github.com/repos/madler/zlib/releases?per_page=100",
+      "checked_at": "2026-11-02T17:03:36.388571+00:00",
+      "status": 200,
+      "sha256": "0cd1274d94af6a9d19c18526d3d3ee58f7fb96c1e39a59c73c656efeedd2f3e6",
+      "bytes": 42787
+    }
+  ],
+  "limitations": [
+    "Static source lockfiles are not an inventory of bundled JavaScript execution.",
+    "APT comparison covers final amd64 OCI only; not intermediate build stages or upstream newest versions.",
+    "Source and license fields are metadata, not a distribution-compliance approval.",
+    "This record does not update dependencies or add monitors."
+  ]
+}
