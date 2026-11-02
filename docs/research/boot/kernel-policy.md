@@ -1,5 +1,16 @@
+# カーネルの生成と比較の方針
 
-## カーネル
+[調査の索引](../../../RESEARCH.md) / [カーネル比較](kernel-comparison.md)
+
+## 現行の生成処理
+
+[post-image.sh](../../../board/cardputerzero/post-image.sh)は、`Image`を`pigz -11 -n`で`kernel8.img`に圧縮し、`gunzip`後に元の`Image`と`cmp`で照合します。実サイズはbuild logの`Kernel compression sizes`行に記録します。firmwareによる展開と実機の起動時間を検証したという意味ではありません。
+
+カーネルの固定値は[defconfig](../../../configs/msd_cardputerzero_defconfig)を参照します。[製品fragment](../../../board/cardputerzero/linux.fragment)は`CONFIG_PREEMPT=y`と`CONFIG_PREEMPT_RT=y`を指定します。生成後の有効値は最終`.config`とbuild logで確認します。
+
+## 過去の方針メモ
+
+以下は、2026年10月の公開資料と当時の方針を記録した本文です。「PREEMPT_RTは対象外」などの記述は現行の製品設定ではありません。版別のAPI・PREEMPT・alias unmapの出典と確認範囲は[比較の詳細](kernel-comparison.md)を、採用方針の訂正は[訂正記録](../corrections.md)を参照してください。
 
 - `kernel8.img` は `pigz -11 -n` で作成し、gunzip 後に `Image` と一致することを検査する。実サイズはビルドログの `Kernel compression sizes` 行に記録する。この文書では未測定値を記載しない。
 - 基準は `rpi-6.18.y` とします。RPi kernel 6.18.57（2026-10-25 に 6.18.58 へ更新）、Buildroot 2026.08 の 2026-09-04 版を公開情報で確認しました。カーネルと M5 driver は commit 固定します。

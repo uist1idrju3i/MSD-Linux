@@ -1,5 +1,9 @@
 # Raspberry Pi ファームウェア仕様の調査（2026-11）
 
+[調査の索引](../../../RESEARCH.md) / [構築手順](../../BUILD.md)
+
+以下は公開資料と過去の検証の記録です。数値の測定条件と未確認事項を保ち、現在の配備設定や実機での検証とは区別します。
+
 RPi ファームウェアの起動フロー・ファイル構成・tryboot/autoboot・OTP/secure boot・更新経路を一次資料（raspberrypi/documentation・firmware リポジトリ）で整理します。CM0 は BCM2710（BCM2837 系）なので**レガシーブート**が対象で、Pi4/5 の EEPROM ブートローダは参考情報です。
 
 2026-11-02 UTC に公式文書のコミット `daf1ca791713d5f1346556122a2b6942bcc7b1d7` と再照合しました。以前の誤記は末尾の訂正表に残しています。設定・ファイルの照合と、実機での起動確認は別です。QEMU は GPU ファームウェアを実行しないため、この設定で CM0 が起動するかは実機で確認する必要があります。
@@ -60,7 +64,7 @@ ROM → `recovery.bin` 経路（OTP/nRPIBOOT、SD、USB device）→ SPI EEPROM 
 
 - `raspberrypi/firmware` リポジトリの `boot/` が配布本体（`bcm2710-rpi-cm0.dtb`・`start.elf` 系・`fixup*.dat`・`overlays/` を含む）。MSD はここから DTB を拾ってイメージに載せている
 - Pi4/5 向けは `rpi-eeprom` パッケージ経由で `pieeprom-*.bin` を SPI に書き込む経路（`rpi-eeprom-update`、`default`/`latest` トレイン）
-- MSD のカーネルは rpi-6.18.y pin です。ファームウェアは Buildroot の `rpi-firmware` パッケージが固定するコミットを使います。ボードの [config.txt](../../board/cardputerzero/config.txt) を Buildroot がコピーし、[post-image.sh](../../board/cardputerzero/post-image.sh) が対応するファイルと boot イメージへ収録します。
+- MSD のカーネルは rpi-6.18.y pin です。ファームウェアは Buildroot の `rpi-firmware` パッケージが固定するコミットを使います。ボードの [config.txt](../../../board/cardputerzero/config.txt) を Buildroot がコピーし、[post-image.sh](../../../board/cardputerzero/post-image.sh) が対応するファイルと boot イメージへ収録します。
 
 ## 6. ファームウェアファイルの全バリアント
 
@@ -173,7 +177,7 @@ ROM → `recovery.bin` 経路（OTP/nRPIBOOT、SD、USB device）→ SPI EEPROM 
 
 1. **ブートフローは bootcode.bin → start.elf → config.txt/tryboot.txt**: tryboot が全モデル対応で、MSD の A/B（`reboot '0 tryboot'` + autoboot.txt のパーティション分岐）と直結する公式機構。
 2. **起動の信頼境界**: Pi4/5 の SPI ブート EEPROM・secure boot を CM0 の保護として数えない。ユーザーランドの更新署名は microSD を交換できる相手に対する信頼の起点にはならない。
-3. **リフレッシュや SDRAM タイミングは start.elf 内部**: [メモリ信頼性の調査](memory-reliability-2026-11.md) の結論と一致（ユーザーランドから変更不可）。
+3. **リフレッシュや SDRAM タイミングは start.elf 内部**: [メモリ信頼性の調査](../memory-reliability-2026-11.md) の結論と一致（ユーザーランドから変更不可）。
 4. **bootcode.bin 探索で 5 秒タイムアウト**: primary SD に bootcode.bin があれば即座に進むため、CardputerZero の起動時間には影響しないが、SD 不在時のフォールバック時間として記録。
 5. **ファームウェアファイルは raspberrypi/firmware 由来を pin して配布**: 更新は「固定版の更新確認」ワークフローと同じく変更履歴確認の対象。
 
@@ -199,4 +203,4 @@ ROM → `recovery.bin` 経路（OTP/nRPIBOOT、SD、USB device）→ SPI EEPROM 
 - otp-bits https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/raspberry-pi/otp-bits.adoc 【一次】
 - config_txt/boot.adoc（tryboot/boot.img/BOOT_ORDER 渡し） https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/config_txt/boot.adoc 【一次】
 - `raspberrypi/firmware` `boot/` https://github.com/raspberrypi/firmware/tree/master/boot 【一次】
-- 既存の起動経路設計は [boot 関連の調査](boot-and-kernel.md) を参照
+- 既存の起動経路設計は [boot 関連の調査](sequence.md) を参照

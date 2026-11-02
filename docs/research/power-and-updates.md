@@ -157,7 +157,7 @@ S10 の時点では、`manifest` にバージョンや通し番号がなく、`m
 | systemd との連携 | `RuntimeWatchdogSec` と `sd_notify` の WATCHDOG 通知が利用できます。 | https://www.freedesktop.org/software/systemd/man/latest/systemd-system.conf.html#RuntimeWatchdogSec=<br>https://man7.org/linux/man-pages/man3/sd_notify.3.html | 一次 |
 
 ### 18.1 人手の回復モードを設けない設計案（推測、未実装・未測定）
-起動完了条件は未決です。LCD にプロンプトを表示してキー入力を受け付ける時点、PID 1 が完了マーカーを書く時点、または両方を使う案では判定条件が異なります。[起動時間の終点](boot-and-kernel.md)も参照してください。
+起動完了条件は未決です。LCD にプロンプトを表示してキー入力を受け付ける時点、PID 1 が完了マーカーを書く時点、または両方を使う案では判定条件が異なります。[起動時間の終点](boot/measurement-methods.md)も参照してください。
 
 1. **スロット:** A / B に加え、必要なら C を工場イメージとして設けます。回復モードとブートメニューは設けず、自動で前のスロットへ戻す案です。
 2. **試行:** 新スロットを tryboot（または自前の試行フラグとカウンター）で 1〜N 回だけ起動します。選択した完了条件への到達とアプリの健全性確認を満たした場合に確定し、autoboot.txt を更新します。完了条件は未決です。

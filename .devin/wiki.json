@@ -61,7 +61,7 @@
       "parent": "ビルドシステム",
       "page_notes": [
         {
-          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、docs/research/boot-and-kernel.md、docs/research/kernel-size.md を根拠にしてください。"
+          "content": "board/cardputerzero/linux.fragment、board/cardputerzero/patches/、vendor/m5stack-linux-dtoverlays の利用箇所、docs/research/boot/sequence.md、docs/research/boot/kernel-comparison.md、docs/research/boot/kernel-size.md を根拠にしてください。"
         }
       ]
     },
@@ -80,7 +80,7 @@
       "parent": "起動シーケンス",
       "page_notes": [
         {
-          "content": "docs/research/boot-time-measurements.md、RESEARCH.md の「高速化のアイデア一覧」と docs/research/boot-and-kernel.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
+          "content": "docs/research/boot/measurements.md、RESEARCH.md の「高速化のアイデア一覧」と docs/research/boot/sequence.md、docs/research/boot/kernel-comparison.md を根拠にしてください。実機での実測値がない項目は未確認と書いてください。"
         }
       ]
     },

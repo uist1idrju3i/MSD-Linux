@@ -99,7 +99,7 @@
 | 項目 | 関連資料 |
 |---|---|
 | 起動完了条件・測定 | [実機で測る項目](#実機が届いたら最初に測る項目優先順の案) |
-| カーネル・UI | [起動・カーネル調査](boot-and-kernel.md) |
+| カーネル・UI | [起動・カーネル調査](boot/sequence.md) |
 | rootfs・init・libc | [ユーザー空間・セキュリティ調査](userspace-and-security.md) |
 | A/B・電源断 | [電源・更新方式の調査](power-and-updates.md) |
 | 開発中のログ | [開発中の観測手段](#開発中の観測手段) |
@@ -170,7 +170,7 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | CM0 の起動時間ベースラインと各最適化の実測効果（実機未入手） | [実機測定計画](#実機が届いたら最初に測る項目優先順の案) |
 | CM0 での `kernel8.img` / GPT / `arm_64bit` の起動可否 | https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/config_txt/boot.adoc |
 | Wi-Fi チップ型番（CM0 データシート上の無線搭載版は CYW43439。無線版か Lite・無線なし版か、実機の chip ID は未確認）、HDMI コネクタ形状、IR・カメラの DT の所在 | https://docs.m5stack.com/en/CardputerZero<br>https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf |
-| fbcon / FRAMEBUFFER_CONSOLE の要否と overlay 名の不整合 | [起動・カーネル調査](boot-and-kernel.md)、https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20 |
+| fbcon / FRAMEBUFFER_CONSOLE の要否と overlay 名の不整合 | [起動・カーネル調査](hardware-spec.md)、https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20 |
 | image-rota 相当の Zero 2 W / Pi 3 での挙動、Canonical Zephyr の内容 | https://github.com/raspberrypi/rpi-image-gen/blob/d7616a28bbb552db77cfd7bf90888f7a9ef22f33/image/gpt/ab_userdata/image.yaml<br>https://github.com/zephyrproject-rtos/zephyr |
 | Ubuntu Core 26 の A/B 相当機構と Pi 3 / Zero 2 W での起動 | https://downloads.raspberrypi.com/os_list_imagingutility_v4.json |
 | `-mcpu` / LTO / sysctl 等の効果 | URL未取得。公開ツールチェーン文書と実機測定で確認します。 |
@@ -179,17 +179,17 @@ UART の既定値、ピン配置、コンソール設定は、公開された M5
 | MCUboot の arm64 実績 | URL未取得。公開ソースと対応ボード一覧で確認します。 |
 | BCM2837 に AES / SHA 命令がないことのメーカー一次仕様。A53 の Crypto Extension がオプションであることは DDI 0501F で確認済みですが、BCM2837 が実際に搭載していないことの一次仕様は未取得です。二次情報として Raspberry Pi forum の報告があります。 | URL未取得。Arm DDI 0501F と BCM2837 のメーカー資料を照合します。 |
 | SSH / VPN / PQ の CM0 実測、古いクライアントとの PQ 互換性、OpenVPN で ML-KEM を使えるか | [SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md)、実機測定は未実施です。 |
-| Linux 7.3（alias unmap 再適用後）の CM0 起動、7.x での M5 モジュールのビルド可否、Linux 7.2 / 7.3 の PREEMPT 値 | [起動・カーネル調査](boot-and-kernel.md) |
+| Linux 7.3（alias unmap 再適用後）の CM0 起動、7.x での M5 モジュールのビルド可否、Linux 7.2 / 7.3 の PREEMPT 値 | [起動・カーネル調査](boot/kernel-comparison.md) |
 | M5Stack の名称利用ガイドライン原文（`docs.m5stack.com/en/brand` は 404） | https://docs.m5stack.com/en/brand |
 | Kickstarter（403）、Raspberry Pi forum `t=207888` / `263234` / `376022`（403 / 取得不可）、TechFeed（タイトルのみ）など、取得できなかった公開ページ | [公開出典一覧](sources.md) |
 | 最終 config.txt の `enable_uart`、GPIO14 / 15 の pinmux（mini-UART か PL011 か）、pi-gen の文書と実装のどちらが意図か | 上記 UART 表と https://docs.m5stack.com/en/CardputerZero |
 | SR9900A の実機 USB ID（0fe6:9900 か） | https://docs.m5stack.com/en/CardputerZero。実機で `lsusb` または起動ログを確認します。 |
-| 再適用後の alias unmap が Raspberry Pi 3 / 4 の KVM 問題を解消したか | [起動・カーネル調査](boot-and-kernel.md)、実機確認は未実施です。 |
+| 再適用後の alias unmap が Raspberry Pi 3 / 4 の KVM 問題を解消したか | [起動・カーネル調査](boot/kernel-comparison.md)、実機確認は未実施です。 |
 | KittenLabs の `core_freq=550` が最終の 3.5 秒に含まれるか | URL未取得。公開ベンチマークの測定条件を確認する必要があります。 |
 | 開発ログ方式の電断試験時の実装 | [電源断試験時の切替方針](#電源断試験時の切替方針推測)を参照。 |
 | rpi-6.12.y の同じパスは HTTP 404。6.12 系全体にヘッダーがないか、rpi-6.13〜6.17 に存在するか | https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.12.y/include/drm/clients/drm_client_setup.h<br>https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.18.y/include/drm/clients/drm_client_setup.h |
 | `powerfail_suo` の `disabled-gpios = <&m5ioe1 11 1>` が M5IOE1 の PYG12（LCD_RST、documentation 記載）に当たるか。index+1 の推論で未確認です。GPIO6=SW_DET と PYG6=MIC_SW は別物で、混同しません。 | https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/powerfail_suo.c<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts |
-| RX8130 の I2C アドレス。CardputerZero overlay は 0x32、単体 `modules/rx8130` は 0x68（実機未確認） | [起動・カーネル調査](boot-and-kernel.md) |
+| RX8130 の I2C アドレス。CardputerZero overlay は 0x32、単体 `modules/rx8130` は 0x68（実機未確認） | [起動・カーネル調査](hardware-wiring-audit.md) |
 | OpenVPN 2.7.6 + OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、CM0 での所要時間も未測定です。 | [SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md) |
 | WP-1 の Pi 3B+ ログにある kernel `Loaded` 4.131 s から `Device tree loaded` 6.760 s までの 2.63 s の内訳、GPU 段とカーネルサイズの関係。同一構成でサイズを変えて実機測定する必要があります。 | https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-003610-WP-1-Optimising%20boot%20time.pdf |
 | Newlib に Linux 用の sys ディレクトリがないか（sourceware の取得ができていません） | URL未取得。公開ソースで確認する必要があります。 |

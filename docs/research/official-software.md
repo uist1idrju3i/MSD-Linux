@@ -64,7 +64,7 @@ PYG3はkeyboardとUSB hubで共有する。GPIO index 2と物理PYG3を混同せ
 
 ## 誤解を避ける境界
 
-- `PARTITION_WALK` はEEPROM bootloader向けで、CM0用A/B実装の根拠に使わない。trybootはRaspberry Pi文書で全モデル対応とされるが、CM0実機で確認済みではない。詳細は [firmware仕様](rpi-firmware-spec.md)。
+- `PARTITION_WALK` はEEPROM bootloader向けで、CM0用A/B実装の根拠に使わない。trybootはRaspberry Pi文書で全モデル対応とされるが、CM0実機で確認済みではない。詳細は [firmware仕様](boot/firmware.md)。
 - MのDRM driverが要求するheaderはKのソースと実際のビルドで確認する。ある6.12系URLの404だけで、6.12系列全体の不在を証明したとは扱わない。
 - Dの16 M5 modulesは署名者・vermagic・aliasを読み取った。署名metadataの存在だけで全moduleの暗号検証・probe・実機動作を完了したとは書かない。
 - DTBO合成は開発用imageのDTC 1.7.2で成功した。ホストDTC 1.6.1ではIMX219適用が失敗した。旧ツールの失敗と製品の不具合を区別し、失敗試行も [確認記録](../experiments/2026-11-02-hardware-artifact-audit.md) に残す。

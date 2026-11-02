@@ -57,14 +57,17 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 起動・カーネル・CPU とメモリ
 
-- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
-- [起動時間の実測と分析](docs/research/boot-time-measurements.md)
-- [カーネル縮小](docs/research/kernel-size.md)
+- [起動経路と高速化候補](docs/research/boot/sequence.md)
+- [起動時間の終点と測定手法](docs/research/boot/measurement-methods.md)
+- [起動時間の実測と分析](docs/research/boot/measurements.md)
+- [カーネル版・PREEMPT・APIの比較](docs/research/boot/kernel-comparison.md)
+- [カーネル縮小](docs/research/boot/kernel-size.md)
+- [起動と電断耐性の設計論点](docs/research/boot/design-notes.md)
 - [sysctl の既定値](docs/research/tunables-sysctl.md)
 - [モジュールパラメーター](docs/research/tunables-module-params.md)
 - [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
-- [Raspberry Pi ファームウェア仕様の調査](docs/research/rpi-firmware-spec.md)
-- [カーネル版と起動方針](docs/research/kernel-policy.md)
+- [Raspberry Pi ファームウェア仕様の調査](docs/research/boot/firmware.md)
+- [カーネル版と起動方針](docs/research/boot/kernel-policy.md)
 - [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
 - [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
 - [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
@@ -124,7 +127,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ## 起動時間（実測値と分析）
 
-詳しくは [boot-time-measurements.md](docs/research/boot-time-measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
+詳しくは [起動時間の測定記録](docs/research/boot/measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
 
 ## 高速化のアイデア一覧
 
@@ -162,7 +165,7 @@ QEMU の `raspi3ap` と `raspi3b` は BCM2837 SoC をエミュレートします
 
 ## カーネル
 
-kernel8.img の生成と検査、rpi-6.18.y 基準、PREEMPT、7.x 比較、overlay 依存、圧縮形式の評価は、 [kernel-policy.md](docs/research/kernel-policy.md) に分けました。
+kernel8.imgの生成と検査は[カーネルの生成方針](docs/research/boot/kernel-policy.md)、版別のPREEMPT・API・7.xの確認範囲は[比較の詳細](docs/research/boot/kernel-comparison.md)を参照してください。過去の方針メモは現在の設定と分けて保存しています。
 
 ## init・libc
 

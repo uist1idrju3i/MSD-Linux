@@ -8,7 +8,7 @@
 |---|---|---|
 | 文書と運用 | yomiyasu の更新、大きな調査文書の分割、README と公式サイトの更新、CI・Issue・リポジトリ設定の点検 | #65、#66、#67、[点検結果](repo-operations-review.md) |
 | QEMU の模型 | GPIO6 の電源断、watchdog のタイマー | #69、#86 |
-| 起動時間 | 段階ごとの計測、K1・K2・U1 の比較、K2 の実機比較の計画 | #70〜#73、[起動時間の計測](boot-time-measurements.md) |
+| 起動時間 | 段階ごとの計測、K1・K2・U1 の比較、K2 の実機比較の計画 | #70〜#73、[起動時間の計測](boot/measurements.md) |
 | 不具合の修正 | init script の `stop` で起動処理を再実行しない、ローカルソースのパッケージへのパッチ適用 | #68、#77 |
 | 小項目の試験 | `/data` の `noexec`、zram、Lynis、BusyBox の静的リンクと applet 削減、dm-verity | #76、#79、#80、#84 |
 | CI の高速化 | per-package directories（PPD）の比較と、成果物差の原因の確認 | #78、#81、#83、#85 |
