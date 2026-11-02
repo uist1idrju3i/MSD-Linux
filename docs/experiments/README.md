@@ -1,5 +1,7 @@
 # 実験記録
 
+[文書案内](../README.md) / [調査の索引](../../RESEARCH.md)。ここでの「完了」は記載した条件で実験を終えたことを表し、製品への採用や実機動作の確認とは別です。Yocto 検討は移行見送りで、[Buildroot への還元](../research/yocto-migration/buildroot-lessons.md)に再点検した範囲を記載しています。
+
 実験・測定・比較の記録を 1 件 1 ファイルで置きます。書き方は `.agents/skills/experiment-record/SKILL.md` に従います。ファイル名は `YYYY-MM-DD-sNN-<short>.md` とし、生の値は同じ名前の `.csv` にします。S1〜S17 のどれにも属さない実験の記録名は `YYYY-MM-DD-<short>.md`（sNN なし）です。これらもこの一覧に載せます。覆った結論も消さず、状態を「置換」にして新しい記録へリンクします。
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
@@ -52,7 +54,7 @@
 | [2026-10-31-cramfs-rootfs](2026-10-31-cramfs-rootfs.md) | なし | 2026-10-31 | 完了（QEMU のみ） | cramfs rootfs（`CONFIG_CRAMFS=y` + host-cramfs、p5 に dd 注入）を QEMU で起動。全ゲート通過・ready 177 s だが image は 25.2 MB で squashfs（22.3 MB）より約 13 % 増。file<16MB・gid 8bit・timestamp なしの制限もあり不採用を確定。 |
 | [2026-11-01-jobs-wallclock](2026-11-01-jobs-wallclock.md) | なし | 2026-11-01 | 完了 | `--jobs` の壁時計測定。jobs1=10421s、jobs2=1452s（ccache 温存で比較不可）。cold 推定は約 2 倍速。linux-custom 不在時に worker 全滅する欠陥を発見し preflight を追加。 |
 | [2026-11-01-s17-dmlw-blkdebug](2026-11-01-s17-dmlw-blkdebug.md) | S17 | 2026-11-01 | 完了（QEMU のみ） | dm-log-writes は 5 回とも replay 後イメージとゲスト計測 SHA-256 が完全一致（書き込み列の完全再生を確認）。blkdebug は注入範囲どおりに発火したが、QEMU の SD モデルがホスト側エラーをゲストに伝播しないことを確定（ゲスト観測型のストレージ障害検証は実機依存）。 |
-| [2026-11-02-buildroot-yocto-boottime](2026-11-02-buildroot-yocto-boottime.md) | なし | 2026-11-02 | 完了（QEMU のみ、各 5 回） | 同じソースと fragment のカーネルなら、Yocto で作っても Buildroot で作っても QEMU の起動時間に差は見えなかった（icount・TCG とも）。イメージ全体の差は中身の違いによるもので、モードで向きが逆になる。 |
+| [2026-11-02-buildroot-yocto-boottime](2026-11-02-buildroot-yocto-boottime.md) | なし | 2026-11-02 | 完了（QEMU のみ、各 5 回） | 同じ rootfs に載せた C3/C4 の差は事前の閾値を超えなかった。同等性や実機の差がないことは未証明。イメージ全体は内容が異なり、モードで差の向きが逆になる。 |
 | [2026-11-02-buildroot-yocto-artifacts](2026-11-02-buildroot-yocto-artifacts.md) | なし | 2026-11-02 | 完了（ビルドと QEMU、各 1 回） | Buildroot の完成イメージを cold で 3,280.65 s でビルドし、QEMU の A/B 試験に合格。Yocto の最小イメージは 7,444 s。同じ defconfig と fragment でもカーネルの `.config` は 544 項目違い、`CONFIG_THERMAL` が Yocto では `n`。 |
 | [2026-11-02-yocto-qemu-boot](2026-11-02-yocto-qemu-boot.md) | なし | 2026-11-02 | 完了（QEMU のみ） | Yocto の最小イメージが、getty を `ttyAMA1` に 1 行足した写しで、開発用 QEMU の `raspi3ap` と標準 QEMU の `raspi3b` のどちらでもログイン画面まで起動した（各 5 / 5）。標準 QEMU の `raspi3ap` は ASB が未実装で止まる。 |
 | [2026-11-02-yocto-wrynose-probe](2026-11-02-yocto-wrynose-probe.md) | なし | 2026-11-02 | 完了（ビルドのみ） | kas-container と rootless Docker で、仮置きの Wrynose 6.0.4 の最小イメージと M5 BSP（.ko 16 個、dtbo 3 個）がビルドできた。MSD のカーネル 6.18.59 と fragment でも通った。起動は未確認。 |
