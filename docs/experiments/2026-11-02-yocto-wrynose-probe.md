@@ -28,7 +28,7 @@
 | コンテナ | rootless Docker 29.9.2、`ghcr.io/siemens/kas/kas@sha256:4b210b0be3c887875973c4f4c35470b4ecf3edd2346c9de1bdd33feae5b86e94`（kas 5.5、Debian 13）、kas-container スクリプト SHA-256 `5b352d554f6f43da727386f156ecff6f7db5df608b676f24a71da84557136210` |
 | レイヤー | bitbake `51fd94a67fa17650a9ff623492005972bbc7d26f`（`yocto-6.0.4` タグの指す commit）、openembedded-core `0f03c732a0a2d0506b41b1abe60b3f368b2300dc`（同）、meta-raspberrypi `919588393f41b48cb6c5d832aa35e58a19b6762d`（wrynose） |
 | GCC / カーネル | gcc 15.3.0（ログのレシピ名）、E・B1 は linux-raspberrypi 6.18.33（`95b85be`）、B2 は 6.18.59（`b3495ea`） |
-| 出力先と状態 | `KAS_WORK_DIR=~/yocto-work/work`、`DL_DIR=~/yocto-cache/downloads`、`SSTATE_DIR=~/yocto-cache/sstate`。E は空の状態から、B1・B2 は E の出力を使い回しました |
+| 出力先と状態 | `KAS_WORK_DIR`、`DL_DIR`、`SSTATE_DIR` はいずれもリポジトリの外の別々のディレクトリ（作業領域、取得物、sstate）。E は空の状態から、B1・B2 は E の出力を使い回しました |
 | 変える条件 | E、B1、B2 の段（構成） |
 | 変えない条件 | DISTRO は nodistro、`BB_NUMBER_THREADS = "6"`、`PARALLEL_MAKE = "-j 6"`、PSI 閾値 15000 |
 | 繰り返し | 各段 1 回。性能の測定ではないため、時間は参考値です |
@@ -254,7 +254,7 @@ kas-container と rootless Docker で、仮置きの Wrynose 6.0.4 を使って 
 
 ## ログ
 
-ログはリポジトリに入れていません。VM 上の `~/yocto-evidence/2026-11-02/` に、設定とスクリプトと一緒に写しました。上の手順で再生成できます。`b1.log` は B1-4 のログです。
+ログはリポジトリに入れていません（大きなログはコミットしない方針）。上の手順で再生成でき、各ログの SHA-256 を下に記します。`b1.log` は B1-4 のログです。
 
 | ファイル | SHA-256 |
 |---|---|
