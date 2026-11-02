@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-02-hardware-artifact-audit](2026-11-02-hardware-artifact-audit.md) | なし | 2026-11-02 | 静的照合完了・実機未確認 | 固定CI生成物のDTBO、16 M5 modules、firmware、権限、最終configとA/Bログを照合。DTC 1.7.2で合成成功、1.6.1の失敗も記録。 |
 | [2026-10-19-s01-kernel-sweep-trial](2026-10-19-s01-kernel-sweep-trial.md) | S1 | 2026-10-19 | 完了 | ツールのみ。本番構成の採否は未実施。NUMA=n は QEMU_FAILED のため未判定。 |
 | [2026-10-19-s02-camera](2026-10-19-s02-camera.md) | S2 | 2026-10-19 | 完了 | tier A 採用（Image +0 B、QEMU 相対 +0.0510%、署名 1,051/1,051）。rootfs +1,499,136 B、実機 capture は未確認。 |
 | [2026-10-19-s03-data-ext4-writes](2026-10-19-s03-data-ext4-writes.md) | S3 | 2026-10-19 | 完了 | 4 KiB / `data=ordered` を採用。`inline_data` と `lazytime` は不採用。 |

@@ -1,0 +1,91 @@
+{
+  "checked_utc_date": "2026-11-02",
+  "scope": "Public pinned source files; not official image binaries",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/docs/CARDPUTERZERO-IMAGE-DESIGN.md",
+      "sha256": "0051a1a8f477982a3ac7db91fc26b7deb7fc0be0b841119ae9834cc59909cbe6",
+      "bytes": 7886
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage1/00-boot-files/files/config.txt",
+      "sha256": "4a0bdccd0c324a59bfb16a11d45f34227bfc64e77705553cf5c49b044a0b2a72",
+      "bytes": 1247
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/01-run.sh",
+      "sha256": "36c6aa8bdb791a445c6aae7b5a2d2e299cee5fabc0d24fe0b1ccf4de4500d502",
+      "bytes": 1328
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/02-run.sh",
+      "sha256": "7cb2acb59f9a0b2812a728a1b6dce3498592c03910fa3e7a5ad6df44a0175e5e",
+      "bytes": 367
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/files/kernel.pref",
+      "sha256": "a5de6a4e9b8fe512ea479ae1c7bc64a584cad394b79d7719b718c7ff2bfac084",
+      "bytes": 243
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/files/kernel-packages.sha256",
+      "sha256": "d0173229989e90a037bf3737a9fc13b93f5d4e27f3cb86cb08d21366c620cf94",
+      "bytes": 1650
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/01-run.sh",
+      "sha256": "fd45585161d2208c838a6a37b476700b9e920478900dbcf9012764803f520edf",
+      "bytes": 1459
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/02-run.sh",
+      "sha256": "b6bd753723d6dd9599185b369884ac14b7ad0bb056d9bb1012a1d566c0989acb",
+      "bytes": 11240
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/03-run.sh",
+      "sha256": "c700ef1af64fc813406eafc7620bb3ae20582d98af217f986c5fb2e0053bbfbe",
+      "bytes": 8875
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/04-run.sh",
+      "sha256": "5e7cd13faa2bbee042fa003b69164f5d7213886ea7de03c8b722b65417cb238d",
+      "bytes": 328
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CardputerZero/pi-gen/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/README.md",
+      "sha256": "ea8a9bfa87eb072f0c3d390efffd748b5d47e4f9d391f6cff94eaf7dd92407af",
+      "bytes": 19690
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts",
+      "bytes": 4391,
+      "sha256": "7e5b2334e898e4b6027ad09a9705260460d8fb0a54b3ffa5ede656c7e940ddf9"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/arch/arm/boot/dts/overlays/imx219-overlay.dts",
+      "bytes": 2003,
+      "sha256": "582eccca54dcb91554b3739b44a62c7be41c9af0b2a88bdcf9c1a644576727f8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/drivers/net/usb/sr9700.c",
+      "bytes": 12888,
+      "sha256": "0baaac831400f35dc0032f919f7c40ecad72c4758b73232b6e1f3b3816c81f0b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/drivers/net/usb/sr9800.c",
+      "bytes": 21043,
+      "sha256": "fc097cfbbbc9b8d8158b0ccb5cd7a0beae9996a794b43f9db0b5e7354f9ec6e3"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/drivers/net/usb/dm9601.c",
+      "bytes": 15749,
+      "sha256": "4b74da251b54a5c83f86417895bb4d4c85767c07c733065cf0a2121b24d6b05b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/raspberrypi/linux/b3495ea401d709af0701a85babcba5e3d788a602/Makefile",
+      "bytes": 72856,
+      "sha256": "cd22685a313cf843d94e9131c35662393d685d7f76165fdee9914741463d2eff"
+    }
+  ]
+}

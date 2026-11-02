@@ -1,0 +1,46 @@
+{
+  "scope": "CM0/CardputerZero official hardware sources; fetched 2026-11-02 UTC",
+  "sources": [
+    {
+      "url": "https://docs.m5stack.com/en/CardputerZero",
+      "downloaded_at": "2026-11-02T16:04:03.282655+00:00",
+      "status": 200,
+      "bytes": 151488,
+      "sha256": "39a8dff7794abd4d4cef3cce07a6a937c046f15af245ed5cf9a2755565d99eea",
+      "last_modified": "Fri, 30 Oct 2026 06:42:26 GMT"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf",
+      "downloaded_at": "2026-11-02T16:04:28.607049+00:00",
+      "status": 200,
+      "bytes": 3329679,
+      "sha256": "91bbf37ae57e9153d9190367979a7789c225ff83567d2b1a9eba30fcd873a0d9",
+      "last_modified": "Fri, 24 Jul 2026 06:28:46 GMT",
+      "pages": 10,
+      "revision": "V0.6.1, 2026-07-02"
+    },
+    {
+      "url": "https://pip-assets.raspberrypi.com/categories/1286-raspberry-pi-compute-module-zero/documents/RP-009251-DS-3-cm0-datasheet.pdf",
+      "downloaded_at": "2026-11-02T16:06:02.095951+00:00",
+      "status": 200,
+      "bytes": 2041052,
+      "sha256": "861c9d1849bf206cce79bfa1beaabe8f86b195356f8db8d534b58cb49e8cd28e",
+      "last_modified": "Wed, 08 Jul 2026 13:00:29 GMT",
+      "pages": 21,
+      "revision": "Release 3; build 205dd78e0f0d; 08/07/2026",
+      "request": "Standard browser User-Agent and Accept: application/pdf; no authentication"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "url": "https://pip-assets.raspberrypi.com/categories/1286-raspberry-pi-compute-module-zero/documents/RP-009251-DS-3-cm0-datasheet.pdf",
+      "status": 403,
+      "request": "Default urllib request; later retrieved as recorded above"
+    },
+    {
+      "url": "https://datasheets.raspberrypi.com/cm0/cm0-datasheet.pdf",
+      "status": 404,
+      "request": "Standard browser User-Agent and Accept: application/pdf; no authentication"
+    }
+  ]
+}
