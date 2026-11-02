@@ -1,0 +1,5 @@
+run_id,tool,method,status,reason
+host-all,DTC-1.6.1,fdtoverlay-all4,failed,imx219 FDT_ERR_NOTFOUND
+host-script,DTC-1.6.1,check-dt-overlays-sequential,failed,imx219 FDT_ERR_NOTFOUND
+dev-script,DTC-1.7.2,check-dt-overlays-sequential,passed,IMX219 and CSI1 status okay
+dev-all,DTC-1.7.2,fdtoverlay-all4,passed,merged DT nodes read successfully

@@ -1,0 +1,38 @@
+ref,pdf_page,part,kind,power_or_rail,interface,control,notes
+U1,3,IP2315,charger,VCHG_5V to VBAT,analog,hardware,USB入力優先の独立充電経路;型番の接尾辞は図面にない
+U2,3,AW32901FCR,input-protection,USBC_R_IN to USBC_R_5V,analog,EN# grounded,右USB-C入力の保護
+U3,3,AW32901FCR,input-protection,EXT_5VIN to VEXT_5V,analog,EN# grounded,外部入力の保護
+U4,3,BQ27220YZFR,battery-gauge,VBAT/VDD_BQ,I2C1 through U6 address 0x55,BAT_NTC/10mohm R15,1750mAhは製品仕様とoverlayの設定;残量精度は未確認
+U5,3,TPS2116DRLR,power-mux,USBC_R_5V/VEXT_5V to VCHG_5V,analog,MODE/PR1 fixed by resistors,充電入力を選択;VBATの直接のmuxではない
+U6,3,AW39112DNR,level-translator,VSYS_3V3 to VSYS_3V3 via R22/I2C1 to battery gauge, I2C1,OE via R25 100k/R29 100k,代替VDD_BQのR23はNC;電源断時の逆流は未測定
+U7,4,SY7088DGC,boost-regulator,VSYS_IN to VSYS_CM0,analog,VSYS_PW_EN from SW_EN or PYG14 via diodes,CM0側の電源;R42 10k pull-down;図面式は5.2V
+U8,4,SY7088DGC,boost-regulator,VSYS_IN to VSYS_5V,analog,EN from VSYS_3V3 divider R45/R48,5V系の電源;図面の計算式は5.2V
+U9,4,AW9967DNR,backlight-driver,VSYS_CM0 to FL_LEDA/FL_LEDK,analog,PYG10_BL_PWM,R54 100k pull-down
+U10,4,SY8003,regulator,VSYS_CM0 to VSYS_3V3,analog,CM0_3V3 via R50 10k,周辺3.3V系;R52 100k pull-down
+U11,5,CM0,module,5V input/3.3V and 1.8V outputs,GPIO/SDIO/CSI/HDMI/USB,RUN_PG/GLOBAL_EN/nRPI_BOOT,単体ICではない;実装モジュールの注文型番は未確認
+U12,5,AW32901FCR,input-protection,VSYS_CM0 to CM0_5V,analog,hardware,CM0電源入力保護
+U13,6,SR9900A,usb-ethernet,VSYS_3V3 to VDD33/derived VDD12,USB hub GL_USB1 to RJ45,hardware,実機USB VID:PIDとLinux driverの対応は未確認
+U14,6,M5IOE1,io-expander,VSYS_3V3,I2C1 address 0x4f/GPIO/PWM,GPIO16 reset R80 100k pull-up,回路図の節見出しM5IOM1と部品名M5IOE1を区別
+U15,6,GL852G-OHY60,usb-hub,VSYS_3V3,USB Ethernet/USB-A/left USB-C/HAT,PYG3_KB_HUB_RST R90 10k pull-up,キーボードとreset線を共用;V5 pin is NC
+U16,6,FSW7227YUWQ10G/TR,usb-switch,VSYS_3V3,CM0 USB to right USB-C or hub,USB_SW SEL/EN grounded,LOWで右USB-C;HIGHでhub;Q4がUSB_OTGを駆動
+U17,6,microSD socket,connector,SD_3V3 from VSYS_3V3,SDIO,SW contact NC,ICではない;Liteにもスロットがある;CM0側SD_VREFは別net
+U18,7,BMI270,imu,IMU_3V3 from VSYS_3V3 via R115 10ohm,I2C1 address 0x68/AUX I2C,INT1/INT2 NC and SDO 10k pull-down,Standardのみ;BMM150はAUX側
+U19,7,RX8130CE:B3,rtc,VSYS_3V3 and RTC_VCC via R95 0ohm,I2C1 address 0x32,nIRQ/nRSTO/FOUT NC,BAT1はNC表記;バックアップ電池搭載を断定しない
+U20,7,BMM150,magnetometer,IMU_3V3,BMI270 AUX I2C address 0x10,via BMI270 ASDx/ASCx;INT/DRDY NC,ES8389と同じ物理I2C segmentではない
+U21,7,XL-IRM-V838M3/TR,ir-receiver,VSYS_3V3,GPIO13,hardware,IR送信は別途GPIO12からQ5を駆動
+U22,7,FSW7227YUWQ10G/TR,hat-signal-switch,VSYS_5V,HAT P0/P1 GPIO26/GPIO23 or USB4,PYG1_HAT_SW;EN grounded,R105 100k pull-down;LOW GPIO/HIGH USB
+U23,7,AW35112FDR,hat-power-switch,VSYS_5V to EXT_5VOUT,PWR,PYG13_HAT_EN,R104 100k pull-down
+U24,7,TXB0104RUTR,level-translator,VSYS_3V3/EXT_3V3,SPI0 MOSI/SCLK/CS1/MISO,OE EXT_3V3 via R106 100k,HAT拡張SPI
+U25,7,SSP7615-33DFR,hat-regulator,EXT_5VOUT to EXT_3V3,analog,EN via R107 100k,HAT側3.3V系
+U26,7,AW39112DNR,level-translator,VSYS_3V3/EXT_3V3,I2C1,OE EXT_3V3 via R114 100k,HAT側I2C
+U27,8,TCA8418RTWR,keypad-controller,VSYS_3V3,I2C1 address 0x34/5x10 matrix,GPIO27 IRQ/PYG3 reset,46キー;IRQ R124 100k pull-up;reset R123 10k pull-up;LEDは別途M5IOE1
+U28,9,SSP7615-33DFR,audio-regulator,VSYS_CM0 to AU_3V3,analog,EN via R138 100k;R141 NC,p2概略のVSYS_INとp9詳細のVSYS_CM0に差異
+U29,9,LMA3729T381-OY3S,microphone,AU_3V3 through R139 100ohm,analog to codec,hardware,MEMSマイク
+U30,9,ES8389,audio-codec,AU_3V3 through R145/R146 4.7ohm,I2C1 address 0x10/I2S GPIO18-21,GPIO17 headphone detect,compatible名everest/es8390と物理型番を区別
+U31,9,AW8737A,speaker-amplifier,VSYS_IN,analog from codec,GPIO24 enable/headphone path Q7,1W/8ohmスピーカー;実際の出力は未測定
+U32,9,FSW7227YUWQ10G/TR,microphone-switch,AU_3V3,TRRS CTIA/OMTP,PYG6_MIC_SW;EN grounded,LOW CTIA/HIGH OMTP;R172 100k pull-down
+U33,10,ME1502AM5G,usb-power,VSYS_5V to USB_5V,PWR,always enabled per diagram,USB-Aと左USB-Cの共有給電経路;合計1A表記
+U34,10,FSW7227YUWQ10G/TR,grove-signal-switch,VSYS_5V,Grove I2C1 or UART,GPIO4;EN grounded,LOW UART/HIGH I2C1;R184 100k pull-down;既定UART
+U35,10,AW35112FDR,grove-power-switch,VSYS_5V to GROVE_5V,PWR,PYG4_GROVE_EN,R188 100k pull-down;製品仕様は500mA未満
+U36,10,SSP7615-33DFR,camera-regulator,VSYS_5V to CAM_3V3,analog,EN pull-up R190 100k/R192 NC,GPIO16をcamera電源ENとして扱わない
+U37,7,AW39112DNR,level-translator,VSYS_3V3/EXT_3V3,UART GPIO14/15,OE EXT_3V3 via R118 100k,HAT側UART

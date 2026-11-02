@@ -26,17 +26,17 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 | ビルド | Buildroot 2026.08、BR2_EXTERNAL として管理（Yocto への移行は検討の結果見送り） |
 | カーネル | Raspberry Pi `rpi-6.18.y` を基準にし、コミットを固定 |
 | 起動 | Raspberry Pi firmware と `autoboot.txt` / `tryboot` による A/B を調査・実装する。CM0 実機で要検証 |
-| rootfs | SquashFS を読み取り専用で使う案を第一候補とし、EROFS と実機比較する |
-| 可変データ | 小さな書込み可能領域と tmpfs overlay を検討。領域・ファイルシステムは電断試験後に決める |
+| rootfs | 現行は読み取り専用 SquashFS + zstd。EROFS は比較候補であり、実機での採否試験は未実施 |
+| 可変データ | 現行は `/data` ext4 と `/etc` の tmpfs overlay。電断耐性・寿命は実機で確認する |
 | UI | ST7789V3 の LCD に fbcon を使う CLI と、TCA8418 内蔵キーボード |
 
 ## ハードウェア
 
-SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源などの公開資料確認表は、 [hardware-spec.md](docs/research/hardware-spec.md) に分けました。
+SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源などの機能対応表は [hardware-spec.md](docs/research/hardware-spec.md) にあります。公式資料の版・全U1〜U37の部品・電源と信号の接続・実装との差異・確認結果は [部品と回路接続の監査](docs/research/hardware-wiring-audit.md) にまとめました。
 
 ## 公式ソフトウェア構成
 
-公式イメージ（pi-gen による Raspberry Pi OS 派生）、カーネル、M5 ドライバの構成と、よくある誤解の訂正は、[公式ソフトウェア構成](docs/research/official-software.md) に分けました。
+公式イメージ（pi-gen による Raspberry Pi OS 派生）、カーネル、M5 ドライバ、DeviceTree・権限・運用の差異は [公式OS・BSP比較](docs/research/official-software.md) にまとめました。固定したCI生成物のDTBO、modules、firmware、最終設定、QEMUログを調べた範囲と失敗試行は [生成物の確認記録](docs/experiments/2026-11-02-hardware-artifact-audit.md) にあります。実機動作や公式配布image全体の検証とは区別します。
 
 ### 詳細な調査記録
 

@@ -1,5 +1,15 @@
 # 訂正済み事項
 
+## 2026-11-02 のハードウェア・公式OS照合
+
+| 原記述・混同 | 訂正 | 根拠 |
+|---|---|---|
+| CM0Liteの無線やCM0のCSI能力をLinuxの既定設定と混同 | CM0Liteにも無線ありの型番がある。CM0と基板は4 lane対応だが、固定Linuxのcamera endpointは既定2 lane | [資料と全U1〜U37](hardware-wiring-audit.md)、[生成物](../experiments/2026-11-02-hardware-artifact-audit.md) |
+| BMM150を主I2Cのdeviceとして扱う | BMI270のAUX経由。主I2C上で同じ0x10のES8389と衝突すると判断しない | [回路接続監査](hardware-wiring-audit.md) |
+| M5 `7551854`、Linux `2341883`を現行値として引用 | 現行固定値はM5 `37b42d9`、Linux `b3495ea`。公式pi-genのkernel固定とM5可変main取得も区別 | [公式OS比較と資料hash](official-software.md) |
+| SysRq-Uだけを製品の電源異常処理として記載 | MSD/Linuxはlocal patchでsyncと通知を加えている。QEMUの通知・RO化と実電断耐性は別 | [生成物とログの確認](../experiments/2026-11-02-hardware-artifact-audit.md) |
+| 公式APPLaunchのLVGL版や全配布imageを検証したかのような表現 | 公開build scriptと取得条件の照合に限定。配布binaryのLVGL版・全サービスは本照合では未確認 | [公式OS比較](official-software.md) |
+
 ## 2026-11-02 の文書整理で補った条件
 
 | 原記述 | 訂正・補足 | 根拠 |
