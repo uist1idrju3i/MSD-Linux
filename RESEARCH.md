@@ -96,7 +96,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 比較・履歴・出典と意匠
 
-- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libc、基本コマンド・init、暗号・TLS・署名、filesystem・更新framework・TUF metadataと[Wi-Fi・接続管理・通信防御](docs/research/alternatives/network.md)を再評価。周辺機能、開発・CI等は継続中）
+- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libc、基本コマンド・init、暗号・TLS・署名、filesystem・更新framework・TUF metadata、[通信](docs/research/alternatives/network.md)、[周辺機能](docs/research/alternatives/peripherals.md)、[圧縮・host依存](docs/research/alternatives/build-support.md)、[開発・CI](docs/research/alternatives/development.md)を比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は役割別の索引で、全候補の同等性・license・実機動作の認定ではない）
 - [公式サイトの HTML・CSS](docs/research/site-html-css.md)
 - [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)

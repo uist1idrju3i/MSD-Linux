@@ -52,8 +52,8 @@
 
 | 実装 | 元実装との関係 | Buildroot | 効能と適用 |
 |---|---|---|---|
-| zlib-ng | zlib からのフォーク（next-gen）。SIMD 最適化 | `BR2_PACKAGE_ZLIB_NG` あり | gzip 系処理の速度効能。initramfs・カーネル側は zstd のため、本機で効く場面は限定的 |
-| libdeflate | スクラッチ再実装（EB Wise）。zlib API 一部互換 | `BR2_PACKAGE_LIBDEFLATE` あり | gzip/zlib の圧縮・展開を大幅に高速化する効能。msd-update の圧縮データ処理が zlib 系なら差し替え候補【未確認：呼び出し側の対応】 |
+| zlib-ng | zlib由来で、native APIとzlib互換modeを持つ。SIMD最適化 | `BR2_PACKAGE_ZLIB_NG`あり。固定recipeは互換mode・gzFile・AArch64 NEONを指定 | targetのlibzlib代替の実験候補。host providerの変更は別。現行rootfsはzstdのSquashFSであり、そのまま起動・更新の改善値にはしない。[条件と一次資料](alternatives/build-support.md) |
+| libdeflate | Eric BiggersらによるDEFLATE/zlib/gzipのwhole-buffer処理。独自APIでstreaming非対応 | `BR2_PACKAGE_LIBDEFLATE`あり | 同形式のデータを扱えてもzlib APIの差し替えではない。callerの移植と全bufferのRAM、処理時間を測る実験候補。本機の速度向上は未確認。[APIと形式の区別](alternatives/build-support.md) |
 | libjpeg-turbo | libjpeg からのフォーク＋SIMD | `BR2_PACKAGE_JPEG_TURBO` あり（`jpeg` 仮想パッケージの実装選択肢） | 画像処理を入れた場合の速度効能 |
 | toybox | BusyBox と同じ方向の、もう一つの minimal userland 再実装（BSD ライセンス） | `BR2_PACKAGE_BUSYBOX` 代替選択肢なし（busybox 固定） | BusyBox からの全面差し替えは根拠が薄い【推測】 |
 | sbase / ubase | suckless の minimal coreutils。設計で最小化 | なし | 同上 |
@@ -80,7 +80,7 @@
 ## 7. 本機への適用まとめ
 
 1. **署名専用の実験候補**: msd-updateのraw Ed25519検証をlibsodium / Monocypherへ分離する案は、鍵形式・API・入力検査・他clientの依存も含めて[再評価](alternatives/crypto.md#署名専用の候補)します。サイズ削減は未測定です。
-2. **速度向上が見込める候補**: libdeflate / zlib-ng（更新データの圧縮・展開を zlib 系で行っている場合）。
+2. **圧縮を実測する候補**: zlib-ngの互換modeと、専用APIへ移植するlibdeflateを分けます。zlib系の処理が実際の律速か、whole-buffer処理のRAMを許容できるか確認します。現行のrootfsや更新処理の高速化を確認した結果ではありません。
 3. **観測待ち**: アロケータ差し替え（jemalloc/mimalloc）はフラグメンテーションの観測が前提。
 4. **評価不能・対象外**: Zephyr 4.5（`rpi_zero_2w` ボードは追加されたが SDHCI 未確認）、OpenJ9、picolibc（Linux hosted は試験用）。BoringSSLは一般用途非推奨とAPI/ABI保証なしを理由に、上記の用途別比較へ戻します。
 

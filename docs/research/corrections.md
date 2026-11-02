@@ -1,5 +1,12 @@
 # 訂正済み事項
 
+## 2026-11-02 の圧縮library比較
+
+| 原記述 | 訂正と理由 | 根拠 |
+|---|---|---|
+| libdeflateを「EB Wise」「zlib API一部互換」と記載 | Eric Biggersらの実装で、DEFLATE/zlib/gzip形式のwhole-buffer処理を行う専用API。zlib APIと互換の差し替えではなく、streamingにも非対応。性能とRAMはcallerを移植して測る必要がある | [固定README・headerと置換条件](alternatives/build-support.md) |
+| libdeflate/zlib-ngを更新データの高速化候補として一括記載 | zlib-ngの互換modeと、callerの移植が必要なlibdeflateを分ける。現行rootfsはzstdのSquashFSであり、zlib系の処理が律速かも未確認 | [圧縮・image生成の比較](alternatives/build-support.md) |
+
 ## 2026-11-02 のSBOM生成経路
 
 通常buildと週次securityにはLinux版の補正処理の有無に差があった。固定生成物の通常build SBOMは `custom` のままであり、生成成功だけでは正しいkernel版の確認にならない。両経路で同じ補正・内容照合を行い、入力のshow-infoも保存する。[検証条件と失敗試行](../experiments/2026-11-02-sbom-generation.md)を参照。
