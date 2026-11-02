@@ -14,6 +14,7 @@ MSD/Linux を Buildroot（BR2_EXTERNAL）から Yocto Project へ移す計画の
 | [dev-environment.md](dev-environment.md) | 開発環境の構築手法（kas、kas-container、bitbake-setup、CROPS、buildtools、`docker/msd-dev` の拡張）の比較 |
 | [reevaluation.md](reevaluation.md) | Buildroot で不採用・保留にした案の Yocto 前提での再評価 |
 | [migration-plan.md](migration-plan.md) | Wrynose 6.0 LTS を前提にしたゼロベースの移行計画（案・未着手） |
+| [pros-cons-2026-11.md](pros-cons-2026-11.md) | 2026-11-02 の成果物の比較に基づく Buildroot と Yocto の Pros/Cons |
 | [pros-cons-2026-10.md](pros-cons-2026-10.md) | 2026-10 に [PR #150](https://github.com/uist1idrju3i/MSD-Linux/pull/150) で行った Buildroot と Yocto の比較 |
 
 ## 2. 依頼の前提と調査結果の違い

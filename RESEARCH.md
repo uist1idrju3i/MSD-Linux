@@ -71,6 +71,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [Yocto Project 移行の事前調査](docs/research/yocto-migration/README.md)
   - [移行計画（案・未着手）](docs/research/yocto-migration/migration-plan.md)
   - [Buildroot で見送った案の再評価](docs/research/yocto-migration/reevaluation.md)
+  - [Buildroot と Yocto の Pros/Cons（2026-11）](docs/research/yocto-migration/pros-cons-2026-11.md)、[成果物の比較](docs/experiments/2026-11-02-buildroot-yocto-artifacts.md)
   - [構築試験（Wrynose、M5 BSP）](docs/experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](docs/experiments/2026-11-02-yocto-qemu-boot.md)
 - [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
 - [未確認事項の追跡表](docs/research/open-questions.md)

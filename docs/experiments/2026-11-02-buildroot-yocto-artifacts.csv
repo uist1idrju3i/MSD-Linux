@@ -1,0 +1,8 @@
+run_id,system,target,start_utc,end_utc,duration_s,exit,result,note
+BR1-make,buildroot,msd_cardputerzero_defconfig,2026-11-02T03:46:54Z,2026-11-02T03:47:04Z,9.79,2,fail,git worktree: submodule gitdir outside the /work mount; M5STACK_CARDPUTERZERO_VERSION empty
+BR1-legal,buildroot,legal-info,,,9.83,2,fail,same cause as BR1-make
+BR2-make,buildroot,msd_cardputerzero_defconfig,2026-11-02T03:54:55Z,2026-11-02T04:49:36Z,3280.65,0,pass,standalone clone; cold dl and ccache; make -j6
+BR2-legal,buildroot,legal-info,2026-11-02T04:49:36Z,2026-11-02T04:50:03Z,27.22,0,pass,
+BR2-qemu-a,buildroot,test-boot.sh,,,,0,pass,login prompt on /dev/mmcblk0p5
+BR2-qemu-b,buildroot,test-ab.sh,,,,0,pass,login prompt on /dev/mmcblk0p6
+E-2,yocto,core-image-minimal,2026-11-02T00:27:32Z,2026-11-02T02:31:36Z,7444,0,pass,from 2026-11-02-yocto-wrynose-probe.csv; BB_NUMBER_THREADS=6 PARALLEL_MAKE=-j6; builds its own toolchain

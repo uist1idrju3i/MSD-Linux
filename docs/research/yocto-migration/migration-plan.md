@@ -61,7 +61,7 @@ Yocto Project Compatible の考え方（層を足しただけで挙動が変わ�
 
 ### 2.5 カーネル
 
-- `linux-raspberrypi_6.18.bbappend` で、MSD の固定コミット（現行は `b3495ea`、6.18.59）と `linux.fragment` を当てます。B2 で、要求 490 項目のうち最終の `.config` と違うのは `CONFIG_NODES_SHIFT` だけでした【実測】。
+- `linux-raspberrypi_6.18.bbappend` で、MSD の固定コミット（現行は `b3495ea`、6.18.59）と `linux.fragment` を当てます。B2 で、要求 490 項目のうち最終の `.config` と違うのは `CONFIG_NODES_SHIFT` だけでした【実測】。ただし fragment にない項目では、Buildroot の最終 `.config` と 544 項目が違い、`CONFIG_THERMAL` が `n` でした【実測: [成果物の比較](../../experiments/2026-11-02-buildroot-yocto-artifacts.md)】。Y2 で差を一つずつ説明します。
 - fragment は、ハードニング、PREEMPT_RT、サイズ削減のように目的ごとに分けると、Yocto の `KERNEL_FEATURES` や比較実験で入れ替えやすくなります。
 - M5 のドライバーは `inherit module` のレシピにし、`kernel-module-*` のパッケージとして image に入れます。
 
@@ -78,7 +78,7 @@ Yocto Project Compatible の考え方（層を足しただけで挙動が変わ�
 |---|---|---|
 | Y0（済み） | 調査、構築試験、BSP のビルド、QEMU 起動 | [調査](README.md)、[構築試験](../../experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動](../../experiments/2026-11-02-yocto-qemu-boot.md) |
 | Y1 | 層と kas の骨組み（meta-msd-bsp、meta-msd、kas とロックファイル） | `bitbake -p` が通る。`yocto-check-layer` の結果を記録する |
-| Y2 | BSP（machine、カーネル、M5 のレシピ、パッチの `Upstream-Status`） | `.ko` 16 個、dtbo 3 個、ファームウェアとキーマップがそろう。最終 `.config` の差が説明できる。CM0 の dtb で QEMU が起動する |
+| Y2 | BSP（machine、カーネル、M5 のレシピ、パッチの `Upstream-Status`） | `.ko` 16 個、dtbo 3 個、ファームウェアとキーマップがそろう。Buildroot の最終 `.config` との差（2026-11-02 時点で 544 項目）をすべて説明できる。CM0 の dtb で QEMU が起動する |
 | Y3 | distro と image（読み取り専用の SquashFS、init、/data、wks の A/B） | 既存の `test-boot.sh` と `test-ab.sh` に相当する QEMU 試験が通る。Buildroot の image とファイル一覧・サイズを比べる |
 | Y4 | 更新と電源断（`msd-update`、bundle と署名、tryboot） | `tests/msd-update/run.sh` と QEMU の A/B・障害注入（S4・S17 相当）が通る |
 | Y5 | Yocto で容易になる比較実験（dm-verity、RAUC の custom backend、systemd、musl、`overlayfs-etc`） | 実験ごとに採否の基準を先に書き、`docs/experiments/` に記録する |
