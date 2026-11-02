@@ -22,6 +22,7 @@ sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 report = {
+    "Metadata": {"ImageConfig": {"Env": ["TOKEN=AKIAFAKEMARKER"]}},
     "Results": [
         {
             "Target": "debian 13",
@@ -30,6 +31,8 @@ report = {
                     "VulnerabilityID": "CVE-2026-1000",
                     "PkgName": "libsample",
                     "Severity": "HIGH",
+                    "InstalledVersion": "1.2.2",
+                    "Description": "AKIAFAKEMARKER",
                     "FixedVersion": "1.2.3",
                 },
                 {
@@ -55,6 +58,8 @@ report = {
                     "Severity": "HIGH",
                     "Match": "AKIAFAKEMARKER",
                     "Code": {"Lines": [{"Content": "AKIAFAKEMARKER"}]},
+                    "InstalledVersion": "AKIAFAKEMARKER",
+                    "FixedVersion": "AKIAFAKEMARKER",
                 }
             ],
             "Misconfigurations": [
@@ -62,6 +67,13 @@ report = {
                     "ID": "DS-0001",
                     "Title": "Weak setting",
                     "Severity": "CRITICAL",
+                    "Message": "AKIAFAKEMARKER",
+                    "CauseMetadata": {"Code": "AKIAFAKEMARKER"},
+                },
+                {
+                    "ID": "DS-0002",
+                    "Severity": "LOW",
+                    "Message": "AKIAFAKEMARKER",
                 }
             ],
         }
@@ -71,9 +83,9 @@ counts, findings, blockers = module.evaluate(report)
 assert counts == {
     "vulnerabilities": 3,
     "credential_rules": 1,
-    "misconfigurations": 1,
+    "misconfigurations": 2,
 }
-assert len(findings) == 5
+assert len(findings) == 6
 assert [finding["id"] for finding in blockers] == [
     "CVE-2026-1000",
     "generic-secret",
@@ -91,6 +103,34 @@ assert "CVE-2026-1001" not in gate_report
 full_report = module.render_report(counts, findings, blockers, "report")
 assert "CVE-2026-1001" in full_report
 assert "AKIAFAKEMARKER" not in full_report
+
+long_report = {
+    "Results": [{"Vulnerabilities": [
+        {"VulnerabilityID": f"CVE-low-{i}", "Severity": "LOW"}
+        for i in range(120)
+    ] + [
+        {"VulnerabilityID": "CVE-critical-no-fix", "Severity": "CRITICAL"},
+        {"VulnerabilityID": "CVE-blocking-high", "Severity": "HIGH",
+         "FixedVersion": "2.0"},
+        {"VulnerabilityID": "CVE-blocking-critical", "Severity": "CRITICAL",
+         "FixedVersion": "2.0"},
+        {"VulnerabilityID": "CVE-unknown", "Severity": "UNRECOGNIZED"},
+    ]}]
+}
+long_counts, long_findings, long_blockers = module.evaluate(long_report)
+prioritized = module.render_report(long_counts, long_findings, long_blockers, "report")
+assert prioritized.index("CVE-blocking-critical") < prioritized.index("CVE-blocking-high")
+assert prioritized.index("CVE-blocking-high") < prioritized.index("CVE-critical-no-fix")
+assert prioritized.index("CVE-critical-no-fix") < prioritized.index("CVE-low-0")
+assert "ほか 24 件" in prioritized
+assert len(long_findings) == 124
+
+empty_counts, empty_findings, empty_blockers = module.evaluate({"Results": []})
+assert not any(empty_counts.values())
+assert empty_findings == empty_blockers == []
+assert "検出事項はありません" in module.render_report(
+    empty_counts, empty_findings, empty_blockers, "report"
+)
 
 with tempfile.TemporaryDirectory() as directory:
     output = pathlib.Path(directory) / "github-output"
@@ -110,13 +150,28 @@ with tempfile.TemporaryDirectory() as directory:
     assert gated.returncode == 1
     assert "AKIAFAKEMARKER" not in gated.stdout
     report_mode = subprocess.run(
-        [sys.executable, str(script), "report", str(report_path)],
+        [sys.executable, str(script), "report", str(report_path),
+         "--findings-json", str(pathlib.Path(directory) / "findings.json")],
         capture_output=True,
         text=True,
         check=False,
     )
     assert report_mode.returncode == 0
     assert "AKIAFAKEMARKER" not in report_mode.stdout
+    safe_json = (pathlib.Path(directory) / "findings.json").read_text()
+    assert "AKIAFAKEMARKER" not in safe_json
+    safe = json.loads(safe_json)
+    assert safe["schema_version"] == 1
+    assert safe["counts"] == counts
+    assert len(safe["findings"]) == 6
+    assert len(safe["blockers"]) == 3
+    assert safe["findings"][0]["installed_version"] == "1.2.2"
+    assert safe["findings"][0]["fixed_version"] == "1.2.3"
+    module.write_findings_json(pathlib.Path(directory) / "all.json", long_counts,
+                               long_findings, long_blockers)
+    all_findings = json.loads((pathlib.Path(directory) / "all.json").read_text())
+    assert len(all_findings["findings"]) == 124
+    assert len(all_findings["blockers"]) == 2
     clean_report = {
         "Results": [
             {
@@ -144,4 +199,6 @@ print("ok - gates high and critical secrets and misconfigurations")
 print("ok - reports do not disclose detected secret values")
 print("ok - reports findings without gating in report mode")
 print("ok - command exits nonzero only for blocking findings")
+print("ok - blocking findings precede severity-sorted truncated details")
+print("ok - sanitized JSON preserves all findings and no secret payloads")
 PY

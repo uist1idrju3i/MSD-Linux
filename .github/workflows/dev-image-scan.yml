@@ -42,7 +42,11 @@ jobs:
           pull_log="$RUNNER_TEMP/docker-pull.log"
           if docker pull --platform linux/amd64 "$IMAGE" > "$pull_log" 2>&1; then
             cat "$pull_log"
-            docker save --output "$RUNNER_TEMP/msd-dev.tar" "$IMAGE"
+            image_id="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
+            docker image inspect "$image_id" --format \
+              '{"image_id":{{json .Id}},"repo_digests":{{json .RepoDigests}},"os":{{json .Os}},"architecture":{{json .Architecture}}}' \
+              > "$RUNNER_TEMP/image-provenance.json"
+            docker save --output "$RUNNER_TEMP/msd-dev.tar" "$image_id"
             echo 'image_available=true' >> "$GITHUB_OUTPUT"
           else
             cat "$pull_log" >&2
@@ -76,14 +80,31 @@ jobs:
             --scanners vuln,secret,misconfig \
             --format json \
             --output /work/trivy.json
+          docker run --rm \
+            --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}:${TRIVY_VERSION}@${TRIVY_DIGEST}" \
+            --version > "$RUNNER_TEMP/trivy-version.txt"
 
       - id: report
         name: Report latest image findings
         if: steps.pull.outputs.image_available == 'true'
         run: |
           python3 .github/scripts/trivy-gate.py report "$RUNNER_TEMP/trivy.json" \
+            --findings-json "$RUNNER_TEMP/trivy-findings.json" \
             --github-output "$GITHUB_OUTPUT" |
             tee "$RUNNER_TEMP/trivy-report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve sanitized scan findings
+        if: always() && steps.pull.outputs.image_available == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: development-image-findings
+          path: |
+            ${{ runner.temp }}/image-provenance.json
+            ${{ runner.temp }}/trivy-findings.json
+            ${{ runner.temp }}/trivy-report.md
+            ${{ runner.temp }}/trivy-version.txt
+          if-no-files-found: warn
 
       - name: Maintain vulnerability issue
         if: steps.pull.outputs.image_available == 'true'
