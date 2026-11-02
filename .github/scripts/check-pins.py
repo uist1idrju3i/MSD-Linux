@@ -12,6 +12,7 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 from urllib.error import URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 KERNEL_SERIES = "rpi-6.18.y"
@@ -361,8 +362,18 @@ def consistency(root: Path) -> list[str]:
 
 def fetch(url: str) -> str:
     request = Request(url, headers={"Accept": "application/vnd.github+json"})
-    if os.environ.get("GITHUB_TOKEN"):
-        request.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+    origin = urlsplit(url)
+    if (
+        os.environ.get("GITHUB_TOKEN")
+        and origin.scheme == "https"
+        and origin.hostname == "api.github.com"
+        and origin.port in (None, 443)
+        and origin.username is None
+        and origin.password is None
+    ):
+        request.add_unredirected_header(
+            "Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}"
+        )
     with urlopen(request, timeout=20) as response:
         return response.read().decode()
 
