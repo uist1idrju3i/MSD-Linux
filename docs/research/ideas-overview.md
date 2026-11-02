@@ -82,5 +82,5 @@ RESEARCH.md から分割した節です。
 | 高速化 | [SquashFS codec／block size の実機比較](../../docs/research/soc-memory-compression.md) | rootfs size と展開・読込時間を比較 | 複数 build と実機測定 | SD rate、cache、CPU clock に依存 | QEMU: 起動 / 実機: SD・CPU | P1 | image size 実測済み、速度未測定 |
 | 軽量化 | [kernel compressor / EROFS の削減比較](../../docs/research/soc-memory-compression.md) | `Image` / `vmlinux` size を比較 | kernel build と回帰試験 | rootfs 互換性・全 hardware 維持 | QEMU: mount・A/B / 実機: 起動 | P2 | EROFS は QEMU 比較済み・不採用（#126）。kernel 圧縮方式の残り比較は S1 sweep に含む |
 | 高速化 | [Buildroot `-O2` / `-Os`、LTO / PGO](../../docs/research/soc-memory-compression.md) | userland size と CPU-bound workload を比較 | build time、profile 回収、再現性 | package 対応と stale profile | QEMU: 機能 / 実機: CPU・起動 | P2 | 未着手 |
-| 試験・保守 | [三段階 simulator 検証](simulation-plan.md#シミュレーターと検証基盤の比較) | QEMU 機能、TCG option 比較、実機 timing を分離 | hardware proxy と実機が必要 | QEMU / gem5 の時間を実機値と混同しない | QEMU・gem5・Zero 2 W・CM0 | P1 | 方針案 |
+| 試験・保守 | [三段階 simulator 検証](verification/platforms.md) | QEMU 機能、TCG option 比較、実機 timing を分離 | hardware proxy と実機が必要 | QEMU / gem5 の時間を実機値と混同しない | QEMU・gem5・Zero 2 W・CM0 | P1 | 方針案 |
 | 開発・CI | [開発環境と CI](../../docs/research/dev-environment-and-ci.md) | ローカルと CI の toolchain をそろえ、検査・起動確認を再現する | 開発イメージと CI の保守 | CI 成果物との比較、速度改善は未確認 | QEMU: 機能確認 / CI: build・artifact | — | 開発イメージ採用、比較結果は予備的 |

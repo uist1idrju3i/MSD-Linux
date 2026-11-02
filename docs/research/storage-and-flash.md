@@ -4,7 +4,7 @@
 
 #19 より前の CI イメージは MBR で、p1～p7 の開始位置がすべて 4 KiB 境界からずれていました。genimage v20 の `align = 4M` を使った実測では、拡張パーティションと論理パーティションを含む全開始位置が 4 MiB 境界にそろい、イメージは約 16 MiB 大きくなりました。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)／[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)
 
-現時点では、`align = 4M` を別変更として実機評価へ進める案を推奨します。これは測定した候補のうち全開始位置がそろう設定であり、SD の速度、寿命、電断耐性が向上することを示すものではありません。実カードで比較してから採否を決めます。【推測】その後 #19 で `align = 4M` を `genimage.cfg` に入れ、`check-image-layout.sh` が CI で全開始位置の 8192 sector 境界を検査しています。実カードでの比較は未実施です。[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[実機測定計画](measurement-and-planning.md)
+現時点では、`align = 4M` を別変更として実機評価へ進める案を推奨します。これは測定した候補のうち全開始位置がそろう設定であり、SD の速度、寿命、電断耐性が向上することを示すものではありません。実カードで比較してから採否を決めます。【推測】その後 #19 で `align = 4M` を `genimage.cfg` に入れ、`check-image-layout.sh` が CI で全開始位置の 8192 sector 境界を検査しています。実カードでの比較は未実施です。[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)／[実機測定計画](verification/hardware-measurements.md)
 
 パーティションの整列と FAT のデータ領域の整列は別です。現行 boot-a の FAT データ領域はパーティション開始から 292 セクター（149,504 byte）後にあります。パーティション開始を 4 MiB にそろえても、この相対オフセットは変わりません。【実測】[CI run 39178538327](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39178538327)／[genimage v20 の仕様](https://github.com/pengutronix/genimage/blob/v20/README.rst)
 
@@ -46,7 +46,7 @@ genimage v20 は `hdimage` の `align` を既定のパーティション整列�
 | GPT | このイメージでの測定なし | 未測定 | BCM2837 の起動互換性は未確認で、採用可能とは判断しない。【未確認】 | パーティション表と起動互換性の再設計・実機検証が必要。 |
 | MBR のプライマリだけで再設計 | このイメージでの測定なし | 未測定 | MBR のエントリー制限を含む起動互換性は未確認。【未確認】 | 現行 7 エントリーをそのままプライマリ化できないため、領域統合など構成変更が必要。 |
 
-`align = 4M` は測定した候補の中で全エントリーの開始位置が 4 MiB 境界にそろう設定です。「最適」と証明されたわけではありません。実機では、同じカード・カーネル・ファイルシステム・ワークロードを使い、起動、連続／小ブロック I/O、電断後の整合性を比較します。【推測】[実機測定計画](measurement-and-planning.md)
+`align = 4M` は測定した候補の中で全エントリーの開始位置が 4 MiB 境界にそろう設定です。「最適」と証明されたわけではありません。実機では、同じカード・カーネル・ファイルシステム・ワークロードを使い、起動、連続／小ブロック I/O、電断後の整合性を比較します。【推測】[実機測定計画](verification/hardware-measurements.md)
 
 ## FAT データ領域
 
@@ -133,7 +133,7 @@ ext4 の使用量には 10,000 個の inode と directory、journal、bitmap 等
 1. 同じカードで 1 KiB／4 KiB ext4 と `inline_data`、必要なら既定／指定 cluster の FAT／exFAT を作り、formatter のバージョン、mount option、block／cluster size、partition と FAT data-area の offset を記録します。
 2. 同一の file tree で作成・読込み・更新・削除を反復し、使用量、fsck 時間、連続 I/O、4 KiB random I/O、同期書込みの throughput と latency を測ります。
 3. カード型番・容量・使用量・温度・電源条件を記録し、カードを替えて再測定します。`blockdev`／sysfs の論理・物理・最適 I/O サイズはカードが公開する値として記録し、内部 NAND の値とは扱いません。
-4. 速度差だけで結論づけず、rootfs 起動時の I/O と `/data` の代表 workload、e2fsck、電断後の整合性を別々に確認します。SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認のため、仕様上の AU 整列を前提にしません。【推測】【未確認】[実機測定計画](measurement-and-planning.md)
+4. 速度差だけで結論づけず、rootfs 起動時の I/O と `/data` の代表 workload、e2fsck、電断後の整合性を別々に確認します。SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認のため、仕様上の AU 整列を前提にしません。【推測】【未確認】[実機測定計画](verification/hardware-measurements.md)
 
 ## discard、fstrim、SD バス
 
@@ -145,16 +145,16 @@ CM0 の正確な microSD ホスト接続、最大クロック、UHS 電圧切替
 
 ## 実機での測定手順
 
-1. 同一の CM0、カード、ファームウェア、カーネル、ファイルシステム、電源条件で現行配置と `align = 4M` を比較します。最初にパーティション開始位置、FAT BPB、ext4 の作成条件を記録します。【推測】[実機測定計画](measurement-and-planning.md)
+1. 同一の CM0、カード、ファームウェア、カーネル、ファイルシステム、電源条件で現行配置と `align = 4M` を比較します。最初にパーティション開始位置、FAT BPB、ext4 の作成条件を記録します。【推測】[実機測定計画](verification/hardware-measurements.md)
 2. 起動時に `/sys/class/mmc_host/` と `/sys/bus/mmc/devices/` を列挙し、カード識別情報と読み取り可能な `erase_size`、`preferred_erase_size`、`ssr` 等を保存します。実際に存在する sysfs 属性だけを記録し、欠落値を推定で補いません。【一次】[Linux SD コアの sysfs 属性](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c#L722-L797)
 3. `/sys/class/block/mmcblk*/queue/` の `logical_block_size`、`physical_block_size`、`minimum_io_size`、`optimal_io_size`、`alignment_offset`、`discard_granularity` など、実機で公開される属性を保存します。値の意味とドライバー実装が一致するかを確認し、存在しない属性は記録します。【未確認】[Linux SD コア](https://github.com/raspberrypi/linux/blob/5d64d1ea73716526ed9c0ed184a9cb5f6042e32c/drivers/mmc/core/sd.c)
 4. 連続読み書き、小ブロックのランダム読み書き、起動時間、温度・電圧をそれぞれ測定し、同じ条件で複数回実行します。flashbench は候補の調査手段ですが、このカード／ホストでの測定手順と妥当性は未確認です。【未確認】
 5. SDA が公開する AU／RU 定義と formatter の手順を確認できるまでは、カードが報告した値から FAT の最適配置を推測しません。【未確認】SD Association の仕様書 PDF は取得できず（HTTP 403）、内容は未確認
-6. 1 KiB と 4 KiB の ext4 作成条件をそろえ、`fsck.ext4 -p` の時間、ファイルシステム容量、代表的な `/data` 書込み、電断後の整合性を比較します。【推測】[実行時 formatter](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)／[実機測定計画](measurement-and-planning.md)
+6. 1 KiB と 4 KiB の ext4 作成条件をそろえ、`fsck.ext4 -p` の時間、ファイルシステム容量、代表的な `/data` 書込み、電断後の整合性を比較します。【推測】[実行時 formatter](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)／[実機測定計画](verification/hardware-measurements.md)
 
 ## 電源断試験との関係
 
-パーティション整列やファイルシステムのジャーナリングだけでは、カード内部 FTL の電断時の挙動を保証できません。試験では更新中・アイドル時の電断、起動不能数、ファイルシステム検査結果、A/B 復帰結果を記録します。QEMU は Linux の起動・パーティション認識・ファイルシステム回帰に使えますが、実カードの電源遮断や FTL の代替にはなりません。【推測】[電源・更新方式の調査](power-and-updates.md)／[実機測定計画](measurement-and-planning.md)
+パーティション整列やファイルシステムのジャーナリングだけでは、カード内部 FTL の電断時の挙動を保証できません。試験では更新中・アイドル時の電断、起動不能数、ファイルシステム検査結果、A/B 復帰結果を記録します。QEMU は Linux の起動・パーティション認識・ファイルシステム回帰に使えますが、実カードの電源遮断や FTL の代替にはなりません。【推測】[電源・更新方式の調査](power-and-updates.md)／[実機測定計画](verification/hardware-measurements.md)
 
 ## 未確認事項
 

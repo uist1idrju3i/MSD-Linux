@@ -95,9 +95,10 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### 開発・測定・未確認事項
 
 - [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
-- [シミュレーション検証計画](docs/research/simulation-plan.md)
-- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
-- [未確認事項の追跡表](docs/research/open-questions.md)
+- [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
+- [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。
+- [未確認事項と次の確認](docs/research/verification/open-questions.md) — 重複した問いを主題別に統合。元の記述は記録CSVに保持。
+- [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
 
@@ -173,7 +174,7 @@ init と周辺デバイス、init の比較、libc / toolchain の調査は、 [
 
 ## ログと観測
 
-開発中の観測方法は、 [measurement-and-planning.md](docs/research/measurement-and-planning.md) に分けました。
+開発中の観測方法は[観測手段](docs/research/verification/observability.md)、実行する項目と保存する出力は[実機測定](docs/research/verification/hardware-measurements.md)にまとめています。
 
 ## SSH・VPN（調査のみ・実装しない）
 
@@ -195,7 +196,7 @@ MSD/Linux も同じように、開発場所の近くを流れる福岡県の室�
 
 ## 未確認事項
 
-未確認事項の追跡表は [open-questions.md](docs/research/open-questions.md) に、測定・調査限界は [measurement-and-planning.md](docs/research/measurement-and-planning.md) に分けました。
+現在の問いと次の確認は[未確認事項](docs/research/verification/open-questions.md)へ統合しました。元の条件・数値・出典は原記録CSVに保持しています。観測方法・実機測定・QEMUで確認できない範囲は[検証の入口](docs/research/verification/README.md)から選べます。
 
 ## 出典一覧
 

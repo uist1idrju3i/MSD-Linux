@@ -1,0 +1,17 @@
+command,expected_exit,actual_exit,status
+python3 .github/scripts/check-links.py,0,0,pass
+python3 .github/scripts/check-jisx0213.py,0,0,pass
+python3 .github/scripts/check-doc-size.py,0,0,pass
+python3 .github/scripts/check-skills.py,0,0,pass
+python3 .github/scripts/check-site.py,0,0,pass
+tests/check-links/run.sh,0,0,pass
+tests/check-jisx0213/run.sh,0,0,pass
+tests/check-doc-size/run.sh,0,0,pass
+tests/check-skills/run.sh,0,0,pass
+tests/check-site/run.sh,0,0,pass
+tests/msd-update/run.sh,0,0,pass
+python3 -m py_compile docs/experiments/2026-11-02-verification-document-layout.py,0,0,pass
+docker/msd-dev sh -c 'actionlint .github/workflows/*.yml',0,0,pass
+"docker/msd-dev sh -c 'git ls-files -z -- ""*.sh"" | xargs -0 shellcheck'",0,0,pass
+"""$HOME/.cache/msd-linux-zizmor/bin/zizmor"" --offline --format=github .github/workflows/",0,0,pass
+git diff --check,0,0,pass

@@ -60,7 +60,7 @@ Devin が 2026-10-18 JST に各実装の既定値を定義するファイルを�
 - データ暗号では OpenSSH は ChaCha20-Poly1305 が先頭、Dropbear は ChaCha20-Poly1305 が有効で GCM は無効、OpenVPN は GCM が先頭（設定変更が必要）です。
 - Dropbear の ML-KEM は約 34kB(armv7 の値)、sntrup は約 9kB の追加コード。ディスクと RAM が小さい構成では 34kB を見積もるが、**CM0(aarch64)での値や起動時間への影響は未測定**。
 
-【推測・未測定】鍵交換は接続ごとに 1 回の計算なので、[起動完了条件](measurement-and-planning.md)の後に sshd / Dropbear を socket activation で起動すれば、起動時間への影響は小さいと見込まれます。実測では SSH 接続確立までの時間が重要です。CM0 の A53 での ML-KEM / X25519 の実測は、実機入手後に行う必要があります。PQ を使う場合のサーバー・クライアント双方の版要件（古いクライアントとの互換性）は未調査です。
+【推測・未測定】鍵交換は接続ごとに 1 回の計算なので、[起動完了条件](verification/open-questions.md)の後に sshd / Dropbear を socket activation で起動すれば、起動時間への影響は小さいと見込まれます。実測では SSH 接続確立までの時間が重要です。CM0 の A53 での ML-KEM / X25519 の実測は、実機入手後に行う必要があります。PQ を使う場合のサーバー・クライアント双方の版要件（古いクライアントとの互換性）は未調査です。
 
 【未確認】OpenSSH の ML-KEM が CM0 でどの程度時間を要するか（公開値なし）、OpenVPN で ML-KEM 系グループが実際に使われるか（OpenSSL 3.6.4 の既定は `X25519MLKEM768` が先頭ですが、OpenVPN 2.7.6 は `--tls-groups` 未指定ならグループを設定しません。ソース確認のみで実接続は未確認）、`--tls-groups` に指定できる値、Buildroot での OpenSSH の `libcrypto` 構成は未確認です。実機測定と対象版の公開ソースで確認が必要です。
 

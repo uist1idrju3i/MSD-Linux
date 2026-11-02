@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-02-verification-document-layout](2026-11-02-verification-document-layout.md) | なし | 2026-11-02 | 静的照合 | 79件の問いを31主題へ統合。9本文と原記録154行を5回照合し、4改変を拒否。過去の測定CSV51ファイルは未変更。 |
 | [2026-11-02-boot-document-layout](2026-11-02-boot-document-layout.md) | なし | 2026-11-02 | 静的照合 | 8本文を5回照合し、4種の改変を拒否。旧案内を削除して主題別に配置。製品設定・過去の測定CSVは未変更。 |
 | [2026-11-02-alternatives-followup-audit](2026-11-02-alternatives-followup-audit.md) | なし | 2026-11-02 | 追加調査・静的照合 | 出典225件中210取得と88 Git blobを5回照合し、3負対照を毎回拒否。代替build・実機は未試験。 |
 | [2026-11-02-release-client-audit](2026-11-02-release-client-audit.md) | なし | 2026-11-02 | 静的調査・提出前検査 | TUF実装4候補と公開側tool、Release配信・時刻・A/B復旧を比較。client実行・製品組込み・実機更新は未実施。 |

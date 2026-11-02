@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。実機とは無関係。各条件 1 回の予備測定）
 - 日付: 2026-10-29
 - 担当: Devin
-- 関連: [simulation-plan.md](../research/simulation-plan.md)、[S15 の記録](2026-10-25-s15-qemu-versions.md)、[boottime の記録](2026-10-20-qemu-boottime.md)
+- 関連: [試験台帳](../research/verification/experiment-catalog.md)、[S15 の記録](2026-10-25-s15-qemu-versions.md)、[boottime の記録](2026-10-20-qemu-boottime.md)
 
 ## 目的
 

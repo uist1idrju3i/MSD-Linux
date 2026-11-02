@@ -182,7 +182,7 @@
       "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md、docs/research/measurement-and-planning.md、docs/research/simulation-plan.md、docs/research/corrections.md、docs/research/sources.md を根拠にしてください。"
+          "content": "RESEARCH.md、docs/research/verification/README.md 、同ディレクトリのopen-questions.md、experiment-catalog.md、observability.md、hardware-measurements.md、qemu-coverage.md、platforms.mdを根拠にしてください。planning-history.mdとdesign-history.mdは当時の記録で、現在の決定ではありません。research-records.csvに統合前の原記述を保持します。docs/research/corrections.md と docs/research/sources.md も参照してください。"
         }
       ]
     },

@@ -17,4 +17,6 @@
 | ロゴの意匠・利用 | [ロゴ](logo/README.md) | 意匠、生成手順、ライセンス |
 | 文書の役割・重複・分割の判断 | [文書の配置](research/document-map.md) | 更新する本文の置き場と、長い文書を保持した理由 |
 
+測定の設計と記録を探すときは[検証・測定の入口](research/verification/README.md)から、未確認事項、S1–S17、観測方法、実機測定、計画履歴へ進みます。
+
 作業規則は [AGENTS.md](../AGENTS.md)、手順は [.agents/skills/](../.agents/skills/) にあります。公開サイト用のファイルは `public_html/` に置き、文書の原本はここに置きます。

@@ -6,7 +6,7 @@ QEMU による検証、A/B 更新、ツールチェーンとハードニング�
 
 ### 1.1 現行の方式
 
-- MSD は QEMU の `raspi3ap`（Cortex-A53 ×4、512 MiB）と `raspi3b`（1 GiB）で起動を確かめています。QEMU の文書では、両機種とも GPIO、SD/MMC ホスト、USB（DWC2）を実装済みです【一次】。GPU ファームウェア、tryboot、LCD、M5 の I2C 機器、電源断は QEMU では確かめられません（[simulation-plan.md](../simulation-plan.md)）。
+- MSD は QEMU の `raspi3ap`（Cortex-A53 ×4、512 MiB）と `raspi3b`（1 GiB）で起動を確かめています。QEMU の文書では、両機種とも GPIO、SD/MMC ホスト、USB（DWC2）を実装済みです【一次】。GPU ファームウェア、tryboot、LCD、M5 の I2C 機器、電源断は QEMU では確かめられません（[QEMUの検証範囲](../verification/qemu-coverage.md)）。
 - `docker/msd-dev` の QEMU は 11.1.2 で、`docker/qemu-patches/` の 4 本のパッチ（ASB の未実装領域、GPIO 入力割り込み、電源管理の watchdog、温度設定）を当てています（[docker/README.md](../../../docker/README.md)）。icount の時間計測は、11.1.2 の遅延回帰を避けるため、`board/cardputerzero/tools/qemu-bisect/build-qemu.sh` で作る 11.0.2 を使います（[qemu-bisect/README.md](../../../board/cardputerzero/tools/qemu-bisect/README.md)）。
 
 ### 1.2 runqemu で再現できるか

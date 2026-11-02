@@ -115,6 +115,17 @@
 
 | S21 SysRq-U marker と remount | driver marker は実 remount の証拠 | `dev_emerg()` marker は `handle_sysrq('u')` より前に出ます。kernel action line で判定した再測定では `kernel.sysrq=0` は remount なし 5/5、32 は remount 5/5 でした。製品採否は未決定 | [S21 記録](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
 
+## 測定・検証文書の状態訂正（2026-11-02）
+
+旧表と訂正する状態の原文は[原記録CSV](verification/research-records.csv)、現在の試験状況は[試験台帳](verification/experiment-catalog.md)へ保存しました。今回、実験を再実行したものではありません。
+
+| 項目 | 旧記述の問題 | 訂正と根拠 |
+|---|---|---|
+| S1/S14 | 80候補の完了や失敗12件の全件誤検出と読める | [本番記録](../experiments/2026-10-30-kernel-sweep-s1-s14.md)の集計はPASS 61、QEMU_FAILED 12、TARGET_MISMATCH 5、KEEP_CHANGED 1の79行。全12件を成功へ再分類できる証拠は確認できず、不一致を保持する |
+| S10 | 初回記録の番号比較前の状態を現行の「未実装」とした | [番号比較v2](../experiments/2026-10-25-s10-version-check.md)は古い番号・番号なしを既定で拒否し、明示した`--allow-downgrade`で許可。不正形式は常に拒否。可変な最大番号の保護・実機全体のanti-rollbackとは別 |
+| S13 | 未着手と完了が併存し、最適化の単独効果と読めた | [元の結果表](../experiments/2026-10-30-s13-optimize.md)は3構成、n=1、output4だけFTRACE=y。`-Os + LTO`の同時適用や統計的な同等性の確認ではない |
+| S17 | SDモデルのblkdebugの限界を全ゲスト障害試験へ広げた | [SDモデルの記録](../experiments/2026-11-01-s17-dmlw-blkdebug.md)ではホスト側発火・ゲスト非伝播。[dm-flakey記録](../experiments/2026-10-30-s17-error-injection.md)にはゲストのreadエラーがある。試した経路を区別し、実カードのFTL・電断は未確認とする |
+
 ## 個別訂正の補足
 
 | 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |

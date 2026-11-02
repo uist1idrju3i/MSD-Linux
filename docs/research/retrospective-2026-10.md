@@ -13,7 +13,7 @@
 | 小項目の試験 | `/data` の `noexec`、zram、Lynis、BusyBox の静的リンクと applet 削減、dm-verity | #76、#79、#80、#84 |
 | CI の高速化 | per-package directories（PPD）の比較と、成果物差の原因の確認 | #78、#81、#83、#85 |
 | sysctl・panic・ramoops | hardening 候補、panic 後の再起動、ramoops の記録 | #87 |
-| 網羅表 | QEMU で検証できる範囲の分類と実施順 | #74、[シミュレーション検証計画](simulation-plan.md) |
+| 網羅表 | QEMU で検証できる範囲の分類と実施順 | #74、[シミュレーション検証計画](verification/experiment-catalog.md) |
 
 製品の設定を変えたのは #68 と #77 だけです。それ以外の結果は、どれも採否を決めていません（5 節）。
 
@@ -70,7 +70,7 @@
 | seedrng | `post-build.sh` の seedrng の改名を、PPD の繰り返し build でも通るようにする（#32） |
 | inittab | 意味のない `mount -o remount,rw /` を外すかを、`/var` の扱いと合わせて決める |
 | devcontainer | 計画を出す（実装はしない） |
-| 網羅表 | 結果が出るたびに [シミュレーション検証計画](simulation-plan.md) の状態を更新する |
+| 網羅表 | 結果が出るたびに [シミュレーション検証計画](verification/experiment-catalog.md) の状態を更新する |
 
 ### 実機で確かめるもの
 
