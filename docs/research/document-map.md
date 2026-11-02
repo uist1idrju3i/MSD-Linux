@@ -17,6 +17,7 @@
 | [read-only と FS](readonly-data-and-fs.md) / [FS 候補](fs-candidates.md) | 前者は mount・書き込み経路・S17 の条件、候補表は圧縮・電断・費用の定性的比較。候補表の K12 などの出典は親文書にあり、切り離せない。未測定の性能を測定済みへ変えない |
 | [電源・更新](power-and-updates.md) / [更新操作](../UPDATE.md) | 前者は FS、tryboot、更新フレームワークの候補と制約、後者は現在の `msd-update` の操作。現行操作は UPDATE を更新し、U-Boot 前提の先例や実機未確認の制約は調査側へ残す |
 | [userspace](userspace-and-security.md) / [セキュリティ](security-hardening.md) / [ハードニング案](security-2026-11-hardening-list.md) | init/libc/allocator の候補、物理交換を含む脅威モデル、個別対策の採否は目的が異なる。systemd の設定例は BusyBox の製品設定ではない。採用根拠を増やさず統合しない |
+| [代替比較](alternatives/README.md) / [userspace](userspace-and-security.md) / [再実装](reimplemented-libraries.md) | 代替比較は現行の固定設定と最新の一次資料を対応付ける採否の本文。既存の第三者の測定・当時の仮説は条件を保つ。古いLLVM libcの評価は根拠とともに訂正し、全分野の比較完了とはしない |
 
 候補比較の古い版数や未確認事項は、その調査時点の記述です。最新の採否は RESEARCH、現行設定は BUILD とコード、個々の測定条件は実験を確認します。文書整理だけで、未確認項目を解消済みにしません。
 

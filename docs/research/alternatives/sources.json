@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "scope": "Compiler, runtime and libc research metadata. Download success does not establish full review, compatibility, latest-version status or license closure.",
+  "baseline_commit": "641a6f5d1d31081832a5ea2da04ef89a6d681f4b",
+  "buildroot_commit": "8b238854d909c9cce32ef9671d968b03e323b55d",
+  "llvm_documentation_commit": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+  "sources": [
+    {
+      "url": "https://clang.llvm.org/docs/Toolchain.html",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 10096,
+      "captured_sha256": "622082f2dd7665651bd951d1ed1381ca4677363b5c9705e574ee98671fe32796"
+    },
+    {
+      "url": "https://docs.kernel.org/kbuild/llvm.html",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 6525,
+      "captured_sha256": "a069f3417f377041bd544301137344527c09b973473b462a682f2511a954eaaa"
+    },
+    {
+      "url": "https://libc.llvm.org/full_host_build.html",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 7687,
+      "captured_sha256": "263b70d8eb9421b0844e0d19b77bf2a65c266305bf168c6369886c69c02f9141"
+    },
+    {
+      "url": "https://sourceware.org/newlib/libc.html#Syscalls",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 10091,
+      "captured_sha256": "22df89d48d97bc7a81040f777929f4270d33909d763f641d93d88f13efb182b9"
+    },
+    {
+      "url": "https://musl.libc.org/about.html",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 5876,
+      "captured_sha256": "c418e953cd354ffd89ccb40c36236829e44e63d2e93f980131ecdc90e48a0e06"
+    },
+    {
+      "url": "https://www.uclibc-ng.org/",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 4146,
+      "captured_sha256": "ba1c52c32f6e29e66f10de7f8ab6038c78388e8ab79897f6627145dd831ae64a"
+    },
+    {
+      "url": "https://github.com/picolibc/picolibc",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 10068,
+      "captured_sha256": "a85df28be56f3885a1260e63f9039f1d69adf35e758f43085db51c198ee565b8"
+    },
+    {
+      "url": "https://android.googlesource.com/platform/bionic/+/master/README.md",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 10108,
+      "captured_sha256": "a4a90f23ef48b18797034d410c82caf66f11da0ccc67381c6575e1821d789e3d"
+    },
+    {
+      "url": "https://www.kernel.org/pub/linux/libs/klibc/",
+      "checked_at": "2026-11-02T19:25:07.181916+00:00",
+      "time_basis": "capture-file-mtime",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 779,
+      "captured_sha256": "92aa5f29c63b9ee78aff99425f17beb248be4aab8d2fb2aa3cd7354c7522e2ff"
+    },
+    {
+      "url": "https://libc.llvm.org/",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "time_basis": "capture-metadata",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 2051,
+      "captured_sha256": "3cc45a29f964d076e4cb76313f9a4374e74aa4ba035bef3ff78e550ae1f20f28"
+    },
+    {
+      "url": "https://ziglang.org/learn/overview/",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "time_basis": "capture-metadata",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 10097,
+      "captured_sha256": "2f325a6f352de675a5990966af06daab8f0cdca8af04e68d3c47d61f42d2030d"
+    },
+    {
+      "url": "https://libcxx.llvm.org/",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "time_basis": "capture-metadata",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 8251,
+      "captured_sha256": "159e98e2769b0f5cb327dc7aef808e58199714a7b19b075417600ef642b29e2a"
+    },
+    {
+      "url": "https://sourceware.org/glibc/",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "time_basis": "capture-metadata",
+      "status": "extracted-text",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 2209,
+      "captured_sha256": "c7520626e5d171743107181428e492cd73029253504af984a262e9139d3a46d9"
+    },
+    {
+      "url": "https://git.kernel.org/pub/scm/libs/klibc/klibc.git/tree/README",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "time_basis": "capture-metadata",
+      "status": "bot-challenge",
+      "representation": "web-tool-extracted-text; may be truncated; not raw HTML",
+      "captured_characters": 129,
+      "captured_sha256": "07425ba09909757728bb1d2fff09e6adb7d5eeb8107d121ea5c34e831fb8d5ab"
+    },
+    {
+      "url": "https://libc.llvm.org/status/",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "status": "not-returned-in-capture",
+      "representation": null
+    },
+    {
+      "url": "https://gcc.gnu.org/gcc-16/changes.html",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "status": "not-returned-in-capture",
+      "representation": null
+    },
+    {
+      "url": "https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "status": "not-returned-in-capture",
+      "representation": null
+    },
+    {
+      "url": "https://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html",
+      "checked_at": "2026-11-02T19:30:15.433Z",
+      "status": "not-returned-in-capture",
+      "representation": null
+    },
+    {
+      "repository": "gcc-mirror/gcc",
+      "ref": "releases/gcc-14.3.0",
+      "path": "libstdc++-v3/doc/xml/manual/using.xml",
+      "checked_at": "2026-11-02T19:32:25.014105+00:00",
+      "html_url": "https://github.com/gcc-mirror/gcc/blob/releases/gcc-14.3.0/libstdc%2B%2B-v3/doc/xml/manual/using.xml",
+      "sha256": "0a4dcd5ed2cf65ff3b1cb578d0cb6b813b98275269e10af36d67a175d73d48fb",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "46b36ba7a7c7d2417b98fa05119864a5f20f7a13",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "main",
+      "path": "libc/docs/index.rst",
+      "checked_at": "2026-11-02T19:32:25.339354+00:00",
+      "error": "gh: Not Found (HTTP 404)\n",
+      "status": "retrieval-failed",
+      "git_blob_sha": null,
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "main",
+      "path": "libc/docs/full_host_build.rst",
+      "checked_at": "2026-11-02T19:32:25.649911+00:00",
+      "error": "gh: Not Found (HTTP 404)\n",
+      "status": "retrieval-failed",
+      "git_blob_sha": null,
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "main",
+      "path": "libcxx/LICENSE.TXT",
+      "checked_at": "2026-11-02T19:32:25.974198+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/main/libcxx/LICENSE.TXT",
+      "sha256": "539dd7aed86e8a4f12cbdd0e6c50c189c7d74847e4fecc64ce2c6ee3a01da38b",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "e159d283443f92ac78b964d2bccebe8f95d5d445",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "main",
+      "path": "libc/LICENSE.TXT",
+      "checked_at": "2026-11-02T19:32:26.336644+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/main/libc/LICENSE.TXT",
+      "sha256": "ebcd9bbf783a73d05c53ba4d586b8d5813dcdf3bbec50265860ccc885e606f47",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "24806ab4c9eb291db4d28e159901f7a0901b9fd1",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "picolibc/picolibc",
+      "ref": "main",
+      "path": "README.md",
+      "checked_at": "2026-11-02T19:32:26.729214+00:00",
+      "html_url": "https://github.com/picolibc/picolibc/blob/main/README.md",
+      "sha256": "17858397318c30da0e7d5f3f9f38605837ba02344c47635c4f04a5cbb4aa1bf9",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "3538033b42196587c4f84161e9e51efd1d7ac844",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "raspberrypi/linux",
+      "ref": "b3495ea401d709af0701a85babcba5e3d788a602",
+      "path": "Documentation/kbuild/llvm.rst",
+      "checked_at": "2026-11-02T19:32:27.048474+00:00",
+      "html_url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/kbuild/llvm.rst",
+      "sha256": "c09a0444e2b670368493e1bf4b431a1e3b3d585c6920c5217be411711440907c",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "bc8a283bc44bbfa9948ad3c9fe8031269ce10be4",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libc/docs/index.md",
+      "checked_at": "2026-11-02T19:33:57.149980+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libc/docs/index.md",
+      "sha256": "234942b1529ac341284bb6ece1175fd1d85d6685ec14301ad008e3d46c36b799",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "4c808e16f9eebd7e55542a49dec7a67098cc38d7",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libc/docs/full_host_build.md",
+      "checked_at": "2026-11-02T19:33:57.436889+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libc/docs/full_host_build.md",
+      "sha256": "0b314fb47af02eacf2d4ac9204ac2564fbee3d0c6c90ebe392cc827fce5bb4ae",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "051870c47a068a2495e56a40bf87f4e4cc2d88a4",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libc/docs/full_cross_build.md",
+      "checked_at": "2026-11-02T19:33:57.690098+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libc/docs/full_cross_build.md",
+      "sha256": "a009eb297cc25cd88b539a7232ac430335af10ca5771e6d660479597db74c853",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "4783b203184eacf7502d01a8de4486fd6a2fa0ae",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libc/docs/platform_support.md",
+      "checked_at": "2026-11-02T19:33:57.962065+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libc/docs/platform_support.md",
+      "sha256": "170bdd0f89f2189f9496bc33a4479e2a492f6d81f655db89c956aa0f00f833ba",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "87f98d3a649d0406e8a9682017e148c79f687a44",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "llvm/docs/Security.rst",
+      "checked_at": "2026-11-02T19:33:58.249083+00:00",
+      "error": "gh: Not Found (HTTP 404)\n",
+      "status": "retrieval-failed",
+      "git_blob_sha": null,
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libcxx/LICENSE.TXT",
+      "checked_at": "2026-11-02T19:33:58.534904+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libcxx/LICENSE.TXT",
+      "sha256": "539dd7aed86e8a4f12cbdd0e6c50c189c7d74847e4fecc64ce2c6ee3a01da38b",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "e159d283443f92ac78b964d2bccebe8f95d5d445",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "libc/LICENSE.TXT",
+      "checked_at": "2026-11-02T19:33:58.846996+00:00",
+      "html_url": "https://github.com/llvm/llvm-project/blob/7a35ab1791fbfc25a0ab56b14693a516cf205bbe/libc/LICENSE.TXT",
+      "sha256": "ebcd9bbf783a73d05c53ba4d586b8d5813dcdf3bbec50265860ccc885e606f47",
+      "status": "git-file-retrieved",
+      "git_blob_sha": "24806ab4c9eb291db4d28e159901f7a0901b9fd1",
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "repository": "llvm/llvm-project",
+      "ref": "7a35ab1791fbfc25a0ab56b14693a516cf205bbe",
+      "path": "clang/docs/Toolchain.rst",
+      "checked_at": "2026-11-02T19:39:24.806804+00:00",
+      "error": "gh: Not Found (HTTP 404)\n",
+      "status": "retrieval-failed",
+      "git_blob_sha": null,
+      "representation": "UTF-8 source file decoded from GitHub Contents API"
+    },
+    {
+      "url": "https://sourceware.org/newlib/libc.html#Syscalls",
+      "checked_at": "2026-11-02T19:39:25.818979+00:00",
+      "status": "HTTP-200",
+      "raw_sha256": "4955204863e377b18e98673e821ab1e178a470e1c1b00e2dd846fbac829f19b2",
+      "raw_bytes": 974353,
+      "representation": "raw HTML hash; full document downloaded; only relevant sections read"
+    },
+    {
+      "url": "https://clang.llvm.org/docs/Toolchain.html",
+      "checked_at": "2026-11-02T19:39:48.622568+00:00",
+      "status": "HTTP-200",
+      "raw_sha256": "30d5722bb3638ccfc63dc35bcc53073f3011fd2064c0e8daa68d9e275f404701",
+      "raw_bytes": 56926,
+      "representation": "raw HTML hash; full document downloaded; only relevant sections read"
+    },
+    {
+      "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/aarch64--glibc--stable-2025.08-1.tar.xz",
+      "checked_at": "2026-11-02T19:41:01.716247+00:00",
+      "time_basis": "archive-member recheck",
+      "status": "archive-member-verified",
+      "member": "aarch64--glibc--stable-2025.08-1/README.txt",
+      "sha256": "cf8e19adc4bdc354476be7c248dddcfb2ecde34f6fc8a981c6835b75659697af",
+      "archive_sha256": "dfb47eee874eef9e8a7fc042eee4e0a183f444b6bcde6a82fef8f009918389c9",
+      "representation": "raw SDK README bytes; URL derived from pinned Buildroot recipe"
+    }
+  ]
+}

@@ -25,7 +25,7 @@
 
 - **musl**: MIT、スクラッチ再実装。静的リンク・小ささ・決定的な実装が強み。本機が外部 Bootlin ツールチェーンの glibc を使う現状では、musl への切替はツールチェーン変更（Buildroot 内蔵 musl ツールチェーン or Bootlin musl 版）が必要で、署名済みユーザーランド全体の再ビルド・再検証を伴う。効能はイメージサイズと依存の簡素化【推測】。
 - **picolibc**: Keith Packard 主導。newlib-nano と AVR libc の流れを統合した組み込み向け libc。printf/scanf を削減した `tinystdio` が特徴。**設計上 Linux ホスト環境は想定しておらず、Linux hosted ビルドは試験用**。本機のルートfs の libc としては対象外で、仮に bare-metal 補助コアやブートローダを自作する場合の候補【一次: picolibc README】。
-- **llvm-libc**: LLVM 製 libc。公式が「重要関数が不足」と警告しており本機用途では未成熟【一次: libc.llvm.org】。
+- **llvm-libc**: 現行の公式資料は、用途を絞った静的Linux等での本番利用と、regex・locale・wide-character I/O等の不足を併記しています。旧来の一律の未成熟扱いを見直し、[限定した実験候補](alternatives/libc.md#llvm-libcの旧評価を変える根拠)とします。MSD/Linux全体の置換は、本リポジトリでは試していません。
 
 ## 3. malloc 実装
 
