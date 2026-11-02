@@ -77,13 +77,13 @@ Yocto Project Compatible の考え方（層を足しただけで挙動が変わ�
 | フェーズ | 内容 | 完了の条件 |
 |---|---|---|
 | Y0（済み） | 調査、構築試験、BSP のビルド、QEMU 起動 | [調査](README.md)、[構築試験](../../experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動](../../experiments/2026-11-02-yocto-qemu-boot.md) |
-| Y1 | 層と kas の骨組み（meta-msd-bsp、meta-msd、kas とロックファイル） | `bitbake -p` が通る。`yocto-check-layer` の結果を記録する |
+| Y1 | 層と kas の骨組み（meta-msd-bsp、meta-msd、kas とロックファイル） | `bitbake -p` が通る。`yocto-check-layer` の結果を記録する。§6 の Y1 の項目（AGENTS.md、スキル、BUILD.md）を利用者の確認後に更新する |
 | Y2 | BSP（machine、カーネル、M5 のレシピ、パッチの `Upstream-Status`） | `.ko` 16 個、dtbo 3 個、ファームウェアとキーマップがそろう。Buildroot の最終 `.config` との差（2026-11-02 時点で 544 項目）をすべて説明できる。CM0 の dtb で QEMU が起動する |
 | Y3 | distro と image（読み取り専用の SquashFS、init、/data、wks の A/B） | 既存の `test-boot.sh` と `test-ab.sh` に相当する QEMU 試験が通る。Buildroot の image とファイル一覧・サイズを比べる |
 | Y4 | 更新と電源断（`msd-update`、bundle と署名、tryboot） | `tests/msd-update/run.sh` と QEMU の A/B・障害注入（S4・S17 相当）が通る |
 | Y5 | Yocto で容易になる比較実験（dm-verity、RAUC の custom backend、systemd、musl、`overlayfs-etc`） | 実験ごとに採否の基準を先に書き、`docs/experiments/` に記録する |
 | Y6 | CI と監査（kas のビルド、sstate ミラー、SPDX、`sbom-cve-check`、archiver、再現性の試験） | 配布物に SPDX、`license.manifest`、ソースを添付できる。同じ入力から 2 回ビルドして差を記録する |
-| Y7 | 受け入れと Buildroot の削除 | §4 の基準をすべて満たし、利用者が承認する |
+| Y7 | 受け入れと Buildroot の削除 | §4 の基準をすべて満たし、利用者が承認する。§6.3 の確認を通す |
 
 ## 4. 受け入れ基準（Buildroot を削除する前提）
 
@@ -108,13 +108,52 @@ Yocto Project Compatible の考え方（層を足しただけで挙動が変わ�
 | M5 の不明ライセンスのバイナリ | `LicenseRef-` で配布 / 配布物から外す / M5Stack に確認 | M5Stack に確認するまで、配布物の扱いは決めない |
 | `INCOMPATIBLE_LICENSE` | GPL-3.0 系を除く / 除かない | MSD のライセンス方針と照らして決める |
 
-## 6. 危険と対策
+## 6. リポジトリの規則・スキル・文書・CI の保守
+
+移行では、ビルドの仕組みだけでなく、エージェントと人が従う規則（AGENTS.md）、手順（`.agents/skills/`）、利用者向けの文書、CI と検査スクリプトも Buildroot を前提にしています。2026-11-02 に `git grep -E 'Buildroot|BR2_|vendor/buildroot|defconfig|legal-info|genimage|output/images'` で数えた結果を出発点にします。
+
+### 6.1 進め方の原則
+
+- 文書は、それが説明する変更と同じ PR で直します。フェーズの完了条件に、対応する文書の更新を含めます。
+- Y1〜Y6 は Buildroot と Yocto が並んで存在します。この間は Buildroot の手順を消さず、「Yocto の場合」を足します。どちらの手順かを見出しで分けます。Buildroot の記述を消すのは Y7 です。
+- AGENTS.md とスキルの変更は、変更案と理由をチャットで示し、利用者が確認してから行います。
+- 過去の調査文書と実験記録は、当時の判断の記録として書き換えません。Buildroot を前提にしていることは、各ディレクトリの README の注記で示します。現在の状態を説明する文書（RESEARCH.md の決定済み方針と概略アーキテクチャ、`open-questions.md`、`simulation-plan.md` の表など）だけを更新します。
+
+### 6.2 対象と変更の内容
+
+| 対象 | 現状（Buildroot を前提にした箇所） | 移行での変更 | フェーズ |
+|---|---|---|---|
+| AGENTS.md §3 外部リポジトリ | `vendor/` の shallow submodule（buildroot、m5stack-linux-dtoverlays、yomiyasu） | 層の取得方法（kas のロック / submodule）の決定に合わせて書き直す。upstream の層を直接編集せず、bbappend とパッチで変える規則を足す | Y1 |
+| AGENTS.md §4 依存関係 | 「Buildroot の系列」を固定版の確認で監視 | oe-core・bitbake・meta-raspberrypi などの層のコミットと Wrynose の点リリースを監視対象にする | Y1 |
+| AGENTS.md §7・§8 | `output*/` の扱い、`make -C vendor/buildroot ...` の確認コマンド | kas のビルド、作業領域を repo の外に置く規則、Yocto の deploy 出力での QEMU 試験を足す。パッチに `Upstream-Status` を付ける規則を足す。§7 の「計画はコミットしない」と本計画の例外の扱いを利用者と決める | Y1（追加）、Y7（Buildroot の削除） |
+| スキル `vendor-update` | Buildroot submodule、rpi-firmware、Bootlin ツールチェーンの行と手順 | 層の更新、Wrynose の点リリースの変更履歴、`sbom-cve-check` の差分、sstate への影響の確認を足す | Y1（追加）、Y7（削除） |
+| スキル `experiment-record` | 条件の欄に Buildroot の版と `O=`、落とし穴に Buildroot の例 | 条件に層のコミット、`MACHINE`・`DISTRO`、sstate の warm / cold、`bitbake -e` で見た変数の値を足す | Y1 |
+| 新しいスキルの候補 | なし | `yocto-layer`（レシピと bbappend の置き場所、`yocto-check-layer`、`Upstream-Status`）、`yocto-build-env`（kas-container、rootless、キャッシュの置き場）。`.claude/skills/` のリンクも同じ PR で作る | Y1 |
+| README.md | ビルドの行、CI の説明、ライセンス表（Buildroot の `.mk` の記載、`make legal-info`） | ビルドと CI の説明を Yocto に、ライセンス表の根拠をレシピの `LICENSE` と SPDX・archiver に変える | Y6、Y7 |
+| RESEARCH.md | 決定済み方針と概略アーキテクチャ | フェーズの進行に合わせて更新し、Y7 で Buildroot を「過去の構成」に移す | 各フェーズ |
+| [BUILD.md](../../BUILD.md)、[CI.md](../../CI.md)、[UPDATE.md](../../UPDATE.md)、[VERIFY.md](../../VERIFY.md) | Buildroot の手順、`output/images/` のパス | BUILD は Y1、VERIFY は Y3、UPDATE は Y4、CI は Y6 で Yocto の手順を足し、Y7 で Buildroot の手順を消す | Y1〜Y7 |
+| `.github/workflows/build.yml` | Buildroot の configure・build・`legal-info`・成果物・QEMU | kas のビルドと deploy 出力の QEMU 試験。SPDX、`license.manifest`、archiver の出力を成果物にする | Y6 |
+| `.github/workflows/security.yml` | Buildroot の `show-info` と `generate-cyclonedx`、CVE 解析 | `sbom-cve-check` と SPDX に置き換え、VEX の要約（`summarize-vex.py`）を合わせる | Y6 |
+| `pins-check.yml`、`check-pins.py`、`tests/check-pins/` | Buildroot の系列、Bootlin のツールチェーン | 層のコミットと Wrynose の点リリースを調べる。Bootlin の確認を外す | Y6 |
+| `set-kernel-version.py`、`summarize-build-time.py` | Buildroot の出力を読む | Yocto の deploy 出力と buildstats を読む | Y6 |
+| `board/cardputerzero/qemu/` | `output/images/` を前提に起動 | deploy のパスを受け取れるようにする。console は `ttyAMA1` | Y3 |
+| `board/cardputerzero/tools/`（`sign-modules.sh`、`kernel-variant-sweep.sh`、`check-modules-dep.sh`、`bench/` の `make-variant.sh`） | Buildroot の出力と再構成 | レシピや比較用の image に置き換えるか、Y7 で役目を終えたものを消す | Y2〜Y7 |
+| `docker/msd-dev`・`docker/README.md` | Buildroot のビルド環境と QEMU | QEMU と検査の環境として残し、Buildroot のための部分を Y7 で外す | Y7 |
+| `.gitmodules`、`.github/dependabot.yml` | `vendor/buildroot` を監視 | Y7 で submodule と監視を外す | Y7 |
+| `public_html/index.html` | 「Buildroot で作る」 | 配布するイメージが Yocto になった時点で直し、`site-review` スキルで確かめる | Y7 |
+| Devin の環境設定（Blueprint） | Buildroot の手順と submodule の初期化 | kas-container と rootless の手順、キャッシュの置き場を足す | Y1 |
+
+### 6.3 Y7 での確認
+
+`git grep -n -E 'Buildroot|BR2_|vendor/buildroot'` の結果が、過去の記録（docs/research の調査文書、docs/experiments、corrections.md など）だけになることを確かめます。残すファイルは理由付きの許可リストにし、使われなくなった行があれば失敗する検査にします。
+
+## 7. 危険と対策
 
 - ビルドの重さ: sstate と hash equivalence を前提にし、空の状態からのビルドは定期実行に限る。
 - 起動時間とサイズの劣化: ツールチェーンと init の中身が変わるため、Y3 で Buildroot と同じ指標を測る。
 - `Upstream-Status` の QA: Wrynose ではないとビルドが止まる。MSD のパッチすべてに付ける。
 - 実機が未入手: QEMU で確かめられない項目（LCD、キーボード、tryboot、電源断）は、実機が届くまで Buildroot を残す理由になる。
 
-## 7. この計画でまだ行わないこと
+## 8. この計画でまだ行わないこと
 
-meta-msd・meta-msd-bsp の作成、Buildroot の削除や置き換え、`vendor/` の変更、上流への提案、実機での確認。
+meta-msd・meta-msd-bsp の作成、Buildroot の削除や置き換え、AGENTS.md・スキル・README・CI の変更、`vendor/` の変更、上流への提案、実機での確認。
