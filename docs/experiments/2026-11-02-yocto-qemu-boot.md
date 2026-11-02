@@ -60,20 +60,29 @@ qemu-system-aarch64 -M raspi3ap -m 512M -kernel kernel8.img -dtb qemu.dtb \
   -display none -serial file:run.log -serial null -monitor none
 ```
 
-開発用 QEMU は `docker/msd-dev bash -c '...'` の中で、標準 QEMU はホストで動かしました。5 回の繰り返しは、ログを 0.5 秒ごとに見て `login:` が出た時点の経過時間を記録し、QEMU を止めるスクリプトで行いました。
+開発用 QEMU は `docker/msd-dev bash -c '...'` の中で、標準 QEMU はホストで動かしました。5 回の繰り返しには次のスクリプト（`repeat.sh`）を使いました。ログを 0.5 秒ごとに見て `login:` が出た時点の経過時間を記録し、QEMU を止めます。引数は `<label> <qemu> <machine> <memory> <出力先>` です（例: `./repeat.sh patched-raspi3ap qemu-system-aarch64 raspi3ap 512M rep`）。
 
 ```sh
+#!/bin/bash
+# usage: repeat.sh <label> <qemu-bin> <machine> <mem> <outdir>   (paths relative to cwd)
+label=$1; Q=$2; M=$3; MEM=$4; out=$5; mkdir -p "$out"
+echo "run,label,machine,mem,start_utc,init_s,login_wall_s,result" > "$out/$label.csv"
 for i in 1 2 3 4 5; do
+  img=$out/$label-$i.img; log=$out/$label-$i.log
   cp run7.wic "$img"; truncate -s 256M "$img"; : > "$log"
-  t0=$(date +%s.%N); "$Q" -M "$M" -m "$MEM" ...（上と同じ引数） & pid=$!
-  for _ in $(seq 1 240); do sleep 0.5
-    grep -aq 'login:' "$log" && { lw=$(awk -v a="$(date +%s.%N)" -v b="$t0" 'BEGIN{printf "%.1f", a-b}'); res=pass; break; }
-    kill -0 $pid 2>/dev/null || { res=exited; break; }
-  done
-  kill $pid; wait $pid
+  st=$(date -u +%FT%TZ); t0=$(date +%s.%N)
+  "$Q" -M "$M" -m "$MEM" -kernel kernel8.img -dtb qemu.dtb -drive file="$img",if=sd,format=raw \
+    -append "earlycon=pl011,mmio32,0x3f201000 console=ttyAMA1,115200 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait initcall_blacklist=bcm2835_wdt_driver_init" \
+    -display none -serial file:"$log" -serial null -monitor none & pid=$!
+  res=timeout; lw=
+  for _ in $(seq 1 240); do sleep 0.5; if grep -aq 'login:' "$log"; then lw=$(awk -v a="$(date +%s.%N)" -v b="$t0" "BEGIN{printf \"%.1f\", a-b}"); res=pass; break; fi; if ! kill -0 $pid 2>/dev/null; then res=exited; break; fi; done
+  kill $pid 2>/dev/null; wait $pid 2>/dev/null
   init=$(grep -a 'Run /sbin/init' "$log" | sed -E 's/^\[ *([0-9.]+)\].*/\1/')
+  echo "$i,$label,$M,$MEM,$st,$init,$lw,$res" >> "$out/$label.csv"; rm -f "$img"
 done
 ```
+
+`qemu.dtb` は、E の `bcm2710-rpi-zero-2.dtb` に `board/cardputerzero/qemu/run-qemu.sh` と同じ操作（`fdtput -t s qemu.dtb /soc/serial@7e201000/bluetooth status disabled`）をしたものです。差は Bluetooth ノードの `status` の 1 か所だけであることを、`dtc` で逆変換して比べて確かめました。
 
 ## 計測器の検証
 

@@ -81,7 +81,7 @@ Buildroot の `manifest.csv` では、`toolchain-external-bootlin` のライセ�
 
 ### カーネルの `.config`
 
-どちらも `bcm2711_defconfig` を元にし（Buildroot は `BR2_LINUX_KERNEL_DEFCONFIG="bcm2711"`、meta-raspberrypi は `KBUILD_DEFCONFIG:raspberrypi3-64 ?= "bcm2711_defconfig"` と `KCONFIG_MODE = "--alldefconfig"`）、同じ `linux.fragment`（518 行）を当てています。それでも、正規化した項目のうち 544 個の値が違いました。多くは Buildroot で `m` の項目が Yocto にない（`6LOWPAN`、`BRIDGE_EBT_*` など）ものです。
+どちらも `bcm2711_defconfig` を元にし（Buildroot は `BR2_LINUX_KERNEL_DEFCONFIG="bcm2711"`、meta-raspberrypi は `KBUILD_DEFCONFIG:raspberrypi3-64 ?= "bcm2711_defconfig"` と `KCONFIG_MODE = "--alldefconfig"`）、同じ `linux.fragment`（518 行）を当てています。それでも、正規化した項目のうち 544 個の値が違いました（全項目は [2026-11-02-buildroot-yocto-kconfig-diff.csv](2026-11-02-buildroot-yocto-kconfig-diff.csv)。片方にない項目は `(absent)`）。多くは Buildroot で `m` の項目が Yocto にない（`6LOWPAN`、`BRIDGE_EBT_*` など）ものです。
 
 CardputerZero に関係する主な項目（ウォッチドッグ、I2C、SPI、fbcon、DRM、SquashFS の zstd、dm-verity、zram、PREEMPT_RT、モジュール署名の強制など）は一致しました。違ったのは `CONFIG_THERMAL` で、Buildroot は `y`、Yocto は `n` でした（Buildroot では `BCM2835_THERMAL` と `BCM2711_THERMAL` も `y`）。`linux.fragment` に THERMAL の行はありません。原因は特定していません。Yocto の `--alldefconfig` による処理の違いと考えていますが、確かめていません【推測】。温度の監視に関わるため、移行計画の Y2 では最終 `.config` を Buildroot と突き合わせることを完了の条件にします。
 
@@ -101,4 +101,4 @@ CardputerZero に関係する主な項目（ウォッチドッグ、I2C、SPI、
 
 ## 再実行の方法
 
-ビルドのログ、QEMU のシリアルログ、正規化した `.config` はリポジトリに入れていません。上の手順で再生成できます。
+ビルドのログと QEMU のシリアルログはリポジトリに入れていません。正規化した `.config` の差は上の CSV に入れました。上の手順で再生成できます。
