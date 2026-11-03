@@ -1,0 +1,783 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "9fbc7767ccc475d67fba5e7d1d9e9968c12131bd",
+  "scope": "Static source/API capture; no candidate library build, execution, hardware or performance verification.",
+  "selected_sources": {
+    "theupdateframework/python-tuf": {
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "archived": false,
+      "release_tag": "v7.0.1",
+      "release_published_at": "2026-09-01T12:05:31Z",
+      "selection": "latest-release"
+    },
+    "theupdateframework/go-tuf": {
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "archived": false,
+      "release_tag": "v2.4.2",
+      "release_published_at": "2026-05-19T08:47:20Z",
+      "selection": "latest-release"
+    },
+    "theupdateframework/rust-tuf": {
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "archived": false,
+      "release_tag": null,
+      "release_published_at": null,
+      "selection": "development-branch-not-a-release"
+    },
+    "awslabs/tough": {
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "archived": false,
+      "release_tag": "tuftool-v0.17.0",
+      "release_published_at": "2026-07-10T22:34:35Z",
+      "selection": "latest-release"
+    },
+    "theupdateframework/tuf-on-ci": {
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "archived": false,
+      "release_tag": "v0.21.0",
+      "release_published_at": "2026-09-15T17:52:01Z",
+      "selection": "latest-release"
+    }
+  },
+  "sources": [
+    {
+      "url": "https://api.github.com/repos/theupdateframework/python-tuf",
+      "checked_at": "2026-11-02T22:02:42.162347+00:00",
+      "file": "theupdateframework--python-tuf-repo.json",
+      "status": "retrieved",
+      "bytes": 7184,
+      "sha256": "fdc2a8eb39f96e1c46a139df25a8cde87c7a7f4aac43ed296ecb29419424875d"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/python-tuf/releases/latest",
+      "checked_at": "2026-11-02T22:02:42.525735+00:00",
+      "file": "theupdateframework--python-tuf-release.json",
+      "status": "retrieved",
+      "bytes": 5654,
+      "sha256": "8bfce45cc0a7a6cedbf207d46008ddd0b1a30af2d2bc93e7b9d3732018006a78"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/python-tuf/commits/v7.0.1",
+      "checked_at": "2026-11-02T22:02:42.821353+00:00",
+      "file": "theupdateframework--python-tuf-commit.json",
+      "status": "retrieved",
+      "bytes": 6541,
+      "sha256": "0c7ca40d3d220548caaf722b9a7c2863527ee833d39edfca806efc3990eb65c3"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/python-tuf/git/trees/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15?recursive=1",
+      "checked_at": "2026-11-02T22:02:43.284105+00:00",
+      "file": "theupdateframework--python-tuf-tree.json",
+      "status": "retrieved",
+      "bytes": 51386,
+      "sha256": "96868efd69adf848126268166e084b36943c351d38587c19fe31d5886439ced5"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/go-tuf",
+      "checked_at": "2026-11-02T22:02:43.630395+00:00",
+      "file": "theupdateframework--go-tuf-repo.json",
+      "status": "retrieved",
+      "bytes": 6987,
+      "sha256": "efca13cd0bf6959b862194918835c5d3c702a80f522d9695a669ce3f65bcfc74"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/go-tuf/releases/latest",
+      "checked_at": "2026-11-02T22:02:44.010295+00:00",
+      "file": "theupdateframework--go-tuf-release.json",
+      "status": "retrieved",
+      "bytes": 2998,
+      "sha256": "00697f4fd58b1ba513cf0c9334dcacb9b87b2848a0ce2cfd782602d530da899a"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/go-tuf/commits/v2.4.2",
+      "checked_at": "2026-11-02T22:02:44.343233+00:00",
+      "file": "theupdateframework--go-tuf-commit.json",
+      "status": "retrieved",
+      "bytes": 12609,
+      "sha256": "74429c367c7eedd084a2d8719417dcb8ce2bcf3956a3ace8223dd579d47c4cca"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/go-tuf/git/trees/f5edbde31e5507f46db2069402dc38903fe6d9d4?recursive=1",
+      "checked_at": "2026-11-02T22:02:44.760787+00:00",
+      "file": "theupdateframework--go-tuf-tree.json",
+      "status": "retrieved",
+      "bytes": 33636,
+      "sha256": "6066400e302e84b2d893cabbaa93db988a5cf3adb55bbfc6f4042f4db82cde1b"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/rust-tuf",
+      "checked_at": "2026-11-02T22:02:45.124487+00:00",
+      "file": "theupdateframework--rust-tuf-repo.json",
+      "status": "retrieved",
+      "bytes": 7002,
+      "sha256": "f0fdf487f8331e03bd63e7574b3e834105da7183d93931325fbd55085814486a"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/rust-tuf/releases/latest",
+      "checked_at": "2026-11-02T22:02:45.523234+00:00",
+      "file": "theupdateframework--rust-tuf-release.json",
+      "status": "failed",
+      "error": "gh: Not Found (HTTP 404)\n"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/rust-tuf/commits/develop",
+      "checked_at": "2026-11-02T22:02:45.968355+00:00",
+      "file": "theupdateframework--rust-tuf-commit.json",
+      "status": "retrieved",
+      "bytes": 208127,
+      "sha256": "6e1844cf4d04bd78baba926469542f1f043e645aec6d0e3502a7365901b1297c"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/rust-tuf/git/trees/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44?recursive=1",
+      "checked_at": "2026-11-02T22:02:46.466927+00:00",
+      "file": "theupdateframework--rust-tuf-tree.json",
+      "status": "retrieved",
+      "bytes": 248792,
+      "sha256": "d354b83e3a01fc1834793301ef4eed0084ad6db686c5e10dfd9afc9de1e831bd"
+    },
+    {
+      "url": "https://api.github.com/repos/awslabs/tough",
+      "checked_at": "2026-11-02T22:02:46.880787+00:00",
+      "file": "awslabs--tough-repo.json",
+      "status": "retrieved",
+      "bytes": 11998,
+      "sha256": "0c2baecd7ef250c8a7a81a9caac2132377b5806268af7f67e97a2ec945695b5b"
+    },
+    {
+      "url": "https://api.github.com/repos/awslabs/tough/releases/latest",
+      "checked_at": "2026-11-02T22:02:47.426651+00:00",
+      "file": "awslabs--tough-release.json",
+      "status": "retrieved",
+      "bytes": 1848,
+      "sha256": "01e4fe658d2ceb3f9312cc02e6bdae2b31eeaac0b9ef4495e8af7d7abc59b3af"
+    },
+    {
+      "url": "https://api.github.com/repos/awslabs/tough/commits/tuftool-v0.17.0",
+      "checked_at": "2026-11-02T22:02:47.724733+00:00",
+      "file": "awslabs--tough-commit.json",
+      "status": "retrieved",
+      "bytes": 47259,
+      "sha256": "c5bcd1ded404fd103740893ca827107a90e1593ba810b90e380661bcaafb2358"
+    },
+    {
+      "url": "https://api.github.com/repos/awslabs/tough/git/trees/98d8eb8b2ce63515d9b4981c938ef6453c5b5771?recursive=1",
+      "checked_at": "2026-11-02T22:02:48.178101+00:00",
+      "file": "awslabs--tough-tree.json",
+      "status": "retrieved",
+      "bytes": 60248,
+      "sha256": "629062f8bb98441bab55bff3add7f95b6201e0d75c1a43cb009110111067b18f"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/tuf-on-ci",
+      "checked_at": "2026-11-02T22:02:48.607854+00:00",
+      "file": "theupdateframework--tuf-on-ci-repo.json",
+      "status": "retrieved",
+      "bytes": 6907,
+      "sha256": "6dfc3ea0399b39b8b23d0dcc0734e5f8379787a33f7d90a6b5649eaa84ad9854"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/tuf-on-ci/releases/latest",
+      "checked_at": "2026-11-02T22:02:49.062126+00:00",
+      "file": "theupdateframework--tuf-on-ci-release.json",
+      "status": "retrieved",
+      "bytes": 5870,
+      "sha256": "fa7188d38ce7f87ee056f03fb3a180210ca1ec9772df63ab2138c534e23fe77a"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/tuf-on-ci/commits/v0.21.0",
+      "checked_at": "2026-11-02T22:02:49.369160+00:00",
+      "file": "theupdateframework--tuf-on-ci-commit.json",
+      "status": "retrieved",
+      "bytes": 9679,
+      "sha256": "4bb40ba0977b116b5a8494d2c4971382d15a51849841d1670d797010b91550e6"
+    },
+    {
+      "url": "https://api.github.com/repos/theupdateframework/tuf-on-ci/git/trees/662382a8295b89a9d538390ce8b9bb85b207a93d?recursive=1",
+      "checked_at": "2026-11-02T22:02:49.768336+00:00",
+      "file": "theupdateframework--tuf-on-ci-tree.json",
+      "status": "retrieved",
+      "bytes": 50696,
+      "sha256": "f8a6bc2f8050851fdda0841104d700519ae3226cf5afcb330ba4446dbd6de615"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/README.md",
+      "checked_at": "2026-11-02T22:03:02.623075+00:00",
+      "file": "theupdateframework--python-tuf--README.md",
+      "status": "retrieved",
+      "bytes": 6595,
+      "sha256": "c16c27d3891076c1e239ea84cffc600dcf25669e2c44f4a36f3fb85e31b6535c",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "README.md",
+      "git_blob_sha": "6cd2c05faebc9bd90394803bd3131d612364dcf7",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/pyproject.toml",
+      "checked_at": "2026-11-02T22:03:02.783865+00:00",
+      "file": "theupdateframework--python-tuf--pyproject.toml",
+      "status": "retrieved",
+      "bytes": 4069,
+      "sha256": "de4a0238da2c7e0452ab36069b3fd3f235a617807250dd7d6b62073da3c394bb",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "pyproject.toml",
+      "git_blob_sha": "a7cfec130794e9097b72b317de0f931560fe416b",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/LICENSE",
+      "checked_at": "2026-11-02T22:03:02.924631+00:00",
+      "file": "theupdateframework--python-tuf--LICENSE",
+      "status": "retrieved",
+      "bytes": 9694,
+      "sha256": "d3174ad63e721d4c9dccb8ad4320848992d314369bc46319720b5802c9153fe9",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "LICENSE",
+      "git_blob_sha": "91e18a62b67551a4d427e2eaee0d33dcab94e141",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/LICENSE-MIT",
+      "checked_at": "2026-11-02T22:03:03.068499+00:00",
+      "file": "theupdateframework--python-tuf--LICENSE-MIT",
+      "status": "retrieved",
+      "bytes": 1086,
+      "sha256": "ad52fe92b0d21a9b3733b484eb6f865e83855f4a6f9b9b8812b9012dc4587d27",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "LICENSE-MIT",
+      "git_blob_sha": "096d0b9e2279c4cda1860dd65cfd547529626e20",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/docs/SECURITY.md",
+      "checked_at": "2026-11-02T22:03:03.209361+00:00",
+      "file": "theupdateframework--python-tuf--docs--SECURITY.md",
+      "status": "retrieved",
+      "bytes": 728,
+      "sha256": "b354815fb84d8e6d2532b6884d9cb5713d052286553e43fe7b08e050cd22a54d",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "docs/SECURITY.md",
+      "git_blob_sha": "0fca579998c7fd93f3edc3e67ad579e83a052027",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/tuf/ngclient/config.py",
+      "checked_at": "2026-11-02T22:03:03.341036+00:00",
+      "file": "theupdateframework--python-tuf--tuf--ngclient--config.py",
+      "status": "retrieved",
+      "bytes": 2173,
+      "sha256": "f6f8dbf7c18cdb08b9dbbd4cd03e19a9b14873ab757cbe2579cb28769ef0df37",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "tuf/ngclient/config.py",
+      "git_blob_sha": "3a41fad45121cf9ab2924b478b011a84112f5b0d",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/tuf/ngclient/updater.py",
+      "checked_at": "2026-11-02T22:03:03.480426+00:00",
+      "file": "theupdateframework--python-tuf--tuf--ngclient--updater.py",
+      "status": "retrieved",
+      "bytes": 24311,
+      "sha256": "fa32bc4a416cf54b996b0b431df5081b68cb00f8b7c5e3e0b196f39dbe40d9f3",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "tuf/ngclient/updater.py",
+      "git_blob_sha": "0ae0fabe517a1de7262835e086d2472a756bc0a4",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/python-tuf/49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15/tuf/ngclient/_internal/trusted_metadata_set.py",
+      "checked_at": "2026-11-02T22:03:03.672556+00:00",
+      "file": "theupdateframework--python-tuf--tuf--ngclient--_internal--trusted_metadata_set.py",
+      "status": "retrieved",
+      "bytes": 20692,
+      "sha256": "97ecbb5d42bf7228b56d1a65ebdebe26569470dc165e7a4386db689afbe44417",
+      "commit": "49eb1da48c58cf0cbb0f2e490f7ad39fbd8c1f15",
+      "path": "tuf/ngclient/_internal/trusted_metadata_set.py",
+      "git_blob_sha": "4a3362ad95f6998a5a408c83626e6ce41a0853c5",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/README.md",
+      "checked_at": "2026-11-02T22:03:03.849579+00:00",
+      "file": "theupdateframework--go-tuf--README.md",
+      "status": "retrieved",
+      "bytes": 7805,
+      "sha256": "e93a135cdcdd448c28e5868c861b9a35dc15785d743f5efb4309321a41f6476f",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "README.md",
+      "git_blob_sha": "d13c2eec714e18b1721a88bea3e98b6bb9fc85e9",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/go.mod",
+      "checked_at": "2026-11-02T22:03:04.006749+00:00",
+      "file": "theupdateframework--go-tuf--go.mod",
+      "status": "retrieved",
+      "bytes": 1027,
+      "sha256": "d0e895542701e1bb30a3a4bbcbaddc889777968ee8d4b49bd971152d04c9e947",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "go.mod",
+      "git_blob_sha": "174edf7c29ad1c60ca843bbdc5b683831243ce1b",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/LICENSE",
+      "checked_at": "2026-11-02T22:03:04.182839+00:00",
+      "file": "theupdateframework--go-tuf--LICENSE",
+      "status": "retrieved",
+      "bytes": 11557,
+      "sha256": "e0122c8780558ada7b4ce0e1aa8596b3d95fda640cef42fca283991bf20306cf",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "LICENSE",
+      "git_blob_sha": "85541be2e1b0499b2a6c30b745bc656a877d8b8f",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/SECURITY.md",
+      "checked_at": "2026-11-02T22:03:04.345212+00:00",
+      "file": "theupdateframework--go-tuf--SECURITY.md",
+      "status": "retrieved",
+      "bytes": 1397,
+      "sha256": "bee58691f8a68fc9285ed3944971c79b6ef953d7b695b1ac0122ce521595fc63",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "SECURITY.md",
+      "git_blob_sha": "eb26fed79574320655e73815336f79d580c18713",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/metadata/updater/updater.go",
+      "checked_at": "2026-11-02T22:03:04.498520+00:00",
+      "file": "theupdateframework--go-tuf--metadata--updater--updater.go",
+      "status": "retrieved",
+      "bytes": 25427,
+      "sha256": "61653cc910879edd28c6cdd7e28bcc7bacacd28c0a022e0f3ff62b9f16c10dc2",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "metadata/updater/updater.go",
+      "git_blob_sha": "d84c869df25e1a65a597732bb200841c9b9a0b23",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/metadata/trustedmetadata/trustedmetadata.go",
+      "checked_at": "2026-11-02T22:03:04.747809+00:00",
+      "file": "theupdateframework--go-tuf--metadata--trustedmetadata--trustedmetadata.go",
+      "status": "retrieved",
+      "bytes": 14420,
+      "sha256": "2adcfa54cb1a578930393849b478bbb4a158e2f4eefe93bf8e0582edff5343b4",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "metadata/trustedmetadata/trustedmetadata.go",
+      "git_blob_sha": "3ae32781cdf83d84bacdd4276ae868cc7b6ef0ed",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/README.md",
+      "checked_at": "2026-11-02T22:03:04.928195+00:00",
+      "file": "theupdateframework--rust-tuf--README.md",
+      "status": "retrieved",
+      "bytes": 847,
+      "sha256": "a18679a3942a9c8c279dc411e29030dab720745af669291b9398723b2c56956f",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "README.md",
+      "git_blob_sha": "2a7151020f108418b333ad18ee43caf80c49497b",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/Cargo.toml",
+      "checked_at": "2026-11-02T22:03:05.123190+00:00",
+      "file": "theupdateframework--rust-tuf--Cargo.toml",
+      "status": "retrieved",
+      "bytes": 90,
+      "sha256": "e1c10999032c9d9c508bc63d64a82f4a6b41b8f0f55d995f6fea63115ed19f8a",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "Cargo.toml",
+      "git_blob_sha": "df00dc09e25961c4aa246e64607a00123f759587",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/LICENSE-APACHE",
+      "checked_at": "2026-11-02T22:03:05.297218+00:00",
+      "file": "theupdateframework--rust-tuf--LICENSE-APACHE",
+      "status": "retrieved",
+      "bytes": 10840,
+      "sha256": "2bdfac761d8c617b32c5e24c429518d71be44aac4aba1a6ac7aa196f929bb601",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "LICENSE-APACHE",
+      "git_blob_sha": "e646da58f1b5072170e97191470d0f2261733e47",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/LICENSE-MIT",
+      "checked_at": "2026-11-02T22:03:05.474954+00:00",
+      "file": "theupdateframework--rust-tuf--LICENSE-MIT",
+      "status": "retrieved",
+      "bytes": 1111,
+      "sha256": "61ed40687d2656636a04680013dffe41d5c724201edaa84045e0677b8e2064d6",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "LICENSE-MIT",
+      "git_blob_sha": "045d2f0b7a70a0d3ece89c94aaf04b08eb7f34cf",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/SECURITY.md",
+      "checked_at": "2026-11-02T22:03:05.635841+00:00",
+      "file": "theupdateframework--rust-tuf--SECURITY.md",
+      "status": "retrieved",
+      "bytes": 726,
+      "sha256": "e73221d706c20ba69469326ace16aec4e6f327f1f0b91ee9abca2da0cb0fc0ec",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "SECURITY.md",
+      "git_blob_sha": "1325dea53cc06b7e25d3d694728d7de08fbdd3ae",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf/Cargo.toml",
+      "checked_at": "2026-11-02T22:03:05.797809+00:00",
+      "file": "theupdateframework--rust-tuf--tuf--Cargo.toml",
+      "status": "retrieved",
+      "bytes": 1099,
+      "sha256": "5d42a566df055687ccf970728c9b646e1f034b3403c916dc208d0c68a178845d",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf/Cargo.toml",
+      "git_blob_sha": "5484bb5f4768d8f1e06698135ea6acfbf7f7027c",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf/README.md",
+      "checked_at": "2026-11-02T22:03:05.962635+00:00",
+      "file": "theupdateframework--rust-tuf--tuf--README.md",
+      "status": "retrieved",
+      "bytes": 12,
+      "sha256": "dbcc210d7f4962499db6d4cfa18658e26d05ee700c962a811cac911f095e22fd",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf/README.md",
+      "git_blob_sha": "32d46ee883b58d6a383eed06eb98f33aa6530ded",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf/src/client.rs",
+      "checked_at": "2026-11-02T22:03:06.214176+00:00",
+      "file": "theupdateframework--rust-tuf--tuf--src--client.rs",
+      "status": "retrieved",
+      "bytes": 90768,
+      "sha256": "90e8f44c03f82ae6d488a961dceed08d7bc99ea1157b98896b9b734e4cff04f3",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf/src/client.rs",
+      "git_blob_sha": "b3608d27d88f19390e9f078a124ebb93fb1d9003",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf/src/repository.rs",
+      "checked_at": "2026-11-02T22:03:06.381688+00:00",
+      "file": "theupdateframework--rust-tuf--tuf--src--repository.rs",
+      "status": "retrieved",
+      "bytes": 20048,
+      "sha256": "7e120bd8344eed1e1b5350893718eae87c3a86bd45c1e6ac9a67cf5e26071a9c",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf/src/repository.rs",
+      "git_blob_sha": "58b13694ddfd8fec983e5d5875c2e1ea19fc4fe7",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/README.md",
+      "checked_at": "2026-11-02T22:03:06.570630+00:00",
+      "file": "awslabs--tough--README.md",
+      "status": "retrieved",
+      "bytes": 651,
+      "sha256": "9c14bc82f20728fb4a10c028d5ae3968a400aae4934fa55a15fe031119822565",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "README.md",
+      "git_blob_sha": "3741bf82bdc3055f6521e227e0534f1e08730ef0",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/Cargo.toml",
+      "checked_at": "2026-11-02T22:03:06.728067+00:00",
+      "file": "awslabs--tough--Cargo.toml",
+      "status": "retrieved",
+      "bytes": 121,
+      "sha256": "bcb124773ff1729696651cf36913eead01c47b365184da473a7e5ca229a981af",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "Cargo.toml",
+      "git_blob_sha": "0ee3e0efd6a8a4b6b2d0e6ae3c9705e282d69121",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/LICENSE-APACHE",
+      "checked_at": "2026-11-02T22:03:06.913540+00:00",
+      "file": "awslabs--tough--LICENSE-APACHE",
+      "status": "retrieved",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "LICENSE-APACHE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/LICENSE-MIT",
+      "checked_at": "2026-11-02T22:03:07.211257+00:00",
+      "file": "awslabs--tough--LICENSE-MIT",
+      "status": "retrieved",
+      "bytes": 1112,
+      "sha256": "90c9a2570c64c62f9c8886afa65afdaf7759a05dae507fc2d38ea43bfc851a00",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "LICENSE-MIT",
+      "git_blob_sha": "503351e0d1ca145ca6c16520b3faaee3217c4559",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/tough/Cargo.toml",
+      "checked_at": "2026-11-02T22:03:07.397629+00:00",
+      "file": "awslabs--tough--tough--Cargo.toml",
+      "status": "retrieved",
+      "bytes": 1839,
+      "sha256": "4977ce9cc5f8eba7a1cfacfc4bdadf9829be607bc24a76cb0fa783840cf85736",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "tough/Cargo.toml",
+      "git_blob_sha": "0cc702df67b545db63af11ffb434fa8245931ba4",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/tough/src/lib.rs",
+      "checked_at": "2026-11-02T22:03:07.567015+00:00",
+      "file": "awslabs--tough--tough--src--lib.rs",
+      "status": "retrieved",
+      "bytes": 62377,
+      "sha256": "6658d1a062aa1567af4607b3fb2fee380547bba3ef962616000dcfac2ab41011",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "tough/src/lib.rs",
+      "git_blob_sha": "e741cd1257978ed6a494ac7b8d3ab171a790a21b",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/tough/src/datastore.rs",
+      "checked_at": "2026-11-02T22:03:07.756543+00:00",
+      "file": "awslabs--tough--tough--src--datastore.rs",
+      "status": "retrieved",
+      "bytes": 5100,
+      "sha256": "cdfd84ccd6ef63149550ba918e135a352801d6343e85043c68a56127241fe5cf",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "tough/src/datastore.rs",
+      "git_blob_sha": "de166d301d5536cecdb37565c93cb881eca98803",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/tough/src/transport.rs",
+      "checked_at": "2026-11-02T22:03:07.917688+00:00",
+      "file": "awslabs--tough--tough--src--transport.rs",
+      "status": "retrieved",
+      "bytes": 9504,
+      "sha256": "edc0199e1b9bf0afdf820474a18532e973f969eac5892a638173eb38fc67b4be",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "tough/src/transport.rs",
+      "git_blob_sha": "18d1b5a7beabdbe60eb376a70b1b7757e7aa4cff",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/README.md",
+      "checked_at": "2026-11-02T22:03:08.086583+00:00",
+      "file": "theupdateframework--tuf-on-ci--README.md",
+      "status": "retrieved",
+      "bytes": 2191,
+      "sha256": "0092b003c7e850bcb8e7331c4fe6718e8cd58e803c75213a29b29efd715cf8fb",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "README.md",
+      "git_blob_sha": "8be9b8887e3bece86a2b4b07099bef93f693c8ab",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/pyproject.toml",
+      "checked_at": "2026-11-02T22:03:08.241442+00:00",
+      "file": "theupdateframework--tuf-on-ci--pyproject.toml",
+      "status": "retrieved",
+      "bytes": 757,
+      "sha256": "7df178668a8696d9d26644ccf18a256bd4553d876f06308cce9d926653a7b670",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "pyproject.toml",
+      "git_blob_sha": "2093faf31f91ae7ee3a9919d6a3c593a6b798f51",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/LICENSE",
+      "checked_at": "2026-11-02T22:03:08.400608+00:00",
+      "file": "theupdateframework--tuf-on-ci--LICENSE",
+      "status": "retrieved",
+      "bytes": 1145,
+      "sha256": "c0af9eb5b48e19db0579e87a547f92bbf2112ec431a8c7ea46712c2206686b99",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "LICENSE",
+      "git_blob_sha": "8f75d7a61b573590fa278428827e129f06c5d5bb",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/repo/README.md",
+      "checked_at": "2026-11-02T22:03:08.594795+00:00",
+      "file": "theupdateframework--tuf-on-ci--repo--README.md",
+      "status": "retrieved",
+      "bytes": 1452,
+      "sha256": "999e8932578ec3454fd17f9006c676c07ecf1f82f3331a397a6ddf16833e207a",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "repo/README.md",
+      "git_blob_sha": "eb67da6c684f7b7aaf90ec6b5f946f8d5385c86b",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/repo/pyproject.toml",
+      "checked_at": "2026-11-02T22:03:08.766870+00:00",
+      "file": "theupdateframework--tuf-on-ci--repo--pyproject.toml",
+      "status": "retrieved",
+      "bytes": 962,
+      "sha256": "b71ab1e0773efe9802b307491c04e25060785d272b496f4227da260404692bc2",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "repo/pyproject.toml",
+      "git_blob_sha": "f6c34f28365877039fc239d8b18a4ef7b58e874d",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/signer/README.md",
+      "checked_at": "2026-11-02T22:03:08.968817+00:00",
+      "file": "theupdateframework--tuf-on-ci--signer--README.md",
+      "status": "retrieved",
+      "bytes": 174,
+      "sha256": "7e2ce50f11425f75249a870a31c6aad1fc1dbd548ea62852cebf4d53b8055ff9",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "signer/README.md",
+      "git_blob_sha": "d4709e09b567e3473b9f730bcef4d4ddf64db1a9",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/awslabs/tough/98d8eb8b2ce63515d9b4981c938ef6453c5b5771/tough/src/http.rs",
+      "checked_at": "2026-11-02T22:05:08.539496+00:00",
+      "file": "awslabs--tough--tough--src--http.rs",
+      "status": "retrieved",
+      "bytes": 22598,
+      "sha256": "25b53ad33b278c2afc401dc84be2c098ec10164b17cdbb6f85a1b664426fd117",
+      "commit": "98d8eb8b2ce63515d9b4981c938ef6453c5b5771",
+      "path": "tough/src/http.rs",
+      "git_blob_sha": "12625188efed72f79704dbf9468e03f7bfda96ec",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf-hyper/Cargo.toml",
+      "checked_at": "2026-11-02T22:05:08.820550+00:00",
+      "file": "theupdateframework--rust-tuf--tuf-hyper--Cargo.toml",
+      "status": "retrieved",
+      "bytes": 1273,
+      "sha256": "1861ae46ef1b585d584ab6d9252f9a5c7df04578ea2f937fa0950995db23bfca",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf-hyper/Cargo.toml",
+      "git_blob_sha": "c2f2444b8cb6c4f5267bc09b98a5da6693cf63bc",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/rust-tuf/219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44/tuf-hyper/src/repository.rs",
+      "checked_at": "2026-11-02T22:05:09.056667+00:00",
+      "file": "theupdateframework--rust-tuf--tuf-hyper--src--repository.rs",
+      "status": "retrieved",
+      "bytes": 32684,
+      "sha256": "407f8f6279f0bfb71e9cc901eeb147153fda695516a78a03a8f79c75bc18656a",
+      "commit": "219ca7d05818d5dd44ec4e32ab47c5ce64a7bf44",
+      "path": "tuf-hyper/src/repository.rs",
+      "git_blob_sha": "308e7697b3abc2c1e534e49e8a9c04de2fc3e17a",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/docs/SIGNER-MANUAL.md",
+      "checked_at": "2026-11-02T22:05:09.311419+00:00",
+      "file": "theupdateframework--tuf-on-ci--docs--SIGNER-MANUAL.md",
+      "status": "retrieved",
+      "bytes": 5066,
+      "sha256": "b8b7fcac11eac719a3d438dcc81f6a5f714a82dbeba1283d284d2120203fd819",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "docs/SIGNER-MANUAL.md",
+      "git_blob_sha": "f40e993137c56b1c6bd036c9c7fb472c3e51e985",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/tuf-on-ci/662382a8295b89a9d538390ce8b9bb85b207a93d/docs/REPOSITORY-MAINTENANCE.md",
+      "checked_at": "2026-11-02T22:05:09.489295+00:00",
+      "file": "theupdateframework--tuf-on-ci--docs--REPOSITORY-MAINTENANCE.md",
+      "status": "retrieved",
+      "bytes": 7152,
+      "sha256": "c545788341ab1f9f515159b934910837ec9e562035a4c9255721d4d3e4ff3c20",
+      "commit": "662382a8295b89a9d538390ce8b9bb85b207a93d",
+      "path": "docs/REPOSITORY-MAINTENANCE.md",
+      "git_blob_sha": "e1285e423fe4d9ac2d5165502675a1af1643bc57",
+      "git_blob_matches": true
+    },
+    {
+      "url": "https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28",
+      "checked_at": "2026-11-02T22:05:09.633155+00:00",
+      "file": "github-releases.html",
+      "status": "retrieved",
+      "bytes": 471517,
+      "sha256": "293ba4f670e786e6de826fac324d97fe2c825a0ea5737fd09563913f75c6ce35"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28",
+      "checked_at": "2026-11-02T22:05:09.882010+00:00",
+      "file": "github-assets.html",
+      "status": "retrieved",
+      "bytes": 353840,
+      "sha256": "fa118e8fec184d6b4d46fe800b7606debec389e255000c7a213e4f1b036d60c6"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api",
+      "checked_at": "2026-11-02T22:05:10.542679+00:00",
+      "file": "github-api-best-practices.html",
+      "status": "retrieved",
+      "bytes": 329494,
+      "sha256": "bf5f748aba4c3283f9573a530a6318582f08da2ef0dabad8713831c6d1e4a340"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+      "checked_at": "2026-11-02T22:05:10.997130+00:00",
+      "file": "github-api-rate-limits.html",
+      "status": "retrieved",
+      "bytes": 338522,
+      "sha256": "8f9ab63811a2a80cc35c9a4e59f7b77e204c2dd310e4982ebf66904b0ea05a79"
+    },
+    {
+      "url": "https://theupdateframework.io/docs/getting-started/",
+      "checked_at": "2026-11-02T22:05:11.329756+00:00",
+      "file": "tuf-getting-started.html",
+      "status": "retrieved",
+      "bytes": 23433,
+      "sha256": "23988830aafd0531a6e13f37fabb655f535e583845508a9c348da92cd2f22313"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/specification/e2bc7d83d0740aaae8dd7133dd4f237ce3d86b16/tuf-spec.md",
+      "checked_at": "2026-11-02T22:05:11.754483+00:00",
+      "file": "tuf-spec.md",
+      "status": "retrieved",
+      "bytes": 76283,
+      "sha256": "87c7136231b8cb3355736d8e7cfe88380d030cb2994ea283a19e78e03fb171ff"
+    },
+    {
+      "url": "https://crates.io/api/v1/crates/tuf",
+      "checked_at": "2026-11-02T22:05:11.920312+00:00",
+      "file": "registry-tuf.json",
+      "status": "retrieved",
+      "bytes": 40918,
+      "sha256": "a4dcf647c6c3e1445acc2800368e163aa56c0a2bf9c9ede7474f3e54d4e24ed0"
+    },
+    {
+      "url": "https://crates.io/api/v1/crates/tough",
+      "checked_at": "2026-11-02T22:05:12.089808+00:00",
+      "file": "registry-tough.json",
+      "status": "retrieved",
+      "bytes": 55037,
+      "sha256": "1943db1c961c6435479f057b65648c82c0de6da1f635782c2b6421bf5f6fc75c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/theupdateframework/go-tuf/f5edbde31e5507f46db2069402dc38903fe6d9d4/metadata/config/config.go",
+      "checked_at": "2026-11-02T22:07:06.358292+00:00",
+      "file": "theupdateframework--go-tuf--metadata--config--config.go",
+      "status": "retrieved",
+      "bytes": 5098,
+      "sha256": "757810fc9813feb787b3524ad297a02637f35f35ba816cb53c21ebec2bf39d58",
+      "commit": "f5edbde31e5507f46db2069402dc38903fe6d9d4",
+      "path": "metadata/config/config.go",
+      "git_blob_sha": "6972de7a5b28448c126e581bd0ad95aaf36f238c",
+      "git_blob_matches": true
+    }
+  ]
+}

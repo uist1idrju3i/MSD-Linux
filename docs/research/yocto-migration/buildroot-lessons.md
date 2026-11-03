@@ -44,7 +44,7 @@ Buildroot 維持の判断は変えません。Yocto で作りやすいことは�
 | Yocto の `read-only-rootfs` / overlay | クラスや init 処理をそのまま移植しない | [現行の書き込み経路](../readonly-data-and-fs.md)と実コードを照合し、seedrng・鍵・ログ・更新の永続性と電断を試す |
 | EROFS | 現行 SquashFS を維持 | [FS 比較](../fs-candidates.md)。同じ内容・圧縮条件でのサイズ、起動、RAM、実機電断を比較する。ビルドシステムの変更は採用根拠にしない |
 | cramfs | 従来の不採用を維持 | [構築・起動の記録](../../experiments/2026-10-31-cramfs-rootfs.md)。サイズとファイル・gid・時刻の制約を覆す新しい根拠はない |
-| 任意ドライバーのモジュール化 | 一律に変更しない | [ハードウェア対応表](../hardware-spec.md)と[縮小の調査](../kernel-size.md)。LCD・入力・rootfs の起動依存と各 driver の built-in/module 制約を確かめる |
+| 任意ドライバーのモジュール化 | 一律に変更しない | [ハードウェア対応表](../hardware-spec.md)と[縮小の調査](../boot/kernel-size.md)。LCD・入力・rootfs の起動依存と各 driver の built-in/module 制約を確かめる |
 | SPDX | CycloneDX を形式だけ置き換えない | 配布先の要求と、target/host/firmware/外部ツールチェーンの収録範囲を先に定義する |
 | 再現ビルド | 達成済みとはしない | 同じ固定入力を独立した clean 出力で 2 回構築し、成果物 hash を比較。差があれば時刻・署名・生成物を調査する |
 

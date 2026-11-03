@@ -51,7 +51,7 @@ Yocto の利点（層の分離、SPDX、LTS、比較用イメージの作りや�
 |---|---|---|
 | ツールチェーンのライセンス | `legal-info` でツールチェーンが `unknown` | 配布物の監査で補う必要があるか、別途確かめる |
 | カーネル設定の確認 | `.config` は fragment 以外の項目でも変わりうる | カーネルを更新するときは、最終 `.config` 全体の差を見る |
-| dm-verity、systemd などの比較 | Yocto 前提で優先度を上げた候補 | Buildroot でも同じ比較はできる。必要なら [simulation-plan.md](../simulation-plan.md) の候補として扱う |
+| dm-verity、systemd などの比較 | Yocto 前提で優先度を上げた候補 | Buildroot でも同じ比較はできる。必要なら [試験台帳](../verification/experiment-catalog.md) の候補として扱う |
 | 計測スクリプト | `board/cardputerzero/tools/bench/yocto-compare/` | Buildroot のイメージ同士の比較にも使える |
 
 ## 5. 再検討する条件

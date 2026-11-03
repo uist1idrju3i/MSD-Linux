@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。実機とアプリの互換性は未確認）
 - 日付: 2026-10-21
 - 担当: Devin
-- 関連: docs/research/simulation-plan.md の小項目「`/data` の `noexec`」、docs/research/security-hardening.md
+- 関連: docs/research/verification/qemu-coverage.md の小項目「`/data` の `noexec`」、docs/research/security-hardening.md
 
 ## 目的と仮説
 

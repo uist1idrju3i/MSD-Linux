@@ -3,7 +3,7 @@
 - 状態: v3 を主結果として QEMU 実験済み（実機未確認）
 - 日付: 2026-10-20
 - 担当: Devin
-- 関連: [S11 調査計画](../research/simulation-plan.md)
+- 関連: [S11 調査計画](../research/verification/experiment-catalog.md)
 
 ## 目的と仮説
 

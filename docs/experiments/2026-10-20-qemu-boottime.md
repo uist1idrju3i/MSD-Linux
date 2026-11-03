@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-20
 - 担当: Devin
-- 関連: [起動時間（実測値と分析）](../research/boot-time-measurements.md)、`board/cardputerzero/tools/bench/boottime/`、`board/cardputerzero/tools/kernel-candidates.txt`
+- 関連: [起動時間（実測値と分析）](../research/boot/measurements.md)、`board/cardputerzero/tools/bench/boottime/`、`board/cardputerzero/tools/kernel-candidates.txt`
 
 ## 目的と仮説
 

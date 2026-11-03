@@ -6,18 +6,13 @@
 
 ## 1. TLS / 暗号
 
-| 実装 | 元実装との関係 | Buildroot | 効能と本機への適用 |
-|---|---|---|---|
-| LibreSSL | OpenSSL 1.0.1g からの OpenBSD フォーク（2014、Heartbleed 対応で分岐）。API 面を削減し続けており OpenSSL 3.x とは非互換部分が増えている | `BR2_PACKAGE_LIBRESSL` あり | 削減された API 面とコード量が攻撃面を下げる効能。ただし依存パッケージ側が OpenSSL 3.x API を要求する場合に移植コストが出る。本機は openssl のみで、署名検証 (Ed25519) に限定用途なら候補になり得るが、現状の openssl 置換の利得は限定的【推測】 |
-| BoringSSL | Google の OpenSSL フォーク。配布を前提としない（「自前の利用以外の配布対象として意図していない」と公式が明言） | なし | 非推奨。配布しない方針のため組み込み製品への利用は意図外【一次: BoringSSL README】 |
-| mbed TLS | ARM 主導のスクラッチ実装（旧 PolarSSL）。TLS 1.3 は 3.x で段階対応 | `BR2_PACKAGE_MBEDTLS` あり | 小型・PSA Crypto API・分離したコンポーネント選択が強み。PSK/DTLS を使う組み込み TLS で実績が多い。効能は「小ささと選択性」。本機で TLS サーバー実装を入れるなら第一候補 |
-| wolfSSL | スクラッチ再実装（組み込み・RTOS 向け）。FIPS 140-3 認証版あり | `BR2_PACKAGE_WOLFSSL` あり | FIPS 認証が要る案件向け。本機に認証要件はなく、効能は mbed TLS と重複 |
-| BearSSL | Thomas Pornin のスクラッチ実装。極小・定数時間の実装を標榜 | `BR2_PACKAGE_BEARSSL` あり | 最小の TLS 実装候補。機能は限定的（TLS 1.2 系中心）で、本機の用途には過少の可能性【未確認】 |
-| GnuTLS | OpenSSL と独立した GNU 実装 | `BR2_PACKAGE_GNUTLS` あり | LGPL であり効能は OpenSSL と大きく変わらない。置換の利得は薄い |
-| libsodium / nettle / libgcrypt | TLS ではなく暗号プリミティブ層 | `BR2_PACKAGE_LIBSODIUM` / `NETTLE` / `LIBGCRYPT` あり | libsodium は Ed25519 署名だけなら極小で済む候補。msd-update の Ed25519 検証を openssl より小さく構成できる可能性【推測】 |
-| monocypher / libhydrogen | TweetNaCl 系の最小暗号ライブラリ | なし（Buildroot 未収録） | Ed25519 検証だけなら数千行で済む。署名検証の最小構成として注目だが、vendor 追加コストと監査が必要 |
+2026-11-02に、現行OpenSSLと固定Buildroot、新しい上流資料を読み直しました。比較の本文・固定した出典・license・統合条件は[暗号・TLS](alternatives/crypto.md)、署名の互換性と鍵運用は[更新署名の信頼境界](alternatives/signing.md)にまとめています。
 
-現行 openssl 維持が妥当なのは、カーネル同様に成熟した実装・更新監視が効く点です。置換の動機が「イメージサイズ」なら libsodium/monocypher 系の調査の方が筋がよいと考えます。
+- 現行OpenSSL 3.6系列の通常保守期限は、公式方針では2026-11-01です。成熟度だけを根拠に現行維持が妥当とした旧評価を改め、保守される系列への対応も比較します。
+- LibreSSL・mbed TLS・wolfSSL・GnuTLSは、保守・設定・TLS policy・依存を別々に評価します。wolfSSLをFIPS案件だけに限定し、GnuTLSを効能が重なるだけとして除外した旧評価を改めます。
+- BoringSSLの一般利用非推奨とAPI/ABI保証なしは、配布禁止という意味ではありません。製品全体の置換と、依存を管理する特定用途を分けます。AWS-LCも配布向けの構成があり、同じ扱いで除外しません。
+- libsodiumとMonocypherは署名専用verifierの実験候補です。ただし、Ed25519phや独自のEdDSA構成を現行のraw Ed25519と同一視しません。libhydrogenは他libraryとの相互運用がnon-goalであり、Ed25519の置換候補として一括した旧記述を訂正します。
+- サイズ・速度は本機で測定していません。OpenSSLを使う別のclientが残る場合、verifierを加えるだけではlibraryを削れず、保守対象が増える可能性もあります。
 
 ## 2. C ライブラリ（libc）
 
@@ -25,7 +20,7 @@
 
 - **musl**: MIT、スクラッチ再実装。静的リンク・小ささ・決定的な実装が強み。本機が外部 Bootlin ツールチェーンの glibc を使う現状では、musl への切替はツールチェーン変更（Buildroot 内蔵 musl ツールチェーン or Bootlin musl 版）が必要で、署名済みユーザーランド全体の再ビルド・再検証を伴う。効能はイメージサイズと依存の簡素化【推測】。
 - **picolibc**: Keith Packard 主導。newlib-nano と AVR libc の流れを統合した組み込み向け libc。printf/scanf を削減した `tinystdio` が特徴。**設計上 Linux ホスト環境は想定しておらず、Linux hosted ビルドは試験用**。本機のルートfs の libc としては対象外で、仮に bare-metal 補助コアやブートローダを自作する場合の候補【一次: picolibc README】。
-- **llvm-libc**: LLVM 製 libc。公式が「重要関数が不足」と警告しており本機用途では未成熟【一次: libc.llvm.org】。
+- **llvm-libc**: 現行の公式資料は、用途を絞った静的Linux等での本番利用と、regex・locale・wide-character I/O等の不足を併記しています。旧来の一律の未成熟扱いを見直し、[限定した実験候補](alternatives/libc.md#llvm-libcの旧評価を変える根拠)とします。MSD/Linux全体の置換は、本リポジトリでは試していません。
 
 ## 3. malloc 実装
 
@@ -57,8 +52,8 @@
 
 | 実装 | 元実装との関係 | Buildroot | 効能と適用 |
 |---|---|---|---|
-| zlib-ng | zlib からのフォーク（next-gen）。SIMD 最適化 | `BR2_PACKAGE_ZLIB_NG` あり | gzip 系処理の速度効能。initramfs・カーネル側は zstd のため、本機で効く場面は限定的 |
-| libdeflate | スクラッチ再実装（EB Wise）。zlib API 一部互換 | `BR2_PACKAGE_LIBDEFLATE` あり | gzip/zlib の圧縮・展開を大幅に高速化する効能。msd-update の圧縮データ処理が zlib 系なら差し替え候補【未確認：呼び出し側の対応】 |
+| zlib-ng | zlib由来で、native APIとzlib互換modeを持つ。SIMD最適化 | `BR2_PACKAGE_ZLIB_NG`あり。固定recipeは互換mode・gzFile・AArch64 NEONを指定 | targetのlibzlib代替の実験候補。host providerの変更は別。現行rootfsはzstdのSquashFSであり、そのまま起動・更新の改善値にはしない。[条件と一次資料](alternatives/build-support.md) |
+| libdeflate | Eric BiggersらによるDEFLATE/zlib/gzipのwhole-buffer処理。独自APIでstreaming非対応 | `BR2_PACKAGE_LIBDEFLATE`あり | 同形式のデータを扱えてもzlib APIの差し替えではない。callerの移植と全bufferのRAM、処理時間を測る実験候補。本機の速度向上は未確認。[APIと形式の区別](alternatives/build-support.md) |
 | libjpeg-turbo | libjpeg からのフォーク＋SIMD | `BR2_PACKAGE_JPEG_TURBO` あり（`jpeg` 仮想パッケージの実装選択肢） | 画像処理を入れた場合の速度効能 |
 | toybox | BusyBox と同じ方向の、もう一つの minimal userland 再実装（BSD ライセンス） | `BR2_PACKAGE_BUSYBOX` 代替選択肢なし（busybox 固定） | BusyBox からの全面差し替えは根拠が薄い【推測】 |
 | sbase / ubase | suckless の minimal coreutils。設計で最小化 | なし | 同上 |
@@ -84,15 +79,15 @@
 
 ## 7. 本機への適用まとめ
 
-1. **置換の利得が見込める候補**: msd-update の Ed25519 検証を openssl から小さい実装（libsodium / monocypher 系）に分離できるか。署名・検証だけならイメージを削れる可能性。要・サイズ実測。
-2. **速度向上が見込める候補**: libdeflate / zlib-ng（更新データの圧縮・展開を zlib 系で行っている場合）。
+1. **署名専用の実験候補**: msd-updateのraw Ed25519検証をlibsodium / Monocypherへ分離する案は、鍵形式・API・入力検査・他clientの依存も含めて[再評価](alternatives/crypto.md#署名専用の候補)します。サイズ削減は未測定です。
+2. **圧縮を実測する候補**: zlib-ngの互換modeと、専用APIへ移植するlibdeflateを分けます。zlib系の処理が実際の律速か、whole-buffer処理のRAMを許容できるか確認します。現行のrootfsや更新処理の高速化を確認した結果ではありません。
 3. **観測待ち**: アロケータ差し替え（jemalloc/mimalloc）はフラグメンテーションの観測が前提。
-4. **評価不能・対象外**: Zephyr 4.5（`rpi_zero_2w` ボードは追加されたが SDHCI 未確認）、OpenJ9、picolibc（Linux hosted は試験用）、BoringSSL（配布を意図しない）。
+4. **評価不能・対象外**: Zephyr 4.5（`rpi_zero_2w` ボードは追加されたが SDHCI 未確認）、OpenJ9、picolibc（Linux hosted は試験用）。BoringSSLは一般用途非推奨とAPI/ABI保証なしを理由に、上記の用途別比較へ戻します。
 
 ## 出典
 
 - Buildroot 2026.08 `vendor/buildroot/package/` のパッケージディレクトリ（libressl・mbedtls・wolfssl・bearssl・gnutls・libsodium・nettle・libgcrypt・jemalloc・libdeflate・zlib-ng・libjpeg-turbo・openntpd・dropbear・newlib-bare-metal の存在を確認。monocypher・libhydrogen・picolibc・toybox・sbase・mandoc・openrsync・sudo-rs・uutils・mimalloc・tcmalloc・snmalloc・scudo・rpmalloc は未収録）【一次】
-- BoringSSL README（配布非意図の記載） https://github.com/google/boringssl 【一次】
+- 暗号関連の固定したREADME・manual・LICENSEと確認範囲は、[暗号比較の出典](alternatives/crypto.md#一次資料と未確認範囲)と[取得台帳](alternatives/sources.json)を参照【一次】
 - picolibc README https://github.com/picolibc/picolibc 【一次】
 - llvm-libc full host build の警告 https://libc.llvm.org/full_host_build.html 【一次】
 - musl malloc については [ユーザー空間・libc 調査](userspace-and-security.md) §17.3-4 を参照

@@ -1,0 +1,61 @@
+trial,case,command,expected_exit,actual_exit,output_bytes,output_sha256
+1,generate,openssl genpkey -algorithm Ed25519 -out private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,derive-public,openssl pkey -in private.pem -pubout -out public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,check-private,openssl pkey -in private.pem -check -noout,0,0,13,8e839b0f49ae8a20f236b6ce1fb9a546fd892bd38420458e14126b0f8eeb81bd
+1,inspect-public,openssl pkey -pubin -in public.pem -text -noout,0,0,135,693c8f23cfd8c101d6c8233ea58c37ec2d943965b9ffec1c4a4020ad30392a79
+1,public-der,openssl pkey -pubin -in public.pem -outform DER -out public.der,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,fingerprint,openssl dgst -sha256 public.der,0,0,87,c05a506b3d2bf8e4c738e99178a45473591b4c38b41c18364b826d1477f3cfd9
+1,sign,openssl pkeyutl -sign -rawin -inkey private.pem -in probe.txt -out probe.sig,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,verify,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in probe.txt -sigfile probe.sig,0,0,32,0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79
+1,reject-tamper,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in tampered.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+1,generate-other,openssl genpkey -algorithm Ed25519 -out other-private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,derive-other,openssl pkey -in other-private.pem -pubout -out other-public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+1,reject-wrong-key,openssl pkeyutl -verify -pubin -rawin -inkey other-public.pem -in probe.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+2,generate,openssl genpkey -algorithm Ed25519 -out private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,derive-public,openssl pkey -in private.pem -pubout -out public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,check-private,openssl pkey -in private.pem -check -noout,0,0,13,8e839b0f49ae8a20f236b6ce1fb9a546fd892bd38420458e14126b0f8eeb81bd
+2,inspect-public,openssl pkey -pubin -in public.pem -text -noout,0,0,135,bd99c700eced21fd8326dcf1dfc56e67480903218e92ac9f6a4963e89357a7a9
+2,public-der,openssl pkey -pubin -in public.pem -outform DER -out public.der,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,fingerprint,openssl dgst -sha256 public.der,0,0,87,a855901b7c646f9bbda16e5a3fc28152a834c04bc67df4a8cd57610a1a2ecc5f
+2,sign,openssl pkeyutl -sign -rawin -inkey private.pem -in probe.txt -out probe.sig,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,verify,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in probe.txt -sigfile probe.sig,0,0,32,0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79
+2,reject-tamper,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in tampered.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+2,generate-other,openssl genpkey -algorithm Ed25519 -out other-private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,derive-other,openssl pkey -in other-private.pem -pubout -out other-public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2,reject-wrong-key,openssl pkeyutl -verify -pubin -rawin -inkey other-public.pem -in probe.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+3,generate,openssl genpkey -algorithm Ed25519 -out private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,derive-public,openssl pkey -in private.pem -pubout -out public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,check-private,openssl pkey -in private.pem -check -noout,0,0,13,8e839b0f49ae8a20f236b6ce1fb9a546fd892bd38420458e14126b0f8eeb81bd
+3,inspect-public,openssl pkey -pubin -in public.pem -text -noout,0,0,135,efba321e0058042c9280dc1e12cc9ffb3cbe9cdb7b87a8a6e211c1aa6959ef52
+3,public-der,openssl pkey -pubin -in public.pem -outform DER -out public.der,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,fingerprint,openssl dgst -sha256 public.der,0,0,87,1653894b2858e019da809c99cf9854971e36fc269d415aee90de282ca00b6371
+3,sign,openssl pkeyutl -sign -rawin -inkey private.pem -in probe.txt -out probe.sig,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,verify,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in probe.txt -sigfile probe.sig,0,0,32,0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79
+3,reject-tamper,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in tampered.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+3,generate-other,openssl genpkey -algorithm Ed25519 -out other-private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,derive-other,openssl pkey -in other-private.pem -pubout -out other-public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+3,reject-wrong-key,openssl pkeyutl -verify -pubin -rawin -inkey other-public.pem -in probe.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+4,generate,openssl genpkey -algorithm Ed25519 -out private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,derive-public,openssl pkey -in private.pem -pubout -out public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,check-private,openssl pkey -in private.pem -check -noout,0,0,13,8e839b0f49ae8a20f236b6ce1fb9a546fd892bd38420458e14126b0f8eeb81bd
+4,inspect-public,openssl pkey -pubin -in public.pem -text -noout,0,0,135,c87281ac900ae0e840b2bf0d199da1009f37288dcf4190e1a107f89060df244f
+4,public-der,openssl pkey -pubin -in public.pem -outform DER -out public.der,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,fingerprint,openssl dgst -sha256 public.der,0,0,87,8b5c9a9d3c2c00ad2430b257be0d267876ea92ec15da0d9df40cf1cc2e257648
+4,sign,openssl pkeyutl -sign -rawin -inkey private.pem -in probe.txt -out probe.sig,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,verify,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in probe.txt -sigfile probe.sig,0,0,32,0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79
+4,reject-tamper,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in tampered.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+4,generate-other,openssl genpkey -algorithm Ed25519 -out other-private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,derive-other,openssl pkey -in other-private.pem -pubout -out other-public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+4,reject-wrong-key,openssl pkeyutl -verify -pubin -rawin -inkey other-public.pem -in probe.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+5,generate,openssl genpkey -algorithm Ed25519 -out private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,derive-public,openssl pkey -in private.pem -pubout -out public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,check-private,openssl pkey -in private.pem -check -noout,0,0,13,8e839b0f49ae8a20f236b6ce1fb9a546fd892bd38420458e14126b0f8eeb81bd
+5,inspect-public,openssl pkey -pubin -in public.pem -text -noout,0,0,135,2ae2590ae67cda8fcaf66a21de52e7a15f1998ba1ecb6b4d585e0ab76127794e
+5,public-der,openssl pkey -pubin -in public.pem -outform DER -out public.der,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,fingerprint,openssl dgst -sha256 public.der,0,0,87,f45c75135a63b4304d63f346f55cd00c2f89861de9c56a1ca58deaa344862eee
+5,sign,openssl pkeyutl -sign -rawin -inkey private.pem -in probe.txt -out probe.sig,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,verify,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in probe.txt -sigfile probe.sig,0,0,32,0fd23954193f64e60f5b4b5f381cd1ea9d580aece00a6bbbc98e664302ce6b79
+5,reject-tamper,openssl pkeyutl -verify -pubin -rawin -inkey public.pem -in tampered.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c
+5,generate-other,openssl genpkey -algorithm Ed25519 -out other-private.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,derive-other,openssl pkey -in other-private.pem -pubout -out other-public.pem,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+5,reject-wrong-key,openssl pkeyutl -verify -pubin -rawin -inkey other-public.pem -in probe.txt -sigfile probe.sig,1,1,31,b7421958d341d888f2ea2df54dac32d4503795ee523e2e6fe6eab8efbd67d88c

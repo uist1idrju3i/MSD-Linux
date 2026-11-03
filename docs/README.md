@@ -4,9 +4,11 @@
 
 | 目的 | 入口 | 本文の扱い |
 |---|---|---|
+| microSDへの導入・再導入 | [INSTALL.md](INSTALL.md) | PCから全SD imageを書く開発用手順。実機未確認とデータ消去を明記 |
 | 構築・成果物・QEMU 起動 | [BUILD.md](BUILD.md) | 現在の実装と実行手順 |
 | 実機での確認 | [VERIFY.md](VERIFY.md) | 実機試験の手順。収録済みなのはカメラで、他の試験が済んだという意味ではない |
 | 更新・署名・A/B | [UPDATE.md](UPDATE.md) | 現在の更新処理と、実機で確認する点 |
+| Releaseと署名鍵の管理 | [RELEASE-SIGNING.md](RELEASE-SIGNING.md) | 管理者の設定手順。Secret登録と、未実装の署名jobを区別する |
 | CI・開発用イメージ・品質検査 | [CI.md](CI.md) | workflow の構成と成果物 |
 | 設計方針・主題別の調査 | [RESEARCH.md](../RESEARCH.md) | 決定済みの方針、候補、未確認事項への案内 |
 | 測定条件・生データ・失敗した試行 | [実験一覧](experiments/README.md) | 当時の commit と入力に対する証拠。新しい版の合格を保証しない |
@@ -14,5 +16,7 @@
 | Yocto 検討の Buildroot への還元 | [還元の評価](research/yocto-migration/buildroot-lessons.md) | 取り込む検査・監査と、製品設定を変えない候補の区別 |
 | ロゴの意匠・利用 | [ロゴ](logo/README.md) | 意匠、生成手順、ライセンス |
 | 文書の役割・重複・分割の判断 | [文書の配置](research/document-map.md) | 更新する本文の置き場と、長い文書を保持した理由 |
+
+測定の設計と記録を探すときは[検証・測定の入口](research/verification/README.md)から、未確認事項、S1–S17、観測方法、実機測定、計画履歴へ進みます。
 
 作業規則は [AGENTS.md](../AGENTS.md)、手順は [.agents/skills/](../.agents/skills/) にあります。公開サイト用のファイルは `public_html/` に置き、文書の原本はここに置きます。

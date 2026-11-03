@@ -57,20 +57,24 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 起動・カーネル・CPU とメモリ
 
-- [起動高速化・カーネル](docs/research/boot-and-kernel.md)
-- [起動時間の実測と分析](docs/research/boot-time-measurements.md)
-- [カーネル縮小](docs/research/kernel-size.md)
+- [起動経路と高速化候補](docs/research/boot/sequence.md)
+- [起動時間の終点と測定手法](docs/research/boot/measurement-methods.md)
+- [起動時間の実測と分析](docs/research/boot/measurements.md)
+- [カーネル版・PREEMPT・APIの比較](docs/research/boot/kernel-comparison.md)
+- [カーネル縮小](docs/research/boot/kernel-size.md)
+- [起動と電断耐性の設計論点](docs/research/boot/design-notes.md)
 - [sysctl の既定値](docs/research/tunables-sysctl.md)
 - [モジュールパラメーター](docs/research/tunables-module-params.md)
 - [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
-- [Raspberry Pi ファームウェア仕様の調査](docs/research/rpi-firmware-spec.md)
-- [カーネル版と起動方針](docs/research/kernel-policy.md)
+- [Raspberry Pi ファームウェア仕様の調査](docs/research/boot/firmware.md)
+- [カーネル版と起動方針](docs/research/boot/kernel-policy.md)
 - [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
 - [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
 - [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
 
 #### 保存・電源断・更新
 
+- [GitHub Releasesからの端末自己更新](docs/research/release-client/README.md) — TUF client・公開側tool、匿名取得、時刻・信頼状態・A/B復旧の設計。製品実装は未着手。
 - [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
 - [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
 - [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
@@ -78,6 +82,9 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### ユーザー空間・セキュリティ
 
+- [OpenBSDの考え方とLinuxの具体的な権限設計](docs/research/security/README.md) — 原則、処理別の権限・可変設定、通信開始前の防御、未実装部分の検証条件。
+- [Release保護・Ed25519鍵・署名job](docs/research/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
+- [導入・A/B操作と現行実装の照合](docs/research/install-update-status.md) — CIで取得できる成果物、既存の自動拡張と自動commit、更新後の状態確認、実機未確認の境界。
 - [セキュリティ・ハードニング](docs/research/security-hardening.md)
 - [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
 - [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
@@ -90,15 +97,17 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [固定コンポーネントの機能・設定・引数と現行値](docs/research/component-options/README.md)
 - [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
 - [全依存の一覧・最新版候補・版と脆弱性の監視範囲](docs/research/dependencies/README.md)
-- [シミュレーション検証計画](docs/research/simulation-plan.md)
-- [未確認事項・測定・調査限界](docs/research/measurement-and-planning.md)
-- [未確認事項の追跡表](docs/research/open-questions.md)
+- [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
+- [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。
+- [未確認事項と次の確認](docs/research/verification/open-questions.md) — 重複した問いを主題別に統合。元の記述は記録CSVに保持。
+- [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
 - [GitHub Actionsの権限・実行境界と監視の監査](docs/research/github-actions-audit.md)
 
 #### 比較・履歴・出典と意匠
 
+- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libc、基本コマンド・init、暗号・TLS・署名、filesystem・更新framework・TUF metadata、[通信](docs/research/alternatives/network.md)、[周辺機能](docs/research/alternatives/peripherals.md)、[圧縮・host依存](docs/research/alternatives/build-support.md)、[開発・CI](docs/research/alternatives/development.md)を比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は役割別の索引で、全候補の同等性・license・実機動作の認定ではない）
 - [公式サイトの HTML・CSS](docs/research/site-html-css.md)
 - [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)
@@ -122,7 +131,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ## 起動時間（実測値と分析）
 
-詳しくは [boot-time-measurements.md](docs/research/boot-time-measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
+詳しくは [起動時間の測定記録](docs/research/boot/measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
 
 ## 高速化のアイデア一覧
 
@@ -144,7 +153,7 @@ tryboot と制約、更新フレームワーク（SWUpdate / RAUC / Mender / rau
 
 microSD を物理交換できる攻撃者は Linux より前の起動ファイルを差し替えられます。Raspberry Pi の secure-boot 手順は Pi 4 以降が対象で、BCM2837 向け経路は文書化されていません（物理的に不可能とは断定しません）。現行 updater は `manifest.sig` を検証し、SHA-256 manifest と書込み後の read-back を確認します。鍵や dm-verity root digest を同じカードに置いても、カード全体の交換を防げません。【一次】【未確認】[脅威モデルと A/B/C 案](docs/research/security-hardening.md)
 
-署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。今後は署名鍵のリリース・更新・失効手順、カーネル／sysctl のハードニング、不要な無線／USB 機能の採否を検討します。dm-verity は信頼できる digest の保管が条件です。起動・RAM・保守コストとハードウェア機能への影響、QEMU で検証できる更新処理と実機でしか検証できない BootROM／OTP・周辺機器を区別します。【一次】【推測】【未確認】[詳細と検証境界](docs/research/security-hardening.md)
+署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。ただし可変なetcが公開鍵やpolicyを隠す境界も設計対象です。OpenBSDの最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、[処理ごとの権限と検証条件](docs/research/security/README.md)へ具体化しました。専用user・分離helper・firewall・新しいsandbox policyは未実装です。鍵のリリース・更新・失効、不要な無線／USB機能、信頼できるdigestを要するdm-verityを引き続き検討し、QEMUと実機の証拠を分けます。【一次】【推測】【未確認】[脅威モデルと費用](docs/research/security-hardening.md)
 
 ## アイデア総覧
 
@@ -160,7 +169,7 @@ QEMU の `raspi3ap` と `raspi3b` は BCM2837 SoC をエミュレートします
 
 ## カーネル
 
-kernel8.img の生成と検査、rpi-6.18.y 基準、PREEMPT、7.x 比較、overlay 依存、圧縮形式の評価は、 [kernel-policy.md](docs/research/kernel-policy.md) に分けました。
+kernel8.imgの生成と検査は[カーネルの生成方針](docs/research/boot/kernel-policy.md)、版別のPREEMPT・API・7.xの確認範囲は[比較の詳細](docs/research/boot/kernel-comparison.md)を参照してください。過去の方針メモは現在の設定と分けて保存しています。
 
 ## init・libc
 
@@ -168,7 +177,7 @@ init と周辺デバイス、init の比較、libc / toolchain の調査は、 [
 
 ## ログと観測
 
-開発中の観測方法は、 [measurement-and-planning.md](docs/research/measurement-and-planning.md) に分けました。
+開発中の観測方法は[観測手段](docs/research/verification/observability.md)、実行する項目と保存する出力は[実機測定](docs/research/verification/hardware-measurements.md)にまとめています。
 
 ## SSH・VPN（調査のみ・実装しない）
 
@@ -190,7 +199,7 @@ MSD/Linux も同じように、開発場所の近くを流れる福岡県の室�
 
 ## 未確認事項
 
-未確認事項の追跡表は [open-questions.md](docs/research/open-questions.md) に、測定・調査限界は [measurement-and-planning.md](docs/research/measurement-and-planning.md) に分けました。
+現在の問いと次の確認は[未確認事項](docs/research/verification/open-questions.md)へ統合しました。元の条件・数値・出典は原記録CSVに保持しています。観測方法・実機測定・QEMUで確認できない範囲は[検証の入口](docs/research/verification/README.md)から選べます。
 
 ## 出典一覧
 

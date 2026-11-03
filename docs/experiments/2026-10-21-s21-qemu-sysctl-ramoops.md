@@ -3,7 +3,7 @@
 - 状態: QEMU 試験完了（製品採否は未決定、実機未確認）
 - 日付: 2026-10-21
 - 担当: Devin
-- 関連: [CPU・割り込み・sysctl](../research/cpu-irq-and-sysctl.md)、[simulation plan](../research/simulation-plan.md)
+- 関連: [CPU・割り込み・sysctl](../research/cpu-irq-and-sysctl.md)、[QEMUの検証範囲](../research/verification/qemu-coverage.md)
 - 事前登録: v1、SHA-256 `2cac248825248d60d84ec99b9d5790bd8d07ca3304bb3185e8146662355411cd`
 
 ## 目的と仮説

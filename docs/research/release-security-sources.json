@@ -1,0 +1,204 @@
+{
+  "scope": "Release protection and Ed25519 key setup; point-in-time source captures",
+  "sources": [
+    {
+      "id": "immutable",
+      "url": "https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases",
+      "checked_at": "2026-11-02T21:36:11.247273+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases",
+      "bytes": 564429,
+      "sha256": "1e3a83f4cf82696db1c8e2e2c8c39c971943c4544512e21760d2322d7ef37d31"
+    },
+    {
+      "id": "enable-immutable",
+      "url": "https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes",
+      "checked_at": "2026-11-02T21:36:11.249523+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes",
+      "bytes": 587917,
+      "sha256": "4d7ca1e47afcbb475b0682a8001c2875e7a501dede8f76745bb42b5044335f46"
+    },
+    {
+      "id": "manage-release",
+      "url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository",
+      "checked_at": "2026-11-02T21:36:11.250559+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository",
+      "bytes": 231391,
+      "sha256": "784362ed4d8986ab58b62aae90b6f3339252fe43e1288f953cef1a2d3b9595a9"
+    },
+    {
+      "id": "verify-release",
+      "url": "https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verify-release-integrity",
+      "checked_at": "2026-11-02T21:36:11.630538+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verify-release-integrity",
+      "bytes": 568617,
+      "sha256": "828465f2ce35d951477da75b381dd19346ec3cfac1a4772f6dba5d2d8aa56a2c"
+    },
+    {
+      "id": "environments",
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments",
+      "checked_at": "2026-11-02T21:36:11.702668+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments",
+      "bytes": 330794,
+      "sha256": "7734776f50a1a7e5e4c6411b5592cc78ee0cc0b5e630a1911909db2d8864b311"
+    },
+    {
+      "id": "use-secrets",
+      "url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets",
+      "checked_at": "2026-11-02T21:36:11.795448+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets",
+      "bytes": 474394,
+      "sha256": "b9b479a54e7cb54544cd75a845958eabdc80189cab1006061b1b675bc6676573"
+    },
+    {
+      "id": "secure-use",
+      "url": "https://docs.github.com/en/actions/reference/security/secure-use",
+      "checked_at": "2026-11-02T21:36:11.908526+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/actions/reference/security/secure-use",
+      "bytes": 466560,
+      "sha256": "40ba8dc8220d6b1fe4d2be47d2dd70d1d7617a8cc006161ba6b739d8d36d2a8d"
+    },
+    {
+      "id": "attestations",
+      "url": "https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations",
+      "checked_at": "2026-11-02T21:36:11.928419+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations",
+      "bytes": 377148,
+      "sha256": "d657de2b18a6e35ad9cd6085e77ba12661745fb906ea522a8ff40388635084b2"
+    },
+    {
+      "id": "gh-secret",
+      "url": "https://cli.github.com/manual/gh_secret_set",
+      "checked_at": "2026-11-02T21:36:12.043959+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://cli.github.com/manual/gh_secret_set",
+      "bytes": 106406,
+      "sha256": "f6224720d33919b09db3692b0f3087c4b730c809ab6224621bb629210a618ef2"
+    },
+    {
+      "id": "openssl-genpkey",
+      "url": "https://docs.openssl.org/3.6/man1/openssl-genpkey/",
+      "checked_at": "2026-11-02T21:36:12.101249+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.openssl.org/3.6/man1/openssl-genpkey/",
+      "bytes": 64828,
+      "sha256": "d9bdfc87742c877e81322d5b1653c8293a2ebf094bff80fcb5f0f6a691d386f7"
+    },
+    {
+      "id": "openssl-pkey",
+      "url": "https://docs.openssl.org/3.6/man1/openssl-pkey/",
+      "checked_at": "2026-11-02T21:36:12.189190+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.openssl.org/3.6/man1/openssl-pkey/",
+      "bytes": 44518,
+      "sha256": "77e922856a8fdc6c04d24a072425777a54521a321bd3ef856077b6bc7262da5c"
+    },
+    {
+      "id": "openssl-pkeyutl",
+      "url": "https://docs.openssl.org/3.6/man1/openssl-pkeyutl/",
+      "checked_at": "2026-11-02T21:36:12.295171+00:00",
+      "review_scope": "Relevant sections for release/signing/verification; not a complete audit",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.openssl.org/3.6/man1/openssl-pkeyutl/",
+      "bytes": 78088,
+      "sha256": "c965ee29e8f609f7e5d21f47f0f28f2cad9d55f1f85527576b84d5ed19a31997"
+    },
+    {
+      "id": "repository",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux",
+      "checked_at": "2026-11-02T21:36:12.891888+00:00",
+      "status": "retrieved",
+      "bytes": 6131,
+      "sha256": "11a3266ceb8c3fab2cbfe0ee8464b0426c918eace862575032fa198ae13b333c",
+      "review_scope": "Read-only settings/release metadata; never secret values"
+    },
+    {
+      "id": "releases",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux/releases",
+      "checked_at": "2026-11-02T21:36:13.406240+00:00",
+      "status": "retrieved",
+      "bytes": 17067,
+      "sha256": "22e400de344a7f676f5bdb35727a0b144ff8f04f1a642eab61226147f02d71a0",
+      "review_scope": "Read-only settings/release metadata; never secret values"
+    },
+    {
+      "id": "environments-state",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux/environments",
+      "checked_at": "2026-11-02T21:36:13.699451+00:00",
+      "status": "retrieved",
+      "bytes": 587,
+      "sha256": "02c9ee1c1bacbd751eec05270f118870556bd1afaf09232460a9ce0bddac1740",
+      "review_scope": "Read-only settings/release metadata; never secret values"
+    },
+    {
+      "id": "release-rules",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux/rulesets/26334422",
+      "checked_at": "2026-11-02T21:36:14.033806+00:00",
+      "status": "retrieved",
+      "bytes": 593,
+      "sha256": "fd5b8a2c521dcfa7965276fc7470a63c26ad3f9cf38d9398875ebe200b78ede3",
+      "review_scope": "Read-only settings/release metadata; never secret values"
+    },
+    {
+      "id": "secrets-access",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux/actions/secrets",
+      "checked_at": "2026-11-02T21:36:14.314835+00:00",
+      "status": "access-denied",
+      "bytes": 158,
+      "sha256": "3d3f30783f5cd971132ffc8f343e1e43c9afdedd50012054595e6d47ff903b6e",
+      "review_scope": "Read-only settings/release metadata; never secret values",
+      "http_status": "403"
+    },
+    {
+      "id": "workflow-permissions-access",
+      "url": "https://api.github.com/repos/uist1idrju3i/MSD-Linux/actions/permissions/workflow",
+      "checked_at": "2026-11-02T21:36:14.559437+00:00",
+      "status": "access-denied",
+      "bytes": 188,
+      "sha256": "cea2b4f3d37040cc51d5fd15f65383101ab3cf373d28db729e71f56acb2caa0f",
+      "review_scope": "Read-only settings/release metadata; never secret values",
+      "http_status": "403"
+    },
+    {
+      "id": "manage-environments",
+      "url": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+      "checked_at": "2026-11-02T21:41:07.645338+00:00",
+      "status": "retrieved",
+      "http_status": 200,
+      "final_url": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+      "bytes": 360085,
+      "sha256": "ae6ff4c9c4702a92c6bf262aaa62b6265c220cbf2eb0cc7c91bbf3de25252b81",
+      "review_scope": "Creation, reviewer, bypass, deployment ref policy and secrets; not a complete audit"
+    }
+  ]
+}

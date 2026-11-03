@@ -1,5 +1,7 @@
 # ユーザー空間・libc 調査
 
+以下には初期の選定案・当時の未確認事項を残しています。現在の[基本コマンド](alternatives/commands.md)・[init](alternatives/init.md)・[libc](alternatives/libc.md)・[Wi-Fiと接続管理の比較・計画](alternatives/network.md)では、固定版と最新の一次資料を分けて再評価しています。Wi-Fiのdriver/firmware選択はありますが、接続機能の実装・実機確認は未完了です。初期案の記載を現在の対応状況とは扱いません。
+
 ## 16. ユーザー空間の除去・遅延起動・init 選択
 
 ### 16.1 BusyBox 最小化と実使用の洗い出し
@@ -63,7 +65,7 @@
 | blktrace | ブロック層の I/O(セクタ・サイズ・順序)を記録。**SquashFS 上のブロック読込順を直接観測** でき、配置最適化の効果検証に向く。開発用カーネルに `CONFIG_BLK_DEV_IO_TRACE` が必要(man 参照。CM0 向けビルドでの有効化は未確認) | https://man7.org/linux/man-pages/man8/blktrace.8.html | 一次(ツール)/ CM0 での実績は未確認 |
 | readahead(2) | 起動時に先読みする用途のシステムコール | https://man7.org/linux/man-pages/man2/readahead.2.html | 一次（システムコールの説明）。SD での効果は未確認です。CardputerZero 上で有効・無効を比較測定する必要があります。 |
 
-【推測】手順案：(1) 開発ビルドで fanotify（または strace）を使ってアクセス一覧を採取、(2) 初回アクセス順に優先度を付けた SORT-FILE を生成（起動に使うファイルほど高い優先度で先頭付近に置く想定）、(3) `mksquashfs -sort` で再パック、(4) blktrace で読込がシーケンシャルに近づいたか確認、(5) [起動時間の測定](measurement-and-planning.md)と比較します。`-sort` は優先度の高いものが先に書かれます（sort.c に基づく一次情報）。実イメージ上の物理配置と SD の読込改善は未測定です。
+【推測】手順案：(1) 開発ビルドで fanotify（または strace）を使ってアクセス一覧を採取、(2) 初回アクセス順に優先度を付けた SORT-FILE を生成（起動に使うファイルほど高い優先度で先頭付近に置く想定）、(3) `mksquashfs -sort` で再パック、(4) blktrace で読込がシーケンシャルに近づいたか確認、(5) [起動時間の測定](verification/open-questions.md)と比較します。`-sort` は優先度の高いものが先に書かれます（sort.c に基づく一次情報）。実イメージ上の物理配置と SD の読込改善は未測定です。
 
 2026-10-25 に、手順案の (1) にあたる観測を QEMU で行いました。fanotify と blktrace の代わりに、QEMU の SD の trace（`sdcard_read_block`）を使っています。起動で読む rootfs は 16.5 % で、data block を全部読むファイルは 13 個でした（[記録](../experiments/2026-10-25-qemu-boot-read-order.md)）。(2) 以降は実施していません。
 
@@ -110,7 +112,7 @@
 | 観点 | glibc | musl | uClibc-ng | Newlib / picolibc / llvm-libc | 出典・確認度 |
 |---|---|---|---|---|---|
 | ライセンス | LGPL-2.1+ | MIT | LGPL-2.1+ | BSD 系 / BSD 系 / Apache-2.0 w/ LLVM Exception | 【未確認】各プロジェクトのライセンスファイルで再確認が必要です。https://sourceware.org/git/?p=glibc.git;a=blob;f=COPYING.LIB;hb=HEAD<br>https://git.musl-libc.org/cgit/musl/tree/COPYRIGHT<br>https://github.com/wbx-github/uclibc-ng/blob/master/COPYING.LIB<br>https://sourceware.org/git/?p=newlib-cygwin.git;a=summary<br>https://github.com/picolibc/picolibc<br>https://github.com/llvm/llvm-project/tree/main/libc |
-| aarch64 Linux | 可 | 可 | 可 | Newlib は `newlib/libc/sys` に Linux がないとの情報がありますが、ディレクトリの有無は未確認です（sourceware のページを取得できませんでした）。picolibc の Linux hosted は試験用との記載があります。llvm-libc は「重要関数が不足」と公式 docs が警告しています。 | https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in<br>https://sourceware.org/git/?p=newlib-cygwin.git;a=tree;f=newlib/libc/sys;hb=HEAD（取得できず）<br>https://github.com/picolibc/picolibc<br>https://libc.llvm.org/full_host_build.html（llvm-libc の記述。Linux 非対応とは断定しません）<br>【一部未確認】 |
+| aarch64 Linux | 可 | 可 | 可 | Newlib の `newlib/libc/sys` の確認は未完了。picolibcのREADMEのLinux hosted試験例はi386/x86_64であり、AArch64 Linux全体対応とは扱いません。LLVM libcは用途を絞ったAArch64 Linuxでの本番利用を公式が記載しますが、regex・locale・wide-character I/O等の不足も明記しています。 | https://github.com/buildroot/buildroot/blob/2026.08/toolchain/toolchain-buildroot/Config.in<br>https://sourceware.org/git/?p=newlib-cygwin.git;a=tree;f=newlib/libc/sys;hb=HEAD（取得できず）<br>https://github.com/picolibc/picolibc<br>[2026-11-02の再評価と固定した一次資料](alternatives/libc.md)。候補のbuildは本リポジトリでは試していません |
 | systemd | **Buildroot の systemd は glibc のみ**（`depends on BR2_TOOLCHAIN_USES_GLIBC`）。upstream の musl 対応は v259（2025-12-17）で「不完全・実験的」、継続サポート非約束です。v260では glibc >= 2.34 への引上げが予告されています。 | NSS 系（nss-systemd など）・`DynamicUser=` などが使えないとの情報がありますが、musl との組合せでの確認は未実施です。【未確認】 | — | — | https://github.com/buildroot/buildroot/blob/2026.08/package/systemd/Config.in<br>https://github.com/systemd/systemd/releases/tag/v259<br>https://github.com/systemd/systemd/pull/38825 【一次 / 一部未確認】 |
 | RAUC / SWUpdate | RAUC 1.15.2 の Config.in は libc を限定しません（glib2・OpenSSL などが必要です）。SWUpdate は静的リンクできません（`!BR2_STATIC_LIBS`）。 | musl・uClibc-ng での実機動作は未確認 | 同左 | — | https://github.com/buildroot/buildroot/blob/2026.08/package/rauc/Config.in<br>https://github.com/buildroot/buildroot/blob/2026.08/package/swupdate/Config.in 【一次（Config.in） / 動作未確認】 |
 | セキュリティ | `_FORTIFY_SOURCE` は glibc ツールチェーンが必要です（Buildroot Config.in）。SSP は常時利用可能です。 | **musl 本体に FORTIFY はないとの情報がありますが未確認です。** Alpine は fortify-headers 3.0.1 を使います。既知脆弱性として CVE-2026-40200（32 bit の qsort。aarch64 は対象外と読めます）、CVE-2026-6042（iconv GB18030 DoS）があり、musl 1.2.6 までの範囲が記載されています。 | `UCLIBC_BUILD_PIE` は aarch64 が依存条件になく、SSP は既定で無効、FORTIFY 設定は見つかりません。 | — | https://github.com/buildroot/buildroot/blob/2026.08/Config.in<br>https://raw.githubusercontent.com/wbx-github/uclibc-ng/master/extra/Configs/Config.in<br>https://musl.libc.org/releases.html<br>https://wiki.musl-libc.org/functional-differences-from-glibc.html<br>https://gitlab.alpinelinux.org/alpine/fortify-headers<br>https://nvd.nist.gov/vuln/detail/CVE-2026-40200<br>https://nvd.nist.gov/vuln/detail/CVE-2026-6042 【一次 / FORTIFY は未確認】 |

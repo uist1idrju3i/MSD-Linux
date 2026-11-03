@@ -8,12 +8,12 @@
 |---|---|---|
 | 文書と運用 | yomiyasu の更新、大きな調査文書の分割、README と公式サイトの更新、CI・Issue・リポジトリ設定の点検 | #65、#66、#67、[点検結果](repo-operations-review.md) |
 | QEMU の模型 | GPIO6 の電源断、watchdog のタイマー | #69、#86 |
-| 起動時間 | 段階ごとの計測、K1・K2・U1 の比較、K2 の実機比較の計画 | #70〜#73、[起動時間の計測](boot-time-measurements.md) |
+| 起動時間 | 段階ごとの計測、K1・K2・U1 の比較、K2 の実機比較の計画 | #70〜#73、[起動時間の計測](boot/measurements.md) |
 | 不具合の修正 | init script の `stop` で起動処理を再実行しない、ローカルソースのパッケージへのパッチ適用 | #68、#77 |
 | 小項目の試験 | `/data` の `noexec`、zram、Lynis、BusyBox の静的リンクと applet 削減、dm-verity | #76、#79、#80、#84 |
 | CI の高速化 | per-package directories（PPD）の比較と、成果物差の原因の確認 | #78、#81、#83、#85 |
 | sysctl・panic・ramoops | hardening 候補、panic 後の再起動、ramoops の記録 | #87 |
-| 網羅表 | QEMU で検証できる範囲の分類と実施順 | #74、[シミュレーション検証計画](simulation-plan.md) |
+| 網羅表 | QEMU で検証できる範囲の分類と実施順 | #74、[シミュレーション検証計画](verification/experiment-catalog.md) |
 
 製品の設定を変えたのは #68 と #77 だけです。それ以外の結果は、どれも採否を決めていません（5 節）。
 
@@ -70,7 +70,7 @@
 | seedrng | `post-build.sh` の seedrng の改名を、PPD の繰り返し build でも通るようにする（#32） |
 | inittab | 意味のない `mount -o remount,rw /` を外すかを、`/var` の扱いと合わせて決める |
 | devcontainer | 計画を出す（実装はしない） |
-| 網羅表 | 結果が出るたびに [シミュレーション検証計画](simulation-plan.md) の状態を更新する |
+| 網羅表 | 結果が出るたびに [シミュレーション検証計画](verification/experiment-catalog.md) の状態を更新する |
 
 ### 実機で確かめるもの
 

@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [ユーザー空間とセキュリティ](../research/userspace-and-security.md)（fanotify、blktrace、`mksquashfs -sort` の手順案）、[シミュレーション検証計画](../research/simulation-plan.md)、`board/cardputerzero/tools/bench/read-order/`
+- 関連: [ユーザー空間とセキュリティ](../research/userspace-and-security.md)（fanotify、blktrace、`mksquashfs -sort` の手順案）、[シミュレーション検証計画](../research/verification/experiment-catalog.md)、`board/cardputerzero/tools/bench/read-order/`
 
 ## 目的と仮説
 

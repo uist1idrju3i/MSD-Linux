@@ -1,0 +1,10 @@
+attempt,stage,command,expected_exit,actual_exit,status
+1,before_blank_line_normalization,git diff --cached --check,0,2,fail
+2,after_blank_line_normalization,git diff --cached --check,0,0,pass
+2,after_blank_line_normalization,python3 .github/scripts/check-links.py,0,0,pass
+2,after_blank_line_normalization,python3 .github/scripts/check-jisx0213.py,0,0,pass
+2,after_blank_line_normalization,python3 .github/scripts/check-doc-size.py,0,0,pass
+2,after_blank_line_normalization,python3 .github/scripts/check-skills.py,0,0,pass
+2,after_blank_line_normalization,python3 .github/scripts/check-site.py,0,0,pass
+2,after_blank_line_normalization,python3 -m py_compile docs/experiments/2026-11-02-verification-document-layout.py,0,0,pass
+2,after_blank_line_normalization,git diff --cached --check,0,0,pass

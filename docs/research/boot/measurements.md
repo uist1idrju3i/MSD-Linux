@@ -1,5 +1,9 @@
 # 起動時間（実測値と分析）
 
+[調査の索引](../../../RESEARCH.md) / [構築手順](../../BUILD.md)
+
+以下は公開資料と過去の検証の記録です。数値の測定条件と未確認事項を保ち、現在の配備設定や実機での検証とは区別します。
+
 RESEARCH.md から分割した節です。
 
 ## 起動時間（実測値と分析）
@@ -19,7 +23,7 @@ M5 の約 2.1 秒は小さな bare-metal カーネルの GPU firmware 段であ�
 
 ### QEMU での段階ごとの測定（2026-10-20）
 
-QEMU（`raspi3ap`、TCG と icount）で、`MSD/Linux ready` までの時間を段階ごとに測りました。QEMU の秒数は実機の秒数ではなく、版どうしの比較にだけ使います。条件、生の値、捨てた試行は [2026-10-20-qemu-boottime](../experiments/2026-10-20-qemu-boottime.md) にあります。計測ハーネスは `board/cardputerzero/tools/bench/boottime/` です。
+QEMU（`raspi3ap`、TCG と icount）で、`MSD/Linux ready` までの時間を段階ごとに測りました。QEMU の秒数は実機の秒数ではなく、版どうしの比較にだけ使います。条件、生の値、捨てた試行は [2026-10-20-qemu-boottime](../../experiments/2026-10-20-qemu-boottime.md) にあります。計測ハーネスは `board/cardputerzero/tools/bench/boottime/` です。
 
 | 条件 | 通常起動の `t_ready`（icount） | 同（TCG） | 判定 |
 |---|---:|---:|---|

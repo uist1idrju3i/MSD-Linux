@@ -1,0 +1,20 @@
+run,check,command,expected_exit,actual_exit,output_bytes,output_sha256
+initial,0,docker/msd-dev tests/msd-update/run.sh,0,0,1509,f518c6a28f67de875059a736528c0ec9efc52a0828bf2077e0aa6f9578979df6
+initial,1,docker/msd-dev tests/msd-data-grow/run.sh,0,0,726,5bb18acd7fa7bddc1ea95c7dd67226ffc5114b3aa5a75ea32af3fcb7b020e994
+initial,2,python3 .github/scripts/check-links.py,0,1,235,b855cce2bc337d224c32b70eb54dd2eb234c145814dad620a73a8f8cddf890f6
+initial,3,python3 .github/scripts/check-jisx0213.py,0,0,1609,505be1f0c1a6a2bbdee7bdc3c8dcb7dbffb00b90117171f9caf8c0ca0828e449
+initial,4,python3 .github/scripts/check-doc-size.py,0,0,4125,159878bbd85e3648e97225ad3d6ac8489862297fcd7c7fd0b86b7d0c93b37bd6
+initial,5,python3 .github/scripts/check-skills.py,0,0,28,de362b927e5dcf3bdfe3326d72fea463672c2e225015996b2809fd3e08d661b3
+initial,6,python3 .github/scripts/check-site.py,0,0,48,fc24f7aa230ed54388d78f4a3df6564948c54ab6631c88af1bb09f826e4c8788
+initial,7,tests/check-links/run.sh,0,0,838,ca508235dbe15e1702ee7a376a88f0b003affd776745ba2e3552642a258b5768
+initial,8,tests/check-jisx0213/run.sh,0,0,1208,759dba7b239a9f28dedca71aef74850b6c6cc56a74fe0bc3c8f8ed404d0a85f0
+initial,9,tests/check-doc-size/run.sh,0,0,803,52ecabadaa43aad40fc5e9640f9d96fecbc6d506aaf3cdf4ccc4a3c93b5bf56d
+initial,10,tests/check-site/run.sh,0,0,761,d8a545eda8318691be9688afe01445f052ea4c6e0f1ffbbcd750d2aaa8f0b330
+initial,11,docker/msd-dev actionlint .github/workflows/agent-docs.yml .github/workflows/build.yml .github/workflows/dev-image-scan.yml .github/workflows/lint.yml .github/workflows/pages.yml .github/workflows/pins-check.yml .github/workflows/publish-dev-image.yml .github/workflows/security.yml .github/workflows/site-status.yml,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+initial,12,docker/msd-dev python3 .github/scripts/shellcheck-tracked.py,0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+initial,13,${HOME}/.cache/msd-linux-zizmor/bin/zizmor --offline --format=github .github/workflows/,0,0,649,8106dbd117510a7e01e8858948f9dfe20c02d18c43cca5832e5a11a8b54c3f87
+corrected,0,python3 .github/scripts/check-links.py,0,0,90,cde494aebb24142f15a088171c49991de86215b0eb5c6067ae4deaa661ce54ba
+corrected,1,python3 .github/scripts/check-jisx0213.py,0,0,1609,505be1f0c1a6a2bbdee7bdc3c8dcb7dbffb00b90117171f9caf8c0ca0828e449
+corrected,2,python3 .github/scripts/check-doc-size.py,0,0,4125,159878bbd85e3648e97225ad3d6ac8489862297fcd7c7fd0b86b7d0c93b37bd6
+corrected,3,python3 .github/scripts/check-skills.py,0,0,28,de362b927e5dcf3bdfe3326d72fea463672c2e225015996b2809fd3e08d661b3
+corrected,4,python3 .github/scripts/check-site.py,0,0,48,fc24f7aa230ed54388d78f4a3df6564948c54ab6631c88af1bb09f826e4c8788

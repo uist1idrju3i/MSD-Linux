@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU とホスト。実機未確認）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [simulation-plan.md の S10](../research/simulation-plan.md)、[power-and-updates.md の 7.8](../research/power-and-updates.md#78-bundle-の検証と巻き戻しs10)、[tests/msd-update/run.sh](../../tests/msd-update/run.sh)
+- 関連: [simulation-plan.md の S10](../research/verification/experiment-catalog.md)、[power-and-updates.md の 7.8](../research/power-and-updates.md#78-bundle-の検証と巻き戻しs10)、[tests/msd-update/run.sh](../../tests/msd-update/run.sh)
 
 ## 目的と仮説
 

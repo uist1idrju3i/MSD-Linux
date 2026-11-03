@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU とホスト）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [シミュレーション検証計画](../research/simulation-plan.md)、[起動時間の QEMU 測定](2026-10-20-qemu-boottime.md)、`board/cardputerzero/tools/bench/s12-squashfs-codec.sh`
+- 関連: [シミュレーション検証計画](../research/verification/experiment-catalog.md)、[起動時間の QEMU 測定](2026-10-20-qemu-boottime.md)、`board/cardputerzero/tools/bench/s12-squashfs-codec.sh`
 
 ## 目的と仮説
 

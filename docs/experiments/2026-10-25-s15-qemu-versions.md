@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。実機とは無関係）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [simulation-plan.md](../research/simulation-plan.md)、[S12 の記録](2026-10-25-s12-squashfs-codec.md)、[boottime の記録](2026-10-20-qemu-boottime.md)
+- 関連: [試験台帳](../research/verification/experiment-catalog.md)、[S12 の記録](2026-10-25-s12-squashfs-codec.md)、[boottime の記録](2026-10-20-qemu-boottime.md)
 
 ## 目的と仮説
 

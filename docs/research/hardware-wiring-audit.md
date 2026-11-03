@@ -122,7 +122,7 @@ C の温度範囲は-20〜+85°C、wireless RFは-20〜+75°C。本文の idle /
 | shared reset | DTに `rest-gpios` | 固定TCA8418 Cにこのpropertyの取得・駆動を確認できず、M5IOE1 Cのreset取得はコメント内 | ソース上の未消費property。実機不具合とは未確定 | `devm_add_action_or_reset` はcleanup APIでありreset pin制御ではない。typoだけと決めずMCUの初期化・probe順を確認 |
 | audio power | audio LDO input | S p.2 VSYS_IN / p.9 VSYS_CM0 | 公式資料内の相違、実基板未確認 | 部品実装と導通・各railの時系列確認。Linux設定は変更しない |
 | Standard / Lite | 同一imageでcamera / IMU overlay選択 | MではLiteにcamera / IMUなし | 意図した製品共通化。ただし「失敗は無害」とする実機証拠はない | missing-device、retry、依存待ち、起動遅延、ログ量をLite実機で確認 |
-| GPU firmware | `gpu_mem=16` | [firmware調査](rpi-firmware-spec.md)と[PR #180](https://github.com/uist1idrju3i/MSD-Linux/pull/180)で訂正済み | 今回の基準commitに反映済み | cut-down firmwareとcamera / displayの実機互換性は未確認。QEMUではこのGPU段階を通らない |
+| GPU firmware | `gpu_mem=16` | [firmware調査](boot/firmware.md)と[PR #180](https://github.com/uist1idrju3i/MSD-Linux/pull/180)で訂正済み | 今回の基準commitに反映済み | cut-down firmwareとcamera / displayの実機互換性は未確認。QEMUではこのGPU段階を通らない |
 
 ## 検証結果と残る確認
 

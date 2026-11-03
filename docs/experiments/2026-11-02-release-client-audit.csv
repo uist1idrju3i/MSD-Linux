@@ -1,0 +1,96 @@
+run,check,command,expected_exit,actual_exit,output_bytes,output_sha256
+initial,0,python3 docs/experiments/release-client-audit.py --ledger docs/research/release-client/sources.json --captures $CAPTURES --negative-tests,0,0,159,528a0d3f3392d9334a70b02ce08661ca764f5553bd60e942d12c4de7667bf612
+initial,1,python3 docs/experiments/release-client-audit.py --ledger docs/research/release-client/sources.json --captures $CAPTURES --negative-tests,0,0,159,528a0d3f3392d9334a70b02ce08661ca764f5553bd60e942d12c4de7667bf612
+initial,2,python3 docs/experiments/release-client-audit.py --ledger docs/research/release-client/sources.json --captures $CAPTURES --negative-tests,0,0,159,528a0d3f3392d9334a70b02ce08661ca764f5553bd60e942d12c4de7667bf612
+initial,3,python3 docs/experiments/release-client-audit.py --ledger docs/research/release-client/sources.json --captures $CAPTURES --negative-tests,0,0,159,528a0d3f3392d9334a70b02ce08661ca764f5553bd60e942d12c4de7667bf612
+initial,4,python3 docs/experiments/release-client-audit.py --ledger docs/research/release-client/sources.json --captures $CAPTURES --negative-tests,0,0,159,528a0d3f3392d9334a70b02ce08661ca764f5553bd60e942d12c4de7667bf612
+initial,5,docker/msd-dev tests/msd-update/run.sh,0,0,1510,93f71eb4c3724dd69f6480191cee1fec10ba5bddb8f2a83d6e94555a97483239
+initial,6,python3 .github/scripts/check-links.py,0,1,481,119772df9ac0dcc18c358d032539872dd3f0226e233e39c23c5dde0f256302b9
+initial,7,python3 .github/scripts/check-jisx0213.py,0,0,1609,b1d51cdd2881a5d6cda58661e0339d425cb1bf35ac5cef7bac54ba85504dbd4d
+initial,8,python3 .github/scripts/check-doc-size.py,0,0,4125,63e73168db6479a416abf4035e7476a48554340cecd6cb95a97d826324126f9c
+initial,9,python3 .github/scripts/check-skills.py,0,0,28,de362b927e5dcf3bdfe3326d72fea463672c2e225015996b2809fd3e08d661b3
+initial,10,python3 .github/scripts/check-site.py,0,0,48,fc24f7aa230ed54388d78f4a3df6564948c54ab6631c88af1bb09f826e4c8788
+initial,11,tests/check-links/run.sh,0,0,838,ca508235dbe15e1702ee7a376a88f0b003affd776745ba2e3552642a258b5768
+initial,12,tests/check-jisx0213/run.sh,0,0,1208,759dba7b239a9f28dedca71aef74850b6c6cc56a74fe0bc3c8f8ed404d0a85f0
+initial,13,tests/check-doc-size/run.sh,0,0,803,52ecabadaa43aad40fc5e9640f9d96fecbc6d506aaf3cdf4ccc4a3c93b5bf56d
+initial,14,tests/check-skills/run.sh,0,0,105,4190e6532da5d52050bd5ea71ff40310f4ffe0846610b4b159650675a5a9c2b2
+initial,15,tests/check-site/run.sh,0,0,761,d8a545eda8318691be9688afe01445f052ea4c6e0f1ffbbcd750d2aaa8f0b330
+initial,16,docker/msd-dev sh -c 'actionlint .github/workflows/*.yml',0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+initial,17,"docker/msd-dev sh -c 'git ls-files -z -- ""*.sh"" | xargs -0 shellcheck'",0,0,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+initial,18,"""$HOME/.cache/msd-linux-zizmor/bin/zizmor"" --offline --format=github .github/workflows/",0,0,649,8106dbd117510a7e01e8858948f9dfe20c02d18c43cca5832e5a11a8b54c3f87
+initial,19,"python3 -c ""import ast,pathlib; ast.parse(pathlib.Path('docs/experiments/release-client-audit.py').read_text()); print('Python syntax: OK')""",0,0,18,0a0b46425a2f03d87092e81cc36128db91bb29029151180b5349612019d77127
+after-link-fix,0,python3 .github/scripts/check-links.py,0,0,90,d69785a46b00a80704c574978f45822e034338a399f0d91f02161de3dae9e25f
+yomiyasu,0-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py RESEARCH.md,0,0,976,f7fa7202f4eaa65f1686abd561fcdca7491211337a99d0cea581a34ace498cf9
+yomiyasu,0-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final RESEARCH.md --source $WRITING/0-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,0-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final RESEARCH.md,0,1,414,11114a38c1fee589aadbcb2950b0c02476cd4481b3132601a89abdad772de3f3
+yomiyasu,1-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/UPDATE.md,0,0,1511,0f98dcf3ae0faafd6b05e21232eb35c4b8fabc1926ee3bd6d440c065a71fea3e
+yomiyasu,1-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/UPDATE.md --source $WRITING/1-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,1-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/UPDATE.md,0,1,414,655c616b19843f0fa0c992c650c9a7ea1cae9d12595e30fcbd393db214feb86e
+yomiyasu,2-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/experiments/2026-11-02-release-client-audit.md,0,0,5487,7ae3a9cdc0ab1b20e34ba064c848a7f78ae0f760daa6d640eddf739774d7796a
+yomiyasu,2-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/experiments/2026-11-02-release-client-audit.md --material $MATERIAL --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,2-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-11-02-release-client-audit.md,0,1,376,4ea7b3136b713cbd8d3f06ce79ac5d30f8c311d523ff1f2720b3f0a6b22a00d8
+yomiyasu,3-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/experiments/README.md,0,0,532,a39a6a129edc1a4f3ac836b767f11ebd884dd033ad455a22b27128cbc5c27351
+yomiyasu,3-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/experiments/README.md --source $WRITING/3-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,3-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/README.md,0,1,414,0659c70cfc0cc453473bd5e5baf76b77de6f07bc663b6da6a8b126c4578e7666
+yomiyasu,4-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/alternatives/update-metadata.md,0,0,1446,79b23fb87c4d709e0964391eabf84a9912f1db5120e09e63f15d447508300c4c
+yomiyasu,4-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/alternatives/update-metadata.md --source $WRITING/4-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,4-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/alternatives/update-metadata.md,0,1,414,b40dc1d25932b353d52caebf149c5212a79a60b1cffd3d2c2b17a2d42e0d999f
+yomiyasu,5-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/document-map.md,0,0,539,3cf70e119b95f96a68ca30d21fa5df654ffb71bdb193e4a16f1700599aa89715
+yomiyasu,5-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/document-map.md --source $WRITING/5-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,5-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/document-map.md,0,1,414,a257536e6e95aff38de4d4f1a1cba429fbfd07fca7d49fab68eafc946b89e3f7
+yomiyasu,6-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/README.md,0,0,1382,b9ff913ffee02bd3da8a36d3433a4d7d84d551f344a4cb146e08366fced9e8d7
+yomiyasu,6-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/README.md --material $MATERIAL --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,6-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/README.md,0,1,376,345cb9246749fa70f151e2e68add34d028944c547a1121998020b0a35cae82ea
+yomiyasu,7-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/implementations.md,0,0,4726,fe40f04adb5e698b4f290f4c5b3f654dbff8ee67a87269b2cb668ae9b6800578
+yomiyasu,7-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/implementations.md --material $MATERIAL --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,7-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/implementations.md,0,1,376,70607c16fbe4f2c08c08f42179c50e9c271076917979e7de827f3c977005445f
+yomiyasu,8-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/transport.md,0,0,1149,6b979e2fdbab24020a966c1718ba8a1161e77c9a95aaf992e992259a64b3116d
+yomiyasu,8-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/transport.md --material $MATERIAL --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,8-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/transport.md,0,1,376,6fcde136bb8a4df06e3c6fc183eb1b6f7ae7550ccb70fd60cae162cdff564eb2
+yomiyasu,9-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/trust-and-state.md,0,0,1329,46fee6d35968f80ff834289cad8468139d975cafa6c550c2840d992dfcdc88c1
+yomiyasu,9-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/trust-and-state.md --material $MATERIAL --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,9-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/trust-and-state.md,0,1,376,8c20de7790b9359a833de78602872e95ec1cb7ebc917194c129afafafd79bc55
+yomiyasu,10-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-security.md,0,0,2197,01fb611c33e994f1a493f03b99ebed702d6b5172e68cb5764fb7c73f15e3a84e
+yomiyasu,10-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-security.md --source $WRITING/10-original.md --doc-type paper --reader MSD/Linuxの開発者,0,2,217,b423915d269801dd26299f382b7c2016bdabfd3ca556c65646d8318dd1346131
+yomiyasu,10-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-security.md,0,1,414,2ae5b414f64c6675fc3c640a0726e98802d89816998b25a3c62fc82cbb915866
+after-link-fix,1,python3 .github/scripts/check-jisx0213.py,0,0,1609,b1d51cdd2881a5d6cda58661e0339d425cb1bf35ac5cef7bac54ba85504dbd4d
+after-link-fix,2,python3 .github/scripts/check-doc-size.py,0,0,4125,63e73168db6479a416abf4035e7476a48554340cecd6cb95a97d826324126f9c
+yomiyasu-fixed-reader,0-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py RESEARCH.md,0,0,976,f7fa7202f4eaa65f1686abd561fcdca7491211337a99d0cea581a34ace498cf9
+yomiyasu-fixed-reader,0-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final RESEARCH.md --source $WRITING/0-original.md --doc-type paper --reader expert,0,0,11722,41c1ac2cd54939f80810bf6cff51b7d310ce78aa900680b5fa5972497435daa9
+yomiyasu-fixed-reader,0-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final RESEARCH.md,0,0,685,a814a55a6af1e8b85280b3996e07cf9287b4249600b606328ff9fb9c7df57442
+yomiyasu-fixed-reader,1-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/UPDATE.md,0,0,1511,0f98dcf3ae0faafd6b05e21232eb35c4b8fabc1926ee3bd6d440c065a71fea3e
+yomiyasu-fixed-reader,1-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/UPDATE.md --source $WRITING/1-original.md --doc-type paper --reader expert,0,0,15282,938139a082eecc0809ad2d7fc520826f08795a2451c468bde12b99d49498f7a1
+yomiyasu-fixed-reader,1-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/UPDATE.md,0,0,685,8c7d98b6722a13eccf54468efdd6c8d1a32129c82fdeb8a32b1ba755413032ab
+yomiyasu-fixed-reader,2-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/experiments/2026-11-02-release-client-audit.md,0,0,5784,617b5cd589e262bec90afec212af8a47797539b48a443046f8144ed798871c90
+yomiyasu-fixed-reader,2-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/experiments/2026-11-02-release-client-audit.md --material $MATERIAL --doc-type paper --reader expert,0,0,28754,aa8ab4517649a7558a38f42b7b0ef37db073b1cb977b95387f7b30dbd283306e
+yomiyasu-fixed-reader,2-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-11-02-release-client-audit.md,0,0,633,06c1b750d6095df9464470c9b19331c707d2d4334744f596508f2ce4237fcff5
+yomiyasu-fixed-reader,3-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/experiments/README.md,0,0,532,a39a6a129edc1a4f3ac836b767f11ebd884dd033ad455a22b27128cbc5c27351
+yomiyasu-fixed-reader,3-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/experiments/README.md --source $WRITING/3-original.md --doc-type paper --reader expert,0,0,4098,96092e8cae3010a8abf9f6e5f419e839b16128e99a2dc901e94acd43620db28c
+yomiyasu-fixed-reader,3-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/README.md,0,0,685,554e1cb319f0ff342e77e24d6d909e56f3b1bc80599fca4b6f21b4a585e20046
+yomiyasu-fixed-reader,4-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/alternatives/update-metadata.md,0,0,1446,79b23fb87c4d709e0964391eabf84a9912f1db5120e09e63f15d447508300c4c
+yomiyasu-fixed-reader,4-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/alternatives/update-metadata.md --source $WRITING/4-original.md --doc-type paper --reader expert,0,0,15720,de5940a21668cb7b4afd77dbf301cbe2f86bbe1d9799e6a3ebb5481199433f3e
+yomiyasu-fixed-reader,4-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/alternatives/update-metadata.md,0,0,1003,ebaa6df7a5afaa667743b0ce93ab89cf55232c179b316741d02d9bec2f409511
+yomiyasu-fixed-reader,5-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/document-map.md,0,0,539,3cf70e119b95f96a68ca30d21fa5df654ffb71bdb193e4a16f1700599aa89715
+yomiyasu-fixed-reader,5-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/document-map.md --source $WRITING/5-original.md --doc-type paper --reader expert,0,0,8619,3b291080df7bf00888ee42f6d8fb04c2c28ef6e7d9d061bc35307cf42fe67aef
+yomiyasu-fixed-reader,5-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/document-map.md,0,0,685,b9addd6a04f7a70f3abd5da469b1f3b6beab5acda3ecd12505ae1481e67bd629
+yomiyasu-fixed-reader,6-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/README.md,0,0,1382,b9ff913ffee02bd3da8a36d3433a4d7d84d551f344a4cb146e08366fced9e8d7
+yomiyasu-fixed-reader,6-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/README.md --material $MATERIAL --doc-type paper --reader expert,0,0,23163,62bebd6c7b92ce5adc1aafe3110868bda745e665e7414bca0e8f6ff9920386ae
+yomiyasu-fixed-reader,6-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/README.md,0,0,950,4ad1a57ba041106a1c2a5e3723ce6d5c65b3d18177b5cd0b8d4ad810477075a7
+yomiyasu-fixed-reader,7-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/implementations.md,0,0,4726,fe40f04adb5e698b4f290f4c5b3f654dbff8ee67a87269b2cb668ae9b6800578
+yomiyasu-fixed-reader,7-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/implementations.md --material $MATERIAL --doc-type paper --reader expert,0,0,55396,2c1e9de0ef5623947d16ed8aa19a9b80d0d2fd6d8fd7bb339b84898220b52023
+yomiyasu-fixed-reader,7-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/implementations.md,0,0,958,6c9f49c67c3061d51aa442d9f112fd01de75b840070b9f3e53a3fb5573662b8c
+yomiyasu-fixed-reader,8-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/transport.md,0,0,1149,6b979e2fdbab24020a966c1718ba8a1161e77c9a95aaf992e992259a64b3116d
+yomiyasu-fixed-reader,8-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/transport.md --material $MATERIAL --doc-type paper --reader expert,0,0,28958,7b282fd612698f7f37a1a48c0976592345b9a0c7ab4f6c1b835d4572e5aabb75
+yomiyasu-fixed-reader,8-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/transport.md,0,0,633,1c7e1da41275cc4f0f376756d001d4d18a34a670fec9c1932ef825afcbfdc86b
+yomiyasu-fixed-reader,9-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-client/trust-and-state.md,0,0,1329,46fee6d35968f80ff834289cad8468139d975cafa6c550c2840d992dfcdc88c1
+yomiyasu-fixed-reader,9-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-client/trust-and-state.md --material $MATERIAL --doc-type paper --reader expert,0,0,36817,6d306c8e07ca499c31a50c3815ea8f1d389c3f239e1bc7d6b12e4ede55cae683
+yomiyasu-fixed-reader,9-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-client/trust-and-state.md,0,0,957,821f4ff31201a2af0d3755c58603e18a67a54e34c630fa7b795cfd0f8f5d1428
+yomiyasu-fixed-reader,10-lint,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/research/release-security.md,0,0,2197,01fb611c33e994f1a493f03b99ebed702d6b5172e68cb5764fb7c73f15e3a84e
+yomiyasu-fixed-reader,10-run,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/research/release-security.md --source $WRITING/10-original.md --doc-type paper --reader expert,0,0,15061,14b31341322f5a2233b4509812026f6585e6d68c50d09acf1a1254ee4f629fbc
+yomiyasu-fixed-reader,10-verify,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/release-security.md,0,0,1003,873fb422a55377bf47eada5ebd99de917c8af9c62b4b2c5da244068ee63c0d2e
+final-experiment-yomi,0,python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py docs/experiments/2026-11-02-release-client-audit.md,0,0,6774,4c564b11415faed1f7da5b1a91d537868fc3376ed6609bb2ff6934f543945adf
+final-experiment-yomi,1,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --final docs/experiments/2026-11-02-release-client-audit.md --material $MATERIAL --doc-type paper --reader expert,0,0,30982,591cbdf2e750840a974223439fcbc824fb1db3eb3e14c7a73901f5c7824b93f5
+final-experiment-yomi,2,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-11-02-release-client-audit.md,0,0,633,8faa2ec947a4b3daebd2edca9ced63a8c90d73b5bf3117f308084e10d028c419
+final-checks,0,python3 .github/scripts/check-links.py,0,0,90,c4ed364fe20c317f958feefbb100289920697dfa237bf2d98348e59e49094c6c
+final-checks,1,python3 .github/scripts/check-jisx0213.py,0,0,1609,b1d51cdd2881a5d6cda58661e0339d425cb1bf35ac5cef7bac54ba85504dbd4d
+final-checks,2,python3 .github/scripts/check-doc-size.py,0,0,4125,63e73168db6479a416abf4035e7476a48554340cecd6cb95a97d826324126f9c

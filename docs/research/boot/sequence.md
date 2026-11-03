@@ -1,8 +1,8 @@
 # 起動シーケンスと高速起動の根拠
 
-[起動・カーネルの入口](boot-and-kernel.md) / [調査の索引](../../RESEARCH.md)
+[調査の索引](../../../RESEARCH.md) / [構築手順](../../BUILD.md)
 
-以下は公開資料の調査記録です。測定条件と未確認の記述を含め、元の節を保持しています。現在の実装は [BUILD.md](../BUILD.md) で確認してください。
+以下は公開資料と過去の検証の記録です。数値の測定条件と未確認事項を保ち、現在の配備設定や実機での検証とは区別します。
 
 ## 5. 超高速起動の調査
 
@@ -71,7 +71,7 @@
   - ドライバごとのバージョン分岐:`gpio-forwarder.c:204` が >= 6.18、`m5ioe1.c:472` が >= 6.18、`cardputerzero-audio.c:25` が >= 7.0.0。(出典: https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/gpio-forwarder.c#L204<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/m5ioe1-1.0/m5ioe1.c#L472<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-audio.c#L25)
   - `dkms.conf` があるのは bq27220/es8389/m5ioe1/st7789v のみ。(出典: https://github.com/m5stack/m5stack-linux-dtoverlays/tree/75518549a2640486f5d13ea72ca4935b198d7c20)
   - `modules/CardputerZero/Makefile:67` の config_setup は外部 gist から rpi-config.py を curl する(**自前イメージでは同梱物への置換が必要**)。(出典: https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile#L67)
-  - M5 overlay はビルドごとに `main` から取得されるため、入力ソースが固定されません。本リポジトリでは [submodule の宣言](../../.gitmodules)でコミットを固定しています。https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/01-run.sh#L20<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile#L67-L74
+  - M5 overlay はビルドごとに `main` から取得されるため、入力ソースが固定されません。本リポジトリでは [submodule の宣言](../../../.gitmodules)でコミットを固定しています。https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/01-run.sh#L20<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile#L67-L74
   - `firmware/CardputerZero/config.txt` の overlay 名は `cardputerzero-overlay` ですが、Makefile のターゲットは `cardputerzero-v3-overlay` / `cardputerzero-v5-overlay` です。名称の不整合があり、正しい組み合わせは実機または公式イメージでの確認が必要です（未確認）。https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/firmware/CardputerZero/config.txt#L12<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile
 - 【一次（Devin が 2026-10-18 に確認）】M5 の `panel-mipi-dbi-m.c` は `#include <drm/clients/drm_client_setup.h>` を持ち、このヘッダーは rpi-6.18.y にあります。rpi-6.12.y の同じパスは HTTP 404 ですが、6.12 系全体でヘッダーがないかは未確認です。6.13〜6.17 も未確認です。https://raw.githubusercontent.com/m5stack/m5stack-linux-dtoverlays/75518549a2640486f5d13ea72ca4935b198d7c20/modules/st7789v-1.0/panel-mipi-dbi-m.c<br>https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.18.y/include/drm/clients/drm_client_setup.h<br>https://raw.githubusercontent.com/raspberrypi/linux/rpi-6.12.y/include/drm/clients/drm_client_setup.h
 - 【未確認】Wayback 版の cardputer-zero-os は、既存の `panel-mipi-dbi-spi` と firmware blob（`cardputerzero,st7789v.bin`）を使う経路を持つとの情報があります。したがって「LCD 全般が 6.18 以上を必要とする」わけではなく、「M5 の外部モジュールが前提」との整理です。確認先: https://web.archive.org/web/20260623195631/https://github.com/CardputerZero/cardputer-zero-os

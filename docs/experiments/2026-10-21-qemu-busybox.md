@@ -1,6 +1,6 @@
 # BusyBox の静的リンクと applet 削減（QEMU）
 
-この実験は完了した。実施日は 2026-10-21 で、関連する文書は [実験計画](../research/simulation-plan.md) と #27 である。
+この実験は完了した。実施日は 2026-10-21 で、関連する文書は [実験計画](../research/verification/qemu-coverage.md) と #27 である。
 
 ## 目的と仮説
 

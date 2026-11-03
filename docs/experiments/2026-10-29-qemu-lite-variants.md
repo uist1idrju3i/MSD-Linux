@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。実機の Lite 版は未確認）
 - 日付: 2026-10-29
 - 担当: Devin
-- 関連: [simulation-plan.md](../research/simulation-plan.md)「QEMU で検証できる項目」、 [S2 の記録](2026-10-19-s02-camera.md)
+- 関連: [試験台帳](../research/verification/experiment-catalog.md)「QEMU で検証できる項目」、 [S2 の記録](2026-10-19-s02-camera.md)
 
 ## 目的
 

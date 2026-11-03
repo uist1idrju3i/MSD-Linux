@@ -1,5 +1,26 @@
 # 訂正済み事項
 
+## 2026-11-02 の権限設計と強化項目
+
+[日付付き強化項目](security-2026-11-hardening-list.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
+
+| 原記述 | 訂正と理由 | 根拠 |
+|---|---|---|
+| firewallにはnft userlandだけが不足、listenerなし、nftablesが最小 | 必要module・ruleset・起動順・hotplug・正負の試験も未実装。runtime socketとsize比較は未試験。output acceptは侵害済みserviceの外向き通信を止めない | [通信開始と検証](security/network.md) |
+| AppArmor以外のLSMは未compile、Landlock等は有効 | Yama/Landlockの設定もある。kernel設定・LSM名の一覧・実行時policyと強制を区別。AppArmorのprofile load・enforce、LandlockのABIとprocess側の適用が必要 | [固定CI設定の照合範囲](security/README.md)／[Linux機構](security/principles.md) |
+| SELinuxは一律不採用、AppArmor profileは自作 | 固定構成と保守費用を理由にAppArmorを第一候補とする比較に限定。上流のprofileやdaemonの既存privsepを先に評価し、major LSMの無条件併用も前提にしない | [原則と適用条件](security/principles.md) |
+| do-udp設定だけで平文fallbackを防ぐ、時刻の乱れが署名検証自体を崩す | 全平文通信の停止保証を撤回し、UDP/TCP・上流TLS・fallbackの確認を要件化。raw Ed25519の数学的検証は壁時計不要で、TLS・metadata期限・運用は別 | [DNS・時刻・更新](security/network.md) |
+| NoNewPrivilegesをnosuid/LSMで代替 | no_new_privsはexec時の昇格等に関する別のkernel機構。保有権限のdropやFD移譲制限の代用ではなく、LSM遷移との順序も試験する | [Linuxの仕組み](security/principles.md) |
+| Quad9でDNS層は対応済み、noexecならdataは実行されずhost AVと同じ効果 | DNS設定は未稼働。noexecはinterpreterやetc overlayを一般には防がず、dm-verityも製品未導入。hostでのscanとdevice実行時の検知は対象・限界が異なる | [通信設計](security/network.md)／[可変設定](security/privileges.md)／[既存noexec試験](../experiments/2026-10-21-qemu-data-noexec.md) |
+| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security-hardening.md)／[処理別設計](security/privileges.md) |
+
+## 2026-11-02 の圧縮library比較
+
+| 原記述 | 訂正と理由 | 根拠 |
+|---|---|---|
+| libdeflateを「EB Wise」「zlib API一部互換」と記載 | Eric Biggersらの実装で、DEFLATE/zlib/gzip形式のwhole-buffer処理を行う専用API。zlib APIと互換の差し替えではなく、streamingにも非対応。性能とRAMはcallerを移植して測る必要がある | [固定README・headerと置換条件](alternatives/build-support.md) |
+| libdeflate/zlib-ngを更新データの高速化候補として一括記載 | zlib-ngの互換modeと、callerの移植が必要なlibdeflateを分ける。現行rootfsはzstdのSquashFSであり、zlib系の処理が律速かも未確認 | [圧縮・image生成の比較](alternatives/build-support.md) |
+
 ## 2026-11-02 のSBOM生成経路
 
 通常buildと週次securityにはLinux版の補正処理の有無に差があった。固定生成物の通常build SBOMは `custom` のままであり、生成成功だけでは正しいkernel版の確認にならない。両経路で同じ補正・内容照合を行い、入力のshow-infoも保存する。[検証条件と失敗試行](../experiments/2026-11-02-sbom-generation.md)を参照。
@@ -27,6 +48,7 @@
 ### よくある誤解と正しい内容
 | 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |
 |---|---|---|---|
+| `/data` の自動拡張 | UPDATE.mdに「初回起動時の自動拡張は未実装」と記載 | `S02msd-data` が `msd-data-grow` を呼び、MBRのp4・p7とext4を拡張する実装が既にあります。拡張の失敗時はログを出し、マウントを維持します。実装・ホスト試験・過去のQEMU・実機未確認を区別します | [導入と更新の照合](install-update-status.md) |
 | Kickstarter の販売数 | 3,000/12,000 台の情報を未検証の SNS 情報と扱う | **Update 13 は公式更新**の引用（X のリンクカード由来。本文は取得できていない=403） | https://x.com/saitotetsuya/status/2111008950107910198<br>URL未取得（Kickstarter 本文） |
 | pi-gen は rpi-v8 カーネルを apt から導入 | pi-gen は rpi-v8 カーネルを apt から導入(版の固定なし) | **6.18.39-1+rpt1 を sha256 検証+apt pin 1001+hold で固定**。M5 dtoverlays は `--depth=1` で最新追従 | https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/files/kernel.pref#L3<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage0/02-firmware/01-run.sh#L32<br>https://github.com/CardputerZero/pi-gen/blob/791a985d4efca7327ae1fdb6c48230ac0d1ee1bc/stage2/05-cardputerzero/01-run.sh#L20 |
 | 起動時間の数値 | 起動時間の数値(2.1s、5〜6s、3.5s 未満)を同列に並べた | 数値は SoC・条件・終点が異なり**合成不可**。2112ms は 227KB の小型カーネル構成、Linux 可用 7〜9s は自己申告、Pi 3B+ は ARM 開始 6.79s です。各値の条件を併記します | https://github.com/CardputerZero/circle-boot-splash/blob/b80d7c6a537c09c1ca233aeffa9c2e8601b113df/app/cardputerzero-splash/BENCHMARK.md#L14-L21<br>https://pip-assets.raspberrypi.com/categories/685-app-notes-guides-whitepapers/documents/RP-010196-WP-1-Optimising%20boot%20time%20on%20Raspberry%20Pi%20single-board%20computers.pdf<br>https://github.com/johschmitz/buildroot-quickpi/blob/2f62ac8b7a1d2edb29aad7008f2c5f38aa5195a5/README.md#L15-L16 |
@@ -53,6 +75,7 @@
 
 | 項目 | 誤解されやすい記述 | 正しい内容 | 出典 |
 |---|---|---|---|
+| LLVM libcの適用範囲 | 公式の重要関数不足の警告だけで、本機では一律に未成熟とした | 現行の公式トップと固定sourceは、静的Linux等の限定した本番利用と、regex・locale・wide-character I/O等の不足を併記します。限定した実験候補に戻しますが、MSD/Linux全体を置換できる根拠や本機の動作確認ではありません | [再評価・確認したcommit・一次資料](alternatives/libc.md#llvm-libcの旧評価を変える根拠) |
 | Mender を RPi3 の対象外 | Mender は RPi3 をサポートしない | mender-convert の README(HEAD 4b3f04a、2026-10-12 コミット)が `raspberrypi/uboot/debian/raspberrypi3_bookworm_64bit_config`(Raspberry Pi 3、Raspberry Pi OS bookworm 64bit)を「officially supported」の Core 構成に載せ、Mender Client 6.1 は 2026-10 にサポート対象(docs.mender.io supported-releases)。Mender Client 6.1.0 は mender.io のブログ(2026-10-16)に記載。CM0 自体の記載と動作は未確認 | [公開出典一覧](sources.md) |
 | `/data` のマウントオプション | `/data` に `nosuid`、`nodev`、`noexec` が指定されていない（security-hardening.md の旧記述） | `fstab` は `noatime,nodev,nosuid,data=ordered,errors=remount-ro`。未指定なのは `noexec` だけです（2026-10-19 に main の `fstab` で確認） | [現行 fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab) |
 | powerfail_suo の動作 | S→U→O を実行する | SysRq-U に加えてバックライトと GPIO を操作します。`'i'`・`'s'`・`kernel_power_off()` はコメントアウトされています（powerfail_suo.c @7551854 の L74/L83/L93/L106） | [公開出典一覧](sources.md) |
@@ -91,6 +114,17 @@
 | S11 v2 QEMU の patch provenance | v2 の結果を commit 済み QEMU patch の結果として扱った | v2 image は prebuilt layer の QEMU を含み、commit 済み patch から build されたものと確認できません。v2 の測定値は invalid とはせず、別 build の参考値として保持し、patch 適用可能な `c01f6e7` の QEMU で v3 を再測定しました | [S11 記録](../experiments/2026-10-20-s11-qemu-watchdog.md) |
 
 | S21 SysRq-U marker と remount | driver marker は実 remount の証拠 | `dev_emerg()` marker は `handle_sysrq('u')` より前に出ます。kernel action line で判定した再測定では `kernel.sysrq=0` は remount なし 5/5、32 は remount 5/5 でした。製品採否は未決定 | [S21 記録](../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
+
+## 測定・検証文書の状態訂正（2026-11-02）
+
+旧表と訂正する状態の原文は[原記録CSV](verification/research-records.csv)、現在の試験状況は[試験台帳](verification/experiment-catalog.md)へ保存しました。今回、実験を再実行したものではありません。
+
+| 項目 | 旧記述の問題 | 訂正と根拠 |
+|---|---|---|
+| S1/S14 | 80候補の完了や失敗12件の全件誤検出と読める | [本番記録](../experiments/2026-10-30-kernel-sweep-s1-s14.md)の集計はPASS 61、QEMU_FAILED 12、TARGET_MISMATCH 5、KEEP_CHANGED 1の79行。全12件を成功へ再分類できる証拠は確認できず、不一致を保持する |
+| S10 | 初回記録の番号比較前の状態を現行の「未実装」とした | [番号比較v2](../experiments/2026-10-25-s10-version-check.md)は古い番号・番号なしを既定で拒否し、明示した`--allow-downgrade`で許可。不正形式は常に拒否。可変な最大番号の保護・実機全体のanti-rollbackとは別 |
+| S13 | 未着手と完了が併存し、最適化の単独効果と読めた | [元の結果表](../experiments/2026-10-30-s13-optimize.md)は3構成、n=1、output4だけFTRACE=y。`-Os + LTO`の同時適用や統計的な同等性の確認ではない |
+| S17 | SDモデルのblkdebugの限界を全ゲスト障害試験へ広げた | [SDモデルの記録](../experiments/2026-11-01-s17-dmlw-blkdebug.md)ではホスト側発火・ゲスト非伝播。[dm-flakey記録](../experiments/2026-10-30-s17-error-injection.md)にはゲストのreadエラーがある。試した経路を区別し、実カードのFTL・電断は未確認とする |
 
 ## 個別訂正の補足
 
