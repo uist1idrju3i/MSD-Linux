@@ -63,14 +63,18 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [カーネル版・PREEMPT・APIの比較](docs/research/boot/kernel-comparison.md)
 - [カーネル縮小](docs/research/boot/kernel-size.md)
 - [起動と電断耐性の設計論点](docs/research/boot/design-notes.md)
-- [sysctl の既定値](docs/research/tuning/tunables-sysctl.md)
-- [モジュールパラメーター](docs/research/tuning/tunables-module-params.md)
-- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/tuning/memory-reliability-2026-11.md)
 - [Raspberry Pi ファームウェア仕様の調査](docs/research/boot/firmware.md)
 - [カーネル版と起動方針](docs/research/boot/kernel-policy.md)
-- [高速起動記事とCortex-A53調整](docs/research/tuning/fastboot-and-cpu-tuning.md)
-- [CPU・割り込み・sysctl の調整余地](docs/research/tuning/cpu-irq-and-sysctl.md)
-- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tuning/tunables-defaults.md)
+- [CPU・割り込み・sysctl の調整余地](docs/research/tuning/cpu-irq-and-sysctl.md) — CPU、IRQ、sysctl の判断をまとめる基準文書。
+- [高速起動の候補一覧](docs/research/tuning/fastboot-ideas.md) — 候補と確認状態。現行設定はコードと firmware / 起動経路の文書を参照。
+- [高速起動記事とCortex-A53調整](docs/research/tuning/fastboot-and-cpu-tuning.md) — 2026-10-19 の調査記録と 2026-11 の現行状態注記。
+- [SoC・メモリ・SD 特性と圧縮方式](docs/research/tuning/soc-memory-compression.md) — 2026-10-19 の調査記録と 2026-11 の firmware 注記。
+- [cramfs と XIP の調査](docs/research/tuning/cramfs-xip.md) — 完了したファイルシステムと XIP の調査。
+- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/tuning/memory-reliability-2026-11.md) — EDAC、MCE、DRAM の完了した調査。
+- [ロスレス再圧縮ツールの調査](docs/research/tuning/lossless-recompression.md) — 再圧縮ツールの種類と特徴をまとめる調査。製品での採用状況はコードで確認。
+- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tuning/tunables-defaults.md) — script から生成した5節の一覧。
+- [sysctl の既定値](docs/research/tuning/tunables-sysctl.md) — 生成一覧から分割した QEMU の sysctl 値。
+- [モジュールパラメーター](docs/research/tuning/tunables-module-params.md) — 生成一覧から分割した QEMU の module parameter 値。
 
 #### 保存・電源断・更新
 
@@ -114,7 +118,6 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [使用部品・ツールの代替比較](docs/research/alternatives/README.md) — コンパイラー・libc、コマンド・init、暗号、保存・更新、通信・周辺、構築・CIを責務別に比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は索引で、同等性・全license・実機動作の認定ではない。
 - [全構成要素の母集団と比較の範囲](docs/research/alternatives/inventory-boundaries.md) — OCIの全231 APTと129 source、Actionsの11参照・859 npm名・親、Go moduleを対応づけ、実bundle等の未確認範囲を分離。
 - [公式サイトの HTML・CSS](docs/research/presentation/site-html-css.md)
-- [ロスレス再圧縮ツールの調査](docs/research/tuning/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)
   - [総まとめ（2026-11、移行しないと決定）](docs/research/yocto-migration/summary-2026-11.md)
   - [Buildroot への還元と証拠の確認範囲](docs/research/yocto-migration/buildroot-lessons.md)
@@ -137,10 +140,6 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 ## 起動時間（実測値と分析）
 
 詳しくは [起動時間の測定記録](docs/research/boot/measurements.md) を参照してください。実機では未測定です。QEMU での段階ごとの測定では、`CONFIG_FTRACE` を無効にすると `MSD/Linux ready` が icount で 37.88 %、TCG で 5.68 % 早くなりました（[実験記録](docs/experiments/2026-10-20-qemu-boottime.md)。製品の設定は未変更）。
-
-## 高速化のアイデア一覧
-
-詳しくは [fastboot-ideas.md](docs/research/tuning/fastboot-ideas.md) を参照してください。
 
 ## 電源断耐性
 

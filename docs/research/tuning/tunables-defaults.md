@@ -1,6 +1,6 @@
 # 調整項目の全一覧（QEMU で取得した既定値）
 
-この文書は [2026-10-19-tunables-dump](../../experiments/2026-10-19-tunables-dump.md) の生の値から `board/cardputerzero/tools/bench/tuning/make-tables.py` で作った一覧です。手で編集せず、再生成してください。項目ごとの意味と判断は [CPU・割り込み・sysctl の調整余地](cpu-irq-and-sysctl.md) にまとめました。
+この文書は [2026-10-19-tunables-dump](../../experiments/2026-10-19-tunables-dump.md) の生の値から `board/cardputerzero/tools/bench/tuning/make-tables.py` で作った一覧です。スクリプトは5節すべてを1つの Markdown ファイルに出力します。サイズのため sysctl 節とモジュールパラメーター節をそれぞれ [tunables-sysctl.md](tunables-sysctl.md) と [tunables-module-params.md](tunables-module-params.md) に分割しているため、再生成後も同じように分割してください。手で編集せず、再生成してください。項目ごとの意味と判断は [CPU・割り込み・sysctl の調整余地](cpu-irq-and-sysctl.md) にまとめました。
 
 - 対象：main の commit `ed42686237581a286b30c132991a58d950267221` の CI 成果物（`msd-cardputerzero-build`）。カーネルは 6.18.57-v8 です。
 - 環境：QEMU 6.2.0 の `-M raspi3b`（RAM 1 GiB）で A スロットから起動しました。「`mem=512M`」の列は、cmdline に `mem=512M` を足して起動した値です。CM0 実機の RAM は 512 MB からファームウェアの取り分を引いた量なので、実機の値はさらに小さくなる可能性があります。
