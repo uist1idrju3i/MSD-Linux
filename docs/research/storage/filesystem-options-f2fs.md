@@ -76,7 +76,7 @@ GC、discard、checkpoint、lazy initはidle中もwriteし得る。timer/backgro
 | `extent_cache` / `noextent_cache` | extent cache | 有効 | 可 | 同 | 既定のまま | RAM使用量とextent lookup latencyを測り、cacheを外す利点がある場合だけ無効化する。 |
 | `data_flush` | unmount時にdata blockをflush | 無効 | 可 | 同 | 実験で比べる | unmount latencyと永続性を比較する。 |
 | `mode=` | adaptive/log-structured allocation | `adaptive` | 可 | 同 | 既定のまま | random/sequential latencyとGC/write amplificationを比較し、adaptiveより改善する場合だけ変える。 |
-| `fsync_mode=` | fsync semantics | `posix` | 可 | 同 | 既定のまま | updaterとdata writerのfsync/recovery試験を各modeで行い、POSIX durability要件を満たした場合だけ変更する。 |
+| `fsync_mode=` | fsync semantics | `posix` | 可 | 同 | 実験で比べる | `strict`を含む各modeでfsync回数・write量・電断復旧を測る。write増とSD wearは推測で、耐久性を満たす場合だけ選ぶ。 |
 | `checkpoint_merge` | concurrent checkpointをmerge | 無効 | 可 | 同 | 実験で比べる | checkpoint頻度とlatencyを測る。 |
 | `nocheckpoint_merge` | checkpoint mergeを無効にする | 有効 | 可 | 同 | 既定のまま | checkpoint頻度、flush latency、CPU時間を測り、mergeを無効にしたときの改善がなければ既定を保つ。 |
 | `atgc` | age-threshold GC | 無効 | 可 | 同 | 実験で比べる | workloadと長期fragmentation試験が必要。 |

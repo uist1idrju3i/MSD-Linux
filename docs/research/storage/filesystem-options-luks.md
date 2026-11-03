@@ -48,12 +48,13 @@
 | option | 意味 | 既定値 | 固定版で使えるか | 最新版の変化 | MSD/Linuxでの扱い | 理由 |
 | --- | --- | --- | --- | --- | --- | --- |
 | `--readonly` | mappingをread-onlyでopen | read/write | 可 | 同 | 実験で比べる | read-only modeと更新処理の整合性を測る。 |
-| `--allow-discards` | discardを暗号mappingへ通す | 無効 | 可 | 同 | 実験で比べる | discardはfree-block patternをobserverへ漏らす一方、SD FTLへ空き領域を通知できる。discardのtime/throughput改善と情報露出要件を比較して決める。 |
-| `--persistent` | mapping flagをLUKS headerに保存 | 保存しない | 可 | 同 | 既定のまま | Headerを別deviceへ移した場合もflagが引き継がれるため、volume間で同一policyにする要件がある場合だけ保存する。 |
-| `--perf-same_cpu_crypt` | cryptoをsubmit CPUで実行 | 無効 | 可 | 同 | 実験で比べる | CPU localityとthroughputを測る。 |
-| `--perf-submit_from_crypt_cpus` | crypto workerからsubmit | 無効 | 可 | 同 | 実験で比べる | worker schedulingを測る。 |
-| `--perf-no_read_workqueue` | read workqueueを外す | workqueue有効 | 可 | 同 | 実験で比べる | kernel/deviceで性能を比較する。 |
-| `--perf-no_write_workqueue` | write workqueueを外す | workqueue有効 | 可 | 同 | 実験で比べる | kernel/deviceで性能を比較する。 |
+| `--allow-discards` / `allow_discards` | discardを暗号mappingへ通す | 省略時無効 | 可 | 同 | 実験で比べる | discardはfree-block patternをobserverへ漏らす一方、SD FTLへ空き領域を通知できる。発行時機、write量、情報露出を比較する。 |
+| `--persistent` | 許可されたmapping flagをLUKS headerに保存する | 無効 | 可 | 同 | 既定のまま | `common_options.adoc`は保存可能なflagを限定する。header移行後もpolicyが残るため、明示的な永続化要件がある場合だけ使う。 |
+| `--perf-same_cpu_crypt` / `same_cpu_crypt` | submit CPUでcryptoを実行する | 省略時無効 | 可 | 同 | 実験で比べる | CPU locality、write latency、未操作時writeを測る。 |
+| `--perf-submit_from_crypt_cpus` / `submit_from_crypt_cpus` | crypto workerからwriteをsubmitし、別threadへのoffloadを止める | 省略時無効 | 可 | 同 | 実験で比べる | worker scheduling、SD queueの時機、未操作時writeを測る。 |
+| `--perf-no_read_workqueue` / `no_read_workqueue` | read requestのinternal workqueueを迂回する | 省略時無効 | 可 | 同 | 実験で比べる | read latencyとCPU負荷を比較する。 |
+| `--perf-no_write_workqueue` / `no_write_workqueue` | write requestのinternal workqueueを迂回する | 省略時無効 | 可 | 同 | 実験で比べる | write completion、CPU負荷、未操作時writeをtraceする。 |
+| `--perf-high_priority` / `high_priority` | dm-crypt worker/threadを高優先度にする | 省略時無効 | 可 | 同 | 実験で比べる | foreground latencyとCPU starvationを測り、有効な場合だけ選ぶ。 |
 | `--sector-size` | target sector size | 512 byte | 可 | 同 | 実験で比べる | cipher/mapping alignmentを測る。 |
 | `--iv-large-sectors` | large sector IV generation | 無効 | 可 | 同 | 実験で比べる | sector sizeと組み合わせて互換性を検証。 |
 | `--key-file` / `--key-slot` | key sourceとslot | prompt / default slot | 可 | 同 | 実験で比べる | first-boot keyslot provisioningとPIN/password設定時のvolume-key rotationを実装し、rotation中断・reboot後のunlockとrecoveryを試験する。 |
@@ -62,7 +63,11 @@
 | `--test-passphrase` | mappingを作らずkey検査 | open時だけ | 可 | 同 | 除外 | runtime mount optionではない。 |
 | `--refresh` / `refresh` | active mapping flagを更新 | 現在値を維持 | 可 | 同 | 実験で比べる | active mapping変更後のlatency/throughputとreboot後のmapping policyが一致するかを確認し、運用上のreconfigure手順が必要な場合だけ使う。 |
 
-kernel dm-cryptのtarget flagsは`allow_discards`、`same_cpu_crypt`、`high_priority`、`submit_from_crypt_cpus`、`no_read_workqueue`、`no_write_workqueue`、`sector_size`、`iv_large_sectors`、`integrity`、`integrity_key_size`です。cryptsetupが指定する性能flagと対応し、追加したworker/sector flagは測定前に有効化しません。kernel documentationに新しいflagがあるかの全差分は未確認です。
+kernel dm-cryptのtarget flagsは`allow_discards`、`same_cpu_crypt`、`high_priority`、`submit_from_crypt_cpus`、`no_read_workqueue`、`no_write_workqueue`、`sector_size`、`iv_large_sectors`、`integrity`、`integrity_key_size`です。cryptsetupの`--allow-discards`は`allow_discards`、`--perf-*`は対応するperformance flagへ写像されます。optional discard/performance flagはtarget parserで指定時だけ有効になり、省略時は無効です。
+
+cryptsetup v2.8.7/2.8.8の`common_options.adoc`は、`--persistent`で保存できるflagを`--allow-discards`、`--perf-same_cpu_crypt`、`--perf-submit_from_crypt_cpus`、`--perf-no_read_workqueue`、`--perf-no_write_workqueue`、`--integrity-no-journal`に限定します。`--perf-high_priority`は対象外です。
+
+固定版と最新版の[dm-crypt.c parser](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/dm-crypt.c)、[mainline parser](https://github.com/torvalds/linux/blob/v7.4-rc1/drivers/md/dm-crypt.c)は、指定されたoptionだけflagを設定します。両sourceに`submit_from_queue_ids`はなく、`submit_from_crypt_cpus`が近い機能です。
 
 ## keyslot・integrity・compatibility option
 
@@ -86,12 +91,6 @@ kernel dm-cryptのtarget flagsは`allow_discards`、`same_cpu_crypt`、`high_pri
 | `--tcrypt-backup` / `--tcrypt-hidden` / `--tcrypt-system` / `--veracrypt` / `--veracrypt-pim` / `--veracrypt-query-pim` / `--disable-veracrypt` | TrueCrypt/VeraCrypt互換動作 | 未確認 | 可 | 同 | 除外 | 既存containerのimport要件がなく、新規`/data`はLUKS2 keyslot方針とする。 |
 | `--disable-blkid` / `--device-size` / `--shared` / `--unbound` / `--skip` / `--timeout` / `--tries` | signature scan、mapping範囲、keyslot、prompt制御 | 未確認 | 可 | 同 | 既定のまま | unlock対象・失敗動作を変える。`data` label、grow後size、keyslot復旧とprompt動作を測り、必要な項目だけ指定する。 |
 | `--debug` / `--progress-frequency` / `--progress-json` | debug・progress表示形式/頻度 | 未確認 | 可 | 同 | 既定のまま | format・integrity初期化・key rotationのprogressを利用者に表示する。idle logは圧縮RAMへ送り、diskへ書かない。 |
-| `--perf-high_priority` / `high_priority` | dm-crypt workerのpriorityを上げる | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | scheduler contention、foreground read/write p99 latency、CPU starvationを測り、優先度変更に実利がある場合だけ設定する。 |
-| `--allow-discards` / `allow_discards` | discardを暗号mapping越しに通す | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | free-space pattern漏えいとSD FTLへの空き通知を比較し、discard発行時刻・遅延・write amplificationを測る。 |
-| `--perf-no_read_workqueue` / `no_read_workqueue` | read workqueueを外す | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | CPU affinity、read throughput、tail latency、同時writeの影響をdevice/kernel別に測る。 |
-| `--perf-no_write_workqueue` / `no_write_workqueue` | write workqueueを外す | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | write completion latencyとscheduler負荷を測り、未操作時間の追加writeを起こさないこともtraceで確認する。 |
-| `--perf-same_cpu_crypt` / `same_cpu_crypt` | submit CPUでcryptを行う | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | CPU locality、IRQ/worker負荷、暗号化throughputをCardputerZeroで比較する。 |
-| `--perf-submit_from_crypt_cpus` / `submit_from_crypt_cpus` | crypt worker CPUからI/O submit | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | worker CPUとSD host queueの負荷、completion latencyを測り改善する場合だけ使用する。 |
 | `--sector-size` / `sector_size` | encryption/dm-crypt sector size | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | filesystem block alignment、device logical block、dm-integrity tag layout、crypt throughputとの互換値を確認する。 |
 | `--iv-large-sectors` / `iv_large_sectors` | large-sector IV numbering | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | sector-sizeと組み合わせたmapping compatibility、known-answer test、reopen後のdata読み出しを確認して設定する。 |
 | `integrity` / `integrity_key_size` | dm-crypt authenticated/integrity modeとkey size | 未確認（資料でdefault未整理） | 可 | 同 | 実験で比べる | tag overhead、authentication failure時のI/O error、journal modeのwrite cost、鍵保管をdm-integrity表に沿って評価する。 |
