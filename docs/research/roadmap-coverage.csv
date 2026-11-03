@@ -1,0 +1,80 @@
+origin,source_path,source_keys,work_ids
+question:起動形式とSD配置,docs/research/verification/open-questions.md,Q01 Q10 Q17 Q30 R07,R15
+question:tryboot・watchdog,docs/research/verification/open-questions.md,Q14 Q28 R01 R02 R23,R12
+question:起動時間の基準,docs/research/verification/open-questions.md,Q21 Q29 Q53 R03,R15
+question:LCD・fbcon・overlay,docs/research/verification/open-questions.md,Q02 Q22 Q23 Q32 R06 R08,R14
+question:公開OS・fork,docs/research/verification/open-questions.md,Q04 Q18 Q27 Q36,R42
+question:公式OSのkernel版,docs/research/verification/open-questions.md,Q55,R42
+question:kernel系列とAPI,docs/research/verification/open-questions.md,Q06 Q41 Q46 Q49,R17|R42
+question:microSDのFTL・電断,docs/research/verification/open-questions.md,Q07 Q19 Q37 R04,R13
+question:カードの特性と配置効果,docs/research/verification/open-questions.md,Q09 R18,R15|R16
+question:data filesystem,docs/research/verification/open-questions.md,Q11 R19,R16
+question:discard・fstrim,docs/research/verification/open-questions.md,R20,R16
+question:更新の信頼連鎖,docs/research/verification/open-questions.md,Q12 R21,R03|R10|R11|R36
+question:RAUC連携,docs/research/verification/open-questions.md,Q03,R37
+question:MCUboot,docs/research/verification/open-questions.md,Q08 Q20 Q38,R36
+question:全周辺機能,docs/research/verification/open-questions.md,Q13 Q31 R24,R14
+question:Wi-Fi・Ethernet,docs/research/verification/open-questions.md,Q15 Q45 R05,R05|R06|R07|R14
+question:HDMI・UART,docs/research/verification/open-questions.md,Q16 Q44,R14
+question:別OS・構築基盤,docs/research/verification/open-questions.md,Q05 Q24 Q25 Q33 Q34 R09,R38
+question:CPU・toolchain・sysctl,docs/research/verification/open-questions.md,Q26 Q35 R14,R17|R18
+question:暗号命令とPQ,docs/research/verification/open-questions.md,Q39 Q40 Q52 R13,R17|R41
+question:出典・名称利用,docs/research/verification/open-questions.md,Q42 Q43,R43
+question:他機種の高速化記事,docs/research/verification/open-questions.md,Q47,R17|R30
+question:電断時の観測,docs/research/verification/open-questions.md,Q48,R13|R30
+question:M5共有resetとGPIO,docs/research/verification/open-questions.md,Q50 R12,R13|R14
+question:RTCアドレス,docs/research/verification/open-questions.md,Q51,R14
+question:Newlib,docs/research/verification/open-questions.md,Q54,R41
+question:配布物・license,docs/research/verification/open-questions.md,R10,R22|R23
+question:開発環境・CI実験,docs/research/verification/open-questions.md,R11,R26|R27|R29
+question:割り込み・周波数,docs/research/verification/open-questions.md,R15 R16,R17
+question:SysRq-U,docs/research/verification/open-questions.md,R17,R13|R17
+question:hardeningの実効値,docs/research/verification/open-questions.md,R22,R08|R17
+experiment:S1,docs/research/verification/experiment-catalog.md,S1,R17
+experiment:S2,docs/research/verification/experiment-catalog.md,S2,R14
+experiment:S3,docs/research/verification/experiment-catalog.md,S3,R16
+experiment:S4,docs/research/verification/experiment-catalog.md,S4,R16
+experiment:S5,docs/research/verification/experiment-catalog.md,S5,R03|R16
+experiment:S6,docs/research/verification/experiment-catalog.md,S6,R08|R17
+experiment:S7,docs/research/verification/experiment-catalog.md,S7,R14
+experiment:S8,docs/research/verification/experiment-catalog.md,S8,R14
+experiment:S9,docs/research/verification/experiment-catalog.md,S9,R13
+experiment:S10,docs/research/verification/experiment-catalog.md,S10,R12
+experiment:S11,docs/research/verification/experiment-catalog.md,S11,R12
+experiment:S12,docs/research/verification/experiment-catalog.md,S12,R16
+experiment:S13,docs/research/verification/experiment-catalog.md,S13,R18
+experiment:S14,docs/research/verification/experiment-catalog.md,S14,R17|R18
+experiment:S15,docs/research/verification/experiment-catalog.md,S15,R29|R30
+experiment:S16,docs/research/verification/experiment-catalog.md,S16,R03|R16
+experiment:S17,docs/research/verification/experiment-catalog.md,S17,R13|R16|R30
+request:SemVerと内部番号/指示,docs/research/roadmap.md,request:SemVerと内部番号/指示,R01
+request:SD導入/A-B手順と実機,docs/research/roadmap.md,request:SD導入/A-B手順と実機,R12|R15|R32
+request:Wi-Fi利用可能性と防御,docs/research/roadmap.md,request:Wi-Fi利用可能性と防御,R05|R06|R07|R08
+request:Release自己更新とEd25519,docs/research/roadmap.md,request:Release自己更新とEd25519,R09|R10|R11
+request:Brotli延期,docs/research/roadmap.md,request:Brotli延期,R25
+request:全構成要素とDocker内toolchain,docs/research/roadmap.md,request:全構成要素とDocker内toolchain,R18|R21|R22|R23|R26|R27
+request:docs buildとCI高速化,docs/research/roadmap.md,request:docs buildとCI高速化,R28|R29
+request:未releaseでモダン化,docs/research/roadmap.md,request:未releaseでモダン化,R20|R34
+request:systemd実測計画/代替深掘り,docs/research/roadmap.md,request:systemd実測計画/代替深掘り,R19|R20
+request:未実施と将来計画コミット,docs/research/roadmap.md,request:未実施と将来計画コミット,R33|R34|R35
+task:21,docs/research/roadmap.md,task:21,R31
+task:23,docs/research/roadmap.md,task:23,R32
+task:24,docs/research/roadmap.md,task:24,R33
+task:25,docs/research/roadmap.md,task:25,R34
+task:26,docs/research/roadmap.md,task:26,R35
+task:29,docs/research/roadmap.md,task:29,R01
+task:35,docs/research/roadmap.md,task:35,R25
+task:40,docs/research/roadmap.md,task:40,R21|R22|R23|R26|R27
+task:43,docs/research/roadmap.md,task:43,R20
+task:44,docs/research/roadmap.md,task:44,R33|R34
+task:45,docs/research/roadmap.md,task:45,R30|R33
+task:46,docs/research/roadmap.md,task:46,R19
+history:セキュリティ強化と保留,docs/research/verification/planning-history.md,history:セキュリティ強化と保留,R04|R07|R08|R17|R39
+history:実機入手後の機能/復旧,docs/research/verification/planning-history.md,history:実機入手後の機能/復旧,R12|R13|R14|R15
+history:PPD/計測/実効の追試,docs/research/verification/planning-history.md,history:PPD/計測/実効の追試,R18|R29|R30
+history:再編と公開導線/最終監査,docs/research/verification/planning-history.md,history:再編と公開導線/最終監査,R31|R32|R33
+topic:全licenseと配布契約,docs/research/roadmap.md,topic:全licenseと配布契約,R22|R23|R44
+topic:loginと可変policy,docs/research/roadmap.md,topic:loginと可変policy,R02|R03|R04
+topic:将来/不採用/条件付き,docs/research/roadmap.md,topic:将来/不採用/条件付き,R36|R37|R38|R39|R40|R41
+topic:保守期限と監視,docs/research/roadmap.md,topic:保守期限と監視,R24|R25
+topic:公式image/名称/出典,docs/research/roadmap.md,topic:公式image/名称/出典,R42|R43

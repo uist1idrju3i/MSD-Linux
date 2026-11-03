@@ -6,6 +6,8 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-03-init-comparison-plan](2026-11-03-init-comparison-plan.md) | なし | 2026-11-03 | 計画のみ | 現行・systemd・s6系・OpenRC等の固定条件、資源・権限・A/B復旧、QEMU/実機の分離。[計測器と故障試験](2026-11-03-init-comparison-protocol.md)も未実装の仕様。 |
+| [2026-11-03-init-roadmap-validation](2026-11-03-init-roadmap-validation.md) | なし | 2026-11-03 | 静的照合 | 残件・原Q/R・S1–S17・要求・出典のID/参照/依存を確認。OSのbuild・実測・実機の合格ではない。 |
 | [2026-11-03-alternative-coverage](2026-11-03-alternative-coverage.md) | なし | 2026-11-03 | 母集団の静的照合 | 67 Buildroot、231 APT/129 source、11 Action、859 npm名/1574組、11 Go moduleを比較先へ対応。5回一致と4負対照。全license・実bundle・代替実行の確認とは別。 |
 | [2026-11-03-ci-scope](2026-11-03-ci-scope.md) | なし | 2026-11-03 | 固定判定の照合・履歴観察 | path・markerの117行成功と改変対照。CI成功5 runの152 stepを観察し、echoによる初回誤分類53行も保存。新しい性能実験・製品buildではない。 |
 | [2026-11-03-userspace-security-layout](2026-11-03-userspace-security-layout.md) | なし | 2026-11-03 | 本文の静的照合済み | 3原文の26範囲、原文要約4行、基準CSV72件を5回照合。10対照を検出。初回の対照対象の誤りとリンクの失敗は別CSVへ保存。製品build・実機試験とは別。 |

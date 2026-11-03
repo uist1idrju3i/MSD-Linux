@@ -12,6 +12,7 @@
 | [Cライブラリー](libc.md) | glibc、musl、uClibc-ng、LLVM libc、newlib、picolibc、Bionic、klibcの適用範囲と再検討条件 |
 | [基本コマンド・シェル](commands.md) | BusyBox、Toybox、GNU coreutils、uutilsと、更新・起動・復旧で必要な引数と挙動 |
 | [init・service監視・device管理](init.md) | PID 1、supervision、readiness、権限制限を分け、s6、runit、OpenRC、systemd、Dinit等を比べる |
+| [init候補の詳細と実測への接続](init-detail.md) | 固定recipeと上流版、s6/OpenRC/Dinit/Finit/runit/procd/Shepherd等、可変etc・health・停止・追加費用を深掘りする |
 | [暗号・TLS](crypto.md) | OpenSSLの保守期限、署名専用libraryとTLSの別々の選定、依存・license・旧算法の削減条件 |
 | [署名・鍵・配信の信頼境界](signing.md) | raw Ed25519の移植条件、manifest、鍵rotation、SemVerとanti-rollback、HTTPSと特権helperの分離 |
 | [保存領域と実行時検証](filesystems.md) | SquashFS/EROFS、ext4/F2FS、設定overlay、dm-verity/fs-verityの違いと移行条件 |

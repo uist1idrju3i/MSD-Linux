@@ -9,6 +9,8 @@
 | 知りたいこと | 本文 |
 |---|---|
 | 現在の未確認事項と次の確認 | [主題別の一覧](open-questions.md) |
+| 未実施・判断待ち・延期・将来計画の順序 | [残件台帳と要求の対応](../roadmap.md) |
+| init移行の計測条件と拒否・復旧試験 | [比較計画](../../experiments/2026-11-03-init-comparison-plan.md) |
 | S1–S17の実験・状態・不足 | [試験台帳](experiment-catalog.md) |
 | S番号以外のQEMU/生成物の記録 | [確認できる範囲](qemu-coverage.md) |
 | UART・通信・ログの条件 | [観測方法](observability.md) |
