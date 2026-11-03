@@ -53,10 +53,10 @@
 | `sb` | alternate superblockを選ぶ | primary | 可 | 同 | 除外 | recovery時に限る。通常起動で指定するとmetadata世代の不一致を隠すおそれがある。 |
 | `norecovery` / `noload` | journal replayを止める | replay有効 | 可 | 同 | 除外 | dirty filesystemのmetadata inconsistencyを残す。write抑制のためにrecoveryを止めない。 |
 | `remount-ro` | error時にread-onlyへ再mount | mount error policy依存 | 可 | 同 | 現行のまま | 現行`errors=remount-ro`と同じくerror後の追加writeを止める。 |
-| `data=journal` | dataとmetadataをjournal | ordered | 可 | 同 | 除外 | write amplificationと容量負担がある。 |
+| `data=journal` | dataとmetadataをjournal | ordered | 可 | 同 | 実験で比べる | `data=journal`はdelayed allocationとO_DIRECTを無効にする（[kernel ext4 documentation](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/admin-guide/ext4.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)）。電断時のdata損失幅とjournal write量・回数を利用者操作中に測り、SD wearへの影響は推測として評価する。 |
 | `data=writeback` | data順序保証を弱める | ordered | 可 | 同 | 除外 | 電断後の整合性を弱める。 |
 | `barrier` / `nobarrier` | flush/FUAによる順序保証 | 有効 | 可 | 同 | 既定のまま | flush無効化にはdevice supportと電源断試験の証拠が必要。現状は順序保証を維持する。 |
-| `delalloc` / `nodelalloc` | delayed allocation | 有効 | 可 | 同 | 既定のまま | 現行kernel defaultを使い、write patternを変える場合はuser-requested workloadで比較する。 |
+| `delalloc` / `nodelalloc` | delayed allocationを使う/停止する | 有効 | 可 | 同 | 実験で比べる | power loss前に未確保のdirty dataを失う窓と、write timing・回数を比較する。`data=journal`では`nodelalloc`が強制される。 |
 | `lazytime` | timestamp更新を遅延 | 無効 | 可 | 同 | 実験で比べる | timestamp write量と異常停止後の許容差を測る。timer flushがidle時間にwriteしないか確認し、user operation起点でないwriteを許容する場合だけ有効化する。 |
 | `acl` / `noacl` | POSIX ACL | kernel/config依存 | 可 | 同 | 既定のまま | 製品のACL要件を変更する指示がない。 |
 | `user_xattr` / `nouser_xattr` | user xattr | 有効 | 可 | 同 | 既定のまま | 現行imageとの互換性を保つ。 |

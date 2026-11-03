@@ -72,8 +72,8 @@ scrubとbalanceはtimerで定期起動せず、user-initiated maintenanceとし�
 | `acl` / `noacl` | POSIX ACLを有効化・無効化 | enabled（kernel config依存） | 可 | 同 | 既定のまま | permission policyを変える要件がない。 |
 | `space_cache=` | free-space cache方式 | v2 | 可 | 同 | 既定のまま | 変更はmount後のallocation latencyとmemory使用量の比較でv2より改善した場合に限る。 |
 | `autodefrag` | 小さいrandom writeを再配置 | 無効 | 可 | 同 | 実験で比べる | `/data`で小さなrandom rewriteが占めるbyte比と、autodefragのCPU/write amplification、read latencyを測り、read改善がwrite増加に見合う場合だけ有効化する。 |
-| `flushoncommit` / `noflushoncommit` | transaction commit時のflushを選ぶ | 無効 | 可 | 同 | 実験で比べる | commit latency、dirty dataの電断時損失量、flush command処理時間を比較し、durability要件を維持できる設定だけ選ぶ。 |
-| `commit=` | transaction commit interval | 30秒 | 可 | 同 | 実験で比べる | commit間隔ごとのwrite latency、dirty data量、電源断試験で現行値より改善する場合にだけ変更する。 |
+| `flushoncommit` / `noflushoncommit` | transaction commit時のflushを選ぶ | 無効 | 可 | 同 | 実験で比べる | commit時にdirty dataをflushする。timer commitが無操作時にwriteするか、commit latencyと電断時loss windowを測り、idle write禁止と耐久性を両立する設定を選ぶ。 |
+| `commit=` | transaction commit interval | 30秒 | 可 | 同 | 実験で比べる | intervalごとのtimer commitがidle中のSD writeを生むかtraceする。write latency、dirty data量、電断試験を測り、性能だけで短縮しない。 |
 | `barrier` / `nobarrier` | device cache flushを制御 | barrier on | 可 | 同 | 現行のまま | barrierを無効にすると電源断時にfilesystemを破損する可能性がある。 |
 | `clear_cache` | free-space cacheを再構築 | 無効 | 可 | 同 | 除外 | recovery/maintenance専用で通常mountに使わない。 |
 | `enospc_debug` / `noenospc_debug` | ENOSPC debug出力 | 無効 | 可 | 同 | 除外 | diagnostic用。 |

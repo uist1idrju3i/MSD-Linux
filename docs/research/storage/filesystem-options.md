@@ -10,6 +10,7 @@ MSD/Linuxの基準は`origin/main` `83bd5cf599bb74d91da0332c2a8d9f25ff9946c6`、
 
 | 主題 | 固定版の比較表 | 表の対象 |
 |---|---|---|
+| write path | [共通mount flag](filesystem-options-write-path-mount.md)、[VM/BDI](filesystem-options-write-path-vm.md)、[block layer](filesystem-options-write-path-block.md)、[MMC/SD](filesystem-options-write-path-mmc.md)、[file属性](filesystem-options-write-path-attributes.md)、[kernel command line](filesystem-options-write-path-cmdline.md) | 永続writeの時機と制御、MMC host、per-file設定 |
 | ext4 | [format・feature](filesystem-options-ext4.md#formatとfeature)、[mount・永続設定](filesystem-options-ext4-mount.md)、[点検と調整](filesystem-options-ext4.md#点検と調整)、[formatter・保守tool](filesystem-options-ext4-tools.md) | e2fsprogsのmkfs、mke2fs.conf、tune2fs、e2fsckとkernelのfeature・mount option |
 | F2FS | [F2FS](filesystem-options-f2fs.md)、[sysfs option](filesystem-options-f2fs-sysfs.md) | mkfs、feature、mount/sysfs、fsck、resize、f2fs_io |
 | Btrfs | [Btrfs](filesystem-options-btrfs.md)、[progs追加option](filesystem-options-btrfs-progs.md) | mkfs、feature、mount option、checksum、single-device DUP |
@@ -17,6 +18,8 @@ MSD/Linuxの基準は`origin/main` `83bd5cf599bb74d91da0332c2a8d9f25ff9946c6`、
 | dm-integrity | [dm-integrity](filesystem-options-dm-integrity.md) | integritysetup、kernel target argument、LUKS2との組合せ |
 
 各表の「固定版で使えるか」は指定された固定版での可否です。「最新版だけ」は固定版で有効とは扱わず、`版上げで使える候補`と記します。MSD/Linuxでの扱いは`実験で比べる`、`現行のまま`、`既定のまま`、`除外`から選びます。選択肢のない項目や製品設定の未確認箇所は、未確認と明記します。
+
+2026-11-04の耐久性判断基準: 同期writeは利用者の操作中に完了するため、progressを表示する操作ならAGENTS.md §10に合う場合があります。同期化でSDへのwrite量や回数が増える可能性があり、wearへの影響は推測です。performanceだけで除外せず、write量・回数・電断時の損失幅を測定して判断します。
 
 ## 現行ext4設定
 
@@ -57,6 +60,12 @@ coverage数は、primary sourceから抽出したtoken、理由付き除外、op
 
 | 主題 | 固定版: extracted / excluded / covered | 最新版: extracted / excluded / covered | 出典の範囲 |
 |---|---:|---:|---|
+| write-path mount | 81 / 0 / 81 | 81 / 0 / 81 | kernel flags、util-linux、BusyBox |
+| write-path VM/BDI | 64 / 0 / 64 | 65 / 0 / 65 | vm.rst、sysfs-class-bdi |
+| write-path block | 75 / 0 / 75 | 77 / 0 / 77 | sysfs-block、scheduler docs、Kconfig |
+| write-path MMC | 48 / 0 / 48 | 46 / 0 / 46 | MMC module parameter、ABI、DT binding |
+| write-path attributes | 30 / 0 / 30 | 30 / 0 / 30 | chattr、Btrfs property、F2FS ioctl |
+| write-path command line | 9 / 0 / 9 | 9 / 0 / 9 | 指定regexに一致するkernel-parameters.txt |
 | ext4 | 225 / 17 / 208 | 225 / 17 / 208 | format/feature、mount、点検と調整、sysfs/ioctl section |
 | F2FS | 212 / 2 / 210 | 226 / 2 / 224 | mkfs, mount, ABI sysfs, fsck/resize |
 | Btrfs | 107 / 6 / 101 | 110 / 6 / 104 | mkfs, btrfstune, mount, checksum |
