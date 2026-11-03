@@ -5,7 +5,7 @@
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
 | `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
-| `publish-dev-image.yml` | 開発イメージの入力変更を含む PR、`main` への push、手動実行 | PR では amd64 と arm64 のイメージを作成して Trivy で検査します。修正版のある HIGH / CRITICAL の脆弱性と、HIGH / CRITICAL の秘密情報・設定不備を公開ゲートにします。`main` への push と手動実行では GHCR へ公開し、SBOM と provenance の attestation を付けます。手動実行では `dry_run` を有効にすると公開を省けます。 |
+| `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があればamd64とarm64を作成してTrivy検査します。修正版のあるHIGH/CRITICAL脆弱性と、HIGH/CRITICALの秘密情報・設定不備を公開ゲート対象にします。`main` pushと手動実行ではGHCRへ公開し、SBOM/provenanceのattestationを付けます。`dry_run`で手動公開を省けます。 |
 | `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
@@ -13,6 +13,16 @@
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
 | `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
+
+## main の必須チェック
+
+`main`では次のstatus checkを必須にします。
+
+`build`（Buildroot）、`changes`、`lint`、`zizmor`、`check`、`MSD tests in development image`、`dev-image gate`。
+
+最後のcheckはmerge後にmaintainerがrulesetへ追加します。エージェントはrulesetを変更しません。
+
+paths filter付きworkflowは対象外PRでcheckを報告せず、必須にするとmergeを妨げます。PRは常時起動し、入力差分がない場合はbuildを省略します。
 
 `check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。URL と例外一覧を除き、`docs/`、`public_html/`、旧 `documentation/` で始まるパスが追跡対象を指していなければ CI を失敗させ、移動後の参照漏れを防ぎます。
 `.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
