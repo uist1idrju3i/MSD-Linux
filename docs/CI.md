@@ -12,7 +12,7 @@
 | `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `pages.yml` | PR と `main` への push で `public_html/`、`docs/logo/`、`check-site.py`、workflow が変わったとき、手動実行 | `check-site.py` と Pages Settings のドメインを照合した後、`public_html/` だけを GitHub Pages に公開します。PR では build job だけを実行し、デプロイは `main` のみで行います。リポジトリにシンボリックリンクがあるため、ブランチからの公開は使いません。 |
-| `security.yml` | 毎週月曜、手動実行 | Buildroot の defconfig から SBOM と CVE/VEX レポートを作ります。検出した CVE 数では失敗せず、ツールのエラーだけを失敗とします。 |
+| `security.yml` | 全 PR、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。mainの定期・手動実行は「製品SBOMの脆弱性監視」Issueを更新して差分をコメント（自動closeなし）。 |
 
 ## main の必須チェック
 
@@ -23,6 +23,8 @@
 最後のcheckはmerge後にmaintainerがrulesetへ追加します。エージェントはrulesetを変更しません。
 
 paths filter付きworkflowは対象外PRでcheckを報告せず、必須にするとmergeを妨げます。PRは常時起動し、入力差分がない場合はbuildを省略します。
+
+merge後にmaintainerが`product CVE scan`をmain rulesetへ追加できます（エージェントは変更しません）。
 
 `check-links.py` は Markdown の相対リンクと HTML の `src`、`href`、`srcset`、見出しアンカーを検査します。URL と例外一覧を除き、`docs/`、`public_html/`、旧 `documentation/` で始まるパスが追跡対象を指していなければ CI を失敗させ、移動後の参照漏れを防ぎます。
 `.github/link-check-allowlist.tsv` は他のリポジトリ内のパスに限って使う古いパス検査の例外一覧で、未使用の例外や追跡されていない対象ファイルはエラー扱いです。
@@ -94,7 +96,7 @@ quote	<exact-path>	<characters>	<reason>
 
 公開前の`publish-dev-image.yml`も元のTrivy JSONをartifactへアップロードせず、選別した全件、レポート、image IDと検査器の版、SPDX SBOMを保存します。SBOMそのものの機密情報の有無を確認したという意味ではありません。[GitHub Actionsの監査](research/operations/github-actions-audit.md)に権限・実行条件・監視漏れを記録しています。
 
-`build.yml` の成果物には CycloneDX SBOM とビルド時間ログを含めます。`security.yml` の `buildroot-security-report` 成果物には SBOM と VEX JSON を保存します。VEX の `analysis.state` は `exploitable`、`resolved`、`resolved_with_pedigree` などの判定です。ジョブサマリーにはコンポーネント別の exploitable 件数、CVSS 上位の CVE、解決済み件数を表示します。
+`build.yml` の成果物には CycloneDX SBOM とビルド時間ログを含めます。`security.yml` の `product-cve-state` 成果物にはstate、SBOM、VEX JSON、show-infoを保存します。VEX の `analysis.state` は `exploitable`、`resolved`、`resolved_with_pedigree` などの判定です。ジョブサマリーにはコンポーネント別の exploitable 件数、CVSS 上位の CVE、解決済み件数を表示します。CPEがないcomponentは照合対象外になり得るため、検出0件を安全の証明とは扱いません。
 
 `build.yml` のカーネル強化検査は固定した kernel-hardening-checker でビルド後の `.config` と起動コマンドラインを調べます。結果は OK/FAIL 件数と FAIL 項目をジョブサマリーに出し、JSON も成果物として保存します。この検査は報告のみで、結果によってビルドを失敗させません。
 
