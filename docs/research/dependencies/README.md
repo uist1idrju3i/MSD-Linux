@@ -8,6 +8,7 @@
 |---|---|
 | 製品とビルドに使うpackage、外部toolchainの内包物、版と許諾 | [Buildrootとtoolchain](buildroot.md)、[67件のCSV](buildroot-packages.csv)、[出典・CPE・licenseを含むJSON](buildroot-packages.json) |
 | OCI、Actions、Go、pip、runnerと監視漏れ | [開発環境・CI](development-and-ci.md) |
+| OpenSSLの固定版・上流保守期限と週次通知の追加 | [OpenSSL保守監視](openssl-maintenance.md) |
 | Debianの各packageの導入版と更新候補 | [231件のCSV](development-apt.csv)、[署名・indexの証拠を含むJSON](development-apt.json) |
 | Actionsから呼ばれる子Actionとnpm依存 | [11 manifestとlockfile](actions-recursive.json)、[859 package名の最新版照合](actions-npm-latest.json) |
 | actionlint binary内のGo module | [11 moduleの照合](actionlint-go-modules.json) |

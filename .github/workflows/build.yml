@@ -69,7 +69,7 @@ jobs:
                 build=true
                 break
                 ;;
-              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE|.devin/*|tests/check-*/*|.github/*)
+              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE|.devin/*|tests/check-*/*|tests/release-signing-key/run.py|.github/*)
                 ;;
               *)
                 build=true
@@ -120,6 +120,8 @@ jobs:
           docker/msd-dev tests/msd-dev/run.sh
           docker/msd-dev tests/trivy-gate/run.sh
           docker/msd-dev tests/check-sbom/run.sh
+          docker/msd-dev python3 tests/check-build-scope/run.py
+          docker/msd-dev python3 tests/release-signing-key/run.py --output-dir "/tmp/msd-release-signing-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 
       - name: Summarize step timings
         if: always()

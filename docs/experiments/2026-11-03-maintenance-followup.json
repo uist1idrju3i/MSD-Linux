@@ -1,0 +1,60 @@
+{
+  "base_commit": "7a0d52b2f20889ac23dd6a8fa585a44c3a373866",
+  "scope": "working-tree host/static checks; not target OpenSSL, QEMU or hardware",
+  "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+  "platform": "Linux-6.8.0-1061-aws-x86_64-with-glibc2.41",
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+  "inputs": {
+    ".github/scripts/check-pins.py": "ae4d3333eab8f365dfdf783a1d9f3b36ee59e8ea15ec7b1b029efe74fd7946c2",
+    ".github/workflows/build.yml": "2e30bffd1761205146b10885e3fd0591c2361ddfecef9efafbe91b747ba582f1",
+    ".github/workflows/pins-check.yml": "cff91abe336edbde38e1282eb1c681e4341e4ed4d8fcd7276aa4adcef9b1bc26",
+    "tests/check-pins/run.sh": "1a1b305c177d5e769d49d258a5ceb5caf9e65eece500b27e45e8161059a7d97d",
+    "tests/check-build-scope/run.py": "b7ac61c874db02e52e9d893e8a7fa3c015180900c6c81aa7612dfc3e4aef1429",
+    "tests/release-signing-key/run.py": "ad906c171f19bf0ecab17beec78c323567b62174dca9904a8409b092f64ffdfb"
+  },
+  "oci_id": "sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77",
+  "signing_binary": {
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+    "openssl_binary_sha256": "acc10176d038aeb7b2a77d9ec972ac2985857a7191f7aecb7c54ef0e2c7e9549",
+    "host": "Linux-6.8.0-1061-aws-x86_64-with-glibc2.41",
+    "trials": 5,
+    "key_scope": "disposable test keys only; never product keys"
+  },
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/8b238854d909c9cce32ef9671d968b03e323b55d/package/libopenssl/libopenssl.mk",
+      "fetched_at": "2026-11-03T02:24:02.152169+00:00",
+      "status": "fetched",
+      "bytes": 6596,
+      "sha256": "782adef35e93f728972feeec416dac408bd2de9a52389e08cba93bec22cc7580"
+    },
+    {
+      "url": "https://openssl-library.org/source/",
+      "fetched_at": "2026-11-03T02:24:02.200929+00:00",
+      "status": "fetched",
+      "bytes": 43472,
+      "sha256": "8c7f2593bbb793f59b2b617114712c2fb5257148c7aca013c93454006ed8c6a4"
+    },
+    {
+      "url": "https://openssl-library.org/policies/releasestrat/",
+      "fetched_at": "2026-11-03T02:24:02.325412+00:00",
+      "status": "fetched",
+      "bytes": 36880,
+      "sha256": "675a2850c7b35a7d2acd3ef0acca2065dcc51937a7da9ba8f1c60541380be17d"
+    }
+  ],
+  "releases": {
+    "4.1": {
+      "version": "4.1.0",
+      "expires": "2027-11-23"
+    },
+    "4.0": {
+      "version": "4.0.3",
+      "expires": "2027-05-14"
+    },
+    "3.5": {
+      "version": "3.5.9",
+      "expires": "2030-04-08"
+    }
+  }
+}
