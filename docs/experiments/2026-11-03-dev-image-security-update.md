@@ -1,6 +1,6 @@
 # 開発用OCIのセキュリティ更新
 
-- 状態: 完了（amd64ローカル検証まで）
+- 状態: 完了（amd64/arm64のCI、Trivy gate、attestation確認）
 - 日付: 2026-11-03
 - 担当: Devin
 - 関連: [R25](../research/pending-work.csv)、[開発用OCIの脆弱性調査](../research/development-image-security.md)、[開発環境とCIの依存監査](../research/dependencies/development-and-ci.md)
@@ -21,7 +21,7 @@
 | 作業branch | `devin/1793676513-brotli-security` |
 | host | Ubuntu 26.04.1、x86_64 |
 | OCI build | amd64、`msd-dev:local` |
-| Buildroot / 製品kernel | 製品buildは実施せず |
+| ローカル試験のBuildroot / 製品kernel | 製品buildは実施せず |
 | OCI内の確認版 | QEMU 11.1.2、GCC 14.2.0-19、Python 3.13.5、Go 1.27.3 |
 | Trivy | 0.76.1、`sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c` |
 | Trivy DB | version 2、UpdatedAt `2026-11-03T01:30:30Z` |
@@ -97,11 +97,17 @@ Brotliのchangelogは[Debian source](https://sources.debian.org/data/main/b/brot
 - `check-doc-size.py`と`tests/check-doc-size/run.sh`: 成功。20,000 byte超の既存文書に警告があるが、新規記録は上限内。
 - yomiyasu lint: error 0件。技術語「ゲート」などのwarn候補と、箇条書き比率のwarnを文脈確認した。
 
-Buildroot製品build、QEMU boot、arm64 build、CI、attestationは未確認である。
+## CI結果
+
+[PR #194](https://github.com/uist1idrju3i/MSD-Linux/pull/194)のhead `e75008d`で、Buildroot `build` job `125736877744`、dev-image amd64 job `125736888846`、arm64 job `125736888989`が成功した。両archのTrivy gateも成功した。PR上の`publish` job `125739350362`はskipとなり、PRではattestationを実行していない。
+
+PR #194 merge後のmain commit `668cd99bd24cec523cc181ef9518a6a52f1a034a`では、dev-image amd64 job `125764443832`とarm64 job `125764443815`がTrivy gateを含め成功し、両jobのSBOM attestationも成功した。Buildroot `build` job `125764500832`と`scan` job `125764409233`も成功した。`publish` job `125767719586`は成功し、multi-arch index `sha256:6bc09058ccfdd10752527f3802f4a56c6276c1ac7d61c066a13b87e9f04b4192`のBuild Provenance attestationを作成・公開した。
+
+PR #195は未mergeであり、同PRの`dev-image gate`はmainで有効になったものとして扱わない。
 
 ## 結論
 
-amd64の開発用OCIはsnapshot更新後にbuildでき、指定されたTrivy gateの対象は0件となった。閾値や除外は変更していない。公開前に同一commitのCIでarm64とattestationを確認する。QEMUの起動成功、実機、Buildroot製品の動作をこの試験の結論に含めない。
+amd64の開発用OCIはsnapshot更新後にbuildでき、指定されたTrivy gateの対象は0件となった。main CIでamd64/arm64のbuildとgate、SBOM、multi-arch indexのprovenance、およびBuildroot buildを確認した。閾値や除外は変更していない。QEMU bootと実機動作はR25のOCI更新の確認範囲外であり、実施していない。次は`dev-image-scan`の週次監視を続け、新しいblocking findingがあれば再評価する。
 
 ## ログと保存範囲
 

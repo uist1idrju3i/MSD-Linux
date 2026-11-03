@@ -12,7 +12,7 @@
 | `build.yml` | PR、main push、週次、手動。changes は read。テストと build は contents/actions/packages/attestations: read | PRの変更を実行。文書だけの変更では build を省略し、msd-update tests は実行する。必要な変更の検出に失敗したときは build。build は150分、PRの新しい実行で旧実行を中止。カーネル強化検査は continue-on-error。legal-infoの既知の警告はCI成功でも解消しない |
 | `lint.yml` | PR、main push。lint/zizmor は contents/packages/attestations: read。Dockerfile検査は contents: read | PR由来のコードを固定開発OCIで実行。SHA固定のcheckoutで資格情報を残さない。zizmorはoffline。3ジョブ、各15分 |
 | `pages.yml` | サイト関連のPRとmain push、手動。build は contents/pages: read、deploy は pages/id-token: write | PRではbuildのみ、mainで公開。ドメイン照合はPages APIに依存し、forkのPRで読めるかは未確認。buildとdeployの権限は分離 |
-| `publish-dev-image.yml` | OCI入力変更のPRとmain push、手動。plan は contents: read。build/publish は contents: read、packages/attestations/id-token: write | PRでも2アーキテクチャを最大45分ずつ構築・検査するがpushはしない。書込権限はPRのbuildにも与えられ、最小権限の余地がある。手動実行は`dry_run=false`ならmain以外からでもlatestタグへ公開しうる。公開先をmain限定にするかは信頼境界の設計判断。イメージの固定digestとSBOM/provenanceはアーキテクチャdigestとindex digestを分ける |
+| `publish-dev-image.yml` | OCI入力変更のPRとmain push、手動。plan は contents: read。build/publish は contents: read、packages/attestations/id-token: write | mainの現行workflowはPRを`paths`で選別し、対象外のPRではstatusを報告しない。PR #195は常時起動と`dev-image gate`を提案中だが未mergeのため、mainでは未適用である。書込権限はPRのbuildにも与えられ、最小権限の余地がある。手動実行は`dry_run=false`ならmain以外からでもlatestタグへ公開しうる。公開先をmain限定にするかは信頼境界の設計判断。イメージの固定digestとSBOM/provenanceはアーキテクチャdigestとindex digestを分ける |
 | `dev-image-scan.yml` | mainのOCI入力変更、週次、手動。contents: read、issues: write | 公開されたlatestのamd64だけを検査。変更前は取得失敗の一部を成功扱いにしたため、失敗を検査失敗に変更。検出事項はIssue通知だがジョブ失敗にはしない。raw Trivy JSONは公開しない |
 | `security.yml` | 週次、手動。contents: read | BuildrootのSBOMとVEXを成果物に保存する。CVEがあってもゲート・Issue通知はなく、実行ログとartifactの確認が必要。NVDは週番号別cache、週内復元の鮮度は別途確認が必要 |
 | `pins-check.yml` | 週次、手動。contents: read、issues: write | GitHubの固定値と公開元を照合しIssueを更新。Release APIに載らないKHCのtagを取得するよう変更。更新不能は確認不能として通知対象に残す |
@@ -40,4 +40,4 @@
 
 artifact内は選別済みJSON、報告、image情報、Trivy版、SPDXの5ファイルだけで、未加工のTrivy JSONはなかった。Brotliの更新は利用者の指定で延期しており、この修正で公開ゲートが失敗することは未対応の検出を正しく示す。除外やゲート緩和は行わない。
 
-2026-11-03のR25更新ではsnapshotを`20261103T023120Z`へ進め、amd64の再構築と同じTrivy 0.76.1 gateを実行した。公開ゲート対象は0件で、閾値や例外は変更していない。arm64とCIは未確認である。初回のBrotliだけの試行を含むpackage差分と結果は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照する。
+2026-11-03のR25ローカル検証ではsnapshotを`20261103T023120Z`へ進め、amd64を再構築してTrivy 0.76.1 gateの対象0件を確認した。その後、PR #194とmerge後のmain CIでamd64/arm64のgate、各archのSBOM attestation、multi-arch indexのBuild Provenance、Buildroot build、`scan`が成功した。PR #195の`dev-image gate`追加は未mergeであり、mainの現行checkとしては扱わない。job IDと初回のBrotliだけの試行を含む結果は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照する。
