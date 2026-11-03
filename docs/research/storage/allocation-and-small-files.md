@@ -26,7 +26,7 @@ ext4 の `data=journal` はファイルデータをジャーナルへ記録し�
 
 ext4 は既定で write barrier を有効にします。電断時の順序保証を弱める `nobarrier` は性能改善策として採用しません。【一次】[ext4 文書](https://docs.kernel.org/admin-guide/ext4.html)
 
-`data=journal` はファイルデータをジャーナルと最終配置の両方へ書くため、追加書込みや遅延割り当て無効化が生じる可能性があります。これは SD の摩耗を測定した結果ではありません。`data=ordered` を移行候補にする場合は、アプリケーションの同期・rename 手順と電断回復を確認します。【推測】[ext4 文書](https://docs.kernel.org/admin-guide/ext4.html)／[電源・更新方式の調査](README.md)
+`data=journal` はファイルデータをジャーナルと最終配置の両方へ書くため、追加書込みや遅延割り当て無効化が生じる可能性があります。これは SD の摩耗を測定した結果ではありません。現行の `S02msd-data` と `fstab` は `/data` に `data=ordered` を指定しています。アプリケーションの同期・rename 手順と実機での電断回復は未確認です。【一次】[ext4 文書](https://docs.kernel.org/admin-guide/ext4.html)／[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)／[fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)
 
 `mke2fs -E stride` は RAID の chunk／stripe geometry 向けに文書化されており、一般的な microSD の AU や消去単位を指定する設定としては使いません。【一次】[mke2fs(8)](https://man7.org/linux/man-pages/man8/mke2fs.8.html)
 

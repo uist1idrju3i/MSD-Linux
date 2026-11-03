@@ -243,10 +243,10 @@ printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
 
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"
 
-# SquashFS sort: Buildroot não expõe -sort do mksquashfs (COMP_OPTS é
-# calculado sem prompt), então um wrapper em $HOST_DIR injeta a ordem de
-# leitura medida em QEMU (docs/experiments/2026-10-25-qemu-boot-read-order.md).
-# O token @KVER@ é resolvido para a versão real do kernel a cada build.
+# SquashFS sort: Buildroot does not expose mksquashfs -sort because COMP_OPTS is
+# calculated without prompting, so a wrapper in $HOST_DIR injects the file
+# order measured in QEMU (docs/experiments/2026-10-25-qemu-boot-read-order.md).
+# The @KVER@ token is resolved to the actual kernel version for each build.
 sort_src="$(dirname "$0")/squashfs-sort.txt"
 sort_file="$base_dir/build/squashfs-sort.resolved"
 krel_file="$base_dir/build/linux-custom/include/config/kernel.release"

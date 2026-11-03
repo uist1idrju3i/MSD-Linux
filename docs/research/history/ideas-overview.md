@@ -20,8 +20,8 @@ RESEARCH.md から分割した節です。
 | 軽量化 | [SquashFS と EROFS の比較](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | サイズ・読込・CPU の選択 | 中 | 圧縮・起動要件の差 | QEMU: 機能 / 実機: I/O・RAM | P2 | QEMU 比較済み（#126）: lz4hc で +29% 増大・起動差なし → SquashFS 維持 |
 | 軽量化 | [BusyBox init + mdev](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | ユーザー空間/サービスを小さくする | 中 | udev ルール / systemd 依存 | QEMU: デバイス / 実機: 全機能 | P3 | 採用済み |
 | 高速化 | [読み取り専用 SquashFS と preload/readahead](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 不要な先読みを避ける | 低 | 必要な読込まで遅れる | QEMU: I/O 観測 / 実機: 起動時間 | P3 | 一部採用（SquashFS rootfs、先読み未実施） |
-| 高速化 | [`mksquashfs -sort`](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 起動ファイルの配置を最適化 | 低 | open 順と I/O 順が不一致 | QEMU: イメージ / 実機: SD 読込 | P3 | 未着手 |
-| 高速化 | [fanotify / strace / blktrace](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 起動時ファイルアクセス観測済み（rootfs の 16.5%、順序固定、2026-10-25-qemu-boot-read-order）。`-sort` の効果は実機で測る |
+| 高速化 | [`mksquashfs -sort`](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 起動ファイルの配置を最適化 | 低 | open 順と I/O 順が不一致 | QEMU: イメージ / 実機: SD 読込 | P3 | 採用済み（[post-build.sh](../../../board/cardputerzero/post-build.sh) が [squashfs-sort.txt](../../../board/cardputerzero/squashfs-sort.txt) を `-sort` に渡す。実機の効果は未測定） |
+| 高速化 | [fanotify / strace / blktrace](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 起動 I/O の把握 | 中 | 監視付加負荷 | QEMU: trace / 実機: 比較測定 | P2 | 起動時ファイルアクセス観測済み（rootfs の 16.5%、順序固定、2026-10-25-qemu-boot-read-order）。`-sort` は適用済み、実機の効果は未測定 |
 | 軽量化 | [不要カーネル機能・DTB の削減](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | イメージと初期化を減らす | 中 | 必須周辺機器を失う | QEMU: 起動 / 実機: 全機能 | P2 | S1・S14 sweep 実行中（約 80 候補） |
 | 高速化 | [Wi-Fi/camera/display 自動検出抑制](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | 未使用初期化探索を減らす可能性 | 中 | 全機能維持の柱と衝突するため遅延ロードで代替 | QEMU: 一部 / 実機: 対象機能 | P3 | 対象外（遅延ロードで代替） |
 | 高速化 | [`max_framebuffers` / ファームウェア KMS](../tuning/fastboot-ideas.md#高速化のアイデア一覧) | HDMI 初期化を抑える可能性 | 低 | LCD/HDMI と競合 | QEMU: 限定 / 実機: 表示 | P3 | 未着手 |
@@ -37,7 +37,7 @@ RESEARCH.md から分割した節です。
 | 信頼性 | [読み取り専用 SquashFS rootfs](../storage/README.md) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
 | 信頼性 | [`align = 4M`](../storage/README.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 採用（#19。`genimage.cfg` の `align = 4M` と、`check-image-layout.sh` の 8192 sector 境界の検査）。実機での性能と電断は未確認 |
 | 信頼性 | [FAT data-area offset の扱い](../storage/README.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
-| 信頼性 | [`data=ordered` 移行検討](../storage/README.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
+| 信頼性 | [`data=ordered` 移行検討](../storage/README.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 採用済み（[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) と [fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab) が `/data` を `data=ordered` で mount。電断時の挙動と実機動作は未確認） |
 | 信頼性 | [barrier / `commit=` と `/data` 検証](../storage/README.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
 | 信頼性 | [discard / `fstrim`](../storage/README.md) | 対応時の空き領域通知 | カード・カーネル対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
 | 信頼性 | [カード erase/AU/sysfs と SD 性能測定](../storage/README.md) | alignment 判断にデータを得る | 複数カード・計測 | 値は erase ユニット / 耐久保証でない | QEMU: 不可 / 実機: fio・sysfs | P1 | 未着手 |

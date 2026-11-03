@@ -24,7 +24,7 @@ S1–S17は[試験台帳](experiment-catalog.md)だけで更新します。以�
 | zram（QEMU のみ） | zstd・lz4 とも `modprobe` から `swapon -p 100` まで動き、zswap は無効のまま。圧縮できないデータでは OOM になる。CPU の負荷は実機で確認する | [2026-10-21-qemu-zram](../../experiments/2026-10-21-qemu-zram.md) |
 | S21 sysctl・powerfail・panic・ramoops（QEMU のみ） | 修正計測器で Y1 は実 remount 5/5、Y2 は 0/5。QEMUでは `kernel.sysrq=0` がremountを止め、32は保つ。実機 ramoops retention 等と製品採否は未確認 | [2026-10-21-s21-qemu-sysctl-ramoops](../../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md) |
 | init script の stop 処理 | 再起動のときに起動時の処理をやり直さないこと（S11 のログで見つけた不具合） | PR #77 で修正済み |
-| 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | 観測は QEMU で完了（[記録](../../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`-sort` の効果は実機で測る |
+| 起動時のファイルアクセスの観測と `mksquashfs -sort` | 起動時に読むファイルとその順番 | QEMU での観測は完了（[記録](../../experiments/2026-10-25-qemu-boot-read-order.md)）。rootfs の 16.5 % を読み、順番は 5 回とも同じ。`post-build.sh` が `squashfs-sort.txt` を `-sort` に適用する。実機での SD 読込・起動時間への効果は未測定 |
 | dm-verity | QEMU で改ざん拒否を確認した。実機性能、A/B 復旧、信頼できる root digest、製品統合は未実施（[記録](../../experiments/2026-10-21-qemu-dm-verity.md)）。 | 中 |
 | BusyBox の applet を減らす、静的リンク | QEMU で静的リンクと 63 applet を比較した。製品用 applet の範囲は未決である（[記録](../../experiments/2026-10-21-qemu-busybox.md)）。 | 中 |
 
