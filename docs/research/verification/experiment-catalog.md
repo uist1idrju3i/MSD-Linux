@@ -4,7 +4,7 @@
 
 実施の記録、現行設定、未確認範囲を対応づける更新先です。過去のQEMU結果を現在のbinary・実機の合格に読み替えません。
 個々の条件・反復数・失敗はリンク先の実験記録を読みます。旧表の状態と省略した重複行は[原記録](research-records.csv)に残しました。
-S17の手法と取得済み出典は[読み取り専用領域とFS](../readonly-data-and-fs.md#s17-ストレージの障害速度の模擬)を参照します。
+S17の手法と取得済み出典は[読み取り専用領域とFS](../storage/fault-injection-s17.md#s17-ストレージの障害速度の模擬)を参照します。
 
 ## シミュレーション検証計画（S1–S17）
 
@@ -53,7 +53,7 @@ S17の手法と取得済み出典は[読み取り専用領域とFS](../readonly-
 [起動script](../../../board/cardputerzero/qemu/run-qemu.sh)の既定機種は`raspi3ap`で、`raspi3b`も選択できます。
 QEMUでrootfs・init・更新・watchdogを試しても、GPU firmware、実tryboot、CM0周辺回路・電断・SD性能は確認できません。
 仮想時間は`-icount shift=0,sleep=off`等の実際の引数とbinary hashを記録し、実時間性能へ換算しません。
-filesystemの障害・速度模擬は[手法と適用範囲](../readonly-data-and-fs.md#s17-ストレージの障害速度の模擬)を参照します。
+filesystemの障害・速度模擬は[手法と適用範囲](../storage/fault-injection-s17.md#s17-ストレージの障害速度の模擬)を参照します。
 各試験の条件・負の対照・5回以上の反復・失敗を[実験一覧](../../experiments/README.md)から辿れる形で保存し、設定採用と試験完了を分けます。
 
 ## 実機へ引き継ぐ確認

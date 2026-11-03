@@ -1,8 +1,16 @@
 # 訂正済み事項
 
+## 2026-11-03 のユーザー空間・強化項目の整理
+
+| 原記述・混在 | 訂正と理由 | 根拠 |
+|---|---|---|
+| BusyBoxの`sysctl -p`は`sysctl.d`も読む | 固定BusyBox 1.38.0は既定で`/etc/sysctl.conf`、引数があればそのファイルを順に読む。directoryを自動で列挙しない。起動scriptが明示して複数ファイルを渡す処理とは別 | [固定sourceの追跡](security/history/kernel-and-mounts.md#busyboxのsysctl読込み) |
+| libcの詳細表と後半の未確認の要約 | 同じ原稿内でも確認状態が違う。版・数値・URLを後の知識で置換せず、重複要約の原文とhashはCSV、詳細はlibc履歴、現在の候補比較は代替比較へ分ける | [原文要約](userspace/original-summaries.csv)、[libc履歴](userspace/libc-history.md)、[現在の比較](alternatives/libc.md) |
+| systemdのunit例とBusyBox製品構成が同じ段落にある | 当時の条件付きの例として保持し、現行のPID1・mdev・mount実装の説明とは分ける。kernel設定や候補表をruntimeの強制済みと読まない | [強化項目の読取り方](security/history/README.md)、[ユーザー空間](userspace/README.md) |
+
 ## 2026-11-02 の権限設計と強化項目
 
-[日付付き強化項目](security-2026-11-hardening-list.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
+[日付付き強化項目](security/history/README.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
 
 | 原記述 | 訂正と理由 | 根拠 |
 |---|---|---|
@@ -12,7 +20,7 @@
 | do-udp設定だけで平文fallbackを防ぐ、時刻の乱れが署名検証自体を崩す | 全平文通信の停止保証を撤回し、UDP/TCP・上流TLS・fallbackの確認を要件化。raw Ed25519の数学的検証は壁時計不要で、TLS・metadata期限・運用は別 | [DNS・時刻・更新](security/network.md) |
 | NoNewPrivilegesをnosuid/LSMで代替 | no_new_privsはexec時の昇格等に関する別のkernel機構。保有権限のdropやFD移譲制限の代用ではなく、LSM遷移との順序も試験する | [Linuxの仕組み](security/principles.md) |
 | Quad9でDNS層は対応済み、noexecならdataは実行されずhost AVと同じ効果 | DNS設定は未稼働。noexecはinterpreterやetc overlayを一般には防がず、dm-verityも製品未導入。hostでのscanとdevice実行時の検知は対象・限界が異なる | [通信設計](security/network.md)／[可変設定](security/privileges.md)／[既存noexec試験](../experiments/2026-10-21-qemu-data-noexec.md) |
-| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security-hardening.md)／[処理別設計](security/privileges.md) |
+| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security/threat-model.md)／[処理別設計](security/privileges.md) |
 
 ## 2026-11-02 の圧縮library比較
 
@@ -106,8 +114,8 @@
 | Compute Module Zero のデータシート | RP-009251-DS を CYW43439 のデータシートとし、URL を未確認とする | データシート Release 3 で BCM2837、無線はオプション(CYW43439)、CM0Lite は eMMC なしで SDIO と確認できます。「CM0 内蔵」ではなく「無線搭載版に搭載」と表現します。CM0Lite に無線があるかはデータシートに明記がなく【未確認】です | [公開出典一覧](sources.md) |
 | Celeron benchmark の条件 | benchmark の測定条件が不明確 | ChromeOS の Crostini VM 上で測定された値です(gist 本文で確認)。blame には Type=simple の service は測定不能という注意が欠けていたことを man で確認しました | [公開出典一覧](sources.md) |
 | `/var` の filesystem | `/var` を tmpfs として扱う | この image では `/tmp`、`/run`、`/dev/shm` が tmpfs mount で、`/var` は tmpfs ではありません | [fstab](../../board/cardputerzero/rootfs-overlay/etc/fstab) |
-| SD の page size | 多くの SD card の page size は 16 KiB 以上 | 取得した公開資料が示すのは 2 KiB または 4 KiB の例であり、「多くは 16 KiB 以上」とする根拠はありません。個別カードの値は未確認です | [S3 記録](../experiments/2026-10-19-s03-data-ext4-writes.md)、[読み取り専用領域と FS 比較](readonly-data-and-fs.md) |
-| CI の `mke2fs` version | PATH の `mke2fs 1.47.2` が image 作成にも使われた | image 作成に使われたのは Buildroot host `output/host/sbin/mke2fs` 1.47.4。PATH 上の version log は誤った binary を示していました | [storage-and-flash.md](storage-and-flash.md)、[Build run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529) |
+| SD の page size | 多くの SD card の page size は 16 KiB 以上 | 取得した公開資料が示すのは 2 KiB または 4 KiB の例であり、「多くは 16 KiB 以上」とする根拠はありません。個別カードの値は未確認です | [S3 記録](../experiments/2026-10-19-s03-data-ext4-writes.md)、[読み取り専用領域と FS 比較](storage/write-policy-and-s3.md) |
+| CI の `mke2fs` version | PATH の `mke2fs 1.47.2` が image 作成にも使われた | image 作成に使われたのは Buildroot host `output/host/sbin/mke2fs` 1.47.4。PATH 上の version log は誤った binary を示していました | [storage-and-flash.md](storage/README.md)、[Build run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/39204900529) |
 | module dependency index より前の状態 | boot smoke test が通るので module autoload も正常 | host depmod に XZ support がなく `.ko.xz` を飛ばし、`modules.dep` が空で `modprobe` できませんでした。実機 autoload への影響は未確認です | [S6 modules.dep 記録](../experiments/2026-10-19-s06-modules-dep-xz.md) |
 | NUMA=n の結果 | gzip size が 64,784 B 減った候補は成功 | raw CSV の状態は `QEMU_FAILED`。保持した QEMU log がなく、サイズ差だけで判定できません | [S1 記録](../experiments/2026-10-19-s01-kernel-sweep-trial.md) |
 | カメラ電源の GPIO 割当て | 「カメラの power-enable GPIO は回路図から特定できない」 | 以前の記述は PDF の文字列だけを抽出し、回路図を読まずに結論づけていました。C154 V0.6.1 p.10 は `CAM_3V3`、`SSP7615-33DFR`、`R190 100K`、`R192 NC` を示し、LDO の EN は VSYS_5V に pull-up されています。p.5 は CM0 pin 44 と JP5 pin 17 を `CAM_GPIO` と表示します。CM0 DTS は GPIO40 を `CAM_GPIO` と名付け、`&cam1_reg` に `gpio = <&gpio 40 GPIO_ACTIVE_HIGH>` を設定するため、既定の cam1 IMX219 overlay が正しい pin を使います。v5 の GPIO16 は `G16_PY32_RST` で、M5 Makefile の GPIO16-high camera overlay は非 V0_5 側だけで追加されます。v5 に追加 GPIO hog は不要です。【一次】 | [C154 V0.6.1 schematic](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1243/C154-CardputerZERO_SCH_V0.6.1_20260702.pdf)<br>[CM0 DTS](https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm/boot/dts/broadcom/bcm2710-rpi-cm0.dts)<br>[M5 CardputerZero Makefile](https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/Makefile) 【一次】 |

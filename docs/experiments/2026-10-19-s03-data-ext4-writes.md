@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-19
 - 担当: Devin
-- 関連: PR #27、[読み取り専用領域と FS 比較](../research/readonly-data-and-fs.md)、[訂正済み事項](../research/corrections.md)
+- 関連: PR #27、[読み取り専用領域と FS 比較](../research/storage/write-policy-and-s3.md)、[訂正済み事項](../research/corrections.md)
 
 ## 目的と仮説
 

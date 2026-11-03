@@ -75,20 +75,21 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### 保存・電源断・更新
 
 - [GitHub Releasesからの端末自己更新](docs/research/release-client/README.md) — TUF client・公開側tool、匿名取得、時刻・信頼状態・A/B復旧の設計。製品実装は未着手。
-- [電源断耐性・A/B 更新](docs/research/power-and-updates.md)
-- [ストレージ・SD カード・フラッシュ測定](docs/research/storage-and-flash.md)
-- [読み取り専用領域・ファイルシステム・障害試験](docs/research/readonly-data-and-fs.md)
-- [ファイルシステムの候補と設計例](docs/research/fs-candidates.md)
+- [保存領域・電源断・A/Bの入口](docs/research/storage/README.md) — 現在のコードと過去の記録の読み分け。
+- [配置とフラッシュ境界](docs/research/storage/layout-and-flash.md)、[割当単位と小さいファイル](docs/research/storage/allocation-and-small-files.md)、[媒体の測定案](docs/research/storage/media-measurements.md)
+- [電源遮断の調査](docs/research/storage/power-loss.md)、[A/Bの設計履歴](docs/research/storage/ab-design-history.md)、[復旧とwatchdog](docs/research/storage/recovery-and-watchdog.md)
+- [読み取り専用領域・ファイルシステム・障害試験](docs/research/storage/write-policy-and-s3.md)
+- [ファイルシステムの候補と設計例](docs/research/storage/filesystem-candidates.md)
 
 #### ユーザー空間・セキュリティ
 
 - [OpenBSDの考え方とLinuxの具体的な権限設計](docs/research/security/README.md) — 原則、処理別の権限・可変設定、通信開始前の防御、未実装部分の検証条件。
 - [Release保護・Ed25519鍵・署名job](docs/research/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
 - [導入・A/B操作と現行実装の照合](docs/research/install-update-status.md) — CIで取得できる成果物、既存の自動拡張と自動commit、更新後の状態確認、実機未確認の境界。
-- [セキュリティ・ハードニング](docs/research/security-hardening.md)
-- [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
+- [セキュリティ・ハードニング](docs/research/security/threat-model.md)
+- [セキュリティ強化項目の調査（2026-11）](docs/research/security/history/README.md)
 - [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
-- [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
+- [ユーザー空間・libc 調査](docs/research/userspace/README.md)
 - [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
 - [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
 
@@ -139,21 +140,21 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ## 電源断耐性
 
-読み取り専用 rootfs、永続領域、F2FS/btrfs/UBIFS/ext4 の採否、powerfail_suo、dm-verity、zram など電源断耐性の方針と候補、電源断試験の計画は、 [power-and-updates.md](docs/research/power-and-updates.md) に分けました。
+FS・FTL・powerfail_suo・zramなどの公開資料と当時の案は[電源遮断の調査](docs/research/storage/power-loss.md)、実カードで測る条件は[媒体の測定案](docs/research/storage/media-measurements.md)に分けました。現在の配置・書き込み経路は[保存領域の入口](docs/research/storage/README.md)で確認します。実カードの電断耐性を確認した結果ではありません。
 
 ## A/B 更新
 
-tryboot と制約、更新フレームワーク（SWUpdate / RAUC / Mender / rauc-hawkbit-updater）の比較は、 [power-and-updates.md](docs/research/power-and-updates.md) に分けました。
+現在の操作は[更新手順](docs/UPDATE.md)、最新の採否比較は[更新framework](docs/research/alternatives/updates.md)と[更新metadata](docs/research/alternatives/update-metadata.md)、当時のtryboot・framework・S10の経緯は[A/Bの設計履歴](docs/research/storage/ab-design-history.md)に分けました。失敗検知の未実装の案とS11の確認範囲は[復旧とwatchdog](docs/research/storage/recovery-and-watchdog.md)を参照します。
 
 ## ストレージとフラッシュの要点
 
-パーティションと FAT 内部の整列、ext4 のブロックサイズと journal、discard、SD カードの測定条件は [storage-and-flash.md](docs/research/storage-and-flash.md) にあります。記録中の 1,024 B ブロックなどは当時の値です。現行 CI は 4,096 B を検査しており、現在の生成条件は [build workflow](.github/workflows/build.yml) と [ボード設定](board/cardputerzero/) で確認します。整列だけで速度・寿命・電断耐性が向上したとは判断しません。
+パーティションとFAT内部の整列は[配置と境界](docs/research/storage/layout-and-flash.md)、ext4の作成条件と小さいファイルは[割当単位](docs/research/storage/allocation-and-small-files.md)、discardと実カードの条件は[媒体の測定案](docs/research/storage/media-measurements.md)にあります。記録中の1,024 Bブロックや「現行（整列なし）」は当時の値です。現在の`align = 4M`と4,096 Bの生成・検査は[genimage.cfg](board/cardputerzero/genimage.cfg)と[build workflow](.github/workflows/build.yml)で確認します。整列だけで速度・寿命・電断耐性が向上したとは判断しません。
 
 ## セキュリティとハードニングの要点
 
-microSD を物理交換できる攻撃者は Linux より前の起動ファイルを差し替えられます。Raspberry Pi の secure-boot 手順は Pi 4 以降が対象で、BCM2837 向け経路は文書化されていません（物理的に不可能とは断定しません）。現行 updater は `manifest.sig` を検証し、SHA-256 manifest と書込み後の read-back を確認します。鍵や dm-verity root digest を同じカードに置いても、カード全体の交換を防げません。【一次】【未確認】[脅威モデルと A/B/C 案](docs/research/security-hardening.md)
+microSD を物理交換できる攻撃者は Linux より前の起動ファイルを差し替えられます。Raspberry Pi の secure-boot 手順は Pi 4 以降が対象で、BCM2837 向け経路は文書化されていません（物理的に不可能とは断定しません）。現行 updater は `manifest.sig` を検証し、SHA-256 manifest と書込み後の read-back を確認します。鍵や dm-verity root digest を同じカードに置いても、カード全体の交換を防げません。【一次】【未確認】[脅威モデルと A/B/C 案](docs/research/security/threat-model.md)
 
-署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。ただし可変なetcが公開鍵やpolicyを隠す境界も設計対象です。OpenBSDの最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、[処理ごとの権限と検証条件](docs/research/security/README.md)へ具体化しました。専用user・分離helper・firewall・新しいsandbox policyは未実装です。鍵のリリース・更新・失効、不要な無線／USB機能、信頼できるdigestを要するdm-verityを引き続き検討し、QEMUと実機の証拠を分けます。【一次】【推測】【未確認】[脅威モデルと費用](docs/research/security-hardening.md)
+署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。ただし可変なetcが公開鍵やpolicyを隠す境界も設計対象です。OpenBSDの最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、[処理ごとの権限と検証条件](docs/research/security/README.md)へ具体化しました。専用user・分離helper・firewall・新しいsandbox policyは未実装です。鍵のリリース・更新・失効、不要な無線／USB機能、信頼できるdigestを要するdm-verityを引き続き検討し、QEMUと実機の証拠を分けます。【一次】【推測】【未確認】[脅威モデルと費用](docs/research/security/threat-model.md)
 
 ## アイデア総覧
 
@@ -173,7 +174,7 @@ kernel8.imgの生成と検査は[カーネルの生成方針](docs/research/boot
 
 ## init・libc
 
-init と周辺デバイス、init の比較、libc / toolchain の調査は、 [userspace-and-security.md](docs/research/userspace-and-security.md) に分けました。
+init と周辺デバイス、init の比較、libc / toolchain の調査は、 [ユーザー空間の調査](docs/research/userspace/README.md) に分けました。
 
 ## ログと観測
 

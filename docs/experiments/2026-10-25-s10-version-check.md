@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU とホスト。実機未確認）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [S10 の最初の記録](2026-10-25-s10-update-rejection.md)、[power-and-updates.md の 7.8](../research/power-and-updates.md#78-bundle-の検証と巻き戻しs10)、[tests/msd-update/run.sh](../../tests/msd-update/run.sh)
+- 関連: [S10 の最初の記録](2026-10-25-s10-update-rejection.md)、[power-and-updates.md の 7.8](../research/storage/ab-design-history.md#78-bundle-の検証と巻き戻しs10)、[tests/msd-update/run.sh](../../tests/msd-update/run.sh)
 
 ## 目的と仮説
 

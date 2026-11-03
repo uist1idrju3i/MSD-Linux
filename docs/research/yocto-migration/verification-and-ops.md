@@ -22,17 +22,17 @@ QEMU による検証、A/B 更新、ツールチェーンとハードニング�
 
 ## 2. A/B 更新
 
-現行は p1 の `autoboot.txt`（`tryboot_a_b=1`）と firmware の tryboot で boot-a / boot-b を切り替え、署名付きの更新バンドルを `msd-update` が書き込みます。tryboot の仕様と既存方式の比較は [power-and-updates.md](../power-and-updates.md) §7 にあります。
+現行は p1 の `autoboot.txt`（`tryboot_a_b=1`）と firmware の tryboot で boot-a / boot-b を切り替え、署名付きの更新バンドルを `msd-update` が書き込みます。tryboot の仕様と既存方式の比較は [power-and-updates.md](../storage/README.md) §7 にあります。
 
 | 方式 | Yocto レイヤー（wrynose 対応） | RPi での起動切替 | MSD との関係 |
 |---|---|---|---|
 | tryboot + `msd-update` を移植 | 不要（自前レシピ） | firmware の tryboot | 現行の設計を保つ。`msd-update` と鍵埋め込みを .bb にする |
 | RAUC | `meta-rauc` に wrynose ブランチあり。`meta-rauc-community` の `meta-rauc-raspberrypi` は `LAYERSERIES_COMPAT` が `wrynose blacksail` | 例は U-Boot（`system.conf` が `bootloader=uboot`、`u-boot-fw-utils` に依存） | tryboot を使うには RAUC の custom bootloader backend（`bootloader=custom`）で handler を自作 |
 | Mender | `meta-mender-community` の wrynose ブランチに `meta-mender-raspberrypi`（compat `wrynose`） | U-Boot | U-Boot 導入で起動経路が変わり、起動時間の再測定が必要 |
-| SWUpdate | `meta-swupdate` に wrynose・blacksail ブランチあり。`meta-swupdate-boards` は master と scarthgap のみ | 主に U-Boot / EFI Boot Guard 系【未確認】 | tryboot 連携は [power-and-updates.md](../power-and-updates.md) で未確認と記録済み |
+| SWUpdate | `meta-swupdate` に wrynose・blacksail ブランチあり。`meta-swupdate-boards` は master と scarthgap のみ | 主に U-Boot / EFI Boot Guard 系【未確認】 | tryboot 連携は [power-and-updates.md](../storage/README.md) で未確認と記録済み |
 
 - RAUC の文書は custom backend の handler が `get-primary`、`set-primary`、`get-state`、`set-state` などに応答する仕組みを説明しています【一次: integration.rst、reference.rst】。RAUC の文書に tryboot の記述はありません【一次】。
-- Rtone の tryboot 用 RAUC backend の評価は [power-and-updates.md](../power-and-updates.md) に未確認として記録済みで、今回も一次資料は確かめていません。
+- Rtone の tryboot 用 RAUC backend の評価は [power-and-updates.md](../storage/README.md) に未確認として記録済みで、今回も一次資料は確かめていません。
 - 移行の最初の段階では、tryboot と `msd-update` をそのまま移すのが最も変更が少ないと考えます。RAUC などを使うかは、移行後に別途判断できます【推測】。U-Boot を使う既成レイヤーを選ぶと、firmware から直接カーネルを起動する現行の起動経路（[RESEARCH.md](../../../RESEARCH.md) の概略アーキテクチャ案）が変わり、起動時間を測り直すことになります。
 
 ## 3. ツールチェーンとハードニング
@@ -100,7 +100,7 @@ QEMU による検証、A/B 更新、ツールチェーンとハードニング�
 | Reddit r/embeddedlinux | 検索 API が JSON 以外を返し、取得できなかった【未確認】 |
 | Mastodon（mastodon.social） | 未認証の検索は 0 件を返した【未確認】 |
 | X | アクセスしていない【未確認】 |
-| raspberrypi.com の config.txt 文書 | この VM からは HTTP 403。tryboot の一次資料は [power-and-updates.md](../power-and-updates.md) が引く GitHub の文書を使った |
+| raspberrypi.com の config.txt 文書 | この VM からは HTTP 403。tryboot の一次資料は [power-and-updates.md](../storage/README.md) が引く GitHub の文書を使った |
 
 コミュニティの移行事例（Buildroot から Yocto へ、RPi + RAUC tryboot）は、今回は一次資料を見つけていません。メーリングリストと SNS は、アクセスできる環境で追加調査するときの残課題です。
 

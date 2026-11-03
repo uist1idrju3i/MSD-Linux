@@ -16,7 +16,7 @@
 
 ## 2. C ライブラリ（libc）
 
-比較表は [ユーザー空間・libc 調査](userspace-and-security.md) §17.3 が正です（glibc / musl / uClibc-ng / Newlib / picolibc / llvm-libc）。ここでは補足のみ。
+比較表は [ユーザー空間・libc 調査](userspace/README.md) §17.3 が正です（glibc / musl / uClibc-ng / Newlib / picolibc / llvm-libc）。ここでは補足のみ。
 
 - **musl**: MIT、スクラッチ再実装。静的リンク・小ささ・決定的な実装が強み。本機が外部 Bootlin ツールチェーンの glibc を使う現状では、musl への切替はツールチェーン変更（Buildroot 内蔵 musl ツールチェーン or Bootlin musl 版）が必要で、署名済みユーザーランド全体の再ビルド・再検証を伴う。効能はイメージサイズと依存の簡素化【推測】。
 - **picolibc**: Keith Packard 主導。newlib-nano と AVR libc の流れを統合した組み込み向け libc。printf/scanf を削減した `tinystdio` が特徴。**設計上 Linux ホスト環境は想定しておらず、Linux hosted ビルドは試験用**。本機のルートfs の libc としては対象外で、仮に bare-metal 補助コアやブートローダを自作する場合の候補【一次: picolibc README】。
@@ -61,7 +61,7 @@
 | dropbear | OpenSSH と独立した SSH 実装 | `BR2_PACKAGE_DROPBEAR` あり | SSH を入れるなら openssh より小さい効能。セキュリティ調査の前提（SSH 未導入）から先に採否を決める必要がある |
 | mandoc | man-db と独立した man/groff 系実装 | なし（`mandoc` パッケージは現行 Buildroot 未収録） | オンライン man は本機に不要 |
 | openrsync | OpenBSD の rsync 再実装 | なし | 更新経路で rsync を使う場合の小さい選択肢 |
-| sudo-rs / uutils coreutils | Trifecta Tech の Rust 再実装（Ubuntu 25.10 で uutils が既定化） | なし | [セキュリティ強化項目の調査](security-2026-11-hardening-list.md) §15 を参照。本機は BusyBox アプレットで sudo・coreutils を持たず差し替え対象がない |
+| sudo-rs / uutils coreutils | Trifecta Tech の Rust 再実装（Ubuntu 25.10 で uutils が既定化） | なし | [セキュリティ強化項目の調査](security/history/README.md) §15 を参照。本機は BusyBox アプレットで sudo・coreutils を持たず差し替え対象がない |
 
 ## 6. ブラウザエンジンの再実装
 
@@ -90,5 +90,5 @@
 - 暗号関連の固定したREADME・manual・LICENSEと確認範囲は、[暗号比較の出典](alternatives/crypto.md#一次資料と未確認範囲)と[取得台帳](alternatives/sources.json)を参照【一次】
 - picolibc README https://github.com/picolibc/picolibc 【一次】
 - llvm-libc full host build の警告 https://libc.llvm.org/full_host_build.html 【一次】
-- musl malloc については [ユーザー空間・libc 調査](userspace-and-security.md) §17.3-4 を参照
-- Rust 再実装の最新状況は [セキュリティ強化項目の調査](security-2026-11-hardening-list.md) §15 を参照
+- musl malloc については [ユーザー空間・libc 調査](userspace/README.md) §17.3-4 を参照
+- Rust 再実装の最新状況は [セキュリティ強化項目の調査](security/history/README.md) §15 を参照

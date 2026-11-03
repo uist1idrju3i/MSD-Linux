@@ -51,7 +51,7 @@ PR #150 の比較は、固定イメージとパッケージ管理の不一致、
 - RAUC の Raspberry Pi firmware 用 bootchooser（PR #1599）は、2026-11-02 の確認でも open のままで、最終更新は 2026-08-14 です【一次: https://github.com/rauc/rauc/pull/1599】。最新リリースは v1.15.2（2026-03-27）です【一次: https://github.com/rauc/rauc/releases】。
 - tryboot と組み合わせるなら、RAUC の custom bootloader backend で `autoboot.txt` を書き換える handler を作ることになります（[verification-and-ops.md](verification-and-ops.md) §2）。得られるのは、署名・検証済みの bundle 形式、slot の状態管理、Yocto の `bundle` レシピによる生成です。失うものは、`msd-update` の小ささと、BusyBox だけで完結する構成です【推測】。
 - 採否は実験で決めます。比べる指標は、更新途中の電源断から前の世代に戻れる割合（現行の電断試験と同じ回数）、イメージに増えるサイズと RAM、起動時間です。U-Boot を入れないことを前提条件にします。
-- SWUpdate と Mender は、既成の Raspberry Pi 構成が U-Boot を前提にしており、CM0 の構成もありません（[power-and-updates.md](../power-and-updates.md) §7.4）。Yocto に移っても、この前提は変わりません。
+- SWUpdate と Mender は、既成の Raspberry Pi 構成が U-Boot を前提にしており、CM0 の構成もありません（[power-and-updates.md](../storage/README.md) §7.4）。Yocto に移っても、この前提は変わりません。
 - `uki.bbclass` と `kernel-fit-image.bbclass` は Wrynose の oe-core にありますが、EFI か U-Boot を前提にしています【一次: oe-core `meta/classes-recipe/`】。firmware がカーネルを直接起動する MSD の経路には合いません。
 
 ### 2.3 dm-verity
@@ -60,15 +60,15 @@ QEMU では、rootfs の破損を dm-verity が拒否することを確かめて
 
 meta-security の wrynose ブランチには `dm-verity-img.bbclass` があり、ハッシュを付けたイメージと root hash を書いた `.env` を作ります。このクラス自身が「root hash は信頼できる場所に置くか、署名して検証すること」と書いています【一次: https://git.yoctoproject.org/meta-security/tree/classes/dm-verity-img.bbclass?h=wrynose】。meta-security は `openembedded-layer`（meta-oe）に依存します【一次: 同 `conf/layer.conf`】。
 
-BCM2837 には OTP の secure boot がないため、カードごと差し替える攻撃への信頼点にはなりません（[security-hardening.md](../security-hardening.md)）。それでも、microSD の劣化や書き込み途中の破損を起動時に検出し、A/B の前の世代へ戻す判断材料になります。Yocto ではクラス一つで生成に組み込めるため、優先度を上げます。採否は、実機での起動時間の増分と読み込み遅延を測ってから決めます。
+BCM2837 には OTP の secure boot がないため、カードごと差し替える攻撃への信頼点にはなりません（[脅威モデル](../security/threat-model.md)）。それでも、microSD の劣化や書き込み途中の破損を起動時に検出し、A/B の前の世代へ戻す判断材料になります。Yocto ではクラス一つで生成に組み込めるため、優先度を上げます。採否は、実機での起動時間の増分と読み込み遅延を測ってから決めます。
 
 ### 2.4 ファイルシステム（EROFS・cramfs・F2FS・btrfs）
 
-EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../fs-candidates.md)、[cramfs-xip.md](../cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
+EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../storage/filesystem-candidates.md)、[cramfs-xip.md](../cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
 
 ### 2.5 init と libc（systemd・musl）
 
-M5Stack の公式構成は、表示の `fb_load.service` と LED の udev ルールで systemd と udev を前提にしています（[userspace-and-security.md](../userspace-and-security.md)）。Buildroot では init を差し替えた構成を並べて保つ手間が大きく、BusyBox init と mdev に絞っていました。
+M5Stack の公式構成は、表示の `fb_load.service` と LED の udev ルールで systemd と udev を前提にしています（[ユーザー空間の調査](../userspace/README.md)）。Buildroot では init を差し替えた構成を並べて保つ手間が大きく、BusyBox init と mdev に絞っていました。
 
 Yocto では `INIT_MANAGER` を変えた image を同じ層から作れます。`mdev-busybox` の構成は Wrynose で動き、QEMU でログイン画面まで起動しました【実測】。最初の製品構成は BusyBox init と mdev のままにし、systemd 版を比較用の image として作ります。比べる指標は、ログインまたは `MSD/Linux ready` までの時間、RAM、rootfs のサイズ、電源断の後の起動です。musl（`TCLIBC = "musl"`）も同じ方法で比べられますが、M5Stack のユーザー空間ソフトとの互換性は確かめていません【推測】。
 

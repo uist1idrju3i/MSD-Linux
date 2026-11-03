@@ -25,7 +25,7 @@ S6の`BLK_DEV_WRITE_MOUNTED=n`は後の実験で`/data`自動拡張と衝突し�
 
 2026-10-29/30 のラウンドで済んだもの: 依存更新（Buildroot 2026.08.1、m5stack-dtoverlays、Trivy 0.76.1、Debian digest、fonttools 4.68.0）、cryptsetup（veritysetup）の dev イメージへの追加と QEMU の SHA-256 ラベル化（#116）、sweep ツール修正と icount `sleep=off`（#118 に同梱）、Lite 判定の QEMU 確認（#118）、QEMU 11.1.2 の icount 実時間 8 倍問題の原因絞り込み（#119）、温度模擬（#120）、quiet/lpj（#123）、S5（#124）、S16（#122）、S17 速度模擬（#125）、EROFS（#126）、PREEMPT モデル比較（#127）、S4・S17 エラー注入（#128）、ドライバー・モジュール化（#129）。カーネルは 6.18.58 のまま（依存側の新バージョン対応を確認してから別 PR で上げる方針）。
 
-2026-10-31/11-01 のラウンドで済んだもの: v4l-utils 削減と実機カメラ確認手順（#156）、kernel rpi-6.18.y の b3495ea への更新（#157）、msd-dev の golang digest 更新（#158）、QEMU 11.1.3 の icount 比較（11.0.2 の 20 s に対し 150 s と 7.5 倍遅く、bisect 済みの WFE sleeping 修正でも解消しなかったため bump 見送り）、S17 blkdebug 障害注入（発火はホスト側で確認、QEMU SD モデルがエラーをゲストに伝播しないことを確定）。セキュリティ強化項目の調査を [security-2026-11-hardening-list](../security-2026-11-hardening-list.md) にまとめた（実装は未着手、調査のみ）。
+2026-10-31/11-01 のラウンドで済んだもの: v4l-utils 削減と実機カメラ確認手順（#156）、kernel rpi-6.18.y の b3495ea への更新（#157）、msd-dev の golang digest 更新（#158）、QEMU 11.1.3 の icount 比較（11.0.2 の 20 s に対し 150 s と 7.5 倍遅く、bisect 済みの WFE sleeping 修正でも解消しなかったため bump 見送り）、S17 blkdebug 障害注入（発火はホスト側で確認、QEMU SD モデルがエラーをゲストに伝播しないことを確定）。セキュリティ強化項目の調査を [security-2026-11-hardening-list](../security/history/README.md) にまとめた（実装は未着手、調査のみ）。
 
 | 順 | 作業 | 内容と完了の条件 |
 |---|---|---|
@@ -36,7 +36,7 @@ S6の`BLK_DEV_WRITE_MOUNTED=n`は後の実験で`/data`自動拡張と衝突し�
 | 5 | QEMU の icount 実時間問題 | 完了: bisect で `01b223f895`（A-profile WFE sleeping）と特定（#143）。11.1.3 でも 7.5 倍遅いままのため QEMU は 11.0.2 を継続使用（`tools/qemu-bisect/build-qemu.sh` でビルド、pins-check で新版を検出したら遅延が解消したかを比較してから bump）。 |
 | 6 | S2 の続き | 完了: v4l-utils を `v4l2-ctl`・`media-ctl`・`ir-keytable`・`ir-ctl` の 4 本に削減し RC keymap を削除（#156）。実機カメラ確認は `tools/hw/camera-check.sh` と `docs/VERIFY.md` の手順で実機待ち。 |
 | 7 | 実機依存の項目 | S7 IR、S9 powerfail の実電源試験、S8 IP2315、実機が届いたら最初に測る項目、周辺機器のモジュール自動ロード、ゲスト観測型のストレージ障害注入（QEMU の SD モデルはエラーをゲストに伝播しないため実機のみ）。 |
-| 8 | セキュリティ強化の実装（調査済み・未実装） | [security-2026-11-hardening-list](../security-2026-11-hardening-list.md) の優先順位案に沿って、fstab の noexec/nosuid 追加、sysctl ファイル整備、cmdline 追加、nftables、DoT（unbound）、chrony+NTS、AppArmor プロファイルを段階導入。実装するか・順番はユーザー確認後。 |
+| 8 | セキュリティ強化の実装（調査済み・未実装） | [security-2026-11-hardening-list](../security/history/README.md) の優先順位案に沿って、fstab の noexec/nosuid 追加、sysctl ファイル整備、cmdline 追加、nftables、DoT（unbound）、chrony+NTS、AppArmor プロファイルを段階導入。実装するか・順番はユーザー確認後。 |
 | 9 | 監査 | 各段階で、チャット・計画書・この表を origin/main と照らし合わせ、済んだものと済んでいないものを報告する。 |
 
 保留: libcamera と VideoCore の ISP（カメラの tier B）は、VCHIQ と firmware の変更が必要で、起動時間と RAM への影響が大きいため、使う場面が決まるまで入れません。Raspberry Pi Zero 2 W は用意しません。CardputerZero が手に入らない場合に限り、代わりの実機として検討します。

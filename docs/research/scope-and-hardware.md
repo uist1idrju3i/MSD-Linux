@@ -21,9 +21,9 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 | 論点 | 選択肢・条件 | 状態 |
 |---|---|---|
 | 起動完了の定義 | A: LCD にプロンプトが表示され、キー入力できるまで。B: init（PID 1）が終点マーカーを書き、LCD・キーボードはその後に遅延読込みする。C: 両方を測定する。 | 未決。遅延読込みと LCD・キー入力までを起動時間に含める定義は両立しない。 |
-| 読み取り専用 rootfs | SquashFS は `-sort` で優先度の高いファイルを先頭に配置できる。EROFS は `-z` を指定した場合に圧縮され、`--sort` は tar 入力に適用される。実機で 2 構成を比較する案。詳細は[電源断対策の調査](power-and-updates.md)を参照。 | 速度は未測定。 |
+| 読み取り専用 rootfs | SquashFS は `-sort` で優先度の高いファイルを先頭に配置できる。EROFS は `-z` を指定した場合に圧縮され、`--sort` は tar 入力に適用される。実機で 2 構成を比較する案。詳細は[電源断対策の調査](storage/README.md)を参照。 | 速度は未測定。 |
 | init と libc | systemd 最小化＋glibc（M5 の udev ルール・unit を利用可能）、BusyBox init＋eudev＋musl 静的、自作 init（最終手段）。 | 全機能を維持する場合は glibc＋systemd が候補だが、起動時間は未測定。 |
-| A/B 方式 | MBR＋tryboot/autoboot.txt＋RAUC custom、U-Boot 系（Mender・RAUC）、Rugix。GPT の採否も検討する。詳細は[更新方式の調査](power-and-updates.md)を参照。 | Raspberry Pi の文書は tryboot を全モデルに適用すると説明するが、CM0 での動作、watchdog、復旧は未検証。FAT の boot 領域は単一障害点となる。 |
+| A/B 方式 | MBR＋tryboot/autoboot.txt＋RAUC custom、U-Boot 系（Mender・RAUC）、Rugix。GPT の採否も検討する。詳細は[更新方式の調査](storage/README.md)を参照。 | Raspberry Pi の文書は tryboot を全モデルに適用すると説明するが、CM0 での動作、watchdog、復旧は未検証。FAT の boot 領域は単一障害点となる。 |
 | カーネル版 | 6.18.y（VOLUNTARY を選択可能）と 7.2.y・7.3.y（PREEMPT は LAZY/FULL のみ）を比較する。7.1 以降の DRM API 変更と 7.3 の alias unmap 再適用も考慮する。詳細は[カーネル調査](boot/kernel-comparison.md)を参照。 | CM0 の実機起動と M5 モジュールのビルドは未確認。 |
 | 開発中ログ | 開発中は ext4 に書き、電源断試験時は専用領域または pstore に切り替える案。 | 完全 read-only 構成との両立と実装方式は未決。 |
 | SSH/VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を比較し、起動完了後に socket activation で開始する案。 | 未決。 |

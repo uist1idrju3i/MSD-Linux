@@ -15,11 +15,11 @@
 | GPU 読込とカーネルサイズ | サイズが読込時間に影響するとの見立ては推測で、比例関係は未確認です。KittenLabs は Zero 2 W の Raspbian 標準 kernel8.img（9,276,375 B）について、ログ時刻の差 1.54 s（計算値約 5.74 MiB/s、ブログ記載は約 6 MiB/s）を掲載しています。単一ブログの条件固有値です。https://kittenlabs.de/blog/2024/09/01/extreme-pi-boot-optimization/ |
 | firmware の代替 | rpi-open-firmware、U-Boot Falcon などは候補ですが、CardputerZero での対応状況は未確認です。https://github.com/search?q=rpi-open-firmware&type=repositories<br>https://github.com/CardputerZero/u-boot |
 | LCD の先行点灯 | 起動完了条件に画面表示を含める場合は早期ロードが必要です。含めない場合は M5IOE1 → backlight → LCD の依存を保ったまま遅延ロードする案があります（推測）。 |
-| init・rootfs・ユーザー空間 | init 直起動、s6 / runit、EROFS（LZ4）と配置最適化、静的リンク / LTO / UPX、network の遅延起動や readahead は個別に検討します。[ユーザー空間とセキュリティ](../userspace-and-security.md) |
+| init・rootfs・ユーザー空間 | init 直起動、s6 / runit、EROFS（LZ4）と配置最適化、静的リンク / LTO / UPX、network の遅延起動や readahead は個別に検討します。[ユーザー空間とセキュリティ](../userspace/README.md) |
 | 電断検知 | 公式 docs の SW_DET = G6 と M5 overlay の `irq-gpios = <&gpio 6 0>`（falling）は、同じ GPIO6 で矛盾しません。GPIO6 は CM0 側の SW_DET です。M5IOE1 側の PYG6 は MIC_SW で別信号です。`disabled-gpios = <&m5ioe1 11 1>` が PYG12（LCD_RST）に当たるかは index + 1 の推論で未確認です。https://docs.m5stack.com/en/CardputerZero<br>https://github.com/m5stack/m5stack-linux-dtoverlays/blob/75518549a2640486f5d13ea72ca4935b198d7c20/modules/CardputerZero/cardputerzero-v5-overlay.dts#L289-L295 |
-| 書込み量と原子性 | rootfs を read-only にして書込みを最小化する案、ext4 `data=ordered`、更新時の atomic write が検討対象です。[電源と更新](../power-and-updates.md) |
+| 書込み量と原子性 | rootfs を read-only にして書込みを最小化する案、ext4 `data=ordered`、更新時の atomic write が検討対象です。[電源と更新](../storage/README.md) |
 | 電源喪失保護付き SD | UCSD の DAC 2011 論文などに PLP 付きストレージの記述があります。pSLC は eMMC 向けで microSD には適用できないとの情報があり、ベンダー主張は未検証です。[公開出典一覧](../sources.md) |
 | dm-verity | QEMU で rootfs の改ざん拒否を確認した。CM0 の SHA 命令、実機性能、A/B 切替時だけ全検証する案は未確認である（[QEMU 記録](../../experiments/2026-10-21-qemu-dm-verity.md)）。確認先: https://developer.arm.com/documentation/ddi0500/latest/ |
-| watchdog と復旧 | WDT、boot counter、最小復旧イメージは候補です。復旧方式は未決です。[電源と更新](../power-and-updates.md) |
+| watchdog と復旧 | WDT、boot counter、最小復旧イメージは候補です。復旧方式は未決です。[電源と更新](../storage/README.md) |
 | 電断試験 | `dm-flakey`、`dm-log-writes`、CrashMonkey などの障害注入が候補です。これらは実カードの FTL や実際の電源遮断を再現しません。[公開出典一覧](../sources.md) |
 | スーパーキャパシタ | 筐体内に搭載するのは難しいとの見立てですが、寸法・電力条件の確認は未実施です（推測）。 |

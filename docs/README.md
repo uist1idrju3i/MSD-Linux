@@ -19,4 +19,8 @@
 
 測定の設計と記録を探すときは[検証・測定の入口](research/verification/README.md)から、未確認事項、S1–S17、観測方法、実機測定、計画履歴へ進みます。
 
+保存領域は[現在の配置と調査の入口](research/storage/README.md)から、FAT/ext4の割当、writerと未実装のpolicy、FS候補、電源断、A/Bの設計履歴へ進みます。過去の比較・測定と、現在実行する導入・更新の操作を分けています。
+
+ユーザー空間は[init・libcの案内](research/userspace/README.md)から、現在の候補比較と過去のdevice依存・測定条件へ進みます。セキュリティは[具体的な権限設計](research/security/README.md)、[物理アクセスの脅威モデル](research/security/threat-model.md)、[過去の強化項目](research/security/history/README.md)を分けています。
+
 作業規則は [AGENTS.md](../AGENTS.md)、手順は [.agents/skills/](../.agents/skills/) にあります。公開サイト用のファイルは `public_html/` に置き、文書の原本はここに置きます。

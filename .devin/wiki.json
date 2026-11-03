@@ -51,7 +51,7 @@
       "parent": "ビルドシステム",
       "page_notes": [
         {
-          "content": "board/cardputerzero/post-build.sh、post-image.sh、genimage.cfg を根拠にしてください。microSD の消去単位とパーティション境界の考え方は RESEARCH.md と docs/research/storage-and-flash.md を参照してください。"
+          "content": "board/cardputerzero/post-build.sh、post-image.sh、genimage.cfg を根拠にしてください。現在は align = 4M、新規ext4は -b 4096 です。docs/research/storage/README.md から layout-and-flash.md、allocation-and-small-files.md、media-measurements.md へ進めます。過去の非整列imageの表を現在の生成条件と混同せず、指定だけで実カードの速度・FTL・電断耐性を検証済みとしないでください。"
         }
       ]
     },
@@ -89,7 +89,7 @@
       "purpose": "SquashFS rootfs、tmpfs、ext4 の /data、/etc の overlay、初回の data 初期化と fsck を説明する",
       "page_notes": [
         {
-          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、docs/UPDATE.md を根拠にしてください。"
+          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、docs/UPDATE.md を根拠にしてください。docs/research/storage/write-policy-and-s3.md の read-only 書き込み窓は未実装の案です。filesystem-candidates.md の K/P 系列は filesystem-sources.md の共通出典を参照し、定性的比較や他OSの事例を製品の実測値にしないでください。"
         }
       ]
     },
@@ -99,7 +99,7 @@
       "parent": "読み取り専用 rootfs と /data",
       "page_notes": [
         {
-          "content": "S01msd-watchdog、RESEARCH.md の「電源断耐性」、docs/research/power-and-updates.md、docs/research/storage-and-flash.md を根拠にしてください。"
+          "content": "board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog、docs/research/storage/power-loss.md、recovery-and-watchdog.md、fault-injection-s17.md、docs/research/verification/experiment-catalog.md を参照してください。S17の当初計画、後のblkdebug非伝播とdm-flakeyのread error、実カードFTL・電断の未確認を分けます。watchdogのresetはQEMUの結果であり、firmwareのtrybootと実機復帰の証明ではありません。"
         }
       ]
     },
@@ -136,7 +136,7 @@
       "purpose": "脅威モデル、採用済みの対策、費用対効果で分類した候補（カーネル、sysctl、マウントオプション、更新署名、無線と USB）を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md のセキュリティに関する節、docs/research/userspace-and-security.md、docs/research/ssh-vpn-and-keys.md、docs/research/security-hardening.md を根拠にしてください。"
+          "content": "RESEARCH.md、docs/research/userspace/README.md、init-history.md、libc-history.md、docs/research/storage/rootfs-read-order.md を参照してください。セキュリティは docs/research/security/README.md 以下の現在の権限設計、threat-model.md の物理アクセス、history/README.md 以下の過去の候補を区別します。原文・版・未確認の条件を現在の採用状態へ読み替えず、kernel設定とruntimeの強制、QEMUと実機を分けます。docs/research/ssh-vpn-and-keys.md は調査のみの範囲です。"
         }
       ]
     },

@@ -34,28 +34,28 @@ RESEARCH.md から分割した節です。
 | 高速化 | [カーネル gzip / 非圧縮比較](fastboot-ideas.md#高速化のアイデア一覧) | 読込時間と展開時間を最適化 | 低 | ファームウェア対応形式 | QEMU: Linux / 実機: 起動経路 | P2 | 一部採用（gzip 方式の生成時比較、非圧縮実測なし） |
 | 高速化 | [GPU ファームウェアを省くブートローダー](fastboot-ideas.md#高速化のアイデア一覧) | ファームウェア段を短縮する可能性 | 高 | 非公式・SoC 互換性 | QEMU: 不可 / 実機: 起動信頼性 | P3 | 未着手 |
 | 高速化 | [PREEMPT / printk 比較](fastboot-ideas.md#高速化のアイデア一覧) | 起動ログ・init 付加負荷の評価 | 低 | 起動時間以外の影響 | QEMU: 起動 / 実機: 時間 | P3 | 3 モデル比較済み（#127）。PREEMPT_RT 採用・製品化中 |
-| 信頼性 | [読み取り専用 SquashFS rootfs](power-and-updates.md) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
-| 信頼性 | [`align = 4M`](../../docs/research/storage-and-flash.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 採用（#19。`genimage.cfg` の `align = 4M` と、`check-image-layout.sh` の 8192 sector 境界の検査）。実機での性能と電断は未確認 |
-| 信頼性 | [FAT data-area offset の扱い](../../docs/research/storage-and-flash.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
-| 信頼性 | [`data=ordered` 移行検討](../../docs/research/storage-and-flash.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
-| 信頼性 | [barrier / `commit=` と `/data` 検証](../../docs/research/storage-and-flash.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
-| 信頼性 | [discard / `fstrim`](../../docs/research/storage-and-flash.md) | 対応時の空き領域通知 | カード・カーネル対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
-| 信頼性 | [カード erase/AU/sysfs と SD 性能測定](../../docs/research/storage-and-flash.md) | alignment 判断にデータを得る | 複数カード・計測 | 値は erase ユニット / 耐久保証でない | QEMU: 不可 / 実機: fio・sysfs | P1 | 未着手 |
-| 信頼性 | [A/B + tryboot + watchdog](../../docs/research/power-and-updates.md) | 起動失敗を検出し旧スロットへ戻す案 | 状態・watchdog・試験 | S01msd-watchdog は実装済み、実機動作は未確認 | QEMU: スロット / 実機: tryboot・ハング | P1 | 採用済み（実機未確認） |
-| 信頼性 | [電源異常正常停止](../../docs/research/power-and-updates.md) | 電源異常を graceful 停止に接続 | ドライバー / ユーザー空間変更 | 電源保持時間不足の可能性 | QEMU: 不可 / 実機: 電源試験 | P1 | 未着手 |
-| 信頼性 | [更新記録の fsync/rename 原子性](../../docs/research/power-and-updates.md) | 確定記録の破損リスク低減 | 更新処理実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
-| 信頼性 | [p7 ext4 を `msd-data-grow` で拡張](power-and-updates.md) | 利用可能容量を増やす | first-起動 script | 中断時の FS 整合性 | QEMU: サイズ変更 / 実機: 電断 | P2 | 採用済み |
-| 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](../../docs/research/power-and-updates.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
-| セキュリティ | [署名検証・公開鍵配置と鍵運用](../../docs/research/security-hardening.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
-| セキュリティ | [dm-verity と trusted root digest](../../docs/research/security-hardening.md) | root block 改ざん検知 | 起動 cmdline・digest 管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | QEMU 検証は完了した。製品統合と信頼起点の確認は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 |
-| セキュリティ | [`nosuid,nodev,noexec` と sysctl](../../docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | QEMU 確認済み・実機とアプリは未確認（[記録](../../docs/experiments/2026-10-21-qemu-data-noexec.md)） |
-| セキュリティ | [SSP / FORTIFY / RELRO / PIE](../../docs/research/security-hardening.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
-| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](../../docs/research/security-hardening.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
-| セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](../../docs/research/security-hardening.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
-| セキュリティ | [対応 secure-起動 SoC への移行](../../docs/research/security-hardening.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
+| 信頼性 | [読み取り専用 SquashFS rootfs](storage/README.md) | rootfs の永続書込みをなくす | 現行構成 | 可変領域の容量・電断 | QEMU: マウント/update / 実機: 電断 | P1 | 採用済み |
+| 信頼性 | [`align = 4M`](storage/README.md) | 全パーティション開始位置を 4 MiB 境界にする | イメージが約16 MiB増 | 実機効果・ファームウェア互換性未確認 | QEMU: レイアウト / 実機: 性能・電断 | P1 | 採用（#19。`genimage.cfg` の `align = 4M` と、`check-image-layout.sh` の 8192 sector 境界の検査）。実機での性能と電断は未確認 |
+| 信頼性 | [FAT data-area offset の扱い](storage/README.md) | ファイルシステム内部位置を把握 | フォーマッター/レイアウト変更 | パーティション alignment だけでは変わらない | QEMU: BPB / 実機: カード性能 | P2 | 一部調査済み（offset 測定済み、性能未測定） |
+| 信頼性 | [`data=ordered` 移行検討](storage/README.md) | `data=journal` の非推奨に備える | アプリ・FS 試験 | fsync/rename と電断時整合性 | QEMU: FS / 実機: 電源断 | P1 | 未着手 |
+| 信頼性 | [barrier / `commit=` と `/data` 検証](storage/README.md) | マウント durability を確認 | マウント・アプリ変更の可能性 | SD FTL の保証ではない | QEMU: マウント / 実機: 電断 | P1 | 未着手 |
+| 信頼性 | [discard / `fstrim`](storage/README.md) | 対応時の空き領域通知 | カード・カーネル対応確認 | 未対応や性能差 | QEMU: コマンド / 実機: discard | P2 | 未着手 |
+| 信頼性 | [カード erase/AU/sysfs と SD 性能測定](storage/README.md) | alignment 判断にデータを得る | 複数カード・計測 | 値は erase ユニット / 耐久保証でない | QEMU: 不可 / 実機: fio・sysfs | P1 | 未着手 |
+| 信頼性 | [A/B + tryboot + watchdog](storage/README.md) | 起動失敗を検出し旧スロットへ戻す案 | 状態・watchdog・試験 | S01msd-watchdog は実装済み、実機動作は未確認 | QEMU: スロット / 実機: tryboot・ハング | P1 | 採用済み（実機未確認） |
+| 信頼性 | [電源異常正常停止](storage/README.md) | 電源異常を graceful 停止に接続 | ドライバー / ユーザー空間変更 | 電源保持時間不足の可能性 | QEMU: 不可 / 実機: 電源試験 | P1 | 未着手 |
+| 信頼性 | [更新記録の fsync/rename 原子性](storage/README.md) | 確定記録の破損リスク低減 | 更新処理実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
+| 信頼性 | [p7 ext4 を `msd-data-grow` で拡張](storage/README.md) | 利用可能容量を増やす | first-起動 script | 中断時の FS 整合性 | QEMU: サイズ変更 / 実機: 電断 | P2 | 採用済み |
+| 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](storage/README.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
+| セキュリティ | [署名検証・公開鍵配置と鍵運用](security/threat-model.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
+| セキュリティ | [dm-verity と trusted root digest](security/threat-model.md) | root block 改ざん検知 | 起動 cmdline・digest 管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | QEMU 検証は完了した。製品統合と信頼起点の確認は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 |
+| セキュリティ | [`nosuid,nodev,noexec` と sysctl](security/threat-model.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | QEMU 確認済み・実機とアプリは未確認（[記録](../../docs/experiments/2026-10-21-qemu-data-noexec.md)） |
+| セキュリティ | [SSP / FORTIFY / RELRO / PIE](security/threat-model.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
+| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](security/threat-model.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
+| セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](security/threat-model.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
+| セキュリティ | [対応 secure-起動 SoC への移行](security/threat-model.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
 | ハードウェア | [ドライバー / ファームウェア / overlay の実機対応表](../../docs/research/hardware-spec.md#ハードウェア機能の対応表) | 未対応・遅延可能機能を把握 | 各機能の個別試験 | 初期化探索成功だけで動作を誤認 | QEMU: 一部 / 実機: 全周辺 | P1 | 一部調査済み（実機動作未確認） |
 | ハードウェア | [IR / camera / IP2315 charger の対応調査](hardware-spec.md#目標との差分) | 未実装機能との境界を明確化 | media/charger ドライバー調査 | ハードウェア revision 依存 | QEMU: 設定 / 実機: I/O | P2 | 一部調査済み（実機対応未確認） |
-| 試験・保守 | [更新中を含む 200 回電源断試験案](power-and-updates.md) | 電断失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |
+| 試験・保守 | [更新中を含む 200 回電源断試験案](storage/README.md) | 電断失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |
 | 試験・保守 | [ホストテスト（msd-update／msd-data-grow／msd-hwinfo）](../../.devin/wiki.json) | 更新・拡張・機器情報処理を回帰検査 | 低 | ホスト試験は実機の周辺機器動作を保証しない | tests/ 配下3 テスト一式／実機：全機能 | P1 | 採用済み |
 | 試験・保守 | [SSH / VPN 実装](../../docs/research/ssh-vpn-and-keys.md) | 遠隔管理 | 鍵・更新・攻撃面 | 現方針では実装対象外 | QEMU: 不要 / 実機: 不要 | P3 | 不採用 |
 | 軽量化 | GPU メモリ／CMA 量の見直し | RAM の余地を評価 |調査・測定| 削減で表示機能を損なう可能性 | 実機で必要量を測る | P2 | 未着手 |
@@ -64,10 +64,10 @@ RESEARCH.md から分割した節です。
 | 信頼性 | `get_throttled` 低電圧・温度記録 | 電源・温度異常を記録 |調査・測定| bit 0／16、3／19。実機未測定 | 実機 | P1 | 未着手 |
 | 信頼性 | `/data` fsck 時間 | 起動遅延を把握 |調査・測定| `fsck.ext4 -p` 実装済み、時間未測定 | QEMU・実機起動時間 | P1 | 一部採用（fsck 実装、時間未測定） |
 | 信頼性 | `/data` ext4 4 KiB block／`inline_data` | 1 KiB と 4 KiB の割り当て量、inode 内保存の候補 |調査・測定| 小さい file での差はローカル測定済み。実機性能は未確認 | QEMU・実機 I/O／fsck | P2 | 候補（効果は未検証） |
-| 信頼性 | [`/etc`・`/data` の通常時 RO と `lazytime`](../../docs/research/readonly-data-and-fs.md#提案する-read-only-policy) | persistent write を限定し、通常時の SD 書き込みを減らす | writer の洗い出しと RW window 実装 | journal recovery、seedrng、更新状態、設定変更を壊す可能性 | QEMU: mount/update / 実機: 電断・書き込み量 | P1 | 未着手 |
-| 信頼性 | [ext4/F2FS/btrfs の `/data` 比較](../../docs/research/readonly-data-and-fs.md#mount-option-と-ext4f2fsbtrfs-の比較方針) | fsck/mount/recovery、小ファイル、write volume を比較 | image/tool build と測定 | SD FTL 依存、回復 tooling と複雑性 | QEMU: fsck/replay / 実機: 電断・I/O | P1 | 未着手 |
-| 信頼性 | [OverlayFS mode と古い `/data/etc` lower の移行](../../docs/research/readonly-data-and-fs.md#overlayfs-の3案) | read-only policy と A/B image defaults を整合 | migration schema と boot logic | 古い設定が新 image を隠す、upper FS xattr 制約 | QEMU: A/B config / 実機: update 回帰 | P1 | 未着手 |
-| 試験・保守 | [S17 storage fault/speed emulation](../../docs/research/readonly-data-and-fs.md#s17-ストレージの障害速度の模擬) | write/flush replay、I/O error、delay、帯域制限を検証 | device-mapper/QEMU image と test harness | QEMU/dm は実 SD FTL・物理電断を再現しない | QEMU guest: replay/error / 実機: 電断・SD 性能 | P1 | 未着手 |
+| 信頼性 | [`/etc`・`/data` の通常時 RO と `lazytime`](storage/write-policy-and-s3.md#提案する-read-only-policy) | persistent write を限定し、通常時の SD 書き込みを減らす | writer の洗い出しと RW window 実装 | journal recovery、seedrng、更新状態、設定変更を壊す可能性 | QEMU: mount/update / 実機: 電断・書き込み量 | P1 | 未着手 |
+| 信頼性 | [ext4/F2FS/btrfs の `/data` 比較](storage/write-policy-and-s3.md#mount-option-と-ext4f2fsbtrfs-の比較方針) | fsck/mount/recovery、小ファイル、write volume を比較 | image/tool build と測定 | SD FTL 依存、回復 tooling と複雑性 | QEMU: fsck/replay / 実機: 電断・I/O | P1 | 未着手 |
+| 信頼性 | [OverlayFS mode と古い `/data/etc` lower の移行](storage/write-policy-and-s3.md#overlayfs-の3案) | read-only policy と A/B image defaults を整合 | migration schema と boot logic | 古い設定が新 image を隠す、upper FS xattr 制約 | QEMU: A/B config / 実機: update 回帰 | P1 | 未着手 |
+| 試験・保守 | [S17 storage fault/speed emulation](storage/fault-injection-s17.md#s17-ストレージの障害速度の模擬) | write/flush replay、I/O error、delay、帯域制限を検証 | device-mapper/QEMU image と test harness | QEMU/dm は実 SD FTL・物理電断を再現しない | QEMU guest: replay/error / 実機: 電断・SD 性能 | P1 | 未着手 |
 | セキュリティ | カーネル Kconfig／sysctl hardening | 攻撃面を緩和 |調査・測定| RAM／CPU／保守コストあり | 設定・実機回帰 | P1 | 未着手 |
 | 試験・保守 | [sysctl・I/O スケジューラーなどの既定値の一覧](../../docs/research/tunables-defaults.md) | 調整の出発点を固定する | QEMU で取得済み | QEMU の値は実機と異なる（RAM、SD、cpufreq、温度） | QEMU: 取得済み / 実機: 取り直し | P1 | 一部調査済み（QEMU のみ） |
 | 信頼性 | [`kernel.sysrq` を 32 に絞る（0 は不可）](../../docs/research/cpu-irq-and-sysctl.md#vps-運用記事との照合) | 電源断時の remount だけを残す | drop-in 1 つ | 0 にすると `powerfail_suo` の remount が止まる | QEMU: 値と remount / 実機: 電源断 | P1 | QEMUの修正計測器で0はremountなし、32はremountありと確認。製品採否は未決定（[記録](../../docs/experiments/2026-10-21-s21-qemu-sysctl-ramoops.md)） |

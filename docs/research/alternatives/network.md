@@ -66,7 +66,7 @@ wpa_supplicant 2.12のupstream defconfigにはWPS・P2P等があり、TKIPを除
 | iptables | 必要な既存hookとの相互運用候補 | nft backendとlegacy backendを区別する。二重policy、IPv4だけの制限、更新順の複雑化を比べる。名前だけでnftablesより安全・危険と順位づけない |
 | eBPF/XDP | 別の処理位置や高負荷処理の用途候補 | 端末の基本firewallと自動的に同じ機能ではない。loader、権限、program更新、verifier、観測・復旧費用が増える。本機での必要性・効果は未測定 |
 | AppArmor | processごとのfile・capability・network等のpolicy | kernelの有効化だけでは不十分。parser/profile、attach、enforce、更新とrollback時のpolicy互換性が必要。受信portのpacket policyや署名検証の代用にしない |
-| Landlock・seccomp・capabilities・namespaces | helperのfile、syscall、権限・資源の範囲を絞る候補 | policyを実行processへ適用する実装が必要。Landlockのnetwork制御は任意のpacket firewallではない。外部daemonと自作helperの適用可能範囲を分け、詳細は[セキュリティ検討](../security-hardening.md)で再評価する |
+| Landlock・seccomp・capabilities・namespaces | helperのfile、syscall、権限・資源の範囲を絞る候補 | policyを実行processへ適用する実装が必要。Landlockのnetwork制御は任意のpacket firewallではない。外部daemonと自作helperの適用可能範囲を分け、詳細は[セキュリティ検討](../security/threat-model.md)で再評価する |
 
 起動時はfilterを用意してからlinkを上げ、DHCP・認証・一般processの通信を開始する順序を設計します。policyの構文不正、必要moduleの欠落、読込み失敗では通信開始を止めます。単にinit script名を早めるだけでなく、hotplug、daemonのautostart、IPv6 link-local、再起動・再接続でも順序を確認します。
 
