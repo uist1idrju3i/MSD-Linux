@@ -14,6 +14,18 @@
     },
     {
       "content": "主要なデータの流れです。configs/msd_cardputerzero_defconfig → Buildroot → board/cardputerzero/post-build.sh（rootfs の調整）→ board/cardputerzero/post-image.sh（kernel8.img と genimage）→ board/cardputerzero/genimage.cfg が sdcard.img を作ります。パーティションは MBR です。p1 bootsel（autoboot.txt、bootcode.bin）、p2/p3 boot-a/boot-b（FAT、config.txt と cmdline）、拡張パーティション p4 内の論理パーティション p5/p6 rootfs-a/b（SquashFS）、p7 data（ext4）の順に並びます。起動後は rootfs-overlay/etc/init.d/S01〜S99 の BusyBox init スクリプトが順に実行され、S99msd-health が tryboot 中のヘルスチェックと msd-update commit を担当します。"
+    },
+    {
+      "content": "現行のビルド基盤は Buildroot です。Yocto は比較調査後に移行を見送っています。根拠は docs/research/yocto-migration/README.md と docs/research/yocto-migration/summary-2026-11.md です。"
+    },
+    {
+      "content": "QEMU の成功は実機での確認を意味しません。実機での起動と周辺機能は未確認です。"
+    },
+    {
+      "content": "文書では現在の実装、過去の記録、未確認事項を区別してください。"
+    },
+    {
+      "content": "SECURITY.md は脆弱性報告の入口です。この案内は別のPRで追加されます。"
     }
   ],
   "pages": [
@@ -114,7 +126,7 @@
     },
     {
       "title": "ホストテスト",
-      "purpose": "tests/msd-update/、tests/msd-data-grow/、tests/msd-hwinfo/ のホストテストを説明する",
+      "purpose": "tests/ のホストテストを、更新・data・hwinfo・init（tests/msd-update/、tests/msd-data-grow/、tests/msd-hwinfo/、tests/init-scripts/）、各checker（tests/check-doc-size/、tests/check-firmware-config/、tests/check-jisx0213/、tests/check-kernel-fragment/、tests/check-links/、tests/check-pins/、tests/check-site/、tests/check-site-status/、tests/check-skills/）、CI範囲（tests/check-build-scope/、tests/check-ci-cache/、tests/check-ci-scope/、tests/check-dev-image-scope/）、SBOM/CVE/Trivy/署名鍵（tests/check-sbom/、tests/check-cve-monitor/、tests/trivy-gate/、tests/release-signing-key/）、起動時間とQEMU/電源断ログ（tests/boottime/、tests/qemu-log-check/、tests/powerfail-log/）、開発用image（tests/msd-dev/）、Yocto比較（tests/yocto-compare/）に分け、各実装やCI範囲の回帰を説明する",
       "parent": "A/B 更新と自動復帰",
       "page_notes": [
         {
@@ -151,7 +163,7 @@
     },
     {
       "title": "CI/CD とサプライチェーン",
-      "purpose": "GitHub Actions のワークフロー（build、lint、security、pins-check、agent-docs）、アクションの固定、zizmor、成果物を説明する",
+      "purpose": ".github/workflows/agent-docs.yml の check（指示・skills・links・JIS・site検査）、.github/workflows/build.yml の changes・msd-update-tests・build（Buildroot、QEMU、SBOM）、.github/workflows/dev-image-scan.yml の scan（週次TrivyとIssue）、.github/workflows/lint.yml の lint・zizmor・dockerfile-lint、.github/workflows/pages.yml の build・deploy、.github/workflows/pins-check.yml の check、.github/workflows/publish-dev-image.yml の plan・build・gate（dev-image gate）・publish、.github/workflows/security.yml の scan（product CVE scan、2時間ごとの監視とPR差分gate）・report（Issue更新）、.github/workflows/site-status.yml の check（公開サイト状態確認）を、docs/CI.md とともに説明する",
       "page_notes": [
         {
           "content": "docs/CI.md、.github/workflows/、.github/zizmor-requirements.txt を根拠にしてください。"
@@ -179,7 +191,7 @@
     },
     {
       "title": "調査記録の読み方",
-      "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
+      "purpose": "RESEARCH.md と docs/research/document-map.md に示す docs/research/alternatives/、docs/research/boot/、docs/research/component-options/、docs/research/dependencies/、docs/research/hardware/、docs/research/history/、docs/research/operations/、docs/research/presentation/、docs/research/release-client/、docs/research/security/、docs/research/security/history/、docs/research/sources/、docs/research/storage/、docs/research/tuning/、docs/research/userspace/、docs/research/verification/、docs/research/yocto-migration/ の配置を案内し、現在の実装、過去の記録、未確認事項を区別して実機での測定計画を説明する",
       "page_notes": [
         {
           "content": "RESEARCH.md、docs/research/verification/README.md 、同ディレクトリのopen-questions.md、experiment-catalog.md、observability.md、hardware-measurements.md、qemu-coverage.md、platforms.mdを根拠にしてください。planning-history.mdとdesign-history.mdは当時の記録で、現在の決定ではありません。research-records.csvに統合前の原記述を保持します。docs/research/history/corrections.md と docs/research/sources/sources.md も参照してください。"
@@ -194,6 +206,26 @@
           "content": "README.md の「ライセンス」節と LICENSE を根拠にしてください。"
         }
       ]
+    },
+    {
+      "title": "開発用 Docker image",
+      "purpose": "docker/README.md、docker/msd-dev、docker/msd-dev.Dockerfile、docker/debian.sources の開発環境と Debian snapshot の固定を説明し、.github/workflows/publish-dev-image.yml の dev-image gate、.github/workflows/dev-image-scan.yml の Trivy 検査と tests/trivy-gate/ の判定を区別する"
+    },
+    {
+      "title": "製品 SBOM と CVE 監視",
+      "purpose": ".github/workflows/build.yml の CycloneDX SBOM 生成と .github/workflows/security.yml の product CVE scan、2時間ごとの監視、PR差分gate、report job を説明し、.github/scripts/cve-monitor.py と .github/cve-exceptions.tsv による判定と、Issue「製品SBOMの脆弱性監視」の更新を案内する"
+    },
+    {
+      "title": "Release の保護と署名",
+      "purpose": "docs/RELEASE-SIGNING.md と docs/research/release-client/ を根拠にRelease保護案、A/B bundle のmanifest署名、鍵の扱いを説明し、独立した署名jobとEnvironment、初回SD imageの署名、本番公開鍵の配備、鍵の移行・失効・復旧が未実装であることを明示する"
+    },
+    {
+      "title": "microSD への導入",
+      "purpose": "docs/INSTALL.md のmicroSD全体へimageを書く開発用手順、データ消去の条件、実機起動が未確認で製品向け署名済みimageがない範囲を説明する"
+    },
+    {
+      "title": "実験記録",
+      "purpose": "docs/experiments/ の記録を基準commit、条件、生データ、失敗した試行と結論を含む履歴として扱い、.agents/skills/experiment-record/ の手順に沿って記録する方法を説明する"
     }
   ]
 }
