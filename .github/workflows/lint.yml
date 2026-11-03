@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: lint-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     runs-on: ubuntu-26.04
@@ -32,10 +36,9 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure
 
       - name: Run lint checks in the development image
         run: |
@@ -70,13 +73,12 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure
 
       - name: Audit workflows offline
-        run: docker/msd-dev zizmor --offline --format=github .github/workflows/
+        run: docker/msd-dev zizmor --offline --format=github .github/workflows/ .github/actions/
 
   dockerfile-lint:
     runs-on: ubuntu-26.04

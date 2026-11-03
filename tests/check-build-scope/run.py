@@ -28,7 +28,7 @@ if args[0] == 'fetch':
     Path(os.environ['FETCHED']).touch()
     sys.exit(0)
 if args[0] == 'diff':
-    assert args == ['diff', '--name-only', '-z', 'b' * 40 + '...' + 'a' * 40], args
+    assert args == ['diff', '--no-renames', '--name-only', '-z', 'b' * 40 + '...' + 'a' * 40], args
     if os.environ['DIFF_FAIL']:
         sys.exit(1)
     sys.stdout.buffer.write(bytes.fromhex(os.environ['CHANGED_HEX']))
@@ -95,7 +95,7 @@ class BuildScope(unittest.TestCase):
         for event in ('push', 'pull_request'):
             result, calls = classify(WORKFLOW, ['README.md'], event)
             self.assertFalse(result)
-            self.assertIn('diff --name-only -z ' + 'b' * 40 + '...' + 'a' * 40, calls)
+            self.assertIn('diff --no-renames --name-only -z ' + 'b' * 40 + '...' + 'a' * 40, calls)
         for event in ('schedule', 'workflow_dispatch', 'unrecognized-event'):
             result, calls = classify(WORKFLOW, ['README.md'], event)
             self.assertTrue(result)
@@ -124,7 +124,8 @@ class BuildScope(unittest.TestCase):
         self.assertTrue(classify(no_exemption, [SIGNING_PATH])[0])
         ignore_products = WORKFLOW.replace('tests/check-*/*', 'tests/*')
         self.assertFalse(classify(ignore_products, ['tests/msd-update/run.sh'])[0])
-        ignore_workflow = WORKFLOW.replace('.github/workflows/build.yml)', 'disabled)')
+        ignore_workflow = WORKFLOW.replace('.github/workflows/*|', '')
+        self.assertNotEqual(ignore_workflow, WORKFLOW)
         self.assertFalse(classify(ignore_workflow, ['.github/workflows/build.yml'])[0])
 
 

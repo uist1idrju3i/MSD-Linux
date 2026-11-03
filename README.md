@@ -49,6 +49,12 @@ QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デ�
 | rootfs | Zstandard 圧縮の読み取り専用 SquashFS。書き込み領域に ext4 の `/data` を使用 |
 | A/B 更新 | Raspberry Pi `autoboot.txt` と `tryboot` を使う構成を追加。実機での確認は未実施 |
 
+## 共通の開発環境
+
+MSD/Linuxは、ローカル開発とCI/CDで同じ開発環境を使うため、開発用Docker imageを構築・配布しています。開発者のOSが標準で提供する版とは独立して、ビルド・テスト・静的解析に必要なツールの版とパッチを管理します。CIだけの環境ではなく、手元でも同じDockerfileと固定した入力に基づく環境で作業できます。
+
+製品の構築、host回帰、QEMU起動確認は`docker/msd-dev`経由で実行します。target用のBootlin toolchainはBuildrootがコンテナー内で取得・使用し、ビルド補助ツールやQEMUもコンテナー内のものを使います。開発hostへ個別にcompilerやQEMUを導入する手順を標準にはしません。公開済みimageの取得、未公開時のローカルbuild、CPU architectureの制約は[開発用Docker image](docker/README.md)、構築コマンドは[ビルド手順](docs/BUILD.md)を参照してください。
+
 ## microSDへのインストール
 
 **開発用の手順です。CardputerZero実機での起動は未確認で、本番向けの署名済みSD imageはまだ提供していません。書き込みはカード全体を消去します。**

@@ -1,20 +1,20 @@
 # ビルドと起動確認
 
-## ホスト環境
+## 共通の開発環境
 
-Ubuntu 26.04 を想定しています。ホスト上でビルドする場合は Buildroot の依存パッケージと QEMU が必要です。`bc`、`bison`、`build-essential`、`cpio`、`device-tree-compiler`、`file`、`flex`、`git`、`libelf-dev`、`libncurses-dev`、`libssl-dev`、`perl`、`python3`、`qemu-system-arm`、`rsync`、`unzip`、`wget`、`xz-utils` を用意してください。ホストでテストを実行する場合は `fdisk`、`e2fsprogs`、`openssl` も必要です。CI はこれらのホスト依存を runner に導入せず、開発用イメージ内でテストとビルドを実行します。
+ローカル開発とCI/CDは、プロジェクトが構築・配布する開発用Docker imageを共用します。OS標準のcompilerやQEMUの版に依存しないよう、構築・テストに必要な版とパッチをimageの入力として固定します。ホストへ個別にビルド依存を導入する手順ではなく、`docker/msd-dev`を標準の実行経路にします。
 
-## 推奨する開発環境
+## ホスト側の準備
 
-CI と同じ固定版のツールを使う場合は、開発用コンテナー `docker/msd-dev` を推奨します。最初にイメージをビルドし、その後はコマンドをコンテナー内で実行します。
+Git、DockerとBashを利用できるホストで、submoduleを含むリポジトリを取得してください。製品buildは現行Bootlin toolchainの制約によりx86_64 LinuxのDocker実行環境が必要です。arm64向けの開発imageはlint・host回帰・QEMUに使えますが、製品buildには使えません。macOSやWindowsからの製品構築は本リポジトリでは試していません。
 rootless Docker では実行モードを自動で判定するため、sudo なしで利用可能です。詳しくは[開発用コンテナーの説明](../docker/README.md)を参照してください。
 
 ```sh
-docker/msd-dev build
+docker/msd-dev ensure
 docker/msd-dev bash
 ```
 
-イメージの選定理由、実行例、GHCR からの取得方法は[開発用コンテナーの説明](../docker/README.md)を参照してください。ホストに依存を導入する方法も引き続き利用できます。
+イメージの選定理由、GHCRからの取得・attestation検証、未公開時のローカルbuildは[開発用コンテナーの説明](../docker/README.md)を参照してください。以下のコマンドもリポジトリのルートで実行します。
 
 コミット前に CI と同じ文字・リンク検査をローカルで回すフックを用意しています。任意ですが、PR 到達後の往復を減らせます。
 
@@ -33,14 +33,9 @@ docker/msd-dev ensure
 docker/msd-dev bash -lc 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig && make -C output'
 ```
 
-上記は CI と同じ開発用イメージを使います。ホスト上で直接ビルドする場合は、次のコマンドを実行します。
+Buildrootがtarget用のBootlin toolchainを取得し、コンテナー内で製品を構築します。CIもこの経路を使い、ホスト側のcompilerへ置き換えません。Buildrootのダウンロードとccacheは対応する世代の入力でのみ再利用します。
 
-```sh
-make -C vendor/buildroot BR2_EXTERNAL="$PWD" O="$PWD/output" msd_cardputerzero_defconfig
-make -C output
-```
-
-CI は Buildroot のダウンロードファイルと ccache をキャッシュし、`main` への push で共有キャッシュを更新します。文書だけを変更した pull request では Buildroot のビルドを省略しますが、`main` への push と手動実行では常にビルドします。同じ concurrency group の保留中の実行は後続の実行に置き換わるため、文書だけの push を省くとコード変更が未ビルドのまま残ることがあります。
+PRは累積差分、`main`へのpushは対象差分から製品buildの要否を判定します。文書だけなら省略し、製品入力・未知のpath・判定失敗ではbuildします。週次・手動は常にbuildします。正確な除外範囲とcacheの扱いは[CIの説明](CI.md)を参照してください。
 
 成果物は `output/images/sdcard.img` と更新用の `output/images/msd-update-bundle.tar` です。構成は MBR と拡張パーティションを使い、p1 に起動選択用 FAT、p2/p3 に同一内容の FAT ブート領域、p5/p6 に同一内容の SquashFS rootfs、p7 に ext4 の `/data` を置きます。p5/p6 は各 256 MiB、p7 は初期 64 MiB で、初回起動時にパーティション末尾まで拡張し、ext4 をオンライン拡張する実装です。`msd-data-grow` は `/sys/class/block/mmcblk0/size` からディスク容量を読み取るため、fstab で `/sys` を sysfs としてマウントします。容量を読み取れない場合は明示的に失敗します。`/var/run`、`/var/lock`、`/var/log` などの書き込み先は `/run` または `/tmp` への symlink なので、`/var` 自体には tmpfs を重ねません。A/B 両スロットには同じ `boot.vfat` を配置します。`config.txt` の `[boot_partition=2]` / `[boot_partition=3]` 条件が、それぞれ `cmdline_rootfs_a.txt` / `cmdline_rootfs_b.txt` を選ぶ構成です。CM0 実機での partition selector、tryboot、p7 拡張は未確認です。
 
@@ -55,8 +50,8 @@ CI は Buildroot のダウンロードファイルと ccache をキャッシュ�
 ## QEMU での起動確認
 
 ```sh
-board/cardputerzero/qemu/test-boot.sh
-board/cardputerzero/qemu/test-ab.sh
+docker/msd-dev board/cardputerzero/qemu/test-boot.sh
+docker/msd-dev board/cardputerzero/qemu/test-ab.sh
 ```
 
 `test-boot.sh` は A スロット（p5）、`test-ab.sh` は B スロット（p6）を rootfs として起動し、`MSD/Linux ready` marker と login prompt を検出した時点で QEMU を停止します。`QEMU_BOOT_TIMEOUT` は検出を待つ上限時間です。両スクリプトはイメージをコピーし、サイズを次の 2 の累乗にそろえます。対話的な起動には `board/cardputerzero/qemu/run-qemu.sh` を使ってください。

@@ -23,16 +23,28 @@
 
 ドメインは Pages の Settings に保存します。Actions 公開では `CNAME` と `.nojekyll` は不要です。build job は Pages API が返す `cname` を `SITE_ORIGIN` のホスト名と照合してから公開します。PR ではサイト検査、ドメイン照合、成果物の作成まで実行し、デプロイは行いません。`check-site.py` は `public_html/` に許可したファイルだけがあること、canonical と OGP の URL が `https://muromi.moe` と一致すること、JavaScript の実行や外部資源の読み込みがないこと、ロゴのコピーが `docs/logo/` のマスターと一致することを検査します。許可するのは `index.html`、`404.html`、`site.css` と `images/` 直下の SVG／PNG です。
 
-`build.yml` は GHCR にログインして `docker/msd-dev ensure` を実行し、開発用イメージを準備します。タグが公開済みなら pull と attestation 検証を行い、未公開ならローカルビルドに切り替わります。認証、通信、pull、検証のエラーではビルドに切り替えず、job は失敗扱いです。
+## 共通の開発環境とキャッシュ
+
+ローカル開発とCI/CDは、[開発用Docker image](../docker/README.md)と`docker/msd-dev`を共用します。開発hostやrunnerのOS標準版とは独立して、構築・テストに必要なツールの版とパッチを管理するためです。Buildrootが使うtarget用のBootlin toolchainもコンテナー内で取得・使用します。checkout・差分判定・cache管理等はrunner上で行いますが、runner側のcompilerで製品を構築しません。
+
+`build.yml`と`lint.yml`の4jobは共通の開発image準備actionを使います。GHCRに対応する入力タグが公開済みなら、毎回pullとattestation検証を行います。未公開の場合だけ、OS・runner arch・入力タグ・形式版が完全一致するcacheを復元し、archiveのmetadata・サイズ・SHA-256・platformと、load後のimage IDを確認します。認証・通信・pull・検証のエラーを、cacheやローカルbuildへの切替で隠しません。
+
+cacheがなければ同じDockerfileをbuildし、512 MiB以下のarchiveを保存します。初回の独立jobはそれぞれbuildする場合があり、全jobで一回の構築だけを共有する設計ではありません。開発imageのcacheは破損検出を伴う再利用であり、署名やbit単位の再現性の証明ではありません。秘密情報やraw scanは保存せず、PRからmainへのcache移送も行いません。
+
+ccacheはOS・host arch・target・Buildroot revision・開発image入力・defconfigから世代を分け、同じ世代内で復元します。保存keyにrun IDとrun attemptを含め、成功build後だけ保存します。download cacheにもhost archとBuildroot revisionを含め、Buildrootのhash検証は省きません。PRの古いbuild・lint・文書検査は取り消しますが、main・週次・手動を一括で取り消しません。
 
 各 job の末尾では、完了した step の所要時間を `=step-time=`、job 開始時刻や開発用イメージと ccache の状態を `=ci-meta=` として出力します。長いログは閲覧ツールで途中が省略されることがあるため、末尾にも集約し、各 step の時間とキャッシュ状態を確認できるようにします。
 build job の `=br-time=` は、Buildroot の `output/build/build-time.log` を step 別の合計と package 別の所要時間上位15件にまとめた値です。
 
-更新処理、hwinfo、p7 拡張、開発イメージのタグ、Trivy の公開判定を含むテストと Buildroot/QEMU の処理はイメージ内で実行します。テストは Buildroot ビルドの docs-only 判定にかかわらず毎回実行されます。
+更新・init・hardware情報・data拡張・QEMUログ・電源断ログ・開発imageのhost回帰7組は、一つの開発image内で最大2組ずつ並列実行します。各組のログとCSVは`host-test-results` artifactに保存し、途中で失敗した組があっても他の結果を回収します。一つでも失敗・timeoutならjobを失敗させます。Trivyの公開判定等の既存検査も維持し、これらのテストは製品buildの変更判定にかかわらず毎回実行します。
 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させる設定です。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
 
-Buildroot ビルドは時間がかかるため、`changes` job は PR と `main` への push で変更ファイルを見て、必要な場合だけビルドを実行します。文書（`*.md`、`docs/`）、サイト（`public_html/`）、エージェント設定（`.agents/`、`.claude/`、`.devin/`）、`vendor/yomiyasu`、`LICENSE`、検査専用の `tests/check-*` はスキップ対象です。`.github/` 配下も `build.yml` 自身を除いて対象から外します。それ以外のファイルに変更があれば Buildroot のビルド対象です。開発用イメージ内のテストは変更判定と独立して毎回実行します。
+## 製品buildの起動条件
+
+`changes` jobはPR全体の累積差分を調べます。改名は削除と追加として扱い、製品入力を文書側へ移す変更も見落としません。製品directory内のMarkdownは拡張子で除外せず、未知のpath、base/head取得失敗、fetch・diff失敗ではbuildします。週次・手動は常にbuildします。
+
+文書のMarkdown・既知の画像/表等、サイト、エージェント設定、`vendor/yomiyasu`、`LICENSE`、検査専用の`tests/check-*`等は製品buildから除外します。`docs/`全体を無条件には除外せず、既知のロゴ生成script以外の実行script・未知の設定入力はbuildへ倒します。製品入力・workflow・共通action・開発imageのcache helper変更はbuild対象です。正確なpath条件は[build workflow](../.github/workflows/build.yml)、正常系と異常系は[検証記録](experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。
 
 `main` への文書だけの push ではビルドを省略するため、最新のビルド成果物は過去の commit に対応したままです。新しい `main` の成果物が必要な場合は `workflow_dispatch` で手動実行してください。毎週月曜 03:47 UTC のビルドは、ダウンロード URL や runner image の変化を検出するために実行します。
 

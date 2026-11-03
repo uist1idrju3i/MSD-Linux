@@ -14,6 +14,8 @@
 
 ## 結論
 
+この本文は改善前の定義と実行履歴の記録です。改善後は[CIの説明](../CI.md)と[起動条件・cache・並列回帰の検証](../experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。以下の「現在」「未実装」は、本文に固定したcommitと観察時点を指します。host回帰の2並列化、未公開OCIの完全一致archive cache、ccache世代と再実行の分離を追加した後の性能を、この観察値から推定しません。
+
 文書変更でもworkflow自体、文書検査、lint、host回帰は動きます。製品imageのbuildは別の判定です。[PR #187](https://github.com/uist1idrju3i/MSD-Linux/pull/187)では、累積差分125ファイル中の`tests/release-signing-key/run.py`だけが製品buildを要求しました。その後のcommitが文書だけでも、このファイルはPR差分に残ります。対して、純粋な文書整理の[PR #188](https://github.com/uist1idrju3i/MSD-Linux/pull/188)は9検査成功、製品buildはskipでした。
 
 高速化は適用済みですが、最適化の完了ではありません。BuildrootのCPU並列化、独立job、OCIのnative amd64/arm64、download cache、ccache、公開開発OCIの再利用、古いPR実行の取消があります。一方、host回帰のsuite内は直列で、Docker layerを後続runnerへ渡す明示的な外部cacheはありません。OCIが未公開の場合、複数jobが各々同じ開発環境を再構築します。
