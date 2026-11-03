@@ -22,7 +22,7 @@ keyringのSHA-256、gpgvの版、各署名・indexのURLとhash、Date/Valid-Unt
 
 報告の成功は脆弱性ゼロを意味しない。Brotliは今回更新せず、[Issue #59](https://github.com/uist1idrju3i/MSD-Linux/issues/59)で未対応を追う。重要な検出が先頭100件の打ち切りで隠れない報告と、秘密値を含めない全件記録は[PR #183](https://github.com/uist1idrju3i/MSD-Linux/pull/183)で扱う。raw Trivy JSON、秘密値、image tar、DBはリポジトリへ保存していない。
 
-2026-11-03にR25の範囲を開発用OCIの公開ゲート解消へ広げ、`DEBIAN_SNAPSHOT=20261103T023120Z`でamd64を再構築した。旧imageから変わったのは`libbrotli1`と`linux-libc-dev`で、Trivy 0.76.1の公開ゲート対象は0件だった。arm64とCIの確認は未完了である。snapshot選択、package差分、変更履歴、検証範囲は[実験記録](../../experiments/2026-11-03-dev-image-security-update.md)に記録した。
+2026-11-03にR25の範囲を開発用OCIの公開ゲート解消へ広げ、`DEBIAN_SNAPSHOT=20261103T023120Z`でamd64を再構築した。旧imageから変わったのは`libbrotli1`と`linux-libc-dev`で、Trivy 0.76.1の公開ゲート対象は0件だった。その後、PR #194とmerge後のmain CIでamd64/arm64のgate、各archのSBOM attestation、multi-arch indexのBuild Provenance、Buildroot buildが成功した。QEMU bootと実機動作はR25のOCI更新の確認範囲外であり、実施していない。job IDとsnapshot選択、package差分、変更履歴は[実験記録](../../experiments/2026-11-03-dev-image-security-update.md)を参照する。
 
 Goの `CVE-2026-39824` はx/sys moduleの検出である。公式[Go advisory](https://pkg.go.dev/vuln/GO-2026-5024)の対象OS・symbolと、対象binaryのGOOSを別に確認する。module版が古いという情報だけでLinuxの当該binaryに到達可能な脆弱性があると決めない。
 
