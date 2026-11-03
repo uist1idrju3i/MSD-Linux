@@ -1,0 +1,27 @@
+{
+  "source_ref": "5d5b275f27da0cf2de6402eeb21b36fb9095a02a",
+  "source_sha256": "367cfb35d34bd53418637acc232ff0a05c4f77a860d303b48a870214fa787531",
+  "pr_ref": "20a80264d65647e933e553cdc33c8a61f0549050",
+  "pr_diff": "second-parent...merge-head",
+  "pr_path_count": 125,
+  "repeats": 5,
+  "bash": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+  "scope": "path case only; event/fetch/diff fail-safe paths are source review, not replayed",
+  "python": "Python 3.12.13",
+  "git": "git version 2.34.1",
+  "gh": "gh version 2.78.0-4-g4fdaf6b25 (2025-08-24)",
+  "script_sha256": "76737d946e9a69f89eac22eb7570d5c0ef1e641e5a70dde77b90bd225fdf9f10",
+  "cache_usage_observed_at_utc": "2026-11-03T00:37:58Z",
+  "cache_usage": {
+    "full_name": "uist1idrju3i/MSD-Linux",
+    "active_caches_size_in_bytes": 10781149193,
+    "active_caches_count": 16
+  },
+  "raw_storage": "Private logs and API responses are not published; job URLs and SHA-256 are in the public CSV.",
+  "host": "Ubuntu 22.04.5 LTS",
+  "oci_verification": {
+    "image_id": "sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77",
+    "log_sha256": "847c02b1a612a247eb0ed8339b11d0a8119825837c4577e3a61a8b99f29801e2",
+    "scope_csv": "byte-identical to host run; 117 passed; Python syntax compiled"
+  }
+}

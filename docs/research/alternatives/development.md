@@ -8,6 +8,8 @@
 
 ## 構築基盤と実行環境
 
+実行中のcache・並列化と費用、Docker内toolchainとBuildroot host packageの区別、改善案の優先順は[CIの追加調査](../ci-build-scope-and-performance.md)を参照してください。候補の機能と、実際に設定・検証した範囲を分けています。
+
 | 現行と候補 | 何を改善できるか | 費用・条件と再評価の結論 |
 |---|---|---|
 | Buildroot維持 / Yocto・OpenEmbedded | package単位の再構築、layer・SDK・license/SBOM等の仕組みを選べる | 現行はBuildrootを基準に維持。[過去の比較](../yocto-migration/README.md)には測定条件・未取得log・取りやめた計画がある。Yoctoは大きいという一般論だけでは排除しない。再現性、全周辺機能、A/B、time/RAM/storage、運用費用を同一条件で再実験する場合に候補へ戻す |

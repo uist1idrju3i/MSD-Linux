@@ -103,6 +103,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [未確認事項と次の確認](docs/research/verification/open-questions.md) — 重複した問いを主題別に統合。元の記述は記録CSVに保持。
 - [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
+- [文書差分のbuild判定と高速化](docs/research/ci-build-scope-and-performance.md) — PR累積差分、OCI準備、cache・並列化の適用済み範囲と未測定の改善候補。
 - [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
 - [GitHub Actionsの権限・実行境界と監視の監査](docs/research/github-actions-audit.md)
 
