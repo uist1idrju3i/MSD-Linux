@@ -16,7 +16,8 @@
 
 ### セキュリティ
 
-- 開発用Docker imageをTrivyで検査し、PRで新たに増えた修正可能なCRITICAL CVEを検出するgateを追加しました。
+- 開発用Docker imageをTrivyで検査するgateを追加しました。
+- 製品SBOMについて、PRで新たに増えた修正可能なCRITICAL CVEを失敗させるgateを追加しました。
 - 製品SBOMを2時間ごとにNVDと照合し、差分をIssueで通知する監視を追加しました。
 
 ## [0.0.0] - 2026-11-02

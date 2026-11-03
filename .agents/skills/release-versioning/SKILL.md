@@ -23,8 +23,9 @@ description: MSD-Linux のCHANGELOG、公開版、Release台帳を準備・検�
 1. release-prep PRで `CHANGELOG.md` の `[Unreleased]` の項目を `## [x.y.z] - YYYY-MM-DD` へ移します。
 2. merge後、利用者がmerge commitの `%ct` が台帳の最後の `update_number` より大きいことを確認します。
 3. 利用者がそのcommitにtagを付け、`MSD_UPDATE_VERSION` を設定せずにbuildします。
-4. Releaseをdraftで作成 → 全assetをupload → publishの順に進め、公開後にimmutableにします。
+4. Releaseをdraftで作成 → 全assetをupload → publishの順に進めます。Release immutabilityが有効なら、publishした時点でimmutableになります。
 5. follow-upの台帳PRでCSV行と `docs/releases/<tag>.sha256` を追加します。GitHub APIのasset `digest` と、downloadしたfileに対する `sha256sum` の値を照合し、一致を確認します。
+   tagを作ってから台帳PRがmergeされるまでの間は、`check-releases.py --require-tags` が未記録のtagとして全PRの `agent-docs` を失敗させます。台帳PRはtagの作成直後に出します。
 6. 署名は [Releaseの保護と署名鍵の設定](../../../docs/RELEASE-SIGNING.md) に従います。
 
 ## 禁止事項
