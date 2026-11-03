@@ -170,8 +170,8 @@ spec.loader.exec_module(runner)
 
 class ParallelRunner(unittest.TestCase):
     def test_suites_are_preserved_and_outputs_do_not_overlap(self) -> None:
-        self.assertEqual(set(runner.SUITES), {"msd-update", "init-scripts", "msd-hwinfo", "msd-data-grow",
-                                             "qemu-log-check", "powerfail-log", "msd-dev"})
+        self.assertEqual(set(runner.SUITES), {"msd-update", "version-info", "init-scripts", "msd-hwinfo",
+                                             "msd-data-grow", "qemu-log-check", "powerfail-log", "msd-dev"})
         self.assertIn("--jobs 2 --output-dir", WORKFLOW)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
