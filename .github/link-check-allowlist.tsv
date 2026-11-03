@@ -11,3 +11,4 @@ docs/research/alternatives/sources.json	docs/basic.rst	RAUCの固定refから取
 docs/research/release-client/sources.json	docs/SECURITY.md	Python-TUFの固定refにある原文パスの記録であり、本リポジトリのリンクではない
 docs/research/release-client/sources.json	docs/SIGNER-MANUAL.md	tuf-on-ciの固定refにある原文パスの記録であり、本リポジトリのリンクではない
 docs/research/release-client/sources.json	docs/REPOSITORY-MAINTENANCE.md	tuf-on-ciの固定refにある原文パスの記録であり、本リポジトリのリンクではない
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/power-and-updates.md	初回リンク検査の失敗を記録した診断内の旧パス。操作用のリンクではなく、記録を改変しないため保持する
