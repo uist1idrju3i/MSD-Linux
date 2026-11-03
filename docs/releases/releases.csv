@@ -1,0 +1,2 @@
+tag,semver,prerelease,commit,update_number,signing_key,release_url,assets_sha256,note
+v0.0.0,0.0.0,true,ec54778fe75bbbc7ae03f0432e9cd68a1ea618f7,1793559964,development,https://github.com/uist1idrju3i/MSD-Linux/releases/tag/v0.0.0,docs/releases/v0.0.0.sha256,開発用pre-release。実機未確認。immutableではない。

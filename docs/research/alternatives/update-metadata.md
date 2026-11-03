@@ -13,7 +13,7 @@
 | 値・状態 | 目的 | 混同しないもの |
 |---|---|---|
 | 公開SemVer | 利用者へリリースの互換性・変更を示す | 単純な辞書順、metadata版、boot試行回数 |
-| 更新の内部番号 | 許可するimage世代の順序を定める案 | SemVerのbuild metadataやtag名。分離案は確認待ち |
+| 更新の内部番号 | 許可するimage世代の順序を定める案 | SemVerのbuild metadataやtag名。SemVerとの分離は承認済みで、番号はtag commitのcommit時刻（[Release対応表](../../releases/README.md)） |
 | TUFのrole別metadata版 | 各metadataのrollback等を検出する | OSのSemVerと一対一である必要はない |
 | expiryと信頼できる時刻 | 古いmetadataのfreezeを検出する | 単調な番号だけでは現在時刻や鮮度を証明できない |
 | 取得済み・試行中・commit済み | 更新transactionと既知の正常slotを区別する | 新metadataを見た時点と、新imageが正常に起動した時点 |

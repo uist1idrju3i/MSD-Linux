@@ -22,6 +22,15 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - name: Release tagを取得する
+        run: git fetch --no-tags --depth=1 origin '+refs/tags/*:refs/tags/*'
+
+      - name: Release台帳とtagを検査する
+        run: python3 .github/scripts/check-releases.py --require-tags
+
+      - name: Release検査のテスト
+        run: tests/check-releases/run.sh
+
       - name: 指示とスキルの一覧・名前・リンクを検査する
         run: python3 .github/scripts/check-skills.py
 

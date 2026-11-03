@@ -8,7 +8,7 @@ GitHub Releasesを配布元にして、CardputerZero自身が新しいOSを取�
 
 2026-11-02に、MSD/Linuxの`9fbc7767ccc475d67fba5e7d1d9e9968c12131bd`と[sources.json](sources.json)の固定資料を基準に調べました。この文書群は調査・比較・設計案で、製品設定、更新形式、GitHubの設定・Secretは変更していません。新clientのbuild・実行、network取得、実機のtryboot・電源断復帰は本リポジトリでは試していません。
 
-推奨は、**不変のRelease payload、標準TUFによるmetadata検証、機種・版を認可する処理、狭いA/B writerを分離**する構成です。TUFの独自再実装や、端末への常設PAT配布は先に選びません。公開SemVerと内部番号の対応、製品の管理操作認可は確認待ちであり、この調査では決定しません。
+推奨は、**不変のRelease payload、標準TUFによるmetadata検証、機種・版を認可する処理、狭いA/B writerを分離**する構成です。TUFの独自再実装や、端末への常設PAT配布は先に選びません。公開SemVerと内部番号の対応は承認済みです（内部番号はtag commitのcommit時刻。対応表は[Release対応表](../../releases/README.md)）。製品の管理操作認可は確認待ちであり、この調査では決定しません。
 
 ## 読む順序
 
@@ -36,7 +36,7 @@ TUF metadataが正しくても、OSが起動することや、slotと共有data�
 ## 実施順と完了条件
 
 1. 署名jobの分離、公開鍵だけのbuild、Release payloadの認証を整える。[Release保護の既知の不足](release-security.md)を先に解消する。
-2. SemVer・内部番号、製品の認可、channel、時刻未確定時の復旧を決める。安全性を上げる案と、利用者が更新できなくなる背反を確認する。
+2. SemVerと内部番号の対応は承認済みです（内部番号はtag commitのcommit時刻。対応表は[Release対応表](../../releases/README.md)）。製品の認可、channel、時刻未確定時の復旧を決める。安全性を上げる案と、利用者が更新できなくなる背反を確認する。
 3. host上で小さなTUF repositoryと複数clientを比較する。鍵更新、期限、rollback、長さ、parser差、故障時の永続化を成功系と同じ重さで試す。
 4. 現行Buildroot・BootlinでAArch64をbuildし、依存閉包、license、SBOM、image/RSS、起動、拒否試験を記録する。新依存を版・脆弱性監視へ加える。
 5. 通信防御を先に有効化し、認証・DHCP・DNS・CA・時刻が揃ってから更新通信を許す。[Wi-Fiと通信の未実装計画](../alternatives/network.md)と統合する。
