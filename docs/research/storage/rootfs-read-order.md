@@ -25,9 +25,9 @@
 | blktrace | ブロック層の I/O(セクタ・サイズ・順序)を記録。**SquashFS 上のブロック読込順を直接観測** でき、配置最適化の効果検証に向く。開発用カーネルに `CONFIG_BLK_DEV_IO_TRACE` が必要(man 参照。CM0 向けビルドでの有効化は未確認) | https://man7.org/linux/man-pages/man8/blktrace.8.html | 一次(ツール)/ CM0 での実績は未確認 |
 | readahead(2) | 起動時に先読みする用途のシステムコール | https://man7.org/linux/man-pages/man2/readahead.2.html | 一次（システムコールの説明）。SD での効果は未確認です。CardputerZero 上で有効・無効を比較測定する必要があります。 |
 
-【推測】手順案：(1) 開発ビルドで fanotify（または strace）を使ってアクセス一覧を採取、(2) 初回アクセス順に優先度を付けた SORT-FILE を生成（起動に使うファイルほど高い優先度で先頭付近に置く想定）、(3) `mksquashfs -sort` で再パック、(4) blktrace で読込がシーケンシャルに近づいたか確認、(5) [起動時間の測定](../verification/open-questions.md)と比較します。`-sort` は優先度の高いものが先に書かれます（sort.c に基づく一次情報）。実イメージ上の物理配置と SD の読込改善は未測定です。
+【推測】評価では、fanotify または strace のアクセス一覧と、blktrace のブロック読込を照合し、[起動時間の測定](../verification/open-questions.md)と比較します。現行の `post-build.sh` は [squashfs-sort.txt](../../../board/cardputerzero/squashfs-sort.txt) の優先度を使い、`@KVER@` を build 中の kernel version に置換したファイルを `mksquashfs -sort` に渡します。優先度の高いファイルが先に書かれます（sort.c に基づく一次情報）。実イメージ上の物理配置、SD の読込改善、実機での起動時間への効果は未測定です。
 
-2026-10-25 に、手順案の (1) にあたる観測を QEMU で行いました。fanotify と blktrace の代わりに、QEMU の SD の trace（`sdcard_read_block`）を使っています。起動で読む rootfs は 16.5 % で、data block を全部読むファイルは 13 個でした（[記録](../../experiments/2026-10-25-qemu-boot-read-order.md)）。(2) 以降は実施していません。
+2026-10-25 に QEMU の SD trace（`sdcard_read_block`）で起動時の読込を観測しました。起動で読む rootfs は 16.5 % で、data block を全部読むファイルは 13 個でした（[記録](../../experiments/2026-10-25-qemu-boot-read-order.md)）。観測順を使った `-sort` の適用は現行 build に含まれます。実機の SD 読込と起動時間への効果は未確認です。
 
 #### (c) EROFS との比較(一次)
 | 観点 | EROFS | SquashFS | 出典URL |
