@@ -1,0 +1,14 @@
+command,exit_code
+python3 .github/scripts/check-links.py,0
+tests/check-links/run.sh,0
+python3 .github/scripts/check-jisx0213.py,0
+tests/check-jisx0213/run.sh,0
+python3 .github/scripts/check-doc-size.py,0
+tests/check-doc-size/run.sh,0
+python3 .github/scripts/check-skills.py,0
+tests/check-skills/run.sh,0
+python3 .github/scripts/check-site.py,0
+tests/check-site/run.sh,0
+git diff --cached --check,0
+docker/msd-dev actionlint .github/workflows/build.yml .github/workflows/lint.yml,0
+docker/msd-dev zizmor --offline --format=github .github/workflows/,0
