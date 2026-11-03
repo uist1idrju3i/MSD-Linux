@@ -18,6 +18,7 @@
 | [SSH clientの候補](ssh-clients.md) | DropbearとOpenSSHの暗号方式、Buildrootの制約、未確認事項 |
 | [署名・鍵・配信の信頼境界](signing.md) | raw Ed25519の移植条件、manifest、鍵rotation、SemVerとanti-rollback、HTTPSと特権helperの分離 |
 | [保存領域と実行時検証](filesystems.md) | SquashFS/EROFS、ext4/F2FS、設定overlay、dm-verity/fs-verityの違いと移行条件 |
+| [filesystem option調査](../storage/filesystem-options.md) | ext4、F2FS、Btrfs、LUKS2、dm-integrityのformat・mount・checksum optionと版比較 |
 | [A/B更新framework](updates.md) | 現行処理とRAUC・SWUpdate・Mender・Rugix・OSTree・bootc・sysupdateの責務、署名形式、CM0の未確認範囲 |
 | [更新経路と差分配信](update-delivery.md) | online/local/clean-installの経路、配信先の制約とrange確認、差分方式 |
 | [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
