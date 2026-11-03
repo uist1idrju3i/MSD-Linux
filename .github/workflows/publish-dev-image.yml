@@ -13,14 +13,6 @@ on:
       - docker/qemu-signing-key.asc
       - .github/workflows/publish-dev-image.yml
   pull_request:
-    paths:
-      - docker/msd-dev.Dockerfile
-      - docker/debian.sources
-      - docker/msd-dev
-      - .github/zizmor-requirements.txt
-      - docker/qemu-patches/**
-      - docker/qemu-signing-key.asc
-      - .github/workflows/publish-dev-image.yml
   workflow_dispatch:
     inputs:
       dry_run:
@@ -48,9 +40,11 @@ jobs:
     outputs:
       tag: ${{ steps.plan.outputs.tag }}
       push: ${{ steps.plan.outputs.push }}
+      changed: ${{ steps.plan.outputs.changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 1
           persist-credentials: false
 
       - id: plan
@@ -59,18 +53,49 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_REF: ${{ github.ref }}
           DRY_RUN: ${{ inputs.dry_run }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          set -euo pipefail
           tag="$(docker/msd-dev tag)"
           push=false
           if [[ "$EVENT_NAME" == "push" && "$EVENT_REF" == "refs/heads/main" ]] ||
              [[ "$EVENT_NAME" == "workflow_dispatch" && "$DRY_RUN" != "true" ]]; then
             push=true
           fi
-          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
-          printf 'push=%s\n' "$push" >> "$GITHUB_OUTPUT"
+          changed=true
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40}$ ||
+                  ! "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ||
+                  ! "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+              printf 'Invalid pull request diff inputs.\n' >&2
+              exit 1
+            fi
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            fetched_base="$(git rev-parse FETCH_HEAD)"
+            if [[ "$fetched_base" != "$BASE_SHA" ]]; then
+              printf 'Fetched base %s, expected %s.\n' "$fetched_base" "$BASE_SHA" >&2
+              exit 1
+            fi
+            git fetch --no-tags --depth=1 origin "refs/pull/${PR_NUMBER}/head"
+            fetched_head="$(git rev-parse FETCH_HEAD)"
+            if [[ "$fetched_head" != "$HEAD_SHA" ]]; then
+              printf 'Fetched head %s, expected %s.\n' "$fetched_head" "$HEAD_SHA" >&2
+              exit 1
+            fi
+            changed="$(python3 .github/scripts/dev-image-scope.py "$BASE_SHA" "$HEAD_SHA")"
+          fi
+          {
+            printf 'tag=%s\n' "$tag"
+            printf 'push=%s\n' "$push"
+            printf 'changed=%s\n' "$changed"
+          } >> "$GITHUB_OUTPUT"
 
   build:
     needs: plan
+    name: dev-image build (${{ matrix.arch }}, ${{ matrix.runner }})
+    if: needs.plan.outputs.changed == 'true'
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     permissions:
@@ -210,11 +235,47 @@ jobs:
           sbom-path: ${{ env.SBOM_PATH }}
           push-to-registry: true
 
+  gate:
+    name: dev-image gate
+    needs:
+      - plan
+      - build
+    if: always()
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Require the scoped development-image build
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHANGED: ${{ needs.plan.outputs.changed }}
+        run: |
+          if [[ "$PLAN_RESULT" != "success" ]]; then
+            printf 'dev-image gate: failed - plan result=%s\n' "$PLAN_RESULT" >&2
+            exit 1
+          fi
+          if [[ "$CHANGED" != "true" && "$CHANGED" != "false" ]]; then
+            printf 'dev-image gate: failed - invalid changed value=%s\n' "$CHANGED" >&2
+            exit 1
+          fi
+          if [[ "$BUILD_RESULT" == "success" ]]; then
+            printf 'dev-image gate: passed - both architecture builds and scans succeeded\n'
+            exit 0
+          fi
+          if [[ "$BUILD_RESULT" == "skipped" && "$CHANGED" == "false" ]]; then
+            printf 'dev-image gate: passed - no development-image inputs changed\n'
+            exit 0
+          fi
+          printf 'dev-image gate: failed - build result=%s changed=%s\n' \
+            "$BUILD_RESULT" "$CHANGED" >&2
+          exit 1
+
   publish:
     needs:
       - plan
       - build
-    if: needs.plan.outputs.push == 'true'
+    if: needs.plan.outputs.push == 'true' && needs.build.result == 'success'
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:

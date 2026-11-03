@@ -12,11 +12,13 @@
 | `build.yml` | PR、main push、週次、手動。changes は read。テストと build は contents/actions/packages/attestations: read | PRの変更を実行。文書だけの変更では build を省略し、msd-update tests は実行する。必要な変更の検出に失敗したときは build。build は150分、PRの新しい実行で旧実行を中止。カーネル強化検査は continue-on-error。legal-infoの既知の警告はCI成功でも解消しない |
 | `lint.yml` | PR、main push。lint/zizmor は contents/packages/attestations: read。Dockerfile検査は contents: read | PR由来のコードを固定開発OCIで実行。SHA固定のcheckoutで資格情報を残さない。zizmorはoffline。3ジョブ、各15分 |
 | `pages.yml` | サイト関連のPRとmain push、手動。build は contents/pages: read、deploy は pages/id-token: write | PRではbuildのみ、mainで公開。ドメイン照合はPages APIに依存し、forkのPRで読めるかは未確認。buildとdeployの権限は分離 |
-| `publish-dev-image.yml` | OCI入力変更のPRとmain push、手動。plan は contents: read。build/publish は contents: read、packages/attestations/id-token: write | PRでも2アーキテクチャを最大45分ずつ構築・検査するがpushはしない。書込権限はPRのbuildにも与えられ、最小権限の余地がある。手動実行は`dry_run=false`ならmain以外からでもlatestタグへ公開しうる。公開先をmain限定にするかは信頼境界の設計判断。イメージの固定digestとSBOM/provenanceはアーキテクチャdigestとindex digestを分ける |
+| `publish-dev-image.yml` | PR（常時）、OCI入力変更のmain push、手動。plan は contents: read。build/publish は contents: read、packages/attestations/id-token: write | PRでは差分が7種のOCI入力に触れる場合だけ2アーキテクチャを最大45分ずつ構築・検査し、常時起動する`dev-image gate`がbuildの結果を集約する。buildの書込権限はPRにも与えられ、最小権限の余地がある。手動実行は`dry_run=false`ならmain以外からでもlatestタグへ公開しうる。公開先をmain限定にするかは信頼境界の設計判断。イメージの固定digestとSBOM/provenanceはアーキテクチャdigestとindex digestを分ける |
 | `dev-image-scan.yml` | mainのOCI入力変更、週次、手動。contents: read、issues: write | 公開されたlatestのamd64だけを検査。変更前は取得失敗の一部を成功扱いにしたため、失敗を検査失敗に変更。検出事項はIssue通知だがジョブ失敗にはしない。raw Trivy JSONは公開しない |
 | `security.yml` | 2時間ごと、手動、対象パスのPR。scanはcontents/packages/actions/attestations: read、reportはissues: write等 | 開発用OCI内でBuildroot SBOM/VEXを作り、成功state・SBOM・VEX・show-infoを30日保存する。mainでは「製品SBOMの脆弱性監視」Issue本文を更新し、前回成功artifactとの差分だけをコメントする。CVE件数では失敗させず、空入力、24時間超のfeed、例外TSV不正・期限切れ・未使用など完全性エラーは失敗させる。毎回depth-1 cloneし、2時間ごとのcacheは作らない |
 | `pins-check.yml` | 週次、手動。contents: read、issues: write | GitHubの固定値と公開元を照合しIssueを更新。Release APIに載らないKHCのtagを取得するよう変更。更新不能は確認不能として通知対象に残す |
 | `site-status.yml` | 週次、手動。contents/pages: read、issues: write | Pages・DNS・TLS・HTTPの異常をIssueに通知する。正常時には閉じる |
+
+2026-11-03の現行設定では、PRの`dev-image gate`が入力差分の有無にかかわらず結果を報告し、対象差分がある場合に限って両archのbuildとTrivy検査を必須にする。`main`のrulesetにこのstatus checkを加える作業はmerge後にmaintainerが行う。rulesetの状態はworkflow YAMLから確認できない。追加前は必須checkではなく、mergeを止めない。paths filter付きworkflowは対象外PRでcheckを報告しないため、直接必須にはできない。
 
 ## 横断的な差分と背反
 
