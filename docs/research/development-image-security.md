@@ -24,7 +24,7 @@
 
 ## Brotliの修正がある検出
 
-利用者の指示で修正版の導入の保留を解除し、[残件R25](roadmap.md)を実行待ちへ戻しました。以下は検出時点の調査です。修正版の適用、amd64/arm64のbuild・scan・SBOM・attestationの再確認はまだ行っていません。CI改善のmain反映後に進め、公開ゲートは緩めません。
+利用者の指示で修正版の導入の保留を解除し、[残件R25](roadmap.md)を実行待ちへ戻しました。以下は検出時点の調査記録です。当時は修正版適用後のamd64/arm64 build・scan・SBOM・attestationをまだ確認しておらず、CI改善のmain反映後に再確認する予定でした。後続の結果は次節に記録します。公開ゲートは緩めません。
 
 `libbrotli1`の`1.1.0-2+b7`に、`CVE-2026-111497`が検出されました。Trivyの重大度はNVD由来のCRITICALです。[Debian Security Tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497)でも、trixieの`1.1.0-2`はvulnerable、trixie-securityの`1.1.0-2+deb13u1`はfixedと確認しました。Brotli decoderの不正な圧縮入力の処理に関する修正です。開発環境での具体的な攻撃到達性や、悪用の成立は試していません。
 
@@ -32,7 +32,9 @@
 
 ## 2026-11-03時点のR25
 
-R25の対応で`DEBIAN_SNAPSHOT`を`20261103T023120Z`へ更新しました。amd64の導入済みpackageは231件で、旧imageから変わったのは`libbrotli1`と`linux-libc-dev`の2件です。固定Trivy 0.76.1と同じDBで公開ゲート対象は0件でした。arm64、CI、attestation、Buildroot製品buildは未確認です。初回のBrotliだけの試行と今回の全package差分は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照してください。
+R25のローカル検証では`DEBIAN_SNAPSHOT`を`20261103T023120Z`へ更新しました。amd64の導入済みpackageは231件で、旧imageから変わったのは`libbrotli1`と`linux-libc-dev`の2件です。固定Trivy 0.76.1と同じDBで公開ゲート対象は0件でした。
+
+その後、PR #194のhead `e75008d`でamd64/arm64のdev-image buildとTrivy gate、Buildroot `build`が成功しました。merge後のmain commit `668cd99`では両archのgateとSBOM attestation、multi-arch indexのBuild Provenance、`scan`、Buildroot `build`を確認しました。job IDと初回のBrotliだけの試行を含むpackage差分は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)に記録しています。QEMU bootと実機試験はR25のOCI更新の確認範囲外であり、実施していません。
 
 修正方法の比較ではsnapshot全体の更新を基本候補とします。Brotliだけの追加取得は変更範囲を絞れますが、取得先・署名またはhash・依存解決・版の監視を二重管理します。全体更新では実際に変わる全packageの変更履歴、QEMUの構築・実行、Buildrootの構築、ライセンスと再走査を比較します。snapshotの日付を変えただけで、修正版の導入が済んだとは判定しません。
 
