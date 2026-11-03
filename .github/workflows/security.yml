@@ -2,97 +2,200 @@ name: Security report
 
 on:
   schedule:
-    - cron: "17 6 * * 1"
+    - cron: "25 */2 * * *"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/security.yml
+      - .github/scripts/cve-monitor.py
+      - .github/cve-exceptions.tsv
+      - tests/check-cve-monitor/**
 
-permissions:
-  contents: read
+concurrency:
+  group: security-report-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
 
 jobs:
-  security-report:
+  scan:
     runs-on: ubuntu-26.04
     timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+      attestations: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
           persist-credentials: false
 
+      - name: Log in to GHCR
+        env:
+          GHCR_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io \
+            --username "$GHCR_ACTOR" \
+            --password-stdin
+
+      - id: dev-image
+        name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Configure Buildroot
         run: |
-          make -C vendor/buildroot \
-            BR2_EXTERNAL="$GITHUB_WORKSPACE" \
-            O="$GITHUB_WORKSPACE/output" \
-            msd_cardputerzero_defconfig
+          docker/msd-dev make -C vendor/buildroot \
+            BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig
 
       - name: Generate SBOM
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          mkdir -p output/images
-          set -euo pipefail
-          make -s -C output show-info > output/images/buildroot-show-info.json
-          python3 vendor/buildroot/utils/generate-cyclonedx \
-              --in-file output/images/buildroot-show-info.json \
-              --project-name msd-linux \
-              --project-version "$GITHUB_SHA" \
-              > output/images/sbom.cdx.json
+          docker/msd-dev mkdir -p output/images
+          docker/msd-dev make -s -C output show-info > output/images/buildroot-show-info.json
+          docker/msd-dev python3 vendor/buildroot/utils/generate-cyclonedx \
+            --in-file output/images/buildroot-show-info.json \
+            --project-name msd-linux --project-version "$GITHUB_SHA" \
+            > output/images/sbom.cdx.json
 
       - name: Set kernel version in SBOM
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          python3 .github/scripts/set-kernel-version.py output/images/sbom.cdx.json \
+          docker/msd-dev python3 .github/scripts/set-kernel-version.py \
+            output/images/sbom.cdx.json \
             --show-info output/images/buildroot-show-info.json \
             --project-version "$GITHUB_SHA"
 
-      - id: iso-week
-        name: Determine NVD cache week
-        run: echo "key=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
-
-      - id: nvd-restore
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: dl/buildroot-nvd
-          key: buildroot-nvd-${{ runner.os }}-${{ steps.iso-week.outputs.key }}
-          restore-keys: buildroot-nvd-${{ runner.os }}-
-
-      - name: Update shallow NVD mirror
-        id: nvd-update
+      - name: Clone current NVD feed
         run: |
-          set -euo pipefail
-          mirror=dl/buildroot-nvd/git
-          if [[ ! -d "$mirror/.git" ]]; then
-            mkdir -p dl/buildroot-nvd
-            git clone --depth 1 \
-              https://github.com/fkie-cad/nvd-json-data-feeds "$mirror"
-          else
-            git -C "$mirror" fetch --depth 1 origin
-            git -C "$mirror" reset --hard FETCH_HEAD
-          fi
+          docker/msd-dev mkdir -p dl/buildroot-nvd
+          docker/msd-dev git clone --depth 1 \
+            https://github.com/fkie-cad/nvd-json-data-feeds dl/buildroot-nvd/git
+          docker/msd-dev git -C dl/buildroot-nvd/git rev-parse HEAD \
+            > output/images/nvd-feed-sha.txt
+          docker/msd-dev git -C dl/buildroot-nvd/git log -1 --format=%ct \
+            > output/images/nvd-feed-commit-time.txt
 
       - name: Run Buildroot CVE analysis
         run: |
-          python3 vendor/buildroot/support/scripts/cve-check \
-            --nvd-path dl/buildroot-nvd \
-            --no-nvd-update \
-            --include-resolved \
-            < output/images/sbom.cdx.json \
-            > output/images/vex.cdx.json
+          docker/msd-dev python3 .github/scripts/cve-monitor.py cve-check \
+            --nvd-path /work/dl/buildroot-nvd \
+            --no-nvd-update --include-resolved \
+            --in-file /work/output/images/sbom.cdx.json \
+            --out-file /work/output/images/vex.cdx.json
 
       - name: Summarize CVE analysis
         run: |
-          python3 .github/scripts/summarize-vex.py output/images/vex.cdx.json \
-            >> "$GITHUB_STEP_SUMMARY"
+          docker/msd-dev python3 .github/scripts/summarize-vex.py \
+            output/images/vex.cdx.json >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: always() && steps.nvd-restore.outputs.cache-hit != 'true' && steps.nvd-update.outcome == 'success'
-        with:
-          path: dl/buildroot-nvd
-          key: buildroot-nvd-${{ runner.os }}-${{ steps.iso-week.outputs.key }}
+      - name: Generate monitor state
+        run: |
+          docker/msd-dev python3 .github/scripts/cve-monitor.py state \
+            --sbom output/images/sbom.cdx.json \
+            --vex output/images/vex.cdx.json \
+            --exceptions .github/cve-exceptions.tsv \
+            --feed-commit-time "$(docker/msd-dev cat output/images/nvd-feed-commit-time.txt)" \
+            --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
+            --now "$(docker/msd-dev date -u +%s)" \
+            --output output/images/state.json
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
+        if: success()
         with:
-          name: buildroot-security-report
+          name: product-cve-state
           path: |
+            output/images/state.json
             output/images/sbom.cdx.json
-            output/images/buildroot-show-info.json
             output/images/vex.cdx.json
+            output/images/buildroot-show-info.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: product-cve-state
+          path: |
+            output/images/state.json
+            output/images/sbom.cdx.json
+            output/images/vex.cdx.json
+            output/images/buildroot-show-info.json
+          retention-days: 30
           if-no-files-found: ignore
+
+  report:
+    needs: scan
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      actions: read
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      ISSUE_TITLE: 製品SBOMの脆弱性監視
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: product-cve-state
+          path: report/current
+
+      - name: Find previous successful state
+        id: previous
+        env:
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          mkdir -p report/previous
+          runs="$(gh run list --workflow security.yml --branch main --status success --json databaseId -L 5)"
+          while IFS= read -r run_id; do
+            [[ -n "$run_id" && "$run_id" != "$CURRENT_RUN" ]] || continue
+            if gh run download "$run_id" -n product-cve-state --dir report/previous; then
+              if [[ -f report/previous/state.json ]]; then
+                printf 'available=true\n' >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            fi
+            rm -f report/previous/*
+          done < <(printf '%s' "$runs" | python3 -c 'import json,sys; print("\n".join(str(x["databaseId"]) for x in json.load(sys.stdin)))')
+          printf 'available=false\n' >> "$GITHUB_OUTPUT"
+
+      - name: Update tracking issue
+        env:
+          PREVIOUS_AVAILABLE: ${{ steps.previous.outputs.available }}
+        run: |
+          python3 .github/scripts/cve-monitor.py issue-body \
+            --state report/current/state.json --run-url "$RUN_URL" \
+            > report/issue-body.md
+          issues="$(gh issue list --state open --json number,title -L 100)"
+          issue_number="$(printf '%s' "$issues" | python3 -c \
+            'import json,os,sys; print(next((str(i["number"]) for i in json.load(sys.stdin) if i["title"] == os.environ["ISSUE_TITLE"]), ""))')"
+          if [[ -z "$issue_number" ]]; then
+            issue_number="$(gh issue create --title "$ISSUE_TITLE" --body-file report/issue-body.md)"
+            issue_number="${issue_number##*/}"
+          else
+            gh issue edit "$issue_number" --body-file report/issue-body.md
+          fi
+          if [[ "$PREVIOUS_AVAILABLE" != true ]]; then
+            printf '基準を作成しました\n\n%s\n' "$RUN_URL" > report/diff.md
+          else
+            python3 .github/scripts/cve-monitor.py diff \
+              --previous report/previous/state.json \
+              --current report/current/state.json --run-url "$RUN_URL" \
+              > report/diff.md
+          fi
+          if [[ -s report/diff.md ]]; then
+            gh issue comment "$issue_number" --body-file report/diff.md
+          fi
