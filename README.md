@@ -36,6 +36,10 @@ CardputerZero を、電源を入れたらすぐに使えて、乱暴に扱って
 
 開発中です。Buildroot の外部ツリーと CardputerZero 用 defconfig があり、CI で Buildroot のフルビルドと、QEMU での A スロット・B スロットの起動を確かめています。QEMU の標準設定は `raspi3ap`（512 MiB、CM0 DTB）で、ASB パッチを含む開発用イメージ内の QEMU が必要です。1 GiB の `raspi3b` と Pi 3 DTB は `QEMU_MACHINE=raspi3b` で選べます。
 
+`v0.0.0` は開発用の pre-release で、開発用の鍵で署名しており、実機での起動は未確認です。
+
+製品 SBOM と開発用 image の脆弱性を監視しています（詳細は[セキュリティポリシー](SECURITY.md#現在の監視)）。
+
 CI とは別に、QEMU で実験を重ねています。watchdog による再起動、QEMU の強制終了で模した電源断からの回復、`/data` の ext4 の設定、dm-verity による改ざんの検出、zram などです。条件、生の値、結論は [docs/experiments/](docs/experiments/) にあります。dm-verity と zram は QEMU で試しただけで、製品の設定には入れていません。
 
 QEMU では GPU firmware の `tryboot`、LCD、キーボード、M5 の I2C デバイス、実際の電源断を再現できません。これらは実機で確かめます。CardputerZero の出荷は 2026 年 11 月に始まる予定です（M5Stack の Kickstarter の更新 13 による。[最新動向](docs/research/hardware/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。実機での起動はまだ試していません。
@@ -100,17 +104,34 @@ MSD/Linuxは、ローカル開発とCI/CDで同じ開発環境を使うため、
 
 ## 文書
 
+### 使う人
+
+| 文書 | 内容 |
+|---|---|
+| [docs/INSTALL.md](docs/INSTALL.md) | microSD への導入手順 |
+| [docs/UPDATE.md](docs/UPDATE.md) | 更新手順と検証範囲 |
+| [SECURITY.md](SECURITY.md) | 脆弱性の報告方法と監視 |
+| [Releases](https://github.com/uist1idrju3i/MSD-Linux/releases) | 開発版のリリース |
+| [docs/VERIFY.md](docs/VERIFY.md) | 実機でのカメラ・周辺確認の手順 |
+
+### 作る人
+
+| 文書 | 内容 |
+|---|---|
+| [docs/BUILD.md](docs/BUILD.md) | ビルドと QEMU 起動確認の手順 |
+| [docker/README.md](docker/README.md) | CI と同じ開発用コンテナー |
+| [docs/CI.md](docs/CI.md) | CI の構成と運用 |
+| [docs/RELEASE-SIGNING.md](docs/RELEASE-SIGNING.md) | Release の保護と署名鍵の管理 |
+| [AGENTS.md](AGENTS.md) | 作業規約（AI エージェントと人間に共通） |
+
+### 調べる人
+
 | 文書 | 内容 |
 |---|---|
 | [docs/README.md](docs/README.md) | 利用・構築・検証・調査・実験の文書案内 |
 | [RESEARCH.md](RESEARCH.md) | 調査の要約、出典、未確認事項。節ごとの詳細は [docs/research/](docs/research/) |
-| [docs/BUILD.md](docs/BUILD.md) | ビルドと QEMU 起動確認の手順 |
-| [docs/UPDATE.md](docs/UPDATE.md) | 更新手順と検証範囲 |
-| [docs/CI.md](docs/CI.md) | CI の構成と運用 |
-| [docs/VERIFY.md](docs/VERIFY.md) | 実機でのカメラ・周辺確認の手順 |
+| [docs/research/document-map.md](docs/research/document-map.md) | 調査文書の配置と役割 |
 | [docs/experiments/](docs/experiments/README.md) | 実験・測定の記録と生の値 |
-| [docker/README.md](docker/README.md) | CI と同じ開発用コンテナー |
-| [AGENTS.md](AGENTS.md) | 作業規約（AI エージェントと人間に共通） |
 
 ## 取得方法
 
