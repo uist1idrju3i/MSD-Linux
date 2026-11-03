@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-03-maintenance-followup](2026-11-03-maintenance-followup.md) | なし | 2026-11-03 | host・静的回帰 | 3 suite各5回、署名300 command、分類5改変の検出。OpenSSLの版と保守期限・取得失敗・週次通知を分離。製品の依存版は変更していない。 |
 | [2026-11-03-init-comparison-plan](2026-11-03-init-comparison-plan.md) | なし | 2026-11-03 | 計画のみ | 現行・systemd・s6系・OpenRC等の固定条件、資源・権限・A/B復旧、QEMU/実機の分離。[計測器と故障試験](2026-11-03-init-comparison-protocol.md)も未実装の仕様。 |
 | [2026-11-03-init-roadmap-validation](2026-11-03-init-roadmap-validation.md) | なし | 2026-11-03 | 静的照合 | 残件・原Q/R・S1–S17・要求・出典のID/参照/依存を確認。OSのbuild・実測・実機の合格ではない。 |
 | [2026-11-03-alternative-coverage](2026-11-03-alternative-coverage.md) | なし | 2026-11-03 | 母集団の静的照合 | 67 Buildroot、231 APT/129 source、11 Action、859 npm名/1574組、11 Go moduleを比較先へ対応。5回一致と4負対照。全license・実bundle・代替実行の確認とは別。 |

@@ -10,6 +10,7 @@ import re
 import subprocess
 import sys
 from datetime import date, datetime
+from html import unescape
 from pathlib import Path
 from urllib.error import URLError
 from urllib.parse import urlsplit
@@ -146,6 +147,96 @@ def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
 def upstream_summary(rows: list[tuple[str, str, str, str, str]]) -> str:
     informational = {"最新", "参考", "Buildroot 安定版待ち"}
     return "更新あり" if any(row[3] not in informational for row in rows) else "全て最新"
+
+
+def html_text(html: str) -> str:
+    return " ".join(unescape(re.sub(r"<[^>]*>", " ", html)).split())
+
+
+def parse_openssl_downloads(html: str) -> dict[str, tuple[str, date]]:
+    releases: dict[str, tuple[str, date]] = {}
+    for table in re.findall(r"<table\b[^>]*>(.*?)</table>", html, re.S | re.I):
+        headers = [html_text(cell) for cell in re.findall(
+            r"<th\b[^>]*>(.*?)</th>", table, re.S | re.I
+        )]
+        if headers != ["Series", "Filename", "Size", "Release", "End-of-Life", "Checksums"]:
+            continue
+        for row in re.findall(r"<tr\b[^>]*>(.*?)</tr>", table, re.S | re.I):
+            cells = [html_text(cell) for cell in re.findall(
+                r"<td\b[^>]*>(.*?)</td>", row, re.S | re.I
+            )]
+            if not cells:
+                continue
+            if len(cells) != 6:
+                raise ValueError("Malformed OpenSSL release row")
+            series = re.fullmatch(r"(\d+\.\d+)(?: \[LTS\])?", cells[0])
+            version = re.fullmatch(r"openssl-(\d+\.\d+\.\d+)\.tar\.gz", cells[1])
+            if not series or not version or not version[1].startswith(series[1] + "."):
+                raise ValueError("Invalid OpenSSL stable version or series")
+            released = datetime.strptime(cells[3], "%d %b %Y").date()
+            expires = datetime.strptime(cells[4], "%d %b %Y").date()
+            if expires < released or series[1] in releases:
+                raise ValueError("Conflicting OpenSSL lifecycle rows")
+            releases[series[1]] = (version[1], expires)
+    if not releases:
+        raise ValueError("No OpenSSL stable release table found")
+    return releases
+
+
+def openssl_rows(root: Path, today: date) -> list[tuple[str, str, str, str, str]]:
+    downloads_url = "https://openssl-library.org/source/"
+    policy_url = "https://openssl-library.org/policies/releasestrat/"
+    pin = "未設定"
+    latest, version_state = "確認できず", "確認できず"
+    expiry, support_state = "確認できず", "確認できず"
+    support_source = policy_url
+    releases: dict[str, tuple[str, date]] = {}
+    try:
+        sha = buildroot_gitlink_sha(root)
+        if not re.fullmatch(r"[0-9a-f]{40}", sha):
+            raise ValueError("Missing Buildroot gitlink")
+        recipe_url = (
+            "https://raw.githubusercontent.com/buildroot/buildroot/"
+            f"{sha}/package/libopenssl/libopenssl.mk"
+        )
+        versions = re.findall(r"^LIBOPENSSL_VERSION\s*=\s*(\d+\.\d+\.\d+)\s*$",
+                              fetch(recipe_url), re.M)
+        if len(versions) != 1:
+            raise ValueError("Missing or ambiguous OpenSSL recipe version")
+        pin = versions[0]
+    except (OSError, URLError, ValueError) as exc:
+        print(f"OpenSSL recipe: unavailable: {exc}", file=sys.stderr)
+    try:
+        releases = parse_openssl_downloads(fetch(downloads_url))
+        latest = max((release[0] for release in releases.values()), key=branch_key)
+        if pin != "未設定":
+            version_state = "最新" if pin == latest else "更新あり"
+    except (OSError, URLError, ValueError) as exc:
+        print(f"OpenSSL releases: unavailable: {exc}", file=sys.stderr)
+    if pin != "未設定":
+        series = pin.rsplit(".", 1)[0]
+        try:
+            if series in releases:
+                deadline = releases[series][1]
+                support_source = downloads_url
+            else:
+                dates = re.findall(
+                    rf"\bVersion {re.escape(series)} will be supported until (\d{{4}}-\d{{2}}-\d{{2}})\b",
+                    html_text(fetch(policy_url)),
+                )
+                if len(dates) != 1:
+                    raise ValueError("No unique OpenSSL support deadline")
+                deadline = date.fromisoformat(dates[0])
+                if deadline >= today:
+                    raise ValueError("Supported series missing from OpenSSL downloads")
+            expiry = deadline.isoformat()
+            support_state = "保守期限超過" if today > deadline else "参考"
+        except (OSError, URLError, ValueError) as exc:
+            print(f"OpenSSL lifecycle: unavailable: {exc}", file=sys.stderr)
+    return [
+        ("OpenSSL (Buildroot target/host)", pin, latest, version_state, downloads_url),
+        ("OpenSSL upstream support", pin, expiry, support_state, support_source),
+    ]
 
 
 def branch_key(name: str) -> tuple[int, ...]:
@@ -421,6 +512,7 @@ def latest_github_version(repository: str, *, tags: bool = False) -> str:
 
 def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     rows: list[tuple[str, str, str, str, str]] = []
+    rows.extend(openssl_rows(root, today or date.today()))
     fixed = "unknown"
     definition = (root / "configs/msd_cardputerzero_defconfig").read_text()
     match = re.search(r"linux-([0-9a-f]{40})\.tar\.gz", definition)
@@ -748,7 +840,7 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
         rows.append(("GitHub-hosted runner", os.environ.get("RUNNER_LABEL") or runner_label(root) or "未設定",
                      "確認できず", "確認できず", "https://github.com/actions/runner-images"))
     lines = [
-             "| 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず・参考・Buildroot 安定版待ち) | 参照URL |",
+             "| 依存 | 固定値 | 最新・保守期限 | 状態(最新・更新あり・確認できず・参考・Buildroot 安定版待ち・保守期限超過) | 参照URL |",
              "|---|---|---|---|---|"]
     lines.extend(f"| {name} | `{pin}` | `{latest}` | {status} | {url} |"
                  for name, pin, latest, status, url in rows)

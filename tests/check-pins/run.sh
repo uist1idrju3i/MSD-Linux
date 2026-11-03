@@ -466,8 +466,25 @@ def fake_run_without_point_tags(*args, cwd=None):
 fetch_calls = []
 
 
+def openssl_table(rows):
+    return (
+        '<table><tr><th>Series</th><th>Filename</th><th>Size</th>'
+        '<th>Release</th><th>End-of-Life</th><th>Checksums</th></tr>'
+        + ''.join(
+            f'<tr><td>{series}</td><td><a>{version}</a></td><td>50MiB</td>'
+            f'<td>01 Oct 2026</td><td>{expiry}</td><td>SHA256</td></tr>'
+            for series, version, expiry in rows
+        ) + '</table>'
+    )
+
+
 def fake_fetch(url):
     fetch_calls.append(url)
+    if url.endswith('/package/libopenssl/libopenssl.mk'):
+        assert f'/{sha}/' in url
+        return 'LIBOPENSSL_VERSION = 3.6.5\n'
+    if url == 'https://openssl-library.org/source/':
+        return openssl_table([('3.6', 'openssl-3.6.5.tar.gz', '01 Nov 2026')])
     if "toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs" in url:
         return (
             '<a href="aarch64--glibc--stable-2025.08-1.tar.xz">2025.08-1</a>'
@@ -549,6 +566,8 @@ with tempfile.TemporaryDirectory() as directory:
         "| Raspberry Pi Linux series | `rpi-6.18.y` | `rpi-7.3.y` | 参考 |"
         in report
     )
+    assert '| OpenSSL (Buildroot target/host) | `3.6.5` | `3.6.5` | 最新 |' in report
+    assert '| OpenSSL upstream support | `3.6.5` | `2026-11-01` | 参考 |' in report
     assert "| QEMU | `11.1.2` | `11.1.2` | 最新 |" in report
     assert "| Trivy | `0.76.0` | `v0.76.0` | 最新 |" in report
     assert "| Go toolchain | `1.27.2` | `1.27.2` | 最新 |" in report
@@ -576,6 +595,84 @@ with tempfile.TemporaryDirectory() as directory:
     assert not any("/master/" in url for url in fetch_calls)
     assert output.getvalue().strip() == "全て最新"
 print("ok - marks informational upstream rows as 参考 and excludes them from status")
+
+openssl_downloads = openssl_table([
+    ('3.5 [LTS]', 'openssl-3.5.9.tar.gz', '08 Apr 2030'),
+    ('4.0', 'openssl-4.0.3.tar.gz', '14 May 2027'),
+    ('4.1', 'openssl-4.1.0.tar.gz', '23 Nov 2027'),
+])
+
+
+def openssl_fetch(url):
+    if url == 'https://openssl-library.org/source/':
+        return openssl_downloads
+    if url == 'https://openssl-library.org/policies/releasestrat/':
+        return '<li>Version <b>3.6</b> will be supported until 2026-11-01</li>'
+    return fake_fetch(url)
+
+
+with patch.object(module, 'fetch', openssl_fetch):
+    rows = module.openssl_rows(passed, date(2026, 11, 2))
+    assert rows[0][1:4] == ('3.6.5', '4.1.0', '更新あり')
+    assert rows[1][1:4] == ('3.6.5', '2026-11-01', '保守期限超過')
+    assert module.upstream_summary([rows[1]]) == '更新あり'
+with patch.object(module, 'fetch', fake_fetch):
+    for day, expected in [(date(2026, 11, 1), '参考'), (date(2026, 11, 2), '保守期限超過')]:
+        assert module.openssl_rows(passed, day)[1][1:4] == ('3.6.5', '2026-11-01', expected)
+print('ok - compares all OpenSSL stable series and checks the exact expiry boundary')
+
+for bad in (
+    '', openssl_downloads.replace('End-of-Life', 'Unknown'),
+    openssl_downloads.replace('openssl-4.1.0', 'openssl-4.1.0-rc1'),
+    openssl_downloads.replace('23 Nov 2027', '31 Nov 2027'),
+    openssl_downloads.replace('23 Nov 2027', '01 Sep 2026'),
+    openssl_downloads.replace('<td>4.1</td>', '<td>4.0</td>'),
+    openssl_downloads + openssl_downloads,
+):
+    try:
+        module.parse_openssl_downloads(bad)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Accepted malformed OpenSSL release data')
+print('ok - rejects missing, malformed, prerelease, duplicate and conflicting OpenSSL rows')
+
+for failed_url in (
+    'https://openssl-library.org/source/',
+    'https://openssl-library.org/policies/releasestrat/',
+    f'https://raw.githubusercontent.com/buildroot/buildroot/{sha}/package/libopenssl/libopenssl.mk',
+):
+    def unavailable(url):
+        if url == failed_url:
+            raise OSError('fixture unavailable')
+        return openssl_fetch(url)
+    with patch.object(module, 'fetch', unavailable), contextlib.redirect_stderr(io.StringIO()):
+        rows = module.openssl_rows(passed, date(2026, 11, 2))
+    assert any(row[3] == '確認できず' for row in rows)
+    assert module.upstream_summary(rows) == '更新あり'
+print('ok - OpenSSL recipe, release or policy failure never reports all current')
+
+for policy in ('', 'Version 3.6 will be supported until 2026-02-30',
+               'Version 3.6 will be supported until 2030-11-01',
+               'Version 3.6 will be supported until 2026-11-01 ' * 2):
+    def invalid_policy(url):
+        if url.endswith('/policies/releasestrat/'):
+            return policy
+        return openssl_fetch(url)
+    with patch.object(module, 'fetch', invalid_policy), contextlib.redirect_stderr(io.StringIO()):
+        assert module.openssl_rows(passed, date(2026, 11, 2))[1][3] == '確認できず'
+print('ok - missing, invalid or ambiguous lifecycle deadlines stay unknown')
+
+workflow = (root / '.github/workflows/pins-check.yml').read_text()
+import re
+import subprocess
+issue_filter = re.search(r"if grep -qvE '([^']+)'", workflow)[1]
+for state, actionable in [('参考', False), ('保守期限超過', True), ('確認できず', True)]:
+    report = '| 依存 | 固定値 | 最新 | 状態 | 参照URL |\n|---|---|---|---|---|\n'
+    report += f'| OpenSSL upstream support | `3.6.5` | `2026-11-01` | {state} | https://example.com |\n'
+    result = subprocess.run(['grep', '-qvE', issue_filter], input=report, text=True)
+    assert result.returncode == (0 if actionable else 1)
+print('ok - weekly Issue filter keeps expired and unknown support findings open')
 
 qemu_update = fixture()
 dockerfile = qemu_update / "docker/msd-dev.Dockerfile"
