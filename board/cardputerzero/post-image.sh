@@ -49,7 +49,7 @@ genimage \
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot.vfat" "$UPDATE_DIR/"
 (
 	cd "$UPDATE_DIR"
-	update_version="$(cat "${TARGET_DIR:?Buildroot must pass TARGET_DIR}/etc/msd-update/version")"
+	update_version="$(cat "${TARGET_DIR:?Buildroot must pass TARGET_DIR}/usr/share/msd-update/version")"
 	{
 		printf 'version %s\n' "$update_version"
 		sha256sum rootfs.squashfs boot.vfat

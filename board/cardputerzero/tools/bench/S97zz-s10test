@@ -31,7 +31,7 @@ else
 	export MSD_UPDATE_DT_DIR="$dt"
 	console "dt=substitute partition=2 tryboot=0"
 fi
-console "running_version=$(cat /etc/msd-update/version 2>/dev/null || echo none)"
+console "running_version=$(cat /usr/share/msd-update/version 2>/dev/null || echo none)"
 console "root=$(sed -n 's/.*root=\([^ ]*\).*/\1/p' /proc/cmdline) openssl=$(openssl version | tr ' ' '_')"
 
 for bundle in "$DIR"/T*.tar; do

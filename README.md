@@ -70,8 +70,8 @@ MSD/Linuxは、ローカル開発とCI/CDで同じ開発環境を使うため、
 
    ```sh
    msd-update status
-   cat /etc/msd-update/key-origin
-   cat /etc/msd-update/version
+   cat /usr/share/msd-update/key-origin
+   cat /usr/share/msd-update/version
    df -h /data
    ```
 

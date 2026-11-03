@@ -12,7 +12,7 @@
 
 | 部分 | ソースで確認した動作 | この動作だけでは保証しないこと |
 |---|---|---|
-| host鍵 | [post-build](../../../board/cardputerzero/post-build.sh)が指定鍵、または自動生成する開発用Ed25519鍵から公開鍵を作り、`/etc/msd-update/update-key.pem`へ入れる。`key-origin`も記録する | 指定されたrelease鍵の算法・保管・権限・環境の承認、開発鍵でのRelease公開禁止 |
+| host鍵 | [post-build](../../../board/cardputerzero/post-build.sh)が指定鍵、または自動生成する開発用Ed25519鍵から公開鍵を作り、`/usr/share/msd-update/update-key.pem`へ入れる。`key-origin`も同じ場所に記録する（`/etc` overlayの対象外） | 指定されたrelease鍵の算法・保管・権限・環境の承認、開発鍵でのRelease公開禁止 |
 | host署名 | [post-image](../../../board/cardputerzero/post-image.sh)がversion行と2 imageのSHA-256をmanifestに書き、host OpenSSLの`pkeyutl -sign -rawin`で署名する | 自動的な鍵rotation、threshold署名、metadata期限、役割別の委任 |
 | bundle検査 | [msd-update](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)がtarのmember名・通常file・4件という構成を調べ、作業領域へ展開する | archive parserの安全性や資源上限の完全な証明。署名が有効でも、展開前の処理がすべて安全になるわけではない |
 | target署名検証 | 展開後のmanifestと署名を、固定公開鍵で`pkeyutl -verify -pubin -rawin`に渡す | 正しいimageが正しいboard向けか、metadataの鮮度、改ざん可能な起動媒体に対するverified boot |

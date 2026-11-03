@@ -92,8 +92,8 @@ etc/inittab 970
 etc/issue 980
 etc/mdev.conf 990
 etc/mke2fs.conf 1000
-etc/msd-update/key-origin 1010
-etc/msd-update/update-key.pem 1020
+usr/share/msd-update/key-origin 1010
+usr/share/msd-update/update-key.pem 1020
 etc/network/if-pre-up.d/wait_iface 1030
 etc/network/interfaces 1040
 etc/network/nfs_check 1050
