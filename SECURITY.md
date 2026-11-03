@@ -29,4 +29,4 @@ MSD/Linux は未リリースです。製品向けの署名済み image はまだ
 - Pull Request では、変更によって新たに増えた、修正版のある CRITICAL の CVE を失敗にします。
 - 開発用 Docker image は Trivy で検査し、`dev-image gate` で結果を返します。
 
-仕組みと例外の扱いは [CI の構成](docs/CI.md#ワークフロー) を参照してください。
+仕組みは [CI の構成](docs/CI.md#ワークフロー)、理由と再確認期限を付けた例外の一覧は [.github/cve-exceptions.tsv](.github/cve-exceptions.tsv) を参照してください。
