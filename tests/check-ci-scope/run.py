@@ -64,8 +64,8 @@ def classify(paths: list[str], event: str = "pull_request", *, workflow: str = W
 
 class BuildScope(unittest.TestCase):
     def test_document_and_gate_only_paths(self) -> None:
-        for path in ("README.md", "RESEARCH.md", "docs/new note\nsecond line.md",
-                     "docs/experiments/raw.csv", "docs/logo/tools/generate.py", "public_html/index.html",
+        for path in ("README.md", "RESEARCH.md", str(Path("docs") / "new note\nsecond line.md"),
+                     str(Path("docs") / "experiments/raw.csv"), "docs/logo/tools/generate.py", "public_html/index.html",
                      ".agents/skills/vendor-update/SKILL.md", ".claude/skills/yomiyasu", "vendor/yomiyasu",
                      ".devin/wiki.json", "LICENSE", "tests/check-ci-cache/run.py",
                      "tests/release-signing-key/run.py", ".github/dependabot.yml"):
@@ -77,7 +77,8 @@ class BuildScope(unittest.TestCase):
                      "package/example/input.md", "docker/README.md", "patches/README.md",
                      "vendor/buildroot", "vendor/kernel/README.md", "external.mk", "Config.in",
                      "Makefile", ".gitmodules", "unknown file\nsecond line", "tests/msd-update/run.sh",
-                     "docs/product.config", "docs/input.dts", "docs/unknown-input.py",
+                     str(Path("docs") / "product.config"), str(Path("docs") / "input.dts"),
+                     str(Path("docs") / "unknown-input.py"),
                      ".github/workflows/build.yml", ".github/workflows/lint.yml", ".github/workflows/new.yml",
                      ".github/actions/setup-dev-image/action.yml",
                      ".github/scripts/dev-image-cache.py", "tests/release-signing-key/new-file.py"):
@@ -117,9 +118,9 @@ class BuildScope(unittest.TestCase):
             git("add", ".")
             git("commit", "--quiet", "-m", "fixture base")
             base = git("rev-parse", "HEAD")
-            git("mv", "board/input.md", "docs/renamed.md")
+            git("mv", "board/input.md", str(Path("docs") / "renamed.md"))
             git("commit", "--quiet", "-am", "fixture rename")
-            (root / "docs/latest.md").write_text("documentation only at tip\n")
+            (root / "docs" / "latest.md").write_text("documentation only at tip\n")
             git("add", ".")
             git("commit", "--quiet", "-m", "fixture documentation tip")
             head = git("rev-parse", "HEAD")
@@ -136,7 +137,7 @@ class BuildScope(unittest.TestCase):
                            cwd=root, env=env, check=True, capture_output=True, timeout=15)
             self.assertEqual(output.read_text().strip(), "build=false")
             doc_base = head
-            git("rm", "docs/renamed.md")
+            git("rm", str(Path("docs") / "renamed.md"))
             git("commit", "--quiet", "-m", "fixture document removal")
             output.write_text("")
             subprocess.run(["bash", "-euo", "pipefail", "-c", filter_script(WORKFLOW)],

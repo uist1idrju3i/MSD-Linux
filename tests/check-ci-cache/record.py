@@ -16,7 +16,8 @@ INPUTS = (".github/actions/setup-dev-image/action.yml", ".github/actionlint.yaml
           ".github/scripts/dev-image-cache.py", ".github/scripts/run-host-tests.py",
           ".github/workflows/build.yml", ".github/workflows/lint.yml",
           ".github/workflows/agent-docs.yml", "docker/msd-dev",
-          "tests/check-ci-cache/run.py", "tests/check-ci-scope/run.py", "tests/check-ci-cache/record.py")
+          "tests/check-ci-cache/run.py", "tests/check-ci-scope/run.py", "tests/check-build-scope/run.py",
+          "tests/check-ci-cache/record.py")
 
 
 def hashes() -> dict[str, str]:
@@ -50,7 +51,7 @@ def main() -> int:
                      "command": json.dumps(command)})
         print(name, process.returncode, flush=True)
     for repeat in range(1, args.repetitions + 1):
-        for suite in ("check-ci-cache", "check-ci-scope"):
+        for suite in ("check-ci-cache", "check-ci-scope", "check-build-scope"):
             capture(f"{suite}-{repeat}", ["docker/msd-dev", "python3", f"tests/{suite}/run.py"])
     capture("tools", ["docker/msd-dev", "bash", "-c",
                       'python3 --version; actionlint -version; shellcheck --version; zizmor --version; '

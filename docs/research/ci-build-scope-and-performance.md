@@ -2,6 +2,16 @@
 
 [RESEARCH](../../RESEARCH.md) / [実行境界の監査](github-actions-audit.md) / [開発・CIの代替比較](alternatives/development.md)
 
+## 署名CLI試験の分類を修正した範囲
+
+2026-11-03の追補です。`tests/release-signing-key/run.py` 一件を軽量試験へ分類し、製品buildの有無に依存しない `MSD tests in development image` へ実行を追加しました。docsとこの試験だけの累積差分では製品buildを省略します。試験用の秘密鍵は使い捨てで、保存するログに秘密鍵を出しません。
+
+全testを除外する変更ではありません。製品の署名・更新source、通常のhost試験、build workflow、未知のpath、差分判定不能は引き続き製品buildへ倒します。専用ディレクトリーに将来追加する別ファイルも、今回の例外には入りません。
+
+[回帰試験](../../tests/check-build-scope/run.py)は、workflow内の実際のBashを実行し、path・累積三点差分・push/PR・週次/手動・SHA欠損・fetch/diff失敗をfixtureで確認します。GitHub上での新規runを代行した試験ではありません。試験呼出し削除、条件依存の追加、例外削除、全test除外、workflow例外削除の改変を検出します。詳細と実行revisionは[検証記録](../experiments/2026-11-03-maintenance-followup.md)に保存します。
+
+今回の変更自体はbuild workflowを含むため、今回のPRでは製品buildが必要です。以下のPR #187等と117行の判定記録は変更前の履歴として残します。
+
 ## 結論
 
 この本文は改善前の定義と実行履歴の記録です。改善後は[CIの説明](../CI.md)と[起動条件・cache・並列回帰の検証](../experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。以下の「現在」「未実装」は、本文に固定したcommitと観察時点を指します。host回帰の2並列化、未公開OCIの完全一致archive cache、ccache世代と再実行の分離を追加した後の性能を、この観察値から推定しません。
