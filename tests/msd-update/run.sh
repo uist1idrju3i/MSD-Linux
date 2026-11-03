@@ -3,6 +3,10 @@ set -eu
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 UPDATER="${REPO_ROOT}/board/cardputerzero/rootfs-overlay/usr/sbin/msd-update"
+POST_BUILD="${REPO_ROOT}/board/cardputerzero/post-build.sh"
+POST_IMAGE="${REPO_ROOT}/board/cardputerzero/post-image.sh"
+QEMU_GUEST_TEST="${REPO_ROOT}/board/cardputerzero/tools/bench/S97zz-s10test"
+QEMU_HOST_TEST="${REPO_ROOT}/board/cardputerzero/tools/bench/s10-update-rejection.sh"
 TEST_DIR="$(mktemp -d)"
 DT_DIR="${TEST_DIR}/dt"
 P1_DIR="${TEST_DIR}/p1"
@@ -70,6 +74,48 @@ expect_failure() {
 		fail "command unexpectedly succeeded: $*"
 	fi
 }
+
+# shellcheck disable=SC2016 # Match literal parameter-expansion defaults.
+grep -Fq 'UPDATE_KEY="${MSD_UPDATE_KEY_PATH:-/usr/share/msd-update/update-key.pem}"' "$UPDATER" ||
+	fail "update key default is not under /usr/share/msd-update"
+# shellcheck disable=SC2016 # Match literal parameter-expansion defaults.
+grep -Fq 'VERSION_FILE="${MSD_UPDATE_VERSION_PATH:-/usr/share/msd-update/version}"' "$UPDATER" ||
+	fail "version default is not under /usr/share/msd-update"
+if grep -Fq '/etc/msd-update/' "$UPDATER"; then
+	fail "updater still has a default under /etc/msd-update"
+fi
+printf 'ok - updater defaults to trust files outside the /etc overlay\n'
+
+# shellcheck disable=SC2016 # Match literal post-build path variables.
+grep -Fq 'update_trust_dir="$target_dir/usr/share/msd-update"' "$POST_BUILD" ||
+	fail "post-build does not set the trust directory under target/usr/share"
+# shellcheck disable=SC2016 # Match literal post-build path variables.
+grep -Fq -- '-out "$update_trust_dir/update-key.pem"' "$POST_BUILD" ||
+	fail "post-build does not write the update public key under /usr/share"
+# shellcheck disable=SC2016 # Match literal post-build path variables.
+grep -Fq '> "$update_trust_dir/key-origin"' "$POST_BUILD" ||
+	fail "post-build does not write key-origin under /usr/share"
+# shellcheck disable=SC2016 # Match literal post-build path variables.
+grep -Fq '> "$update_trust_dir/version"' "$POST_BUILD" ||
+	fail "post-build does not write version under /usr/share"
+if grep -Eq '(>|-out)[[:space:]].*etc/msd-update' "$POST_BUILD"; then
+	fail "post-build still writes a trust file under /etc/msd-update"
+fi
+grep -Fq '/usr/share/msd-update/version' "$POST_IMAGE" ||
+	fail "post-image does not read the version under /usr/share"
+if find "${REPO_ROOT}/board/cardputerzero/rootfs-overlay/etc" -path '*/msd-update/*' -print -quit | grep -q .; then
+	fail "rootfs overlay still contains /etc/msd-update trust files"
+fi
+printf 'ok - image trust files are installed and read under /usr/share/msd-update\n'
+
+grep -Fq '/usr/share/msd-update/version' "$QEMU_GUEST_TEST" ||
+	fail "QEMU guest test does not read the /usr/share version"
+grep -Fq 'target/usr/share/msd-update/version' "$QEMU_HOST_TEST" ||
+	fail "QEMU host test does not read the /usr/share version"
+if grep -Fq '/etc/msd-update/version' "$QEMU_GUEST_TEST" "$QEMU_HOST_TEST"; then
+	fail "a QEMU test still reads the old version path"
+fi
+printf 'ok - QEMU update tests read the version outside the /etc overlay\n'
 
 mkdir -p "$DT_DIR" "$P1_DIR" "$STATE_DIR"
 printf '100\n' > "$RUNNING_VERSION"

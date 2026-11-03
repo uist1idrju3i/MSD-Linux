@@ -218,10 +218,18 @@ else
 fi
 test -r "$signing_key"
 
-mkdir -p "$target_dir/etc/msd-update"
+legacy_update_dir="$target_dir/etc/msd-update"
+if [ -d "$legacy_update_dir" ]; then
+	rm -f "$legacy_update_dir/update-key.pem" \
+		"$legacy_update_dir/version" \
+		"$legacy_update_dir/key-origin"
+	rmdir "$legacy_update_dir"
+fi
+update_trust_dir="$target_dir/usr/share/msd-update"
+mkdir -p "$update_trust_dir"
 "$host_openssl" pkey -in "$signing_key" -pubout \
-	-out "$target_dir/etc/msd-update/update-key.pem"
-printf '%s\n' "$key_origin" > "$target_dir/etc/msd-update/key-origin"
+	-out "$update_trust_dir/update-key.pem"
+printf '%s\n' "$key_origin" > "$update_trust_dir/key-origin"
 
 # msd-update refuses bundles older than this number unless --allow-downgrade is given.
 update_version="${MSD_UPDATE_VERSION:-}"
@@ -239,7 +247,7 @@ if [ "${#update_version}" -gt 18 ]; then
 	printf 'MSD_UPDATE_VERSION must have at most 18 digits: %s\n' "$update_version" >&2
 	exit 1
 fi
-printf '%s\n' "$update_version" > "$target_dir/etc/msd-update/version"
+printf '%s\n' "$update_version" > "$update_trust_dir/version"
 
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"
 

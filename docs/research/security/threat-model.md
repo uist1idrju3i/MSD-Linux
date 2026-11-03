@@ -16,7 +16,7 @@ Raspberry Pi の secure-boot ガイドは Pi 4 以降の手順を説明してい
 
 ## 現行の対策と不足
 
-更新処理は `manifest.sig` を公開鍵で検証し、SHA-256 マニフェスト検査と書込み後の read-back を行います。公開鍵は post-build で `/etc/msd-update/update-key.pem` に配置されます。ただしカード全体を交換できる攻撃者への信頼の起点にはならず、署名鍵のリリース運用・更新・失効は別途管理が必要です。【一次】[更新処理](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)／[post-build](../../../board/cardputerzero/post-build.sh)
+更新処理は `manifest.sig` を公開鍵で検証し、SHA-256 マニフェスト検査と書込み後の read-back を行います。公開鍵は post-build で `/usr/share/msd-update/update-key.pem` に配置され、`/etc` overlay の対象外です。ただしカード全体を交換できる攻撃者への信頼の起点にはならず、署名鍵のリリース運用・更新・失効は別途管理が必要です。【一次】[更新処理](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)／[post-build](../../../board/cardputerzero/post-build.sh)
 
 rootfs は読み取り専用の SquashFS として構成されています。`/data` の ext4 マウントには `nodev` と `nosuid` が指定済みで、`noexec` は未指定です。`noexec` は更新処理や利用者が意図する実行ファイルを妨げる可能性があるため、利用方法を確認してから採否を決めます。QEMU では、`noexec` を足しても起動と `/data` の準備は変わらず、`/data` 上のファイルの直接実行だけが拒否されました。`sh` に渡す実行と、`/data/etc` を lowerdir にした `/etc` の overlay 経由の実行は防げません（[2026-10-21-qemu-data-noexec](../../experiments/2026-10-21-qemu-data-noexec.md)）。【一次】[現行 fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)／[イメージ構成](../../../board/cardputerzero/genimage.cfg)
 

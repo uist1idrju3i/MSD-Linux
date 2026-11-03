@@ -50,7 +50,7 @@ bundles="${build}/target/usr/share/msd-s10"
 "$unsquashfs" -no-progress -no-xattrs -d "${build}/target" "${IMAGES_DIR}/rootfs.squashfs" \
 	>"${build}/unsquashfs.log" 2>&1 || grep -Fq 'failed to change uid and gids' "${build}/unsquashfs.log"
 mkdir -p "$bundles"
-running_version="$(cat "${build}/target/etc/msd-update/version")"
+running_version="$(cat "${build}/target/usr/share/msd-update/version")"
 [[ "$running_version" =~ ^[1-9][0-9]{0,17}$ ]] ||
 	{ printf 'Invalid running version in rootfs: %s\n' "$running_version" >&2; exit 1; }
 printf '%s\n' "$running_version" >"${build}/running-version"

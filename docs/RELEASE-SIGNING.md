@@ -15,7 +15,7 @@
 | GitHub Environment | `release-signing` | 署名jobだけが参照する保護された環境 |
 | Environment secret | `MSD_RELEASE_ED25519_PRIVATE_KEY_PEM` | PEM形式の秘密鍵の内容。改行を含む |
 | 既存スクリプトの環境変数 | `MSD_UPDATE_SIGNING_KEY` | 秘密鍵の内容ではなく、署名job内の鍵ファイルへのパス |
-| image内の信頼鍵 | `/etc/msd-update/update-key.pem` | 秘密鍵と対になる公開鍵。初回導入時の信頼の出発点 |
+| image内の信頼鍵 | `/usr/share/msd-update/update-key.pem` | 秘密鍵と対になる公開鍵。初回導入時の信頼の出発点。`/etc` overlayの対象外 |
 
 Environment名とSecret名は新設案です。値を保存する前に、今後のworkflowで同じ名前を参照することを確認します。
 

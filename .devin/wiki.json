@@ -101,7 +101,7 @@
       "purpose": "SquashFS rootfs、tmpfs、ext4 の /data、/etc の overlay、初回の data 初期化と fsck を説明する",
       "page_notes": [
         {
-          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、docs/UPDATE.md を根拠にしてください。docs/research/storage/write-policy-and-s3.md の read-only 書き込み窓は未実装の案です。filesystem-candidates.md の K/P 系列は filesystem-sources.md の共通出典を参照し、定性的比較や他OSの事例を製品の実測値にしないでください。"
+          "content": "board/cardputerzero/rootfs-overlay/etc/fstab、board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data、board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay、board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow、board/cardputerzero/rootfs-overlay/usr/sbin/msd-update、board/cardputerzero/post-build.sh、docs/UPDATE.md を根拠にしてください。更新鍵・key-origin・最低更新番号は /usr/share/msd-update/ にあり、/etc overlay の対象外です。docs/research/storage/write-policy-and-s3.md の read-only 書き込み窓は未実装の案です。filesystem-candidates.md の K/P 系列は filesystem-sources.md の共通出典を参照し、定性的比較や他OSの事例を製品の実測値にしないでください。"
         }
       ]
     },

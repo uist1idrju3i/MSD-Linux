@@ -40,11 +40,11 @@ boot_partition=3
 
 - `/data` の重要なデータを別の媒体へ退避し、安定した電源と復旧用のPC・カードを用意します。A/Bは共有データや設定の変更まで巻き戻しません。
 - 端末に配置された公開鍵に対応する `msd-update-bundle.tar` を用意します。自分で構築した場合は `output/images/` に生成されます。現行の `msd-cardputerzero-build` artifactはSD image等を保存しますが、更新tarは保存しません。Releaseからの自動ダウンロードも未実装です。
-- `cat /etc/msd-update/key-origin` で由来を確認します。`development` は開発用鍵であり、本番配布の認証ではありません。未指定なら別のbuild出力で別の開発鍵になる場合があり、対応しないbundleは既存端末で拒否されます。
+- `cat /usr/share/msd-update/key-origin` で由来を確認します。`development` は開発用鍵であり、本番配布の認証ではありません。未指定なら別のbuild出力で別の開発鍵になる場合があり、対応しないbundleは既存端末で拒否されます。
 - 公開鍵のDER表現のSHA-256を、信頼する発行者の公開鍵fingerprintと照合します。秘密鍵を端末にコピーせず、署名エラー時に公開鍵をbundle側のものへ差し替えたり、検証を迂回したりしません。
 
   ```sh
-  openssl pkey -pubin -in /etc/msd-update/update-key.pem -outform DER |
+  openssl pkey -pubin -in /usr/share/msd-update/update-key.pem -outform DER |
       openssl dgst -sha256
   ```
 
@@ -65,7 +65,7 @@ manifest
 manifest.sig
 ```
 
-`manifest` の 1 行目は `version <番号>` で、2 行目以降は `sha256sum` と同じ形式の各イメージの SHA-256 です。番号は 10 進の整数で、build ごとに増やします。post-build は環境変数 `MSD_UPDATE_VERSION` を使い、指定がなければ本リポジトリの HEAD の commit 時刻（UNIX 時間）を使います。同じ番号を rootfs の `/etc/msd-update/version` にも書きます。
+`manifest` の 1 行目は `version <番号>` で、2 行目以降は `sha256sum` と同じ形式の各イメージの SHA-256 です。番号は 10 進の整数とし、build ごとに増加させます。post-build では環境変数 `MSD_UPDATE_VERSION` を使います。未指定時は本リポジトリの HEAD の commit 時刻（UNIX 時間）を採番に使う仕様です。同じ番号の保存先は rootfs の `/usr/share/msd-update/version` です。
 
 ```text
 version 1761400000
@@ -83,7 +83,7 @@ msd-update install /data/update.tar
 msd-update try
 ```
 
-`install` は稼働中の rootfs/boot を維持し、非アクティブスロットを更新先にする処理です。bundle のメンバー名、署名、SHA-256 を確かめ、`manifest` の番号を稼働中の `/etc/msd-update/version` と比べます。番号が稼働中より小さい bundle と、番号のない bundle は、既定では書き込まずに拒否します。古いバージョンへ戻すときだけ、`--allow-downgrade` を付けてください。番号が同じ bundle は受け入れる仕様です。確認後、`dd conv=fsync` でイメージを転送します。同じバイト数を読み戻し、ハッシュが一致することを確かめます。双方の検証後、`/data/msd-update/installed` に試験対象を記録する流れです。
+`install` は稼働中の rootfs/boot を維持し、非アクティブスロットを更新先にする処理です。bundle のメンバー名、署名、SHA-256 を確かめ、`manifest` の番号を稼働中の `/usr/share/msd-update/version` と比べます。番号が稼働中より小さい bundle と、番号のない bundle は、既定では書き込まずに拒否します。古いバージョンへ戻すときだけ、`--allow-downgrade` を付けてください。番号が同じ bundle は受け入れる仕様です。確認後、`dd conv=fsync` でイメージを転送します。同じバイト数を読み戻し、ハッシュが一致することを確かめます。双方の検証後、`/data/msd-update/installed` に試験対象を記録する流れです。
 
 `try` は検証済み更新の状態ファイルと `autoboot.txt` のスロット指定が一致する場合だけ、`reboot '0 tryboot'` を実行します。firmware は p1 の `[tryboot]` で指定されたブート領域を一度だけ選びます。次回の通常起動では tryboot が解除されるため、試験中に再起動しても未コミットの更新へ固定されません。
 
@@ -111,7 +111,7 @@ rootfs は Zstandard 圧縮 SquashFS で読み取り専用です。fstab が tmp
 
 起動時は p7 の ext4 を `fsck.ext4 -p` で確認します。superblock magic がなく、パーティション全体がゼロの場合だけ `mkfs.ext4 -b 4096` で初期化する仕様です。未知の非空パーティションはフォーマットせず、起動を停止する設計です。初期化または fsck の後に `/data` へマウントします。新規 filesystem のブロックサイズは 4 KiB です。既存デバイスの 1 KiB filesystem は再フォーマットも移行もせず、新しい mount option でそのまま使用します。mount option は `noatime,nodev,nosuid,data=ordered,errors=remount-ro` です。`commit=` は kernel の既定値を使います。
 
-`/etc` は overlayfs で構成します。`/etc` と `/data/etc` を lower layer、`/run` 上の tmpfs を upper/work layer とするため、通常の `/etc` への変更は再起動で消えます。再起動後も残す設定ファイルは `/data/etc` に保存してください。サービスがその場所を直接参照しない場合は、個別の bind mount などを追加します。
+`/etc` は overlayfs で構成します。`/etc` と `/data/etc` を lower layer、`/run` 上の tmpfs を upper/work layer とするため、通常の `/etc` への変更は再起動で消えます。再起動後も残す設定ファイルは `/data/etc` に保存してください。サービスがその場所を直接参照しない場合は、個別の bind mount などを追加します。更新鍵、鍵の由来、最低更新番号は `/usr/share/msd-update/` に置きます。このディレクトリーは `/etc` を対象とする overlay の外にあるため、`/data/etc` の内容で上書きされません。
 
 p7は初期イメージで64 MiBです。現在は `S02msd-data` が `msd-data-grow` を呼び、p4とp7の末尾をディスク末尾へ広げ、`resize2fs` を実行する実装があります。失敗時はエラーを出し、`/data` をマウントしたまま続けます。[構築手順](BUILD.md#現在の検証状況) には拡大imageでのローカルQEMU確認を記録していますが、実機での拡張は未確認です。以前の「自動拡張は未実装」という記述を訂正しました。
 

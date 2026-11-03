@@ -41,7 +41,7 @@ PC、microSDリーダー、内容を消してよいmicroSD、別媒体へのバ�
 
 CardputerZeroの電源を切ってからmicroSDを挿入し、安定した電源で起動します。LCD・内蔵キーボードを含む起動と操作は実機での確認が残っています。[権限調査の設定照合](research/security/README.md#照合した範囲と限界)では、現行Buildrootの展開設定はrootログイン有効・初期パスワード空・console gettyありでした。これは設定値であり、実機でのログイン確認ではありません。無認証の開発consoleを本番の認可手段として扱わず、不特定の人やネットワークにさらさないでください。製品の利用者・管理者認可を分ける方針は未確定です。
 
-管理用consoleで操作できた場合、READMEの確認コマンドと [実機確認](VERIFY.md) に沿い、slot、鍵の由来、更新番号、rootfs、`/data`、入力・表示を記録します。`msd-update status` がDTの情報を読めない場合、`MSD_UPDATE_DT_DIR` 等の試験用環境変数で見かけの成功にしてはいけません。
+管理用consoleで操作できた場合、READMEの確認コマンドと [実機確認](VERIFY.md) に沿い、slot、`/usr/share/msd-update/key-origin` の鍵の由来、`/usr/share/msd-update/version` の更新番号、rootfs、`/data`、入力・表示を記録します。これらの信頼情報は `/etc` overlay の対象外です。`msd-update status` がDTの情報を読めない場合、`MSD_UPDATE_DT_DIR` 等の試験用環境変数で見かけの成功にしてはいけません。
 
 p7はimage内で64 MiBです。起動時に `S02msd-data` が `msd-data-grow` を呼び、拡張パーティションp4とp7をディスク末尾まで拡張し、`resize2fs` を実行する実装があります。失敗時はエラーを記録し、`/data` のマウントを維持します。`df -h /data` と起動ログで結果を確認します。実装の存在と、全カードでの拡張成功は別です。実機確認なしに手動でパーティションを削除・再作成しないでください。
 

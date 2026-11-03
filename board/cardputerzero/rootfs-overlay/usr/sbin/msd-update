@@ -7,8 +7,8 @@ P1_MOUNTPOINT="${MSD_UPDATE_P1_MOUNTPOINT:-/run/msd-bootsel}"
 P1_DIR_OVERRIDE="${MSD_UPDATE_P1_DIR:-}"
 STATE_DIR="${MSD_UPDATE_STATE_DIR:-/data/msd-update}"
 PARTITION_PREFIX="${MSD_UPDATE_PARTITION_PREFIX:-/dev/mmcblk0p}"
-UPDATE_KEY="${MSD_UPDATE_KEY_PATH:-/etc/msd-update/update-key.pem}"
-VERSION_FILE="${MSD_UPDATE_VERSION_PATH:-/etc/msd-update/version}"
+UPDATE_KEY="${MSD_UPDATE_KEY_PATH:-/usr/share/msd-update/update-key.pem}"
+VERSION_FILE="${MSD_UPDATE_VERSION_PATH:-/usr/share/msd-update/version}"
 WORK_DIR=
 P1_MOUNTED=0
 
