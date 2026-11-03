@@ -108,7 +108,8 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 比較・履歴・出典と意匠
 
-- [使用部品・ツールの代替比較](docs/research/alternatives/README.md)（コンパイラー・runtime・libc、基本コマンド・init、暗号・TLS・署名、filesystem・更新framework・TUF metadata、[通信](docs/research/alternatives/network.md)、[周辺機能](docs/research/alternatives/peripherals.md)、[圧縮・host依存](docs/research/alternatives/build-support.md)、[開発・CI](docs/research/alternatives/development.md)を比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は役割別の索引で、全候補の同等性・license・実機動作の認定ではない）
+- [使用部品・ツールの代替比較](docs/research/alternatives/README.md) — コンパイラー・libc、コマンド・init、暗号、保存・更新、通信・周辺、構築・CIを責務別に比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は索引で、同等性・全license・実機動作の認定ではない。
+- [全構成要素の母集団と比較の範囲](docs/research/alternatives/inventory-boundaries.md) — OCIの全231 APTと129 source、Actionsの11参照・859 npm名・親、Go moduleを対応づけ、実bundle等の未確認範囲を分離。
 - [公式サイトの HTML・CSS](docs/research/site-html-css.md)
 - [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)

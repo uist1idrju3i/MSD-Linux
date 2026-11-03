@@ -33,6 +33,8 @@
 
 同じ本文への対応には、同じ責務としての比較と、親packageの移植が必要な比較を含みます。全67要素にdrop-inの代替があるという意味ではありません。GCC・libc等の外部toolchain内包物、OCIのAPT、Actionのnpm内包物、runnerはこの67行だけでは覆えないため、本文と依存監査の範囲を併読してください。実bundle・全配布binary・全licenseの監査と、深掘り待ちの候補は未確認のまま残します。
 
+Docker/Actions等を含む[全体の範囲と未確認事項](inventory-boundaries.md)に、231 APT・129 source・11 Action参照・859 npm名・11 Go moduleの比較先と親を追加しました。[OCIの責務別比較](oci-components.md)と[Actionsの機能・権限・置換費用](ci-actions.md)を併読してください。有限な台帳の全行照合と、実bundle・全license・代替構成の実行確認は別です。
+
 ## 判定をそろえる
 
 - **現行維持**: 比較の基準に残すという提案です。最新・最速・最安全との認定ではありません。

@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-03-alternative-coverage](2026-11-03-alternative-coverage.md) | なし | 2026-11-03 | 母集団の静的照合 | 67 Buildroot、231 APT/129 source、11 Action、859 npm名/1574組、11 Go moduleを比較先へ対応。5回一致と4負対照。全license・実bundle・代替実行の確認とは別。 |
 | [2026-11-03-userspace-security-layout](2026-11-03-userspace-security-layout.md) | なし | 2026-11-03 | 本文の静的照合済み | 3原文の26範囲、原文要約4行、基準CSV72件を5回照合。10対照を検出。初回の対照対象の誤りとリンクの失敗は別CSVへ保存。製品build・実機試験とは別。 |
 | [2026-11-02-storage-document-layout](2026-11-02-storage-document-layout.md) | なし | 2026-11-02 | 本文の静的照合済み | 4原文の全範囲を11ブロックで保存し、5回照合と4改変対照を確認。基準のCSV59件は未変更。初回の改変対象の誤りも保持。 |
 | [2026-11-02-verification-document-layout](2026-11-02-verification-document-layout.md) | なし | 2026-11-02 | 静的照合 | 79件の問いを31主題へ統合。9本文と原記録154行を5回照合し、4改変を拒否。過去の測定CSV51ファイルは未変更。 |
