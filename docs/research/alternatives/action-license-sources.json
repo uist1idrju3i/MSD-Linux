@@ -1,0 +1,92 @@
+[
+  {
+    "repository": "actions/checkout",
+    "commit": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "url": "https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/LICENSE",
+    "checked_at": "2026-11-03T01:00:39.121668+00:00",
+    "status": 200,
+    "bytes": 1097,
+    "sha256": "3e855ffa704114a51628ef8f0bf3aeb41728adf9d9070e263bf58aa5640b0eb5"
+  },
+  {
+    "repository": "actions/upload-pages-artifact",
+    "commit": "fc324d3547104276b827a68afc52ff2a11cc49c9",
+    "url": "https://raw.githubusercontent.com/actions/upload-pages-artifact/fc324d3547104276b827a68afc52ff2a11cc49c9/LICENSE",
+    "checked_at": "2026-11-03T01:00:39.253787+00:00",
+    "status": 200,
+    "bytes": 1069,
+    "sha256": "b1bb6c1d76d90892ac4a9d1cca6380316df22671560c6cf4a5e298dcfa26bb4d"
+  },
+  {
+    "repository": "actions/deploy-pages",
+    "commit": "368f82528645a54fb793d4d04e342629a3f51346",
+    "url": "https://raw.githubusercontent.com/actions/deploy-pages/368f82528645a54fb793d4d04e342629a3f51346/LICENSE",
+    "checked_at": "2026-11-03T01:00:39.640089+00:00",
+    "status": 200,
+    "bytes": 1069,
+    "sha256": "741d1031b351a6dc8421130e3282456afe884068596134683fd5e5f8188363ee"
+  },
+  {
+    "repository": "actions/upload-artifact",
+    "commit": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+    "url": "https://raw.githubusercontent.com/actions/upload-artifact/cf430e030ddbb5b0abf93d22962f4752f3646cd9/LICENSE",
+    "checked_at": "2026-11-03T01:00:39.792885+00:00",
+    "status": 200,
+    "bytes": 1097,
+    "sha256": "3e855ffa704114a51628ef8f0bf3aeb41728adf9d9070e263bf58aa5640b0eb5"
+  },
+  {
+    "repository": "actions/cache",
+    "commit": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+    "url": "https://raw.githubusercontent.com/actions/cache/55cc8345863c7cc4c66a329aec7e433d2d1c52a9/LICENSE",
+    "checked_at": "2026-11-03T01:00:39.946696+00:00",
+    "status": 200,
+    "bytes": 1096,
+    "sha256": "7d070f6b64d9bcc530fe99cc21eaaa4b3c364e0b2d367d7735671fa202a03b32"
+  },
+  {
+    "repository": "actions/attest-sbom",
+    "commit": "c604332985a26aa8cf1bdc465b92731239ec6b9e",
+    "url": "https://raw.githubusercontent.com/actions/attest-sbom/c604332985a26aa8cf1bdc465b92731239ec6b9e/LICENSE",
+    "checked_at": "2026-11-03T01:00:40.070799+00:00",
+    "status": 200,
+    "bytes": 1053,
+    "sha256": "32d0bae2419f014f5066af5915264c966efdb7b6e7fe8f90cf87dc75c5a8d6d0"
+  },
+  {
+    "repository": "actions/attest-build-provenance",
+    "commit": "4d101475d8b20a2381f78447822ac1eab6504dd8",
+    "url": "https://raw.githubusercontent.com/actions/attest-build-provenance/4d101475d8b20a2381f78447822ac1eab6504dd8/LICENSE",
+    "checked_at": "2026-11-03T01:00:40.224321+00:00",
+    "status": 200,
+    "bytes": 1053,
+    "sha256": "32d0bae2419f014f5066af5915264c966efdb7b6e7fe8f90cf87dc75c5a8d6d0"
+  },
+  {
+    "repository": "actions/upload-artifact",
+    "commit": "bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+    "url": "https://raw.githubusercontent.com/actions/upload-artifact/bbbca2ddaa5d8feaa63e36b76fdaad77386f024f/LICENSE",
+    "checked_at": "2026-11-03T01:00:40.530973+00:00",
+    "status": 200,
+    "bytes": 1097,
+    "sha256": "3e855ffa704114a51628ef8f0bf3aeb41728adf9d9070e263bf58aa5640b0eb5"
+  },
+  {
+    "repository": "actions/attest",
+    "commit": "59d89421af93a897026c735860bf21b6eb4f7b26",
+    "url": "https://raw.githubusercontent.com/actions/attest/59d89421af93a897026c735860bf21b6eb4f7b26/LICENSE",
+    "checked_at": "2026-11-03T01:00:40.701398+00:00",
+    "status": 200,
+    "bytes": 1053,
+    "sha256": "32d0bae2419f014f5066af5915264c966efdb7b6e7fe8f90cf87dc75c5a8d6d0"
+  },
+  {
+    "repository": "actions/attest",
+    "commit": "508db95dd578ae2727ebd6217d5ba78e4fbda05d",
+    "url": "https://raw.githubusercontent.com/actions/attest/508db95dd578ae2727ebd6217d5ba78e4fbda05d/LICENSE",
+    "checked_at": "2026-11-03T01:00:40.873209+00:00",
+    "status": 200,
+    "bytes": 1053,
+    "sha256": "32d0bae2419f014f5066af5915264c966efdb7b6e7fe8f90cf87dc75c5a8d6d0"
+  }
+]

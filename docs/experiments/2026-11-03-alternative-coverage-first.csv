@@ -1,0 +1,5 @@
+attempt,result,observation,exit_code
+stdin-collector,failed,empty output; JSON decoding failed,not-recorded
+raw-name-comparison,failed,127 keys per side unmatched; multiarch suffix normalization required,not-recorded
+run-first,failed,KeyError: packages; composite lockfile explicitly not-present,not-recorded
+run-v2,passed,5 deterministic repeats and 4 negative controls,0
