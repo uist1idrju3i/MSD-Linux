@@ -124,7 +124,7 @@ def fixture() -> pathlib.Path:
     )
     (path / "docker/msd-dev.Dockerfile").write_text(
         "ARG ACTIONLINT_VERSION=1.7.12\n"
-        "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
+        "ARG DEBIAN_SNAPSHOT=20261103T023120Z\n"
         "ARG QEMU_VERSION=11.1.2\n"
         "ARG QEMU_SHA256=" + "1" * 64 + "\n"
         "ARG QEMU_SIGNING_FINGERPRINT=CEACC9E15534EBABB82D3FA03353C9CEF108B584\n"
@@ -132,7 +132,7 @@ def fixture() -> pathlib.Path:
         "ARG ACTIONLINT_VERSION\n"
         "FROM debian:trixie-slim@sha256:" + "b" * 64 + " AS msd-dev\n"
         "ARG ACTIONLINT_VERSION\n"
-        "ARG DEBIAN_SNAPSHOT=20261019T190000Z\n"
+        "ARG DEBIAN_SNAPSHOT=20261103T023120Z\n"
         "ARG SHELLCHECK_VERSION=0.11.0\n"
         "ARG SHELLCHECK_SHA256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198\n"
     )
@@ -579,7 +579,7 @@ with tempfile.TemporaryDirectory() as directory:
         "| Debian base image digest | `sha256:" + "b" * 64 + "` | `sha256:"
         + "b" * 64 + "` | 最新 |"
     ) in report
-    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 最新 |" in report
+    assert "| Debian snapshot date | `20261103T023120Z` | `-` | 最新 |" in report
     assert "| Buildroot LTS | `2026.08.x` | `2026.02.x` | 参考 |" in report
     assert (
         "| Bootlin toolchain (aarch64 glibc stable) | `2025.08-1` | "
@@ -704,9 +704,9 @@ with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
-        assert module.upstream(report_path, passed, today=date(2026, 11, 19)) == 0
+        assert module.upstream(report_path, passed, today=date(2026, 12, 4)) == 0
     report = report_path.read_text()
-    assert "| Debian snapshot date | `20261019T190000Z` | `-` | 更新あり |" in report
+    assert "| Debian snapshot date | `20261103T023120Z` | `-` | 更新あり |" in report
     assert output.getvalue().strip() == "更新あり"
 print("ok - reports snapshots older than 30 days as update candidates")
 
