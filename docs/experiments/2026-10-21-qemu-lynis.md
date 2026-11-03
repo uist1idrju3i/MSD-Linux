@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。指摘への対応は未実施）
 - 日付: 2026-10-21
 - 担当: Devin
-- 関連: docs/research/verification/qemu-coverage.md の小項目「Lynis」、docs/research/security-hardening.md、docs/research/cpu-irq-and-sysctl.md
+- 関連: docs/research/verification/qemu-coverage.md の小項目「Lynis」、docs/research/security/threat-model.md、docs/research/cpu-irq-and-sysctl.md
 
 ## 目的
 

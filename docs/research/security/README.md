@@ -1,6 +1,6 @@
 # OpenBSDの考え方を取り込む権限設計
 
-[RESEARCH](../../../RESEARCH.md) / [物理アクセスと費用](../security-hardening.md) / [接続管理の比較](../alternatives/network.md)
+[RESEARCH](../../../RESEARCH.md) / [物理アクセスと費用](threat-model.md) / [接続管理の比較](../alternatives/network.md)
 
 ## この調査の結論
 
@@ -10,6 +10,8 @@ OpenBSDから取り入れるのは、**危険な入力を扱う処理に大き�
 
 | 読む目的 | 本文 |
 |---|---|
+| カード交換・bootの信頼点と対策費用 | [脅威モデル](threat-model.md) |
+| 当時の候補・非採用理由と現在の注記 | [強化項目の履歴](history/README.md) |
 | 原則をLinuxへどう適用するか | [OpenBSDとLinuxの違い](principles.md) |
 | 現行のroot処理、可変設定、device・IPCの境界 | [処理ごとの権限設計](privileges.md) |
 | Wi-Fi等を動かす前に何を強制するか | [通信開始と多層防御](network.md) |
@@ -40,4 +42,4 @@ OpenBSDから取り入れるのは、**危険な入力を扱う処理に大き�
 
 製品版の一般userと管理操作、初回設定・復旧方法は要件確認待ちです。無認証rootコンソールを製品版の安全な既定値として追認せず、開発用と分ける案を提示していますが、ログイン設定は変更していません。公開SemVerと内部更新番号の契約、更新鍵の運用も別の未決定事項です。
 
-hardware secure bootの文書化された経路がないBCM2837を前提に、署名更新をsecure bootとは呼びません。カード全体を交換できる攻撃者、同じカード上の公開鍵・検証処理・root digest、rootを既に得た攻撃者に対する限界は[脅威モデル](../security-hardening.md)を参照してください。
+hardware secure bootの文書化された経路がないBCM2837を前提に、署名更新をsecure bootとは呼びません。カード全体を交換できる攻撃者、同じカード上の公開鍵・検証処理・root digest、rootを既に得た攻撃者に対する限界は[脅威モデル](threat-model.md)を参照してください。

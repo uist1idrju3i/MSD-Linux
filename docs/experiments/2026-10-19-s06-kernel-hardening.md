@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-19
 - 担当: Devin（実装エージェント）
-- 関連: [security-hardening.md](../research/security-hardening.md)、base commit `ecc0dead81285f8d5a8f9692b5cd1bd257e1a58f`
+- 関連: [脅威モデル](../research/security/threat-model.md)、base commit `ecc0dead81285f8d5a8f9692b5cd1bd257e1a58f`
 
 ## 目的と仮説
 

@@ -1,0 +1,17 @@
+index,command,exit_code,status,log_sha256,diagnostic
+0,python3 docs/experiments/2026-11-03-userspace-security-layout.py --base 5a3fec689ed47afccec4eb7a2ba8bb41b98b8319 --output docs/experiments/2026-11-03-userspace-security-layout-v3.csv,0,pass,6f515e2585f8e30fcedf5002ab4bcceda8be15dfd9f90dcd46ef981c081a289a,
+1,python3 .github/scripts/check-links.py,1,fail,2a030e0959e738235e0d06774b398c1b0ebdeea9a37d9226f37bd1ada642b73f,"docs/experiments/2026-11-03-userspace-security-layout.md:47: error: リンク先が追跡対象にありません: 2026-11-03-userspace-security-checks-final.csv
+docs/experiments/2026-11-03-userspace-security-checks-first.csv:2: error: 古い文書パスが追跡対象にありません: docs/research/security/history/kernel-and-mounts.md:9:
+docs/experiments/2026-11-03-userspace-security-checks-first.csv:3: error: 古い文書パスが追跡対象にありません: docs/research/storage/rootfs-read-order.mdを参照してください
+docs/experiments/2026-11-03-userspace-security-checks-first.csv:4: error: 古い文書パスが追跡対象にありません: docs/research/ssh-vpn-and-keys.mdは調査のみの範囲です
+docs/experiments/2026-11-03-userspace-security-checks-first.csv:5: error: 古い文書パスが追跡対象にありません: docs/experiments/2026-11-03-userspace-security-layout.md:34:
+docs/experiments/2026-11-03-userspace-security-checks-first.csv:5: error: 古い文書パスが追跡対象にありません: docs/experiments/2026-11-03-userspace-security-layout-repeat.csv
+Summary: links_checked=2425 anchors_checked=92 stale_paths_checked=636 errors=6 files=532
+"
+2,python3 .github/scripts/check-jisx0213.py,0,pass,7a7e1f3d83cf05cf8ba73548e8aa532baac4e6be3807570b53513fa884ceef85,
+3,python3 .github/scripts/check-doc-size.py,0,pass,7c9eac22e17a756a0ebdad60cbf46a958e7273cc720bb2961148851bf49d68e4,
+4,python3 .github/scripts/check-skills.py,0,pass,de362b927e5dcf3bdfe3326d72fea463672c2e225015996b2809fd3e08d661b3,
+5,python3 .github/scripts/check-site.py,0,pass,fc24f7aa230ed54388d78f4a3df6564948c54ab6631c88af1bb09f826e4c8788,
+6,git diff --check,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,
+7,git diff --cached --check,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,
+8,git ls-files --unmerged,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,

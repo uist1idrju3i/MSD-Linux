@@ -26,7 +26,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 |---|---|---|
 | 起動完了条件 | 主指標は **T_shell**（LCD にプロンプトが表示され、キー入力できる時点）、副指標は **T_init**（PID 1 の完了マーカー）とし、両方を測ります。 | 測定方針 |
 | 読み取り専用 rootfs | SquashFS（`-sort` で優先度の高いファイルを先に配置）と EROFS（`-z` を指定すれば圧縮でき、`--sort` は tar 入力向け）を実機で比較する案です。どちらが速いかは未測定です。 | 未決 |
-| init と libc | 初期案は BusyBox init + mdev + glibc とします。mdev への udev ルール移植、必要なら musl との比較、systemd の最小化も検討します。起動時間は未測定です。[関連資料](../userspace-and-security.md) | 未着手 |
+| init と libc | 初期案は BusyBox init + mdev + glibc とします。mdev への udev ルール移植、必要なら musl との比較、systemd の最小化も検討します。起動時間は未測定です。[関連資料](../userspace/README.md) | 未着手 |
 | A/B 方式 | MBR + tryboot / autoboot.txt + RAUC custom、U-Boot 系、Rugix を候補とします。tryboot と watchdog が CM0 で動作するか未確認です。FAT の boot 領域が単一障害点となる可能性があります（推測）。 | 未決 |
 | カーネル版 | Linux 6.18.y、7.2.y、7.3.y を候補とします。7.2.y / 7.3.y の PREEMPT は LAZY / FULL のみです。7.1 で DRM API が変わり、7.3 の alias unmap 再適用後の CM0 起動は未確認です。 | 未決 |
 | 開発中のログ | 開発ビルドでは ext4 に記録し、電断試験時は専用領域または pstore に切り替える案です。完全 read-only との両立方法と、測定条件の差を記録する必要があります。 | 未決 |
@@ -38,7 +38,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 |---|---|
 | 起動完了条件・測定 | [実機で測る項目](hardware-measurements.md#実機が届いたら最初に測る項目優先順の案) |
 | カーネル・UI | [起動・カーネル調査](../boot/sequence.md) |
-| rootfs・init・libc | [ユーザー空間・セキュリティ調査](../userspace-and-security.md) |
+| rootfs・init・libc | [ユーザー空間・セキュリティ調査](../userspace/README.md) |
 | A/B・電源断 | [電源・更新方式の調査](../storage/README.md) |
 | 開発中のログ | [開発中の観測手段](observability.md#開発中の観測手段) |
 | SSH / VPN | [SSH・VPN・鍵保管の調査](../ssh-vpn-and-keys.md) |

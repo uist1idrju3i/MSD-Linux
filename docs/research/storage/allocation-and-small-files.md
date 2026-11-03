@@ -30,7 +30,7 @@ ext4 は既定で write barrier を有効にします。電断時の順序保証
 
 `mke2fs -E stride` は RAID の chunk／stripe geometry 向けに文書化されており、一般的な microSD の AU や消去単位を指定する設定としては使いません。【一次】[mke2fs(8)](https://man7.org/linux/man-pages/man8/mke2fs.8.html)
 
-SquashFS／EROFS の圧縮ブロックサイズと rootfs の比較は、既存の[ユーザー空間・セキュリティ調査](../userspace-and-security.md)にも記載しています。
+SquashFS／EROFS の圧縮ブロックサイズと rootfs の比較は、既存の[ユーザー空間・セキュリティ調査](../userspace/README.md)にも記載しています。
 
 ## 割り当て単位（クラスタ・ブロック）と小さいファイル
 

@@ -1,8 +1,16 @@
 # 訂正済み事項
 
+## 2026-11-03 のユーザー空間・強化項目の整理
+
+| 原記述・混在 | 訂正と理由 | 根拠 |
+|---|---|---|
+| BusyBoxの`sysctl -p`は`sysctl.d`も読む | 固定BusyBox 1.38.0は既定で`/etc/sysctl.conf`、引数があればそのファイルを順に読む。directoryを自動で列挙しない。起動scriptが明示して複数ファイルを渡す処理とは別 | [固定sourceの追跡](security/history/kernel-and-mounts.md#busyboxのsysctl読込み) |
+| libcの詳細表と後半の未確認の要約 | 同じ原稿内でも確認状態が違う。版・数値・URLを後の知識で置換せず、重複要約の原文とhashはCSV、詳細はlibc履歴、現在の候補比較は代替比較へ分ける | [原文要約](userspace/original-summaries.csv)、[libc履歴](userspace/libc-history.md)、[現在の比較](alternatives/libc.md) |
+| systemdのunit例とBusyBox製品構成が同じ段落にある | 当時の条件付きの例として保持し、現行のPID1・mdev・mount実装の説明とは分ける。kernel設定や候補表をruntimeの強制済みと読まない | [強化項目の読取り方](security/history/README.md)、[ユーザー空間](userspace/README.md) |
+
 ## 2026-11-02 の権限設計と強化項目
 
-[日付付き強化項目](security-2026-11-hardening-list.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
+[日付付き強化項目](security/history/README.md)の採用方向と現行実装を分け、設定から実行時の強制を推定していた箇所を訂正しました。数値・過去の実験結果を新しい製品の試験結果へ置き換えてはいません。
 
 | 原記述 | 訂正と理由 | 根拠 |
 |---|---|---|
@@ -12,7 +20,7 @@
 | do-udp設定だけで平文fallbackを防ぐ、時刻の乱れが署名検証自体を崩す | 全平文通信の停止保証を撤回し、UDP/TCP・上流TLS・fallbackの確認を要件化。raw Ed25519の数学的検証は壁時計不要で、TLS・metadata期限・運用は別 | [DNS・時刻・更新](security/network.md) |
 | NoNewPrivilegesをnosuid/LSMで代替 | no_new_privsはexec時の昇格等に関する別のkernel機構。保有権限のdropやFD移譲制限の代用ではなく、LSM遷移との順序も試験する | [Linuxの仕組み](security/principles.md) |
 | Quad9でDNS層は対応済み、noexecならdataは実行されずhost AVと同じ効果 | DNS設定は未稼働。noexecはinterpreterやetc overlayを一般には防がず、dm-verityも製品未導入。hostでのscanとdevice実行時の検知は対象・限界が異なる | [通信設計](security/network.md)／[可変設定](security/privileges.md)／[既存noexec試験](../experiments/2026-10-21-qemu-data-noexec.md) |
-| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security-hardening.md)／[処理別設計](security/privileges.md) |
+| A/Bと署名検証を含む設計・試験が未実施 | raw Ed25519の現行実装と既存host試験を区別。鍵の配布・更新・失効、復旧、可変etcが正本を隠す境界が未解決 | [現行対策と不足](security/threat-model.md)／[処理別設計](security/privileges.md) |
 
 ## 2026-11-02 の圧縮library比較
 

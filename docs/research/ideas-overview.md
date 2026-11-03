@@ -46,13 +46,13 @@ RESEARCH.md から分割した節です。
 | 信頼性 | [更新記録の fsync/rename 原子性](storage/README.md) | 確定記録の破損リスク低減 | 更新処理実装・試験 | FAT 上の原子性未保証 | QEMU: 更新処理 / 実機: 電断 | P1 | 一部採用（fsync・一時ファイル rename、電断未検証） |
 | 信頼性 | [p7 ext4 を `msd-data-grow` で拡張](storage/README.md) | 利用可能容量を増やす | first-起動 script | 中断時の FS 整合性 | QEMU: サイズ変更 / 実機: 電断 | P2 | 採用済み |
 | 信頼性 | [RAUC / SWUpdate / Mender / Rugix 比較](storage/README.md) | 更新方式を選ぶ | 導入・保守負担 | ファームウェア/bootchooser 互換性 | QEMU: package / 実機: ロールバック | P2 | 未着手 |
-| セキュリティ | [署名検証・公開鍵配置と鍵運用](../../docs/research/security-hardening.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
-| セキュリティ | [dm-verity と trusted root digest](../../docs/research/security-hardening.md) | root block 改ざん検知 | 起動 cmdline・digest 管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | QEMU 検証は完了した。製品統合と信頼起点の確認は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 |
-| セキュリティ | [`nosuid,nodev,noexec` と sysctl](../../docs/research/security-hardening.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | QEMU 確認済み・実機とアプリは未確認（[記録](../../docs/experiments/2026-10-21-qemu-data-noexec.md)） |
-| セキュリティ | [SSP / FORTIFY / RELRO / PIE](../../docs/research/security-hardening.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
-| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](../../docs/research/security-hardening.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
-| セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](../../docs/research/security-hardening.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
-| セキュリティ | [対応 secure-起動 SoC への移行](../../docs/research/security-hardening.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
+| セキュリティ | [署名検証・公開鍵配置と鍵運用](security/threat-model.md) | 更新物の真正性 | 署名鍵の運用 | 全 microSD 交換は防げない | QEMU: reject / 実機: 信頼連鎖 | P1 | 一部採用（署名検証・鍵配置あり、鍵運用未確認） |
+| セキュリティ | [dm-verity と trusted root digest](security/threat-model.md) | root block 改ざん検知 | 起動 cmdline・digest 管理 | digest が同じカードなら無効 | QEMU: corruption / 実機: 信頼起点 | P2 | QEMU 検証は完了した。製品統合と信頼起点の確認は未実施（[記録](../experiments/2026-10-21-qemu-dm-verity.md)）。 |
+| セキュリティ | [`nosuid,nodev,noexec` と sysctl](security/threat-model.md) | `/data` からの権限昇格面を減らす | マウント・互換試験 | アプリ互換性 | QEMU: マウント / 実機: アプリ | P1 | QEMU 確認済み・実機とアプリは未確認（[記録](../../docs/experiments/2026-10-21-qemu-data-noexec.md)） |
+| セキュリティ | [SSP / FORTIFY / RELRO / PIE](security/threat-model.md) | exploit mitigation（FORTIFY_SOURCE_3 は現行設定） | binary サイズ・ビルド時間 | toolchain/package 互換 | QEMU: ビルド / 実機: アプリ | P2 | 一部採用（FORTIFY_SOURCE_3、残り未監査） |
+| セキュリティ | [A/B 更新の署名・SHA-256 manifest・読込-back](security/threat-model.md) | 書込み破損検出・スロットイメージ確認 | 現行更新処理 | 署名鍵の配布・更新・失効手順は要確認 | QEMU: 正常/破損 bundle / 実機: 書込み復旧 | P1 | 採用済み |
+| セキュリティ | [未使用 Wi-Fi/BT/USB surface の削減](security/threat-model.md) | attack surface を縮小 | 機能・保守判断 | 無線/USB 機能喪失 | QEMU: 設定 / 実機: peripheral | P2 | 未着手 |
+| セキュリティ | [対応 secure-起動 SoC への移行](security/threat-model.md) | ファームウェア信頼連鎖を追加 | 高い BOM・移植費 | board/起動 migration | QEMU: 非対象 / 実機: BootROM | P3 | 未着手 |
 | ハードウェア | [ドライバー / ファームウェア / overlay の実機対応表](../../docs/research/hardware-spec.md#ハードウェア機能の対応表) | 未対応・遅延可能機能を把握 | 各機能の個別試験 | 初期化探索成功だけで動作を誤認 | QEMU: 一部 / 実機: 全周辺 | P1 | 一部調査済み（実機動作未確認） |
 | ハードウェア | [IR / camera / IP2315 charger の対応調査](hardware-spec.md#目標との差分) | 未実装機能との境界を明確化 | media/charger ドライバー調査 | ハードウェア revision 依存 | QEMU: 設定 / 実機: I/O | P2 | 一部調査済み（実機対応未確認） |
 | 試験・保守 | [更新中を含む 200 回電源断試験案](storage/README.md) | 電断失敗 rate を評価 | 長時間・試験治具 | 例示合格条件で保証ではない | QEMU: 不可 / 実機: 反復試験 | P1 | 未着手 |

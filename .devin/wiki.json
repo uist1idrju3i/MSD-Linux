@@ -136,7 +136,7 @@
       "purpose": "脅威モデル、採用済みの対策、費用対効果で分類した候補（カーネル、sysctl、マウントオプション、更新署名、無線と USB）を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md のセキュリティに関する節、docs/research/userspace-and-security.md、docs/research/ssh-vpn-and-keys.md、docs/research/security-hardening.md を根拠にしてください。"
+          "content": "RESEARCH.md、docs/research/userspace/README.md、init-history.md、libc-history.md、docs/research/storage/rootfs-read-order.md を参照してください。セキュリティは docs/research/security/README.md 以下の現在の権限設計、threat-model.md の物理アクセス、history/README.md 以下の過去の候補を区別します。原文・版・未確認の条件を現在の採用状態へ読み替えず、kernel設定とruntimeの強制、QEMUと実機を分けます。docs/research/ssh-vpn-and-keys.md は調査のみの範囲です。"
         }
       ]
     },

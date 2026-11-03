@@ -37,9 +37,9 @@ Buildroot 維持の判断は変えません。Yocto で作りやすいことは�
 
 | 候補 | 今回の判断 | 再検討に必要な根拠 |
 |---|---|---|
-| dm-verity | 製品への導入は保留 | [S15 の記録](../../experiments/README.md)と[脅威モデル](../security-hardening.md)。破損検出、root hash の信頼点、A/B 復帰、実機の時間・メモリ費用を別々に検証する。カード全体交換への対策とはしない |
-| systemd | BusyBox init を維持 | [init の調査](../userspace-and-security.md)。必要な機能、同じサービスを含むイメージ、起動・RAM・保守コストを比較する |
-| musl | 現行ツールチェーンを維持 | [libc の調査](../userspace-and-security.md)。全パッケージ・BSP の互換性と実機でのサイズ・起動・機能を検証する |
+| dm-verity | 製品への導入は保留 | [S15 の記録](../../experiments/README.md)と[脅威モデル](../security/threat-model.md)。破損検出、root hash の信頼点、A/B 復帰、実機の時間・メモリ費用を別々に検証する。カード全体交換への対策とはしない |
+| systemd | BusyBox init を維持 | [init の調査](../userspace/README.md)。必要な機能、同じサービスを含むイメージ、起動・RAM・保守コストを比較する |
+| musl | 現行ツールチェーンを維持 | [libc の調査](../userspace/README.md)。全パッケージ・BSP の互換性と実機でのサイズ・起動・機能を検証する |
 | RAUC / SWUpdate / Mender | `msd-update` と tryboot を置き換えない | [更新方式](../storage/README.md)。RPi の既成例が U-Boot 前提である点と、CM0 tryboot の実機検証を解決する |
 | Yocto の `read-only-rootfs` / overlay | クラスや init 処理をそのまま移植しない | [現行の書き込み経路](../storage/write-policy-and-s3.md)と実コードを照合し、seedrng・鍵・ログ・更新の永続性と電断を試す |
 | EROFS | 現行 SquashFS を維持 | [FS 比較](../storage/filesystem-candidates.md)。同じ内容・圧縮条件でのサイズ、起動、RAM、実機電断を比較する。ビルドシステムの変更は採用根拠にしない |

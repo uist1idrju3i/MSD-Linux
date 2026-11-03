@@ -1,6 +1,6 @@
 # SSH・VPN・鍵保管の調査
 
-[ユーザー空間・libc 調査](userspace-and-security.md) から分けた節です。節の番号（21）は元の文書のものを残しています。
+[ユーザー空間・libc 調査](userspace/README.md) から分けた節です。節の番号（21）は元の文書のものを残しています。
 
 ## 21. SSH・VPN、暗号拡張、鍵保管と A/B OTA
 

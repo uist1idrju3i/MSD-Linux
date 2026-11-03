@@ -86,10 +86,10 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [OpenBSDの考え方とLinuxの具体的な権限設計](docs/research/security/README.md) — 原則、処理別の権限・可変設定、通信開始前の防御、未実装部分の検証条件。
 - [Release保護・Ed25519鍵・署名job](docs/research/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
 - [導入・A/B操作と現行実装の照合](docs/research/install-update-status.md) — CIで取得できる成果物、既存の自動拡張と自動commit、更新後の状態確認、実機未確認の境界。
-- [セキュリティ・ハードニング](docs/research/security-hardening.md)
-- [セキュリティ強化項目の調査（2026-11）](docs/research/security-2026-11-hardening-list.md)
+- [セキュリティ・ハードニング](docs/research/security/threat-model.md)
+- [セキュリティ強化項目の調査（2026-11）](docs/research/security/history/README.md)
 - [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
-- [ユーザー空間・libc 調査](docs/research/userspace-and-security.md)
+- [ユーザー空間・libc 調査](docs/research/userspace/README.md)
 - [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
 - [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
 
@@ -152,9 +152,9 @@ FS・FTL・powerfail_suo・zramなどの公開資料と当時の案は[電源遮
 
 ## セキュリティとハードニングの要点
 
-microSD を物理交換できる攻撃者は Linux より前の起動ファイルを差し替えられます。Raspberry Pi の secure-boot 手順は Pi 4 以降が対象で、BCM2837 向け経路は文書化されていません（物理的に不可能とは断定しません）。現行 updater は `manifest.sig` を検証し、SHA-256 manifest と書込み後の read-back を確認します。鍵や dm-verity root digest を同じカードに置いても、カード全体の交換を防げません。【一次】【未確認】[脅威モデルと A/B/C 案](docs/research/security-hardening.md)
+microSD を物理交換できる攻撃者は Linux より前の起動ファイルを差し替えられます。Raspberry Pi の secure-boot 手順は Pi 4 以降が対象で、BCM2837 向け経路は文書化されていません（物理的に不可能とは断定しません）。現行 updater は `manifest.sig` を検証し、SHA-256 manifest と書込み後の read-back を確認します。鍵や dm-verity root digest を同じカードに置いても、カード全体の交換を防げません。【一次】【未確認】[脅威モデルと A/B/C 案](docs/research/security/threat-model.md)
 
-署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。ただし可変なetcが公開鍵やpolicyを隠す境界も設計対象です。OpenBSDの最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、[処理ごとの権限と検証条件](docs/research/security/README.md)へ具体化しました。専用user・分離helper・firewall・新しいsandbox policyは未実装です。鍵のリリース・更新・失効、不要な無線／USB機能、信頼できるdigestを要するdm-verityを引き続き検討し、QEMUと実機の証拠を分けます。【一次】【推測】【未確認】[脅威モデルと費用](docs/research/security-hardening.md)
+署名検証と読み取り専用 rootfs への公開鍵配置は実装済みです。ただし可変なetcが公開鍵やpolicyを隠す境界も設計対象です。OpenBSDの最小特権・特権分離と放棄・多層防御・安全な既定値・単純さを、[処理ごとの権限と検証条件](docs/research/security/README.md)へ具体化しました。専用user・分離helper・firewall・新しいsandbox policyは未実装です。鍵のリリース・更新・失効、不要な無線／USB機能、信頼できるdigestを要するdm-verityを引き続き検討し、QEMUと実機の証拠を分けます。【一次】【推測】【未確認】[脅威モデルと費用](docs/research/security/threat-model.md)
 
 ## アイデア総覧
 
@@ -174,7 +174,7 @@ kernel8.imgの生成と検査は[カーネルの生成方針](docs/research/boot
 
 ## init・libc
 
-init と周辺デバイス、init の比較、libc / toolchain の調査は、 [userspace-and-security.md](docs/research/userspace-and-security.md) に分けました。
+init と周辺デバイス、init の比較、libc / toolchain の調査は、 [ユーザー空間の調査](docs/research/userspace/README.md) に分けました。
 
 ## ログと観測
 
