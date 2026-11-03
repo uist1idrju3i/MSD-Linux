@@ -1,0 +1,110 @@
+{
+  "scope": "Read-only authenticated gh api fallback after unauthenticated urllib API requests returned 403; API license is not a complete legal review; pushed_at is not a security maintenance guarantee; missing latest-release data remains unknown.",
+  "observed_at": "2026-11-03T01:27:51.457057+00:00",
+  "repositories": [
+    {
+      "full_name": "davmac314/dinit",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2026-10-29T12:55:41Z",
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      },
+      "default_branch_sha": "e518520e7c6bb63f14b3061e9f1c9fe7da813b43"
+    },
+    {
+      "full_name": "finit-project/finit",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2026-10-27T11:51:43Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      },
+      "default_branch_sha": "a220e0fa9b00becd7323516b7bc0bf46bbc2fd75",
+      "release": {
+        "tag_name": "4.17",
+        "published_at": "2026-04-28T08:25:58Z",
+        "prerelease": false,
+        "html_url": "https://github.com/finit-project/finit/releases/tag/4.17"
+      }
+    },
+    {
+      "full_name": "OpenRC/openrc",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2026-11-01T20:50:51Z",
+      "license": {
+        "key": "bsd-2-clause",
+        "name": "BSD 2-Clause \"Simplified\" License",
+        "spdx_id": "BSD-2-Clause",
+        "url": "https://api.github.com/licenses/bsd-2-clause",
+        "node_id": "MDc6TGljZW5zZTQ="
+      },
+      "default_branch_sha": "14e11b7f5b09072aa1433e790bbf832800858fec"
+    },
+    {
+      "full_name": "slicer69/sysvinit",
+      "archived": false,
+      "default_branch": "main",
+      "pushed_at": "2025-09-08T20:40:38Z",
+      "license": {
+        "key": "gpl-2.0",
+        "name": "GNU General Public License v2.0",
+        "spdx_id": "GPL-2.0",
+        "url": "https://api.github.com/licenses/gpl-2.0",
+        "node_id": "MDc6TGljZW5zZTg="
+      },
+      "default_branch_sha": "2da36cf51d4816438d5f944ec5e5d2f56f49e292"
+    },
+    {
+      "full_name": "openwrt/procd",
+      "archived": false,
+      "default_branch": "main",
+      "pushed_at": "2026-11-02T16:00:41Z",
+      "license": {
+        "key": "other",
+        "name": "Other",
+        "spdx_id": "NOASSERTION",
+        "url": null,
+        "node_id": "MDc6TGljZW5zZTA="
+      },
+      "default_branch_sha": "fea76294a68196c633cd2f323a6958f8c0d25648"
+    },
+    {
+      "full_name": "Supervisor/supervisor",
+      "archived": false,
+      "default_branch": "main",
+      "pushed_at": "2025-12-21T21:03:13Z",
+      "license": {
+        "key": "other",
+        "name": "Other",
+        "spdx_id": "NOASSERTION",
+        "url": null,
+        "node_id": "MDc6TGljZW5zZTA="
+      },
+      "default_branch_sha": "abc60468ea4b78c446cf3a194f6fccb83d90f670"
+    },
+    {
+      "full_name": "eudev-project/eudev",
+      "archived": false,
+      "default_branch": "master",
+      "pushed_at": "2026-09-27T19:53:15Z",
+      "license": {
+        "key": "gpl-2.0",
+        "name": "GNU General Public License v2.0",
+        "spdx_id": "GPL-2.0",
+        "url": "https://api.github.com/licenses/gpl-2.0",
+        "node_id": "MDc6TGljZW5zZTg="
+      },
+      "default_branch_sha": "165bdab652e6020b2663d5df063cbdef860bb34f"
+    }
+  ]
+}

@@ -101,6 +101,8 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
 - [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。
 - [未確認事項と次の確認](docs/research/verification/open-questions.md) — 重複した問いを主題別に統合。元の記述は記録CSVに保持。
+- [未実施項目・将来計画](docs/research/roadmap.md) — 状態、依存、優先度、完了条件、判断待ち・延期・対象外を追跡する。問い・実験・追加要求との対応はCSVに保持。
+- [init移行の比較実測計画](docs/experiments/2026-11-03-init-comparison-plan.md) — 現行・systemd・代替の共通条件、readiness、資源、拒否・復旧、QEMU/実機の分離。計画のみで本計測は未実施。
 - [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
 - [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
 - [文書差分のbuild判定と高速化](docs/research/ci-build-scope-and-performance.md) — PR累積差分、OCI準備、cache・並列化の適用済み範囲と未測定の改善候補。

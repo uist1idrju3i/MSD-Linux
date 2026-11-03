@@ -1,0 +1,665 @@
+{
+  "scope": "2026-11-03 init alternatives primary-source fetch metadata; fetched is not verified or built. Failed HTTP and soft-200 responses are retained. No alternative implementation is integrated.",
+  "sources": [
+    {
+      "id": "s6-overview",
+      "url": "https://skarnet.org/software/s6/overview.html",
+      "checked_at": "2026-11-03T01:21:01.250656+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/overview.html",
+      "bytes": 23449,
+      "sha256": "125a537e1259ba8bacd8215560a90ce816e17f11732adb75d7fcec6ee3ba209a",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-notify",
+      "url": "https://skarnet.org/software/s6/notifywhenup.html",
+      "checked_at": "2026-11-03T01:21:01.251600+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/notifywhenup.html",
+      "bytes": 8927,
+      "sha256": "b28202a6f85bda31622d7da03ec0ef8bb92a8f81ba3072fdd8abbae7b1da6e78",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-supervise",
+      "url": "https://skarnet.org/software/s6/s6-supervise.html",
+      "checked_at": "2026-11-03T01:21:01.252255+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/s6-supervise.html",
+      "bytes": 12668,
+      "sha256": "758a941fe1f96a589cadb15337c83d99d3d3819767d6f137e5fdf4f20fc2cbbe",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-log",
+      "url": "https://skarnet.org/software/s6/s6-log.html",
+      "checked_at": "2026-11-03T01:21:01.253309+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/s6-log.html",
+      "bytes": 26757,
+      "sha256": "6a7243e924ee1773074af0aed50dd20595bcd06de71b170eb648c535ec4d2642",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-setuidgid",
+      "url": "https://skarnet.org/software/s6/s6-setuidgid.html",
+      "checked_at": "2026-11-03T01:21:01.253740+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/s6-setuidgid.html",
+      "bytes": 1790,
+      "sha256": "e3b6b8ab391a5c4940f9706eb78f4859e6e85629c77d3d68e7e4964bd5c6b249",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-linux-init",
+      "url": "https://skarnet.org/software/s6-linux-init/overview.html",
+      "checked_at": "2026-11-03T01:21:01.254218+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6-linux-init/overview.html",
+      "bytes": 7652,
+      "sha256": "429579d111c29e4fc6451b1b294607a10561b320ce6f9a205d46ee0cc1fe73cc",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-rc",
+      "url": "https://skarnet.org/software/s6-rc/overview.html",
+      "checked_at": "2026-11-03T01:21:02.318367+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6-rc/overview.html",
+      "bytes": 9966,
+      "sha256": "e7975945a3888885b4cb5082f01ec7f94ca753023fd4885fcf06866f79b2bdb7",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-rc-format",
+      "url": "https://skarnet.org/software/s6-rc/s6-rc-compile.html",
+      "checked_at": "2026-11-03T01:21:02.333290+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6-rc/s6-rc-compile.html",
+      "bytes": 20225,
+      "sha256": "a3b68193fc7baaded2f165990c16556c29ea43fd0614b78e4d15a541e01fbfcb",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-portability",
+      "url": "https://skarnet.org/software/s6/portability.html",
+      "checked_at": "2026-11-03T01:21:02.392783+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "openrc-guide",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/service-script-guide.md",
+      "checked_at": "2026-11-03T01:21:02.399067+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/service-script-guide.md",
+      "bytes": 19017,
+      "sha256": "4f16e4f4d56161c8a54d60bd785f66ed2b771c1769bcfd250a271c6fd1dfa0ed",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "openrc-supervise",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/supervise-daemon.8",
+      "checked_at": "2026-11-03T01:21:02.413994+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/supervise-daemon.8",
+      "bytes": 7741,
+      "sha256": "82fb09e8108bb658d9db64ff6a64b55d6185739c746c7f9b9e6944e0804195b7",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "openrc-init",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/openrc-init.8",
+      "checked_at": "2026-11-03T01:21:02.429122+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/openrc-init.8",
+      "bytes": 1615,
+      "sha256": "380bf1f56502453575233a7bed5b540b065fa5094f450309116049af4cc96a73",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "openrc-cgroup",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/openrc-run.8.in",
+      "checked_at": "2026-11-03T01:21:02.572623+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "dinit-overview",
+      "url": "https://davmac.org/projects/dinit/",
+      "checked_at": "2026-11-03T01:21:02.575242+00:00",
+      "status": 200,
+      "final_url": "https://davmac.org/projects/dinit/",
+      "bytes": 7647,
+      "sha256": "0e35e44a05b8eaca363f9979c2833fc28487dfe61644be0177a5006e043ddbe5",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "dinit-manual",
+      "url": "https://raw.githubusercontent.com/davmac314/dinit/master/doc/manpages/dinit-service.5.m4",
+      "checked_at": "2026-11-03T01:21:02.582372+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/davmac314/dinit/master/doc/manpages/dinit-service.5.m4",
+      "bytes": 51316,
+      "sha256": "9b79fbb2a47abacb5486fe6a261e7670962073bc5f490dd05c14cfe9ae4eeae9",
+      "ref_scope": "mutable upstream branch; not evidence for pinned Buildroot package"
+    },
+    {
+      "id": "dinit-description",
+      "url": "https://raw.githubusercontent.com/davmac314/dinit/master/README.md",
+      "checked_at": "2026-11-03T01:21:02.697242+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/davmac314/dinit/master/README.md",
+      "bytes": 14457,
+      "sha256": "538014f515a021e121f01a71ea45ee7a65daeef17d2bd9ea9acbab8d247316eb",
+      "ref_scope": "mutable upstream branch; not evidence for pinned Buildroot package"
+    },
+    {
+      "id": "runit-overview",
+      "url": "https://smarden.org/runit/",
+      "checked_at": "2026-11-03T01:21:02.792217+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/",
+      "bytes": 10983,
+      "sha256": "e06d8c42535b292a0614411ddb3766c3030a3e9f7c479db502b304ebd98f5532",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "runit-faq",
+      "url": "https://smarden.org/runit/faq.html",
+      "checked_at": "2026-11-03T01:21:02.888984+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/faq",
+      "bytes": 13592,
+      "sha256": "a781b623ebbed1f4c81fc06f5907b841592bf73e58a2043dff9e396510aecd86",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "runit-runsv",
+      "url": "https://smarden.org/runit/runsv.8.html",
+      "checked_at": "2026-11-03T01:21:02.950439+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/runsv.8",
+      "bytes": 7820,
+      "sha256": "245ab696512c5a53693f17ba2ea43664cf94325749cabf2cc7a876d05f4a0b36",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "runit-chpst",
+      "url": "https://smarden.org/runit/chpst.8.html",
+      "checked_at": "2026-11-03T01:21:03.038465+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/chpst.8",
+      "bytes": 6950,
+      "sha256": "0787c1c39e2d1bb9b42e6ff7277ff4df64b601182587d07301a395b45cfed2ae",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "runit-svlogd",
+      "url": "https://smarden.org/runit/svlogd.8.html",
+      "checked_at": "2026-11-03T01:21:03.143424+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/svlogd.8",
+      "bytes": 12430,
+      "sha256": "4ba0962f10de4af98a3b2d23d15fd0e21abd7c30ff59ba6a433c5a4023cf7d72",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "busybox-manual",
+      "url": "https://busybox.net/downloads/BusyBox.html",
+      "checked_at": "2026-11-03T01:21:03.161058+00:00",
+      "status": 200,
+      "final_url": "https://busybox.net/downloads/BusyBox.html",
+      "bytes": 147562,
+      "sha256": "66abb7783bca78c91b77e4e545b0eec769e4b2cbe11b92993df4d1ee10f9c90d",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "sysvinit-overview",
+      "url": "https://raw.githubusercontent.com/slicer69/sysvinit/3.14/README.md",
+      "checked_at": "2026-11-03T01:21:03.178138+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "finit-overview",
+      "url": "https://raw.githubusercontent.com/troglobit/finit/master/README.md",
+      "checked_at": "2026-11-03T01:21:03.182909+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/troglobit/finit/master/README.md",
+      "bytes": 2484,
+      "sha256": "2cb046d2569b7002008529132afd8d17848207f72fb4c52fe087eaf3b9f18af9",
+      "ref_scope": "mutable upstream branch; not evidence for pinned Buildroot package"
+    },
+    {
+      "id": "finit-config",
+      "url": "https://raw.githubusercontent.com/troglobit/finit/master/man/finit.conf.5",
+      "checked_at": "2026-11-03T01:21:03.197997+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/troglobit/finit/master/man/finit.conf.5",
+      "bytes": 34328,
+      "sha256": "e72d63a641b180fc2e7787d8e5824a92c14021dce68ea5c987d6bbf9dd57b352",
+      "ref_scope": "mutable upstream branch; not evidence for pinned Buildroot package"
+    },
+    {
+      "id": "finit-license",
+      "url": "https://raw.githubusercontent.com/troglobit/finit/master/LICENSE",
+      "checked_at": "2026-11-03T01:21:03.246255+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/troglobit/finit/master/LICENSE",
+      "bytes": 1150,
+      "sha256": "868cb6c5414933a48db11186042cfe65c87480d326734bc6cf0e4b19b4a2e52a",
+      "ref_scope": "mutable upstream branch; not evidence for pinned Buildroot package"
+    },
+    {
+      "id": "procd-design",
+      "url": "https://openwrt.org/docs/techref/procd",
+      "checked_at": "2026-11-03T01:21:03.321020+00:00",
+      "status": 200,
+      "final_url": "https://openwrt.org/docs/techref/procd",
+      "bytes": 68662,
+      "sha256": "9345018e03a888ae01bc086634904bebe5331582dcb495d7a8f5bda56c89e272",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "procd-services",
+      "url": "https://openwrt.org/docs/guide-developer/procd-init-scripts",
+      "checked_at": "2026-11-03T01:21:03.321569+00:00",
+      "status": 200,
+      "final_url": "https://openwrt.org/docs/guide-developer/procd-init-scripts",
+      "bytes": 73630,
+      "sha256": "ca580dcbbd5280acd3c50dc19d058130f6ae36feb482c9d6bb5a446057e31674",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "shepherd-overview",
+      "url": "https://www.gnu.org/software/shepherd/",
+      "checked_at": "2026-11-03T01:21:03.322387+00:00",
+      "status": 200,
+      "final_url": "https://shepherding.services/",
+      "bytes": 12268,
+      "sha256": "0fc60441874c2576fed5e4d03fc0b7382cdb5e20020a9d7ab566c15e28c3e655",
+      "ref_scope": "see URL; live site may differ from fixed recipe",
+      "content_review": "Homepage overview only"
+    },
+    {
+      "id": "shepherd-manual",
+      "url": "https://www.gnu.org/software/shepherd/manual/html_node/Defining-Services.html",
+      "checked_at": "2026-11-03T01:21:03.358978+00:00",
+      "status": 200,
+      "final_url": "https://shepherding.services/",
+      "bytes": 12268,
+      "sha256": "0fc60441874c2576fed5e4d03fc0b7382cdb5e20020a9d7ab566c15e28c3e655",
+      "content_review": "Homepage body, not the requested detailed manual",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "shepherd-forkexec",
+      "url": "https://www.gnu.org/software/shepherd/manual/html_node/Fork_002dExec-Constructors.html",
+      "checked_at": "2026-11-03T01:21:03.362519+00:00",
+      "status": 200,
+      "final_url": "https://shepherding.services/",
+      "bytes": 12268,
+      "sha256": "0fc60441874c2576fed5e4d03fc0b7382cdb5e20020a9d7ab566c15e28c3e655",
+      "content_review": "Homepage body, not the requested detailed manual",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "supervisor",
+      "url": "https://supervisord.org/introduction.html",
+      "checked_at": "2026-11-03T01:21:03.381597+00:00",
+      "status": 200,
+      "final_url": "https://supervisord.org/introduction.html",
+      "bytes": 14885,
+      "sha256": "8a25d5188d5ce9dd401af987033f9848db6c1c2a30535af3a9627cc6547960ac",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "systemd-service",
+      "url": "https://www.freedesktop.org/software/systemd/man/258/systemd.service.html",
+      "checked_at": "2026-11-03T01:21:03.679816+00:00",
+      "status": 200,
+      "final_url": "https://www.freedesktop.org/software/systemd/man/258/systemd.service.html",
+      "bytes": 119294,
+      "sha256": "a64829b516e19aac7b31921493fb8ff621874a7a44c30e27a0d60c8d617f4423",
+      "ref_scope": "systemd 258 series; Buildroot recipe 258.7"
+    },
+    {
+      "id": "systemd-exec",
+      "url": "https://www.freedesktop.org/software/systemd/man/258/systemd.exec.html",
+      "checked_at": "2026-11-03T01:21:03.818643+00:00",
+      "status": 200,
+      "final_url": "https://www.freedesktop.org/software/systemd/man/258/systemd.exec.html",
+      "bytes": 367439,
+      "sha256": "13364628deae1ebae811e9fc23ff40529e40549b760b6443aba55777af9c5a2e",
+      "ref_scope": "systemd 258 series; Buildroot recipe 258.7"
+    },
+    {
+      "id": "systemd-resource",
+      "url": "https://www.freedesktop.org/software/systemd/man/258/systemd.resource-control.html",
+      "checked_at": "2026-11-03T01:21:03.915129+00:00",
+      "status": 200,
+      "final_url": "https://www.freedesktop.org/software/systemd/man/258/systemd.resource-control.html",
+      "bytes": 109406,
+      "sha256": "ee652838fac85d4ae3b2947e683799a217a7e048542534fc6bdc3809f24cd813",
+      "ref_scope": "systemd 258 series; Buildroot recipe 258.7"
+    },
+    {
+      "id": "systemd-sysv",
+      "url": "https://github.com/systemd/systemd/releases/tag/v258",
+      "checked_at": "2026-11-03T01:21:03.977874+00:00",
+      "status": 200,
+      "final_url": "https://github.com/systemd/systemd/releases/tag/v258",
+      "bytes": 338417,
+      "sha256": "d4281305741efdc3b32cb3aa3d72b4247705144bb1d3ce3592229b752dd63f03",
+      "ref_scope": "systemd 258 series; Buildroot recipe 258.7"
+    },
+    {
+      "id": "udev",
+      "url": "https://raw.githubusercontent.com/eudev-project/eudev/v3.2.14/README.md",
+      "checked_at": "2026-11-03T01:21:04.505160+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/eudev-project/eudev/v3.2.14/README.md",
+      "bytes": 2181,
+      "sha256": "21327c1355a5859f96f5e8052eb8a6b9e1cefb9019bd1b692272f8d791edcd33",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "shepherd-manual-full",
+      "url": "https://www.gnu.org/software/shepherd/manual/shepherd.html",
+      "checked_at": "2026-11-03T01:21:57.351303+00:00",
+      "status": 200,
+      "final_url": "https://shepherding.services/",
+      "bytes": 12268,
+      "sha256": "0fc60441874c2576fed5e4d03fc0b7382cdb5e20020a9d7ab566c15e28c3e655",
+      "content_review": "Homepage body, not the requested detailed manual",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "openrc-run",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/openrc-run.8",
+      "checked_at": "2026-11-03T01:21:57.351972+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/man/openrc-run.8",
+      "bytes": 25391,
+      "sha256": "9bcef58f6e5f8cc63e56b588ec6a1fef4bccd9f51245f91a95836a31b8eace1f",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "sysvinit-readme",
+      "url": "https://raw.githubusercontent.com/slicer69/sysvinit/3.14/doc/README",
+      "checked_at": "2026-11-03T01:21:57.352469+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-index",
+      "url": "https://skarnet.org/software/s6/",
+      "checked_at": "2026-11-03T01:21:57.352990+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6/",
+      "bytes": 18945,
+      "sha256": "3ad5558d3a7b56c6f74542d5145dce597ca52ff1179028d50d2d688b3654eb94",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "dinit-release",
+      "url": "https://api.github.com/repos/davmac314/dinit/releases/latest",
+      "checked_at": "2026-11-03T01:21:57.354395+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "finit-release",
+      "url": "https://api.github.com/repos/troglobit/finit/releases/latest",
+      "checked_at": "2026-11-03T01:21:57.354734+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "openrc-release",
+      "url": "https://api.github.com/repos/OpenRC/openrc/releases/latest",
+      "checked_at": "2026-11-03T01:21:57.385527+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "finit-repo",
+      "url": "https://api.github.com/repos/troglobit/finit",
+      "checked_at": "2026-11-03T01:21:57.385894+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "dinit-repo",
+      "url": "https://api.github.com/repos/davmac314/dinit",
+      "checked_at": "2026-11-03T01:21:57.411713+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "openrc-repo",
+      "url": "https://api.github.com/repos/OpenRC/openrc",
+      "checked_at": "2026-11-03T01:21:57.414100+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "sysvinit-repo",
+      "url": "https://api.github.com/repos/slicer69/sysvinit",
+      "checked_at": "2026-11-03T01:21:57.436751+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "procd-repo",
+      "url": "https://api.github.com/repos/openwrt/procd",
+      "checked_at": "2026-11-03T01:21:57.439130+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "supervisor-repo",
+      "url": "https://api.github.com/repos/Supervisor/supervisor",
+      "checked_at": "2026-11-03T01:21:57.462920+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "eudev-repo",
+      "url": "https://api.github.com/repos/eudev-project/eudev",
+      "checked_at": "2026-11-03T01:21:57.463353+00:00",
+      "status": 403,
+      "error": "HTTP Error 403: rate limit exceeded",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "daemontools",
+      "url": "https://cr.yp.to/daemontools.html",
+      "checked_at": "2026-11-03T01:21:57.487219+00:00",
+      "status": 200,
+      "final_url": "https://cr.yp.to/daemontools.html",
+      "bytes": 2253,
+      "sha256": "52e8d1968b94452d0c7579bb6587487b6b90133ac94a115d85d1303cd3a112fd",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "sysvinit-init",
+      "url": "https://raw.githubusercontent.com/slicer69/sysvinit/3.14/man/init.8",
+      "checked_at": "2026-11-03T01:21:57.492168+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/slicer69/sysvinit/3.14/man/init.8",
+      "bytes": 13696,
+      "sha256": "d05dd6567b21afc2f0a170f79e5fc0d31158b1323120b8cbf6552f9424b204c2",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "openrc-user-guide",
+      "url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/user-guide.md",
+      "checked_at": "2026-11-03T01:21:57.507345+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/OpenRC/openrc/0.56/user-guide.md",
+      "bytes": 6616,
+      "sha256": "714a5879583f890ad0f8dbae03cd1a8842014bf485bfc42c068b3ad09f53d955",
+      "ref_scope": "OpenRC 0.56"
+    },
+    {
+      "id": "busybox-init-source",
+      "url": "https://raw.githubusercontent.com/mirror/busybox/1_38_0/init/init.c",
+      "checked_at": "2026-11-03T01:21:57.544500+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "systemd-exec-source",
+      "url": "https://raw.githubusercontent.com/systemd/systemd/v258.7/man/systemd.exec.xml",
+      "checked_at": "2026-11-03T01:21:57.638988+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/systemd/systemd/v258.7/man/systemd.exec.xml",
+      "bytes": 331996,
+      "sha256": "ab5e428ce5de18ac619b1813124c9376a9c0b0d71ece8e37c703740a3e269978",
+      "ref_scope": "systemd 258 series; Buildroot recipe 258.7"
+    },
+    {
+      "id": "dinit-stable-manual",
+      "url": "https://raw.githubusercontent.com/davmac314/dinit/v0.22.1/doc/manpages/dinit-service.5.m4",
+      "checked_at": "2026-11-03T01:23:19.737268+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/davmac314/dinit/v0.22.1/doc/manpages/dinit-service.5.m4",
+      "bytes": 50707,
+      "sha256": "a253478d386b300c263c9aeb94b1f49b8c6d8556521be7a639033602a7f93170",
+      "ref_scope": "Dinit v0.22.1"
+    },
+    {
+      "id": "finit-stable-config",
+      "url": "https://raw.githubusercontent.com/finit-project/finit/4.17/man/finit.conf.5",
+      "checked_at": "2026-11-03T01:23:19.739623+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/finit-project/finit/4.17/man/finit.conf.5",
+      "bytes": 34328,
+      "sha256": "e72d63a641b180fc2e7787d8e5824a92c14021dce68ea5c987d6bbf9dd57b352",
+      "ref_scope": "Finit 4.17"
+    },
+    {
+      "id": "finit-stable-readme",
+      "url": "https://raw.githubusercontent.com/finit-project/finit/4.17/README.md",
+      "checked_at": "2026-11-03T01:23:19.740102+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/finit-project/finit/4.17/README.md",
+      "bytes": 2484,
+      "sha256": "2cb046d2569b7002008529132afd8d17848207f72fb4c52fe087eaf3b9f18af9",
+      "ref_scope": "Finit 4.17"
+    },
+    {
+      "id": "finit-build",
+      "url": "https://raw.githubusercontent.com/finit-project/finit/4.17/configure.ac",
+      "checked_at": "2026-11-03T01:23:19.740915+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/finit-project/finit/4.17/configure.ac",
+      "bytes": 19239,
+      "sha256": "e78e683fbde7152ff7abcdaee70cb8a7e37af4bf25962bb04ac1ff0eaf22ecc1",
+      "ref_scope": "Finit 4.17"
+    },
+    {
+      "id": "dinit-build",
+      "url": "https://raw.githubusercontent.com/davmac314/dinit/e518520e7c6bb63f14b3061e9f1c9fe7da813b43/BUILD",
+      "checked_at": "2026-11-03T01:23:19.741279+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/davmac314/dinit/e518520e7c6bb63f14b3061e9f1c9fe7da813b43/BUILD",
+      "bytes": 16160,
+      "sha256": "ed3dfa62257ec73fc80cc4af6fbf547b0a47ee151ed9a398410be7753b70a81f",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "procd-build",
+      "url": "https://raw.githubusercontent.com/openwrt/procd/fea76294a68196c633cd2f323a6958f8c0d25648/CMakeLists.txt",
+      "checked_at": "2026-11-03T01:23:19.742053+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/openwrt/procd/fea76294a68196c633cd2f323a6958f8c0d25648/CMakeLists.txt",
+      "bytes": 3943,
+      "sha256": "14613b5c32ffe286be7e5c29ead52a6c53115c6f13f561bd398446eafb36e0b4",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "procd-license",
+      "url": "https://raw.githubusercontent.com/openwrt/procd/fea76294a68196c633cd2f323a6958f8c0d25648/service/service.c",
+      "checked_at": "2026-11-03T01:23:19.900876+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/openwrt/procd/fea76294a68196c633cd2f323a6958f8c0d25648/service/service.c",
+      "bytes": 36367,
+      "sha256": "115a89ba12e817540c8fd3b5251dcda792433b311a11dfdbf59972a7cd9585f7",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "runit-install",
+      "url": "https://smarden.org/runit/install.html",
+      "checked_at": "2026-11-03T01:23:19.921228+00:00",
+      "status": 200,
+      "final_url": "https://smarden.org/runit/install",
+      "bytes": 5199,
+      "sha256": "8b4bf9a4f9ee1532684aa7cfd45884f3905fe39b950f86beb88792af685cc0d4",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "shepherd-source",
+      "url": "https://git.savannah.gnu.org/cgit/shepherd.git/plain/doc/shepherd.texi",
+      "checked_at": "2026-11-03T01:23:19.925772+00:00",
+      "status": "error",
+      "error": "The read operation timed out",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "busybox-init-git",
+      "url": "https://git.busybox.net/busybox/plain/init/init.c?h=1_38_0",
+      "checked_at": "2026-11-03T01:23:19.934806+00:00",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-linux-init-index",
+      "url": "https://skarnet.org/software/s6-linux-init/",
+      "checked_at": "2026-11-03T01:23:19.945086+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6-linux-init/",
+      "bytes": 6919,
+      "sha256": "66b2a97bed169af65cabef65b3983a87b8b04f81dd3a47241ac12a9e436e53f4",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "s6-rc-index",
+      "url": "https://skarnet.org/software/s6-rc/",
+      "checked_at": "2026-11-03T01:23:19.954200+00:00",
+      "status": 200,
+      "final_url": "https://skarnet.org/software/s6-rc/",
+      "bytes": 7030,
+      "sha256": "9267bcc80febba2a1f20dddd7eff86d488a73c6c03c31116a45ab0fc20040cc3",
+      "ref_scope": "see URL; live site may differ from fixed recipe"
+    },
+    {
+      "id": "dinit-stable-readme",
+      "url": "https://raw.githubusercontent.com/davmac314/dinit/v0.22.1/README.md",
+      "checked_at": "2026-11-03T01:23:19.995242+00:00",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/davmac314/dinit/v0.22.1/README.md",
+      "bytes": 14454,
+      "sha256": "cf0faac1212eb246c6356f718d8bb0f50c9b6b0cb5b6ebe59f9df9410a9f63d8",
+      "ref_scope": "Dinit v0.22.1"
+    }
+  ]
+}
