@@ -103,7 +103,7 @@ Brotliのchangelogは[Debian source](https://sources.debian.org/data/main/b/brot
 
 PR #194 merge後のmain commit `668cd99bd24cec523cc181ef9518a6a52f1a034a`では、dev-image amd64 job `125764443832`とarm64 job `125764443815`がTrivy gateを含め成功し、両jobのSBOM attestationも成功した。Buildroot `build` job `125764500832`と`scan` job `125764409233`も成功した。`publish` job `125767719586`は成功し、multi-arch index `sha256:6bc09058ccfdd10752527f3802f4a56c6276c1ac7d61c066a13b87e9f04b4192`のBuild Provenance attestationを作成・公開した。
 
-PR #195は未mergeであり、同PRの`dev-image gate`はmainで有効になったものとして扱わない。
+上記のjobは、PR #195で`dev-image gate`をmainへ追加する前の結果である。
 
 ## 結論
 
