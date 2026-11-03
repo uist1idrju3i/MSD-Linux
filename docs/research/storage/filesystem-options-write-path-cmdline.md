@@ -18,5 +18,5 @@ Linux固定版6.18.59とmainline 7.4-rc1の`Documentation/admin-guide/kernel-par
 
 ## 出典
 
-- [固定版 kernel-parameters.txt](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt?id=b3495ea401d709af0701a85babcba5e3d788a602)
+- [固定版 kernel-parameters.txt](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/kernel-parameters.txt)
 - [Linux v7.4-rc1 kernel-parameters.txt](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt?h=v7.4-rc1)

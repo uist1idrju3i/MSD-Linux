@@ -22,6 +22,6 @@ board configは`bcm2710-rpi-cm0.dtb`と`cardputerzero-v5-overlay`を指定し、
 
 ## 出典
 
-- [固定版 MMC sysfs ABI](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/ABI/testing/sysfs-bus-mmc?id=b3495ea401d709af0701a85babcba5e3d788a602)、[MMC bindings](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/devicetree/bindings/mmc?id=b3495ea401d709af0701a85babcba5e3d788a602)
+- [固定版 MMC sysfs ABI](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/ABI/testing/sysfs-bus-mmc)、[MMC bindings](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/devicetree/bindings/mmc)
 - [Linux v7.4-rc1 MMC ABI](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/testing/sysfs-bus-mmc?h=v7.4-rc1)、[MMC bindings](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/mmc?h=v7.4-rc1)
 - [CardputerZero board configuration](../../../board/cardputerzero/config.txt)、[kernel fragment](../../../board/cardputerzero/linux.fragment)

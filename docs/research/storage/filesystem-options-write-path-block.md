@@ -24,6 +24,6 @@
 
 ## 出典
 
-- [固定版 sysfs-block ABI](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/ABI/stable/sysfs-block?id=b3495ea401d709af0701a85babcba5e3d788a602)
-- [固定版 deadline](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/block/deadline-iosched.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)、[BFQ](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/block/bfq-iosched.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)、[Kyber](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/block/kyber-iosched.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)
+- [固定版 sysfs-block ABI](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/ABI/stable/sysfs-block)
+- [固定版 deadline](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/block/deadline-iosched.rst)、[BFQ](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/block/bfq-iosched.rst)、[Kyber](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/block/kyber-iosched.rst)
 - [Linux v7.4-rc1 block ABI](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/sysfs-block?h=v7.4-rc1)、[block scheduler docs](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block?h=v7.4-rc1)

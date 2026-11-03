@@ -19,9 +19,9 @@ Linux固定版6.18.59とmainline 7.4-rc1の`Documentation/admin-guide/sysctl/vm.
 | `bdi/read_ahead_kb` | BDIのread-ahead量 | device/driver依存 | 可 | 同 | 実験で比べる | read-aheadとcache圧力を測る。write抑制の根拠にはせず、read workload中のwritebackをtraceする。 |
 | `bdi/min_ratio` `bdi/min_ratio_fine` `bdi/max_ratio` `bdi/max_ratio_fine` `bdi/min_bytes` `bdi/max_bytes` `bdi/strict_limit` `bdi/stable_pages_required` `vm.vfs_cache_pressure` `vm.vfs_cache_pressure_denom` | backing deviceのdirty memory制御とVFS cache reclaim | device/kernel依存 | 可 | 同 | 実験で比べる | BDI単位でwritebackを制御する。SDへの個別上限を設定する場合もidle writeが出ないこととdata durabilityを実測する。VFS cache pressureはwriteback設定と混同しない。 |
 
-`vm.page-cluster`以外のmemory-only項目を除外せず記載しました。最新版で新規となるsysctlの有効性は最終kernel `.config`で未確認です。
+memory管理だけの項目も除外せず記載しました。最新版で新規となるsysctlの有効性は最終kernel `.config`で未確認です。
 
 ## 出典
 
-- [固定版 vm.rst](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/admin-guide/sysctl/vm.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)、[sysfs-class-bdi](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/ABI/testing/sysfs-class-bdi?id=b3495ea401d709af0701a85babcba5e3d788a602)
+- [固定版 vm.rst](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/sysctl/vm.rst)、[sysfs-class-bdi](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/ABI/testing/sysfs-class-bdi)
 - [Linux v7.4-rc1 vm.rst](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/sysctl/vm.rst?h=v7.4-rc1)、[sysfs-class-bdi](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/testing/sysfs-class-bdi?h=v7.4-rc1)

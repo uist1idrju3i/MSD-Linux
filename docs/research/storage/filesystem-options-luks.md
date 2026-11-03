@@ -63,7 +63,7 @@
 | `--test-passphrase` | mappingを作らずkey検査 | open時だけ | 可 | 同 | 除外 | runtime mount optionではない。 |
 | `--refresh` / `refresh` | active mapping flagを更新 | 現在値を維持 | 可 | 同 | 実験で比べる | active mapping変更後のlatency/throughputとreboot後のmapping policyが一致するかを確認し、運用上のreconfigure手順が必要な場合だけ使う。 |
 
-kernel dm-cryptのtarget flagsは`allow_discards`、`same_cpu_crypt`、`high_priority`、`submit_from_crypt_cpus`、`no_read_workqueue`、`no_write_workqueue`、`sector_size`、`iv_large_sectors`、`integrity`、`integrity_key_size`です。cryptsetupの`--allow-discards`は`allow_discards`、`--perf-*`は対応するperformance flagへ写像されます。optional discard/performance flagはtarget parserで指定時だけ有効になり、省略時は無効です。`submit_from_queue_ids`は固定版と最新版のkernel sourceにありません。近い機能名は`submit_from_crypt_cpus`です。
+kernel dm-cryptのtarget flagsは`allow_discards`、`same_cpu_crypt`、`high_priority`、`submit_from_crypt_cpus`、`no_read_workqueue`、`no_write_workqueue`、`sector_size`、`iv_large_sectors`、`integrity`、`integrity_key_size`です。cryptsetupの`--allow-discards`は`allow_discards`、`--perf-*`は対応するperformance flagへ写像されます。optional discard/performance flagはtarget parserで指定時だけ有効になり、省略時は無効です。
 
 cryptsetup v2.8.7/2.8.8の`common_options.adoc`は、`--persistent`で保存できるflagを`--allow-discards`、`--perf-same_cpu_crypt`、`--perf-submit_from_crypt_cpus`、`--perf-no_read_workqueue`、`--perf-no_write_workqueue`、`--integrity-no-journal`に限定します。`--perf-high_priority`は対象外です。
 

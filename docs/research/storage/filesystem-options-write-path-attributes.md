@@ -24,4 +24,4 @@ e2fsprogs 1.47.4の`chattr(1)`、btrfs-progs 6.10/7.3の`btrfs property`、Linux
 
 - [e2fsprogs v1.47.4 chattr.1](https://github.com/tytso/e2fsprogs/blob/v1.47.4/misc/chattr.1.in)
 - [btrfs-progs v6.10 btrfs-property](https://github.com/kdave/btrfs-progs/blob/v6.10/Documentation/btrfs-property.rst)、[v7.3](https://github.com/kdave/btrfs-progs/blob/v7.3/Documentation/btrfs-property.rst)
-- [固定版 F2FS documentation](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/Documentation/filesystems/f2fs.rst?id=b3495ea401d709af0701a85babcba5e3d788a602)、[Linux v7.4-rc1](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/f2fs.rst?h=v7.4-rc1)
+- [固定版 F2FS documentation](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/filesystems/f2fs.rst)、[Linux v7.4-rc1](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/f2fs.rst?h=v7.4-rc1)

@@ -32,7 +32,9 @@ BuildrootのBusyBox設定は`CONFIG_MOUNT=y`と`CONFIG_FEATURE_MOUNT_FLAGS=y`で
 
 ## 出典
 
-- [Linux固定版 fs_context.c](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/fs/fs_context.c?id=b3495ea401d709af0701a85babcba5e3d788a602)、[namespace.c](https://git.kernel.org/pub/scm/linux/kernel/git/raspberrypi/linux.git/tree/fs/namespace.c?id=b3495ea401d709af0701a85babcba5e3d788a602)
+- [Linux固定版 fs_context.c](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/fs/fs_context.c)、[namespace.c](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/fs/namespace.c)
 - [Linux v7.4-rc1 fs_context.c](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/fs/fs_context.c?h=v7.4-rc1)、[namespace.c](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/fs/namespace.c?h=v7.4-rc1)
 - [util-linux v2.41.5 mount(8)](https://github.com/util-linux/util-linux/blob/v2.41.5/sys-utils/mount.8.adoc)、[v2.42.4](https://github.com/util-linux/util-linux/blob/v2.42.4/sys-utils/mount.8.adoc)
-- [BusyBox 1.38.0 mount.c](https://git.busybox.net/busybox/tree/util-linux/mount.c?h=1_38_stable)
+- [BusyBox 1.38.0 mount.c（tag `1_38_0`, commit `fc71374`）](https://github.com/mirror/busybox/blob/fc71374dfccd46448c62947269a35f1420d7ee28/util-linux/mount.c)、[公式source archive](https://busybox.net/downloads/busybox-1.38.0.tar.bz2)
+
+Buildrootの`vendor/buildroot/package/busybox/busybox.mk`は1.38.0を固定しています。公式[release一覧](https://busybox.net/downloads/)と[news](https://busybox.net/news.html)でも1.38.0（2026-05-13、unstable）が最新です。
