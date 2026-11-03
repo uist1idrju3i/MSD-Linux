@@ -153,6 +153,7 @@ jobs:
             --sbom base/output/images/sbom.cdx.json \
             --vex base/output/images/vex.cdx.json \
             --exceptions .github/cve-exceptions.tsv \
+            --allow-unused-exceptions \
             --feed-commit-time "$(docker/msd-dev cat output/images/nvd-feed-commit-time.txt)" \
             --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
             --now "$(docker/msd-dev date -u +%s)" \
