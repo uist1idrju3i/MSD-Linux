@@ -41,6 +41,8 @@ PRは累積差分、`main`へのpushは対象差分から製品buildの要否を
 
 各ブート領域には `kernel8.img` を配置します。元データは未圧縮の `Image` です。post-image スクリプトは `pigz -11 -n` で圧縮し、展開結果と元データの一致を確認します。比較用の `gzip -9n` と `pigz -11` のサイズはビルドログに記録する仕様です。QEMU 用の未圧縮 `Image` は `output/images/` に残ります。更新 bundle は `rootfs.squashfs`、共通の `boot.vfat`、SHA-256 の `manifest`、Ed25519 署名 `manifest.sig` の4ファイルです。端末は書き込み前に `/usr/share/msd-update/update-key.pem` で署名を検証します。最低更新番号は `/usr/share/msd-update/version`、鍵の由来は `/usr/share/msd-update/key-origin` に記録します。これらは `/etc` overlay の対象外です。target には検証用の `openssl` コマンドも含めます。`MSD_UPDATE_SIGNING_KEY=/path/to/private.pem` を指定するとリリース鍵を使います。未指定時は `$BASE_DIR/msd-update-dev-key.pem` を生成・再利用し、開発用鍵である旨を警告します。秘密鍵は成果物に含めず、開発用鍵をリリースに使わないでください。ビルド成果物の署名は実機未検証です。
 
+post-buildは `/etc/issue` と `/usr/lib/os-release` に版とcommit情報を記録します。`/etc/os-release` は後者へのsymlinkです。
+
 `BR2_PACKAGE_KBD` の keymap/font データは post-build で削除し、TCA8418 用 map だけを残します。map 自体は 1,593 bytes です。展開後の `loadkeys` 実行ファイルと必要ライブラリのサイズは rootfs をビルドして測る必要があります。`S04msd-keymap` が `loadkeys -C /dev/tty0 -q` で読み込み、mdev helper が入力デバイスの symlink を作成・削除します。`S05seedrng` は `S02msd-data` と `S03msd-etc-overlay` の後に起動し、`SEEDRNG_ARGS=--seed-dir=/data/seedrng` で乱数シードを永続領域に保存します。実機では `/var/lib` が読み取り専用 rootfs 上にあるため、seedrng の保存先を `/data` にしています。keymap の読み込みと symlink は実機未検証です。
 
 `BR2_PACKAGE_LIBV4L_UTILS` は meson の単一トグルで全 utility を target に入れるため、post-build で `v4l2-ctl`、`media-ctl`、`ir-keytable`、`ir-ctl` の 4 本だけを残し、CEC・RDS・TV tuner・compliance 系のツールと RC keymap・udev rule を削除します。削除する対象は `post-build.sh` に列挙しています。実機でのカメラ確認手順は [VERIFY.md](VERIFY.md) を参照してください。
