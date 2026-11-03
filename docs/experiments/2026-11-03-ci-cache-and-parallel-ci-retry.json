@@ -1,0 +1,20 @@
+{
+  "base_commit": "2b8d7db45853bc0af0e5656f4a8c4a202d2e697f",
+  "inputs": {
+    ".github/actions/setup-dev-image/action.yml": "08c8a088c1178bbfff0a7e32c84393605895db640e2451e3c115690afc9dcf68",
+    ".github/actionlint.yaml": "f0b69b004aca484b173520555fca0c276f0c1b2e7462b84198039af74ca6fc3c",
+    ".github/scripts/dev-image-cache.py": "c2e733a3c16ffb757da2049a59af7e5d953babc2e1b243607c234b839621e6b3",
+    ".github/scripts/run-host-tests.py": "20649758aca8d7a6c00cecd528183657627f7f96a9a7491013e4e58ba49607a6",
+    ".github/workflows/build.yml": "96e675a713adaba026420dd12d42a101a999b5a9e21b309e13197fcf0c3bbdd9",
+    ".github/workflows/lint.yml": "3e9d88476f1786c7173fe449b4d7bedb1afdc1c400bad8cdd9ed6f4f97275c21",
+    ".github/workflows/agent-docs.yml": "a988f7604774e445ef7a5e47fbcbc0796bce7f55c50fa4d3a780f2c6c3efd202",
+    "docker/msd-dev": "8bb5c1bf1c65987133912dad2e61d329106e09fe9f0597d6d90bafee4cef2a6f",
+    "tests/check-ci-cache/run.py": "e013b7cc684871c73cf1dca5e649af442cf43f4ba23fff7a4b6ba45478c2e80a",
+    "tests/check-ci-scope/run.py": "8036e1802d62823dbe3261f00de0af024297859fc8c6cbe6e16f4561856e54d6",
+    "tests/check-build-scope/run.py": "1b809346519ee96cb021cafdc4f1e99eeb0ab9c7b64246245ebbd5032abe9710",
+    "tests/check-ci-cache/record.py": "5ece6708b01e097c3f3405a69c78ff050003a27c63cdaeb2e91c5f7aff61973e"
+  },
+  "host": "Linux-6.8.0-1061-aws-x86_64-with-glibc2.35",
+  "repetitions": 5,
+  "image": "sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77 linux/amd64"
+}

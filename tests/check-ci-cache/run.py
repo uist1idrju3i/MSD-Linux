@@ -347,8 +347,12 @@ class CacheTests(unittest.TestCase):
             self.assertIn("github.event.pull_request.number || github.run_id", workflow)
             self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", workflow)
         lint = (ROOT / ".github/workflows/lint.yml").read_text()
-        self.assertEqual(build.count("uses: $/.github/actions/setup-dev-image"), 2)
-        self.assertEqual(lint.count("uses: $/.github/actions/setup-dev-image"), 2)
+        local_action = "uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout"
+        self.assertEqual(build.count(local_action), 2)
+        self.assertEqual(lint.count(local_action), 2)
+        for workflow in (build, lint):
+            self.assertEqual(workflow.count("ignore[self-repository]"), 2)
+            self.assertNotIn("ignore[unpinned-uses]", workflow)
         self.assertIn("docker/msd-dev python3 tests/check-ci-cache/run.py", build)
         self.assertIn("docker/msd-dev python3 .github/scripts/run-host-tests.py", build)
         self.assertIn("docker/msd-dev bash -c", script(build, "buildroot-build"))
@@ -360,11 +364,8 @@ class CacheTests(unittest.TestCase):
         self.assertIn("Generate SPDX SBOM", publish)
         self.assertIn("uses: actions/attest-sbom@", publish)
         config = (ROOT / ".github/actionlint.yaml").read_text()
-        exception = r'^specifying action "\$/\.github/actions/setup-dev-image" in invalid format because ref is missing\.'
-        self.assertIn(exception, config)
+        self.assertNotIn("specifying action", config)
         self.assertIn("ARG ACTIONLINT_VERSION=1.7.12", (ROOT / "docker/msd-dev.Dockerfile").read_text())
-        self.assertIsNotNone(re.match(exception, 'specifying action "$/.github/actions/setup-dev-image" in invalid format because ref is missing.'))
-        self.assertIsNone(re.match(exception, 'specifying action "$/unrecognized-action" in invalid format because ref is missing.'))
 
 
 if __name__ == "__main__":

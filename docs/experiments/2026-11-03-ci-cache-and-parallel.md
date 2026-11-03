@@ -24,7 +24,7 @@ scope回帰の初回は、コンテナーにGitのauthor設定がないため仮
 
 一覧CSVは公開時に改行をLFへそろえ、全セルが原記録と一致することを確認しました。ZIP内にはCRLFの原CSVをそのまま保存しています。
 
-最終入力はmain統合commit `08e191b`の対象ファイルとhashが一致します。metadataの`base_commit`は採取開始時のHEADであり、当時の作業差分を含むcommit全体の同定ではありません。実際の入力は`inputs`各行で固定します。ローカル回帰の成功を、未実行の製品buildやQEMUの成功とは扱いません。
+v6の入力はmain統合commit `08e191b`の対象ファイルとhashが一致します。metadataの`base_commit`は採取開始時のHEADであり、当時の作業差分を含むcommit全体の同定ではありません。実際の入力は`inputs`各行で固定します。ローカル回帰の成功を、未実行の製品buildやQEMUの成功とは扱いません。
 
 Python 3.13.5、actionlint 1.7.12、ShellCheck 0.11.0、zizmor 1.31.1を使用しました。binaryのhashと版出力は生ログの`tools.log`にあります。archiveは266,478,080 bytes、SHA-256は`942893e4ecffa20d5f205c945d3b28c327b845232847ef6532e4f75c3408f88d`、入力タグは`inputs-fcf14a3abc4d89ac`です。これはDocker save/loadの機能確認であり、sourceからのbit単位の再現性証明ではありません。
 
@@ -33,6 +33,16 @@ Python 3.13.5、actionlint 1.7.12、ShellCheck 0.11.0、zizmor 1.31.1を使用�
 文書pathの検査は、最初にテスト用の架空pathを実在する文書への参照と判定しました。実Git fixture内のpathをPathで構成し、検査の例外を増やさず再確認しました。main統合時には、署名CLIの常時実行と、改名前の製品入力を見落とさない`--no-renames`の契約を両方残しています。
 
 ## 再実行と未確認
+
+### 実CIで見つかったaction展開の失敗と再検証
+
+[PR 193](https://github.com/uist1idrju3i/MSD-Linux/pull/193)の初回では、lint・zizmor・host回帰・製品buildがactionの準備段階で失敗しました。GitHubのself-repository構文はリポジトリのsource archiveを展開しますが、submodule内を参照する`.claude/skills/yomiyasu`を解決できず、`Could not find file`で終了しました。job IDは125700909307、125700908758、125700908869です。製品テストまで到達した失敗とは扱いません。
+
+checkout済みの`./.github/actions/setup-dev-image`へ4箇所を変更しました。zizmorのself-repository構文の推奨だけを、その4行に理由付きで除外し、旧actionlint構文例外は削除しました。外部actionのSHA固定・署名・公開ゲート・権限は変更しません。回帰では正確なpathと除外理由・件数を検査します。スキルのリンクやvendorは変更しません。
+
+修正後のformal-v7でも3 suite各5回とtool同定・実Docker save/loadの18行がpassed・終了値0でした。[CSV](2026-11-03-ci-cache-and-parallel-ci-retry.csv)、[入力metadata](2026-11-03-ci-cache-and-parallel-ci-retry.json)、[生ログ](2026-11-03-ci-cache-and-parallel-ci-retry.zip)を追加します。全入力・ログhashと各CSV列を読み、actionlint・zizmorも再検査しました。生ログZIPのSHA-256は`d1aeeff3afa333334fcfae98f6be4b01bad8efa4ab2f254fcbb422ca344c0f1b`です。v7も採取時HEADに作業差分を含むため、入力hashを基準とし、push後の実CIと区別します。
+
+### 手順
 
 Docker daemonを利用できるLinux cloneで、既存の出力先を上書きせず実行します。
 

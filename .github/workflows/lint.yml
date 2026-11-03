@@ -36,7 +36,7 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
-        uses: $/.github/actions/setup-dev-image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -73,7 +73,7 @@ jobs:
             --password-stdin
 
       - name: Ensure development image
-        uses: $/.github/actions/setup-dev-image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
