@@ -27,7 +27,7 @@
 
 その後の通常buildの版補正と実artifactの再照合、全67 componentの最新版候補、開発用OCIとActionsの依存、監視の差分は[依存関係の一覧](dependencies/README.md)にまとめた。以下の初回調査と、その後の検証を区別する。
 
-- `security.yml`は2時間ごとに補正後のSBOMをBuildroot `cve-check`へ渡し、NVD feedと照合してVEXとstateをartifactへ保存する。mainでは「製品SBOMの脆弱性監視」Issueを更新し、前回成功時との差分をコメントする。source packageのCPEによる照合なので、CPEを持たないpackage、外部ツールチェーン内部、M5配布ファイルは見えないことがある。一覧にないことは安全の証明ではない。
+- `security.yml`は2時間ごとに補正後のSBOMをBuildroot `cve-check`へ渡し、NVD feedと照合してVEXとstateをartifactへ保存する。mainでは「製品SBOMの脆弱性監視」Issueを更新し、前回成功時との差分をコメントする。PRでは同じfeed cloneからbaseとheadを比較し、新規の修正可能CRITICAL（CVSS v3.x/v4.0で9.0以上）だけを失敗条件にする。CVSSv2のみ、NVDに修正境界がないfinding、CPEがないcomponentはゲートを通すが、結果は安全を示さず修正可否不明として報告する。修正境界はhead SBOMのcomponent versionを含む同一vendor/productのCPE rangeで確認する。新規CRITICALのNVD entry欠損は整合性エラーとして失敗する。source packageのCPEによる照合なので、CPEを持たないpackage、外部ツールチェーン内部、M5配布ファイルは見えないことがある。一覧にないことは安全の証明ではない。
 - `toolchain-external-bootlin`のlicenseはunknown。一部M5配布物もunknown、Wi-Fi firmwareはPROPRIETARYとして記録される。toolchain内部のGCC・binutils・glibcの版と許諾、個々のfirmwareの出典・許諾は別に確認する。
 - 通常buildのlegal-infoログには、LinuxのCOPYING等に対するhash欠落も記録されている。build成功を、これらのライセンスファイルのhash確認済みと読み替えない。
 - 開発用OCIのapt・pip・Go依存、GitHub Actionsとそのruntime、runner、CI専用ツール、ロゴ生成依存は、製品のBuildroot SBOMだけでは一覧にならない。別の一覧と版・CVE監視の照合が必要である。

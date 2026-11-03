@@ -14,7 +14,7 @@
 | `pages.yml` | サイト関連のPRとmain push、手動。build は contents/pages: read、deploy は pages/id-token: write | PRではbuildのみ、mainで公開。ドメイン照合はPages APIに依存し、forkのPRで読めるかは未確認。buildとdeployの権限は分離 |
 | `publish-dev-image.yml` | PR（常時）、OCI入力変更のmain push、手動。plan は contents: read。build/publish は contents: read、packages/attestations/id-token: write | PRでは差分が7種のOCI入力に触れる場合だけ2アーキテクチャを最大45分ずつ構築・検査し、常時起動する`dev-image gate`がbuildの結果を集約する。buildの書込権限はPRにも与えられ、最小権限の余地がある。手動実行は`dry_run=false`ならmain以外からでもlatestタグへ公開しうる。公開先をmain限定にするかは信頼境界の設計判断。イメージの固定digestとSBOM/provenanceはアーキテクチャdigestとindex digestを分ける |
 | `dev-image-scan.yml` | mainのOCI入力変更、週次、手動。contents: read、issues: write | 公開されたlatestのamd64だけを検査。変更前は取得失敗の一部を成功扱いにしたため、失敗を検査失敗に変更。検出事項はIssue通知だがジョブ失敗にはしない。raw Trivy JSONは公開しない |
-| `security.yml` | 2時間ごと、手動、対象パスのPR。scanはcontents/packages/actions/attestations: read、reportはissues: write等 | 開発用OCI内でBuildroot SBOM/VEXを作り、成功state・SBOM・VEX・show-infoを30日保存する。mainでは「製品SBOMの脆弱性監視」Issue本文を更新し、前回成功artifactとの差分だけをコメントする。CVE件数では失敗させず、空入力、24時間超のfeed、例外TSV不正・期限切れ・未使用など完全性エラーは失敗させる。毎回depth-1 cloneし、2時間ごとのcacheは作らない |
+| `security.yml` | すべてのPR、2時間ごと、手動。scanはcontents/packages/actions/attestations: read、reportはissues: write等 | 開発用OCI内でBuildroot SBOM/VEXを作り、成功state・SBOM・VEX・show-infoを30日保存する。PRでは同じNVD feed cloneからbaseとheadのstateを作り、新規の修正可能CRITICALがあれば失敗させる。CVSS v3.x/v4.0の9.0以上を対象とし、CVSSv2のみと修正可否不明は失敗させない。新規CRITICALのNVD entry欠損は完全性エラーとして失敗する。mainの定期・手動実行では「製品SBOMの脆弱性監視」Issue本文を更新し、前回成功artifactとの差分だけをコメントする。空入力、24時間超のfeed、例外TSV不正・期限切れ、head/定期stateでの未使用例外は失敗させる一方、base stateではheadで追加された未使用例外を記録して比較を続ける。毎回depth-1 cloneし、2時間ごとのcacheは作らない |
 | `pins-check.yml` | 週次、手動。contents: read、issues: write | GitHubの固定値と公開元を照合しIssueを更新。Release APIに載らないKHCのtagを取得するよう変更。更新不能は確認不能として通知対象に残す |
 | `site-status.yml` | 週次、手動。contents/pages: read、issues: write | Pages・DNS・TLS・HTTPの異常をIssueに通知する。正常時には閉じる |
 
@@ -32,7 +32,7 @@
 
 修正後の`tests/check-pins/run.sh`では、タグだけを公開する上流、複数ページ・メジャー、未完成のページ、draft、pre-release、壊れた応答の検査が通った。`tests/trivy-gate/run.sh`では、週次image取得の3種類の失敗と成功、公開フローのartifact選択、および秘密値を含む模擬入力からの安全な出力を検査した。開発用OCI内でactionlint、ShellCheck、zizmor offlineとPython構文検査を実行した。公開されたCIの実行結果は別途確認する。
 
-製品SBOMの2時間ごとのIssue監視は実装中で、CIとmergeは未確認である。PR-sideの修正可能CRITICAL gateは別PRの後続作業とする。次に公開権限をmainへ限定する運用判断、PR用OCIジョブの権限分離、残る依存の監視漏れ、Pagesのfork動作を確認する。監視に失敗したことと脆弱性が0件であることを同じ状態にしない。
+製品SBOMの2時間ごとのIssue監視とPR-sideの新規修正可能CRITICAL gateは実装済みだが、このフォローアップのCI・mergeは未確認で、mainではまだ有効になっていない。merge後にmaintainerが`product CVE scan`をrulesetへ追加する。次に公開権限をmainへ限定する運用判断、PR用OCIジョブの権限分離、残る依存の監視漏れ、Pagesのfork動作を確認する。監視に失敗したことと脆弱性が0件であることを同じ状態にしない。
 
 ## CI生成物による追加確認
 
