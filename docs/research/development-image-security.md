@@ -28,7 +28,11 @@
 
 `libbrotli1`の`1.1.0-2+b7`に、`CVE-2026-111497`が検出されました。Trivyの重大度はNVD由来のCRITICALです。[Debian Security Tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497)でも、trixieの`1.1.0-2`はvulnerable、trixie-securityの`1.1.0-2+deb13u1`はfixedと確認しました。Brotli decoderの不正な圧縮入力の処理に関する修正です。開発環境での具体的な攻撃到達性や、悪用の成立は試していません。
 
-現行のDockerfileはDebian snapshotを`20261019T190000Z`に固定しています。再現可能な取得先を保つことと、固定後のセキュリティ修正を取り込むことは別の要件です。更新検知だけでなく、修正版を含むsnapshot・base imageと生成後のpackage版を確認する必要があります。
+2026-11-02の調査で対象にしたDockerfileはDebian snapshotを`20261019T190000Z`に固定していました。再現可能な取得先を保つことと、固定後のセキュリティ修正を取り込むことは別の要件です。更新検知だけでなく、修正版を含むsnapshot・base imageと生成後のpackage版を確認する必要があります。
+
+## 2026-11-03時点のR25
+
+R25の対応で`DEBIAN_SNAPSHOT`を`20261103T023120Z`へ更新しました。amd64の導入済みpackageは231件で、旧imageから変わったのは`libbrotli1`と`linux-libc-dev`の2件です。固定Trivy 0.76.1と同じDBで公開ゲート対象は0件でした。arm64、CI、attestation、Buildroot製品buildは未確認です。初回のBrotliだけの試行と今回の全package差分は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照してください。
 
 修正方法の比較ではsnapshot全体の更新を基本候補とします。Brotliだけの追加取得は変更範囲を絞れますが、取得先・署名またはhash・依存解決・版の監視を二重管理します。全体更新では実際に変わる全packageの変更履歴、QEMUの構築・実行、Buildrootの構築、ライセンスと再走査を比較します。snapshotの日付を変えただけで、修正版の導入が済んだとは判定しません。
 
