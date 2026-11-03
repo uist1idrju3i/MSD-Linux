@@ -1,6 +1,6 @@
 # Releaseの保護とEd25519署名鍵の設定
 
-対象は、このリポジトリの管理者です。端末でのA/B更新は [UPDATE.md](UPDATE.md)、設計の根拠と未実装部分は [Releaseのセキュリティ調査](research/release-security.md)、その他の操作は [文書案内](README.md) を参照してください。
+対象は、このリポジトリの管理者です。端末でのA/B更新は [UPDATE.md](UPDATE.md)、設計の根拠と未実装部分は [Releaseのセキュリティ調査](research/release-client/release-security.md)、その他の操作は [文書案内](README.md) を参照してください。
 
 ## まず確認すること
 
@@ -138,4 +138,4 @@ GitHubが自動生成するsource zip/tarballは、このasset検証の対象外
 
 ## この手順で確認した範囲
 
-公式手順、閲覧可能なリポジトリ設定、ローカルCLIのhelpと、試験鍵による生成・公開鍵導出・raw署名・検証・改変と別鍵の拒否を確認しました。本番鍵の生成・登録、GitHub設定の変更、本番署名job、image署名、実機での鍵移行は実施していません。詳細と失敗した確認は [調査記録](research/release-security.md) にあります。
+公式手順、閲覧可能なリポジトリ設定、ローカルCLIのhelpと、試験鍵による生成・公開鍵導出・raw署名・検証・改変と別鍵の拒否を確認しました。本番鍵の生成・登録、GitHub設定の変更、本番署名job、image署名、実機での鍵移行は実施していません。詳細と失敗した確認は [調査記録](research/release-client/release-security.md) にあります。

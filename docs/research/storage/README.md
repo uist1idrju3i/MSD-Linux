@@ -30,7 +30,7 @@
 | FTL、電源遮断、FS耐性、powerfailの資料 | [電源断耐性の調査](power-loss.md) |
 | RAUC等の過去の比較とS10の経緯 | [A/B設計の履歴](ab-design-history.md)。現在の比較は[更新framework](../alternatives/updates.md)と[TUF/Uptane](../alternatives/update-metadata.md) |
 | 回復案の未実装部分、watchdog、S11の成功・失敗条件 | [復旧案とwatchdog](recovery-and-watchdog.md) |
-| 端末がReleaseを確認する将来の方式 | [自己更新の設計](../release-client/README.md)と[Release・署名鍵](../release-security.md) |
+| 端末がReleaseを確認する将来の方式 | [自己更新の設計](../release-client/README.md)と[Release・署名鍵](../release-client/release-security.md) |
 
 ## 記録を残す単位
 

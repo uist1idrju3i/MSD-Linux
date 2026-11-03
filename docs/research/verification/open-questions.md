@@ -46,5 +46,5 @@
 
 ## 判断に使う記録
 
-現行設定と過去の仮説を分けます。[ハードウェア・BSP](../hardware-spec.md)、[生成物照合](../../experiments/2026-11-02-hardware-artifact-audit.md)、[依存とSBOM](../sbom-coverage.md)、[代替比較](../alternatives/README.md)、[権限設計](../security/README.md)を主題ごとの根拠にします。
+現行設定と過去の仮説を分けます。[ハードウェア・BSP](../hardware/hardware-spec.md)、[生成物照合](../../experiments/2026-11-02-hardware-artifact-audit.md)、[依存とSBOM](../operations/sbom-coverage.md)、[代替比較](../alternatives/README.md)、[権限設計](../security/README.md)を主題ごとの根拠にします。
 公開版SemVerと内部番号、ログイン方式の確認待ちを、この整理で確定しません。

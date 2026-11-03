@@ -1,6 +1,6 @@
 # Release設定とEd25519鍵の手順の確認
 
-[実験一覧](README.md) / [Releaseの調査](../research/release-security.md) / [管理者の手順](../RELEASE-SIGNING.md)
+[実験一覧](README.md) / [Releaseの調査](../research/release-client/release-security.md) / [管理者の手順](../RELEASE-SIGNING.md)
 
 ## 目的と事前の基準
 
@@ -30,7 +30,7 @@ runnerは秘密鍵を一時ディレクトリ内に生成し、試験後に破�
 
 5回それぞれ12コマンド、計60行が事前基準と一致しました。各回の改変・別鍵の計10検証は、期待どおり終了値1です。CSV全列と出力logを読み、正常検証と拒否を区別しました。秘密鍵は製品用ではなく、実行後の一時ディレクトリも残していません。
 
-公開資料と閲覧可能な設定APIは [出典台帳](../research/release-security-sources.json) に記録しました。19取得試行のうち17件が取得でき、Secrets一覧とworkflow既定権限の2件はHTTP 403です。19応答のbytesとSHA-256を照合しました。公式文書の関連節を読んだ範囲であり、全文・license・全設定の監査ではありません。
+公開資料と閲覧可能な設定APIは [出典台帳](../research/release-client/release-security-sources.json) に記録しました。19取得試行のうち17件が取得でき、Secrets一覧とworkflow既定権限の2件はHTTP 403です。19応答のbytesとSHA-256を照合しました。公式文書の関連節を読んだ範囲であり、全文・license・全設定の監査ではありません。
 
 GitHub CLIの `secret set`、`release verify`、`release verify-asset` のhelpで構文を確認しました。Secretを投入せずに公開済みの `v0.0.0` を検証すると、`gh release verify v0.0.0 --repo uist1idrju3i/MSD-Linux` は終了値1で `no attestations for tag` でした。APIでも `immutable=false` であり、署名済みReleaseの成功例とはしません。この照合は1回です。
 

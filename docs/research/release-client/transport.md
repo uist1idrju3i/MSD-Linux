@@ -4,7 +4,7 @@
 
 ## Releaseとmetadataを別に扱う
 
-GitHubのimmutable Releaseは、公開後のasset・tagの変更を防ぐ配布側の境界です。端末のTUF root、metadata署名、OS版の認可、A/B復旧を代替しません。期限付きmetadataを同じimmutable Releaseで上書きし続ける設計にはしません。[Release保護の調査](../release-security.md)と役割を分けます。
+GitHubのimmutable Releaseは、公開後のasset・tagの変更を防ぐ配布側の境界です。端末のTUF root、metadata署名、OS版の認可、A/B復旧を代替しません。期限付きmetadataを同じimmutable Releaseで上書きし続ける設計にはしません。[Release保護の調査](release-security.md)と役割を分けます。
 
 | 構成案 | 利点 | 費用・不足 | 評価 |
 |---|---|---|---|

@@ -177,7 +177,7 @@ ROM → `recovery.bin` 経路（OTP/nRPIBOOT、SD、USB device）→ SPI EEPROM 
 
 1. **ブートフローは bootcode.bin → start.elf → config.txt/tryboot.txt**: tryboot が全モデル対応で、MSD の A/B（`reboot '0 tryboot'` + autoboot.txt のパーティション分岐）と直結する公式機構。
 2. **起動の信頼境界**: Pi4/5 の SPI ブート EEPROM・secure boot を CM0 の保護として数えない。ユーザーランドの更新署名は microSD を交換できる相手に対する信頼の起点にはならない。
-3. **リフレッシュや SDRAM タイミングは start.elf 内部**: [メモリ信頼性の調査](../memory-reliability-2026-11.md) の結論と一致（ユーザーランドから変更不可）。
+3. **リフレッシュや SDRAM タイミングは start.elf 内部**: [メモリ信頼性の調査](../tuning/memory-reliability-2026-11.md) の結論と一致（ユーザーランドから変更不可）。
 4. **bootcode.bin 探索で 5 秒タイムアウト**: primary SD に bootcode.bin があれば即座に進むため、CardputerZero の起動時間には影響しないが、SD 不在時のフォールバック時間として記録。
 5. **ファームウェアファイルは raspberrypi/firmware 由来を pin して配布**: 更新は「固定版の更新確認」ワークフローと同じく変更履歴確認の対象。
 

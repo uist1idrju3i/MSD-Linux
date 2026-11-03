@@ -86,7 +86,7 @@ hawkBit等の配信・端末群管理serviceや[TUF metadata](update-metadata.md
 | OSTree | READMEはcode/man/APIをLGPLv2+とし、manualには別licenseを示す | file単位SPDXと実際のbuild・署名backend・bootloader統合 |
 | bootc・sysupdate等 | 機能資料を比較した範囲 | 採用構成の全依存、license、SBOM、Buildroot recipeの追加範囲。機能資料だけで配布可否を確定しない |
 
-Buildroot submoduleの更新通知は、未採用候補を含む各framework・内包依存・pluginの全版と脆弱性を継続監視する保証ではありません。採用時は[依存台帳とSBOM](../sbom-coverage.md)と監視経路を同じ変更で更新し、hostのsigning toolも対象にします。
+Buildroot submoduleの更新通知は、未採用候補を含む各framework・内包依存・pluginの全版と脆弱性を継続監視する保証ではありません。採用時は[依存台帳とSBOM](../operations/sbom-coverage.md)と監視経路を同じ変更で更新し、hostのsigning toolも対象にします。
 
 ## 実験の優先順
 

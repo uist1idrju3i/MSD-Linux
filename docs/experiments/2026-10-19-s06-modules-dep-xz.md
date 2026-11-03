@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-19
 - 担当: Devin
-- 関連: PR #28、[Build workflow](../../.github/workflows/build.yml)、[訂正済み事項](../research/corrections.md)
+- 関連: PR #28、[Build workflow](../../.github/workflows/build.yml)、[訂正済み事項](../research/history/corrections.md)
 
 ## 目的と仮説
 

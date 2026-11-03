@@ -1,6 +1,6 @@
 # CIの起動条件・開発OCIキャッシュ・host回帰並列化の検証
 
-[実験の一覧](README.md) / [CIの調査](../research/ci-build-scope-and-performance.md)
+[実験の一覧](README.md) / [CIの調査](../research/operations/ci-build-scope-and-performance.md)
 
 ## 目的と事前の判定条件
 

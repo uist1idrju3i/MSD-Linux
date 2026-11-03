@@ -127,7 +127,7 @@
       "purpose": "CardputerZero の各ハードウェア機能（LCD、キーボード、音声、IMU、RTC、電池、IR、カメラ、Wi-Fi/BT、USB、Ethernet、HDMI、拡張端子、電源スイッチ）について、ドライバ、overlay、firmware、現在の対応状況を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md の「ハードウェア」、docs/research/scope-and-hardware.md、docs/research/hardware-spec.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
+          "content": "RESEARCH.md の「ハードウェア」、docs/research/hardware/scope-and-hardware.md、docs/research/hardware/hardware-spec.md、board/cardputerzero/linux.fragment、config.txt の dtoverlay 行を根拠にしてください。未対応の機能は未対応と明記してください。"
         }
       ]
     },
@@ -136,7 +136,7 @@
       "purpose": "脅威モデル、採用済みの対策、費用対効果で分類した候補（カーネル、sysctl、マウントオプション、更新署名、無線と USB）を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md、docs/research/userspace/README.md、init-history.md、libc-history.md、docs/research/storage/rootfs-read-order.md を参照してください。セキュリティは docs/research/security/README.md 以下の現在の権限設計、threat-model.md の物理アクセス、history/README.md 以下の過去の候補を区別します。原文・版・未確認の条件を現在の採用状態へ読み替えず、kernel設定とruntimeの強制、QEMUと実機を分けます。docs/research/ssh-vpn-and-keys.md は調査のみの範囲です。"
+          "content": "RESEARCH.md、docs/research/userspace/README.md、init-history.md、libc-history.md、docs/research/storage/rootfs-read-order.md を参照してください。セキュリティは docs/research/security/README.md 以下の現在の権限設計、threat-model.md の物理アクセス、history/README.md 以下の過去の候補を区別します。原文・版・未確認の条件を現在の採用状態へ読み替えず、kernel設定とruntimeの強制、QEMUと実機を分けます。docs/research/security/ssh-vpn-and-keys.md は調査のみの範囲です。"
         }
       ]
     },
@@ -182,7 +182,7 @@
       "purpose": "RESEARCH.md と docs/research/ の構成、確度の表記（一次、二次、実測、推測、未確認）、未確認事項と実機での測定計画を説明する",
       "page_notes": [
         {
-          "content": "RESEARCH.md、docs/research/verification/README.md 、同ディレクトリのopen-questions.md、experiment-catalog.md、observability.md、hardware-measurements.md、qemu-coverage.md、platforms.mdを根拠にしてください。planning-history.mdとdesign-history.mdは当時の記録で、現在の決定ではありません。research-records.csvに統合前の原記述を保持します。docs/research/corrections.md と docs/research/sources.md も参照してください。"
+          "content": "RESEARCH.md、docs/research/verification/README.md 、同ディレクトリのopen-questions.md、experiment-catalog.md、observability.md、hardware-measurements.md、qemu-coverage.md、platforms.mdを根拠にしてください。planning-history.mdとdesign-history.mdは当時の記録で、現在の決定ではありません。research-records.csvに統合前の原記述を保持します。docs/research/history/corrections.md と docs/research/sources/sources.md も参照してください。"
         }
       ]
     },

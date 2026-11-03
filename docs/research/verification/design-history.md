@@ -30,7 +30,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 | A/B 方式 | MBR + tryboot / autoboot.txt + RAUC custom、U-Boot 系、Rugix を候補とします。tryboot と watchdog が CM0 で動作するか未確認です。FAT の boot 領域が単一障害点となる可能性があります（推測）。 | 未決 |
 | カーネル版 | Linux 6.18.y、7.2.y、7.3.y を候補とします。7.2.y / 7.3.y の PREEMPT は LAZY / FULL のみです。7.1 で DRM API が変わり、7.3 の alias unmap 再適用後の CM0 起動は未確認です。 | 未決 |
 | 開発中のログ | 開発ビルドでは ext4 に記録し、電断試験時は専用領域または pstore に切り替える案です。完全 read-only との両立方法と、測定条件の差を記録する必要があります。 | 未決 |
-| SSH / VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を候補とします。SSH サーバーは起動完了後に socket activation で起動する案です。[関連資料](../ssh-vpn-and-keys.md) | 未決 |
+| SSH / VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を候補とします。SSH サーバーは起動完了後に socket activation で起動する案です。[関連資料](../security/ssh-vpn-and-keys.md) | 未決 |
 | 名称 | MSD/Linux の由来は [RESEARCH.md](../../../RESEARCH.md) に記載しています。 | — |
 
 ### 判断と関連資料
@@ -41,7 +41,7 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 | rootfs・init・libc | [ユーザー空間・セキュリティ調査](../userspace/README.md) |
 | A/B・電源断 | [電源・更新方式の調査](../storage/README.md) |
 | 開発中のログ | [開発中の観測手段](observability.md#開発中の観測手段) |
-| SSH / VPN | [SSH・VPN・鍵保管の調査](../ssh-vpn-and-keys.md) |
+| SSH / VPN | [SSH・VPN・鍵保管の調査](../security/ssh-vpn-and-keys.md) |
 | 名称の由来 | [RESEARCH.md](../../../RESEARCH.md) |
 
 ---
@@ -50,6 +50,6 @@ rootfsはSquashFS + zstd、`/data`はext4、更新は`msd-update`です。比較
 
 以下は当初の調査範囲と取得失敗の記録です。後の検証結果や現在の到達性へ読み替えません。
 
-調査した公開資料は[出典一覧](../sources.md)に記載しています。kernel.org の kernel 文書、EROFS FAQ、squashfs-tools documentation、man7、BusyBox FAQ、Dropbear、WireGuard、musl、mimalloc、M5 documentation と overlay、raspberrypi/linux、raspberrypi/documentation を参照しました。起動時間や電断耐性など、実機での測定は未実施です。したがって性能効果は推測です。
+調査した公開資料は[出典一覧](../sources/sources.md)に記載しています。kernel.org の kernel 文書、EROFS FAQ、squashfs-tools documentation、man7、BusyBox FAQ、Dropbear、WireGuard、musl、mimalloc、M5 documentation と overlay、raspberrypi/linux、raspberrypi/documentation を参照しました。起動時間や電断耐性など、実機での測定は未実施です。したがって性能効果は推測です。
 
 未取得・未調査事項は次の一覧にまとめます。bootchart の man7 は HTTP 404、OpenSSH sshd の man、Raspberry Pi の processors ページ、Arm の ID_AA64ISAR0_EL1 定義ページは取得できていません。BCM2837 の暗号拡張に関するメーカー一次仕様、`systemd.timer` の本文、BusyBox の NOFORK / NOEXEC 設定、mdev の仕様、WireGuard / OpenVPN / Dropbear / OpenSSH の CM0 実測値、IR・カメラの DT、brcmfmac firmware の取得元、SR9900A の実機 USB ID、Linux 7.2 / 7.3 の `bcm2711_defconfig` の PREEMPT 値も未確認です。

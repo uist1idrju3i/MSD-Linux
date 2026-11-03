@@ -1,6 +1,6 @@
 # 導入・A/B更新手順の静的照合とホスト回帰検査
 
-[実験一覧](README.md) / [調査結果](../research/install-update-status.md) / [導入](../INSTALL.md) / [更新](../UPDATE.md)
+[実験一覧](README.md) / [調査結果](../research/release-client/install-update-status.md) / [導入](../INSTALL.md) / [更新](../UPDATE.md)
 
 ## 目的と事前基準
 
@@ -26,7 +26,7 @@ JISの既存警告9件は、文字検査skillの例と中国語入力方式の�
 
 OCIの実行出力はPython 3.13.5、OpenSSL 3.5.7、util-linux 2.41.5、e2fsprogs 1.47.2、actionlint 1.7.12、ShellCheck 0.11.0でした。`resize2fs -V` は未対応の引数として拒否され、版は同じ出力の先頭に表示されました。製品側のOpenSSL等の版とは区別します。
 
-公式サイトのHTTP 403と、代わりに読んだ公式GitHub sourceは [取得記録](../research/install-update-sources.json) に残しています。ログとCSVは出力の全列・bytes・hashを照合し、失敗と成功を混ぜて集計しません。
+公式サイトのHTTP 403と、代わりに読んだ公式GitHub sourceは [取得記録](../research/release-client/install-update-sources.json) に残しています。ログとCSVは出力の全列・bytes・hashを照合し、失敗と成功を混ぜて集計しません。
 
 ## 確認できないこと
 

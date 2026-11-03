@@ -1,8 +1,8 @@
 docs/research/alternatives/sources.json	docs/README-linux.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
 docs/research/alternatives/sources.json	docs/README-kmsbsd.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
 # path	token	reason
-docs/research/sources-other-url-results.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
-docs/research/sources-url-reachability-more.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
+docs/research/sources/sources-other-url-results.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
+docs/research/sources/sources-url-reachability-more.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
 docs/UPDATE.md	documentation/asciidoc/	Raspberry Pi documentation リポジトリ内のパス
 docs/research/alternatives/sources.json	docs/integration.rst	RAUCの固定refから取得した原文パスの記録であり、本リポジトリのリンクではない
 docs/research/alternatives/sources.json	docs/advanced.rst	RAUCの固定refから取得した原文パスの記録であり、本リポジトリのリンクではない
@@ -27,3 +27,34 @@ docs/experiments/2026-11-03-userspace-security-checks-final.csv	docs/research/ss
 docs/experiments/2026-11-03-userspace-security-checks-final.csv	docs/experiments/2026-11-03-userspace-security-checks-first.csv:5	二回目の失敗診断の原文。行番号を含む記録であり現在のリンクではない
 docs/experiments/2026-11-03-userspace-security-checks-final.csv	docs/experiments/2026-11-03-userspace-security-layout.md:34	二回目に検出した初回の失敗診断を改変せず保存する
 docs/experiments/2026-11-03-userspace-security-checks-final.csv	docs/experiments/2026-11-03-userspace-security-layout-repeat.csv	二回目に検出した未生成の出力例の診断を改変せず保存する
+docs/experiments/2026-10-21-qemu-lynis.md	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-10-21-qemu-zram.md	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-release-client-audit.csv	docs/research/release-security.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v2.csv	docs/research/corrections.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v2.csv	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v2.csv	docs/research/ideas-overview.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v2.csv	docs/research/scope-and-hardware.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v2.csv	docs/research/ssh-vpn-and-keys.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v3.csv	docs/research/corrections.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v3.csv	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v3.csv	docs/research/ideas-overview.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v3.csv	docs/research/scope-and-hardware.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks-v3.csv	docs/research/ssh-vpn-and-keys.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/corrections.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/ideas-overview.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/scope-and-hardware.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-02-storage-document-checks.csv	docs/research/ssh-vpn-and-keys.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/corrections.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/ideas-overview.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/memory-reliability-2026-11.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/reimplemented-libraries.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/scope-and-hardware.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-final-v4.csv	docs/research/ssh-vpn-and-keys.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/corrections.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/cpu-irq-and-sysctl.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/ideas-overview.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/memory-reliability-2026-11.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/reimplemented-libraries.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する
+docs/experiments/2026-11-03-userspace-security-checks-first.csv	docs/research/ssh-vpn-and-keys.md	実験の原記録に残る移動前のパスであり、リンク先ではないため保持する

@@ -81,4 +81,4 @@ tmpfsのsize・inode上限、zramの`disksize`・`mem_limit`・codec、OOM、圧
 
 Linuxの[SquashFS](https://docs.kernel.org/6.18/filesystems/squashfs.html)、[EROFS](https://docs.kernel.org/6.18/filesystems/erofs.html)、[overlayfs](https://docs.kernel.org/6.18/filesystems/overlayfs.html)、[ext4](https://docs.kernel.org/6.18/filesystems/ext4/overview.html)、[F2FS](https://docs.kernel.org/6.18/filesystems/f2fs.html)、[EROFS mkfs](https://erofs.docs.kernel.org/en/latest/mkfs.html)の必要な節と固定Buildroot recipeを照合しました。kernel 6.18資料と最新mkfs資料は同じ版ではありません。取得時刻・原文hashは[sources.json](sources.json)に残します。
 
-kernel、filesystem tool、圧縮library、image生成toolは別の配布物です。Buildrootの`legal-info`とfile単位のlicense、static link、host再配布、SBOMを確認します。kernelの監視だけでe2fsprogs・erofs-utils・squashfs-tools・codecの更新を網羅したとはしません。候補を採用する変更では、[依存監視の限界](../sbom-coverage.md)も同時に解消する必要があります。
+kernel、filesystem tool、圧縮library、image生成toolは別の配布物です。Buildrootの`legal-info`とfile単位のlicense、static link、host再配布、SBOMを確認します。kernelの監視だけでe2fsprogs・erofs-utils・squashfs-tools・codecの更新を網羅したとはしません。候補を採用する変更では、[依存監視の限界](../operations/sbom-coverage.md)も同時に解消する必要があります。

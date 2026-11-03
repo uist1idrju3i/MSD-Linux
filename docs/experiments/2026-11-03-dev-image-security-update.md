@@ -3,7 +3,7 @@
 - 状態: 完了（amd64/arm64のCI、Trivy gate、attestation確認）
 - 日付: 2026-11-03
 - 担当: Devin
-- 関連: [R25](../research/pending-work.csv)、[開発用OCIの脆弱性調査](../research/development-image-security.md)、[開発環境とCIの依存監査](../research/dependencies/development-and-ci.md)
+- 関連: [R25](../research/pending-work.csv)、[開発用OCIの脆弱性調査](../research/operations/development-image-security.md)、[開発環境とCIの依存監査](../research/dependencies/development-and-ci.md)
 
 ## 目的と仮説
 

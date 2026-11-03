@@ -3,7 +3,7 @@
 - 状態: 完了（2026-10-25 に、`run-qemu.sh` の既定で無効にしたあとの測り直しを追加）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [振り返り](../research/retrospective-2026-10.md) の残タスク「tty の警告」、[2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md)
+- 関連: [振り返り](../research/history/retrospective-2026-10.md) の残タスク「tty の警告」、[2026-10-21-qemu-lynis](2026-10-21-qemu-lynis.md)
 
 ## 目的と仮説
 

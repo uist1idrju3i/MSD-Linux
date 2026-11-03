@@ -3,7 +3,7 @@
 - 状態: 完了（予備比較。採否は未決定）
 - 日付: 2026-10-21
 - 担当: Devin
-- 関連: [開発環境と CI の調査](../research/dev-environment-and-ci.md)
+- 関連: [開発環境と CI の調査](../research/operations/dev-environment-and-ci.md)
 
 ## 目的と仮説
 

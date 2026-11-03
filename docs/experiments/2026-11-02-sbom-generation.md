@@ -34,7 +34,7 @@
 - 回帰テスト11件が成功した。local Makefileと固定URL取得の同値性、冪等性、virtual provider、過不足・重複、古いproject version、誤ったhost/target・CPE・graphを確認した。URL取得のテストはmockであり、外部サービスの到達性を試したものではない。
 - actionlint、ShellCheck、zizmor offlineとPythonの構文検査を実行した。新しいCI生成物の検査はこのローカル静的試験とは別に確認する。
 
-生の値は[CSV](2026-11-02-sbom-generation.csv)、集計と入力hashは[JSON](2026-11-02-sbom-generation.json)にある。SBOM全体の読解と監視の限界は[SBOMの確認範囲](../research/sbom-coverage.md)を参照。
+生の値は[CSV](2026-11-02-sbom-generation.csv)、集計と入力hashは[JSON](2026-11-02-sbom-generation.json)にある。SBOM全体の読解と監視の限界は[SBOMの確認範囲](../research/operations/sbom-coverage.md)を参照。
 
 ## 再確認
 

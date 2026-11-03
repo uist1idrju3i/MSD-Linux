@@ -157,7 +157,7 @@ D1 の目印の間隔です（通常起動 5 回の中央値）。目印は各�
 ## 結論
 
 - K2（`CONFIG_FTRACE` を無効にする）は、TCG と icount の両方で基準を満たしました。QEMU 上の改善とみなします。icount では initcall の合計が 1.650265 秒から 0.544213 秒に減り、`t_ready` が 1.150770 秒（37.88 %）短くなりました。`Image` は 5,439,488 B、rootfs は 602,112 B 小さくなりました。
-  - ただし、この PR では製品の設定を変えていません。ftrace を無効にすると、kprobe、blktrace、ブート時の tracing が使えなくなります。調査文書では、SquashFS の読み込み順を blktrace で調べる案が出ています（[fastboot-ideas.md](../research/fastboot-ideas.md)）。製品のビルドと調査用のビルドを分けるか、実機で測ってから決めます。`kernel-candidates.txt` にも `FTRACE n` が候補として載っています。
+  - ただし、この PR では製品の設定を変えていません。ftrace を無効にすると、kprobe、blktrace、ブート時の tracing が使えなくなります。調査文書では、SquashFS の読み込み順を blktrace で調べる案が出ています（[fastboot-ideas.md](../research/tuning/fastboot-ideas.md)）。製品のビルドと調査用のビルドを分けるか、実機で測ってから決めます。`kernel-candidates.txt` にも `FTRACE n` が候補として載っています。
 - U1 は 2 つのモードで約 3 % 短くなり、向きはそろいました。5 % の基準には届かないため、改善とはみなしません。icount で `S10mdev` は 0.817086 秒から 0.704289 秒になりました。
 - K1 は不採用です。`init_kprobe_trace` は消えましたが、ほぼ同じ時間が `init_blk_tracer` に移り、`t_ready` は短くなりませんでした。
 - D1 で、TCG でだけ長い区間（init の起動直後、swapon、fsck、`msd-data-grow` など）は、icount ではどれも 0.07 秒以下でした。これらはゲストの CPU の処理ではなく、QEMU が SD カードなどを模倣するのにかかったホストの時間だと考えます。TCG の秒数で、ユーザー空間の I/O の速さを判断しません。

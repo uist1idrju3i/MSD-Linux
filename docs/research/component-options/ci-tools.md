@@ -37,5 +37,5 @@ APTのfile一覧はsystem imageの全設定ではない。直接導入するbina
 ## 根拠
 
 - [開発用Dockerfile](../../../docker/msd-dev.Dockerfile)、[wrapper](../../../docker/msd-dev)、[依存監視の設定](../../../.github/dependabot.yml)、[版の固定値を読む検査](../../../.github/scripts/check-pins.py)
-- [QEMUの試験仕様](../../BUILD.md#qemu-での起動確認)、[OCIの脆弱性と監視](../development-image-security.md)、[SBOMの範囲](../sbom-coverage.md)
+- [QEMUの試験仕様](../../BUILD.md#qemu-での起動確認)、[OCIの脆弱性と監視](../operations/development-image-security.md)、[SBOMの範囲](../operations/sbom-coverage.md)
 - [各packageのmetadataとfile一覧](apt-surfaces.csv)。help・manual・sourceは版を合わせて参照する。全APT libraryに独立CLIがあるとはしない。

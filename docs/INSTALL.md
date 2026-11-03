@@ -22,7 +22,7 @@ PC、microSDリーダー、内容を消してよいmicroSD、別媒体へのバ�
 2. Buildroot build、image layoutとQEMU検査の結果・ログを読みます。artifactはbuild成功を条件に保存するため、artifactがあるだけで後続検査の成功を証明できません。文書変更でbuildがskipされたPRには新しいimageはありません。
 3. `msd-cardputerzero-build` をダウンロードし、ZIPの中の `sdcard.img.xz` を展開して `sdcard.img` にします。ほかのDTB・kernel・SBOM・legal-infoは全SD imageの代わりにはなりません。
 
-既存の `v0.0.0` はprereleaseで、確認した時点ではimmutableではなく、Release attestationも取得できませんでした。本番の署名済み配布としては案内しません。HTTPS、GitHubのasset digestや同じ配布場所にあるchecksumだけを、独立した発行者署名の代わりにはしません。SD image全体の署名・初回の信頼鍵の配布は未実装です。詳細は [Releaseの調査](research/release-security.md) を参照してください。
+既存の `v0.0.0` はprereleaseで、確認した時点ではimmutableではなく、Release attestationも取得できませんでした。本番の署名済み配布としては案内しません。HTTPS、GitHubのasset digestや同じ配布場所にあるchecksumだけを、独立した発行者署名の代わりにはしません。SD image全体の署名・初回の信頼鍵の配布は未実装です。詳細は [Releaseの調査](research/release-client/release-security.md) を参照してください。
 
 ## 2. PCでカード全体へ書く
 

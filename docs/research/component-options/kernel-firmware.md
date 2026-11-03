@@ -47,11 +47,11 @@ Raspberry Pi GPU firmwareは`BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI_CD`と`gpu_mem=
 
 Wi-FiのSDIO firmwareがあるだけでは、認証、国別規制、DHCP/DNS、再接続、資格情報の保護まで完成しない。M5のLCD・BMI270初期化データ・keymapも、配布元、許諾、該当driverと機器の対応を別に確認する。
 
-M5 packageは外部moduleをbuildし、`KCFLAGS`へ`CONFIG_CARDPUTERO_V0_5=1`を渡す。overlayはC preprocessorと`dtc -@ -I dts -O dtb`を経由する。指定を増やす前に、driverが読むproperty、共有resetや電源の責務、標準DT bindingとの違いを追う。[公式OSとの照合](../official-software.md)と[ハードウェアの資料](../hardware-spec.md)から、設定変更の機能要件を確認できる。
+M5 packageは外部moduleをbuildし、`KCFLAGS`へ`CONFIG_CARDPUTERO_V0_5=1`を渡す。overlayはC preprocessorと`dtc -@ -I dts -O dtb`を経由する。指定を増やす前に、driverが読むproperty、共有resetや電源の責務、標準DT bindingとの違いを追う。[公式OSとの照合](../hardware/official-software.md)と[ハードウェアの資料](../hardware/hardware-spec.md)から、設定変更の機能要件を確認できる。
 
 ## 一次資料と既存の実測
 
 - [固定kernelのソース](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602)、[同版のkernel引数](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/kernel-parameters.txt)、[sysctl](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/sysctl)
 - [Linux 6.18のkernel引数の説明](https://docs.kernel.org/6.18/admin-guide/kernel-parameters.html)。Raspberry Pi固有の差は固定ソースを優先する。
 - [M5 packageのbuildとoverlay生成](../../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)、[kernel fragment](../../../board/cardputerzero/linux.fragment)
-- [moduleの引数](../tunables-module-params.md)、[sysctl](../tunables-sysctl.md)、[既定値の実測](../tunables-defaults.md)。当時の測定条件を維持し、今回の設定CSVと異なる版の結果を混ぜない。
+- [moduleの引数](../tuning/tunables-module-params.md)、[sysctl](../tuning/tunables-sysctl.md)、[既定値の実測](../tuning/tunables-defaults.md)。当時の測定条件を維持し、今回の設定CSVと異なる版の結果を混ぜない。

@@ -29,7 +29,7 @@ mkcramfs の警告: `gids truncated to 8 bits (this may be a security concern)`�
 
 ## 結論
 
-block device 経由の cramfs rootfs は QEMU で正常に起動する。ただし image は squashfs（zstd）より約 13% 大きく、file<16MB・fs 256MB 強・gid 8bit・timestamp なしという制限のため優位点がない。**不採用を確定**し、rootfs は現行 SquashFS+zstd を維持する。XIP 系は SD の block device では適用不能（[cramfs と XIP の調査](../research/cramfs-xip.md)）。
+block device 経由の cramfs rootfs は QEMU で正常に起動する。ただし image は squashfs（zstd）より約 13% 大きく、file<16MB・fs 256MB 強・gid 8bit・timestamp なしという制限のため優位点がない。**不採用を確定**し、rootfs は現行 SquashFS+zstd を維持する。XIP 系は SD の block device では適用不能（[cramfs と XIP の調査](../research/tuning/cramfs-xip.md)）。
 
 ## 再現
 

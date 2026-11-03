@@ -63,7 +63,7 @@ Raspberry Pi の暗号化ガイダンスは BCM2837 に Adiantum、BCM2711 に A
 
 Wi-Fi／Bluetooth のドライバーとファームウェアは選択されていますが、アソシエーション、ペアリング、常時 discoverable の有無は未確認です。必要な無線機能が確定するまでは、起動時サービス、権限、ペアリング可否を検査し、不要な無線を無効化します。【未確認】[無線カーネル設定](../../../board/cardputerzero/linux.fragment)／[Buildroot defconfig](../../../configs/msd_cardputerzero_defconfig)
 
-USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID と対応ドライバーは実機で確認します。USB gadget 機能は一部が kernel fragment で無効化されていますが、それだけで最終 `.config` や runtime の全 gadget 経路が無効だとは断定できません。【一次】【未確認】[USB／Ethernet の調査](../scope-and-hardware.md)
+USB hub、USB-A、host／device 切替、SR9900A Ethernet の実際の USB ID と対応ドライバーは実機で確認します。USB gadget 機能は一部が kernel fragment で無効化されていますが、それだけで最終 `.config` や runtime の全 gadget 経路が無効だとは断定できません。【一次】【未確認】[USB／Ethernet の調査](../hardware/scope-and-hardware.md)
 
 ## 未確認事項
 
