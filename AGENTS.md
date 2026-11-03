@@ -45,6 +45,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 | `experiment-record` | 実験・測定・比較の計画、実行、再現できる記録 |
 | `site-review` | 公式サイトの見え方（テキストブラウザー、小さな画面、明暗）の確認 |
 | `document-structure` | 文書の棚卸し、現行と履歴の区別、重複の整理、分割とリンクの照合 |
+| `release-versioning` | リリース版、CHANGELOG、台帳の更新と検査 |
 
 ## 6. yomiyasu（日本語推敲スキル）
 
@@ -73,7 +74,17 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 - 完了報告では、依頼と計画の各項目を変更・検証・未確認に照らし合わせます。CI の合否とログを確認し、未実施の試験を実施済みとは書きません。
 - GitHub の stacked PR は、同一リポジトリ内で PR を積み重ね、先行 PR の変更を後続ブランチに含める運用です。各 PR の base は利用者が設定し、エージェントは指示なしに base を変更したり、PR を merge したりしません。https://docs.github.com/en/pull-requests/reference/stacked-pull-requests、https://docs.github.com/en/pull-requests/get-started/about-stacked-prs
 
-## 8. 確認コマンド
+## 8. リリースと版
+
+- 公開版はSemVer 2.0.0を使い、tagは `^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-rc\.([1-9]\d*))?$` に従います。build metadataは付けません。最初の公開版は `v0.1.0`、既存の `v0.0.0` は開発用pre-releaseです。
+- 内部更新番号はtag commitの `%ct` です。Release buildでは `MSD_UPDATE_VERSION` を設定せず、手動の番号ファイルも作りません。
+- SemVerの優先順位に沿って内部番号も厳密に増やします。`-rc.N` は同じMAJOR.MINOR.PATCHの通常tagより前で、pre-releaseも順序に含めます。
+- SemVerを再発行せず、1つのcommitに複数のSemVerを付けません。
+- tagとReleaseは利用者だけが作成します。エージェントはCHANGELOGと台帳のPRだけを作ります。
+- `0.y.z` の互換性を壊す変更はMINORを上げます。
+- 詳細は [`release-versioning` スキル](.agents/skills/release-versioning/SKILL.md) を参照してください。
+
+## 9. 確認コマンド
 
 ```sh
 git submodule update --init             # submodule の取得
@@ -89,6 +100,9 @@ python3 .github/scripts/check-links.py && tests/check-links/run.sh
 python3 .github/scripts/check-doc-size.py && tests/check-doc-size/run.sh
 python3 .github/scripts/check-jisx0213.py && tests/check-jisx0213/run.sh
 python3 .github/scripts/check-site.py && tests/check-site/run.sh
+python3 .github/scripts/check-releases.py
+python3 .github/scripts/check-releases.py --require-tags
+tests/check-releases/run.sh
 docker/msd-dev actionlint .github/workflows/*.yml
 docker/msd-dev python3 .github/scripts/shellcheck-tracked.py
 docker/msd-dev zizmor --offline --format=github .github/workflows/

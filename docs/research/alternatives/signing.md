@@ -4,7 +4,7 @@
 
 ## 何を同じに保ち、何を見直すか
 
-現行のhost署名とtarget検証を、別の暗号libraryや更新frameworkへ移せるか調べるための比較条件です。新しいmanifest、鍵運用、anti-rollbackの採用決定ではありません。公開版はSemVerにする要求がありますが、内部の単調増加番号と分離する案は利用者の確認待ちです。ここで承認済みとは扱いません。
+現行のhost署名とtarget検証を、別の暗号libraryや更新frameworkへ移せるか調べるための比較条件です。新しいmanifest、鍵運用、anti-rollbackの採用決定ではありません。公開版はSemVerにする要求があります。SemVerと内部の単調増加番号の分離は承認済みです（内部番号はtag commitのcommit時刻。対応表は[Release対応表](../../releases/README.md)）。
 
 2026-11-02にMSD/Linuxの`9f07c3b884ae4c63c22dc196fd02b6ee43932f6e`、Buildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に読みました。代替verifierのbuild・実行、Release配信・鍵rotation・実機rollbackの試験は本リポジトリでは試していません。
 
@@ -57,7 +57,7 @@ HTTPSは配信先の認証と転送中の保護、bundle署名は配信物の発
 | offline rootと委任 | offlineで保管するroot、期限付きonline鍵、用途別role、threshold署名 | root保管、更新儀式、復旧・rotation試験が増える。TUF等の採用比較へ接続し、独自protocolへ同じ機能を安易に再実装しない |
 | rootfsに固定した公開鍵 | 信頼する鍵と算法・key IDをimageへ固定 | 単一鍵が侵害された場合の失効、壊れた端末への回復、古いslotとの整合が必要。新鍵を同梱するだけでは、信頼の移行にならない |
 | root鍵rotation | 旧信頼根から検証できる新metadata、必要なら旧／新側のthreshold、世代とrole | 古い鍵のreplay、未更新端末、鍵喪失、権限を奪われたonline鍵への耐性を設計・試験する。自動rotationが現行にあるとはしない |
-| SemVer | 公開版のMAJOR.MINOR.PATCH、pre-release、build metadataを規定どおり扱う | 文字列の辞書順や日時順と同じではない。internal counterとの分離案は確認待ちで、manifest仕様をまだ変更しない |
+| SemVer | 公開版のMAJOR.MINOR.PATCH、pre-release、build metadataを規定どおり扱う | 文字列の辞書順や日時順と同じではない。内部番号との対応は[Release対応表](../../releases/README.md)のとおり承認済みで、内部番号はtag commitのcommit時刻。manifest仕様は変更しない |
 | rollback防止 | 単調増加metadata版／内部番号、必要なら期限・永続的な最高到達値、復旧経路 | 有効な古い署名だけでは鮮度を証明しない。書換え可能なSD上の番号は、媒体を戻す攻撃へのhardware保証ではない |
 | A/B rollback | 新版が起動不能なら既知の正常slotへ戻す | セキュリティ上禁止した旧版へのdowngradeとは別。counter更新時点とhealth後commit、電源断、復旧許可の整合が必要 |
 | verified boot | trust anchorからbootloader・kernel・rootfsを検証する別のchain | bundle署名やread-only rootfsだけでは成立しない。署名鍵の入ったimageごと差し替えられる物理脅威を含むか、boardの能力と費用を評価する |

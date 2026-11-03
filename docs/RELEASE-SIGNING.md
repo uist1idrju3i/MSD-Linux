@@ -113,7 +113,7 @@ gh secret list --repo uist1idrju3i/MSD-Linux --env release-signing
 ## 6. 将来の署名済みReleaseを公開・確認する
 
 1. 本番鍵ではなく試験鍵で、正常な署名の受理、改変、別鍵、欠落、未知の機種、古い更新、容量不足の拒否を先に確認します。host、生成image、QEMU、実機の範囲を区別します。
-2. 対象タグ、commit、公開SemVer、内部更新番号、信頼する鍵、build結果を確認します。SemVerと内部番号の対応は別途決める仕様であり、この手順で変更しません。
+2. 対象タグ、commit、公開SemVer、内部更新番号、信頼する鍵、build結果を確認します。SemVerと内部番号の対応は[Release対応表](releases/README.md)のとおり承認済みです（内部番号はtag commitのcommit時刻）。この手順でmanifest仕様は変更しません。
 3. Releaseをdraftとして作り、image、update bundle、署名metadata、SBOM、ライセンス資料など、必要なassetを全て添付します。公開後の追加や差し替えを前提にしません。
 4. ダウンロードし直したassetの長さ・hash・Ed25519署名、image内の公開鍵、開発鍵でないことを照合します。現在の `manifest.sig` だけでSD image全体を確認したことにはなりません。
 5. 承認後にpublishし、ReleaseページのImmutable表示を確認します。公開後に説明文やlatestの指定が変わる可能性は残るため、端末の信頼判断を説明文やlatestだけに依存させません。

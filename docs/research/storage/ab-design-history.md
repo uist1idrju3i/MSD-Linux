@@ -4,7 +4,7 @@
 
 以下は主に2026-10-18に調べた更新方式・boot連携と、その後のS10の経緯です。引用版、未確認・未着手という記述は当時の条件として保持し、現在の採用版・未実装範囲へ読み替えません。実行する操作は[A/B更新手順](../../UPDATE.md)、現在の候補比較は[更新framework](../alternatives/updates.md)と[TUF/Uptane](../alternatives/update-metadata.md)が正本です。
 
-現行の更新番号検証とS10の状態は[試験台帳](../verification/experiment-catalog.md)、端末がReleaseを確認する将来の設計は[自己更新](../release-client/README.md)を参照します。公開SemVerと内部更新番号の確認待ちを、この再配置で決定しません。
+現行の更新番号検証とS10の状態は[試験台帳](../verification/experiment-catalog.md)、端末がReleaseを確認する将来の設計は[自己更新](../release-client/README.md)を参照します。公開SemVerと内部更新番号の対応は承認済みです（内部番号はtag commitのcommit時刻。対応表は[Release対応表](../../releases/README.md)）。
 
 ## 7. OTA / A-B
 

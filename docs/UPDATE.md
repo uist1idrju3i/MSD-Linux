@@ -50,7 +50,7 @@ boot_partition=3
 
 - bundleを手元で `/data/update.tar` に配置し、`df -h /data /tmp` で空き領域を確認します。現在はtarを一時ディレクトリへ展開して検証するため、保存先だけでなく通常tmpfsの `/tmp` にも展開分が必要です。512 MiB機で最大slot相当のbundleが扱える保証ではありません。
 
-公開SemVerと、現行manifestの10進整数の更新番号は別です。両者の対応は未確定であり、SemVer文字列を現行 `MSD_UPDATE_VERSION` に渡しません。
+公開SemVerと、現行manifestの10進整数の更新番号は別です。対応は承認済みで、内部更新番号はtag commitのcommit時刻です。対応表は[Release対応表](releases/README.md)を参照してください。SemVer文字列を現行 `MSD_UPDATE_VERSION` に渡しません。
 
 ## 更新の流れ
 

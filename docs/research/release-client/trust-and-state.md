@@ -27,7 +27,7 @@ rootはofflineで保管する鍵とthresholdを検討し、targets・snapshot・
 | schema版 | updaterがfield・署名対象・状態を理解できるかを示す | 未知schemaを旧形式として解釈する |
 | board・architecture | CM0/CardputerZero用の許可対象を認証済みmetadataから制限する | file名やRelease説明だけで判定する |
 | channel・公開SemVer | 利用者向けの互換性と配信系列を表す | 文字列順、tagの先頭`v`、build metadataをanti-rollback番号にする |
-| 内部更新番号 | 古いimageのnetwork再投入を拒否する案 | 公開SemVerと分離する案は確認待ち。現行整数parserへSemVer文字列を渡さない |
+| 内部更新番号 | 古いimageのnetwork再投入を拒否する案 | 公開SemVerとは分離済み（内部番号はtag commitのcommit時刻。対応表は[Release対応表](../../releases/README.md)）。現行整数parserへSemVer文字列を渡さない |
 | role別metadata版 | TUFの信頼更新と世代混在・rollback検出に使う | OSのSemVerや内部番号と同一にする |
 | 最低updater版 | parser、鍵、永続stateの互換性を要求する | 読めない更新を先にinstallしてから旧slotが壊れることを知る |
 | payloadの名前・length・hash | 選んだbytesを固定し、TUF targetまたは認証済みdescriptorへ結び付ける | 未署名の別fieldで書込み先やhashを上書きする |
