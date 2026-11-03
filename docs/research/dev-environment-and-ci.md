@@ -2,7 +2,13 @@
 
 この記録は、Buildroot をビルドする開発環境と CI の選定、依存関係の監視、既存の比較結果をまとめます。数値は記載した調査日・CI 実行の範囲に限り、実機性能や未実施の比較を示すものではありません。
 
-現在の差分判定、OCI準備、cache・並列化の適用範囲は[2026-11の実行履歴の観察](ci-build-scope-and-performance.md)へまとめました。後述の統制した比較とは別の記録です。
+## 現行の開発環境
+
+開発用Docker imageは、ローカル開発とCI/CDの共通環境として構築・配布します。開発hostのOS標準版とは独立して、必要なツールの版とパッチを固定するためのものです。製品構築・host回帰・QEMUは`docker/msd-dev`を使い、target用のBootlin toolchainもBuildrootがコンテナー内で取得・使用します。runnerや開発hostへ導入したcompilerへ切り替えることを、高速化の前提にはしません。
+
+現行の設定は[Dockerfile](../../docker/msd-dev.Dockerfile)、操作は[開発用コンテナー](../../docker/README.md)、CIの起動条件とcacheは[CIの説明](../CI.md)を正本とします。[改善の回帰記録](../experiments/2026-11-03-ci-cache-and-parallel.md)と[改善前の実行履歴の観察](ci-build-scope-and-performance.md)は区別します。
+
+以下は選定当時の比較と実行履歴です。APT版QEMU、Goの旧pin、過去の並列化条件等を現在の設定として使用しません。現在のQEMUは署名付きsourceと製品向けpatchから構築します。
 
 ## 開発用コンテナーの選定
 

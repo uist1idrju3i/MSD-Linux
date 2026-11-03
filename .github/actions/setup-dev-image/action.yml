@@ -1,0 +1,63 @@
+name: Prepare development image
+description: Prefer an attested published image, otherwise cache an exact-input local build
+outputs:
+  source:
+    description: published, local-cache, or local-build
+    value: ${{ steps.prepare.outputs.source }}
+runs:
+  using: composite
+  steps:
+    - id: probe
+      name: Check published image and inputs
+      shell: bash
+      run: |
+        tag="$(docker/msd-dev tag)"
+        available="$(docker/msd-dev available)"
+        printf 'tag=%s\npublished=%s\n' "$tag" "$available" >> "$GITHUB_OUTPUT"
+
+    - id: cache
+      name: Restore local development image
+      if: steps.probe.outputs.published == 'false'
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          ${{ runner.temp }}/msd-dev-image-cache/image.tar
+          ${{ runner.temp }}/msd-dev-image-cache/image.json
+        key: msd-dev-image-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.probe.outputs.tag }}-exact
+
+    - id: prepare
+      name: Pull, load, or build development image
+      shell: bash
+      env:
+        PUBLISHED: ${{ steps.probe.outputs.published }}
+        CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+        INPUT_TAG: ${{ steps.probe.outputs.tag }}
+        MSD_DEV_IMAGE: msd-dev:local
+        MSD_DEV_REQUIRE_ATTESTATION: '1'
+      run: |
+        cache_dir="$RUNNER_TEMP/msd-dev-image-cache"
+        log="$RUNNER_TEMP/msd-ensure.log"
+        printf 'Development image exact cache hit: %s\n' "${CACHE_HIT:-not-requested}" >> "$GITHUB_STEP_SUMMARY"
+        if [[ "$PUBLISHED" == true ]]; then
+          docker/msd-dev pull 2>&1 | tee "$log"
+          printf 'source=published\n' >> "$GITHUB_OUTPUT"
+          printf '=dev-image=\tsource\tpublished\n' | tee -a "$log"
+          printf '\nDevelopment image: **published** (attestation verified).\n' >> "$GITHUB_STEP_SUMMARY"
+        elif [[ "$CACHE_HIT" == true ]]; then
+          python3 .github/scripts/dev-image-cache.py load \
+            --directory "$cache_dir" --tag "$INPUT_TAG" 2>&1 | tee "$log"
+        else
+          printf 'Published image was not found; building locally.\n' | tee "$log"
+          docker/msd-dev build 2>&1 | tee -a "$log"
+          python3 .github/scripts/dev-image-cache.py save \
+            --directory "$cache_dir" --tag "$INPUT_TAG" 2>&1 | tee -a "$log"
+        fi
+
+    - name: Save local development image
+      if: steps.prepare.outputs.source == 'local-build' && steps.prepare.outputs.cacheable == 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          ${{ runner.temp }}/msd-dev-image-cache/image.tar
+          ${{ runner.temp }}/msd-dev-image-cache/image.json
+        key: ${{ steps.cache.outputs.cache-primary-key }}

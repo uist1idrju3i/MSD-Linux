@@ -52,14 +52,18 @@ if [[ "${1:-}" == "tag" ]]; then
     exit 0
 fi
 
-if [[ "${1:-}" == "ensure" ]]; then
+if [[ "${1:-}" == "ensure" || "${1:-}" == "available" ]]; then
     if (($# != 1)); then
-        printf 'Usage: %s ensure\n' "$0" >&2
+        printf 'Usage: %s %s\n' "$0" "$1" >&2
         exit 2
     fi
     input_tag="$(image_input_hash)"
     source_image="${image_repository}:inputs-${input_tag}"
     if inspect_output="$(docker manifest inspect "${source_image}" 2>&1)"; then
+        if [[ "$1" == "available" ]]; then
+            printf 'true\n'
+            exit 0
+        fi
         printf 'Published image %s found.\n' "${source_image}"
         exec "${0}" pull
     else
@@ -68,6 +72,10 @@ if [[ "${1:-}" == "ensure" ]]; then
     if [[ "${inspect_output}" == *"manifest unknown"* ||
         "${inspect_output}" == *": not found"* ||
         "${inspect_output}" == *"no such manifest"* ]]; then
+        if [[ "$1" == "available" ]]; then
+            printf 'false\n'
+            exit 0
+        fi
         printf 'Published image %s was not found; building locally.\n' \
             "${source_image}" >&2
         exec docker build \
