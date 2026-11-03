@@ -5,11 +5,6 @@ on:
     - cron: "25 */2 * * *"
   workflow_dispatch:
   pull_request:
-    paths:
-      - .github/workflows/security.yml
-      - .github/scripts/cve-monitor.py
-      - .github/cve-exceptions.tsv
-      - tests/check-cve-monitor/**
 
 concurrency:
   group: security-report-${{ github.ref }}
@@ -19,6 +14,7 @@ permissions: {}
 
 jobs:
   scan:
+    name: product CVE scan
     runs-on: ubuntu-26.04
     timeout-minutes: 90
     permissions:
@@ -105,6 +101,85 @@ jobs:
             --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
             --now "$(docker/msd-dev date -u +%s)" \
             --output output/images/state.json
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+          submodules: true
+          persist-credentials: false
+
+      - name: Configure base Buildroot
+        if: github.event_name == 'pull_request'
+        run: |
+          docker/msd-dev make -C base/vendor/buildroot \
+            BR2_EXTERNAL=/work/base O=/work/base/output msd_cardputerzero_defconfig
+
+      - name: Generate base SBOM
+        if: github.event_name == 'pull_request'
+        run: |
+          docker/msd-dev mkdir -p base/output/images
+          docker/msd-dev make -s -C base/output show-info \
+            > base/output/images/buildroot-show-info.json
+          docker/msd-dev python3 vendor/buildroot/utils/generate-cyclonedx \
+            --in-file base/output/images/buildroot-show-info.json \
+            --project-name msd-linux \
+            --project-version "$(docker/msd-dev git -C base rev-parse HEAD)" \
+            > base/output/images/sbom.cdx.json
+
+      - name: Set base kernel version in SBOM
+        if: github.event_name == 'pull_request'
+        run: |
+          docker/msd-dev bash -c "cd /work/base && \
+            python3 /work/.github/scripts/set-kernel-version.py \
+              output/images/sbom.cdx.json \
+              --show-info output/images/buildroot-show-info.json \
+              --project-version \"\$(git rev-parse HEAD)\""
+
+      - name: Run base Buildroot CVE analysis
+        if: github.event_name == 'pull_request'
+        run: |
+          docker/msd-dev python3 .github/scripts/cve-monitor.py cve-check \
+            --nvd-path /work/dl/buildroot-nvd \
+            --no-nvd-update --include-resolved \
+            --in-file /work/base/output/images/sbom.cdx.json \
+            --out-file /work/base/output/images/vex.cdx.json
+
+      - name: Generate base monitor state
+        if: github.event_name == 'pull_request'
+        run: |
+          docker/msd-dev python3 .github/scripts/cve-monitor.py state \
+            --sbom base/output/images/sbom.cdx.json \
+            --vex base/output/images/vex.cdx.json \
+            --exceptions .github/cve-exceptions.tsv \
+            --feed-commit-time "$(docker/msd-dev cat output/images/nvd-feed-commit-time.txt)" \
+            --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
+            --now "$(docker/msd-dev date -u +%s)" \
+            --output base/output/images/state.json
+
+      - name: Check PR CVE gate
+        if: github.event_name == 'pull_request'
+        run: |
+          set -o pipefail
+          docker/msd-dev python3 .github/scripts/cve-monitor.py pr-gate \
+            --base-state base/output/images/state.json \
+            --head-state output/images/state.json \
+            --head-sbom output/images/sbom.cdx.json \
+            --nvd-path /work/dl/buildroot-nvd \
+            | tee output/images/pr-gate-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always() && github.event_name == 'pull_request'
+        with:
+          name: product-cve-pr-gate
+          path: |
+            base/output/images/state.json
+            base/output/images/sbom.cdx.json
+            base/output/images/vex.cdx.json
+            output/images/pr-gate-summary.md
+          retention-days: 30
+          if-no-files-found: ignore
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: success()
