@@ -6,7 +6,7 @@
 
 このrunのheadは `1147512a54f1f1b68f97ad1b5a7d053de644cb10`、SBOMのproject versionはPR用test mergeの `d9ae8a33f348b6ff77d236d02c1d56e7ae81d70e` である。head、test merge、mainへのmergeは区別する。[既存の照合関数](../../../.github/scripts/set-kernel-version.py)で実artifactの構成要素・host/target・版・依存先を生成元show-infoと再照合した。Linuxは `custom` ではなく `6.18.59`、source commitは `b3495ea401d709af0701a85babcba5e3d788a602` だった。
 
-67 componentの全件は[CSV](buildroot-packages.csv)と[JSON](buildroot-packages.json)にある。rootfsやvirtual providerの情報は生成元にもあるが、component件数と混ぜない。67件の内訳、68 dependencyレコードと267本の参照は従来の[SBOM調査](../sbom-coverage.md)と同じ。今回の実物照合は、その後の版補正経路の検証に当たる。
+67 componentの全件は[CSV](buildroot-packages.csv)と[JSON](buildroot-packages.json)にある。rootfsやvirtual providerの情報は生成元にもあるが、component件数と混ぜない。67件の内訳、68 dependencyレコードと267本の参照は従来の[SBOM調査](../operations/sbom-coverage.md)と同じ。今回の実物照合は、その後の版補正経路の検証に当たる。
 
 ## 最新版候補の確認方法
 

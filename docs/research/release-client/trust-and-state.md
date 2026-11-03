@@ -12,7 +12,7 @@ TUFの検証順とroot移行は[固定した仕様](https://github.com/theupdate
 
 初期imageへ、検証済みのroot bytes、機種・channel policy、metadata配布先を組み込みます。最初にnetworkから拾ったrootを、その場で信頼する方式にはしません。現在の`/etc`は可変lowerとtmpfsのoverlayなので、単に公開鍵を`/etc`へ置くだけでは不変の信頼起点になりません。信頼するbytesをread-only rootfsの専用pathへ置き、一般ユーザーやdownload処理が隠蔽・差替えできないmount・所有者・権限を設計します。
 
-ただしread-only rootfsも、最初のSD imageが正しいと認証する手段を代替しません。[image署名の未実装範囲](../release-security.md)と初回導入時の検証を先に整えます。物理置換を含む保証がないことを、利用者へ明示します。
+ただしread-only rootfsも、最初のSD imageが正しいと認証する手段を代替しません。[image署名の未実装範囲](release-security.md)と初回導入時の検証を先に整えます。物理置換を含む保証がないことを、利用者へ明示します。
 
 rootはofflineで保管する鍵とthresholdを検討し、targets・snapshot・timestampの鍵を役割別に分離します。2-of-3等の値は候補で、maintainer数・独立した保管場所・復旧能力を確認せずに必須にしません。同じ端末の同じSecretへ複数鍵を置くだけでは独立性を得られません。
 
@@ -36,7 +36,7 @@ timestampの再署名だけでOSの内部番号を増やす必要はありませ
 
 ## 時刻未確定・後退・長期offline
 
-[回路の照合](../hardware-wiring-audit.md)では、U19はRX8130CE:B3、I2C1の`0x32`、BAT1はNC表記です。RTCの存在だけで、電池保持・正確さ・耐改ざん性を仮定しません。NTP、HTTPSのDate、署名済みの古いmetadataだけでも、攻撃者が遅延・再送できる条件で現在時刻を自動的に証明しません。
+[回路の照合](../hardware/hardware-wiring-audit.md)では、U19はRX8130CE:B3、I2C1の`0x32`、BAT1はNC表記です。RTCの存在だけで、電池保持・正確さ・耐改ざん性を仮定しません。NTP、HTTPSのDate、署名済みの古いmetadataだけでも、攻撃者が遅延・再送できる条件で現在時刻を自動的に証明しません。
 
 既知の時刻下限を永続化し、clockの後退を検出する案を検討します。ただし下限だけでは、長いoffline期間中のfreezeを検出できません。誤って未来時刻を受け入れると全metadataやTLSが使えなくなるため、異常な前進も通知・復旧対象とし、信頼する時刻源と初回設定を決めます。TLSの時刻検証にも同じbootstrap問題があります。
 

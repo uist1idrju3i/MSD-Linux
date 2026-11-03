@@ -63,4 +63,4 @@ python3 -m py_compile docs/research/component-options/collect.py
 
 ## 出典とlicense
 
-option名とhelpの説明は、各upstreamの固定sourceと実行ファイルに由来する。定義の場所はpackage台帳、出典archiveとhashは[source台帳](source-archives.json)、recipeのlicense指定は固定Buildroot、原文のlicense・copyrightは同CI artifactの`legal-info.tar.gz`にある。license未確認項目は[SBOMの限界](../sbom-coverage.md)と分けて解決する。台帳の存在を全配布物のlicense審査完了とはしない。
+option名とhelpの説明は、各upstreamの固定sourceと実行ファイルに由来する。定義の場所はpackage台帳、出典archiveとhashは[source台帳](source-archives.json)、recipeのlicense指定は固定Buildroot、原文のlicense・copyrightは同CI artifactの`legal-info.tar.gz`にある。license未確認項目は[SBOMの限界](../operations/sbom-coverage.md)と分けて解決する。台帳の存在を全配布物のlicense審査完了とはしない。

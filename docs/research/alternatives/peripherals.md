@@ -1,6 +1,6 @@
 # 周辺機能・BSP・device APIの代替
 
-[比較の索引](README.md) / [部品・配線の照合](../hardware-wiring-audit.md) / [公式OSとの差異](../official-software.md)
+[比較の索引](README.md) / [部品・配線の照合](../hardware/hardware-wiring-audit.md) / [公式OSとの差異](../hardware/official-software.md)
 
 ## 結論と比較の境界
 
@@ -32,7 +32,7 @@ CardputerZeroの全機能を使う目標は維持します。ただし、ユー�
 
 一方、[libcameraの固定recipe](https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/libcamera/libcamera.mk)はv0.7.1で、C++、libyaml、GnuTLS、host側のPython生成tool等を使います。`rpi/vc4`を含むpipeline選択があり、Python binding、compliance、GStreamer、V4L2互換層、GUIはそれぞれ別の条件です。[公式の構築案内](https://libcamera.org/getting-started.html)もcoreと追加機能の依存を分けています。互換層があることだけで、全cameraアプリを無変更で動かせるとは扱いません。
 
-MSD/Linuxの[fragment](../../../board/cardputerzero/linux.fragment)はUnicamとIMX219を指定し、BCM2835 ISP等を無効にしています。libcameraのPi向けpipelineを評価する場合は、最終kernel・DT・ISP・firmware・sensor構成を改めて揃える必要があります。recipeを追加するだけの試験にはしません。撮像の成立、auto exposure/white balance、rawと処理済み画像、長時間のbuffer動作を別々に判定します。4レーンの配線能力と現在のDT設定の差も[回路監査](../hardware-wiring-audit.md)を参照します。
+MSD/Linuxの[fragment](../../../board/cardputerzero/linux.fragment)はUnicamとIMX219を指定し、BCM2835 ISP等を無効にしています。libcameraのPi向けpipelineを評価する場合は、最終kernel・DT・ISP・firmware・sensor構成を改めて揃える必要があります。recipeを追加するだけの試験にはしません。撮像の成立、auto exposure/white balance、rawと処理済み画像、長時間のbuffer動作を別々に判定します。4レーンの配線能力と現在のDT設定の差も[回路監査](../hardware/hardware-wiring-audit.md)を参照します。
 
 ## BSPを小さくする順番
 

@@ -21,13 +21,13 @@
 | 層・現行の役割 | 代替比較の正本と置換の単位 | 追加で必要な確認 |
 |---|---|---|
 | 外部Bootlin toolchain内のGCC・binutils・glibc・GDBとruntime | [toolchain](toolchains.md)、[libc](libc.md)、[現在の内包版とlicenseの不足](../dependencies/buildroot.md)。外部SDKの交換、Buildroot内での生成、Clang系等を比較 | toolchain一行のSBOMで内包全fileは覆わない。再配布条件、source、例外、target runtime、sysrootを別々に同定する |
-| kernel、DT/DTBO、Pi firmware、Wi-Fi firmware、M5 overlay/BSP | [周辺/BSP](peripherals.md)、[機能library](peripheral-userspace.md)、[通信](network.md)、[公式OSとの差](../official-software.md) | kernelの置換、個々のdriver、API library、closed firmwareを同じ階層で比較しない。全周辺の実機・license・配布binaryの同定は残る |
+| kernel、DT/DTBO、Pi firmware、Wi-Fi firmware、M5 overlay/BSP | [周辺/BSP](peripherals.md)、[機能library](peripheral-userspace.md)、[通信](network.md)、[公式OSとの差](../hardware/official-software.md) | kernelの置換、個々のdriver、API library、closed firmwareを同じ階層で比較しない。全周辺の実機・license・配布binaryの同定は残る |
 | Go builder、QEMU builder、最終Debian OCIとsnapshot | [OCI比較](oci-components.md)、[構築基盤](development.md)、[PTXdist/Nix/Debian](system-builders.md) | base digestを固定してもbootstrap取得・全中間stage・host kernel/daemon/CPUまで不変ではない。段階ごとのSBOMと両CPUの証拠が必要 |
 | QEMU、actionlint、ShellCheck、zizmorのnative binary/wheel | [開発tool比較](development.md)。更新/別tool/機能削減を分ける | QEMUの内包物、ShellCheckのHaskell library、zizmorのRust crate等をAPT/pip一覧だけで完全列挙していない。wheel/sourceのlockfileと実binaryも別 |
-| hadolint・Trivyの独立したdigest固定container | [検査の代替と補完](development.md)、[全workflowの監査](../github-actions-audit.md) | 各OCIの内包packageと中間stageは開発用OCIの231件とは別。独立SBOM、検査DB・policy、同じdigestでの比較が必要 |
+| hadolint・Trivyの独立したdigest固定container | [検査の代替と補完](development.md)、[全workflowの監査](../operations/github-actions-audit.md) | 各OCIの内包packageと中間stageは開発用OCIの231件とは別。独立SBOM、検査DB・policy、同じdigestでの比較が必要 |
 | runner OS、Docker/Podman/BuildKit、可変host | [実行環境の候補](development.md)、[Docker固定とhostの境界](system-builders.md) | hosted/self-hosted、native ARM、rootless、永続cache・socket・secret・未信頼PRの隔離費用。runner labelはimmutableなimageではない |
-| download/ccache、artifact、GHCR、Pages、GitHub Releases | [CI追加調査](https://github.com/uist1idrju3i/MSD-Linux/blob/3914ad3dc104138e4a9be2f3250f23151a7a3e81/docs/research/ci-build-scope-and-performance.md)、[Actions比較](ci-actions.md)、[Release保護](../release-security.md) | cacheと信頼の証拠を分ける。storage/転送・公開権限・保護・期限、cache miss時の費用、取得失敗を確認する。GitHub内のhosted service全実装のSBOMは本調査の取得対象ではない |
-| SPDX/CycloneDX、Syft/Trivy/Grype、VEX、attestation | [SBOMとscannerの比較](development.md)、[確認範囲](../sbom-coverage.md) | formatと生成元を換えても漏れは自動的に埋まらない。package同定、advisory、DB時刻、署名identity、許可する公開項目を別の契約にする |
+| download/ccache、artifact、GHCR、Pages、GitHub Releases | [CI追加調査](https://github.com/uist1idrju3i/MSD-Linux/blob/3914ad3dc104138e4a9be2f3250f23151a7a3e81/docs/research/operations/ci-build-scope-and-performance.md)、[Actions比較](ci-actions.md)、[Release保護](../release-client/release-security.md) | cacheと信頼の証拠を分ける。storage/転送・公開権限・保護・期限、cache miss時の費用、取得失敗を確認する。GitHub内のhosted service全実装のSBOMは本調査の取得対象ではない |
+| SPDX/CycloneDX、Syft/Trivy/Grype、VEX、attestation | [SBOMとscannerの比較](development.md)、[確認範囲](../operations/sbom-coverage.md) | formatと生成元を換えても漏れは自動的に埋まらない。package同定、advisory、DB時刻、署名identity、許可する公開項目を別の契約にする |
 | yomiyasu、fonttools、独自checker、text/GUI browser | [文書toolの比較](development.md)、[ロゴrequirements](../../logo/tools/requirements.txt) | 手動生成の依存とCI/製品を分ける。意味保存と視覚確認は別。全browser/描画環境の内包物や全fontの許諾を一つのpackage名で代表しない |
 
 ## 次に埋める不足

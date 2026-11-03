@@ -40,7 +40,7 @@ XIP は「ROM/flash 上のコードを RAM にコピーせず、そのまま実�
 
 ## QEMU での cramfs rootfs 実測
 
-`CONFIG_CRAMFS=y` を追加したカーネルと host-cramfs の mkcramfs で rootfs.cramfs（25,198,592 B、squashfs 22.3MB に対し約 13% 増）を生成し、sdcard p5 に書き込んで QEMU 起動を確認した。`MSD/Linux ready`・login・/data マウント・serial チェックの全ゲートを通過するが、サイズと制限（file<16MB、gid 8bit、timestamp なし）で優位点がなく、不採用を確定した。詳細は [実験記録](../experiments/2026-10-31-cramfs-rootfs.md)。
+`CONFIG_CRAMFS=y` を追加したカーネルと host-cramfs の mkcramfs で rootfs.cramfs（25,198,592 B、squashfs 22.3MB に対し約 13% 増）を生成し、sdcard p5 に書き込んで QEMU 起動を確認した。`MSD/Linux ready`・login・/data マウント・serial チェックの全ゲートを通過するが、サイズと制限（file<16MB、gid 8bit、timestamp なし）で優位点がなく、不採用を確定した。詳細は [実験記録](../../experiments/2026-10-31-cramfs-rootfs.md)。
 
 ## 出典
 

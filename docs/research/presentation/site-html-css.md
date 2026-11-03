@@ -8,7 +8,7 @@ RESEARCH.md から分割した節です。
 
 ### 測った結果
 
-測定の条件と生の値は [docs/experiments/2026-10-19-site-render.md](../../docs/experiments/2026-10-19-site-render.md) にあります。GitHub Pages は HTML・CSS・SVG を gzip で送り、Brotli には対応しません。HTML・CSS を minify しても、gzip 後の転送量は数十バイトしか減りません。レンダリング時間も、320×170・CPU 6 倍の条件で誤差（2〜3 ms）を超えて縮みませんでした。時間の大半はレイアウトです。SVG の最適化（svgo）は画素が変わり、CSS のインライン化は CSP にハッシュを足す手間に見合う短縮がありませんでした。`content-visibility: auto` は FCP が 28% 縮みましたが、全体のスクリーンショットが変わり、スクロール中にページの高さも変わるため、採用しません。
+測定の条件と生の値は [docs/experiments/2026-10-19-site-render.md](../../experiments/2026-10-19-site-render.md) にあります。GitHub Pages は HTML・CSS・SVG を gzip で送り、Brotli には対応しません。HTML・CSS を minify しても、gzip 後の転送量は数十バイトしか減りません。レンダリング時間も、320×170・CPU 6 倍の条件で誤差（2〜3 ms）を超えて縮みませんでした。時間の大半はレイアウトです。SVG の最適化（svgo）は画素が変わり、CSS のインライン化は CSP にハッシュを足す手間に見合う短縮がありませんでした。`content-visibility: auto` は FCP が 28% 縮みましたが、全体のスクリーンショットが変わり、スクロール中にページの高さも変わるため、採用しません。
 
 ### 採用したもの
 

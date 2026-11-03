@@ -6,7 +6,7 @@
 
 開発用Docker imageは、ローカル開発とCI/CDの共通環境として構築・配布します。開発hostのOS標準版とは独立して、必要なツールの版とパッチを固定するためのものです。製品構築・host回帰・QEMUは`docker/msd-dev`を使い、target用のBootlin toolchainもBuildrootがコンテナー内で取得・使用します。runnerや開発hostへ導入したcompilerへ切り替えることを、高速化の前提にはしません。
 
-現行の設定は[Dockerfile](../../docker/msd-dev.Dockerfile)、操作は[開発用コンテナー](../../docker/README.md)、CIの起動条件とcacheは[CIの説明](../CI.md)を正本とします。[改善の回帰記録](../experiments/2026-11-03-ci-cache-and-parallel.md)と[改善前の実行履歴の観察](ci-build-scope-and-performance.md)は区別します。
+現行の設定は[Dockerfile](../../../docker/msd-dev.Dockerfile)、操作は[開発用コンテナー](../../../docker/README.md)、CIの起動条件とcacheは[CIの説明](../../CI.md)を正本とします。[改善の回帰記録](../../experiments/2026-11-03-ci-cache-and-parallel.md)と[改善前の実行履歴の観察](ci-build-scope-and-performance.md)は区別します。
 
 以下は選定当時の比較と実行履歴です。APT版QEMU、Goの旧pin、過去の並列化条件等を現在の設定として使用しません。現在のQEMUは署名付きsourceと製品向けpatchから構築します。
 
@@ -64,11 +64,11 @@ CI 実行 [39308965520](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/3
 | `build-time.log` の host-zstd | 43秒 |
 | `build-time.log` の host-python3 | 37秒 |
 
-2026-10-21 に C1（`BR2_PER_PACKAGE_DIRECTORIES=y` と top-level `make -j`）をローカルで 1 回ずつ比較しました。同一 commit、共有 DL_DIR、新規の空の ccache を使い、PPD run2 の top-level make は 2,298.974 秒、非 PPD base run3 は 3,004.838 秒でした。この 1 回では PPD が 705.864 秒（約 23.5%）短くなりましたが、再現性のある短縮率とは判断しません。target manifest は 1,064 paths 異なり、PPD では libv4l の `msgfmt` が per-package host path に見つからず、locale translation が生成されない差もありました。詳細は [CI 高速化 C1 の非 PPD 対照 build](../experiments/2026-10-21-ci8-ppd-control.md) を参照してください。
+2026-10-21 に C1（`BR2_PER_PACKAGE_DIRECTORIES=y` と top-level `make -j`）をローカルで 1 回ずつ比較しました。同一 commit、共有 DL_DIR、新規の空の ccache を使い、PPD run2 の top-level make は 2,298.974 秒、非 PPD base run3 は 3,004.838 秒でした。この 1 回では PPD が 705.864 秒（約 23.5%）短くなりましたが、再現性のある短縮率とは判断しません。target manifest は 1,064 paths 異なり、PPD では libv4l の `msgfmt` が per-package host path に見つからず、locale translation が生成されない差もありました。詳細は [CI 高速化 C1 の非 PPD 対照 build](../../experiments/2026-10-21-ci8-ppd-control.md) を参照してください。
 
 この結果だけでは C1 を採用しません。追加反復と target 差の評価が必要です。registry cache、変更検知、cache の分割、job 分割、150 分の timeout も見直し候補です。有料の上位 runner は採用しません。
 
-標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たしました。legal-info の package/version 13 組はすべて一致する結果でした。後日の path-map 追試では、`v4l2-compliance` と `v4l2-ctl` に残った 217 B と 11,669 B の差を、埋め込まれる host path の長さで説明でき、成果物基準 3 も満たしました。製品 build に `-ffile-prefix-map` を入れない場合、PPD の binary は path length に応じて異なります。`BR2_REPRODUCIBLE` の `$(BASE_DIR)=buildroot` map は per-package の suffix を残すため、この差を解消しません。PPD の採否は利用者が判断します。判断に先立つ post-build の seedrng 処理の修正が前提となります。run/job ID と計測値は [CI 比較の実験記録](../experiments/2026-10-21-ci8-ppd-ci.md)、成果物差の検証は [path-map 追試の記録](../experiments/2026-10-21-ci8-ppd-pathmap.md)、target 差の調査は [非 PPD 対照 build の記録](../experiments/2026-10-21-ci8-ppd-control.md)を参照してください。
+標準 runner での本番 5 回では、Buildroot step の中央値は C0 の 1,218 秒から C1 の 832 秒へ 31.7 % 短縮し、事前登録の時間基準を満たしました。legal-info の package/version 13 組はすべて一致する結果でした。後日の path-map 追試では、`v4l2-compliance` と `v4l2-ctl` に残った 217 B と 11,669 B の差を、埋め込まれる host path の長さで説明でき、成果物基準 3 も満たしました。製品 build に `-ffile-prefix-map` を入れない場合、PPD の binary は path length に応じて異なります。`BR2_REPRODUCIBLE` の `$(BASE_DIR)=buildroot` map は per-package の suffix を残すため、この差を解消しません。PPD の採否は利用者が判断します。判断に先立つ post-build の seedrng 処理の修正が前提となります。run/job ID と計測値は [CI 比較の実験記録](../../experiments/2026-10-21-ci8-ppd-ci.md)、成果物差の検証は [path-map 追試の記録](../../experiments/2026-10-21-ci8-ppd-pathmap.md)、target 差の調査は [非 PPD 対照 build の記録](../../experiments/2026-10-21-ci8-ppd-control.md)を参照してください。
 
 ## Bootlin toolchain
 
@@ -102,5 +102,5 @@ TCG plugin は guest の実行を測るもので、ハードウェアモデル�
 - [actionlint v1.7.12](https://github.com/rhysd/actionlint/releases/tag/v1.7.12)、[Go downloads](https://go.dev/dl/)、[official Go image](https://hub.docker.com/_/golang)、[Trivy v0.76.0](https://github.com/aquasecurity/trivy/releases/tag/v0.76.0)
 - [Bootlin aarch64 toolchains](https://toolchains.bootlin.com/releases_aarch64.html)、[Buildroot 2026.08 Bootlin options](https://gitlab.com/buildroot.org/buildroot/-/raw/2026.08/toolchain/toolchain-external/toolchain-external-bootlin/Config.in.options)
 - [QEMU Raspberry Pi machine models](https://qemu.readthedocs.io/en/v11.1.2/system/arm/raspi.html)、[PR #53](https://github.com/uist1idrju3i/MSD-Linux/pull/53)、[PR #54](https://github.com/uist1idrju3i/MSD-Linux/pull/54)、[PR #55](https://github.com/uist1idrju3i/MSD-Linux/pull/55)
-- [開発用コンテナーの設定](../../docker/README.md)、[CI の説明](../CI.md)、[開発用ビルド手順](../BUILD.md)
-- 実装: [Dockerfile](../../docker/msd-dev.Dockerfile)、[launcher](../../docker/msd-dev)、[Dependabot 設定](../../.github/dependabot.yml)、[pin checker](../../.github/scripts/check-pins.py)、[lint workflow](../../.github/workflows/lint.yml)、[pin check workflow](../../.github/workflows/pins-check.yml)
+- [開発用コンテナーの設定](../../../docker/README.md)、[CI の説明](../../CI.md)、[開発用ビルド手順](../../BUILD.md)
+- 実装: [Dockerfile](../../../docker/msd-dev.Dockerfile)、[launcher](../../../docker/msd-dev)、[Dependabot 設定](../../../.github/dependabot.yml)、[pin checker](../../../.github/scripts/check-pins.py)、[lint workflow](../../../.github/workflows/lint.yml)、[pin check workflow](../../../.github/workflows/pins-check.yml)

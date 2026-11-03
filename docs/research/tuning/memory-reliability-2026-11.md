@@ -53,7 +53,7 @@ DRAM のリフレッシュ間隔を短くする（例: 64ms → 32ms）と、リ
 |---|---|---|
 | ウォッチドッグ | `CONFIG_BCM2835_WDT=y` + ユーザーランド watchdog | 有効済み |
 | ストレージ健全性 | SquashFS RO + 署名検証 + A/B | 済み |
-| ランタイム | 定期的な再起動・ヘルスチェック・panic 自動再起動（sysctl `kernel.panic`） | [セキュリティ強化項目の調査](security/history/README.md) の sysctl 案を参照 |
+| ランタイム | 定期的な再起動・ヘルスチェック・panic 自動再起動（sysctl `kernel.panic`） | [セキュリティ強化項目の調査](../security/history/README.md) の sysctl 案を参照 |
 | アプリケーション | 重要データの冗長保持・CRC・チェックポイント | 設計上の話題 |
 | ハードウェア | ECC 付きモジュール（CM4 等）への移行 | 本機では対象外 |
 

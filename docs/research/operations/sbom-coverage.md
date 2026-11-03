@@ -2,7 +2,7 @@
 
 ## 何を確認したか
 
-[固定CI生成物の確認](../experiments/2026-11-02-hardware-artifact-audit.md)に続き、[run 41477653658](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658) のSBOMとlegal-infoを読んだ。これは全依存の最新版・脆弱性・配布許諾を確認し終えた報告ではない。
+[固定CI生成物の確認](../../experiments/2026-11-02-hardware-artifact-audit.md)に続き、[run 41477653658](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658) のSBOMとlegal-infoを読んだ。これは全依存の最新版・脆弱性・配布許諾を確認し終えた報告ではない。
 
 | 項目 | 確認した値と限界 |
 |---|---|
@@ -21,11 +21,11 @@
 
 補正時に、project version、構成要素の過不足・重複、名前・版、host/target、依存関係の参照先とpackageごとの接続を照合する。Buildrootのgeneratorと同様にvirtual packageをproviderへ解決し、rootfs項目はcomponentに数えない。検査に失敗したらSBOMを書き換えず、CIを止める。元のshow-infoもartifactへ保存する。
 
-これは内容の照合であり、CycloneDX全schemaの適合検査、実ファイルからの独立したSBOM生成、署名や配布許諾の検証ではない。修正の試験条件・入力hash・失敗した照合は[検証記録](../experiments/2026-11-02-sbom-generation.md)にある。
+これは内容の照合であり、CycloneDX全schemaの適合検査、実ファイルからの独立したSBOM生成、署名や配布許諾の検証ではない。修正の試験条件・入力hash・失敗した照合は[検証記録](../../experiments/2026-11-02-sbom-generation.md)にある。
 
 ## 監視対象と残る確認
 
-その後の通常buildの版補正と実artifactの再照合、全67 componentの最新版候補、開発用OCIとActionsの依存、監視の差分は[依存関係の一覧](dependencies/README.md)にまとめた。以下の初回調査と、その後の検証を区別する。
+その後の通常buildの版補正と実artifactの再照合、全67 componentの最新版候補、開発用OCIとActionsの依存、監視の差分は[依存関係の一覧](../dependencies/README.md)にまとめた。以下の初回調査と、その後の検証を区別する。
 
 - securityは補正後のSBOMをBuildroot `cve-check`へ渡し、NVD mirrorと照合してVEXを保存する。source packageのCPEによる照合なので、CPEのない配布物や外部ツールチェーン内部まで網羅するとはいえない。
 - `toolchain-external-bootlin`のlicenseはunknown。一部M5配布物もunknown、Wi-Fi firmwareはPROPRIETARYとして記録される。toolchain内部のGCC・binutils・glibcの版と許諾、個々のfirmwareの出典・許諾は別に確認する。
@@ -36,6 +36,6 @@
 ## 根拠となる実装
 
 - [Buildroot generator](https://gitlab.com/buildroot.org/buildroot/-/blob/8b238854d909c9cce32ef9671d968b03e323b55d/utils/generate-cyclonedx)
-- [version補正と内容照合](../../.github/scripts/set-kernel-version.py)
-- [通常build](../../.github/workflows/build.yml)、[週次security](../../.github/workflows/security.yml)
-- [回帰テスト](../../tests/check-sbom/test_sbom.py)
+- [version補正と内容照合](../../../.github/scripts/set-kernel-version.py)
+- [通常build](../../../.github/workflows/build.yml)、[週次security](../../../.github/workflows/security.yml)
+- [回帰テスト](../../../tests/check-sbom/test_sbom.py)

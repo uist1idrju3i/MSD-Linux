@@ -1,6 +1,6 @@
 # CardputerZero自身によるGitHub Releasesからの更新
 
-[RESEARCH](../../../RESEARCH.md) / [現在のA/B操作](../../UPDATE.md) / [Release署名](../release-security.md) / [TUFの基礎](../alternatives/update-metadata.md)
+[RESEARCH](../../../RESEARCH.md) / [現在のA/B操作](../../UPDATE.md) / [Release署名](release-security.md) / [TUFの基礎](../alternatives/update-metadata.md)
 
 ## 結論と現在地
 
@@ -35,7 +35,7 @@ TUF metadataが正しくても、OSが起動することや、slotと共有data�
 
 ## 実施順と完了条件
 
-1. 署名jobの分離、公開鍵だけのbuild、Release payloadの認証を整える。[Release保護の既知の不足](../release-security.md)を先に解消する。
+1. 署名jobの分離、公開鍵だけのbuild、Release payloadの認証を整える。[Release保護の既知の不足](release-security.md)を先に解消する。
 2. SemVer・内部番号、製品の認可、channel、時刻未確定時の復旧を決める。安全性を上げる案と、利用者が更新できなくなる背反を確認する。
 3. host上で小さなTUF repositoryと複数clientを比較する。鍵更新、期限、rollback、長さ、parser差、故障時の永続化を成功系と同じ重さで試す。
 4. 現行Buildroot・BootlinでAArch64をbuildし、依存閉包、license、SBOM、image/RSS、起動、拒否試験を記録する。新依存を版・脆弱性監視へ加える。

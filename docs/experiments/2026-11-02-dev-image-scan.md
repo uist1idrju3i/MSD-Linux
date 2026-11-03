@@ -3,7 +3,7 @@
 - 状態: 完了。報告器の確認であり、Brotliの修正版は未導入。
 - 日付: 2026-11-02 UTC
 - 担当: Devin
-- 関連: [調査と判断](../research/development-image-security.md)、[追跡Issue](https://github.com/uist1idrju3i/MSD-Linux/issues/59)
+- 関連: [調査と判断](../research/operations/development-image-security.md)、[追跡Issue](https://github.com/uist1idrju3i/MSD-Linux/issues/59)
 
 ## 目的と採否の基準
 
@@ -18,14 +18,14 @@
 | 基準commit | `916a45e80545fb5ecf3546873ce332093b0501f2` |
 | 変更するもの | `trivy-gate.py`の本文の並び順と、安全な全件JSONの出力 |
 | 固定するもの | 入力JSON、Python、各回のCLI引数。実行中は報告器を編集しない |
-| OCI、Trivy、DB | [調査の確認値](../research/development-image-security.md#対象と確認の限界)を参照 |
+| OCI、Trivy、DB | [調査の確認値](../research/operations/development-image-security.md#対象と確認の限界)を参照 |
 | ホスト、Python、入力と実行コードのhash | 同名の[JSON](2026-11-02-dev-image-scan.json)に記録 |
 | Buildroot、GCC、kernel、QEMU | 構築・起動せず、この試行では使わない |
 | 出力 | 各回を別名に保存し、既存の出力には上書きしない。Buildrootの`O=`、ccache、warm/coldは該当しない |
 
 ## 手順と負の対照
 
-元の走査の手順は[調査文書](../research/development-image-security.md#再検査の手順)にあります。同じDBを再取得できない場合は件数が変わります。DBの更新日時と元JSONのhashを、同名JSONと比較してください。
+元の走査の手順は[調査文書](../research/operations/development-image-security.md#再検査の手順)にあります。同じDBを再取得できない場合は件数が変わります。DBの更新日時と元JSONのhashを、同名JSONと比較してください。
 
 報告器は、その走査JSONに対して次のように繰り返します。`out`は走査時に作った出力先です。
 

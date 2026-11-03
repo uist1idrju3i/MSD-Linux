@@ -17,17 +17,17 @@
 
 | 履歴で注意する記述 | 今の読み方・根拠 |
 |---|---|
-| ARM組込みはACPIではない、irqbalanceは不要 | CM0のDeviceTree構成とARM全般を区別する。irqbalanceの費用・効果は推測で、同条件の実機測定なしに優劣を確定しない。[CPU/IRQの調査](../../cpu-irq-and-sysctl.md) |
+| ARM組込みはACPIではない、irqbalanceは不要 | CM0のDeviceTree構成とARM全般を区別する。irqbalanceの費用・効果は推測で、同条件の実機測定なしに優劣を確定しない。[CPU/IRQの調査](../../tuning/cpu-irq-and-sysctl.md) |
 | unboundが唯一実用的 | 固定Buildrootにstubby packageがないことと、全候補の実用性は別。[接続管理の候補](../../alternatives/network.md)を先に比較する |
 | `sysctl -p`は`sysctl.d`も読む | 固定BusyBox 1.38.0は引数なしの`-p`で`/etc/sysctl.conf`を読み、引数はファイルとして順に開く。directory自動走査はしない。起動時に何を呼ぶかは別に定める。[固定sourceと確認方法](kernel-and-mounts.md#busyboxのsysctl読込み) |
 | PIE等の選択は全packageに同じcompiler引数を与える | 共通設定、外部toolchain、package固有の処理、生成ELFを分けて確認する。[compiler比較](../../alternatives/toolchains.md) |
 | Rust表の「最新情報」 | 元の表見出しは2025-11-01、原稿名は2026-11-01。誤記と推定して日付を直さず、現在の最新情報として使わない |
 
-既存のAppArmor、時刻、noexec等の訂正は[訂正記録](../../corrections.md)と[Linuxの機構](../principles.md)を参照します。原稿の前提・候補を保存したことは、profile・ruleの稼働や実機性能の確認とは異なります。
+既存のAppArmor、時刻、noexec等の訂正は[訂正記録](../../history/corrections.md)と[Linuxの機構](../principles.md)を参照します。原稿の前提・候補を保存したことは、profile・ruleの稼働や実機性能の確認とは異なります。
 
 ## 原稿の前提と導入順の記録
 
-2026-11-02に、設定と実行時の強制を混同する箇所、署名と時刻、noexec等の記述を[訂正記録](../../corrections.md)に根拠を残して更新しました。採用方向という表現は導入方針であり、firewall・AppArmor profile等が製品で稼働しているという意味ではありません。具体的な権限・起動順・拒否試験は[権限設計](../README.md)を参照してください。
+2026-11-02に、設定と実行時の強制を混同する箇所、署名と時刻、noexec等の記述を[訂正記録](../../history/corrections.md)に根拠を残して更新しました。採用方向という表現は導入方針であり、firewall・AppArmor profile等が製品で稼働しているという意味ではありません。具体的な権限・起動順・拒否試験は[権限設計](../README.md)を参照してください。
 
 ユーザーから提示された強化項目を、MSD/Linux（Buildroot + BusyBox、systemd・deb 系なし、ターゲットは BCM2837 / 512 MiB RAM / microSD 起動 / RO SquashFS + A/B 更新）へ適用する観点で調査した。各項目について、現行構成との照合、適用可否、推奨、検証方法を示す。なお現在この機器には**ネットワーク設定自体が未導入**（`udhcpc` は busybox に入っているが interfaces・resolv.conf 系の設定がなく、起動時に net を上げる init もない）ため、ネットワーク前提の項目は「ネットワーク導入時の設計」として整理する。
 

@@ -94,8 +94,8 @@ Buildroot 2026.08 に無いものです。
 
 ## 7. 表示先の固定と運用
 
-- `/dev/dri/cardN` や `/dev/fbN` の番号は probe 順依存です。HDMI 側に出す場合は `/dev/dri/by-path/` や `card*-HDMI-A-1` のコネクタ名で固定するのが確実です（[hdmi-output.md](hdmi-output.md) §4）。
-- 内蔵液晶を CLI のまま、HDMI 側にだけブラウザを立てるには、cog DRM platform・mpv `--vo=drm`・Qt `eglfs`・SDL `kmsdrm` が該当します（[hdmi-output.md](hdmi-output.md) §6 参照）。
+- `/dev/dri/cardN` や `/dev/fbN` の番号は probe 順依存です。HDMI 側に出す場合は `/dev/dri/by-path/` や `card*-HDMI-A-1` のコネクタ名で固定するのが確実です（[hdmi-output.md](../hardware/hdmi-output.md) §4）。
+- 内蔵液晶を CLI のまま、HDMI 側にだけブラウザを立てるには、cog DRM platform・mpv `--vo=drm`・Qt `eglfs`・SDL `kmsdrm` が該当します（[hdmi-output.md](../hardware/hdmi-output.md) §6 参照）。
 - 電力面では、ブラウザエンジン（特に WebKit/Chromium 系）の常駐メモリと描画が支配的で、表示サーバー自体の差よりエンジン選択の影響が大きいです。
 
 ## 8. 未確認事項
@@ -117,4 +117,4 @@ Buildroot 2026.08 に無いものです。
 - Qt（eglfs / QtWebEngine）: https://doc.qt.io/ 、Chromium / Firefox / Ladybird は各公式サイトの動作要件・収録状況に拠る
 - Servo: https://servo.org/ 、https://book.servo.org/ 、https://github.com/servo/servo/releases/tag/v0.0.2 、埋め込み API: https://github.com/servo/servo/blob/master/components/servo/lib.rs 、Verso: https://github.com/versotile-org/verso
 - Buildroot の Rust 基盤: vendor/buildroot/package/rust*/、`pkg-cargo.mk`（当該リポジトリ内の一次資料）
-- 表示経路の前提: [display-servers.md](display-servers.md)、[hdmi-output.md](hdmi-output.md)、[fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md)
+- 表示経路の前提: [display-servers.md](display-servers.md)、[hdmi-output.md](../hardware/hdmi-output.md)、[fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md)

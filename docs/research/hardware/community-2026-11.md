@@ -27,7 +27,7 @@ M5 公式・コミュニティと Raspberry Pi 公式・コミュニティの最
 | `raspberrypi/firmware` | `boot/bcm2710-rpi-cm0.dtb` あり【一次】 | ファームウェア側も CM0 対応済み |
 | `rpi-image-gen` | `device/` に `zero2w` はあるが `cm0` なし【一次】 | 公式イメージ生成器では CM0 専用 device は未提供 |
 | Compute Module 0 本体 | RP3A0 SiP（BCM2710 + 512MB LPDDR2） | MSD の対象 SoC と一致（Zero 2 W と同 SiP） |
-| Zephyr v4.5.0 | `boards/raspberrypi/rpi_zero_2w` 追加（[Zephyr 更新](os-candidates.md) を参照） | SDHCI 未確認。評価不能のまま |
+| Zephyr v4.5.0 | `boards/raspberrypi/rpi_zero_2w` 追加（[Zephyr 更新](../alternatives/os-candidates.md) を参照） | SDHCI 未確認。評価不能のまま |
 
 ## 3. CM0 コミュニティ（GitHub 検索・フォーラム系）
 

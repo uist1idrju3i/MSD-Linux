@@ -90,9 +90,9 @@ quote	<exact-path>	<characters>	<reason>
 
 ## SBOM、VEX、カーネル設定
 
-開発用OCIの週次検査は、先頭100件を超える検出事項も`development-image-findings` artifactの`trivy-findings.json`に保存します。検出した秘密値やコードを含みうる元のTrivy JSONはアップロードしません。artifactには`image-provenance.json`、`trivy-version.txt`、Issueと同じ本文も含めます。検出の適用範囲と確認の限界は[開発用OCIの調査](research/development-image-security.md)を参照してください。
+開発用OCIの週次検査は、先頭100件を超える検出事項も`development-image-findings` artifactの`trivy-findings.json`に保存します。検出した秘密値やコードを含みうる元のTrivy JSONはアップロードしません。artifactには`image-provenance.json`、`trivy-version.txt`、Issueと同じ本文も含めます。検出の適用範囲と確認の限界は[開発用OCIの調査](research/operations/development-image-security.md)を参照してください。
 
-公開前の`publish-dev-image.yml`も元のTrivy JSONをartifactへアップロードせず、選別した全件、レポート、image IDと検査器の版、SPDX SBOMを保存します。SBOMそのものの機密情報の有無を確認したという意味ではありません。[GitHub Actionsの監査](research/github-actions-audit.md)に権限・実行条件・監視漏れを記録しています。
+公開前の`publish-dev-image.yml`も元のTrivy JSONをartifactへアップロードせず、選別した全件、レポート、image IDと検査器の版、SPDX SBOMを保存します。SBOMそのものの機密情報の有無を確認したという意味ではありません。[GitHub Actionsの監査](research/operations/github-actions-audit.md)に権限・実行条件・監視漏れを記録しています。
 
 `build.yml` の成果物には CycloneDX SBOM とビルド時間ログを含めます。`security.yml` の `buildroot-security-report` 成果物には SBOM と VEX JSON を保存します。VEX の `analysis.state` は `exploitable`、`resolved`、`resolved_with_pedigree` などの判定です。ジョブサマリーにはコンポーネント別の exploitable 件数、CVSS 上位の CVE、解決済み件数を表示します。
 

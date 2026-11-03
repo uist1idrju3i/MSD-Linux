@@ -1,10 +1,10 @@
 # Release保護・Ed25519鍵・署名jobの調査
 
-[RESEARCH](../../RESEARCH.md) / [管理者の設定手順](../RELEASE-SIGNING.md) / [権限設計](security/README.md)
+[RESEARCH](../../../RESEARCH.md) / [管理者の設定手順](../../RELEASE-SIGNING.md) / [権限設計](../security/README.md)
 
 ## 対象と結論
 
-端末がReleaseを取得する際のmetadata認証、TUF実装、時刻・復旧は[自己更新の設計](release-client/README.md)へ分けました。この文書では、Releaseと署名鍵を管理する側の防御を扱います。
+端末がReleaseを取得する際のmetadata認証、TUF実装、時刻・復旧は[自己更新の設計](README.md)へ分けました。この文書では、Releaseと署名鍵を管理する側の防御を扱います。
 
 2026-11-02時点の公開資料と、本リポジトリの `b9bea56b703c54d2cd0782481d2de7a73e13294b` を調べました。目的はReleaseの改変防止、初回導入imageと更新bundleの認証、秘密鍵をbuildから分離する構成の検討です。文書を追加しただけで署名運用を実装したとは扱いません。
 
@@ -60,7 +60,7 @@ Environmentのref制限はworkflowを動かすrefに適用され、入力した�
 
 将来のRelease metadataでは、schema、機種、公開SemVer、内部番号、最低updater版、鍵の識別子、assetの正確な名前・長さ・SHA-256を署名対象に含める案を検討します。初回導入では圧縮した配布imageを、更新ではbundleとその検証対象を対応付けます。鍵をReleaseと同時に取得して無条件に信頼する方式は採りません。
 
-raw Ed25519、Ed25519ph、SHA-256を先に計算して別メッセージとして署名する方式は同一ではありません。現在の `openssl pkeyutl -sign/-verify -rawin` と、署名する正確なバイト列、鍵の符号化を固定する必要があります。SemVerと内部番号の分離、metadata schema、image用署名形式は、この調査だけで確定・実装しません。[更新方式の比較](alternatives/updates.md) も参照してください。
+raw Ed25519、Ed25519ph、SHA-256を先に計算して別メッセージとして署名する方式は同一ではありません。現在の `openssl pkeyutl -sign/-verify -rawin` と、署名する正確なバイト列、鍵の符号化を固定する必要があります。SemVerと内部番号の分離、metadata schema、image用署名形式は、この調査だけで確定・実装しません。[更新方式の比較](../alternatives/updates.md) も参照してください。
 
 ## 5. 鍵の更新・失効・復旧
 
@@ -70,7 +70,7 @@ GitHub Secretを交換しても、既存端末の信頼鍵は変わりません�
 
 ## 6. 確認したことと次の完了条件
 
-試験鍵でのCLI手順は、OpenSSL 3.0.2で5回、鍵生成・導出・署名・検証と、改変・別鍵による拒否を確認しました。既存mutableな `v0.0.0` に対する `gh release verify` は終了値1で、`no attestations for tag` でした。公開済みの署名運用の成功例にはしません。条件と生の終了値は [確認記録](../experiments/2026-11-02-release-key-audit.md) にあります。
+試験鍵でのCLI手順は、OpenSSL 3.0.2で5回、鍵生成・導出・署名・検証と、改変・別鍵による拒否を確認しました。既存mutableな `v0.0.0` に対する `gh release verify` は終了値1で、`no attestations for tag` でした。公開済みの署名運用の成功例にはしません。条件と生の終了値は [確認記録](../../experiments/2026-11-02-release-key-audit.md) にあります。
 
 本番鍵、Secret登録、Environment設定、署名・公開job、image署名、端末のGitHub取得、実機での鍵移行は試していません。今後の完了条件は次のとおりです。
 

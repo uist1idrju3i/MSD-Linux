@@ -1,6 +1,6 @@
 # 公式OS・BSPとMSD/Linuxの比較
 
-[RESEARCH](../../RESEARCH.md) / [部品と回路接続](hardware-wiring-audit.md) / [生成物の確認記録](../experiments/2026-11-02-hardware-artifact-audit.md)
+[RESEARCH](../../../RESEARCH.md) / [部品と回路接続](hardware-wiring-audit.md) / [生成物の確認記録](../../experiments/2026-11-02-hardware-artifact-audit.md)
 
 ## 結論と確認範囲
 
@@ -17,7 +17,7 @@ GPIO、電源保持、reset、Ethernetには実機でしか解決できない項
 | K | Raspberry Pi Linux、`b3495ea401d709af0701a85babcba5e3d788a602`、`6.18.59` | [ソース](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602)。MSD/Linuxのdefconfig固定値 |
 | D | MSD/Linux、CI checkout `c96e5faf015c828a213c8ea64f613b4a429196c7`、PR head `84ca145032216b696a8944d54b4f820edc1ac565` | [CI run](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41477653658)。両者のtree `61584002a3ee682ff6b7f7d891d705a5fce079be` は一致。headと実際のcheckoutは区別する |
 
-PとKの取得ファイルのURL・bytes・SHA-256は [ソース取得記録](official-software-sources.json)、Dのimage・DTBO・モジュールの値は [生成物の記録](../experiments/2026-11-02-hardware-artifact-audit.json) に保存した。旧調査のM5 `7551854`、Linux `2341883`は現在の固定値ではない。回路図の版と製品差は [ハードウェア監査](hardware-wiring-audit.md) を参照する。
+PとKの取得ファイルのURL・bytes・SHA-256は [ソース取得記録](official-software-sources.json)、Dのimage・DTBO・モジュールの値は [生成物の記録](../../experiments/2026-11-02-hardware-artifact-audit.json) に保存した。旧調査のM5 `7551854`、Linux `2341883`は現在の固定値ではない。回路図の版と製品差は [ハードウェア監査](hardware-wiring-audit.md) を参照する。
 
 ## 公式OSの作り方
 
@@ -64,7 +64,7 @@ PYG3はkeyboardとUSB hubで共有する。GPIO index 2と物理PYG3を混同せ
 
 ## 誤解を避ける境界
 
-- `PARTITION_WALK` はEEPROM bootloader向けで、CM0用A/B実装の根拠に使わない。trybootはRaspberry Pi文書で全モデル対応とされるが、CM0実機で確認済みではない。詳細は [firmware仕様](boot/firmware.md)。
+- `PARTITION_WALK` はEEPROM bootloader向けで、CM0用A/B実装の根拠に使わない。trybootはRaspberry Pi文書で全モデル対応とされるが、CM0実機で確認済みではない。詳細は [firmware仕様](../boot/firmware.md)。
 - MのDRM driverが要求するheaderはKのソースと実際のビルドで確認する。ある6.12系URLの404だけで、6.12系列全体の不在を証明したとは扱わない。
 - Dの16 M5 modulesは署名者・vermagic・aliasを読み取った。署名metadataの存在だけで全moduleの暗号検証・probe・実機動作を完了したとは書かない。
-- DTBO合成は開発用imageのDTC 1.7.2で成功した。ホストDTC 1.6.1ではIMX219適用が失敗した。旧ツールの失敗と製品の不具合を区別し、失敗試行も [確認記録](../experiments/2026-11-02-hardware-artifact-audit.md) に残す。
+- DTBO合成は開発用imageのDTC 1.7.2で成功した。ホストDTC 1.6.1ではIMX219適用が失敗した。旧ツールの失敗と製品の不具合を区別し、失敗試行も [確認記録](../../experiments/2026-11-02-hardware-artifact-audit.md) に残す。

@@ -64,7 +64,7 @@ BCM2837 には OTP の secure boot がないため、カードごと差し替え
 
 ### 2.4 ファイルシステム（EROFS・cramfs・F2FS・btrfs）
 
-EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../storage/filesystem-candidates.md)、[cramfs-xip.md](../cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
+EROFS と cramfs の不採用は、QEMU でのサイズと起動の測定から決めたもので、ビルドシステムには依存しません（[fs-candidates.md](../storage/filesystem-candidates.md)、[cramfs-xip.md](../tuning/cramfs-xip.md)）。Yocto の `image_types.bbclass` には `erofs`、`erofs-lz4`、`erofs-lz4hc` があるため、比べ直す手間は小さくなります【一次】。結論を変える新しい証拠はないので、不採用を維持します。F2FS と btrfs は電源断耐性の根拠が足りないための保留で、これも変わりません。
 
 ### 2.5 init と libc（systemd・musl）
 

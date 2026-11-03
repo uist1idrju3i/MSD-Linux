@@ -1,6 +1,6 @@
 # 文書差分で起動するCIと高速化の判断
 
-[RESEARCH](../../RESEARCH.md) / [実行境界の監査](github-actions-audit.md) / [開発・CIの代替比較](alternatives/development.md)
+[RESEARCH](../../../RESEARCH.md) / [実行境界の監査](github-actions-audit.md) / [開発・CIの代替比較](../alternatives/development.md)
 
 ## 署名CLI試験の分類を修正した範囲
 
@@ -8,23 +8,23 @@
 
 全testを除外する変更ではありません。製品の署名・更新source、通常のhost試験、build workflow、未知のpath、差分判定不能は引き続き製品buildへ倒します。専用ディレクトリーに将来追加する別ファイルも、今回の例外には入りません。
 
-[回帰試験](../../tests/check-build-scope/run.py)は、workflow内の実際のBashを実行し、path・累積三点差分・push/PR・週次/手動・SHA欠損・fetch/diff失敗をfixtureで確認します。GitHub上での新規runを代行した試験ではありません。試験呼出し削除、条件依存の追加、例外削除、全test除外、workflow例外削除の改変を検出します。詳細と実行revisionは[検証記録](../experiments/2026-11-03-maintenance-followup.md)に保存します。
+[回帰試験](../../../tests/check-build-scope/run.py)は、workflow内の実際のBashを実行し、path・累積三点差分・push/PR・週次/手動・SHA欠損・fetch/diff失敗をfixtureで確認します。GitHub上での新規runを代行した試験ではありません。試験呼出し削除、条件依存の追加、例外削除、全test除外、workflow例外削除の改変を検出します。詳細と実行revisionは[検証記録](../../experiments/2026-11-03-maintenance-followup.md)に保存します。
 
 今回の変更自体はbuild workflowを含むため、今回のPRでは製品buildが必要です。以下のPR #187等と117行の判定記録は変更前の履歴として残します。
 
 ## 結論
 
-この本文は改善前の定義と実行履歴の記録です。改善後は[CIの説明](../CI.md)と[起動条件・cache・並列回帰の検証](../experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。以下の「現在」「未実装」は、本文に固定したcommitと観察時点を指します。host回帰の2並列化、未公開OCIの完全一致archive cache、ccache世代と再実行の分離を追加した後の性能を、この観察値から推定しません。
+この本文は改善前の定義と実行履歴の記録です。改善後は[CIの説明](../../CI.md)と[起動条件・cache・並列回帰の検証](../../experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。以下の「現在」「未実装」は、本文に固定したcommitと観察時点を指します。host回帰の2並列化、未公開OCIの完全一致archive cache、ccache世代と再実行の分離を追加した後の性能を、この観察値から推定しません。
 
 文書変更でもworkflow自体、文書検査、lint、host回帰は動きます。製品imageのbuildは別の判定です。[PR #187](https://github.com/uist1idrju3i/MSD-Linux/pull/187)では、累積差分125ファイル中の`tests/release-signing-key/run.py`だけが製品buildを要求しました。その後のcommitが文書だけでも、このファイルはPR差分に残ります。対して、純粋な文書整理の[PR #188](https://github.com/uist1idrju3i/MSD-Linux/pull/188)は9検査成功、製品buildはskipでした。
 
 高速化は適用済みですが、最適化の完了ではありません。BuildrootのCPU並列化、独立job、OCIのnative amd64/arm64、download cache、ccache、公開開発OCIの再利用、古いPR実行の取消があります。一方、host回帰のsuite内は直列で、Docker layerを後続runnerへ渡す明示的な外部cacheはありません。OCIが未公開の場合、複数jobが各々同じ開発環境を再構築します。
 
-以下は`5d5b275f27da0cf2de6402eeb21b36fb9095a02a`の定義と、2026-11-03 UTCに取得した実行記録の観察です。workflow・製品設定・依存版は変更していません。制御した性能比較でも、実機試験でもありません。生CSV、失敗した抽出、再照合手順は[検査記録](../experiments/2026-11-03-ci-scope.md)へ保存します。
+以下は`5d5b275f27da0cf2de6402eeb21b36fb9095a02a`の定義と、2026-11-03 UTCに取得した実行記録の観察です。workflow・製品設定・依存版は変更していません。制御した性能比較でも、実機試験でもありません。生CSV、失敗した抽出、再照合手順は[検査記録](../../experiments/2026-11-03-ci-scope.md)へ保存します。
 
 ## 何を差分判定しているか
 
-定義は[build.yml](../../.github/workflows/build.yml)にあります。`changes`の`steps.filter.outputs.build`をjob出力へ渡し、`build`が`needs.changes.outputs.build == 'true'`で起動します。`MSD tests in development image`はこの出力に依存しないため、文書差分でも実行します。
+定義は[build.yml](../../../.github/workflows/build.yml)にあります。`changes`の`steps.filter.outputs.build`をjob出力へ渡し、`build`が`needs.changes.outputs.build == 'true'`で起動します。`MSD tests in development image`はこの出力に依存しないため、文書差分でも実行します。
 
 | 入口・差分 | 現在の処理 | 理由・注意点 |
 |---|---|---|

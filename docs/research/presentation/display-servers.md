@@ -1,6 +1,6 @@
 # 表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）
 
-X11・Wayland とそれらを使わない代替描画経路を、Buildroot 2026.08 の収録状況と CardputerZero（CM0 / 512MB / VC4 GPU）での現実性込みで調査しました。表示先の前提（fb0/fb1、vc4 KMS、fbcon）は [hdmi-output.md](hdmi-output.md) 、テキスト端末側は [fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md) を参照します。確認日は 2026-11-02 です。
+X11・Wayland とそれらを使わない代替描画経路を、Buildroot 2026.08 の収録状況と CardputerZero（CM0 / 512MB / VC4 GPU）での現実性込みで調査しました。表示先の前提（fb0/fb1、vc4 KMS、fbcon）は [hdmi-output.md](../hardware/hdmi-output.md) 、テキスト端末側は [fb-terminals-and-text-browsers.md](fb-terminals-and-text-browsers.md) を参照します。確認日は 2026-11-02 です。
 
 ## 1. 表示経路の分類
 
@@ -32,7 +32,7 @@ MSD 向けの論点：
 
 - X.Org は構成が大きく、`udev`（入力ホットプラグ検出）を前提とする部分があります。MSD は busybox `mdev`（`BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_MDEV`）のため、`HAS_UDEV` 前提の経路は `eudev` 等への切替が必要です【一次: msd_cardputerzero_defconfig、xserver .mk】。
 - fbdev ドライバなら「`/dev/fb1` に X を出す」だけなら小さく組めますが、現行ブラウザやアプリの多くは Wayland/GL 前提に移行しており、X 固有の利点は縮小しています。
-- リモートからの X 転送（SSH -X）はネットワーク透過なので別経路として残ります（[ssh-implementations.md](ssh-implementations.md) 参照）。
+- リモートからの X 転送（SSH -X）はネットワーク透過なので別経路として残ります（[ssh-implementations.md](../security/ssh-implementations.md) 参照）。
 
 ## 3. Wayland 系
 
@@ -80,7 +80,7 @@ MSD 向けの論点：
 
 - **udev/eudev**：MSD は busybox mdev。libinput・wlroots・cog DRM・qt5webengine・X の入力ホットプラグは `BR2_PACKAGE_HAS_UDEV` を要求するため、本格的な GUI 経路では eudev 導入が鍵です【一次: 各 Config.in】。
 - **GPU/メモリ**：mesa3d の `GALLIUM_DRIVER_VC4` で VC4 世代の OpenGL ES（2.x 系）が使えます。512MB RAM で WebKit/Chromium 系エンジンは重く、compositor の有無よりエンジン本体がボトルネックになります【推測】。
-- **CMA**：vc4 KMS/GBM 系は連続メモリを要するため、公式 OS が `,cma-64` を付ける例がある点に注意します（[hdmi-output.md](hdmi-output.md) 参照）。
+- **CMA**：vc4 KMS/GBM 系は連続メモリを要するため、公式 OS が `,cma-64` を付ける例がある点に注意します（[hdmi-output.md](../hardware/hdmi-output.md) 参照）。
 
 ## 6. 参考：要求の重いアプリの可否（Minecraft / OpenJ9）
 

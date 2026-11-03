@@ -3,7 +3,7 @@
 - 状態: 配布物選択・cache除去・offline監査の確認は完了。Brotliによる公開阻止は継続
 - 日付: 2026-11-02
 - 担当: Devin
-- 関連: [開発用OCIの監視](../research/development-image-security.md)、[CI監査PR](https://github.com/uist1idrju3i/MSD-Linux/pull/185)
+- 関連: [開発用OCIの監視](../research/operations/development-image-security.md)、[CI監査PR](https://github.com/uist1idrju3i/MSD-Linux/pull/185)
 
 ## 目的と判定基準
 

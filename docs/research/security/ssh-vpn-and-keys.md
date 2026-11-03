@@ -1,6 +1,6 @@
 # SSH・VPN・鍵保管の調査
 
-[ユーザー空間・libc 調査](userspace/README.md) から分けた節です。節の番号（21）は元の文書のものを残しています。
+[ユーザー空間・libc 調査](../userspace/README.md) から分けた節です。節の番号（21）は元の文書のものを残しています。
 
 ## 21. SSH・VPN、暗号拡張、鍵保管と A/B OTA
 
@@ -39,9 +39,9 @@
 【推測・設計案（一次情報で検証した設計ではありません）】
 - **ホスト鍵(SSH)・WireGuard 秘密鍵・認証情報は A/B のどちらの rootfs にも入れず、別の永続 RW パーティション(小さい ext4)に置く**。A/B 切替・ロールバックで鍵が変わると、クライアント側の known_hosts 警告や VPN 切断が起こるため。
 - 鍵の生成は**初回起動時(個体ごと)** に行う。イメージに共通鍵を焼くと全個体が同じ鍵になる(典型的な落とし穴)。
-- 電断耐性：鍵ファイルは「tmp に書く → fsync → rename」で更新する案です（[電源遮断耐性の調査](storage/README.md)）。RW パーティションが壊れても機器は起動できるよう分離し、破損時に鍵を再生成する運用を許容するか決める必要があります。
+- 電断耐性：鍵ファイルは「tmp に書く → fsync → rename」で更新する案です（[電源遮断耐性の調査](../storage/README.md)）。RW パーティションが壊れても機器は起動できるよう分離し、破損時に鍵を再生成する運用を許容するか決める必要があります。
 - 権限は `0600` とします。microSD は取り外せるため、暗号化しなければ鍵を読み取れる可能性があります（個体の物理的脅威モデルは未検討）。dm-crypt は CM0 に AES 命令がなく遅いと推測されます。ChaCha20 系の Adiantum は RPi defconfig で `CRYPTO_ADIANTUM=m` ですが、CE 非搭載機向けとの説明は未確認です。https://github.com/raspberrypi/linux/blob/234188315037848e5b07d65b85d38edc64095caa/arch/arm64/configs/bcm2711_defconfig 【一次（設定） / 用途は未確認】
-- OTA ペイロードの署名検証は RAUC / SWUpdate の導入候補に含まれます（[電源・更新方式の調査](storage/README.md)）。**署名鍵・検証鍵の保管とローテーション**は未調査です。
+- OTA ペイロードの署名検証は RAUC / SWUpdate の導入候補に含まれます（[電源・更新方式の調査](../storage/README.md)）。**署名鍵・検証鍵の保管とローテーション**は未調査です。
 - Dropbear は `-r` でホスト鍵ファイルのパスを指定できるとの記述がありますが、現時点では未確認です。確認先は [Dropbear README](https://github.com/mkj/dropbear/blob/main/README.md) です。OpenSSH の `HostKey` も man を取得できておらず未確認です。
 
 ### 21.5 ポスト量子（PQ）鍵交換と SSH / VPN の既定暗号
@@ -60,7 +60,7 @@ Devin が 2026-10-18 JST に各実装の既定値を定義するファイルを�
 - データ暗号では OpenSSH は ChaCha20-Poly1305 が先頭、Dropbear は ChaCha20-Poly1305 が有効で GCM は無効、OpenVPN は GCM が先頭（設定変更が必要）です。
 - Dropbear の ML-KEM は約 34kB(armv7 の値)、sntrup は約 9kB の追加コード。ディスクと RAM が小さい構成では 34kB を見積もるが、**CM0(aarch64)での値や起動時間への影響は未測定**。
 
-【推測・未測定】鍵交換は接続ごとに 1 回の計算なので、[起動完了条件](verification/open-questions.md)の後に sshd / Dropbear を socket activation で起動すれば、起動時間への影響は小さいと見込まれます。実測では SSH 接続確立までの時間が重要です。CM0 の A53 での ML-KEM / X25519 の実測は、実機入手後に行う必要があります。PQ を使う場合のサーバー・クライアント双方の版要件（古いクライアントとの互換性）は未調査です。
+【推測・未測定】鍵交換は接続ごとに 1 回の計算なので、[起動完了条件](../verification/open-questions.md)の後に sshd / Dropbear を socket activation で起動すれば、起動時間への影響は小さいと見込まれます。実測では SSH 接続確立までの時間が重要です。CM0 の A53 での ML-KEM / X25519 の実測は、実機入手後に行う必要があります。PQ を使う場合のサーバー・クライアント双方の版要件（古いクライアントとの互換性）は未調査です。
 
 【未確認】OpenSSH の ML-KEM が CM0 でどの程度時間を要するか（公開値なし）、OpenVPN で ML-KEM 系グループが実際に使われるか（OpenSSL 3.6.4 の既定は `X25519MLKEM768` が先頭ですが、OpenVPN 2.7.6 は `--tls-groups` 未指定ならグループを設定しません。ソース確認のみで実接続は未確認）、`--tls-groups` に指定できる値、Buildroot での OpenSSH の `libcrypto` 構成は未確認です。実機測定と対象版の公開ソースで確認が必要です。
 

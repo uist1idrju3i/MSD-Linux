@@ -47,7 +47,7 @@
 
 ## 6. I/O スケジューラ チューニングは不要か
 
-- **要検証（実験価値あり）。** microSD に対して mq-deadline / kyber / bfq / none を比較する実験が可能。ただし 6.18 系では mq が主体で `elevator=` の選択肢は限られる。まず現行値を `/sys/block/mmcblk0/queue/scheduler` で確認してから、ブート時間・更新書き込み時間を基準に選ぶ。`docs/research/cpu-irq-and-sysctl.md` のスケジューラ節と既存ブート時間データを参照し、差分が小さいなら既定維持。
+- **要検証（実験価値あり）。** microSD に対して mq-deadline / kyber / bfq / none を比較する実験が可能。ただし 6.18 系では mq が主体で `elevator=` の選択肢は限られる。まず現行値を `/sys/block/mmcblk0/queue/scheduler` で確認してから、ブート時間・更新書き込み時間を基準に選ぶ。`docs/research/tuning/cpu-irq-and-sysctl.md` のスケジューラ節と既存ブート時間データを参照し、差分が小さいなら既定維持。
 
 ## 10. noatime・マウントオプションは最適か
 
@@ -67,7 +67,7 @@
 
 ## 13. sysctl の最適化（提示リストの照合）
 
-提示リストを、本機の現状・ハード（512 MiB、100 Mbps 級想定、microSD）と照合する。既存の `docs/research/tunables-sysctl.md` に 606 項目の既定値一覧があり、今回は提示値との差分に絞る。
+提示リストを、本機の現状・ハード（512 MiB、100 Mbps 級想定、microSD）と照合する。既存の `docs/research/tuning/tunables-sysctl.md` に 606 項目の既定値一覧があり、今回は提示値との差分に絞る。
 
 ### 採用方向でよいもの
 

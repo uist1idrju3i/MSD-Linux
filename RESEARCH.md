@@ -15,7 +15,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - 起動を速くし、突然の電源断に備えて rootfs を読み取り専用にし、更新失敗時は A/B の前のスロットへ自動復帰することを目指す。
 - SSH・VPN は調査対象にとどめ、実装しない。
 - リポジトリのライセンス方針は GPL-2.0-or-later。配布物ごとのライセンスとソース提供に注意する。
-- 開発中。実機の出荷は 2026 年 11 月に始まる予定（[最新動向](docs/research/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。起動イメージは CI で作り QEMU で起動を確かめているが、実機では試していない。起動時間の目標値は実機測定後に決める。
+- 開発中。実機の出荷は 2026 年 11 月に始まる予定（[最新動向](docs/research/hardware/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。起動イメージは CI で作り QEMU で起動を確かめているが、実機では試していない。起動時間の目標値は実機測定後に決める。
 
 ### 概略アーキテクチャ案
 
@@ -32,11 +32,11 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 
 ## ハードウェア
 
-SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源などの機能対応表は [hardware-spec.md](docs/research/hardware-spec.md) にあります。公式資料の版・全U1〜U37の部品・電源と信号の接続・実装との差異・確認結果は [部品と回路接続の監査](docs/research/hardware-wiring-audit.md) にまとめました。
+SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源などの機能対応表は [hardware-spec.md](docs/research/hardware/hardware-spec.md) にあります。公式資料の版・全U1〜U37の部品・電源と信号の接続・実装との差異・確認結果は [部品と回路接続の監査](docs/research/hardware/hardware-wiring-audit.md) にまとめました。
 
 ## 公式ソフトウェア構成
 
-公式イメージ（pi-gen による Raspberry Pi OS 派生）、カーネル、M5 ドライバ、DeviceTree・権限・運用の差異は [公式OS・BSP比較](docs/research/official-software.md) にまとめました。固定したCI生成物のDTBO、modules、firmware、最終設定、QEMUログを調べた範囲と失敗試行は [生成物の確認記録](docs/experiments/2026-11-02-hardware-artifact-audit.md) にあります。実機動作や公式配布image全体の検証とは区別します。
+公式イメージ（pi-gen による Raspberry Pi OS 派生）、カーネル、M5 ドライバ、DeviceTree・権限・運用の差異は [公式OS・BSP比較](docs/research/hardware/official-software.md) にまとめました。固定したCI生成物のDTBO、modules、firmware、最終設定、QEMUログを調べた範囲と失敗試行は [生成物の確認記録](docs/experiments/2026-11-02-hardware-artifact-audit.md) にあります。実機動作や公式配布image全体の検証とは区別します。
 
 ### 詳細な調査記録
 
@@ -44,16 +44,16 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 #### 対象・ハードウェア・表示と入力
 
-- [調査の前提・ハードウェア・候補](docs/research/scope-and-hardware.md)
-- [ハードウェア仕様と機能対応表](docs/research/hardware-spec.md)
-- [CardputerZero / Raspberry Pi CM0 エコシステム調査](docs/research/community-2026-11.md)
-- [ハードウェア機能の対応表](docs/research/hardware-spec.md#ハードウェア機能の対応表)
-- [公式ソフトウェア構成](docs/research/official-software.md)
-- [フォントの調査](docs/research/fonts.md)
-- [フレームバッファ端末とテキストブラウザの調査](docs/research/fb-terminals-and-text-browsers.md)
-- [HDMI 外部ディスプレイ出力の調査](docs/research/hdmi-output.md)
-- [表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）](docs/research/display-servers.md)
-- [ウェブブラウザの調査](docs/research/web-browsers.md)
+- [調査の前提・ハードウェア・候補](docs/research/hardware/scope-and-hardware.md)
+- [ハードウェア仕様と機能対応表](docs/research/hardware/hardware-spec.md)
+- [CardputerZero / Raspberry Pi CM0 エコシステム調査](docs/research/hardware/community-2026-11.md)
+- [ハードウェア機能の対応表](docs/research/hardware/hardware-spec.md#ハードウェア機能の対応表)
+- [公式ソフトウェア構成](docs/research/hardware/official-software.md)
+- [フォントの調査](docs/research/presentation/fonts.md)
+- [フレームバッファ端末とテキストブラウザの調査](docs/research/presentation/fb-terminals-and-text-browsers.md)
+- [HDMI 外部ディスプレイ出力の調査](docs/research/hardware/hdmi-output.md)
+- [表示サーバー・描画基盤の調査（X11 / Wayland / 代替技術）](docs/research/presentation/display-servers.md)
+- [ウェブブラウザの調査](docs/research/presentation/web-browsers.md)
 
 #### 起動・カーネル・CPU とメモリ
 
@@ -63,14 +63,14 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [カーネル版・PREEMPT・APIの比較](docs/research/boot/kernel-comparison.md)
 - [カーネル縮小](docs/research/boot/kernel-size.md)
 - [起動と電断耐性の設計論点](docs/research/boot/design-notes.md)
-- [sysctl の既定値](docs/research/tunables-sysctl.md)
-- [モジュールパラメーター](docs/research/tunables-module-params.md)
-- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/memory-reliability-2026-11.md)
+- [sysctl の既定値](docs/research/tuning/tunables-sysctl.md)
+- [モジュールパラメーター](docs/research/tuning/tunables-module-params.md)
+- [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/tuning/memory-reliability-2026-11.md)
 - [Raspberry Pi ファームウェア仕様の調査](docs/research/boot/firmware.md)
 - [カーネル版と起動方針](docs/research/boot/kernel-policy.md)
-- [高速起動記事とCortex-A53調整](docs/research/fastboot-and-cpu-tuning.md)
-- [CPU・割り込み・sysctl の調整余地](docs/research/cpu-irq-and-sysctl.md)
-- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tunables-defaults.md)
+- [高速起動記事とCortex-A53調整](docs/research/tuning/fastboot-and-cpu-tuning.md)
+- [CPU・割り込み・sysctl の調整余地](docs/research/tuning/cpu-irq-and-sysctl.md)
+- [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tuning/tunables-defaults.md)
 
 #### 保存・電源断・更新
 
@@ -84,19 +84,19 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 #### ユーザー空間・セキュリティ
 
 - [OpenBSDの考え方とLinuxの具体的な権限設計](docs/research/security/README.md) — 原則、処理別の権限・可変設定、通信開始前の防御、未実装部分の検証条件。
-- [Release保護・Ed25519鍵・署名job](docs/research/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
-- [導入・A/B操作と現行実装の照合](docs/research/install-update-status.md) — CIで取得できる成果物、既存の自動拡張と自動commit、更新後の状態確認、実機未確認の境界。
+- [Release保護・Ed25519鍵・署名job](docs/research/release-client/release-security.md) — immutable Release、Environment secret、初回imageと更新bundleの認証、未実装の鍵移行と復旧。管理者の設定手順も収録。
+- [導入・A/B操作と現行実装の照合](docs/research/release-client/install-update-status.md) — CIで取得できる成果物、既存の自動拡張と自動commit、更新後の状態確認、実機未確認の境界。
 - [セキュリティ・ハードニング](docs/research/security/threat-model.md)
 - [セキュリティ強化項目の調査（2026-11）](docs/research/security/history/README.md)
-- [再実装ライブラリとアロケータの調査](docs/research/reimplemented-libraries.md)
+- [再実装ライブラリとアロケータの調査](docs/research/alternatives/reimplemented-libraries.md)
 - [ユーザー空間・libc 調査](docs/research/userspace/README.md)
-- [SSH・VPN・鍵保管の調査](docs/research/ssh-vpn-and-keys.md)
-- [SSH サーバー・クライアント実装の調査](docs/research/ssh-implementations.md)
+- [SSH・VPN・鍵保管の調査](docs/research/security/ssh-vpn-and-keys.md)
+- [SSH サーバー・クライアント実装の調査](docs/research/security/ssh-implementations.md)
 
 #### 開発・測定・未確認事項
 
 - [固定コンポーネントの機能・設定・引数と現行値](docs/research/component-options/README.md)
-- [SBOMの生成・確認範囲と監視の限界](docs/research/sbom-coverage.md)
+- [SBOMの生成・確認範囲と監視の限界](docs/research/operations/sbom-coverage.md)
 - [全依存の一覧・最新版候補・版と脆弱性の監視範囲](docs/research/dependencies/README.md)
 - [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
 - [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。
@@ -104,17 +104,17 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [未実施項目・将来計画](docs/research/roadmap.md) — 状態、依存、優先度、完了条件、判断待ち・延期・対象外を追跡する。問い・実験・追加要求との対応はCSVに保持。
 - [init移行の比較実測計画](docs/experiments/2026-11-03-init-comparison-plan.md) — 現行・systemd・代替の共通条件、readiness、資源、拒否・復旧、QEMU/実機の分離。計画のみで本計測は未実施。
 - [観測方法](docs/research/verification/observability.md) / [実機での測定](docs/research/verification/hardware-measurements.md) / [QEMUの範囲](docs/research/verification/qemu-coverage.md)
-- [開発環境と CI の選定・予備的な測定](docs/research/dev-environment-and-ci.md)
-- [文書差分のbuild判定と高速化](docs/research/ci-build-scope-and-performance.md) — PR累積差分、OCI準備、cache・並列化の適用済み範囲と未測定の改善候補。
-- [開発用OCIの脆弱性と監視の確認](docs/research/development-image-security.md)
-- [GitHub Actionsの権限・実行境界と監視の監査](docs/research/github-actions-audit.md)
+- [開発環境と CI の選定・予備的な測定](docs/research/operations/dev-environment-and-ci.md)
+- [文書差分のbuild判定と高速化](docs/research/operations/ci-build-scope-and-performance.md) — PR累積差分、OCI準備、cache・並列化の適用済み範囲と未測定の改善候補。
+- [開発用OCIの脆弱性と監視の確認](docs/research/operations/development-image-security.md)
+- [GitHub Actionsの権限・実行境界と監視の監査](docs/research/operations/github-actions-audit.md)
 
 #### 比較・履歴・出典と意匠
 
 - [使用部品・ツールの代替比較](docs/research/alternatives/README.md) — コンパイラー・libc、コマンド・init、暗号、保存・更新、通信・周辺、構築・CIを責務別に比較。[67構成要素との対応](docs/research/alternatives/coverage.csv)は索引で、同等性・全license・実機動作の認定ではない。
 - [全構成要素の母集団と比較の範囲](docs/research/alternatives/inventory-boundaries.md) — OCIの全231 APTと129 source、Actionsの11参照・859 npm名・親、Go moduleを対応づけ、実bundle等の未確認範囲を分離。
-- [公式サイトの HTML・CSS](docs/research/site-html-css.md)
-- [ロスレス再圧縮ツールの調査](docs/research/lossless-recompression.md)
+- [公式サイトの HTML・CSS](docs/research/presentation/site-html-css.md)
+- [ロスレス再圧縮ツールの調査](docs/research/tuning/lossless-recompression.md)
 - [Yocto Project 移行の検討記録（移行見送り）](docs/research/yocto-migration/README.md)
   - [総まとめ（2026-11、移行しないと決定）](docs/research/yocto-migration/summary-2026-11.md)
   - [Buildroot への還元と証拠の確認範囲](docs/research/yocto-migration/buildroot-lessons.md)
@@ -122,13 +122,13 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
   - [Buildroot で見送った案の再評価](docs/research/yocto-migration/reevaluation.md)
   - [Buildroot と Yocto の Pros/Cons（2026-11）](docs/research/yocto-migration/pros-cons-2026-11.md)、[成果物の比較](docs/experiments/2026-11-02-buildroot-yocto-artifacts.md)、[QEMU での起動時間の比較](docs/experiments/2026-11-02-buildroot-yocto-boottime.md)
   - [構築試験（Wrynose、M5 BSP）](docs/experiments/2026-11-02-yocto-wrynose-probe.md)、[QEMU 起動確認](docs/experiments/2026-11-02-yocto-qemu-boot.md)
-- [OS 候補の比較](docs/research/os-candidates.md)
-- [訂正済み事項](docs/research/corrections.md)
-- [出典一覧と URL 取得記録](docs/research/sources.md)
-- [CI・Issue・リポジトリ設定の点検（2026-10-20）](docs/research/repo-operations-review.md)
-- [作業の振り返りと残タスク（2026-10-22）](docs/research/retrospective-2026-10.md)
-- [作業の振り返りと残タスク（2026-10-25）](docs/research/retrospective-2026-10-25.md)
-- [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/wagara.md)
+- [OS 候補の比較](docs/research/alternatives/os-candidates.md)
+- [訂正済み事項](docs/research/history/corrections.md)
+- [出典一覧と URL 取得記録](docs/research/sources/sources.md)
+- [CI・Issue・リポジトリ設定の点検（2026-10-20）](docs/research/operations/repo-operations-review.md)
+- [作業の振り返りと残タスク（2026-10-22）](docs/research/history/retrospective-2026-10.md)
+- [作業の振り返りと残タスク（2026-10-25）](docs/research/history/retrospective-2026-10-25.md)
+- [和柄（日本の伝統文様）の調査とロゴ・サイトでの採否](docs/research/presentation/wagara.md)
 
 ### この記録に含めないもの
 
@@ -140,7 +140,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 ## 高速化のアイデア一覧
 
-詳しくは [fastboot-ideas.md](docs/research/fastboot-ideas.md) を参照してください。
+詳しくは [fastboot-ideas.md](docs/research/tuning/fastboot-ideas.md) を参照してください。
 
 ## 電源断耐性
 
@@ -162,7 +162,7 @@ microSD を物理交換できる攻撃者は Linux より前の起動ファイ�
 
 ## アイデア総覧
 
-詳しくは [ideas-overview.md](docs/research/ideas-overview.md) を参照してください。
+詳しくは [ideas-overview.md](docs/research/history/ideas-overview.md) を参照してください。
 
 ## QEMU で検証できる範囲
 
@@ -170,7 +170,7 @@ QEMU の `raspi3ap` と `raspi3b` は BCM2837 SoC をエミュレートします
 
 ## OS ベース比較
 
-公開資料による OS 候補の比較表は、 [os-candidates.md](docs/research/os-candidates.md) に分けました。
+公開資料による OS 候補の比較表は、 [os-candidates.md](docs/research/alternatives/os-candidates.md) に分けました。
 
 ## カーネル
 
@@ -186,7 +186,7 @@ init と周辺デバイス、init の比較、libc / toolchain の調査は、 [
 
 ## SSH・VPN（調査のみ・実装しない）
 
-SSH・VPN・鍵保管の調査は、 [ssh-vpn-and-keys.md](docs/research/ssh-vpn-and-keys.md) に分けました。
+SSH・VPN・鍵保管の調査は、 [ssh-vpn-and-keys.md](docs/research/security/ssh-vpn-and-keys.md) に分けました。
 
 ## 名称
 
@@ -194,13 +194,13 @@ MSD/Linux は Muromi Software Distribution / Linux の略です。
 
 名付け方は、ぷらっとホームの [SSD/Linux](https://www.plathome.co.jp/support/labo/ssdlinux/) にならいました。公式ページによれば、SSD は「BSD (Berkeley Software Distribution) にならい、開発場所である外神田 (Sotokanda) を冠した名称」です。SSD/Linux は、開発者が中学3年生だった 2004 年に初めて触れた Linux です。
 
-MSD/Linux も同じように、開発場所の近くを流れる福岡県の室見川（Muromi）から名前をとりました。ロゴは、室見川が博多湾へ注ぐ姿を描いています（[ロゴの意匠](docs/logo/README.md#意匠)）。ロゴと公式サイトの文様を選んだ調査は、[和柄（日本の伝統文様）の調査](docs/research/wagara.md)にまとめました。
+MSD/Linux も同じように、開発場所の近くを流れる福岡県の室見川（Muromi）から名前をとりました。ロゴは、室見川が博多湾へ注ぐ姿を描いています（[ロゴの意匠](docs/logo/README.md#意匠)）。ロゴと公式サイトの文様を選んだ調査は、[和柄（日本の伝統文様）の調査](docs/research/presentation/wagara.md)にまとめました。
 
 名前には、もう一つの由来があります。開発者が好きなライトノベル『なれる!SE』（夏海公司、電撃文庫、2010〜2017 年）に登場する、室見立華（むろみ りっか）です。作中では、ネットワーク系のシステムエンジニアとして描かれています。作中の主要な登場人物の苗字は、どれも福岡市地下鉄の駅名からとられていて、室見立華は空港線の室見駅に由来します（[Wikipedia「なれる!SE」](https://ja.wikipedia.org/wiki/%E3%81%AA%E3%82%8C%E3%82%8B!SE)）。
 
 ## 公式サイトの HTML・CSS
 
-詳しくは [site-html-css.md](docs/research/site-html-css.md) を参照してください。
+詳しくは [site-html-css.md](docs/research/presentation/site-html-css.md) を参照してください。
 
 ## 未確認事項
 
@@ -208,4 +208,4 @@ MSD/Linux も同じように、開発場所の近くを流れる福岡県の室�
 
 ## 出典一覧
 
-本文で引用した主要な一次資料・技術資料の一覧と URL 取得記録は、 [sources.md](docs/research/sources.md) に分けました。
+本文で引用した主要な一次資料・技術資料の一覧と URL 取得記録は、 [sources.md](docs/research/sources/sources.md) に分けました。

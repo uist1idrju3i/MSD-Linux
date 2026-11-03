@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-19
 - 担当: Devin
-- 関連: [CPU・割り込み・sysctl の調整余地](../research/cpu-irq-and-sysctl.md)、[調整項目の全一覧](../research/tunables-defaults.md)
+- 関連: [CPU・割り込み・sysctl の調整余地](../research/tuning/cpu-irq-and-sysctl.md)、[調整項目の全一覧](../research/tuning/tunables-defaults.md)
 
 ## 目的と仮説
 
@@ -59,7 +59,7 @@ Kconfig は、ゲストに `/proc/config.gz` がなかったため（`CONFIG_IKC
 
 ## 結果
 
-生の値は [2026-10-19-tunables-dump.csv](2026-10-19-tunables-dump.csv)（列は `run_id,variant,repeat,metric,value,unit,valid,note`。`metric` がパス、`unit` が種類）です。全一覧は [調整項目の全一覧](../research/tunables-defaults.md) にあります。
+生の値は [2026-10-19-tunables-dump.csv](2026-10-19-tunables-dump.csv)（列は `run_id,variant,repeat,metric,value,unit,valid,note`。`metric` がパス、`unit` が種類）です。全一覧は [調整項目の全一覧](../research/tuning/tunables-defaults.md) にあります。
 
 | 種類 | 項目数（a1） |
 |---|---|
@@ -71,7 +71,7 @@ Kconfig は、ゲストに `/proc/config.gz` がなかったため（`CONFIG_IKC
 
 `mem=512M` で値が変わった sysctl は 24 項目でした（例：`fs/file-max` 86,624 → 41,792、`kernel/threads-max` 7,007 → 3,500、`vm/min_free_kbytes` 3,869 → 2,791、`net/ipv4/tcp_mem` `10899 14534 21798` → `5658 7545 11316`、`user/max_*_namespaces` 3,503 → 1,750）。
 
-主な値と判断は [CPU・割り込み・sysctl の調整余地](../research/cpu-irq-and-sysctl.md#qemu-で取得した既定値) にまとめました。
+主な値と判断は [CPU・割り込み・sysctl の調整余地](../research/tuning/cpu-irq-and-sysctl.md#qemu-で取得した既定値) にまとめました。
 
 ## 捨てた試行と経緯
 

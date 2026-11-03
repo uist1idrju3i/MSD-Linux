@@ -1,6 +1,6 @@
 # 2026-11-02 CI生成物のハードウェア定義照合
 
-[実験一覧](README.md) / [RESEARCH](../../RESEARCH.md) / [公式OS比較](../research/official-software.md)
+[実験一覧](README.md) / [RESEARCH](../../RESEARCH.md) / [公式OS比較](../research/hardware/official-software.md)
 
 ## 目的・条件・判定
 

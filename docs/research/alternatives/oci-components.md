@@ -32,7 +32,7 @@ Docker内の新しいtoolchainを再現性の基準にする方針は維持し�
 
 `selected_in_final_stage`は固定Dockerfileの最終stageの`apt-get install`に明記したpackageです。`false`は不要という意味ではなく、base由来・推移依存・既定のtoolchain package等を含みます。`installed_reverse_dependencies`はDependsとPre-Dependsに記載された、導入済みの候補への辺です。alternativesのどの分岐をAPTが採用したか、Provides、実行時load、scriptの呼出しを完全に解決したgraphではありません。原文の依存式は[採取metadata](oci-package-metadata.json)に残します。
 
-削減するなら、まず検査専用の軽い環境と、製品build/QEMUの環境を分ける案を試します。full OCIの機能を削って全jobを速くする案より、不要なjobへcompiler/QEMUを配らない案です。一方で、入力固定、2種類の環境の保守、共通test、両CPUの検査が増えます。現在のcache/OCI再利用の[調査](https://github.com/uist1idrju3i/MSD-Linux/blob/3914ad3dc104138e4a9be2f3250f23151a7a3e81/docs/research/ci-build-scope-and-performance.md)と合わせて費用を測るまで採用しません。
+削減するなら、まず検査専用の軽い環境と、製品build/QEMUの環境を分ける案を試します。full OCIの機能を削って全jobを速くする案より、不要なjobへcompiler/QEMUを配らない案です。一方で、入力固定、2種類の環境の保守、共通test、両CPUの検査が増えます。現在のcache/OCI再利用の[調査](https://github.com/uist1idrju3i/MSD-Linux/blob/3914ad3dc104138e4a9be2f3250f23151a7a3e81/docs/research/operations/ci-build-scope-and-performance.md)と合わせて費用を測るまで採用しません。
 
 ## 著作権資料と保守の範囲
 

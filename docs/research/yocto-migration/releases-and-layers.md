@@ -49,7 +49,7 @@ Whinlatter 5.3 の移行ガイドには「The Poky repository master branch is n
 ### 3.1 CardputerZero（CM0）に近い machine
 
 - **CM0 用の machine はありません**。`master` を `cm0` で検索しても該当はありませんでした【一次】。
-- 近いのは `raspberrypi0-2w-64` と `raspberrypi3-64` です。`raspberrypi0-2w-64` は `raspberrypi3-64.conf` を include し、`MACHINEOVERRIDES` に `raspberrypi3-64` を加えます。device tree は `bcm2710-rpi-zero-2.dtb` だけです。CM0 と Zero 2 W は同じ RP3A0（BCM2710A1 系）を載せています（[hardware-spec.md](../hardware-spec.md)）。
+- 近いのは `raspberrypi0-2w-64` と `raspberrypi3-64` です。`raspberrypi0-2w-64` は `raspberrypi3-64.conf` を include し、`MACHINEOVERRIDES` に `raspberrypi3-64` を加えます。device tree は `bcm2710-rpi-zero-2.dtb` だけです。CM0 と Zero 2 W は同じ RP3A0（BCM2710A1 系）を載せています（[hardware-spec.md](../hardware/hardware-spec.md)）。
 - `raspberrypi3-64.conf` の主な値は次のとおりです【一次】。
   - `DEFAULTTUNE ?= "cortexa53-nocrypto"`（`tune-cortexa53.inc`）
   - `SDIMG_KERNELIMAGE ?= "kernel8.img"`、`KERNEL_IMAGETYPE_DIRECT ?= "Image"`

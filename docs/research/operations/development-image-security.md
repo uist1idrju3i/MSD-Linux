@@ -1,6 +1,6 @@
 # 開発用OCIの脆弱性と監視の確認
 
-[RESEARCH](../../RESEARCH.md) / [CIの運用](../CI.md)
+[RESEARCH](../../../RESEARCH.md) / [CIの運用](../../CI.md)
 
 ## 対象と確認の限界
 
@@ -24,7 +24,7 @@
 
 ## Brotliの修正がある検出
 
-利用者の指示で修正版の導入の保留を解除し、[残件R25](roadmap.md)を実行待ちへ戻しました。以下は検出時点の調査記録です。当時は修正版適用後のamd64/arm64 build・scan・SBOM・attestationをまだ確認しておらず、CI改善のmain反映後に再確認する予定でした。後続の結果は次節に記録します。公開ゲートは緩めません。
+利用者の指示で修正版の導入の保留を解除し、[残件R25](../roadmap.md)を実行待ちへ戻しました。以下は検出時点の調査記録です。当時は修正版適用後のamd64/arm64 build・scan・SBOM・attestationをまだ確認しておらず、CI改善のmain反映後に再確認する予定でした。後続の結果は次節に記録します。公開ゲートは緩めません。
 
 `libbrotli1`の`1.1.0-2+b7`に、`CVE-2026-111497`が検出されました。Trivyの重大度はNVD由来のCRITICALです。[Debian Security Tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497)でも、trixieの`1.1.0-2`はvulnerable、trixie-securityの`1.1.0-2+deb13u1`はfixedと確認しました。Brotli decoderの不正な圧縮入力の処理に関する修正です。開発環境での具体的な攻撃到達性や、悪用の成立は試していません。
 
@@ -34,7 +34,7 @@
 
 R25のローカル検証では`DEBIAN_SNAPSHOT`を`20261103T023120Z`へ更新しました。amd64の導入済みpackageは231件で、旧imageから変わったのは`libbrotli1`と`linux-libc-dev`の2件です。固定Trivy 0.76.1と同じDBで公開ゲート対象は0件でした。
 
-その後、PR #194のhead `e75008d`でamd64/arm64のdev-image buildとTrivy gate、Buildroot `build`が成功しました。merge後のmain commit `668cd99`では両archのgateとSBOM attestation、multi-arch indexのBuild Provenance、`scan`、Buildroot `build`を確認しました。job IDと初回のBrotliだけの試行を含むpackage差分は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)に記録しています。QEMU bootと実機試験はR25のOCI更新の確認範囲外であり、実施していません。
+その後、PR #194のhead `e75008d`でamd64/arm64のdev-image buildとTrivy gate、Buildroot `build`が成功しました。merge後のmain commit `668cd99`では両archのgateとSBOM attestation、multi-arch indexのBuild Provenance、`scan`、Buildroot `build`を確認しました。job IDと初回のBrotliだけの試行を含むpackage差分は[実験記録](../../experiments/2026-11-03-dev-image-security-update.md)に記録しています。QEMU bootと実機試験はR25のOCI更新の確認範囲外であり、実施していません。
 
 修正方法の比較ではsnapshot全体の更新を基本候補とします。Brotliだけの追加取得は変更範囲を絞れますが、取得先・署名またはhash・依存解決・版の監視を二重管理します。全体更新では実際に変わる全packageの変更履歴、QEMUの構築・実行、Buildrootの構築、ライセンスと再走査を比較します。snapshotの日付を変えただけで、修正版の導入が済んだとは判定しません。
 
@@ -60,7 +60,7 @@ OCIから取り出したactionlintのbuild情報は`GOOS=linux`でした。modul
 
 公開前ゲートの基準は変えません。修正版のあるHIGH/CRITICALの脆弱性と、HIGH/CRITICALの秘密情報・設定不備を対象にします。週次の報告は検出事項だけでは失敗させず、Issueに集約する現行の運用を保ちます。秘密情報の値を出さないことは、生成物の全ファイルに秘密情報がないことの証明ではありません。
 
-回帰テストでは120件のLOWの後ろにHIGH/CRITICALを置き、重要項目が本文に残ること、100件を超えた残りもJSONに保存することを確認します。秘密値を模した文字列を`Match`、`Code`、環境変数、診断文へ入れ、本文と保存JSONに出ないことも検査します。ローカルの実データでは、改修後の本文の先頭にBrotliの検出が表示されました。入力hashと報告器の5回のA/A試行は[確認記録](../experiments/2026-11-02-dev-image-scan.md)に残します。新しいworkflowの実行結果とは区別します。
+回帰テストでは120件のLOWの後ろにHIGH/CRITICALを置き、重要項目が本文に残ること、100件を超えた残りもJSONに保存することを確認します。秘密値を模した文字列を`Match`、`Code`、環境変数、診断文へ入れ、本文と保存JSONに出ないことも検査します。ローカルの実データでは、改修後の本文の先頭にBrotliの検出が表示されました。入力hashと報告器の5回のA/A試行は[確認記録](../../experiments/2026-11-02-dev-image-scan.md)に残します。新しいworkflowの実行結果とは区別します。
 
 ## 再検査の手順
 
@@ -91,4 +91,4 @@ tests/trivy-gate/run.sh
 
 [公開前検査のarm64 artifact](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41499766995/artifacts/13169865900)には、Brotli以外にも38件のblocking検出があった。対象はいずれも`root/.cache/puccinialin/cargo/registry/src/`内のlockfileであり、実行バイナリーの38件の脆弱性と同一視しない。
 
-同版のarm64 wheelは公開されていたが許可hashがなく、CIはsdistから構築していた。対応hashを加え、OCIではwheel限定・pip cache無効化・同じレイヤーでの不要cache除去と、除去後のoffline監査を行う。版・snapshot・脆弱性gateは変更しない。source lockfileとの照合、配布物のhash・license、回帰試験・変異試験・5回の選択結果と確認範囲は[検証記録](../experiments/2026-11-02-zizmor-wheel-cache.md)を参照する。
+同版のarm64 wheelは公開されていたが許可hashがなく、CIはsdistから構築していた。対応hashを加え、OCIではwheel限定・pip cache無効化・同じレイヤーでの不要cache除去と、除去後のoffline監査を行う。版・snapshot・脆弱性gateは変更しない。source lockfileとの照合、配布物のhash・license、回帰試験・変異試験・5回の選択結果と確認範囲は[検証記録](../../experiments/2026-11-02-zizmor-wheel-cache.md)を参照する。

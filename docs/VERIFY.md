@@ -31,6 +31,6 @@ Standard（IMX219 実装）で期待する結果は次のとおりです。
 
 Lite（センサー未実装）で期待する結果は次のとおりです。
 
-- sensor が存在しないため probe は失敗しますが、その際の実際の kernel message は未確認項目です。`dmesg.txt` を保存し、[hardware-spec.md](research/hardware-spec.md) の「Lite 版の probe failure は想定内」の行に記録される実際の message を追記してください。
+- sensor が存在しないため probe は失敗しますが、その際の実際の kernel message は未確認項目です。`dmesg.txt` を保存し、[hardware-spec.md](research/hardware/hardware-spec.md) の「Lite 版の probe failure は想定内」の行に記録される実際の message を追記してください。
 
 確認が終わったら、出力ディレクトリの内容（特に `dmesg.txt` と `media-topology.txt`）を保存し、[試験台帳](research/verification/experiment-catalog.md) の S2 行と hardware-spec.md の未確認項目を実測値で更新してください。

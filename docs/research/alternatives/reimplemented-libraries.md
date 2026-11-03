@@ -6,7 +6,7 @@
 
 ## 1. TLS / 暗号
 
-2026-11-02に、現行OpenSSLと固定Buildroot、新しい上流資料を読み直しました。比較の本文・固定した出典・license・統合条件は[暗号・TLS](alternatives/crypto.md)、署名の互換性と鍵運用は[更新署名の信頼境界](alternatives/signing.md)にまとめています。
+2026-11-02に、現行OpenSSLと固定Buildroot、新しい上流資料を読み直しました。比較の本文・固定した出典・license・統合条件は[暗号・TLS](crypto.md)、署名の互換性と鍵運用は[更新署名の信頼境界](signing.md)にまとめています。
 
 - 現行OpenSSL 3.6系列の通常保守期限は、公式方針では2026-11-01です。成熟度だけを根拠に現行維持が妥当とした旧評価を改め、保守される系列への対応も比較します。
 - LibreSSL・mbed TLS・wolfSSL・GnuTLSは、保守・設定・TLS policy・依存を別々に評価します。wolfSSLをFIPS案件だけに限定し、GnuTLSを効能が重なるだけとして除外した旧評価を改めます。
@@ -16,11 +16,11 @@
 
 ## 2. C ライブラリ（libc）
 
-比較表は [ユーザー空間・libc 調査](userspace/README.md) §17.3 が正です（glibc / musl / uClibc-ng / Newlib / picolibc / llvm-libc）。ここでは補足のみ。
+比較表は [ユーザー空間・libc 調査](../userspace/README.md) §17.3 が正です（glibc / musl / uClibc-ng / Newlib / picolibc / llvm-libc）。ここでは補足のみ。
 
 - **musl**: MIT、スクラッチ再実装。静的リンク・小ささ・決定的な実装が強み。本機が外部 Bootlin ツールチェーンの glibc を使う現状では、musl への切替はツールチェーン変更（Buildroot 内蔵 musl ツールチェーン or Bootlin musl 版）が必要で、署名済みユーザーランド全体の再ビルド・再検証を伴う。効能はイメージサイズと依存の簡素化【推測】。
 - **picolibc**: Keith Packard 主導。newlib-nano と AVR libc の流れを統合した組み込み向け libc。printf/scanf を削減した `tinystdio` が特徴。**設計上 Linux ホスト環境は想定しておらず、Linux hosted ビルドは試験用**。本機のルートfs の libc としては対象外で、仮に bare-metal 補助コアやブートローダを自作する場合の候補【一次: picolibc README】。
-- **llvm-libc**: 現行の公式資料は、用途を絞った静的Linux等での本番利用と、regex・locale・wide-character I/O等の不足を併記しています。旧来の一律の未成熟扱いを見直し、[限定した実験候補](alternatives/libc.md#llvm-libcの旧評価を変える根拠)とします。MSD/Linux全体の置換は、本リポジトリでは試していません。
+- **llvm-libc**: 現行の公式資料は、用途を絞った静的Linux等での本番利用と、regex・locale・wide-character I/O等の不足を併記しています。旧来の一律の未成熟扱いを見直し、[限定した実験候補](libc.md#llvm-libcの旧評価を変える根拠)とします。MSD/Linux全体の置換は、本リポジトリでは試していません。
 
 ## 3. malloc 実装
 
@@ -52,8 +52,8 @@
 
 | 実装 | 元実装との関係 | Buildroot | 効能と適用 |
 |---|---|---|---|
-| zlib-ng | zlib由来で、native APIとzlib互換modeを持つ。SIMD最適化 | `BR2_PACKAGE_ZLIB_NG`あり。固定recipeは互換mode・gzFile・AArch64 NEONを指定 | targetのlibzlib代替の実験候補。host providerの変更は別。現行rootfsはzstdのSquashFSであり、そのまま起動・更新の改善値にはしない。[条件と一次資料](alternatives/build-support.md) |
-| libdeflate | Eric BiggersらによるDEFLATE/zlib/gzipのwhole-buffer処理。独自APIでstreaming非対応 | `BR2_PACKAGE_LIBDEFLATE`あり | 同形式のデータを扱えてもzlib APIの差し替えではない。callerの移植と全bufferのRAM、処理時間を測る実験候補。本機の速度向上は未確認。[APIと形式の区別](alternatives/build-support.md) |
+| zlib-ng | zlib由来で、native APIとzlib互換modeを持つ。SIMD最適化 | `BR2_PACKAGE_ZLIB_NG`あり。固定recipeは互換mode・gzFile・AArch64 NEONを指定 | targetのlibzlib代替の実験候補。host providerの変更は別。現行rootfsはzstdのSquashFSであり、そのまま起動・更新の改善値にはしない。[条件と一次資料](build-support.md) |
+| libdeflate | Eric BiggersらによるDEFLATE/zlib/gzipのwhole-buffer処理。独自APIでstreaming非対応 | `BR2_PACKAGE_LIBDEFLATE`あり | 同形式のデータを扱えてもzlib APIの差し替えではない。callerの移植と全bufferのRAM、処理時間を測る実験候補。本機の速度向上は未確認。[APIと形式の区別](build-support.md) |
 | libjpeg-turbo | libjpeg からのフォーク＋SIMD | `BR2_PACKAGE_JPEG_TURBO` あり（`jpeg` 仮想パッケージの実装選択肢） | 画像処理を入れた場合の速度効能 |
 | toybox | BusyBox と同じ方向の、もう一つの minimal userland 再実装（BSD ライセンス） | `BR2_PACKAGE_BUSYBOX` 代替選択肢なし（busybox 固定） | BusyBox からの全面差し替えは根拠が薄い【推測】 |
 | sbase / ubase | suckless の minimal coreutils。設計で最小化 | なし | 同上 |
@@ -61,7 +61,7 @@
 | dropbear | OpenSSH と独立した SSH 実装 | `BR2_PACKAGE_DROPBEAR` あり | SSH を入れるなら openssh より小さい効能。セキュリティ調査の前提（SSH 未導入）から先に採否を決める必要がある |
 | mandoc | man-db と独立した man/groff 系実装 | なし（`mandoc` パッケージは現行 Buildroot 未収録） | オンライン man は本機に不要 |
 | openrsync | OpenBSD の rsync 再実装 | なし | 更新経路で rsync を使う場合の小さい選択肢 |
-| sudo-rs / uutils coreutils | Trifecta Tech の Rust 再実装（Ubuntu 25.10 で uutils が既定化） | なし | [セキュリティ強化項目の調査](security/history/README.md) §15 を参照。本機は BusyBox アプレットで sudo・coreutils を持たず差し替え対象がない |
+| sudo-rs / uutils coreutils | Trifecta Tech の Rust 再実装（Ubuntu 25.10 で uutils が既定化） | なし | [セキュリティ強化項目の調査](../security/history/README.md) §15 を参照。本機は BusyBox アプレットで sudo・coreutils を持たず差し替え対象がない |
 
 ## 6. ブラウザエンジンの再実装
 
@@ -79,7 +79,7 @@
 
 ## 7. 本機への適用まとめ
 
-1. **署名専用の実験候補**: msd-updateのraw Ed25519検証をlibsodium / Monocypherへ分離する案は、鍵形式・API・入力検査・他clientの依存も含めて[再評価](alternatives/crypto.md#署名専用の候補)します。サイズ削減は未測定です。
+1. **署名専用の実験候補**: msd-updateのraw Ed25519検証をlibsodium / Monocypherへ分離する案は、鍵形式・API・入力検査・他clientの依存も含めて[再評価](crypto.md#署名専用の候補)します。サイズ削減は未測定です。
 2. **圧縮を実測する候補**: zlib-ngの互換modeと、専用APIへ移植するlibdeflateを分けます。zlib系の処理が実際の律速か、whole-buffer処理のRAMを許容できるか確認します。現行のrootfsや更新処理の高速化を確認した結果ではありません。
 3. **観測待ち**: アロケータ差し替え（jemalloc/mimalloc）はフラグメンテーションの観測が前提。
 4. **評価不能・対象外**: Zephyr 4.5（`rpi_zero_2w` ボードは追加されたが SDHCI 未確認）、OpenJ9、picolibc（Linux hosted は試験用）。BoringSSLは一般用途非推奨とAPI/ABI保証なしを理由に、上記の用途別比較へ戻します。
@@ -87,8 +87,8 @@
 ## 出典
 
 - Buildroot 2026.08 `vendor/buildroot/package/` のパッケージディレクトリ（libressl・mbedtls・wolfssl・bearssl・gnutls・libsodium・nettle・libgcrypt・jemalloc・libdeflate・zlib-ng・libjpeg-turbo・openntpd・dropbear・newlib-bare-metal の存在を確認。monocypher・libhydrogen・picolibc・toybox・sbase・mandoc・openrsync・sudo-rs・uutils・mimalloc・tcmalloc・snmalloc・scudo・rpmalloc は未収録）【一次】
-- 暗号関連の固定したREADME・manual・LICENSEと確認範囲は、[暗号比較の出典](alternatives/crypto.md#一次資料と未確認範囲)と[取得台帳](alternatives/sources.json)を参照【一次】
+- 暗号関連の固定したREADME・manual・LICENSEと確認範囲は、[暗号比較の出典](crypto.md#一次資料と未確認範囲)と[取得台帳](sources.json)を参照【一次】
 - picolibc README https://github.com/picolibc/picolibc 【一次】
 - llvm-libc full host build の警告 https://libc.llvm.org/full_host_build.html 【一次】
-- musl malloc については [ユーザー空間・libc 調査](userspace/README.md) §17.3-4 を参照
-- Rust 再実装の最新状況は [セキュリティ強化項目の調査](security/history/README.md) §15 を参照
+- musl malloc については [ユーザー空間・libc 調査](../userspace/README.md) §17.3-4 を参照
+- Rust 再実装の最新状況は [セキュリティ強化項目の調査](../security/history/README.md) §15 を参照

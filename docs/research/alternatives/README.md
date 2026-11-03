@@ -26,7 +26,7 @@
 | [構築基盤・開発・CI](development.md) | Buildrootと他の基盤、OCI、cache、QEMU、lint・scanner・SBOM・provenanceの責務と費用を比べる |
 | [PTXdist・Nix・Debian](system-builders.md) | hostの固定化、target OS、縮小rootfsの生成を分け、利点と移行費用を比べる |
 
-各分野の役割と代替・再検討条件を比較しましたが、全候補の全option・全licenseや代替構成の実行確認を完了した索引ではありません。最小特権とnetwork隔離の[具体設計](../security/README.md)、鍵・Releaseの[設定手順](../../RELEASE-SIGNING.md)は、実装・本番設定とは分けて保存しています。構成情報の母集団は[SBOMの確認範囲](../sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
+各分野の役割と代替・再検討条件を比較しましたが、全候補の全option・全licenseや代替構成の実行確認を完了した索引ではありません。最小特権とnetwork隔離の[具体設計](../security/README.md)、鍵・Releaseの[設定手順](../../RELEASE-SIGNING.md)は、実装・本番設定とは分けて保存しています。構成情報の母集団は[SBOMの確認範囲](../operations/sbom-coverage.md)、現行の構築手順は[BUILD](../../BUILD.md)を参照してください。
 
 ### 構成要素との対応
 

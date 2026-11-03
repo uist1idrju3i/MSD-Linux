@@ -6,7 +6,7 @@
 
 ## 現在の構成と未確認の境界
 
-[defconfig](../../../configs/msd_cardputerzero_defconfig)はBootlinのAArch64 glibc stable外部toolchain、BusyBox init、mdevを選びます。systemd・eudev・muslへの移行を決めたという意味ではありません。M5のudev ruleとsystemd unitをそのまま実行する構成ではなく、対応する初期化・deviceの識別・権限は[公式OSとの比較](../official-software.md)で個別に確認します。全周辺機能の実機動作は未確認です。
+[defconfig](../../../configs/msd_cardputerzero_defconfig)はBootlinのAArch64 glibc stable外部toolchain、BusyBox init、mdevを選びます。systemd・eudev・muslへの移行を決めたという意味ではありません。M5のudev ruleとsystemd unitをそのまま実行する構成ではなく、対応する初期化・deviceの識別・権限は[公式OSとの比較](../hardware/official-software.md)で個別に確認します。全周辺機能の実機動作は未確認です。
 
 | 読む目的 | 本文 |
 |---|---|
@@ -16,7 +16,7 @@
 | SquashFSの並び・圧縮・観測手段 | [rootfsの読込み順](../storage/rootfs-read-order.md) |
 | Wi-Fiの接続管理・IP・DNS・未実装部分 | [接続管理の比較と計画](../alternatives/network.md) |
 | 最小特権・設定の信頼・通信前の制限 | [権限設計](../security/README.md) |
-| SSH・VPN・鍵保管の調査のみの範囲 | [SSH・VPN](../ssh-vpn-and-keys.md) |
+| SSH・VPN・鍵保管の調査のみの範囲 | [SSH・VPN](../security/ssh-vpn-and-keys.md) |
 
 driver・firmwareの選択だけでWi-Fi接続可能とは扱いません。認証、IP・DNS設定、firewall、AppArmor profile等は製品未実装です。kernel設定・生成物・runtimeの強制は別々に確かめます。
 

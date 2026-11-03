@@ -10,7 +10,7 @@
 
 ## 過去の方針メモ
 
-以下は、2026年10月の公開資料と当時の方針を記録した本文です。「PREEMPT_RTは対象外」などの記述は現行の製品設定ではありません。版別のAPI・PREEMPT・alias unmapの出典と確認範囲は[比較の詳細](kernel-comparison.md)を、採用方針の訂正は[訂正記録](../corrections.md)を参照してください。
+以下は、2026年10月の公開資料と当時の方針を記録した本文です。「PREEMPT_RTは対象外」などの記述は現行の製品設定ではありません。版別のAPI・PREEMPT・alias unmapの出典と確認範囲は[比較の詳細](kernel-comparison.md)を、採用方針の訂正は[訂正記録](../history/corrections.md)を参照してください。
 
 - `kernel8.img` は `pigz -11 -n` で作成し、gunzip 後に `Image` と一致することを検査する。実サイズはビルドログの `Kernel compression sizes` 行に記録する。この文書では未測定値を記載しない。
 - 基準は `rpi-6.18.y` とします。RPi kernel 6.18.57（2026-10-25 に 6.18.58 へ更新）、Buildroot 2026.08 の 2026-09-04 版を公開情報で確認しました。カーネルと M5 driver は commit 固定します。

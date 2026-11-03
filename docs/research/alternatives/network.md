@@ -8,7 +8,7 @@
 
 | 層 | 確認できたもの | 足りない確認・実装 |
 |---|---|---|
-| IC・接続・firmware | [公式OS・BSP比較](../official-software.md)、[部品と配線](../hardware-wiring-audit.md)、[defconfig](../../../configs/msd_cardputerzero_defconfig)のBRCMFMAC SDIO firmware選択 | 実機のprobe、正しいfirmware/NVRAM、規制地域、rfkill、scan、接続。上流supplicantのWPA3対応を無線ICの対応証明にしない |
+| IC・接続・firmware | [公式OS・BSP比較](../hardware/official-software.md)、[部品と配線](../hardware/hardware-wiring-audit.md)、[defconfig](../../../configs/msd_cardputerzero_defconfig)のBRCMFMAC SDIO firmware選択 | 実機のprobe、正しいfirmware/NVRAM、規制地域、rfkill、scan、接続。上流supplicantのWPA3対応を無線ICの対応証明にしない |
 | kernel | [固定CI生成物の記録](../../experiments/2026-11-02-hardware-artifact-audit.md)と同じSHA-256の最終`.config`を追加読取り。BRCMFMAC/CFG80211/MAC80211はmodule | signed moduleのload、実機interfaceの出現。QEMUの仮想Ethernetで代用しない |
 | 認証・接続管理 | 現行defconfigにwpa_supplicant、iwd、ConnMan、NetworkManagerの選択なし | 認証方式、接続先選択、資格情報保存、再接続、Wi-FiとEthernetの優先度 |
 | IP・DNS | [固定BusyBox既定config](https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/busybox/busybox.config)にはUDHCPCとip appletがある | 最終BusyBox設定・imageの実物、起動時の呼出し、DHCP hook、IPv6、resolv.conf。appletの存在だけで接続設定済みにはしない |

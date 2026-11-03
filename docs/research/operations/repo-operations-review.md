@@ -1,6 +1,6 @@
 # CI・Issue・リポジトリ設定の点検（2026-10-20）
 
-[RESEARCH.md](../../RESEARCH.md) から分けた節です。CI のログ、Issue、DeepWiki、GitHub、AGENTS.md、GitHub Actions の設定を点検した結果と改善案をまとめます。設定の変更（ルールセット、Actions の allowlist、必須チェック）は利用者が行うので、ここでは提案にとどめます。
+[RESEARCH.md](../../../RESEARCH.md) から分けた節です。CI のログ、Issue、DeepWiki、GitHub、AGENTS.md、GitHub Actions の設定を点検した結果と改善案をまとめます。設定の変更（ルールセット、Actions の allowlist、必須チェック）は利用者が行うので、ここでは提案にとどめます。
 
 ## 1. 点検の対象と方法
 

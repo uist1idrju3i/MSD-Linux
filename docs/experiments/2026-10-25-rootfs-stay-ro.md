@@ -3,7 +3,7 @@
 - 状態: 完了（QEMU のみ。実機未確認）
 - 日付: 2026-10-25
 - 担当: Devin
-- 関連: [retrospective-2026-10.md の 6.1](../research/retrospective-2026-10.md#61-inittab-の-remountrw)、[dm-verity の記録](2026-10-21-qemu-dm-verity.md)
+- 関連: [retrospective-2026-10.md の 6.1](../research/history/retrospective-2026-10.md#61-inittab-の-remountrw)、[dm-verity の記録](2026-10-21-qemu-dm-verity.md)
 
 ## 目的と仮説
 

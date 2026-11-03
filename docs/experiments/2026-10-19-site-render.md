@@ -3,7 +3,7 @@
 - 状態: 完了
 - 日付: 2026-10-19
 - 担当: Devin
-- 関連: [公式サイト調査](../research/site-html-css.md)
+- 関連: [公式サイト調査](../research/presentation/site-html-css.md)
 
 ## 目的と仮説
 

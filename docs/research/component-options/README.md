@@ -35,6 +35,6 @@
 
 ## 調査の境界と続く作業
 
-これは固定時点の設定調査であり、全optionの意味解析、全compile/link引数の実行記録、全commandの実行試験、全componentの代替比較の完了ではない。実機、TLS・provider、libc tunables、firewall/LSM policyの実行時確認も別の試験が必要である。kernel module/sysctlの過去の値は、[取得時の版とQEMU条件](../tunables-defaults.md)を保って参照する。
+これは固定時点の設定調査であり、全optionの意味解析、全compile/link引数の実行記録、全commandの実行試験、全componentの代替比較の完了ではない。実機、TLS・provider、libc tunables、firewall/LSM policyの実行時確認も別の試験が必要である。kernel module/sysctlの過去の値は、[取得時の版とQEMU条件](../tuning/tunables-defaults.md)を保って参照する。
 
 未リリースで互換性維持が不要という方針に沿い、不要機能・旧暗号の削減、build/runtimeの権限分離、SDK内包物のSBOM、同名commandの引数差を優先的に検討する。採否は追加の比較・測定へつなげ、台帳の行数だけを理由に「全て検証済み」としない。

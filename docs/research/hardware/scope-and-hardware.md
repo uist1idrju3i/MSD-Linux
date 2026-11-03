@@ -14,17 +14,17 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 - カーネル圧縮、initramfs、btrfs の透過圧縮、SquashFS の配置順、読み取り専用構成での zram/zswap を調べる。カーネルログは SD に保存する案があり、開発中は ext4、電源断試験時は専用領域または pstore に切り替える方法を検討する。
 - init、glibc/musl、Newlib、jemalloc 等のアロケータ、ユーザー領域の不要機能除去と遅延起動を比較する。将来の SSH/VPN も対象にする。
 - Zephyr、Linux 系、Android、BSD 系、Debian、Arch、Buildroot、BusyBox、Yocto、Ubuntu Core、Minimal Ubuntu などを比較し、自作構成も検討する。一次資料の URL と、調査済み・未確認の区別を記録する。
-- 実機到着後に開発へ移れるよう、起動測定、電源断試験、OTA、ハードウェア機能の確認方法を整理する。イメージ名の由来は [RESEARCH.md](../../RESEARCH.md) を参照する。
+- 実機到着後に開発へ移れるよう、起動測定、電源断試験、OTA、ハードウェア機能の確認方法を整理する。イメージ名の由来は [RESEARCH.md](../../../RESEARCH.md) を参照する。
 
 ## 未決の設計論点
 
 | 論点 | 選択肢・条件 | 状態 |
 |---|---|---|
 | 起動完了の定義 | A: LCD にプロンプトが表示され、キー入力できるまで。B: init（PID 1）が終点マーカーを書き、LCD・キーボードはその後に遅延読込みする。C: 両方を測定する。 | 未決。遅延読込みと LCD・キー入力までを起動時間に含める定義は両立しない。 |
-| 読み取り専用 rootfs | SquashFS は `-sort` で優先度の高いファイルを先頭に配置できる。EROFS は `-z` を指定した場合に圧縮され、`--sort` は tar 入力に適用される。実機で 2 構成を比較する案。詳細は[電源断対策の調査](storage/README.md)を参照。 | 速度は未測定。 |
+| 読み取り専用 rootfs | SquashFS は `-sort` で優先度の高いファイルを先頭に配置できる。EROFS は `-z` を指定した場合に圧縮され、`--sort` は tar 入力に適用される。実機で 2 構成を比較する案。詳細は[電源断対策の調査](../storage/README.md)を参照。 | 速度は未測定。 |
 | init と libc | systemd 最小化＋glibc（M5 の udev ルール・unit を利用可能）、BusyBox init＋eudev＋musl 静的、自作 init（最終手段）。 | 全機能を維持する場合は glibc＋systemd が候補だが、起動時間は未測定。 |
-| A/B 方式 | MBR＋tryboot/autoboot.txt＋RAUC custom、U-Boot 系（Mender・RAUC）、Rugix。GPT の採否も検討する。詳細は[更新方式の調査](storage/README.md)を参照。 | Raspberry Pi の文書は tryboot を全モデルに適用すると説明するが、CM0 での動作、watchdog、復旧は未検証。FAT の boot 領域は単一障害点となる。 |
-| カーネル版 | 6.18.y（VOLUNTARY を選択可能）と 7.2.y・7.3.y（PREEMPT は LAZY/FULL のみ）を比較する。7.1 以降の DRM API 変更と 7.3 の alias unmap 再適用も考慮する。詳細は[カーネル調査](boot/kernel-comparison.md)を参照。 | CM0 の実機起動と M5 モジュールのビルドは未確認。 |
+| A/B 方式 | MBR＋tryboot/autoboot.txt＋RAUC custom、U-Boot 系（Mender・RAUC）、Rugix。GPT の採否も検討する。詳細は[更新方式の調査](../storage/README.md)を参照。 | Raspberry Pi の文書は tryboot を全モデルに適用すると説明するが、CM0 での動作、watchdog、復旧は未検証。FAT の boot 領域は単一障害点となる。 |
+| カーネル版 | 6.18.y（VOLUNTARY を選択可能）と 7.2.y・7.3.y（PREEMPT は LAZY/FULL のみ）を比較する。7.1 以降の DRM API 変更と 7.3 の alias unmap 再適用も考慮する。詳細は[カーネル調査](../boot/kernel-comparison.md)を参照。 | CM0 の実機起動と M5 モジュールのビルドは未確認。 |
 | 開発中ログ | 開発中は ext4 に書き、電源断試験時は専用領域または pstore に切り替える案。 | 完全 read-only 構成との両立と実装方式は未決。 |
 | SSH/VPN | Dropbear または OpenSSH、WireGuard または OpenVPN を比較し、起動完了後に socket activation で開始する案。 | 未決。 |
 
@@ -33,11 +33,11 @@ M5Stack CardputerZero（Raspberry Pi CM0、BCM2837、RAM 512 MB、microSD）向�
 - BCM2837（CM0）で tryboot、autoboot.txt、`kernel_watchdog_*` が動作するか。Raspberry Pi 文書は tryboot を全モデルに適用すると説明するが、CM0 の動作は未確認。確認先: https://www.raspberrypi.com/documentation/computers/configuration.html#tryboot
 - 起動時間の基準値と最適化効果、SquashFS と EROFS、無圧縮と gzip カーネルの比較。実機で未測定で、公表値は条件が異なるため合算できない。
 - A53 の Crypto Extension はオプション（Arm DDI 0501F）だが、BCM2837 に実装されているかの一次仕様と、SSH/VPN・耐量子鍵交換の CM0 実測は未確認。確認先: https://developer.arm.com/documentation/ddi0501/latest/
-- 7.2/7.3 を CM0 で起動できるか、alias unmap の再適用が与える影響。コミットメッセージだけでは、RPi 3/4 の起動問題が解消したか判断できない。詳細は[カーネル調査](boot/kernel-comparison.md)を参照。
+- 7.2/7.3 を CM0 で起動できるか、alias unmap の再適用が与える影響。コミットメッセージだけでは、RPi 3/4 の起動問題が解消したか判断できない。詳細は[カーネル調査](../boot/kernel-comparison.md)を参照。
 - M5 の名称・ロゴを第三者が利用する場合の公式ルールは未確認。確認先: https://docs.m5stack.com/
 - Kickstarter の期間・金額・更新内容は本体が HTTP 403 で、一部 SNS も本文を確認できていない。詳細は[最新動向](scope-and-hardware.md#9-最新動向2026-10-18-時点)を参照。
-- OpenVPN 2.7.6 と OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、実機・実接続は未実施。詳細は[SSH・VPN・鍵保管の調査](ssh-vpn-and-keys.md)を参照。
-- Raspberry Pi 3B+ の WP-1 ログにおける kernel の `Loaded` から `Device tree loaded` までの 2.63 s の内訳と、GPU 段のサイズ依存。実機未測定で、サイズ依存は推測。詳細は[起動・測定の調査](boot/sequence.md)を参照。
+- OpenVPN 2.7.6 と OpenSSL 3.6.4 の実接続で ML-KEM（X25519MLKEM768）が使われるか。ソース確認のみで、実機・実接続は未実施。詳細は[SSH・VPN・鍵保管の調査](../security/ssh-vpn-and-keys.md)を参照。
+- Raspberry Pi 3B+ の WP-1 ログにおける kernel の `Loaded` から `Device tree loaded` までの 2.63 s の内訳と、GPU 段のサイズ依存。実機未測定で、サイズ依存は推測。詳細は[起動・測定の調査](../boot/sequence.md)を参照。
 - Newlib に Linux 用の sys ディレクトリがないか。sourceware のページを取得できず未確認。確認先: https://sourceware.org/newlib/
 
 ## 確認度と出典の扱い

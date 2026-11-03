@@ -156,10 +156,10 @@ expect_output 'public_html/foo.md'
 printf 'ok - detects stale site paths in non-Markdown text\n'
 
 new_repo
-write_file docs/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+write_file docs/research/sources/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
-docs/research/sources.md	documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc	external repository page title
+docs/research/sources/sources.md	documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc	external repository page title
 '
 track_files
 run_check
@@ -167,7 +167,7 @@ expect_status 0
 printf 'ok - accepts an explicitly allowlisted external repository path\n'
 
 new_repo
-write_file docs/research/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
+write_file docs/research/sources/sources.md 'recorded title: documentation/documentation/asciidoc/computers/config_txt/autoboot.adoc;
 '
 track_files
 run_check
@@ -176,12 +176,12 @@ expect_output 'documentation/documentation/asciidoc/computers/config_txt/autoboo
 printf 'ok - rejects the same external path without an allowlist entry\n'
 
 new_repo
-write_file docs/research/sources.md 'docs/research/README.md
+write_file docs/research/sources/sources.md 'docs/research/README.md
 '
 write_file docs/research/README.md 'tracked
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
-docs/research/sources.md	documentation/external-repository/	unused external path
+docs/research/sources/sources.md	documentation/external-repository/	unused external path
 '
 track_files
 run_check
@@ -190,7 +190,7 @@ expect_output '使われていない例外'
 printf 'ok - rejects an unused allowlist entry\n'
 
 new_repo
-write_file docs/research/sources.md 'recorded title
+write_file docs/research/sources/sources.md 'recorded title
 '
 write_file .github/link-check-allowlist.tsv '# path	token	reason
 docs/research/missing.md	documentation/external-repository/	untracked source
