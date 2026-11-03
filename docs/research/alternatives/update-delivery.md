@@ -15,7 +15,7 @@
 | P3 | 別端末で更新fileをSDに置き、本体が読む | local bundleをinstall | local `.swu`をinstall |
 | P4 | 別端末でimageを書き直すclean install | frameworkは使わず`sdcard.img.xz`とSHA-256で検証 | 同左 |
 
-P3では置き場所（`/data`かFATのboot領域か）を定める必要があります。電源断の扱いと、信頼できないfile systemを読む危険も設計対象です。P4は工場出荷状態に戻す手段で、`/data`も消えます。
+P3の置き場所は、利用者の判断で`/data`に決めました（2026-11-03）。電源断の扱いと、信頼できないfile systemを読む危険も設計対象です。P4は工場出荷状態に戻す手段で、`/data`も消えます。
 
 RAUCのadaptiveは4 KiB blockごとのSHA-256 index（imageの約0.8%）をbundleに含めます。install時に両slotの一致blockを再利用し、残りをHTTP range要求で取得します。上流の例ではext4上の1 packageを更新した場合、bundleの約10%の取得で済みました。block device限定で、SquashFSではblock size（例: `-b 64k`）により効果が変わります。
 

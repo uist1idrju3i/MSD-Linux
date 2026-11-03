@@ -16,6 +16,7 @@ MSD/Linux は Muromi Software Distribution / Linux の略で、開発場所の�
 - SSH・VPN は調査対象にとどめ、実装しない。
 - リポジトリのライセンス方針は GPL-2.0-or-later。配布物ごとのライセンスとソース提供に注意する。
 - 開発中。実機の出荷は 2026 年 11 月に始まる予定（[最新動向](docs/research/hardware/scope-and-hardware.md#9-最新動向2026-10-18-時点)）。起動イメージは CI で作り QEMU で起動を確かめているが、実機では試していない。起動時間の目標値は実機測定後に決める。
+- 利用者が決めた製品の方針と実装状況は[方針の記録](docs/design/product-decisions.md)にまとめる。
 
 ### 概略アーキテクチャ案
 
