@@ -24,6 +24,8 @@
 
 ## Brotliの修正がある検出
 
+利用者の指示で修正版の導入の保留を解除し、[残件R25](roadmap.md)を実行待ちへ戻しました。以下は検出時点の調査です。修正版の適用、amd64/arm64のbuild・scan・SBOM・attestationの再確認はまだ行っていません。CI改善のmain反映後に進め、公開ゲートは緩めません。
+
 `libbrotli1`の`1.1.0-2+b7`に、`CVE-2026-111497`が検出されました。Trivyの重大度はNVD由来のCRITICALです。[Debian Security Tracker](https://security-tracker.debian.org/tracker/CVE-2026-111497)でも、trixieの`1.1.0-2`はvulnerable、trixie-securityの`1.1.0-2+deb13u1`はfixedと確認しました。Brotli decoderの不正な圧縮入力の処理に関する修正です。開発環境での具体的な攻撃到達性や、悪用の成立は試していません。
 
 2026-11-02の調査で対象にしたDockerfileはDebian snapshotを`20261019T190000Z`に固定していました。再現可能な取得先を保つことと、固定後のセキュリティ修正を取り込むことは別の要件です。更新検知だけでなく、修正版を含むsnapshot・base imageと生成後のpackage版を確認する必要があります。

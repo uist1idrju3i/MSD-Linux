@@ -53,7 +53,7 @@ jobs:
           if [[ ! "$BASE_SHA" =~ ^0+$ ]] && git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null &&
              git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null; then
             diff_range="${BASE_SHA}...${HEAD_SHA}"
-            if ! git diff --name-only -z "$diff_range" > "$RUNNER_TEMP/changed-files"; then
+            if ! git diff --no-renames --name-only -z "$diff_range" > "$RUNNER_TEMP/changed-files"; then
               echo "build=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
@@ -65,11 +65,27 @@ jobs:
           build=false
           while IFS= read -r -d '' path; do
             case "$path" in
-              .github/workflows/build.yml)
+              .github/workflows/*|.github/actions/*|.github/scripts/dev-image-cache.py|board/*|configs/*|package/*|patches/*|docker/*)
                 build=true
                 break
                 ;;
-              *.md|docs/*|public_html/*|.agents/*|.claude/*|vendor/yomiyasu|LICENSE|.devin/*|tests/check-*/*|tests/release-signing-key/run.py|.github/*)
+              vendor/yomiyasu)
+                ;;
+              vendor/*)
+                build=true
+                break
+                ;;
+              docs/*)
+                case "$path" in
+                  *.md|*.csv|*.json|*.sha256|*.txt|*.svg|*.png|*.webp|*.ppm|*.rgb565|*.html|*.css|*.js|docs/logo/render.sh|docs/logo/tools/generate.py|docs/logo/tools/site_patterns.py)
+                    ;;
+                  *)
+                    build=true
+                    break
+                    ;;
+                esac
+                ;;
+              *.md|public_html/*|.agents/*|.claude/*|LICENSE|.devin/*|tests/check-*/*|tests/release-signing-key/run.py|.github/*)
                 ;;
               *)
                 build=true
@@ -102,26 +118,30 @@ jobs:
             --username "$GHCR_ACTOR" \
             --password-stdin
 
-      - name: Ensure development image
-        shell: bash
+      - id: dev-image
+        name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure 2>&1 | tee "$RUNNER_TEMP/msd-ensure.log"
 
       - name: Run tests in the development image
         run: |
-          docker/msd-dev tests/msd-update/run.sh
-          docker/msd-dev tests/init-scripts/run.sh
-          docker/msd-dev tests/msd-hwinfo/run.sh
-          docker/msd-dev tests/msd-data-grow/run.sh
-          docker/msd-dev tests/qemu-log-check/run.sh
-          docker/msd-dev tests/powerfail-log/run.sh
-          docker/msd-dev tests/msd-dev/run.sh
+          docker/msd-dev python3 .github/scripts/run-host-tests.py \
+            --jobs 2 --output-dir "output/ci-host-tests/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           docker/msd-dev tests/trivy-gate/run.sh
           docker/msd-dev tests/check-sbom/run.sh
+          docker/msd-dev python3 tests/check-ci-cache/run.py
+          docker/msd-dev python3 tests/check-ci-scope/run.py
           docker/msd-dev python3 tests/check-build-scope/run.py
           docker/msd-dev python3 tests/release-signing-key/run.py --output-dir "/tmp/msd-release-signing-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+      - name: Save parallel host test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: host-test-results
+          path: output/ci-host-tests/
+          if-no-files-found: ignore
 
       - name: Summarize step timings
         if: always()
@@ -129,6 +149,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MSD_JOB_NAME: MSD tests in development image
+          MSD_DEV_IMAGE_SOURCE: ${{ steps.dev-image.outputs.source }}
         run: |
           # shellcheck disable=SC2016
           step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
@@ -142,11 +163,7 @@ jobs:
           else
             printf '=ci-meta=\tjob_started_at\tunknown\n'
           fi
-          ensure_log="$RUNNER_TEMP/msd-ensure.log"
-          if [[ ! -f "$ensure_log" ]]; then ensure_state=missing
-          elif grep -Fq 'Published image' "$ensure_log" && grep -Fq 'found.' "$ensure_log"; then ensure_state=published
-          elif grep -Fq 'building locally' "$ensure_log"; then ensure_state=local-build
-          else ensure_state=unknown; fi
+          ensure_state="${MSD_DEV_IMAGE_SOURCE:-unknown}"
           printf '=ci-meta=\tensure\t%s\n' "$ensure_state"
           {
             printf '| # | Step | Started at | Completed at | Seconds | Conclusion |\n'
@@ -179,26 +196,40 @@ jobs:
             --username "$GHCR_ACTOR" \
             --password-stdin
 
-      - name: Ensure development image
-        shell: bash
+      - id: dev-image
+        name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- source archives cannot resolve vendor-backed skill symlinks; use the checkout
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MSD_DEV_REQUIRE_ATTESTATION: "1"
-        run: docker/msd-dev ensure 2>&1 | tee "$RUNNER_TEMP/msd-ensure.log"
+
+      - id: cache-generation
+        name: Determine Buildroot cache generation
+        env:
+          DEFCONFIG_HASH: ${{ hashFiles('configs/msd_cardputerzero_defconfig') }}
+        run: |
+          revision="$(git rev-parse HEAD:vendor/buildroot)"
+          image_tag="$(docker/msd-dev tag)"
+          {
+            printf 'ccache-prefix=buildroot-ccache-v2-%s-%s-cardputerzero-%s-%s-%s-\n' \
+              "$RUNNER_OS" "$RUNNER_ARCH" "$revision" "$image_tag" "$DEFCONFIG_HASH"
+            printf 'download-prefix=buildroot-dl-v2-%s-%s-\n' \
+              "$RUNNER_OS" "$RUNNER_ARCH"
+            printf 'buildroot=%s\n' "$revision"
+          } >> "$GITHUB_OUTPUT"
 
       - id: dl-restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: dl
-          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
-          restore-keys: buildroot-dl-${{ runner.os }}-
+          key: ${{ steps.cache-generation.outputs.download-prefix }}${{ steps.cache-generation.outputs.buildroot }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
+          restore-keys: ${{ steps.cache-generation.outputs.download-prefix }}
 
       - id: ccache-restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .ccache
-          key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: buildroot-ccache-${{ runner.os }}-
+          key: ${{ steps.cache-generation.outputs.ccache-prefix }}${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ steps.cache-generation.outputs.ccache-prefix }}
 
       - name: Configure Buildroot
         env:
@@ -384,13 +415,13 @@ jobs:
         if: always() && steps.dl-restore.outputs.cache-hit != 'true' && steps.buildroot-build.outcome == 'success'
         with:
           path: dl
-          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('configs/msd_cardputerzero_defconfig','package/**/*.mk','package/**/*.hash') }}
+          key: ${{ steps.dl-restore.outputs.cache-primary-key }}
 
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: always() && steps.buildroot-build.outcome == 'success'
         with:
           path: .ccache
-          key: buildroot-ccache-${{ runner.os }}-${{ github.run_id }}
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
 
       - name: Summarize step timings
         if: always()
@@ -398,6 +429,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MSD_JOB_NAME: build
+          MSD_DEV_IMAGE_SOURCE: ${{ steps.dev-image.outputs.source }}
         run: |
           # shellcheck disable=SC2016
           step_lines="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" --paginate --jq '
@@ -411,11 +443,7 @@ jobs:
           else
             printf '=ci-meta=\tjob_started_at\tunknown\n'
           fi
-          ensure_log="$RUNNER_TEMP/msd-ensure.log"
-          if [[ ! -f "$ensure_log" ]]; then ensure_state=missing
-          elif grep -Fq 'Published image' "$ensure_log" && grep -Fq 'found.' "$ensure_log"; then ensure_state=published
-          elif grep -Fq 'building locally' "$ensure_log"; then ensure_state=local-build
-          else ensure_state=unknown; fi
+          ensure_state="${MSD_DEV_IMAGE_SOURCE:-unknown}"
           printf '=ci-meta=\tensure\t%s\n' "$ensure_state"
           if [[ ! -f "$RUNNER_TEMP/msd-ccache.log" ]]; then
             printf '=ci-meta=\tccache\tmissing\n'
