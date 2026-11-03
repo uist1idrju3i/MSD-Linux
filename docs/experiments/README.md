@@ -8,6 +8,7 @@
 |---|---|---|---|---|
 | [2026-11-03-ci-cache-and-parallel](2026-11-03-ci-cache-and-parallel.md) | なし | 2026-11-03 | host回帰・実Dockerの機能検証 | 文書のみのskip、製品・未知・失敗時のbuild、完全一致archive、2並列runnerと負対照を確認。GitHub cacheの長期hit率・総費用・短縮率は未測定。 |
 | [2026-11-03-maintenance-followup](2026-11-03-maintenance-followup.md) | なし | 2026-11-03 | host・静的回帰 | 3 suite各5回、署名300 command、分類5改変の検出。OpenSSLの版と保守期限・取得失敗・週次通知を分離。製品の依存版は変更していない。 |
+| [2026-11-03-sbom-cve-monitor](2026-11-03-sbom-cve-monitor.md) | なし | 2026-11-03 | OCI pipeline・CPython比較 | depth-1 NVD clone 5回の中央値156.062秒。cacheなしを選択。SBOM 67件、VEX 16,047件。CPython 3.11 distutilsとのsemantic tuple 16,421件が一致。 |
 | [2026-11-03-init-comparison-plan](2026-11-03-init-comparison-plan.md) | なし | 2026-11-03 | 計画のみ | 現行・systemd・s6系・OpenRC等の固定条件、資源・権限・A/B復旧、QEMU/実機の分離。[計測器と故障試験](2026-11-03-init-comparison-protocol.md)も未実装の仕様。 |
 | [2026-11-03-init-roadmap-validation](2026-11-03-init-roadmap-validation.md) | なし | 2026-11-03 | 静的照合 | 残件・原Q/R・S1–S17・要求・出典のID/参照/依存を確認。OSのbuild・実測・実機の合格ではない。 |
 | [2026-11-03-alternative-coverage](2026-11-03-alternative-coverage.md) | なし | 2026-11-03 | 母集団の静的照合 | 67 Buildroot、231 APT/129 source、11 Action、859 npm名/1574組、11 Go moduleを比較先へ対応。5回一致と4負対照。全license・実bundle・代替実行の確認とは別。 |

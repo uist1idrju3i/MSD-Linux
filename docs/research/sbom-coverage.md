@@ -10,14 +10,14 @@
 | 構成要素 | 67件。BR_TYPEはtarget 18件、host 49件。hostはイメージに入るアプリケーション数ではない |
 | 依存関係 | 68個のdependencyレコード、267本の参照。レコード数と辺の数は異なる |
 | project version | 実checkoutのmerge commit `c96e5faf015c828a213c8ea64f613b4a429196c7`。PR headとは区別する |
-| Linux | 元の通常ビルドSBOMはversionとCPEが `custom`。週次securityだけに補正処理があり、生成経路が異なった |
+| Linux | 元の通常ビルドSBOMはversionとCPEが `custom`。以前は定期securityだけに補正処理があり、生成経路が異なった |
 | purl / hash | purlとcomponent直下のhashは0件。ただし59 componentのexternalReferencesにはsource hashがある。「hashが全くない」ではない |
 | ライセンス欄 | 67件に欄があるが、unknownを含む。欄の存在は配布許諾の確認ではない |
 | legal-info | target manifest 13行、host manifest 48行。SBOMとの件数差を依存の欠落と即断せず、package単位で照合する |
 
 ## 生成時の検査
 
-通常buildと週次securityの両方で、同じ呼び出しの `show-info` をJSONとして保存し、そのJSONからSBOMを生成する。LinuxのversionとCPEは同じスクリプトで補正する。通常buildは展開したkernelのMakefileを読み、securityはdefconfigで固定したcommitのMakefileを取得する。source commitは `msd:linux:source-commit` に残す。
+通常buildと定期securityの両方で、同じ呼び出しの `show-info` をJSONとして保存し、そのJSONからSBOMを生成する。LinuxのversionとCPEは同じスクリプトで補正する。通常buildは展開したkernelのMakefileを読み、securityはdefconfigで固定したcommitのMakefileを取得する。source commitは `msd:linux:source-commit` に残す。
 
 補正時に、project version、構成要素の過不足・重複、名前・版、host/target、依存関係の参照先とpackageごとの接続を照合する。Buildrootのgeneratorと同様にvirtual packageをproviderへ解決し、rootfs項目はcomponentに数えない。検査に失敗したらSBOMを書き換えず、CIを止める。元のshow-infoもartifactへ保存する。
 
@@ -27,7 +27,7 @@
 
 その後の通常buildの版補正と実artifactの再照合、全67 componentの最新版候補、開発用OCIとActionsの依存、監視の差分は[依存関係の一覧](dependencies/README.md)にまとめた。以下の初回調査と、その後の検証を区別する。
 
-- securityは補正後のSBOMをBuildroot `cve-check`へ渡し、NVD mirrorと照合してVEXを保存する。source packageのCPEによる照合なので、CPEのない配布物や外部ツールチェーン内部まで網羅するとはいえない。
+- `security.yml`は2時間ごとに補正後のSBOMをBuildroot `cve-check`へ渡し、NVD feedと照合してVEXとstateをartifactへ保存する。mainでは「製品SBOMの脆弱性監視」Issueを更新し、前回成功時との差分をコメントする。source packageのCPEによる照合なので、CPEを持たないpackage、外部ツールチェーン内部、M5配布ファイルは見えないことがある。一覧にないことは安全の証明ではない。
 - `toolchain-external-bootlin`のlicenseはunknown。一部M5配布物もunknown、Wi-Fi firmwareはPROPRIETARYとして記録される。toolchain内部のGCC・binutils・glibcの版と許諾、個々のfirmwareの出典・許諾は別に確認する。
 - 通常buildのlegal-infoログには、LinuxのCOPYING等に対するhash欠落も記録されている。build成功を、これらのライセンスファイルのhash確認済みと読み替えない。
 - 開発用OCIのapt・pip・Go依存、GitHub Actionsとそのruntime、runner、CI専用ツール、ロゴ生成依存は、製品のBuildroot SBOMだけでは一覧にならない。別の一覧と版・CVE監視の照合が必要である。
@@ -37,5 +37,5 @@
 
 - [Buildroot generator](https://gitlab.com/buildroot.org/buildroot/-/blob/8b238854d909c9cce32ef9671d968b03e323b55d/utils/generate-cyclonedx)
 - [version補正と内容照合](../../.github/scripts/set-kernel-version.py)
-- [通常build](../../.github/workflows/build.yml)、[週次security](../../.github/workflows/security.yml)
+- [通常build](../../.github/workflows/build.yml)、[2時間ごとのsecurity](../../.github/workflows/security.yml)
 - [回帰テスト](../../tests/check-sbom/test_sbom.py)
