@@ -42,4 +42,4 @@
 
 artifact内は選別済みJSON、報告、image情報、Trivy版、SPDXの5ファイルだけで、未加工のTrivy JSONはなかった。Brotliの更新は利用者の指定で延期しており、この修正で公開ゲートが失敗することは未対応の検出を正しく示す。除外やゲート緩和は行わない。
 
-2026-11-03のR25更新ではsnapshotを`20261103T023120Z`へ進め、amd64の再構築と同じTrivy 0.76.1 gateを実行した。公開ゲート対象は0件で、閾値や例外は変更していない。arm64とCIは未確認である。初回のBrotliだけの試行を含むpackage差分と結果は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照する。
+2026-11-03のR25ローカル検証ではsnapshotを`20261103T023120Z`へ進め、amd64を再構築してTrivy 0.76.1 gateの対象0件を確認した。その後、PR #194とmerge後のmain CIでamd64/arm64のgate、各archのSBOM attestation、multi-arch indexのBuild Provenance、Buildroot build、`scan`が成功した。`dev-image gate`はPR #195でmainに入ったが、rulesetの必須checkへの追加は上記のとおりmaintainerの作業として残る。job IDと初回のBrotliだけの試行を含む結果は[実験記録](../experiments/2026-11-03-dev-image-security-update.md)を参照する。
