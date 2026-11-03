@@ -8,6 +8,8 @@
 
 2026-11-02にMSD/Linuxの`c0214b380c046100592cd427ab3013347dff1758`と固定Buildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。代替frameworkのbuild・実行、CM0でのslot切替、署名方式の相互運用、性能測定は本リポジトリでは試していません。製品設定と更新形式は変更しません。
 
+固定Buildrootのoptionは[更新frameworkと暗号libraryのbuild option](update-build-options.md)、更新経路・配信制約・差分方式は[更新経路と差分配信](update-delivery.md)を参照してください。
+
 ## 現行処理を比較の基準にする
 
 [msd-update](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)は4 memberのtar bundle、raw Ed25519のmanifest署名、imageのSHA-256、十進数の版比較、inactive rootfs・bootへの書込み、tryboot・commitを扱います。永続状態は`/data/msd-update`、selectorは共通boot領域です。[署名・鍵の比較](signing.md)に入力形式と異常系をまとめました。

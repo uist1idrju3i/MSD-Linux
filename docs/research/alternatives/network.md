@@ -6,6 +6,8 @@
 
 **Wi-Fiを利用可能とはまだ言えません。** 2026-11-02にMSD/Linuxの`551eee4`と固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`を調べました。無線driver・firmwareの選択と、認証・IP設定・DNS・安全な通信開始は別です。この文書は比較と未実装機能の計画であり、製品設定を変えていません。候補のbuild・実行、実機の無線接続・firewall・権限制限は本リポジトリでは試していません。
 
+iwdとOpenSSLの関係は[更新frameworkと暗号libraryのbuild option](update-build-options.md)、SSH clientの候補は[SSH clientの比較](ssh-clients.md)を参照してください。
+
 | 層 | 確認できたもの | 足りない確認・実装 |
 |---|---|---|
 | IC・接続・firmware | [公式OS・BSP比較](../hardware/official-software.md)、[部品と配線](../hardware/hardware-wiring-audit.md)、[defconfig](../../../configs/msd_cardputerzero_defconfig)のBRCMFMAC SDIO firmware選択 | 実機のprobe、正しいfirmware/NVRAM、規制地域、rfkill、scan、接続。上流supplicantのWPA3対応を無線ICの対応証明にしない |
