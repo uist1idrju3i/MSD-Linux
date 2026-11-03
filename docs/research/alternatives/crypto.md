@@ -8,6 +8,8 @@
 
 2026-11-02に、MSD/Linuxの`9f07c3b884ae4c63c22dc196fd02b6ee43932f6e`とBuildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。製品設定・固定版は変更していません。代替構成のbuild・実行・サイズ測定は本リポジトリでは試していません。
 
+OpenSSLの保守期限、固定Buildrootのoptionとhardeningは[更新frameworkと暗号libraryのbuild option](update-build-options.md)、SSH clientの暗号依存は[SSH clientの候補](ssh-clients.md)にまとめました。
+
 - [defconfig](../../../configs/msd_cardputerzero_defconfig)はOpenSSL libraryとCLIを選びます。固定Buildrootの`package/libopenssl/libopenssl.mk`は**3.6.5**です。targetの`msd-update`はCLIで署名を検証し、hostのpost-image処理もOpenSSL CLIで署名します。
 - [post-build](../../../board/cardputerzero/post-build.sh)は、指定鍵がなければ開発用Ed25519鍵を生成し、公開鍵をrootfsへ入れます。[post-image](../../../board/cardputerzero/post-image.sh)はmanifestを`pkeyutl -sign -rawin`で署名します。開発用鍵の自動生成は、本番Releaseの鍵運用が完成している証拠ではありません。
 - imageのSHA-256照合はBusyBox側の`sha256sum -c`です。署名だけを別libraryへ移しても、このhash処理を同時に置換する必要はありません。

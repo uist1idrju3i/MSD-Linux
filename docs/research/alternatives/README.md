@@ -14,9 +14,12 @@
 | [init・service監視・device管理](init.md) | PID 1、supervision、readiness、権限制限を分け、s6、runit、OpenRC、systemd、Dinit等を比べる |
 | [init候補の詳細と実測への接続](init-detail.md) | 固定recipeと上流版、s6/OpenRC/Dinit/Finit/runit/procd/Shepherd等、可変etc・health・停止・追加費用を深掘りする |
 | [暗号・TLS](crypto.md) | OpenSSLの保守期限、署名専用libraryとTLSの別々の選定、依存・license・旧算法の削減条件 |
+| [更新frameworkと暗号libraryのbuild option](update-build-options.md) | 固定BuildrootでのRAUC・SWUpdate・OpenSSLの設定、将来packageの暗号依存、hardening |
+| [SSH clientの候補](ssh-clients.md) | DropbearとOpenSSHの暗号方式、Buildrootの制約、未確認事項 |
 | [署名・鍵・配信の信頼境界](signing.md) | raw Ed25519の移植条件、manifest、鍵rotation、SemVerとanti-rollback、HTTPSと特権helperの分離 |
 | [保存領域と実行時検証](filesystems.md) | SquashFS/EROFS、ext4/F2FS、設定overlay、dm-verity/fs-verityの違いと移行条件 |
 | [A/B更新framework](updates.md) | 現行処理とRAUC・SWUpdate・Mender・Rugix・OSTree・bootc・sysupdateの責務、署名形式、CM0の未確認範囲 |
+| [更新経路と差分配信](update-delivery.md) | online/local/clean-installの経路、配信先の制約とrange確認、差分方式 |
 | [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
 | [Wi-Fi・接続管理・通信防御](network.md) | 認証・IP・DNS・時刻・HTTPSとfirewallを分け、wpa_supplicant・iwd・各managerの条件と未実装機能の計画を比べる |
 | [周辺機能・BSP・device API](peripherals.md) | LCD・入力・音声・camera・IMU・RTC・電池・GPIO等を、driverとlibraryの層を分けて比べる |
