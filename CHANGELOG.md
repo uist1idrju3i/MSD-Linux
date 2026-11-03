@@ -8,6 +8,7 @@
 
 - CardputerZero向けBuildroot構成、A/B更新手順、QEMUを含む検証手順を整備しました。
 - 調査・測定記録を主題別に整理し、再現条件と未確認範囲を追跡できるようにしました。
+- 起動時の `/etc/issue` と `os-release` に、版、commit時刻（JST）、commit IDを記録します。
 
 ### 変更
 

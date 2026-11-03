@@ -249,6 +249,8 @@ if [ "${#update_version}" -gt 18 ]; then
 fi
 printf '%s\n' "$update_version" > "$update_trust_dir/version"
 
+"$(dirname "$0")/tools/write-version-info.sh" "$target_dir" "$(dirname "$0")"
+
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"
 
 # SquashFS sort: Buildroot does not expose mksquashfs -sort because COMP_OPTS is

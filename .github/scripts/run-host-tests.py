@@ -12,8 +12,10 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SUITES = ("msd-update", "init-scripts", "msd-hwinfo", "msd-data-grow",
-          "qemu-log-check", "powerfail-log", "msd-dev")
+SUITES = (
+    "msd-update", "version-info", "init-scripts", "msd-hwinfo", "msd-data-grow",
+    "qemu-log-check", "powerfail-log", "msd-dev",
+)
 
 
 def run_suite(name: str, command: list[str], directory: Path, timeout: float,
