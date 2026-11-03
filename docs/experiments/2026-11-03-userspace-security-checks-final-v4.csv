@@ -1,0 +1,92 @@
+index,command,exit_code,status,log_sha256
+0,python3 docs/experiments/2026-11-02-storage-document-layout.py --base 55ffde1e8219207c73d1fa1d6c7d2728cf3949a3 --output ARTIFACT_DIR/2026-11-02-storage-document-layout.csv,0,pass,f93e4228cf6aa804ad7c089a4e4aa00fd9c737ba31255dd74fc2dbbd14867986
+1,python3 docs/experiments/2026-11-03-userspace-security-layout.py --base 5a3fec689ed47afccec4eb7a2ba8bb41b98b8319 --output ARTIFACT_DIR/2026-11-03-userspace-security-layout.csv,0,pass,6f515e2585f8e30fcedf5002ab4bcceda8be15dfd9f90dcd46ef981c081a289a
+2,python3 .github/scripts/check-links.py,0,pass,387ce8a2f71983b1826be1403c45034d50045c8c82c09f52761e8e47c3e92928
+3,python3 .github/scripts/check-jisx0213.py,0,pass,09c58a0b91d1f535248bf775608c188ad237f966583041a9b0ed7b606c95d181
+4,python3 .github/scripts/check-skills.py,0,pass,de362b927e5dcf3bdfe3326d72fea463672c2e225015996b2809fd3e08d661b3
+5,python3 .github/scripts/check-doc-size.py,0,pass,d7fee1a71df370ed58021d39c91ffe731f871b060a1763ba9c6125cd4e76932e
+6,python3 .github/scripts/check-site.py,0,pass,fc24f7aa230ed54388d78f4a3df6564948c54ab6631c88af1bb09f826e4c8788
+7,docker/msd-dev tests/check-doc-size/run.sh,0,pass,52ecabadaa43aad40fc5e9640f9d96fecbc6d506aaf3cdf4ccc4a3c93b5bf56d
+8,docker/msd-dev tests/check-firmware-config/run.sh,0,pass,d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad
+9,docker/msd-dev tests/check-jisx0213/run.sh,0,pass,759dba7b239a9f28dedca71aef74850b6c6cc56a74fe0bc3c8f8ed404d0a85f0
+10,docker/msd-dev tests/check-kernel-fragment/run.sh,0,pass,c5ff9d9b2858a604c46414f05e2c9edd9b80bfac6426e1c922e16d5de32dfd47
+11,docker/msd-dev tests/check-links/run.sh,0,pass,ca508235dbe15e1702ee7a376a88f0b003affd776745ba2e3552642a258b5768
+12,docker/msd-dev tests/check-pins/run.sh,0,pass,6466a436ce9bafb9d9da5626950329096d64bc681f825f54dda80ebca5d3479c
+13,docker/msd-dev tests/check-sbom/run.sh,0,pass,1b6e09321b861c38562728a189e4867e3cdb543d5c4340dd325aadab14d01d99
+14,docker/msd-dev tests/check-site-status/run.sh,0,pass,28a371826099711bd38937313f271b1cf60a167bb90548562664213012996b9e
+15,docker/msd-dev tests/check-site/run.sh,0,pass,d8a545eda8318691be9688afe01445f052ea4c6e0f1ffbbcd750d2aaa8f0b330
+16,docker/msd-dev tests/check-skills/run.sh,0,pass,4190e6532da5d52050bd5ea71ff40310f4ffe0846610b4b159650675a5a9c2b2
+17,docker/msd-dev tests/msd-update/run.sh,0,pass,de88fac1b5a64e40f9d31db46a8cfe7c747fc38d9f0119bfe82a9c265e7b12b6
+18,docker/msd-dev tests/init-scripts/run.sh,0,pass,2d298545d6a036d10bb26a0e72a4babc44e00d942da67fdafd7ab3983a0a4e62
+19,docker/msd-dev tests/msd-hwinfo/run.sh,0,pass,18e8bd6fa0d3eb5d2f8c38393315e34043304070b0ea69252a18e227e551fe4c
+20,docker/msd-dev tests/msd-data-grow/run.sh,0,pass,ebe3b9a47f7c94bfe5e5529c28f906abe9b91220d13aea9fcddfa79782385342
+21,docker/msd-dev tests/qemu-log-check/run.sh,0,pass,7006fde5bc6ab8234186cb2e6d30d47c2593962a7cbd059c45b3523f2d3f1d49
+22,docker/msd-dev tests/powerfail-log/run.sh,0,pass,de047989887b1d8b6a5fa84702fd096df9f5f38e971af1763fbad33b8cf6d923
+23,docker/msd-dev tests/msd-dev/run.sh,0,pass,b4224d7c17c48b98b7b6cd0aef492d04ab64851eaf4f6b062ea4b2c85cafa339
+24,docker/msd-dev tests/trivy-gate/run.sh,0,pass,3e9e6f47d1d9bf27dbe479f7d2365acf983e6f47e77b45ec4effaeab6d087458
+25,docker/msd-dev actionlint .github/workflows/agent-docs.yml .github/workflows/build.yml .github/workflows/dev-image-scan.yml .github/workflows/lint.yml .github/workflows/pages.yml .github/workflows/pins-check.yml .github/workflows/publish-dev-image.yml .github/workflows/security.yml .github/workflows/site-status.yml,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+26,docker/msd-dev python3 .github/scripts/shellcheck-tracked.py,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+27,docker/msd-dev zizmor --offline --format=github .github/workflows/,0,pass,8106dbd117510a7e01e8858948f9dfe20c02d18c43cca5832e5a11a8b54c3f87
+28,git diff --check,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+29,git diff --cached --check,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+30,git ls-files --unmerged,0,pass,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+31,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --source ARTIFACT_DIR/source-0.md --final RESEARCH.md --doc-type paper --new-run,0,pass,0f2dcd902b3fb4c675826eec06a149b32aa20deb6dc76aa630ef3748f686b6c6
+32,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final RESEARCH.md,0,pass,a9ab04c94cd184437864da614e592984103a147c0b66d92b48455bc3df02ae47
+33,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/README.md,0,pass,0004b2723f137ea2c90be86c9bc0e1e0e68fac0977871446beb382a15ebad3aa
+34,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-19-s03-data-ext4-writes.md,0,pass,57a1e0957a965cb2c0c378412020ad53301c0c897d087fa18d9284dbccbae96f
+35,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-19-s06-kernel-hardening.md,0,pass,7dea5cab591c5af88340a4db2ea6bdd027793a9c09f506e55e6661ae7f245087
+36,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-21-qemu-data-noexec.md,0,pass,5623a86726172b23875b778e2b7fbed8f28f66eaefe9a044651b7bbdbbf7ae18
+37,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-21-qemu-lynis.md,0,pass,4dd5f97352eb813f16214b0fa5c5ba75ab70c96bd7b41d88c18b522fd48b2b15
+38,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-21-qemu-zram.md,0,pass,c12d665072733068e5dc466bac14842c243c6dc8940b4e9a2615f688fd4b773d
+39,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-25-qemu-boot-read-order.md,0,pass,d5606b19c6d8868bf7da4d41226d0588c224095388f628952e4fe28293e6e9cd
+40,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-25-s10-update-rejection.md,0,pass,0eb9bd0584a87220963116cbbfb7cfb02724b34f08653e46b8cfb1aa6decf172
+41,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-25-s10-version-check.md,0,pass,4115f655d63fdddb6c2e52f41e70bda028c6f7149bedcef430625ecbb71086fc
+42,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-29-s16-ro-mounts.md,0,pass,63bc9c52a4f8a33838888d99884474ba35d87631050cc6e44c1766b8a7783ba2
+43,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-10-29-s5-overlayfs.md,0,pass,ebdbf4e57878cae1b6276ec50be3f328fafc3892092a0b63cd6072aed0d3aa6e
+44,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-11-02-storage-document-layout.md,0,pass,30fcca5c3df794050b811d208bc1cdeded455ef55891d1ca95f44047ce84bdb7
+45,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --material ARTIFACT_DIR/userspace-and-security.md --material ARTIFACT_DIR/security-hardening.md --material ARTIFACT_DIR/security-2026-11-hardening-list.md --material ARTIFACT_DIR/storage-and-flash.md --material ARTIFACT_DIR/readonly-data-and-fs.md --material ARTIFACT_DIR/fs-candidates.md --material ARTIFACT_DIR/power-and-updates.md --final docs/experiments/2026-11-03-userspace-security-layout.md --doc-type paper --new-run,0,pass,a6179390cd37515c8d1578ed773c344ddc76447119630e68e230141e5a253f37
+46,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/2026-11-03-userspace-security-layout.md,0,pass,89da77e08cc2d7644542e69bc3fb26d810dd854016c6d63f96f5ac030564f58f
+47,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --source ARTIFACT_DIR/source-14.md --final docs/experiments/README.md --doc-type paper --new-run,0,pass,99abcb2a19c8ab783e010dfa722e364d4b11de6aa70c3872c3863ccebe51745e
+48,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/experiments/README.md,0,pass,0f3bfeab71a3521b7e81383be5f8cd9bf60e24a3e6720b728ef747f734c122b1
+49,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/alternatives/filesystems.md,0,pass,c54ff7f72896bcc5e173d4d11e75feed48a410d99e192d00a84675de3317d2a3
+50,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/alternatives/network.md,0,pass,8719ab9edaf877f529b6cd9100fe0391bbb26e7d0c023483eb4030a7d51e22f4
+51,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/boot/design-notes.md,0,pass,826c70122b79f7d0457926abf3be0fddd684d1ad17e5042d9a6341fdbfbd26fe
+52,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/corrections.md,0,pass,f6bcfb89c679964a70b7abee6d7664e48e208dcd209eb6fa480eb2b0582882ee
+53,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/cpu-irq-and-sysctl.md,0,pass,98897e392ec679ae9ce8ff2e0d5f94450b4495709e66deca8dd5da3b51bedd62
+54,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/document-map.md,0,pass,e68524605db593becc62d1b6f62998b58233961d2d1dc1e53914352df70c275f
+55,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/ideas-overview.md,0,pass,e60a44e598f202a4b510ab5555f3f43e9963ca2e0e9d207bbd98b8f752e97183
+56,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/memory-reliability-2026-11.md,0,pass,ee7750cc53cfe348ae93a4a85892e2f559098df04dc39cb255ff8627e2c1f5cc
+57,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/reimplemented-libraries.md,0,pass,3209c200cf82efabeb0e530c090a28ca447cf5f76027da377b62565b25f641bf
+58,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/scope-and-hardware.md,0,pass,b75ad27657c8d4dc5e822dc72edc1b0f267463faed4e292ce1da8158b49c9731
+59,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/README.md,0,pass,7d2f4e601c9708a85967acfec2a6a6ef55dadeee0fe46310d7094a5a239d3a3d
+60,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/history/README.md,0,pass,b82617ea3d7c93b5c7a4c6e263f476fa5912ead687f57535a6e4f202604241d7
+61,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --material ARTIFACT_DIR/userspace-and-security.md --material ARTIFACT_DIR/security-hardening.md --material ARTIFACT_DIR/security-2026-11-hardening-list.md --material ARTIFACT_DIR/storage-and-flash.md --material ARTIFACT_DIR/readonly-data-and-fs.md --material ARTIFACT_DIR/fs-candidates.md --material ARTIFACT_DIR/power-and-updates.md --final docs/research/security/history/kernel-and-mounts.md --doc-type paper --new-run,0,pass,d67c602ddef0fc330fc2b6edbe13e2b5b3f1d65e615c7273c0d56af33a749845
+62,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/history/kernel-and-mounts.md,0,pass,8a9d428275f321d73b08a9d21f8f2847e8b3a987e3d218fca7f08e693cf9650d
+63,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/history/monitoring.md,0,pass,2752b9fc7df8c2ad7165278e9f139d66134f550b359ee98ab13d4c23c721d5f9
+64,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/history/network.md,0,pass,6c048ac162acbfc537394a1763ee8fe2de84c372e7dc5718250e7cef6a86f8c4
+65,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/history/software-and-sandbox.md,0,pass,282a0af531666f971f43052dec1851a33708afd3751a1365f3c82205f520dd1e
+66,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/security/threat-model.md,0,pass,679e16443e2195aae4d1da412cb289a099395ee0745b40dc91c1dc852e0f9093
+67,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/ssh-vpn-and-keys.md,0,pass,d5d756abd1cb93d6269929b1b3ef8a618f08238c9d1ccd819e3fd2c2af7e1ba0
+68,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/README.md,0,pass,970b0df4ee3a4e149dfbf579a8a7feee3192d2345d420698bdbd6ed3918e5fd8
+69,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/ab-design-history.md,0,pass,33d804c7df73c5d7196cebe6769827c998b07bd65622150902130a51a7f7e39b
+70,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/allocation-and-small-files.md,0,pass,72513d853f8dd0e972614619ad26d2fa3dac3631e8649ebb7f297d0b0a2b5764
+71,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/fault-injection-s17.md,0,pass,68999435bb78857508203c6a1c5f076291ccb4753e3a9b9132ff7647745f6be8
+72,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/filesystem-candidates.md,0,pass,6a69f6beb46c62ed0cc2af5ada512dc49a48efeea76d8a19a8b631337a9289c4
+73,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/filesystem-sources.md,0,pass,573150a750fc5b08cd3d9c44673b54d79e00aae554c1383857597820abf7867b
+74,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/layout-and-flash.md,0,pass,9a50e649cc5a9ace540b40e6fc96b411e84bd1adcf79bcb0cb31c472f90d65ef
+75,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/media-measurements.md,0,pass,94706297f600cf8634006410d073b2873166e2ebb72ac459746d64f983cc0c83
+76,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/power-loss.md,0,pass,05acfd78f5fa038a4b4325ccad9ff739c816f0404dfd990b52fe50e75052561d
+77,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/recovery-and-watchdog.md,0,pass,bd0bb097568cdb3a2928091be981c17cd01486b294f848ea7cd3d27b057f774d
+78,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/rootfs-read-order.md,0,pass,69f8ec1d87d7181b784d0995208fa3a5154d1e9c63a9dd64f9d3844f7029d3de
+79,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/storage/write-policy-and-s3.md,0,pass,0bc52dd26bb06c5f7ac3a962214fd972c086fb822b16ae6f1aaa28c98506c315
+80,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/userspace/README.md,0,pass,d6d1aec9d2b8d7a843f6daf13d854530b1567418d3eb5c4f21f3a3f589d5e250
+81,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/userspace/init-history.md,0,pass,64b388f05c5b02f2e3dc784123e8a1333184230464e9530c4820d9f014795d58
+82,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/userspace/libc-history.md,0,pass,fecf7988f6902debf1dea21b65ec9320b66c895a8c591d3b4259cd028e0bdf6e
+83,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/verification/design-history.md,0,pass,9b30ab3c993fe1dbe8e2a38974051a321f81e1f572918225b23ab93addd73432
+84,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/verification/experiment-catalog.md,0,pass,19309786c555de6b129716a4f0f6f11236ce55bfc8830efcbd24060c9178d7fa
+85,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/verification/observability.md,0,pass,64d539e57aad935bc0d6c9008fba9b9f777af19bb66cbfaf0244440cbcd091f8
+86,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/verification/planning-history.md,0,pass,c30449ac1ae55b756fcc88359a9dd489c2a4f10dd0c9a4b7792614a49565e3cc
+87,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/verification/qemu-coverage.md,0,pass,cb350931c8b55fbc9a07b4ca3283eaa9a2c256597708df0c1c2c2fe637d311bb
+88,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/yocto-migration/buildroot-lessons.md,0,pass,3981cf825179532bd0130d715d49a88f21760e31ace8adb60fc71725e63f6316
+89,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/yocto-migration/reevaluation.md,0,pass,01ddb2bf5b0c430c281f990ed3664d6b05c599dd8265e441403e6a2b2e064e25
+90,python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py verify --final docs/research/yocto-migration/verification-and-ops.md,0,pass,5fa8b9abe1dea1f16e80e3f0ad50f4b326d0c6eccdb992137a98985266b6a525

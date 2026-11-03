@@ -46,7 +46,13 @@ python3 docs/experiments/2026-11-03-userspace-security-layout.py \
 
 保存検査のPythonは3.12.13、kernelは6.8.0-1061-aws、x86_64、glibc 2.35です。固定OCIはlinux/amd64、image IDは`sha256:c813692f2419472f753fb50531f3d446354eb1aff7005869d1142792ccafc5d9`です。OCI内ではPython 3.13.5、actionlint 1.7.12（Go 1.27.3）、ShellCheck 0.11.0、zizmor 1.31.1を使いました。VM側のcompilerでは製品を作っていません。実行した検査とlogのhashはCSVへ保存し、large logはcommitしません。コマンドの資料ファイル引数は環境に依存しない相対表記へ正規化しています。
 
-[最終の静的検査](2026-11-03-userspace-security-checks-final-v2.csv)には、修正後のリンク・文字・サイズ・構造、再度の保存照合、whitespaceと競合状態の終了値を別の行として残します。Python構文も解析しています。初回の失敗を成功へ上書きしません。
+[例外の初回検査](2026-11-03-userspace-security-checks-final-v2.csv)もリンク検査で失敗しました。診断の表示は行番号の末尾にコロンを付けますが、例外と照合する値では末尾のコロンを除くためです。失敗CSVはそのまま保持し、例外側の値だけを規則に合わせました。
+
+[最新main上の初回](2026-11-03-userspace-security-checks-final-v3.csv)は、保存領域の本文検査で停止しました。[保存領域の結果](2026-11-03-storage-layout-cross-links-first.csv)は、userspaceの再配置で変わった2リンクを旧pathと比較したため、保存5回とも不一致です。本文の欠落ではなく、同じ案内先への参照の変更でした。保存領域runnerに、その旧入口と新入口だけの明示的な換算を追加しました。数値・条件・原稿の基準は変えません。この初回の改変対照には別の不一致も混じるため、対照が独立に機能した証拠には使いません。
+
+[最新main基準の最終検査](2026-11-03-userspace-security-checks-final-v4.csv)には、修正後のリンク・文字・サイズ・構造、再度の保存照合、host回帰、固定OCIのlint、whitespaceと競合状態、yomiyasuのrunとverifyの終了値を別の行として残します。Python構文も解析しています。初回の失敗を成功へ上書きしません。保存照合の再実行は、各runnerの基準commitと既存CSVを変えず、未使用の出力先へ行います。公開側の基準は`55f5dd0`で、先にmainへ入ったcomponent-options等は削除しません。
+
+この最終検査の91行は全て終了値0です。再実行の生データは[保存領域の5回と4対照](2026-11-03-storage-layout-cross-links-v2.csv)、[userspace/securityの5回と10対照](2026-11-03-userspace-security-layout-v4.csv)へ保存しました。本文検査が通った上で、各対照による意図した不一致を確認しています。この結果を追記した後にも、この記録のyomiyasuとリンク・文字・サイズの検査を行います。
 
 ## 限界
 

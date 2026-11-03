@@ -88,6 +88,8 @@ def relocate_url(url, filename, originals, headings):
             sep = fragment = ''
         target = headings.get((name, unquote(fragment)), DEFAULTS[name])
         absolute = DEST + target
+    if absolute == PREFIX + 'userspace-and-security.md' and not fragment:
+        absolute = PREFIX + 'userspace/README.md'
     return absolute + sep + fragment
 
 

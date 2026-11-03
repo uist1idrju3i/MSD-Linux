@@ -1,0 +1,2 @@
+index,command,exit_code,status,log_sha256
+0,python3 docs/experiments/2026-11-02-storage-document-layout.py --base 55ffde1e8219207c73d1fa1d6c7d2728cf3949a3 --output ARTIFACT_DIR/2026-11-02-storage-document-layout.csv,1,fail,09bbb1a8b392b8b597b84b127573ed01aea3c6f9a4975ad0312c5fd26fc42a92
