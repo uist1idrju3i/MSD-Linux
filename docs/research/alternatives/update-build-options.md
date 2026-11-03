@@ -83,7 +83,7 @@ iwdを選ぶ場合はD-Busの常駐が増え、userspaceからkernel暗号APIを
 
 ## OpenSSLのbuild設定とhardening
 
-現行defconfigで明示しているのは`BR2_PACKAGE_LIBOPENSSL_BIN=y`です。Buildrootの`package/openssl/Config.in`では複数の任意機能が既定で`y`になっています。最終`.config`は未確認のため、次の一覧はConfig.inの既定値からの推測です。
+現行defconfigで明示しているのは`BR2_PACKAGE_LIBOPENSSL_BIN=y`です。Buildrootの`package/libopenssl/Config.in`では複数の任意機能が既定で`y`になっています。最終`.config`は未確認のため、次の一覧はConfig.inの既定値からの推測です。
 
 - SSL3、weak SSL ciphers
 - MD2、MD4、RC2、RC4、DES、IDEA、SEED、Blowfish、CAST、Whirlpool
