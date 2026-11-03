@@ -1,0 +1,42 @@
+[
+  {
+    "name": "github-cache-reference",
+    "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+    "resolved_url": "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+    "http_status": 200,
+    "bytes": 477379,
+    "sha256": "6624078bf507c33056e1091ce9d55bcf70f5ae64386439b0cca6d7b844ba30c3"
+  },
+  {
+    "name": "github-cache-concepts",
+    "url": "https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching",
+    "resolved_url": "https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching",
+    "http_status": 200,
+    "bytes": 289163,
+    "sha256": "b2cabb61f3fad72301cd94e485c4de025601fb3237308d21a44639ac507e008f"
+  },
+  {
+    "name": "docker-gha-cache",
+    "url": "https://docs.docker.com/build/cache/backends/gha/",
+    "resolved_url": "https://docs.docker.com/build/cache/backends/gha/",
+    "http_status": 200,
+    "bytes": 551240,
+    "sha256": "051ea2145ea8b5856a1deade7048613235997a33374f506f8e48b5af42d20e4c"
+  },
+  {
+    "name": "ccache-manual",
+    "url": "https://ccache.dev/manual/4.14.2.html",
+    "resolved_url": "https://ccache.dev/manual/4.14.2.html",
+    "http_status": 200,
+    "bytes": 145919,
+    "sha256": "000130bc8a05b0ba33cbf415102ec2d4599ccedeeae6534cda4589680486fd28"
+  },
+  {
+    "name": "github-concurrency",
+    "url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+    "resolved_url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+    "http_status": 200,
+    "bytes": 351340,
+    "sha256": "c110571175a660b29c51819fed2e224be4a287af971845ec3d5afe399fbb75d9"
+  }
+]
