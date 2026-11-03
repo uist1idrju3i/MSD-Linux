@@ -5,7 +5,7 @@ description: Review and update MSD-Linux dependencies, read their complete chang
 
 # vendor-update（依存関係の更新）
 
-依存を追加・更新するときは、対象の変更履歴とライセンスを確認し、更新前後の結果を比べます。Dependabot が作成した PR も同じ手順で確認してから、人間がマージします。
+application、library、依存、toolchainを更新するときは、対象の変更履歴とライセンスを確認し、更新前後の結果を比べます。Dependabot が作成した PR も同じ手順で確認してから、人間がマージします。
 
 ## 対象と変更履歴の参照先
 
@@ -32,10 +32,10 @@ description: Review and update MSD-Linux dependencies, read their complete chang
 
 1. 作業ブランチで、更新前の基準を記録します。CI の build/QEMU 結果、`tests/msd-update/run.sh`、成果物のサイズ、カーネル設定、legal-info、SBOM/VEX の CVE 件数を残します。
 2. 更新する版の間にある変更履歴をすべて読みます。履歴が shallow clone に含まれない場合は必要な範囲を fetch するか、upstream の compare/release ページで補います。`.gitmodules` の `shallow = true` は維持します。
-3. 変更点を次の四つに分けて記録します。新機能は安定性、セキュリティ、速度の順に採否と理由を判断します。
+3. 変更点を次の四つに分けて記録します。新機能、新しいoption・設定項目、既定値の変更は採否と理由を判断します。役立つものは同じ変更で採用し、見送る場合は理由と再確認の条件を記録します。新しいoptionは「component-options」スキルの表にも反映します。
    - 破壊的な変更と、こちらで必要な対応
    - セキュリティ修正と対象範囲
-   - 使える新機能と採否の理由
+   - 新機能、新しいoption・設定項目、既定値の変更と採否の理由
    - ライセンスまたはライセンス条件の変更
 4. 更新します。submodule は `git -C vendor/<name> fetch --depth 1 origin <tag-or-commit>` の後に `git -C vendor/<name> checkout FETCH_HEAD` を使い、`.gitmodules` の shallow 設定を残します。GitHub Actions は full commit SHA と `# vX.Y.Z` を併記します。Security tool の版・hash・workflow pin も同じ変更でそろえます。
 5. 更新後に回帰テストを行い、更新前の基準と比較します。
@@ -46,7 +46,7 @@ description: Review and update MSD-Linux dependencies, read their complete chang
    - kernel の正規化後の最終 `.config` 全体の差分。fragment で要求していない項目も確認し、設定の削除・依存による無効化・重複した指定を説明する
    - `make legal-info` の `manifest.csv` とライセンス差分。外部ツールチェーンや firmware の `unknown`・不足したソースは、出典と未確認事項を残す。SBOM の生成成功を配布許諾の確認と扱わない
    - SBOM/VEX の exploitable CVE 件数
-6. PR 本文に、依存ごとの旧版 → 新版、変更履歴リンク、四分類の記録、回帰テストの比較結果を記載します。Dependabot PR にも同じ確認を行い、結果を確認した後に人間がマージします。
+6. PR 本文に、依存ごとの旧版 → 新版、変更履歴リンク、四分類の記録、新機能・option・設定項目・既定値の採否と理由、回帰テストの比較結果を記載します。新しいoptionは対応する「component-options」の表にも反映します。Dependabot PR にも同じ確認を行い、結果を確認した後に人間がマージします。
 
 ## 更新を止める条件と完了の確認
 
