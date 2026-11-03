@@ -92,7 +92,10 @@ Brotliのchangelogは[Debian source](https://sources.debian.org/data/main/b/brot
 
 - `docker/msd-dev tests/msd-update/run.sh`: 成功。
 - `tests/check-pins/run.sh`: 初回はsnapshotの古さを検査するfixtureの日付が新snapshotから30日未満で失敗した。fixtureの日付を`2026-12-04`に直して再実行し、成功。
-- `check-links.py`、`check-jisx0213.py`、`check-doc-size.py`、各`tests/*/run.sh`、yomiyasu lint: 最終文書更新後に実施する。
+- `check-links.py`と`tests/check-links/run.sh`: 成功、リンクエラー0件。
+- `check-jisx0213.py`と`tests/check-jisx0213/run.sh`: 成功。既存文書・skillの警告9件は残るが、今回の追加文書には範囲外文字がない。
+- `check-doc-size.py`と`tests/check-doc-size/run.sh`: 成功。20,000 byte超の既存文書に警告があるが、新規記録は上限内。
+- yomiyasu lint: error 0件。技術語「ゲート」などのwarn候補と、箇条書き比率のwarnを文脈確認した。
 
 Buildroot製品build、QEMU boot、arm64 build、CI、attestationは未確認である。
 
