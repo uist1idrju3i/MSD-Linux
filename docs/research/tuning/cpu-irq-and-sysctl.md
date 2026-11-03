@@ -1,5 +1,7 @@
 # CPU・割り込み・sysctl の調整余地
 
+2026-11 の追記: 現行 [linux.fragment](../../../board/cardputerzero/linux.fragment) は `CONFIG_BCM2835_WDT=y`、`CONFIG_PSTORE=y`、`CONFIG_PSTORE_RAM=y` を設定し、[S01msd-watchdog](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog) が watchdog を起動します。Buildroot の `vendor/buildroot/package/busybox/S02sysctl` は一般設定を読み込みますが、製品 overlay に sysctl drop-in はありません。[S11 watchdog 試験](../../experiments/2026-10-20-s11-qemu-watchdog.md)は QEMU のみ、[S21 sysctl/ramoops 試験](../../experiments/2026-10-21-s21-qemu-sysctl-ramoops.md)の drop-in と ramoops DTB は試験専用で、製品への採否は未決定です。現行 `linux.fragment` に `IKCONFIG` と `workqueue.power_efficient` の明示設定はありません。実機の動作と RAM 保持は未確認です。
+
 ## 調査範囲
 
 確認基準日は 2026 年 10 月 19 日です。対象カーネルは本リポジトリが指定する Raspberry Pi Linux commit `234188315037848e5b07d65b85d38edc64095caa`、Buildroot は gitlink commit `d6061d653d7fb215c2409c59e4bfad1b9d677215`、M5 ドライバーは gitlink commit `75518549a2640486f5d13ea72ca4935b198d7c20` です。Raspberry Pi の設定資料は documentation commit `ddea98e98dafe9419feb4fd82710c2fbdef7dc44` を読みました。

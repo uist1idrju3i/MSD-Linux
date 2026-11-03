@@ -1,5 +1,13 @@
 # 訂正済み事項
 
+## 2026-11-03 の高速起動候補の状態訂正
+
+| 原記述・混在 | 訂正と理由 | 根拠 |
+|---|---|---|
+| `fastboot-ideas.md` の `start_cd.elf` / `fixup_cd.dat` 行: 【案・未検証】 | 現行 `config.txt` の `gpu_mem=16` が cut-down firmware を選び、生成処理と image 定義が両ファイルを収録する。設定と収録は確認済みだが、実機での起動は未確認 | [config.txt](../../../board/cardputerzero/config.txt)、[post-image.sh](../../../board/cardputerzero/post-image.sh)、[genimage.cfg](../../../board/cardputerzero/genimage.cfg)、[ファームウェア調査](../boot/firmware.md) |
+| `fastboot-ideas.md` の boot 設定行: 【案・未検証】 | `boot_delay=0` と `disable_splash=1` は現行 `config.txt` にある一方、`avoid_warnings` は設定されていない。実機での効果は未確認 | [config.txt](../../../board/cardputerzero/config.txt) |
+| `fastboot-ideas.md` の built-in / module 行: QEMU 実測済み（#129: Image -3.6%、modalias 自動ロード正常）。採否は積み上げ方針で再検討中 | PR #129 の QEMU 実験は製品設定を変更せず、Image の縮小に対してフラッシュ節約が小さく署名鍵ペアの管理が複雑になるため、追加のモジュール化は見送りが妥当と結論した | [linux.fragment](../../../board/cardputerzero/linux.fragment)、[PR #129](https://github.com/uist1idrju3i/MSD-Linux/pull/129)、[実験記録](../../experiments/2026-10-30-modularize-drivers.md) |
+
 ## 2026-11-03 のユーザー空間・強化項目の整理
 
 | 原記述・混在 | 訂正と理由 | 根拠 |

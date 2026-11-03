@@ -4,6 +4,41 @@
 
 利用・構築・検証は `docs/` の操作文書、採否と公開資料の調査は `docs/research/`、特定の入力に対する測定は `docs/experiments/` に置きます。操作手順はコードと照合して更新します。実験は基準 commit の記録として残し、結論が変われば注記と新しい根拠を足します。
 
+## ディレクトリ構成
+
+- `alternatives/`: OS、ライブラリ、ファイルシステム、更新方式などの候補比較。
+- `boot/`: 起動経路、firmware、kernel policy、起動時間の測定。
+- `component-options/`: 固定コンポーネントの機能、設定、引数。
+- `dependencies/`: 依存関係のバージョン、取得元、ライセンス、更新。
+- `hardware/`: 製品仕様、部品、配線、公式ソフトウェア。
+- `history/`: 文書の訂正、振り返り、調査案の履歴。`security/history/` とは別の記録。
+- `operations/`: CI、開発環境、リポジトリ運用、SBOM と監視。
+- `presentation/`: 表示、ブラウザー、フォント、サイトの見た目。
+- `release-client/`: Release の保護、端末への導入、更新 client。
+- `security/`: 脅威モデルと権限設計。`security/history/` は個別の強化項目の履歴。
+- `security/history/`: 強化候補、採否、条件、試験の記録。
+- `sources/`: 出典一覧、URL の到達性、取得結果と確認記録。
+- `storage/`: ファイルシステム、配置、電源断、A/B 保存設計。
+- `tuning/`: CPU、IRQ、sysctl、起動調整と QEMU 既定値。
+- `userspace/`: init、libc、allocator などユーザー空間の調査。
+- `verification/`: 試験台帳、測定方法、QEMU と実機の確認範囲、未確認事項。
+- `yocto-migration/`: Yocto 移行の比較、Buildroot への還元、移行見送りの記録。
+
+## tuning/ の文書と判断の置き場
+
+| 文書 | 役割（正本／履歴／生成物） | 重複と正本 | 判断 |
+|---|---|---|---|
+| [cpu-irq-and-sysctl.md](tuning/cpu-irq-and-sysctl.md) | 正本 | CPU、IRQ、sysctl の判断。`tunables-*` は QEMU で取得した値 | CPU・IRQ・sysctl の判断は本書を正本とし、生成値から採否を推定しない |
+| [fastboot-ideas.md](tuning/fastboot-ideas.md) | 履歴（候補一覧） | 現行状態はコードと [firmware](boot/firmware.md) / [boot sequence](boot/sequence.md) が正本。`mksquashfs -sort` は [post-build.sh](../../board/cardputerzero/post-build.sh) が `squashfs-sort.txt` から設定。SquashFS / EROFS は [filesystem candidates](storage/filesystem-candidates.md) | 候補と検証状態の一覧として維持し、現行設定の説明を重複させない |
+| [fastboot-and-cpu-tuning.md](tuning/fastboot-and-cpu-tuning.md) | 履歴 | 2026-10-19 の調査と 2026-11 の追記。firmware / `gpu_mem` は [firmware](boot/firmware.md)、CPU 判断は `cpu-irq-and-sysctl.md` | 当時の条件と調査を保持し、現行コードと実機結果を混同しない |
+| [soc-memory-compression.md](tuning/soc-memory-compression.md) | 履歴 | 2026-10-19 の調査と 2026-11 の追記。firmware / `gpu_mem` は [firmware](boot/firmware.md)、SquashFS / EROFS は [filesystem candidates](storage/filesystem-candidates.md) | 調査時点の値を保持し、現在の firmware 状態は正本へ案内する |
+| [cramfs-xip.md](tuning/cramfs-xip.md) | 履歴 | 完了した調査。ファイルシステム比較は [filesystem candidates](storage/filesystem-candidates.md) | cramfs の比較と XIP の適用不可という結論を保持する |
+| [memory-reliability-2026-11.md](tuning/memory-reliability-2026-11.md) | 履歴 | 完了した調査。pstore / ramoops の観測方法は [observability](verification/observability.md)、ハードウェア条件は [hardware spec](hardware/hardware-spec.md) | 調査結果を保持し、製品設定や実機確認へ読み替えない |
+| [lossless-recompression.md](tuning/lossless-recompression.md) | 履歴 | 再圧縮ツールの調査。製品 kernel image の生成は `board/cardputerzero/post-image.sh`、候補一覧は `fastboot-ideas.md` | tool survey として保持し、実装済み方式はコードで確認する |
+| [tunables-defaults.md](tuning/tunables-defaults.md) | 生成物 | QEMU 既定値。生成 script は5節を1ファイルに出力し、sysctl / module parameters を別文書へ分割 | 値の一覧を保持し、意味や採否は `cpu-irq-and-sysctl.md` に置く |
+| [tunables-sysctl.md](tuning/tunables-sysctl.md) | 生成物 | `tunables-defaults.md` の sysctl 節を分割した QEMU 取得値 | サイズのための分割を維持し、製品の sysctl 設定とは扱わない |
+| [tunables-module-params.md](tuning/tunables-module-params.md) | 生成物 | `tunables-defaults.md` の module parameter 節を分割した QEMU 取得値 | サイズのための分割を維持し、製品の判断とは扱わない |
+
 ## 主題の本文と重複候補
 
 [端末の自己更新](release-client/README.md)は、TUF実装の選定、Releaseとmetadataの配信、時刻・信頼・A/B状態を分けた設計本文です。[更新metadataの比較](alternatives/update-metadata.md)はTUF/Uptaneの役割、[Release保護](release-client/release-security.md)は管理者の署名運用、[更新手順](../UPDATE.md)は現行実装の操作に絞ります。自己更新の案を操作手順へ混ぜず、各文書から設計へ参照します。
@@ -80,6 +115,8 @@ K/P/S17の出典は、URL・逐語抜粋・適用範囲を同じ行で保つ一�
 |---|---|
 | [起動経路](boot/sequence.md) | 約21 KB。今回は配置と案内を整理し、起動順・候補・制約・出典の本文は保持。さらなる分割は本文の条件を比較して判断する |
 | [corrections.md](history/corrections.md) | 原記述・訂正理由・出典を並べる記録。誤記だけを独立させない |
+| [document-map.md](document-map.md) | ディレクトリの役割、重複する本文の置き場、長文を保持する理由を対応づける索引。表と判断を一体で保つ |
+| [RESEARCH.md](../../RESEARCH.md) | 主題別の文書と短い目的をまとめる総合索引。各項目の本文はリンク先に置き、一覧は一箇所で保つ |
 | [cpu-irq-and-sysctl.md](tuning/cpu-irq-and-sysctl.md) | CPU/thermal/IRQ の相互作用と QEMU の既定値・未測定の条件を保持 |
 | [fastboot-and-cpu-tuning.md](tuning/fastboot-and-cpu-tuning.md) | 外部記事、CM0 の条件、compiler/crypto 候補の適用可否と出典が対になる |
 | [hardware-spec.md](hardware/hardware-spec.md) | 対応表の「ビルド済みは実機動作ではない」という条件と、回路・機能依存を保持 |
