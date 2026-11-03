@@ -6,6 +6,8 @@
 
 rootfsの圧縮方式、書換え可能なデータ領域、設定の重ね合わせ、実行中の整合性検証は別々に選びます。read-only、圧縮、checksum、署名は同じ保護ではありません。cramfs、romfs、ext2/3、XFS、NILFS2、bcachefs、exFAT等を含む[候補の全景](../storage/filesystem-candidates.md)を踏まえ、ここでは現行構成からの移行と検証を詳しく扱います。
 
+ext4、F2FS、Btrfs、LUKS2、dm-integrityのformat・mount・checksum等の個別optionは[filesystem option調査](../storage/filesystem-options.md)に分けました。
+
 2026-11-02にMSD/Linuxの`c0214b380c046100592cd427ab3013347dff1758`、Buildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に調べました。固定kernelは`b3495ea401d709af0701a85babcba5e3d788a602`です。新しいfilesystem構成のbuild・実行・サイズ測定は本リポジトリでは試していません。過去のQEMU試験は当時のrevision・binaryの証拠として参照します。
 
 ## 現行の保存と起動の契約

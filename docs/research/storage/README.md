@@ -25,6 +25,7 @@
 | discard、SDバス、実カードで測る条件 | [媒体と測定計画](media-measurements.md) |
 | mountとwriter、未実装の書き込み窓、S3の条件と結果 | [書き込みpolicyとS3](write-policy-and-s3.md) |
 | Linux 6.18のFS候補と他OSの設計例 | [filesystem候補](filesystem-candidates.md)。最新の採否比較は[代替技術](../alternatives/filesystems.md) |
+| format、feature、mount、checksumなどの個別option | [filesystem option調査](filesystem-options.md)。ext4の[mount option](filesystem-options-ext4-mount.md)と[formatter・保守tool](filesystem-options-ext4-tools.md)、F2FSの[sysfs option](filesystem-options-f2fs-sysfs.md)、Btrfsの[progs追加option](filesystem-options-btrfs-progs.md)も参照 |
 | K/P/S17系列のURL・逐語抜粋・適用範囲 | [共通の出典表](filesystem-sources.md) |
 | 故障注入で何を模擬し、何を確認できないか | [S17の当初計画](fault-injection-s17.md)と[試験台帳](../verification/experiment-catalog.md) |
 | FTL、電源遮断、FS耐性、powerfailの資料 | [電源断耐性の調査](power-loss.md) |

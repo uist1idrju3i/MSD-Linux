@@ -6,6 +6,8 @@
 
 現在の採否を比較する本文は[保存領域の代替](../alternatives/filesystems.md)、現在のコードは[保存領域の入口](README.md#現在の実装とまだ確かめていないこと)、writerと未実装の案は[書き込みpolicy](write-policy-and-s3.md)です。
 
+formatter、filesystem feature、mount、checksum、LUKS2、dm-integrityの個別optionと固定版・最新版の比較は[filesystem option調査](filesystem-options.md)を参照してください。
+
 [読み取り専用データ領域とファイルシステム比較](write-policy-and-s3.md) から分けた節です。【一次: K12】のような出典の ID は、元の文書の[出典、抜粋、信頼度](filesystem-sources.md#出典抜粋信頼度)の表を指します。
 
 ## Linux 6.18 系 microSD 候補の比較
