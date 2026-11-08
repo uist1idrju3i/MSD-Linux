@@ -79,6 +79,7 @@ write_summary()
 	local exit_code=$1 status='' reason='' wall='' workload_size=''
 	local t1_summary='' t2_manifest='' t3_line='' t4_result='' t5_result='' t6_read='' t6_scrub=''
 	local points='' loss_points='' mount_fail='' fsck_fail='' recovered='' manifest_ok=''
+	local setup_points='' setup_mount_fail='' setup_fsck_fail=''
 	local quiesce_seconds='' quiesce_write_ios='' quiesce_write_sectors=''
 	local write_ios='' write_sectors='' last_write_s='' logical_bytes=''
 	local lost_records='' lost_seconds='' fsync_lost='' read_result=''
@@ -113,6 +114,11 @@ write_summary()
 	t1_summary="$(last_line 'T1_SUMMARY ' "$QEMU_LOG")"
 	points="$(field_from_line "$t1_summary" points)"
 	loss_points="$(field_from_line "$t1_summary" loss_points)"
+	mount_fail="$(field_from_line "$t1_summary" mount_fail)"
+	fsck_fail="$(field_from_line "$t1_summary" fsck_fail)"
+	setup_points="$(field_from_line "$t1_summary" setup_points)"
+	setup_mount_fail="$(field_from_line "$t1_summary" setup_mount_fail)"
+	setup_fsck_fail="$(field_from_line "$t1_summary" setup_fsck_fail)"
 	case "$TEST" in
 		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
 			if [[ -f "$QEMU_LOG" ]]; then
@@ -120,13 +126,19 @@ write_summary()
 					points="$(grep -aEc 'T1_POINT ' "$QEMU_LOG" || true)"
 				[[ -n "$loss_points" ]] ||
 					loss_points="$(grep -aEc 'T1_POINT .*manifest=no' "$QEMU_LOG" || true)"
+				[[ -n "$mount_fail" ]] ||
+					mount_fail="$(grep -aEc 'T1_POINT .*phase=workload .*mount=no' "$QEMU_LOG" || true)"
+				[[ -n "$fsck_fail" ]] ||
+					fsck_fail="$(grep -aEc 'T1_POINT .*phase=workload .*fsck=[1-9]' "$QEMU_LOG" || true)"
+				[[ -n "$setup_points" ]] ||
+					setup_points="$(grep -aEc 'T1_POINT .*phase=setup ' "$QEMU_LOG" || true)"
+				[[ -n "$setup_mount_fail" ]] ||
+					setup_mount_fail="$(grep -aEc 'T1_POINT .*phase=setup .*mount=no' "$QEMU_LOG" || true)"
+				[[ -n "$setup_fsck_fail" ]] ||
+					setup_fsck_fail="$(grep -aEc 'T1_POINT .*phase=setup .*fsck=[1-9]' "$QEMU_LOG" || true)"
 			fi
 			;;
 	esac
-	if [[ -f "$QEMU_LOG" ]]; then
-		mount_fail="$(grep -aEc 'T1_POINT .*mount=no' "$QEMU_LOG" || true)"
-		fsck_fail="$(grep -aEc 'T1_POINT .*fsck=[1-9]' "$QEMU_LOG" || true)"
-	fi
 	line="$(last_line 'recovery_mount=' "$QEMU_LOG")"
 	recovered="$(field_from_line "$line" recovery_mount)"
 	t2_manifest="$(last_line 'manifest_ok=' "$QEMU_LOG")"
@@ -180,9 +192,9 @@ write_summary()
 		mem_available_kb="$(sed -n 's/.*T7_MEMAVAILABLE value=\([0-9][0-9]*\) kB.*/\1/p' "$QEMU_LOG" | tail -n1)"
 	fi
 
-	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb\n' \
+	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail\n' \
 		>"${RUN_DIR}/summary.csv"
-	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
 		"$RUN_ID" "$CONFIG" "$TEST" "$status" "$wall" "$workload_size" \
 		"$points" "$loss_points" "$mount_fail" "$fsck_fail" "$recovered" \
 		"$manifest_ok" "$quiesce_seconds" "$quiesce_write_ios" \
@@ -191,7 +203,8 @@ write_summary()
 		"$fsync_lost" "$read_result" "$scrub_corrected" \
 		"$scrub_uncorrectable" "$fsck_detection" "$repaired" \
 		"$mkfs_seconds" "$mount_seconds" "$fsck_seconds" \
-		"$mem_available_kb" >>"${RUN_DIR}/summary.csv"
+		"$mem_available_kb" "$setup_points" "$setup_mount_fail" \
+		"$setup_fsck_fail" >>"${RUN_DIR}/summary.csv"
 }
 
 finalize_run()

@@ -233,6 +233,32 @@ setup_log_writes()
 	FS_DEVICE=/dev/mapper/fscompare_log
 }
 
+mark_t1_setup_done()
+{
+	case "$TEST" in
+		T1|T1-negative|T1-final|T1-negative-final|T1-sample) ;;
+		*) return ;;
+	esac
+	dmsetup message fscompare_log 0 mark setup-done ||
+		fail "t1_setup_done_mark_failed"
+	setup_done_entry=
+	setup_done_attempt=0
+	while [ "$setup_done_attempt" -lt 10 ]; do
+		if setup_done_entry="$("$REPLAY" --log "$LOG_FILE" --find \
+			--end-mark setup-done 2>/dev/null)"; then
+			break
+		fi
+		setup_done_entry=
+		setup_done_attempt=$((setup_done_attempt + 1))
+		sleep 1
+	done
+	[ -n "$setup_done_entry" ] || fail "t1_setup_done_mark_not_found"
+	case "$setup_done_entry" in
+		''|*[!0-9]*) fail "t1_setup_done_entry_invalid" ;;
+	esac
+	console "T1_SETUP_DONE entry=$setup_done_entry"
+}
+
 prepare_test_volume()
 {
 	attach_test_disk
@@ -406,7 +432,6 @@ replay_t1()
 	raw_total="$(wc -l <"$raw_points" | tr -d ' ')"
 	flush_total="$(awk -F '\t' '$2 == "flush" { count++ } END { print count + 0 }' "$raw_points")"
 	fua_total="$(awk -F '\t' '$2 == "fua" { count++ } END { print count + 0 }' "$raw_points")"
-	console "T1_POINT_COUNT raw_flush_fua=$raw_total flush_entries=$flush_total fua_entries=$fua_total unique_points=$point_total"
 	selected_points="${RUN_PATH}/T1-points-selected.tsv"
 	case "$mode" in
 		all) cp "$all_points" "$selected_points" ;;
@@ -428,12 +453,25 @@ replay_t1()
 	LOOP_REPLAY="$(losetup --find --show --direct-io=on "$REPLAY_IMAGE")" ||
 		fail "replay_loop_direct_io_failed"
 	replay_next=0
-	printf 'entry,kind,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
+	printf 'entry,phase,kind,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
 	points=0
 	loss_points=0
+	setup_points=0
+	setup_mount_fail=0
+	setup_fsck_fail=0
+	workload_points=0
+	workload_mount_fail=0
+	workload_fsck_fail=0
 	while IFS="$tab" read -r entry kind; do
 		[ -n "$entry" ] || continue
 		points=$((points + 1))
+		if [ "$entry" -lt "$setup_done_entry" ]; then
+			point_phase=setup
+			setup_points=$((setup_points + 1))
+		else
+			point_phase=workload
+			workload_points=$((workload_points + 1))
+		fi
 		point_started="$(date +%s)"
 		limit=$((entry - replay_next + 1))
 		manifest_limit=$((entry + 1))
@@ -474,6 +512,31 @@ EOF
 		else
 			fsck_status=$?
 		fi
+		if [ "$mount_ok" != yes ]; then
+			if [ "$point_phase" = setup ]; then
+				setup_mount_fail=$((setup_mount_fail + 1))
+			else
+				workload_mount_fail=$((workload_mount_fail + 1))
+			fi
+			head -n 20 "${RUN_PATH}/mount-$entry.log" |
+				while IFS= read -r line; do
+					console "T1_MOUNT_ERR entry=$entry $line"
+				done
+		fi
+		if [ "$fsck_status" -ne 0 ]; then
+			if [ "$point_phase" = setup ]; then
+				setup_fsck_fail=$((setup_fsck_fail + 1))
+			else
+				workload_fsck_fail=$((workload_fsck_fail + 1))
+			fi
+			head -n 20 "${RUN_PATH}/fsck-$entry.log" |
+				while IFS= read -r line; do
+					console "T1_FSCK_ERR entry=$entry $line"
+				done
+		fi
+		if [ "$manifest_ok" = no ]; then
+			loss_points=$((loss_points + 1))
+		fi
 		final_point_validation=no
 		case "$TEST" in
 			T1-final|T1-negative-final) final_point_validation=yes ;;
@@ -499,14 +562,11 @@ EOF
 				fi
 			fi
 		fi
-		printf '%s,%s,%s,%s,%s,%s\n' "$entry" "$kind" "$ack_count" \
-			"$mount_ok" "$fsck_status" "$manifest_ok" >>"$T1_CSV"
+		printf '%s,%s,%s,%s,%s,%s,%s\n' "$entry" "$point_phase" "$kind" \
+			"$ack_count" "$mount_ok" "$fsck_status" "$manifest_ok" >>"$T1_CSV"
 		point_finished="$(date +%s)"
 		point_elapsed=$((point_finished - point_started))
-		console "T1_POINT entry=$entry kind=$kind snapshot=dm-snapshot checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
-		if [ "$manifest_ok" = no ]; then
-			loss_points=$((loss_points + 1))
-		fi
+		console "T1_POINT entry=$entry phase=$point_phase kind=$kind snapshot=dm-snapshot checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
 		dmsetup remove "$SNAPSHOT_NAME" ||
 			fail "snapshot_device_remove_failed"
 		losetup -d "$LOOP_COW" || fail "snapshot_cow_loop_detach_failed"
@@ -516,7 +576,8 @@ EOF
 	done <"$selected_points"
 	losetup -d "$LOOP_REPLAY" || fail "replay_loop_detach_failed"
 	LOOP_REPLAY=
-	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total loss_points=$loss_points csv=$T1_CSV"
+	console "T1_POINT_COUNT raw_flush_fua=$raw_total flush_entries=$flush_total fua_entries=$fua_total unique_points=$point_total selected_points=$points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail"
+	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail loss_points=$loss_points csv=$T1_CSV"
 	case "$TEST" in
 	T1-negative|T1-negative-final)
 		if [ "$loss_points" -gt 0 ]; then
@@ -1019,6 +1080,7 @@ dispatch()
 	if ! mount_volume; then
 		fail "mount_failed"
 	fi
+	mark_t1_setup_done
 	console "mounted config=$CONFIG test=$TEST"
 	case "$TEST" in
 		T4-sync|T4-nosync|T5)
