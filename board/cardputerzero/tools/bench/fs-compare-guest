@@ -17,6 +17,7 @@ WORKLOAD="${SCRIPT_DIR}/fs-compare-workload"
 REPLAY="${SCRIPT_DIR}/replay-log"
 TEST_BYTES=$((256 * 1024 * 1024))
 TEST_SECTORS=$((TEST_BYTES / 512))
+COW_BYTES=$((64 * 1024 * 1024))
 RUNS_DIR=/data/fs-compare
 
 console()
@@ -94,6 +95,9 @@ WORKLOAD_ROOT="$MOUNTPOINT"
 LOOP_DATA=
 LOOP_LOG=
 LOOP_REPLAY=
+LOOP_COW=
+SNAPSHOT_NAME=fscompare_snapshot
+SNAPSHOT_DEVICE="/dev/mapper/$SNAPSHOT_NAME"
 DM_NAME=
 T1_CSV="${RUN_PATH}/T1-points.csv"
 
@@ -304,7 +308,7 @@ verify_recovery()
 	else
 		verify_manifest || true
 	fi
-	umount "$MOUNTPOINT" || console "recovery_umount=fail"
+	unmount_volume "$MOUNTPOINT"
 	console "recovery_finished"
 }
 
@@ -415,6 +419,15 @@ replay_t1()
 		*) fail "unknown_t1_point_mode=$mode" ;;
 	esac
 	[ -s "$selected_points" ] || fail "t1_replay_points_missing"
+	REPLAY_IMAGE="${RUN_PATH}/replay.img"
+	COW_IMAGE="${RUN_PATH}/snapshot-cow.img"
+	[ ! -e "$REPLAY_IMAGE" ] || fail "replay_image_already_exists"
+	[ ! -e "$COW_IMAGE" ] || fail "snapshot_cow_image_already_exists"
+	truncate -s "$TEST_BYTES" "$REPLAY_IMAGE" ||
+		fail "replay_image_create_failed"
+	LOOP_REPLAY="$(losetup --find --show --direct-io=on "$REPLAY_IMAGE")" ||
+		fail "replay_loop_direct_io_failed"
+	replay_next=0
 	printf 'entry,kind,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
 	points=0
 	loss_points=0
@@ -422,65 +435,87 @@ replay_t1()
 		[ -n "$entry" ] || continue
 		points=$((points + 1))
 		point_started="$(date +%s)"
-		REPLAY_IMAGE="${RUN_PATH}/replay.img"
-		rm -f "$REPLAY_IMAGE"
-		truncate -s "$TEST_BYTES" "$REPLAY_IMAGE"
-		LOOP_REPLAY="$(losetup --find --show --direct-io=on "$REPLAY_IMAGE")" ||
-			fail "replay_loop_direct_io_failed"
-		limit=$((entry + 1))
-		if "$REPLAY" --log "$LOG_FILE" --replay "$LOOP_REPLAY" --limit "$limit" \
+		limit=$((entry - replay_next + 1))
+		manifest_limit=$((entry + 1))
+		[ "$limit" -gt 0 ] || fail "t1_replay_entry_not_increasing"
+		if "$REPLAY" --log "$LOG_FILE" --replay "$LOOP_REPLAY" \
+			--start-entry "$replay_next" --limit "$limit" \
 			>"${RUN_PATH}/replay-$entry.log" 2>&1; then
 			replay_status=0
 		else
 			replay_status=$?
+			fail "t1_incremental_replay_failed_entry=$entry"
 		fi
-		RECOVERY_IMAGE="${RUN_PATH}/recovery.img"
-		rm -f "$RECOVERY_IMAGE"
-		cp "$REPLAY_IMAGE" "$RECOVERY_IMAGE" ||
-			fail "recovery_image_copy_failed"
-		sync
-		LOOP_RECOVERY="$(losetup --find --show --direct-io=on "$RECOVERY_IMAGE")" ||
-			fail "recovery_loop_direct_io_failed"
-		if mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$LOOP_RECOVERY" "$REPLAY_MOUNT" \
+		replay_next=$((entry + 1))
+		truncate -s 0 "$COW_IMAGE" ||
+			fail "snapshot_cow_reset_failed"
+		fallocate -l "$COW_BYTES" "$COW_IMAGE" ||
+			fail "snapshot_cow_allocate_failed"
+		LOOP_COW="$(losetup --find --show --direct-io=on "$COW_IMAGE")" ||
+			fail "snapshot_cow_loop_direct_io_failed"
+		dmsetup create "$SNAPSHOT_NAME" --table \
+			"0 $TEST_SECTORS snapshot $LOOP_REPLAY $LOOP_COW N 8" ||
+			fail "snapshot_device_create_failed"
+		if mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$SNAPSHOT_DEVICE" "$REPLAY_MOUNT" \
 			>"${RUN_PATH}/mount-$entry.log" 2>&1; then
 			mount_ok=yes
 		else
 			mount_ok=no
 		fi
-		result="$(check_manifest_at_point "$limit" "$mount_ok")"
+		result="$(check_manifest_at_point "$manifest_limit" "$mount_ok")"
 		IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF
 $result
 EOF
 		if [ "$mount_ok" = yes ]; then
 			umount "$REPLAY_MOUNT" || fail "recovery_mount_unmount_failed"
 		fi
-		if fsck_volume "${RUN_PATH}/fsck-$entry.log" "$LOOP_RECOVERY"; then
+		if fsck_volume "${RUN_PATH}/fsck-$entry.log" "$SNAPSHOT_DEVICE"; then
 			fsck_status=0
 		else
 			fsck_status=$?
 		fi
-		if [ "$TEST" = T1-final ] &&
-		   { [ "$mount_ok" != yes ] || [ "$manifest_ok" != yes ] ||
-		     [ "$fsck_status" -ne 0 ] ||
-		     [ "$ack_count" -ne "$expected_ack_count" ]; }; then
-			console "T1_FINAL_CHECK expected_files=$expected_ack_count actual_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok"
-			fail "t1_final_checker_validation_failed"
+		final_point_validation=no
+		case "$TEST" in
+			T1-final|T1-negative-final) final_point_validation=yes ;;
+			T1)
+				if [ "$mode" = all ] && [ "$points" -eq "$point_total" ]; then
+					final_point_validation=yes
+				fi
+				;;
+		esac
+		if [ "$final_point_validation" = yes ]; then
+			if [ "$TEST" = T1-negative-final ]; then
+				console "T1_NEGATIVE_FINAL_CHECK mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points"
+				if [ "$mount_ok" != yes ] || [ "$fsck_status" -ne 0 ] ||
+				   [ "$manifest_ok" != no ]; then
+					fail "t1_negative_final_checker_validation_failed"
+				fi
+			else
+				console "T1_FINAL_CHECK path=dm-snapshot expected_files=$expected_ack_count actual_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok"
+				if [ "$mount_ok" != yes ] || [ "$manifest_ok" != yes ] ||
+				   [ "$fsck_status" -ne 0 ] ||
+				   [ "$ack_count" -ne "$expected_ack_count" ]; then
+					fail "t1_final_checker_validation_failed"
+				fi
+			fi
 		fi
 		printf '%s,%s,%s,%s,%s,%s\n' "$entry" "$kind" "$ack_count" \
 			"$mount_ok" "$fsck_status" "$manifest_ok" >>"$T1_CSV"
 		point_finished="$(date +%s)"
 		point_elapsed=$((point_finished - point_started))
-		console "T1_POINT entry=$entry kind=$kind checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
+		console "T1_POINT entry=$entry kind=$kind snapshot=dm-snapshot checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
 		if [ "$manifest_ok" = no ]; then
 			loss_points=$((loss_points + 1))
 		fi
-		losetup -d "$LOOP_RECOVERY"
-		rm -f "$RECOVERY_IMAGE"
-		losetup -d "$LOOP_REPLAY"
-		rm -f "$REPLAY_IMAGE"
-		LOOP_RECOVERY=
-		LOOP_REPLAY=
+		dmsetup remove "$SNAPSHOT_NAME" ||
+			fail "snapshot_device_remove_failed"
+		losetup -d "$LOOP_COW" || fail "snapshot_cow_loop_detach_failed"
+		LOOP_COW=
+		truncate -s 0 "$COW_IMAGE" ||
+			fail "snapshot_cow_reset_failed"
 	done <"$selected_points"
+	losetup -d "$LOOP_REPLAY" || fail "replay_loop_detach_failed"
+	LOOP_REPLAY=
 	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total loss_points=$loss_points csv=$T1_CSV"
 	case "$TEST" in
 	T1-negative|T1-negative-final)
@@ -554,7 +589,15 @@ EOF
 
 run_workload_once()
 {
-	"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" "$@"
+	case "$TEST" in
+		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
+			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
+				--workload-size t1-reduced "$@"
+			;;
+		*)
+			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" "$@"
+			;;
+	esac
 }
 
 run_t4_idle()
@@ -587,13 +630,13 @@ EOF
 		{
 			device = $3
 			if (device in writes && (writes[device] != $4 || sectors[device] != $5))
-				last[device] = $2
+				last[device] = $1
 			writes[device] = $4
 			sectors[device] = $5
 		}
 		END {
 			for (device in writes)
-				printf "msd.fscmp: T4_LAST_WRITE device=%s epoch=%s\n", device, (device in last ? last[device] : "none")
+				printf "msd.fscmp: T4_LAST_WRITE device=%s last_write_s=%s\n", device, (device in last ? last[device] : "none")
 		}
 	' >/dev/console
 	printf '%s\n---\n%s\n' "$before_stats" "$after_stats" |
@@ -609,6 +652,26 @@ EOF
 					$1, $2 - before_writes[$1], $3 - before_sectors[$1]
 			}
 		' >/dev/console
+	test_device="$(basename "$(readlink -f "$LOOP_DATA")")"
+	printf '%s' "$samples" | awk -F, -v device="$test_device" '
+		$3 == device {
+			if (!seen) {
+				first_ios = $4
+				first_sectors = $5
+				seen = 1
+			} else if (last_ios != $4 || last_sectors != $5) {
+				last_write = $1
+			}
+			last_ios = $4
+			last_sectors = $5
+		}
+		END {
+			if (seen)
+				printf "msd.fscmp: T4_RESULT device=%s write_ios=%d write_sectors=%d last_write_s=%s\n",
+					device, last_ios - first_ios, last_sectors - first_sectors,
+					(last_write == "" ? "none" : last_write)
+		}
+	' >/dev/console
 	console "T4_IDLE duration_seconds=$duration samples=serial_log"
 }
 
@@ -667,9 +730,68 @@ run_t5()
 	console "T5_LOGICAL_BYTES=34706432"
 }
 
+quiesce_device()
+{
+	device="$(basename "$(readlink -f "$LOOP_DATA")")"
+	stats="$(read_stats "$device")"
+	IFS="$tab" read -r initial_ios initial_sectors <<EOF
+$stats
+EOF
+	previous_ios=$initial_ios
+	stable_seconds=0
+	elapsed=0
+	quiesce_started="$(date +%s)"
+	sync &
+	sync_pid=$!
+	while kill -0 "$sync_pid" 2>/dev/null; do
+		sleep 1
+		stats="$(read_stats "$device")"
+		IFS="$tab" read -r current_ios current_sectors <<EOF
+$stats
+EOF
+		elapsed=$(( $(date +%s) - quiesce_started ))
+		[ "$elapsed" -lt 900 ] ||
+			fail "quiesce_timeout_seconds=900 device=$device"
+	done
+	wait "$sync_pid" || fail "quiesce_sync_failed"
+	previous_ios=${current_ios:-$initial_ios}
+	while [ "$elapsed" -lt 900 ]; do
+		sleep 1
+		stats="$(read_stats "$device")"
+		IFS="$tab" read -r current_ios current_sectors <<EOF
+$stats
+EOF
+		elapsed=$(( $(date +%s) - quiesce_started ))
+		if [ "$current_ios" -eq "$previous_ios" ]; then
+			stable_seconds=$((stable_seconds + 1))
+		else
+			stable_seconds=0
+		fi
+		previous_ios=$current_ios
+		if [ "$stable_seconds" -ge 30 ]; then
+			break
+		fi
+	done
+	[ "$stable_seconds" -ge 30 ] ||
+		fail "quiesce_timeout_seconds=900 device=$device"
+	console "QUIESCE_RESULT device=$device quiesce_seconds=$elapsed quiesce_write_ios=$((current_ios - initial_ios)) quiesce_write_sectors=$((current_sectors - initial_sectors))"
+}
+
+unmount_volume()
+{
+	path=$1
+	if awk -v path="$path" '$2 == path { found = 1 } END { exit !found }' \
+		/proc/mounts; then
+		umount "$path" || fail "umount_failed_path=$path"
+	fi
+}
+
 run_t6()
 {
 	known="${MOUNTPOINT}/T6/known.bin"
+	dmesg >"${RUN_PATH}/T6-kernel-before.log" ||
+		fail "T6_dmesg_before_failed"
+	dmesg_before_count="$(wc -l <"${RUN_PATH}/T6-kernel-before.log" | tr -d ' ')"
 	"$WORKLOAD" known "$MOUNTPOINT" "$MANIFEST" "$DM_NAME"
 	expected="$(sha256sum "$known" | awk '{ print $1 }')"
 	if filefrag -b4096 -v "$known" >"${RUN_PATH}/filefrag.txt" 2>&1; then
@@ -700,11 +822,33 @@ run_t6()
 				'$3 ~ /^Data\// && logical >= $8 && logical < $8 + $5 { print $4 + logical - $8 }' \
 				"${RUN_PATH}/btrfs-chunks.txt")"
 			[ -n "$physical_copies" ] || fail "btrfs_chunk_mapping_missing"
-			physical_offset="$(printf '%s\n' "$physical_copies" | head -n 1)"
+			physical_offset="$(printf '%s\n' "$physical_copies" | sed -n '1p')"
+			second_offset="$(printf '%s\n' "$physical_copies" | sed -n '2p')"
+			if [ "$CONFIG" = B2 ] && [ -z "$second_offset" ]; then
+				fail "btrfs_duplicate_copy_mapping_missing"
+			fi
 			;;
 	esac
 	console "T6_EXTENT filesystem=$FS_TYPE file=$known physical_block=$physical_block offsets=$(printf '%s' "$physical_copies" | tr '\n' ':')"
-	umount "$MOUNTPOINT"
+	sync
+	dd if="$DISK_FILE" of="${RUN_PATH}/T6-original-first.bin" bs=1 \
+		skip="$physical_offset" count=4096 \
+		2>"${RUN_PATH}/T6-original-first.log" ||
+		fail "T6_original_first_copy_read_failed"
+	[ "$(wc -c <"${RUN_PATH}/T6-original-first.bin" | tr -d '[:space:]')" = 4096 ] ||
+		fail "T6_original_first_copy_short"
+	if [ -n "${second_offset:-}" ]; then
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-original-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-original-second.log" ||
+			fail "T6_original_second_copy_read_failed"
+		[ "$(wc -c <"${RUN_PATH}/T6-original-second.bin" | tr -d '[:space:]')" = 4096 ] ||
+			fail "T6_original_second_copy_short"
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-original-second.bin" ||
+			fail "T6_mirror_copies_differ_before_corruption"
+	fi
+	unmount_volume "$MOUNTPOINT"
 	losetup -d "$LOOP_DATA"
 	printf '%s\n' "$physical_offset" >"${RUN_PATH}/corrupt-offset.txt"
 	dd if=/dev/urandom of="$DISK_FILE" bs=1 seek="$physical_offset" count=1 \
@@ -719,33 +863,97 @@ run_t6()
 	if ! mount_volume; then
 		fail "T6_corrupted_mount_failed"
 	fi
+	scrub_corrected=not_applicable
+	scrub_uncorrectable=not_applicable
+	repaired=not_applicable
+	if [ "$FS_TYPE" = btrfs ] && [ "$CONFIG" = B2 ]; then
+		mount -t tmpfs -o size=16M tmpfs /var/lib ||
+			fail "T6_scrub_state_tmpfs_mount_failed"
+		mkdir -p /var/lib/btrfs ||
+			fail "T6_scrub_state_directory_failed"
+		btrfs scrub start -B "$MOUNTPOINT" >"${RUN_PATH}/scrub.log" 2>&1 ||
+			fail "T6_scrub_start_failed"
+		while IFS= read -r line; do console "T6_SCRUB $line"; done \
+			<"${RUN_PATH}/scrub.log"
+		btrfs scrub status -R "$MOUNTPOINT" \
+			>"${RUN_PATH}/scrub-status.log" 2>&1 ||
+			fail "T6_scrub_status_failed"
+		while IFS= read -r line; do console "T6_SCRUB_STATUS $line"; done \
+			<"${RUN_PATH}/scrub-status.log"
+		scrub_corrected="$(awk 'tolower($1) ~ /^corrected_errors:?$/ { gsub(/[^0-9]/, "", $2); print $2; exit }' \
+			"${RUN_PATH}/scrub-status.log")"
+		scrub_uncorrectable="$(awk 'tolower($1) ~ /^uncorrectable_errors:?$/ { gsub(/[^0-9]/, "", $2); print $2; exit }' \
+			"${RUN_PATH}/scrub-status.log")"
+		[ -n "$scrub_corrected" ] && [ -n "$scrub_uncorrectable" ] ||
+			fail "T6_scrub_counts_missing"
+		console "T6_SCRUB_RESULT corrected=$scrub_corrected uncorrectable=$scrub_uncorrectable"
+		umount /var/lib || fail "T6_scrub_state_tmpfs_unmount_failed"
+	fi
+	if [ -n "${second_offset:-}" ]; then
+		sync
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-recovered-first.bin" bs=1 \
+			skip="$physical_offset" count=4096 \
+			2>"${RUN_PATH}/T6-recovered-first.log" ||
+			fail "T6_recovered_first_copy_read_failed"
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-recovered-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-recovered-second.log" ||
+			fail "T6_recovered_second_copy_read_failed"
+		first_copy_matches=no
+		second_copy_matches=no
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-recovered-first.bin" &&
+			first_copy_matches=yes
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-recovered-second.bin" &&
+			second_copy_matches=yes
+		[ "$first_copy_matches" = yes ] &&
+			[ "$second_copy_matches" = yes ] && repaired=yes
+		console "T6_REPAIR_RESULT repaired=$repaired first_copy_matches_original=$first_copy_matches second_copy_matches_original=$second_copy_matches"
+	fi
 	set +e
 	"$WORKLOAD" readcheck "$known" "$expected"
 	read_status=$?
 	set -e
-	if [ "$FS_TYPE" = btrfs ] && [ "$CONFIG" = B2 ]; then
-		if btrfs scrub start -B "$MOUNTPOINT" >"${RUN_PATH}/scrub.log" 2>&1; then
-			console "T6_SCRUB result=ok"
-		else
-			console "T6_SCRUB result=fail"
-		fi
-		while IFS= read -r line; do console "T6_SCRUB $line"; done \
-			<"${RUN_PATH}/scrub.log"
-		btrfs scrub status "$MOUNTPOINT" >"${RUN_PATH}/scrub-status.log" 2>&1 ||
-			console "T6_SCRUB_STATUS result=fail"
-		while IFS= read -r line; do console "T6_SCRUB_STATUS $line"; done \
-			<"${RUN_PATH}/scrub-status.log"
-		set +e
-		"$WORKLOAD" readcheck "$known" "$expected"
-		set -e
+	if [ -n "${second_offset:-}" ]; then
+		sync
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-postread-first.bin" bs=1 \
+			skip="$physical_offset" count=4096 \
+			2>"${RUN_PATH}/T6-postread-first.log" ||
+			fail "T6_postread_first_copy_read_failed"
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-postread-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-postread-second.log" ||
+			fail "T6_postread_second_copy_read_failed"
+		first_copy_matches=no
+		second_copy_matches=no
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-postread-first.bin" &&
+			first_copy_matches=yes
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-postread-second.bin" &&
+			second_copy_matches=yes
+		console "T6_RAW_FINAL_RESULT first_copy_matches_original=$first_copy_matches second_copy_matches_original=$second_copy_matches"
+		[ "$first_copy_matches" = yes ] &&
+			[ "$second_copy_matches" = yes ] ||
+			fail "T6_postread_raw_copies_differ"
 	fi
-	umount "$MOUNTPOINT"
+	unmount_volume "$MOUNTPOINT"
 	if fsck_volume "${RUN_PATH}/T6-fsck.log"; then
 		console "T6_FSCK result=0"
 	else
 		fsck_status=$?
 		console "T6_FSCK result=$fsck_status"
 	fi
+	dmesg >"${RUN_PATH}/T6-kernel-after.log" ||
+		fail "T6_dmesg_after_failed"
+	awk -v start="$dmesg_before_count" \
+		'NR > start && tolower($0) ~ /btrfs|csum|integrity|device-mapper/ { print }' \
+		"${RUN_PATH}/T6-kernel-after.log" \
+		>"${RUN_PATH}/T6-kernel-matching.log"
+	while IFS= read -r line; do console "T6_KERNEL $line"; done \
+		<"${RUN_PATH}/T6-kernel-matching.log"
+	console "T6_SCRUB_METRICS corrected=$scrub_corrected uncorrectable=$scrub_uncorrectable repaired=$repaired"
 	console "T6_READCHECK exit=$read_status expected_sha256=$expected"
 }
 
@@ -773,7 +981,7 @@ run_t7()
 	mem_available="$(awk '$1 == "MemAvailable:" { print $2 " " $3; exit }' \
 		/proc/meminfo)"
 	console "T7_MEMAVAILABLE value=$mem_available"
-	umount "$MOUNTPOINT"
+	unmount_volume "$MOUNTPOINT"
 	case "$FS_TYPE" in
 		ext4) "$WORKLOAD" timer e2fsck -fn "$device" >/dev/console 2>&1 ;;
 		btrfs) "$WORKLOAD" timer btrfs check --readonly "$device" >/dev/console 2>&1 ;;
@@ -812,11 +1020,19 @@ dispatch()
 		fail "mount_failed"
 	fi
 	console "mounted config=$CONFIG test=$TEST"
+	case "$TEST" in
+		T4-sync|T4-nosync|T5)
+			quiesce_device
+			;;
+		T4-idle-control)
+			quiesce_device
+			;;
+	esac
 
 	case "$TEST" in
 		smoke)
 			console "smoke=mounted"
-			umount "$MOUNTPOINT"
+			unmount_volume "$MOUNTPOINT"
 			;;
 		T1|T1-final|T1-sample)
 			run_workload_once
@@ -851,7 +1067,6 @@ dispatch()
 			run_t4_idle 600
 			;;
 		T4-idle-control)
-			sync
 			run_t4_idle 60
 			;;
 		T5)
@@ -864,10 +1079,7 @@ dispatch()
 			fail "unknown_test"
 			;;
 	esac
-	case "$TEST" in
-		T1-negative|T1-negative-final) ;;
-		*) umount "$MOUNTPOINT" || console "umount=fail" ;;
-	esac
+	unmount_volume "$MOUNTPOINT"
 	console finished
 }
 

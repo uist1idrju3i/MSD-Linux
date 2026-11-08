@@ -25,6 +25,10 @@
 #define W4_SIZE (32U * 1024U * 1024U)
 
 static int console_fd = -1;
+static unsigned int w1_file_count = W1_FILES;
+static unsigned int w2_update_count = W2_UPDATES;
+static unsigned int w3_record_count = W3_RECORDS;
+static size_t w4_size = W4_SIZE;
 
 static void report(const char *format, ...)
 {
@@ -269,7 +273,7 @@ static void run_w1(const char *root, const char *manifest, const char *device,
 	close(root_fd);
 	if (directory_fd < 0)
 		fail("open_w1_directory");
-	for (index = 0; index < W1_FILES; index++) {
+	for (index = 0; index < w1_file_count; index++) {
 		int fd;
 
 		snprintf(relative, sizeof(relative), "W1/file-%03u.dat", index);
@@ -299,7 +303,7 @@ static void run_w1(const char *root, const char *manifest, const char *device,
 			     "-", 0, "w1-directory");
 	}
 	close(directory_fd);
-	report("W1 files=%d bytes_per_file=%d fsync=%s", W1_FILES, W1_SIZE,
+	report("W1 files=%u bytes_per_file=%d fsync=%s", w1_file_count, W1_SIZE,
 	       no_fsync ? "omitted" : "each");
 }
 
@@ -319,10 +323,10 @@ static void run_w2(const char *root, const char *manifest, const char *device,
 	close(root_fd);
 	if (directory_fd < 0)
 		fail("open_w2_directory");
-	for (index = 0; index < W2_UPDATES; index++) {
+	for (index = 0; index < w2_update_count; index++) {
 		int fd;
 
-		make_payload(buffer, sizeof(buffer), cycle * W2_UPDATES + index);
+		make_payload(buffer, sizeof(buffer), cycle * w2_update_count + index);
 		fd = openat(directory_fd, "target.tmp",
 			    O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
 		if (fd < 0)
@@ -350,7 +354,7 @@ static void run_w2(const char *root, const char *manifest, const char *device,
 			     relative, hash, 1, marker);
 	}
 	close(directory_fd);
-	report("W2 updates=%d bytes_per_update=%d cycle=%u", W2_UPDATES, W2_SIZE,
+	report("W2 updates=%u bytes_per_update=%d cycle=%u", w2_update_count, W2_SIZE,
 	       cycle);
 }
 
@@ -365,7 +369,7 @@ static void run_w3(const char *root, const char *manifest, const char *device,
 	fd = open(full_path, O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC, 0644);
 	if (fd < 0)
 		fail("open_w3_file");
-	for (index = 1; index <= W3_RECORDS; index++) {
+	for (index = 1; index <= w3_record_count; index++) {
 		int length;
 
 		memset(record, ' ', sizeof(record));
@@ -401,7 +405,7 @@ static void run_w4(const char *root, const char *manifest, const char *device,
 	const size_t chunk_size = 1024U * 1024U;
 	unsigned char *buffer = malloc(chunk_size);
 	char full_path[4096], hash[65], marker[128];
-	size_t remaining = W4_SIZE;
+	size_t remaining = w4_size;
 	int fd;
 
 	if (!buffer)
@@ -428,16 +432,29 @@ static void run_w4(const char *root, const char *manifest, const char *device,
 	snprintf(marker, sizeof(marker), "w4-fsync-%03u", cycle);
 	record_event(manifest, device, sequence, "W4", "file_fsync",
 		     "W4/large.bin", hash, 1, marker);
-	report("W4 bytes=%u cycle=%u", W4_SIZE, cycle);
+	report("W4 bytes=%zu cycle=%u", w4_size, cycle);
 }
 
 static void run_workload(const char *root, const char *manifest,
-			 const char *device, int no_fsync, int repeat)
+			 const char *device, int no_fsync, int repeat,
+			 const char *workload_size)
 {
 	unsigned int sequence = 0;
 	unsigned int cycle = 0;
 	int manifest_fd;
 
+	if (!strcmp(workload_size, "t1-reduced")) {
+		w1_file_count = 50;
+		w2_update_count = 25;
+		w3_record_count = 250;
+		w4_size = 8U * 1024U * 1024U;
+	} else if (strcmp(workload_size, "full")) {
+		errno = EINVAL;
+		fail("unknown_workload_size");
+	}
+	report("workload_profile name=%s W1_files=%u W2_updates=%u W3_records=%u W3_fsync_every=%d W4_bytes=%zu",
+	       workload_size, w1_file_count, w2_update_count, w3_record_count,
+	       W3_SYNC_INTERVAL, w4_size);
 	manifest_fd = open(manifest, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC,
 			   0600);
 	if (manifest_fd < 0)
@@ -677,6 +694,7 @@ static void verify_t3(const char *root, const char *manifest)
 	char path[4096], record[65], line[512], marker[128];
 	unsigned char present[100001] = {0};
 	unsigned int last = 0;
+	unsigned long long last_monotonic_ns = 0;
 	unsigned int fsync_lost = 0;
 	FILE *file;
 	int fd;
@@ -689,11 +707,14 @@ static void verify_t3(const char *root, const char *manifest)
 	}
 	while (read(fd, record, 64) == 64) {
 		unsigned int current;
+		unsigned long long monotonic_ns;
 
 		record[64] = '\0';
-		if (sscanf(record, "%10u", &current) == 1) {
+		if (sscanf(record, "%10u %20llu", &current, &monotonic_ns) == 2) {
 			if (current > last)
 				last = current;
+			if (current == last)
+				last_monotonic_ns = monotonic_ns;
 			if (current < sizeof(present))
 				present[current] = 1;
 		}
@@ -715,7 +736,8 @@ static void verify_t3(const char *root, const char *manifest)
 				fsync_lost++;
 	}
 	fclose(file);
-	report("T3_DISK last_seq=%u", last);
+	report("T3_DISK last_seq=%u monotonic_ns=%llu", last,
+	       last_monotonic_ns);
 	report("T3_FSYNC_LOST count=%u", fsync_lost);
 }
 
@@ -806,6 +828,7 @@ int main(int argc, char **argv)
 	}
 	if (!strcmp(argv[1], "workload") && argc >= 5) {
 		int no_fsync = 0, repeat = 0;
+		const char *workload_size = "full";
 		int index;
 
 		for (index = 5; index < argc; index++) {
@@ -813,13 +836,17 @@ int main(int argc, char **argv)
 				no_fsync = 1;
 			else if (!strcmp(argv[index], "--repeat"))
 				repeat = 1;
+			else if (!strcmp(argv[index], "--workload-size") &&
+				 index + 1 < argc)
+				workload_size = argv[++index];
 			else {
 				fprintf(stderr, "unknown workload option: %s\n",
 					argv[index]);
 				return 2;
 			}
 		}
-		run_workload(argv[2], argv[3], argv[4], no_fsync, repeat);
+		run_workload(argv[2], argv[3], argv[4], no_fsync, repeat,
+			     workload_size);
 		return 0;
 	}
 	if (!strcmp(argv[1], "t3") && argc == 5) {
