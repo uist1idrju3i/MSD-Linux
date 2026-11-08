@@ -45,7 +45,6 @@ jobs:
           docker/msd-dev actionlint .github/workflows/*.yml
           docker/msd-dev python3 .github/scripts/check-pins.py consistency
           docker/msd-dev tests/check-pins/run.sh
-          docker/msd-dev tests/check-site-status/run.sh
           docker/msd-dev tests/check-kernel-fragment/run.sh
           docker/msd-dev tests/check-firmware-config/run.sh
           docker/msd-dev tests/yocto-compare/run.sh

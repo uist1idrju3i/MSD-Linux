@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that public_html/ contains only the local, script-free GitHub Pages site."""
+"""Check that public_html/ contains only the local, script-free static site."""
 
 from __future__ import annotations
 
@@ -139,18 +139,6 @@ def check_site_allowlist(site_paths: set[str], reporter: Reporter) -> None:
             )
     for path in sorted(FIXED_SITE_PATHS - site_paths):
         reporter.error(path, 1, "必要なサイトファイルが追跡されていません")
-
-
-def check_expected_pages_cname(value: str, reporter: Reporter) -> None:
-    host = value.strip()
-    if not host:
-        reporter.error("Pages", 1, "Pages の Settings にドメインがありません")
-    elif host.casefold() != SITE_ORIGIN_HOST.casefold():
-        reporter.error(
-            "Pages",
-            1,
-            f"Pages の Settings のドメインが SITE_ORIGIN ({SITE_ORIGIN_HOST}) と一致しません",
-        )
 
 
 def resolve_local_target(source_path: str, value: str) -> tuple[str | None, str | None]:
@@ -545,7 +533,6 @@ def main() -> int:
     default_root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=default_root)
-    parser.add_argument("--expect-pages-cname")
     args = parser.parse_args()
     root = args.root.resolve()
     reporter = Reporter()
@@ -559,8 +546,6 @@ def main() -> int:
         return 1
 
     check_site_allowlist(site_paths, reporter)
-    if args.expect_pages_cname is not None:
-        check_expected_pages_cname(args.expect_pages_cname, reporter)
 
     for path in sorted(item for item in site_paths if item.lower().endswith(".html")):
         text = read_text(root, path, reporter)

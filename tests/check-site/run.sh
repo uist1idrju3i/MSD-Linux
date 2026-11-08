@@ -95,7 +95,7 @@ new_repo() {
 }
 
 run_check() {
-	if output="$(python3 "$checker" --root "$fixture" "$@" 2>&1)"; then
+	if output="$(python3 "$checker" --root "$fixture" 2>&1)"; then
 		status=0
 	else
 		status=$?
@@ -119,7 +119,7 @@ new_repo
 run_check
 expect_status 0
 expect_output 'errors=0'
-printf 'ok - accepts a valid local GitHub Pages site\n'
+printf 'ok - accepts a valid local static site\n'
 
 new_repo
 write_webp 1280 640 'VP8 '
@@ -230,29 +230,5 @@ run_check
 expect_status 1
 expect_output 'public_html/ はサイト専用です。文書は docs/ に置いてください。'
 printf 'ok - rejects the forbidden CNAME marker\n'
-
-new_repo
-run_check --expect-pages-cname muromi.moe
-expect_status 0
-expect_output 'errors=0'
-printf 'ok - accepts the expected Pages domain\n'
-
-new_repo
-run_check --expect-pages-cname ' MuRoMi.MoE '
-expect_status 0
-expect_output 'errors=0'
-printf 'ok - trims and case-folds the expected Pages domain\n'
-
-new_repo
-run_check --expect-pages-cname other.example
-expect_status 1
-expect_output 'SITE_ORIGIN'
-printf 'ok - rejects a Pages domain that differs from SITE_ORIGIN\n'
-
-new_repo
-run_check --expect-pages-cname ''
-expect_status 1
-expect_output 'Pages の Settings にドメインがありません'
-printf 'ok - rejects a missing Pages domain\n'
 
 printf 'All check-site tests passed.\n'
