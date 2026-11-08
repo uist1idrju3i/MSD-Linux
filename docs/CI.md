@@ -9,7 +9,6 @@
 | `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
-| `site-status.yml` | 毎週月曜、手動実行 | GitHub Pages、DNS、ドメイン期限、HTTP リダイレクトを確認し、異常を「公開サイトの状態確認」Issue に集約します。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `security.yml` | 全 PR、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。mainの定期・手動実行は「製品SBOMの脆弱性監視」Issueを更新して差分をコメント（自動closeなし）。 |
 
@@ -104,12 +103,6 @@ quote	<exact-path>	<characters>	<reason>
 ## 固定版の整合性と更新確認
 
 `lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーのバージョン（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot のバージョン、チェックアウト済み Buildroot における defconfig 選択中の Bootlin ツールチェーンです。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。Bootlin の新しい安定版は、最新の安定版 Buildroot ブランチが提供しているかも確認します。Buildroot のポイントリリースは、`.gitmodules` の系列に属する最新タグの commit と submodule の gitlink の比較です。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新します。「Buildroot 安定版待ち」は情報表示のみで Issue の対象にせず、ほかに対応が必要な行がなければ Issue を閉じます。
-
-## 公開サイトの状態確認
-
-`site-status.yml` は Pages API の独自ドメイン、HTTPS 強制、証明書の状態・対象ドメイン・残り日数を確認します。DNS は `1.1.1.1` と `8.8.8.8` の回答を `.github/site-dns.tsv` と照合し、ワイルドカード回答の有無も検査対象です。IANA の RDAP 登録情報で得たドメイン期限は、残り 60 日以上が合格条件です。HTTP と HTTPS の応答およびリダイレクト先を検査します。証明書の残り日数は 14 日以上が基準です。
-
-異常があれば「公開サイトの状態確認」Issue を作成するか本文を更新します。すべて正常になった後の実行では、開いている Issue にコメントを付けて閉じます。DNS を意図的に変更したときは、期待値を `.github/site-dns.tsv` に反映してください。
 
 ## 採用しないツール
 

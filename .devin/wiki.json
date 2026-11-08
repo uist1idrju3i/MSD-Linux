@@ -126,7 +126,7 @@
     },
     {
       "title": "ホストテスト",
-      "purpose": "tests/ のホストテストを、更新・data・hwinfo・init（tests/msd-update/、tests/msd-data-grow/、tests/msd-hwinfo/、tests/init-scripts/）、各checker（tests/check-doc-size/、tests/check-firmware-config/、tests/check-jisx0213/、tests/check-kernel-fragment/、tests/check-links/、tests/check-pins/、tests/check-site/、tests/check-site-status/、tests/check-skills/）、CI範囲（tests/check-build-scope/、tests/check-ci-cache/、tests/check-ci-scope/、tests/check-dev-image-scope/）、SBOM/CVE/Trivy/署名鍵（tests/check-sbom/、tests/check-cve-monitor/、tests/trivy-gate/、tests/release-signing-key/）、起動時間とQEMU/電源断ログ（tests/boottime/、tests/qemu-log-check/、tests/powerfail-log/）、開発用image（tests/msd-dev/）、Yocto比較（tests/yocto-compare/）に分け、各実装やCI範囲の回帰を説明する",
+      "purpose": "tests/ のホストテストを、更新・data・hwinfo・init（tests/msd-update/、tests/msd-data-grow/、tests/msd-hwinfo/、tests/init-scripts/）、各checker（tests/check-doc-size/、tests/check-firmware-config/、tests/check-jisx0213/、tests/check-kernel-fragment/、tests/check-links/、tests/check-pins/、tests/check-site/、tests/check-skills/）、CI範囲（tests/check-build-scope/、tests/check-ci-cache/、tests/check-ci-scope/、tests/check-dev-image-scope/）、SBOM/CVE/Trivy/署名鍵（tests/check-sbom/、tests/check-cve-monitor/、tests/trivy-gate/、tests/release-signing-key/）、起動時間とQEMU/電源断ログ（tests/boottime/、tests/qemu-log-check/、tests/powerfail-log/）、開発用image（tests/msd-dev/）、Yocto比較（tests/yocto-compare/）に分け、各実装やCI範囲の回帰を説明する",
       "parent": "A/B 更新と自動復帰",
       "page_notes": [
         {
@@ -163,7 +163,7 @@
     },
     {
       "title": "CI/CD とサプライチェーン",
-      "purpose": ".github/workflows/agent-docs.yml の check（指示・skills・links・JIS・site検査）、.github/workflows/build.yml の changes・msd-update-tests・build（Buildroot、QEMU、SBOM）、.github/workflows/dev-image-scan.yml の scan（週次TrivyとIssue）、.github/workflows/lint.yml の lint・zizmor・dockerfile-lint、.github/workflows/pins-check.yml の check、.github/workflows/publish-dev-image.yml の plan・build・gate（dev-image gate）・publish、.github/workflows/security.yml の scan（product CVE scan、2時間ごとの監視とPR差分gate）・report（Issue更新）、.github/workflows/site-status.yml の check（公開サイト状態確認）を、docs/CI.md とともに説明する",
+      "purpose": ".github/workflows/agent-docs.yml の check（指示・skills・links・JIS・site検査）、.github/workflows/build.yml の changes・msd-update-tests・build（Buildroot、QEMU、SBOM）、.github/workflows/dev-image-scan.yml の scan（週次TrivyとIssue）、.github/workflows/lint.yml の lint・zizmor・dockerfile-lint、.github/workflows/pins-check.yml の check、.github/workflows/publish-dev-image.yml の plan・build・gate（dev-image gate）・publish、.github/workflows/security.yml の scan（product CVE scan、2時間ごとの監視とPR差分gate）・report（Issue更新）を、docs/CI.md とともに説明する",
       "page_notes": [
         {
           "content": "docs/CI.md、.github/workflows/、.github/zizmor-requirements.txt を根拠にしてください。"
