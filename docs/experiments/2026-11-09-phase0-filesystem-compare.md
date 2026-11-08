@@ -1,4 +1,4 @@
-# Phase 0 filesystem comparison: T1 replay and instrument checks
+# 第0段の/data file system比較：T1再生と計測器の検証
 
 - 状態: 完了（記載した条件でQEMU runを実施。実機検証ではない）
 - 日付: 2026-11-08 - 2026-11-09
