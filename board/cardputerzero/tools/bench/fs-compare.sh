@@ -46,9 +46,11 @@ VM_PID=
 case "$TEST" in
 	T1|T1-negative|T1-final|T1-negative-final|T1-sample)
 		WORKLOAD_SIZE=t1-reduced
+		LOG_BYTES=$((1024 * 1024 * 1024))
 		;;
 	*)
 		WORKLOAD_SIZE=full
+		LOG_BYTES=0
 		;;
 esac
 
@@ -101,13 +103,19 @@ write_summary()
 			wall=$((SECONDS - RUN_START_SECONDS))
 		fi
 	fi
-	if ((exit_code == 0)); then
+	if ((exit_code == 0)) && grep -aFq 'msd.fscmp: finished' "$QEMU_LOG"; then
 		status=ok
 	else
-		line="$(last_line 'msd.fscmp: error=' "$QEMU_LOG")"
-		reason="$(sed -n 's/.*msd\.fscmp: error=//p' <<<"$line" |
-			tr ' ,	' '___' | tr -d '\r')"
-		[[ -n "$reason" ]] || reason="exit_${exit_code}"
+		if ((exit_code >= 129 && exit_code <= 255)); then
+			reason="terminated_signal_$((exit_code - 128))"
+		elif ((exit_code == 0)); then
+			reason=guest_finished_marker_missing
+		else
+			line="$(last_line 'msd.fscmp: error=' "$QEMU_LOG")"
+			reason="$(sed -n 's/.*msd\.fscmp: error=//p' <<<"$line" |
+				tr ' ,	' '___' | tr -d '\r')"
+			[[ -n "$reason" ]] || reason="exit_${exit_code}"
+		fi
 		status="fail:${reason}"
 	fi
 
@@ -129,13 +137,13 @@ write_summary()
 				[[ -n "$mount_fail" ]] ||
 					mount_fail="$(grep -aEc 'T1_POINT .*phase=workload .*mount=no' "$QEMU_LOG" || true)"
 				[[ -n "$fsck_fail" ]] ||
-					fsck_fail="$(grep -aEc 'T1_POINT .*phase=workload .*fsck=[1-9]' "$QEMU_LOG" || true)"
+					fsck_fail="$(grep -aEc 'T1_POINT .*phase=workload .*fsck=(skipped|[1-9][0-9]*)' "$QEMU_LOG" || true)"
 				[[ -n "$setup_points" ]] ||
 					setup_points="$(grep -aEc 'T1_POINT .*phase=setup ' "$QEMU_LOG" || true)"
 				[[ -n "$setup_mount_fail" ]] ||
 					setup_mount_fail="$(grep -aEc 'T1_POINT .*phase=setup .*mount=no' "$QEMU_LOG" || true)"
 				[[ -n "$setup_fsck_fail" ]] ||
-					setup_fsck_fail="$(grep -aEc 'T1_POINT .*phase=setup .*fsck=[1-9]' "$QEMU_LOG" || true)"
+					setup_fsck_fail="$(grep -aEc 'T1_POINT .*phase=setup .*fsck=(skipped|[1-9][0-9]*)' "$QEMU_LOG" || true)"
 			fi
 			;;
 	esac
@@ -224,6 +232,8 @@ finalize_run()
 	exit "$exit_code"
 }
 
+trap 'exit 130' INT
+trap 'exit 143' TERM
 trap finalize_run EXIT
 
 for required in "$TEST_ROOTFS" "$BASE_IMAGE" "$KERNEL" "$DTB" \
@@ -288,6 +298,7 @@ truncate -s 8G "$IMAGE"
 {
 	printf 'config=%s\ntest=%s\nrun_id=%s\n' "$CONFIG" "$TEST" "$RUN_ID"
 	printf 'workload_size=%s\n' "$WORKLOAD_SIZE"
+	printf 'log_bytes=%s\n' "$LOG_BYTES"
 	if [[ "$WORKLOAD_SIZE" == t1-reduced ]]; then
 		printf 'workload_W1_files=50\nworkload_W2_updates=25\nworkload_W3_records=250\nworkload_W3_fsync_every=50\nworkload_W4_bytes=8388608\n'
 	else

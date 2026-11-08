@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-08-t1-stack-replay](2026-11-08-t1-stack-replay.md) | なし | 2026-11-08 | 完了（QEMU、6構成） | F1・L3・I2・E5・B5・E1のT1-finalでacknowledged files 53件、mount yes、fsck 0、manifest yesを確認。SIGTERM対照は`fail:terminated_signal_15`。残る14構成とT1 mode=allは未確認。 |
 | [2026-11-03-ci-cache-and-parallel](2026-11-03-ci-cache-and-parallel.md) | なし | 2026-11-03 | host回帰・実Dockerの機能検証 | 文書のみのskip、製品・未知・失敗時のbuild、完全一致archive、2並列runnerと負対照を確認。GitHub cacheの長期hit率・総費用・短縮率は未測定。 |
 | [2026-11-03-maintenance-followup](2026-11-03-maintenance-followup.md) | なし | 2026-11-03 | host・静的回帰 | 3 suite各5回、署名300 command、分類5改変の検出。OpenSSLの版と保守期限・取得失敗・週次通知を分離。製品の依存版は変更していない。 |
 | [2026-11-03-sbom-cve-monitor](2026-11-03-sbom-cve-monitor.md) | なし | 2026-11-03 | OCI pipeline・CPython・PR gate比較 | depth-1 NVD clone 5回の中央値156.062秒でcacheなし。SBOM 67件、VEX 16,047件。CPython 3.11とのsemantic tuple 16,421件が一致。PR gateのbase/headは各149 findingsで差分0、終了コード0。 |

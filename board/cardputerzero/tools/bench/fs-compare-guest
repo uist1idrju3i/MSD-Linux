@@ -93,11 +93,16 @@ FSCRYPT_KEY="${RUN_PATH}/fscrypt.key"
 MANIFEST="${RUN_PATH}/manifest.tsv"
 WORKLOAD_ROOT="$MOUNTPOINT"
 LOOP_DATA=
+STACK_BASE=
 LOOP_LOG=
 LOOP_REPLAY=
 LOOP_COW=
+REPLAY_DEVICE=
+REPLAY_WORKLOAD_ROOT=
+FSCRYPT_REPLAY_KEY_ID=
 SNAPSHOT_NAME=fscompare_snapshot
 SNAPSHOT_DEVICE="/dev/mapper/$SNAPSHOT_NAME"
+REPLAY_STACK_NAME=fscompare_replay_stack
 DM_NAME=
 T1_CSV="${RUN_PATH}/T1-points.csv"
 
@@ -141,7 +146,7 @@ make_keyfiles()
 replace_setup_tokens()
 {
 	printf '%s' "$1" |
-		sed -e "s|%BASE_DEVICE%|$LOOP_DATA|g" \
+		sed -e "s|%BASE_DEVICE%|$STACK_BASE|g" \
 			-e "s|%DEVICE%|$FS_DEVICE|g" \
 			-e "s|%KEYFILE%|$KEYFILE|g" \
 			-e "s|%MOUNTPOINT%|$MOUNTPOINT|g"
@@ -161,7 +166,7 @@ run_setup_commands()
 			"$@"
 		done
 	if [ "$CONFIG" = L3 ] || [ "$CONFIG" = B5 ]; then
-		cryptsetup luksDump "$LOOP_DATA" >"${RUN_PATH}/luksDump.txt"
+		cryptsetup luksDump "$STACK_BASE" >"${RUN_PATH}/luksDump.txt"
 		grep -E 'Cipher:|Key:' "${RUN_PATH}/luksDump.txt" |
 			while IFS= read -r line; do console "luksDump $line"; done
 	fi
@@ -177,6 +182,7 @@ attach_test_disk()
 	fi
 	LOOP_DATA="$(losetup --find --show --direct-io=on "$DISK_FILE")" ||
 		fail "losetup_direct_io_failed"
+	STACK_BASE=$LOOP_DATA
 	case "$CONFIG" in
 		L*|I*|B5) ;;
 		*) FS_DEVICE=$LOOP_DATA ;;
@@ -218,19 +224,19 @@ mount_volume()
 
 setup_log_writes()
 {
-	case "$CONFIG" in
-		E1|B2) ;;
-		*) fail "T1_requires_E1_or_B2" ;;
-	esac
 	: >"$LOG_FILE"
-	truncate -s 512M "$LOG_FILE"
+	truncate -s 1G "$LOG_FILE"
 	LOOP_LOG="$(losetup --find --show --direct-io=on "$LOG_FILE")" ||
 		fail "log_loop_direct_io_failed"
 	dmsetup create fscompare_log --table \
 		"0 $TEST_SECTORS log-writes $LOOP_DATA $LOOP_LOG" ||
 		fail "dm_log_writes_create_failed"
 	DM_NAME=fscompare_log
-	FS_DEVICE=/dev/mapper/fscompare_log
+	STACK_BASE=/dev/mapper/fscompare_log
+	case "$CONFIG" in
+		L*|I*|B5) ;;
+		*) FS_DEVICE=$STACK_BASE ;;
+	esac
 }
 
 mark_t1_setup_done()
@@ -243,7 +249,7 @@ mark_t1_setup_done()
 		fail "t1_setup_done_mark_failed"
 	setup_done_entry=
 	setup_done_attempt=0
-	while [ "$setup_done_attempt" -lt 10 ]; do
+	while [ "$setup_done_attempt" -lt 60 ]; do
 		if setup_done_entry="$("$REPLAY" --log "$LOG_FILE" --find \
 			--end-mark setup-done 2>/dev/null)"; then
 			break
@@ -280,7 +286,7 @@ fsck_volume()
 	device=${2:-$FS_DEVICE}
 	case "$FS_TYPE" in
 		ext4) e2fsck -fn "$device" >"$fsck_log" 2>&1 ;;
-		f2fs) fsck.f2fs "$device" >"$fsck_log" 2>&1 ;;
+		f2fs) fsck.f2fs --dry-run "$device" >"$fsck_log" 2>&1 ;;
 		btrfs) btrfs check --readonly "$device" >"$fsck_log" 2>&1 ;;
 	esac
 }
@@ -408,15 +414,120 @@ check_manifest_at_point()
 		manifest_ok=yes
 		while IFS="$tab" read -r relative expected; do
 			[ -n "$relative" ] || continue
-			if [ ! -f "${REPLAY_MOUNT}/${relative}" ]; then
+			if [ ! -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ]; then
 				manifest_ok=no
 				continue
 			fi
-			actual="$(sha256sum "${REPLAY_MOUNT}/${relative}" | awk '{ print $1 }')"
+			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
 			[ "$actual" = "$expected" ] || manifest_ok=no
 		done <"$expected_file"
 	fi
 	printf '%s\t%s\t%s\n' "$ack_count" "$manifest_ok" "$expected_file"
+}
+
+mounted_at()
+{
+	awk -v path="$1" '$2 == path { found = 1 } END { exit !found }' \
+		/proc/mounts
+}
+
+close_t1_original_volume()
+{
+	mounted_at "$MOUNTPOINT" ||
+		fail "t1_original_mount_missing_before_replay"
+	unmount_volume "$MOUNTPOINT"
+	if mounted_at "$MOUNTPOINT"; then
+		fail "t1_original_mount_still_mounted"
+	fi
+	case "$CONFIG" in
+		L*|B5)
+			dmsetup info "$MAPPER_NAME" >/dev/null 2>&1 ||
+				fail "t1_original_stack_not_open"
+			cryptsetup close "$MAPPER_NAME" ||
+				fail "t1_original_stack_close_failed"
+			;;
+		I*)
+			dmsetup info "$MAPPER_NAME" >/dev/null 2>&1 ||
+				fail "t1_original_stack_not_open"
+			integritysetup close "$MAPPER_NAME" ||
+				fail "t1_original_stack_close_failed"
+			;;
+	esac
+}
+
+assert_t1_original_volume_closed()
+{
+	if mounted_at "$MOUNTPOINT"; then
+		fail "t1_original_mount_still_mounted"
+	fi
+	case "$CONFIG" in
+		L*|I*|B5)
+			if dmsetup info "$MAPPER_NAME" >/dev/null 2>&1; then
+				fail "t1_original_stack_still_open"
+			fi
+			;;
+	esac
+}
+
+open_t1_replay_stack()
+{
+	entry=$1
+	stack_open=not_applicable
+	REPLAY_DEVICE=$SNAPSHOT_DEVICE
+	REPLAY_WORKLOAD_ROOT=$REPLAY_MOUNT
+	case "$CONFIG" in
+		L*|B5)
+			if cryptsetup open --key-file "$KEYFILE" "$SNAPSHOT_DEVICE" \
+				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		I1)
+			if integritysetup open "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
+				>"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		I2)
+			if integritysetup open --integrity-bitmap-mode "$SNAPSHOT_DEVICE" \
+				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		E5|F5)
+			REPLAY_WORKLOAD_ROOT="${REPLAY_MOUNT}/encrypted"
+			;;
+	esac
+	if [ "$stack_open" = no ]; then
+		head -n 20 "${RUN_PATH}/stack-open-$entry.log" |
+			while IFS= read -r line; do
+				console "T1_STACK_OPEN_ERR entry=$entry $line"
+			done
+		return 1
+	fi
+	return 0
+}
+
+close_t1_replay_stack()
+{
+	[ "$stack_open" = yes ] || return 0
+	case "$CONFIG" in
+		L*|B5) cryptsetup close "$REPLAY_STACK_NAME" ;;
+		I*) integritysetup close "$REPLAY_STACK_NAME" ;;
+		*) return 0 ;;
+	esac || fail "t1_replay_stack_close_failed"
+	if dmsetup info "$REPLAY_STACK_NAME" >/dev/null 2>&1; then
+		fail "t1_replay_stack_still_open"
+	fi
 }
 
 replay_t1()
@@ -429,6 +540,9 @@ replay_t1()
 	raw_points="${RUN_PATH}/T1-points-raw.tsv"
 	all_points="${RUN_PATH}/T1-points.tsv"
 	point_total="$(wc -l <"$all_points" | tr -d ' ')"
+	candidate_setup_points="$(awk -F '\t' -v marker="$setup_done_entry" \
+		'$1 < marker { count++ } END { print count + 0 }' "$all_points")"
+	candidate_workload_points=$((point_total - candidate_setup_points))
 	raw_total="$(wc -l <"$raw_points" | tr -d ' ')"
 	flush_total="$(awk -F '\t' '$2 == "flush" { count++ } END { print count + 0 }' "$raw_points")"
 	fua_total="$(awk -F '\t' '$2 == "fua" { count++ } END { print count + 0 }' "$raw_points")"
@@ -444,6 +558,8 @@ replay_t1()
 		*) fail "unknown_t1_point_mode=$mode" ;;
 	esac
 	[ -s "$selected_points" ] || fail "t1_replay_points_missing"
+	close_t1_original_volume
+	assert_t1_original_volume_closed
 	REPLAY_IMAGE="${RUN_PATH}/replay.img"
 	COW_IMAGE="${RUN_PATH}/snapshot-cow.img"
 	[ ! -e "$REPLAY_IMAGE" ] || fail "replay_image_already_exists"
@@ -453,7 +569,7 @@ replay_t1()
 	LOOP_REPLAY="$(losetup --find --show --direct-io=on "$REPLAY_IMAGE")" ||
 		fail "replay_loop_direct_io_failed"
 	replay_next=0
-	printf 'entry,phase,kind,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
+	printf 'entry,phase,kind,stack_open,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
 	points=0
 	loss_points=0
 	setup_points=0
@@ -494,24 +610,70 @@ replay_t1()
 		dmsetup create "$SNAPSHOT_NAME" --table \
 			"0 $TEST_SECTORS snapshot $LOOP_REPLAY $LOOP_COW N 8" ||
 			fail "snapshot_device_create_failed"
-		if mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$SNAPSHOT_DEVICE" "$REPLAY_MOUNT" \
-			>"${RUN_PATH}/mount-$entry.log" 2>&1; then
-			mount_ok=yes
+		if open_t1_replay_stack "$entry"; then
+			if mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$REPLAY_DEVICE" "$REPLAY_MOUNT" \
+				>"${RUN_PATH}/mount-$entry.log" 2>&1; then
+				mount_ok=yes
+			else
+				mount_ok=no
+			fi
 		else
 			mount_ok=no
+			printf 'mount skipped because replay stack open failed\n' \
+				>"${RUN_PATH}/mount-$entry.log"
+		fi
+		FSCRYPT_REPLAY_KEY_ID=
+		if [ "$mount_ok" = yes ]; then
+			case "$CONFIG" in
+				E5|F5)
+					if FSCRYPT_REPLAY_KEY_ID="$(fscryptctl add_key "$REPLAY_MOUNT" \
+						<"$FSCRYPT_KEY" 2>"${RUN_PATH}/fscrypt-add-key-$entry.log")" &&
+					   [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
+						:
+					else
+						head -n 20 "${RUN_PATH}/fscrypt-add-key-$entry.log" |
+							while IFS= read -r line; do
+								console "T1_FSCRYPT_ADD_KEY_ERR entry=$entry $line"
+							done
+						fail "t1_replay_fscrypt_add_key_failed_entry=$entry"
+					fi
+					;;
+			esac
 		fi
 		result="$(check_manifest_at_point "$manifest_limit" "$mount_ok")"
 		IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF
 $result
 EOF
 		if [ "$mount_ok" = yes ]; then
+			if [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
+				fscryptctl remove_key "$FSCRYPT_REPLAY_KEY_ID" "$REPLAY_MOUNT" \
+					>"${RUN_PATH}/fscrypt-remove-key-$entry.log" 2>&1 ||
+					fail "t1_replay_fscrypt_remove_key_failed_entry=$entry"
+				FSCRYPT_REPLAY_KEY_ID=
+			fi
 			umount "$REPLAY_MOUNT" || fail "recovery_mount_unmount_failed"
 		fi
-		if fsck_volume "${RUN_PATH}/fsck-$entry.log" "$SNAPSHOT_DEVICE"; then
+		if [ "$stack_open" = no ]; then
+			fsck_status=skipped
+			printf 'fsck skipped because replay stack open failed\n' \
+				>"${RUN_PATH}/fsck-$entry.log"
+		elif fsck_volume "${RUN_PATH}/fsck-$entry.log" "$REPLAY_DEVICE"; then
 			fsck_status=0
 		else
 			fsck_status=$?
 		fi
+		close_t1_replay_stack
+		if ! snapshot_status="$(dmsetup status "$SNAPSHOT_NAME" \
+			2>"${RUN_PATH}/snapshot-status-$entry.log")"; then
+			fail "snapshot_status_failed_entry=$entry"
+		fi
+		printf '%s\n' "$snapshot_status" >"${RUN_PATH}/snapshot-status-$entry.log"
+		console "T1_SNAPSHOT_STATUS entry=$entry status=$snapshot_status"
+		case "$snapshot_status" in
+			*Invalid*|*Overflow*|*invalid*|*overflow*)
+				fail "snapshot_cow_overflow_entry=$entry"
+				;;
+		esac
 		if [ "$mount_ok" != yes ]; then
 			if [ "$point_phase" = setup ]; then
 				setup_mount_fail=$((setup_mount_fail + 1))
@@ -523,16 +685,18 @@ EOF
 					console "T1_MOUNT_ERR entry=$entry $line"
 				done
 		fi
-		if [ "$fsck_status" -ne 0 ]; then
+		if [ "$fsck_status" != 0 ]; then
 			if [ "$point_phase" = setup ]; then
 				setup_fsck_fail=$((setup_fsck_fail + 1))
 			else
 				workload_fsck_fail=$((workload_fsck_fail + 1))
 			fi
-			head -n 20 "${RUN_PATH}/fsck-$entry.log" |
-				while IFS= read -r line; do
-					console "T1_FSCK_ERR entry=$entry $line"
-				done
+			if [ "$fsck_status" != skipped ]; then
+				head -n 20 "${RUN_PATH}/fsck-$entry.log" |
+					while IFS= read -r line; do
+						console "T1_FSCK_ERR entry=$entry $line"
+					done
+			fi
 		fi
 		if [ "$manifest_ok" = no ]; then
 			loss_points=$((loss_points + 1))
@@ -548,25 +712,26 @@ EOF
 		esac
 		if [ "$final_point_validation" = yes ]; then
 			if [ "$TEST" = T1-negative-final ]; then
-				console "T1_NEGATIVE_FINAL_CHECK mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points"
-				if [ "$mount_ok" != yes ] || [ "$fsck_status" -ne 0 ] ||
+				console "T1_NEGATIVE_FINAL_CHECK stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points"
+				if [ "$mount_ok" != yes ] || [ "$fsck_status" != 0 ] ||
 				   [ "$manifest_ok" != no ]; then
 					fail "t1_negative_final_checker_validation_failed"
 				fi
 			else
-				console "T1_FINAL_CHECK path=dm-snapshot expected_files=$expected_ack_count actual_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok"
+				console "T1_FINAL_CHECK path=dm-snapshot expected_files=$expected_ack_count actual_files=$ack_count stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok"
 				if [ "$mount_ok" != yes ] || [ "$manifest_ok" != yes ] ||
-				   [ "$fsck_status" -ne 0 ] ||
+				   [ "$fsck_status" != 0 ] ||
 				   [ "$ack_count" -ne "$expected_ack_count" ]; then
 					fail "t1_final_checker_validation_failed"
 				fi
 			fi
 		fi
-		printf '%s,%s,%s,%s,%s,%s,%s\n' "$entry" "$point_phase" "$kind" \
-			"$ack_count" "$mount_ok" "$fsck_status" "$manifest_ok" >>"$T1_CSV"
+		printf '%s,%s,%s,%s,%s,%s,%s,%s\n' "$entry" "$point_phase" "$kind" \
+			"$stack_open" "$ack_count" "$mount_ok" "$fsck_status" "$manifest_ok" \
+			>>"$T1_CSV"
 		point_finished="$(date +%s)"
 		point_elapsed=$((point_finished - point_started))
-		console "T1_POINT entry=$entry phase=$point_phase kind=$kind snapshot=dm-snapshot checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
+		console "T1_POINT entry=$entry phase=$point_phase kind=$kind snapshot=dm-snapshot stack_open=$stack_open checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
 		dmsetup remove "$SNAPSHOT_NAME" ||
 			fail "snapshot_device_remove_failed"
 		losetup -d "$LOOP_COW" || fail "snapshot_cow_loop_detach_failed"
@@ -576,8 +741,8 @@ EOF
 	done <"$selected_points"
 	losetup -d "$LOOP_REPLAY" || fail "replay_loop_detach_failed"
 	LOOP_REPLAY=
-	console "T1_POINT_COUNT raw_flush_fua=$raw_total flush_entries=$flush_total fua_entries=$fua_total unique_points=$point_total selected_points=$points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail"
-	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail loss_points=$loss_points csv=$T1_CSV"
+	console "T1_POINT_COUNT raw_flush_fua=$raw_total flush_entries=$flush_total fua_entries=$fua_total unique_points=$point_total selected_points=$points candidate_setup_points=$candidate_setup_points candidate_workload_points=$candidate_workload_points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail"
+	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total candidate_setup_points=$candidate_setup_points candidate_workload_points=$candidate_workload_points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail loss_points=$loss_points csv=$T1_CSV"
 	case "$TEST" in
 	T1-negative|T1-negative-final)
 		if [ "$loss_points" -gt 0 ]; then
