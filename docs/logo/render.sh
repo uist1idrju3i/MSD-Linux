@@ -35,7 +35,7 @@ rsvg-convert -w 80 -h 80 msd-linux-mark.svg | \
 rsvg-convert -w 1280 -h 640 msd-linux-social-1280x640.svg -o msd-linux-social-1280x640.png
 test "$(wc -c < msd-linux-social-1280x640.png)" -lt 1000000
 
-# GitHub Pages のサイトでも同じロゴを使う。
+# 公開サイトでも同じロゴを使う。
 site_images=../../public_html/images
 mkdir -p "$site_images"
 cp msd-linux-logo.svg msd-linux-logo-dark.svg msd-linux-mark.svg \

@@ -67,7 +67,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 - 自明でない作業は調査して深い計画を立ててから着手します。計画はリポジトリにコミットせず、チャットで共有します。
 - 部品（application、library、toolchain、kernel、CI tool）を採用・追加・置換する前に、代替品、build option、実行時の設定項目を一次資料で全部調べ、採否と理由を表にします。手順は「component-options」スキルに従います。
 - 実験・測定・比較を行うときは「experiment-record」スキルに従い、条件、手順、生の値、結論、失敗した試行を `docs/experiments/` に残します。結果を PR 本文だけに書きません。
-- `public_html/` は GitHub Pages で公開するサイト専用です。文書は `docs/` に置き、`public_html/` にはサイトのファイル以外を置きません。`public_html/` を変えたら「site-review」スキルで、テキストブラウザーと小さな画面での見え方を確かめます。
+- `public_html/` は Cloudflare Pages で公開するサイト専用です。文書は `docs/` に置き、`public_html/` にはサイトのファイル以外を置きません。`public_html/` を変えたら「site-review」スキルで、テキストブラウザーと小さな画面での見え方を確かめます。
 - 文書の根拠に、VM や個人環境のパスを書きません。リポジトリ内のファイル、CI の成果物、公開 URL を示します。
 - `output*/` など数 GB の untracked ディレクトリが常にあるため、`git stash -u` は使いません（走査で無応答になります）。ブランチ切替は対象ファイルを add/commit するだけで済ませ、untracked はそのまま残します。
 - `vendor/` submodule の dirty（ビルド由来の変更）は commit しません。

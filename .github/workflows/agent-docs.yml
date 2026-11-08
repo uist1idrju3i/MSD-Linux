@@ -80,8 +80,8 @@ jobs:
       - name: 文書サイズ検査のテスト
         run: tests/check-doc-size/run.sh
 
-      - name: GitHub Pages サイトを検査する
+      - name: 公開サイトを検査する
         run: python3 .github/scripts/check-site.py
 
-      - name: GitHub Pages サイト検査のテスト
+      - name: 公開サイト検査のテスト
         run: tests/check-site/run.sh

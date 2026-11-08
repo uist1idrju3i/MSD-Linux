@@ -163,7 +163,7 @@
     },
     {
       "title": "CI/CD とサプライチェーン",
-      "purpose": ".github/workflows/agent-docs.yml の check（指示・skills・links・JIS・site検査）、.github/workflows/build.yml の changes・msd-update-tests・build（Buildroot、QEMU、SBOM）、.github/workflows/dev-image-scan.yml の scan（週次TrivyとIssue）、.github/workflows/lint.yml の lint・zizmor・dockerfile-lint、.github/workflows/pages.yml の build・deploy、.github/workflows/pins-check.yml の check、.github/workflows/publish-dev-image.yml の plan・build・gate（dev-image gate）・publish、.github/workflows/security.yml の scan（product CVE scan、2時間ごとの監視とPR差分gate）・report（Issue更新）、.github/workflows/site-status.yml の check（公開サイト状態確認）を、docs/CI.md とともに説明する",
+      "purpose": ".github/workflows/agent-docs.yml の check（指示・skills・links・JIS・site検査）、.github/workflows/build.yml の changes・msd-update-tests・build（Buildroot、QEMU、SBOM）、.github/workflows/dev-image-scan.yml の scan（週次TrivyとIssue）、.github/workflows/lint.yml の lint・zizmor・dockerfile-lint、.github/workflows/pins-check.yml の check、.github/workflows/publish-dev-image.yml の plan・build・gate（dev-image gate）・publish、.github/workflows/security.yml の scan（product CVE scan、2時間ごとの監視とPR差分gate）・report（Issue更新）、.github/workflows/site-status.yml の check（公開サイト状態確認）を、docs/CI.md とともに説明する",
       "page_notes": [
         {
           "content": "docs/CI.md、.github/workflows/、.github/zizmor-requirements.txt を根拠にしてください。"
@@ -182,10 +182,10 @@
     },
     {
       "title": "公式サイト（muromi.moe）",
-      "purpose": "public_html/ の静的サイトの目的、GitHub Actions での公開の流れ、公開前の検査とドメインの照合、ロゴの派生画像の作り方を説明する",
+      "purpose": "public_html/ の静的サイトの目的、Cloudflare Pages での公開、公開前の検査、ロゴの派生画像の作り方を説明する",
       "page_notes": [
         {
-          "content": "public_html/index.html、public_html/404.html、public_html/site.css、.github/workflows/pages.yml、.github/scripts/check-site.py、tests/check-site/run.sh、docs/CI.md の「GitHub Pages サイト」、docs/logo/README.md を根拠にしてください。ドメインは Pages の Settings と check-site.py の SITE_ORIGIN の2か所にあり、CNAME ファイルは使いません。サイトは JavaScript と外部資源を使いません。"
+          "content": "public_html/index.html、public_html/404.html、public_html/site.css、.github/scripts/check-site.py、tests/check-site/run.sh、docs/CI.md の「公開サイト」、docs/logo/README.md を根拠にしてください。ドメインは Cloudflare Pages の設定と check-site.py の SITE_ORIGIN で管理し、CNAME ファイルは使いません。サイトは JavaScript と外部資源を使いません。"
         }
       ]
     },
