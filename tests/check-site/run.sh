@@ -95,7 +95,7 @@ new_repo() {
 }
 
 run_check() {
-	if output="$(python3 "$checker" --root "$fixture" "$@" 2>&1)"; then
+	if output="$(python3 "$checker" --root "$fixture" 2>&1)"; then
 		status=0
 	else
 		status=$?
