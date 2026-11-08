@@ -14,14 +14,21 @@ DTB="${IMAGES_DIR}/bcm2710-rpi-3-b.dtb"
 
 usage()
 {
-	printf 'Usage: %s <config> <test> <run_id>\n' "${BASH_SOURCE[0]}" >&2
+	printf 'Usage: %s <config> <test> <run_id> [--points <entry,...>]\n' \
+		"${BASH_SOURCE[0]}" >&2
 	exit 2
 }
 
-[[ $# -eq 3 ]] || usage
+[[ $# -eq 3 || $# -eq 5 ]] || usage
 CONFIG=$1
 TEST=$2
 RUN_ID=$3
+T1_POINTS=
+if [[ $# -eq 5 ]]; then
+	[[ "$4" == --points && "$TEST" == T1-sample ]] || usage
+	T1_POINTS=$5
+	[[ "$T1_POINTS" =~ ^[0-9]+(,[0-9]+)*$ ]] || usage
+fi
 [[ "$CONFIG" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2])$ ]] || usage
 [[ "$TEST" =~ ^(smoke|T1|T1-negative|T1-final|T1-negative-final|T1-sample|T2|T3|T4-sync|T4-nosync|T4-idle-control|T4-odirect-control|T5|T6|T7)$ ]] || usage
 [[ "$RUN_ID" =~ ^[A-Za-z0-9._-]+$ ]] || usage
@@ -218,12 +225,22 @@ write_summary()
 finalize_run()
 {
 	local exit_code=$?
+	local setup_done_wait_seconds=''
 	trap - EXIT
 	set +e
 	if [[ -n "${VM_PID:-}" ]]; then
 		kill -KILL "$VM_PID" 2>/dev/null
 		wait "$VM_PID" 2>/dev/null
 		VM_PID=
+	fi
+	if [[ -f "$QEMU_LOG" && -f "${RUN_DIR}/run-meta.txt" ]]; then
+		setup_done_wait_seconds="$(sed -n \
+			's/.*setup_done_wait_seconds=\([0-9][0-9]*\).*/\1/p' "$QEMU_LOG" |
+			tail -n 1)"
+		if [[ -n "$setup_done_wait_seconds" ]]; then
+			printf 'setup_done_wait_seconds=%s\n' "$setup_done_wait_seconds" \
+				>>"${RUN_DIR}/run-meta.txt"
+		fi
 	fi
 	if ! write_summary "$exit_code"; then
 		printf 'Failed to write summary.csv under %s\n' "$RUN_DIR" >&2
@@ -297,6 +314,9 @@ truncate -s 8G "$IMAGE"
 
 {
 	printf 'config=%s\ntest=%s\nrun_id=%s\n' "$CONFIG" "$TEST" "$RUN_ID"
+	if [[ -n "$T1_POINTS" ]]; then
+		printf 'selected_points=%s\n' "$T1_POINTS"
+	fi
 	printf 'workload_size=%s\n' "$WORKLOAD_SIZE"
 	printf 'log_bytes=%s\n' "$LOG_BYTES"
 	if [[ "$WORKLOAD_SIZE" == t1-reduced ]]; then
@@ -335,6 +355,9 @@ start_vm()
 {
 	local phase=$1
 	local append="msd.fscmp=${CONFIG}:${TEST}:${RUN_ID}"
+	if [[ -n "$T1_POINTS" ]]; then
+		append+=" msd.fscmp.points=${T1_POINTS}"
+	fi
 	if [[ "$phase" == verify ]]; then
 		append+=" msd.fscmp.phase=verify"
 	fi

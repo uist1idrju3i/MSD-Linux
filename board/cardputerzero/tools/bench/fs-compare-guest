@@ -42,9 +42,10 @@ fail()
 	exit 1
 }
 
-[ "$#" -eq 2 ] || fail "invalid_arguments"
+[ "$#" -eq 2 ] || [ "$#" -eq 3 ] || fail "invalid_arguments"
 selection=$1
 phase=$2
+T1_POINTS=${3:-}
 case "$selection" in
 	*:*:*) ;;
 	*) fail "invalid_selection" ;;
@@ -62,6 +63,13 @@ case "$phase" in
 	run|verify) ;;
 	*) fail "invalid_phase" ;;
 esac
+case "$T1_POINTS" in
+	'') ;;
+	*[!0-9,]*|,*|*,|*,,*) fail "invalid_t1_points" ;;
+esac
+if [ -n "$T1_POINTS" ] && [ "$TEST" != T1-sample ]; then
+	fail "t1_points_require_sample_mode"
+fi
 
 tab="$(printf '\t')"
 row="$(awk -F '\t' -v id="$CONFIG" '$1 == id { print; count++ } END { if (count != 1) exit 1 }' "$CONFIGS")" ||
@@ -245,24 +253,59 @@ mark_t1_setup_done()
 		T1|T1-negative|T1-final|T1-negative-final|T1-sample) ;;
 		*) return ;;
 	esac
+	setup_done_started="$(date +%s)"
+	setup_done_deadline=$((setup_done_started + 900))
+	setup_done_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+		fail "t1_setup_done_status_failed"
+	case "$setup_done_status" in
+		*logging_disabled*) fail "t1_setup_done_logging_disabled" ;;
+	esac
+	setup_done_entries_before="$(printf '%s\n' "$setup_done_status" |
+		awk '$3 == "log-writes" { print $4; exit }')"
+	case "$setup_done_entries_before" in
+		''|*[!0-9]*) fail "t1_setup_done_status_invalid" ;;
+	esac
 	dmsetup message fscompare_log 0 mark setup-done ||
 		fail "t1_setup_done_mark_failed"
 	setup_done_entry=
-	setup_done_attempt=0
-	while [ "$setup_done_attempt" -lt 60 ]; do
-		if setup_done_entry="$("$REPLAY" --log "$LOG_FILE" --find \
+	while :; do
+		setup_done_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+			fail "t1_setup_done_status_failed"
+		case "$setup_done_status" in
+			*logging_disabled*)
+				console "T1_SETUP_DONE_WAIT logging_disabled status=$setup_done_status"
+				fail "t1_setup_done_logging_disabled"
+				;;
+		esac
+		setup_done_entries="$(printf '%s\n' "$setup_done_status" |
+			awk '$3 == "log-writes" { print $4; exit }')"
+		setup_done_used_sectors="$(printf '%s\n' "$setup_done_status" |
+			awk '$3 == "log-writes" { print $5; exit }')"
+		case "$setup_done_entries:$setup_done_used_sectors" in
+			*[!0-9:]*|:*|*:) fail "t1_setup_done_status_invalid" ;;
+		esac
+		if [ "$setup_done_entries" -gt "$setup_done_entries_before" ] &&
+		   setup_done_entry="$("$REPLAY" --log "$LOG_FILE" --find \
 			--end-mark setup-done 2>/dev/null)"; then
 			break
 		fi
 		setup_done_entry=
-		setup_done_attempt=$((setup_done_attempt + 1))
+		setup_done_now="$(date +%s)"
+		if [ "$setup_done_now" -ge "$setup_done_deadline" ]; then
+			setup_done_wait_seconds=$((setup_done_now - setup_done_started))
+			setup_done_log_used_bytes=$(((setup_done_used_sectors + 1) * 512))
+			console "T1_SETUP_DONE_WAIT timeout setup_done_wait_seconds=$setup_done_wait_seconds log_entries_before=$setup_done_entries_before log_entries_after=$setup_done_entries log_used_bytes=$setup_done_log_used_bytes"
+			fail "t1_setup_done_mark_not_found"
+		fi
 		sleep 1
 	done
-	[ -n "$setup_done_entry" ] || fail "t1_setup_done_mark_not_found"
 	case "$setup_done_entry" in
 		''|*[!0-9]*) fail "t1_setup_done_entry_invalid" ;;
 	esac
-	console "T1_SETUP_DONE entry=$setup_done_entry"
+	setup_done_now="$(date +%s)"
+	setup_done_wait_seconds=$((setup_done_now - setup_done_started))
+	setup_done_log_used_bytes=$(((setup_done_used_sectors + 1) * 512))
+	console "T1_SETUP_DONE entry=$setup_done_entry setup_done_wait_seconds=$setup_done_wait_seconds log_entries_before=$setup_done_entries_before log_entries_after=$setup_done_entries log_used_bytes=$setup_done_log_used_bytes"
 }
 
 prepare_test_volume()
@@ -361,8 +404,8 @@ create_mark_map()
 			continue
 		fi
 		if log_entry="$("$REPLAY" --log "$LOG_FILE" --find --end-mark "$marker" 2>/dev/null)"; then
-			printf '%s\t%s\t%s\t%s\t%s\n' "$sequence" "$path" "$hash" \
-				"$acknowledged" "$log_entry" >>"${RUN_PATH}/T1-markers.tsv"
+			printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$sequence" "$path" "$hash" \
+				"$acknowledged" "$log_entry" "$marker" >>"${RUN_PATH}/T1-markers.tsv"
 		else
 			console "T1_marker_missing marker=$marker"
 			marker_errors=$((marker_errors + 1))
@@ -398,28 +441,33 @@ find_replay_points()
 
 check_manifest_at_point()
 {
-	entry=$1
-	mount_ok=$2
+	point_entry=$1
+	manifest_limit=$2
+	mount_ok=$3
 	expected_file="${RUN_PATH}/T1-expected.tsv"
 	negative=0
 	case "$TEST" in
 		T1-negative|T1-negative-final) negative=1 ;;
 	esac
-	awk -F '\t' -v limit="$entry" -v negative="$negative" \
-		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3 } END { for (path in latest) print path "\t" latest[path] }' \
+	awk -F '\t' -v limit="$manifest_limit" -v negative="$negative" \
+		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3; latest_marker[$2] = $6; latest_entry[$2] = $5 } END { for (path in latest) print path "\t" latest[path] "\t" latest_marker[path] "\t" latest_entry[path] }' \
 		"${RUN_PATH}/T1-markers.tsv" >"$expected_file"
 	ack_count="$(wc -l <"$expected_file" | tr -d ' ')"
 	manifest_ok=not_mounted
 	if [ "$mount_ok" = yes ]; then
 		manifest_ok=yes
-		while IFS="$tab" read -r relative expected; do
+		while IFS="$tab" read -r relative expected marker marker_entry; do
 			[ -n "$relative" ] || continue
 			if [ ! -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ]; then
 				manifest_ok=no
+				console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=missing marker=$marker marker_entry=$marker_entry"
 				continue
 			fi
 			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
-			[ "$actual" = "$expected" ] || manifest_ok=no
+			if [ "$actual" != "$expected" ]; then
+				manifest_ok=no
+				console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry"
+			fi
 		done <"$expected_file"
 	fi
 	printf '%s\t%s\t%s\n' "$ack_count" "$manifest_ok" "$expected_file"
@@ -551,9 +599,28 @@ replay_t1()
 		all) cp "$all_points" "$selected_points" ;;
 		final) tail -n 1 "$all_points" >"$selected_points" ;;
 		sample)
-			awk -F '\t' -v total="$point_total" \
-				'NR == 1 || NR == int((total + 3) / 4) || NR == int((total + 1) / 2) || NR == int((3 * total + 3) / 4) || NR == total' \
-				"$all_points" >"$selected_points"
+			if [ -n "$T1_POINTS" ]; then
+				selected_entries="${RUN_PATH}/T1-selected-entry-list.txt"
+				printf '%s\n' "$T1_POINTS" | tr ',' '\n' >"$selected_entries"
+				previous_entry=-1
+				while IFS= read -r selected_entry; do
+					case "$selected_entry" in
+						''|*[!0-9]*) fail "invalid_t1_point=$selected_entry" ;;
+					esac
+					[ "$selected_entry" -gt "$previous_entry" ] ||
+						fail "t1_points_not_strictly_increasing"
+					if ! awk -F '\t' -v selected="$selected_entry" \
+						'$1 == selected { print; found = 1 } END { exit !found }' \
+						"$all_points" >>"$selected_points"; then
+						fail "t1_point_not_found=$selected_entry"
+					fi
+					previous_entry=$selected_entry
+				done <"$selected_entries"
+			else
+				awk -F '\t' -v total="$point_total" \
+					'NR == 1 || NR == int((total + 3) / 4) || NR == int((total + 1) / 2) || NR == int((3 * total + 3) / 4) || NR == total' \
+					"$all_points" >"$selected_points"
+			fi
 			;;
 		*) fail "unknown_t1_point_mode=$mode" ;;
 	esac
@@ -590,7 +657,7 @@ replay_t1()
 		fi
 		point_started="$(date +%s)"
 		limit=$((entry - replay_next + 1))
-		manifest_limit=$((entry + 1))
+		manifest_limit=$entry
 		[ "$limit" -gt 0 ] || fail "t1_replay_entry_not_increasing"
 		if "$REPLAY" --log "$LOG_FILE" --replay "$LOOP_REPLAY" \
 			--start-entry "$replay_next" --limit "$limit" \
@@ -640,7 +707,7 @@ replay_t1()
 					;;
 			esac
 		fi
-		result="$(check_manifest_at_point "$manifest_limit" "$mount_ok")"
+		result="$(check_manifest_at_point "$entry" "$manifest_limit" "$mount_ok")"
 		IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF
 $result
 EOF

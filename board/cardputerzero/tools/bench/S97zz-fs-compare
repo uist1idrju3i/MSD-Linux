@@ -8,4 +8,5 @@ esac
 selection="$(tr ' ' '\n' </proc/cmdline | sed -n 's/^msd\.fscmp=//p')"
 [ -n "$selection" ] || exit 0
 phase="$(tr ' ' '\n' </proc/cmdline | sed -n 's/^msd\.fscmp\.phase=//p')"
-exec /usr/libexec/fs-compare-guest "$selection" "${phase:-run}"
+points="$(tr ' ' '\n' </proc/cmdline | sed -n 's/^msd\.fscmp\.points=//p')"
+exec /usr/libexec/fs-compare-guest "$selection" "${phase:-run}" "$points"
