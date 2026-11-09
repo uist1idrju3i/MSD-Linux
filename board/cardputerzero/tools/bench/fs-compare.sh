@@ -487,17 +487,24 @@ case "$TEST" in
 		;;
 	*)
 		case "$TEST" in
-			T1|T1-negative|T1-final|T1-negative-final|T1-sample) timeout=14400 ;;
+			T1|T1-negative|T1-final|T1-negative-final|T1-sample)
+				case "$CONFIG" in
+					E4|F4|B4) timeout=28800 ;;
+					*) timeout=14400 ;;
+				esac
+				;;
 			T4-sync|T4-nosync) timeout=3600 ;;
 			T4-idle-control) timeout=1800 ;;
 			T6) timeout=1800 ;;
 			T7) timeout=7200 ;;
 			*) timeout=600 ;;
 		esac
-		if [[ "$TEST" == T7 ]]; then
-			printf 'test_timeout_seconds=%s\n' "$timeout" |
-				tee -a "${RUN_DIR}/run-meta.txt"
-		fi
+		case "$TEST" in
+			T1|T1-negative|T1-final|T1-negative-final|T1-sample|T7)
+				printf 'test_timeout_seconds=%s\n' "$timeout" |
+					tee -a "${RUN_DIR}/run-meta.txt"
+				;;
+		esac
 		if ! wait_for_marker 'msd.fscmp: finished' "$timeout"; then
 			printf 'Test did not finish; see %s\n' "$QEMU_LOG" >&2
 			stop_vm

@@ -112,6 +112,11 @@ SNAPSHOT_NAME=fscompare_snapshot
 SNAPSHOT_DEVICE="/dev/mapper/$SNAPSHOT_NAME"
 REPLAY_STACK_NAME=fscompare_replay_stack
 DM_NAME=
+W3_EXPECTED_FILE=
+W3_ACTUAL_TAIL=
+W3_EXPECTED_TAIL=
+W3_CYCLE=
+W3_MAX_RECORD=
 T1_CSV="${RUN_PATH}/T1-points.csv"
 
 if [ "$phase" = run ]; then
@@ -450,6 +455,8 @@ create_mark_map()
 		T1-negative|T1-negative-final) negative=1 ;;
 	esac
 	marker_errors=0
+	marker_lookup_started=
+	marker_lookup_deadline=
 	: >"${RUN_PATH}/T1-markers.tsv"
 	while IFS="$tab" read -r sequence workload _ path hash acknowledged marker; do
 		case "$sequence" in
@@ -459,18 +466,167 @@ create_mark_map()
 		   { [ "$negative" -ne 1 ] || [ "$workload" != W1 ]; }; then
 			continue
 		fi
-		if log_entry="$("$REPLAY" --log "$LOG_FILE" --find --end-mark "$marker" 2>/dev/null)"; then
-			printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$sequence" "$path" "$hash" \
-				"$acknowledged" "$log_entry" "$marker" >>"${RUN_PATH}/T1-markers.tsv"
-		else
-			console "T1_marker_missing marker=$marker"
-			marker_errors=$((marker_errors + 1))
-		fi
+		marker_waited=0
+		marker_wait_started=0
+		marker_entries_before=
+		while :; do
+			if log_entry="$("$REPLAY" --log "$LOG_FILE" --find \
+				--end-mark "$marker" 2>/dev/null)"; then
+				case "$log_entry" in
+					''|*[!0-9]*) fail "t1_marker_entry_invalid marker=$marker" ;;
+				esac
+				if [ "$marker_waited" -eq 1 ]; then
+					marker_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+						fail "t1_marker_status_failed marker=$marker"
+					case "$marker_status" in
+						*logging_disabled*)
+							console "T1_MARKER_WAIT logging_disabled marker=$marker status=$marker_status"
+							fail "t1_marker_logging_disabled marker=$marker"
+							;;
+					esac
+					marker_entries_after="$(printf '%s\n' "$marker_status" |
+						awk '$3 == "log-writes" { print $4; exit }')"
+					marker_used_sectors="$(printf '%s\n' "$marker_status" |
+						awk '$3 == "log-writes" { print $5; exit }')"
+					case "$marker_entries_after:$marker_used_sectors" in
+						*[!0-9:]*|:*|*:) fail "t1_marker_status_invalid marker=$marker" ;;
+					esac
+					if [ "$marker_entries_after" -le "$log_entry" ]; then
+						marker_now="$(date +%s)"
+						if [ "$marker_now" -ge "$marker_lookup_deadline" ]; then
+							marker_wait_seconds=$((marker_now - marker_wait_started))
+							marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+							console "T1_MARKER_WAIT timeout marker=$marker wait_seconds=$marker_wait_seconds log_entry=$log_entry log_entries_before=$marker_entries_before log_entries_after=$marker_entries_after log_used_bytes=$marker_log_used_bytes"
+							fail "t1_marker_lookup_failed_count=$((marker_errors + 1))"
+						fi
+						sleep 1
+						continue
+					fi
+					marker_wait_finished="$(date +%s)"
+					marker_wait_seconds=$((marker_wait_finished - marker_wait_started))
+					marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+					console "T1_MARKER_WAIT marker=$marker log_entry=$log_entry wait_seconds=$marker_wait_seconds log_entries_before=$marker_entries_before log_entries_after=$marker_entries_after log_used_bytes=$marker_log_used_bytes"
+				fi
+				printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$sequence" "$path" "$hash" \
+					"$acknowledged" "$log_entry" "$marker" >>"${RUN_PATH}/T1-markers.tsv"
+				break
+			fi
+			marker_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+				fail "t1_marker_status_failed marker=$marker"
+			case "$marker_status" in
+				*logging_disabled*)
+					console "T1_MARKER_WAIT logging_disabled marker=$marker status=$marker_status"
+					fail "t1_marker_logging_disabled marker=$marker"
+					;;
+			esac
+			marker_entries="$(printf '%s\n' "$marker_status" |
+				awk '$3 == "log-writes" { print $4; exit }')"
+			marker_used_sectors="$(printf '%s\n' "$marker_status" |
+				awk '$3 == "log-writes" { print $5; exit }')"
+			case "$marker_entries:$marker_used_sectors" in
+				*[!0-9:]*|:*|*:) fail "t1_marker_status_invalid marker=$marker" ;;
+			esac
+			if [ -z "$marker_entries_before" ]; then
+				marker_entries_before=$marker_entries
+			fi
+			marker_now="$(date +%s)"
+			if [ "$marker_wait_started" -eq 0 ]; then
+				marker_waited=1
+				marker_wait_started=$marker_now
+				if [ -z "$marker_lookup_started" ]; then
+					marker_lookup_started=$marker_now
+					marker_lookup_deadline=$((marker_lookup_started + 900))
+				fi
+			fi
+			if [ "$marker_now" -ge "$marker_lookup_deadline" ]; then
+				marker_wait_seconds=$((marker_now - marker_wait_started))
+				marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+				console "T1_MARKER_WAIT timeout marker=$marker wait_seconds=$marker_wait_seconds log_entries_before=$marker_entries_before log_entries_after=$marker_entries log_used_bytes=$marker_log_used_bytes"
+				fail "t1_marker_lookup_failed_count=$((marker_errors + 1))"
+			fi
+			sleep 1
+		done
 	done <"$MANIFEST"
+	if [ -n "$marker_lookup_started" ]; then
+		marker_lookup_finished="$(date +%s)"
+		marker_lookup_wait_seconds=$((marker_lookup_finished - marker_lookup_started))
+		console "T1_MARKER_LOOKUP_WAIT total_seconds=$marker_lookup_wait_seconds max_seconds=900"
+	fi
 	[ "$marker_errors" -eq 0 ] || fail "t1_marker_lookup_failed_count=$marker_errors"
 }
 
-find_replay_points()
+wait_for_t1_log_end()
+{
+	required_entry=${1:-0}
+	case "$required_entry" in
+		''|*[!0-9]*) fail "t1_log_end_required_entry_invalid=$required_entry" ;;
+	esac
+	max_marker_entry="$(awk -F '\t' \
+		'$5 ~ /^[0-9]+$/ && $5 + 0 > max { max = $5 + 0 } END { print max + 0 }' \
+		"${RUN_PATH}/T1-markers.tsv")"
+	required_log_end_entry=$max_marker_entry
+	if [ "$required_entry" -gt "$required_log_end_entry" ]; then
+		required_log_end_entry=$required_entry
+	fi
+	if [ -z "$t1_log_end_wait_started" ]; then
+		t1_log_end_wait_started="$(date +%s)"
+		t1_log_end_deadline=$((t1_log_end_wait_started + 900))
+	fi
+	wait_started=$t1_log_end_wait_started
+	deadline=$t1_log_end_deadline
+	previous_entries=
+	stable_polls=0
+	while :; do
+		log_end_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+			fail "t1_log_end_status_failed"
+		case "$log_end_status" in
+			*logging_disabled*)
+				console "T1_LOG_END_WAIT logging_disabled status=$log_end_status"
+				fail "t1_log_end_logging_disabled"
+				;;
+		esac
+		log_end_entries="$(printf '%s\n' "$log_end_status" |
+			awk '$3 == "log-writes" { print $4; exit }')"
+		log_end_used_sectors="$(printf '%s\n' "$log_end_status" |
+			awk '$3 == "log-writes" { print $5; exit }')"
+		case "$log_end_entries:$log_end_used_sectors" in
+			*[!0-9:]*|:*|*:) fail "t1_log_end_status_invalid" ;;
+		esac
+		if [ "$log_end_entries" -gt "$required_log_end_entry" ]; then
+			if [ "$log_end_entries" = "$previous_entries" ]; then
+				stable_polls=$((stable_polls + 1))
+			else
+				stable_polls=0
+			fi
+			previous_entries=$log_end_entries
+			if [ "$stable_polls" -ge 2 ]; then
+				break
+			fi
+		else
+			previous_entries=$log_end_entries
+			stable_polls=0
+		fi
+		wait_now="$(date +%s)"
+		if [ "$wait_now" -ge "$deadline" ]; then
+			wait_seconds=$((wait_now - wait_started))
+			log_used_bytes=$(((log_end_used_sectors + 1) * 512))
+			console "T1_LOG_END_WAIT timeout wait_seconds=$wait_seconds max_seconds=900 log_entries=$log_end_entries max_marker_entry=$max_marker_entry required_entry=$required_entry log_used_bytes=$log_used_bytes"
+			fail "t1_log_end_wait_timeout"
+		fi
+		sleep 1
+	done
+	wait_finished="$(date +%s)"
+	wait_seconds=$((wait_finished - wait_started))
+	t1_log_end_entry=$((log_end_entries - 1))
+	[ "$t1_log_end_entry" -ge "$max_marker_entry" ] ||
+		fail "t1_log_end_before_last_marker"
+	[ "$t1_log_end_entry" -ge "$required_entry" ] ||
+		fail "t1_log_end_before_required_entry"
+	log_used_bytes=$(((log_end_used_sectors + 1) * 512))
+	console "T1_LOG_END entry=$t1_log_end_entry log_entries=$log_end_entries wait_seconds=$wait_seconds max_marker_entry=$max_marker_entry required_entry=$required_entry stable_polls=$stable_polls log_used_bytes=$log_used_bytes"
+}
+
+collect_replay_points()
 {
 	raw_points="${RUN_PATH}/T1-points-raw.tsv"
 	: >"$raw_points"
@@ -493,6 +649,124 @@ find_replay_points()
 			{ print current, kinds; current = $1; kinds = $2 }
 			END { if (NR) print current, kinds }
 		' >"${RUN_PATH}/T1-points.tsv"
+	last_point_entry="$(awk -F '\t' 'END { if (NF) print $1 }' \
+		"${RUN_PATH}/T1-points.tsv")"
+}
+
+find_replay_points()
+{
+	collect_replay_points
+	while [ -n "$last_point_entry" ] &&
+	      [ "$t1_log_end_entry" -lt "$last_point_entry" ]; do
+		console "T1_LOG_END_WAIT_FOR_POINT required_entry=$last_point_entry current_entry=$t1_log_end_entry"
+		wait_for_t1_log_end "$last_point_entry"
+		collect_replay_points
+	done
+	if [ -n "$last_point_entry" ] &&
+	   [ "$t1_log_end_entry" -lt "$last_point_entry" ]; then
+		fail "t1_log_end_before_last_flush_fua"
+	fi
+	if [ "$t1_log_end_entry" != "$last_point_entry" ]; then
+		printf '%s\tlog-end\n' "$t1_log_end_entry" \
+			>>"${RUN_PATH}/T1-points.tsv"
+		console "T1_LOG_END_POINT entry=$t1_log_end_entry previous_point=${last_point_entry:-none}"
+	fi
+}
+
+prepare_w3_expected_file()
+{
+	w3_latest_marker="$(awk -F '\t' \
+		'$2 == "W3/append.log" && $6 ~ /^w3-record-/ && $6 > latest { latest = $6 } END { print latest }' \
+		"${RUN_PATH}/T1-markers.tsv")"
+	[ -n "$w3_latest_marker" ] || fail "t1_w3_latest_marker_missing"
+	w3_cycle_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $3 }')"
+	w3_record_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $4 }')"
+	case "$w3_cycle_raw:$w3_record_raw" in
+		*[!0-9:]*|:*|*:) fail "t1_w3_latest_marker_invalid=$w3_latest_marker" ;;
+	esac
+	W3_CYCLE="$(printf '%s\n' "$w3_cycle_raw" | awk '{ print $1 + 0 }')"
+	W3_MAX_RECORD="$(printf '%s\n' "$w3_record_raw" | awk '{ print $1 + 0 }')"
+	W3_EXPECTED_FILE="${RUN_PATH}/T1-w3-expected.bin"
+	W3_ACTUAL_TAIL="${RUN_PATH}/T1-w3-actual-tail.bin"
+	W3_EXPECTED_TAIL="${RUN_PATH}/T1-w3-expected-tail.bin"
+	: >"$W3_EXPECTED_FILE"
+	w3_record=1
+	while [ "$w3_record" -le "$W3_MAX_RECORD" ]; do
+		{
+			printf '%010d %010d\n' "$W3_CYCLE" "$w3_record"
+			printf '\000'
+			printf '%105s' ''
+		} >>"$W3_EXPECTED_FILE"
+		w3_record=$((w3_record + 1))
+	done
+	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
+	[ "$w3_expected_bytes" -eq "$((W3_MAX_RECORD * 128))" ] ||
+		fail "t1_w3_expected_size_invalid"
+	: >"$W3_ACTUAL_TAIL"
+	: >"$W3_EXPECTED_TAIL"
+	console "T1_W3_EXPECTED cycle=$W3_CYCLE max_record=$W3_MAX_RECORD bytes=$w3_expected_bytes"
+}
+
+validate_w3_file()
+{
+	w3_file=$1
+	w3_expected_hash=$2
+	w3_marker=$3
+	w3_marker_entry=$4
+	w3_point_entry=$5
+	w3_marker_cycle_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $3 }')"
+	w3_marker_record_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $4 }')"
+	case "$w3_marker_cycle_raw:$w3_marker_record_raw" in
+		*[!0-9:]*|:*|*:)
+			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_marker"
+			return 1
+			;;
+	esac
+	w3_marker_cycle="$(printf '%s\n' "$w3_marker_cycle_raw" | awk '{ print $1 + 0 }')"
+	w3_marker_record="$(printf '%s\n' "$w3_marker_record_raw" | awk '{ print $1 + 0 }')"
+	if [ "$w3_marker_cycle" -ne "$W3_CYCLE" ] ||
+	   [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ]; then
+		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=marker_out_of_range"
+		return 1
+	fi
+	w3_prefix_bytes=$((w3_marker_record * 128))
+	w3_actual_bytes="$(wc -c <"$w3_file" | tr -d '[:space:]')"
+	case "$w3_actual_bytes" in
+		''|*[!0-9]*)
+			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_file_size"
+			return 1
+			;;
+	esac
+	if [ "$w3_actual_bytes" -lt "$w3_prefix_bytes" ]; then
+		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry expected_prefix_bytes=$w3_prefix_bytes actual_bytes=$w3_actual_bytes"
+		return 1
+	fi
+	w3_actual_prefix_hash="$(head -c "$w3_prefix_bytes" "$w3_file" |
+		sha256sum | awk '{ print $1 }')"
+	if [ "$w3_actual_prefix_hash" != "$w3_expected_hash" ]; then
+		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry expected_prefix_sha256=$w3_expected_hash actual_prefix_sha256=$w3_actual_prefix_hash"
+		return 1
+	fi
+	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
+	if [ "$w3_actual_bytes" -gt "$w3_expected_bytes" ]; then
+		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=tail_exceeds_final_record actual_bytes=$w3_actual_bytes expected_max_bytes=$w3_expected_bytes"
+		return 1
+	fi
+	w3_tail_bytes=$((w3_actual_bytes - w3_prefix_bytes))
+	if [ "$w3_tail_bytes" -gt 0 ]; then
+		: >"$W3_ACTUAL_TAIL"
+		: >"$W3_EXPECTED_TAIL"
+		if ! dd if="$w3_file" of="$W3_ACTUAL_TAIL" bs=1 \
+			skip="$w3_prefix_bytes" count="$w3_tail_bytes" 2>/dev/null ||
+		   ! dd if="$W3_EXPECTED_FILE" of="$W3_EXPECTED_TAIL" bs=1 \
+			skip="$w3_prefix_bytes" count="$w3_tail_bytes" 2>/dev/null ||
+		   ! cmp -s "$W3_ACTUAL_TAIL" "$W3_EXPECTED_TAIL"; then
+			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_deterministic_tail tail_bytes=$w3_tail_bytes"
+			return 1
+		fi
+		console "T1_MANIFEST_TAIL entry=$w3_point_entry path=W3/append.log marker=$w3_marker marker_entry=$w3_marker_entry prefix_bytes=$w3_prefix_bytes tail_bytes=$w3_tail_bytes deterministic=yes"
+	fi
+	return 0
 }
 
 check_manifest_at_point()
@@ -506,13 +780,13 @@ check_manifest_at_point()
 		T1-negative|T1-negative-final) negative=1 ;;
 	esac
 	awk -F '\t' -v limit="$manifest_limit" -v negative="$negative" \
-		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3; latest_marker[$2] = $6; latest_entry[$2] = $5 } END { for (path in latest) print path "\t" latest[path] "\t" latest_marker[path] "\t" latest_entry[path] }' \
+		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3; latest_marker[$2] = $6; latest_entry[$2] = $5; latest_sequence[$2] = $1 } END { for (path in latest) print path "\t" latest[path] "\t" latest_marker[path] "\t" latest_entry[path] "\t" latest_sequence[path] }' \
 		"${RUN_PATH}/T1-markers.tsv" >"$expected_file"
 	ack_count="$(wc -l <"$expected_file" | tr -d ' ')"
 	manifest_ok=not_mounted
 	if [ "$mount_ok" = yes ]; then
 		manifest_ok=yes
-		while IFS="$tab" read -r relative expected marker marker_entry; do
+		while IFS="$tab" read -r relative expected marker marker_entry marker_sequence; do
 			[ -n "$relative" ] || continue
 			if [ ! -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ]; then
 				manifest_ok=no
@@ -521,8 +795,33 @@ check_manifest_at_point()
 			fi
 			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
 			if [ "$actual" != "$expected" ]; then
-				manifest_ok=no
-				console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry"
+				case "$relative" in
+					W2/target.dat)
+						matched_update="$(awk -F '\t' \
+							-v start="$marker_sequence" -v hash="$actual" \
+							'$1 + 0 >= start + 0 && $2 == "W2/target.dat" && $3 == hash && $4 == 1 { print $6 "\t" $5; exit }' \
+							"${RUN_PATH}/T1-markers.tsv")"
+						if [ -n "$matched_update" ]; then
+							IFS="$tab" read -r matched_marker matched_entry <<EOF
+$matched_update
+EOF
+							console "T1_MANIFEST_ADVANCE entry=$point_entry path=$relative expected_marker=$marker expected_marker_entry=$marker_entry matched_marker=$matched_marker matched_marker_entry=$matched_entry"
+						else
+							manifest_ok=no
+							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+						fi
+						;;
+					W3/append.log)
+						if ! validate_w3_file "${REPLAY_WORKLOAD_ROOT}/${relative}" \
+							"$expected" "$marker" "$marker_entry" "$point_entry"; then
+							manifest_ok=no
+						fi
+						;;
+					*)
+						manifest_ok=no
+						console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+						;;
+				esac
 			fi
 		done <"$expected_file"
 	fi
@@ -638,6 +937,13 @@ replay_t1()
 {
 	mode=${1:-all}
 	create_mark_map
+	t1_log_end_wait_started=
+	t1_log_end_deadline=
+	wait_for_t1_log_end
+	case "$TEST" in
+		T1-negative|T1-negative-final) ;;
+		*) prepare_w3_expected_file ;;
+	esac
 	expected_ack_count="$(awk -F '\t' '$4 == 1 { paths[$2] = 1 } END { for (path in paths) count++; print count + 0 }' \
 		"${RUN_PATH}/T1-markers.tsv")"
 	find_replay_points
