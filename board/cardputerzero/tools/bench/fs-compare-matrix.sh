@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../../../.." && pwd -P)"
 CONFIGS_FILE="${SCRIPT_DIR}/fs-compare-configs.tsv"
 FS_COMPARE="${SCRIPT_DIR}/fs-compare.sh"
-SUMMARY_HEADER='run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail'
+SUMMARY_HEADER='run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds'
 
 DEFAULT_RUNS_DIR="${HOME:-${REPO_ROOT}}/fscmp/runs"
 RUNS_DIR="${FS_COMPARE_RUNS_DIR:-${QEMU_LOG_DIR:-${DEFAULT_RUNS_DIR}}}"
@@ -268,7 +268,7 @@ read_summary()
 	SUMMARY_ROW="$(tail -n 1 "$summary_file")"
 	[[ -n "$SUMMARY_ROW" ]] || return 1
 	field_count="$(awk -F, '{ print NF }' <<<"$SUMMARY_ROW")"
-	[[ "$field_count" == 34 ]] || return 1
+	[[ "$field_count" == 35 ]] || return 1
 	SUMMARY_RUN_ID="$(cut -d, -f1 <<<"$SUMMARY_ROW")"
 	SUMMARY_CONFIG="$(cut -d, -f2 <<<"$SUMMARY_ROW")"
 	SUMMARY_TEST="$(cut -d, -f3 <<<"$SUMMARY_ROW")"
@@ -511,7 +511,7 @@ append_synthetic_failure()
 {
 	local config=$1 test=$2 run_id=$3 wall=$4
 	local -a fields=("$run_id" "$config" "$test" fail:summary_missing "$wall")
-	while ((${#fields[@]} < 34)); do
+	while ((${#fields[@]} < 35)); do
 		fields+=("")
 	done
 	local IFS=,

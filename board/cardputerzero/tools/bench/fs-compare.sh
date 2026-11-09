@@ -94,7 +94,7 @@ write_summary()
 	local lost_records='' lost_seconds='' fsync_lost='' read_result=''
 	local scrub_corrected='' scrub_uncorrectable='' fsck_detection='' repaired=''
 	local mkfs_seconds='' mount_seconds='' fsck_seconds='' mem_available_kb=''
-	local line='' ns=''
+	local setup_seconds='' completion_marker='msd.fscmp: finished' line='' ns=''
 
 	if [[ -f "${RUN_DIR}/run-meta.txt" ]]; then
 		wall="$(sed -n 's/^wall_seconds=//p' "${RUN_DIR}/run-meta.txt" | tail -n1)"
@@ -110,7 +110,10 @@ write_summary()
 			wall=$((SECONDS - RUN_START_SECONDS))
 		fi
 	fi
-	if ((exit_code == 0)) && grep -aFq 'msd.fscmp: finished' "$QEMU_LOG"; then
+	case "$TEST" in
+		T2|T3) completion_marker='msd.fscmp: recovery_finished' ;;
+	esac
+	if ((exit_code == 0)) && grep -aFq "$completion_marker" "$QEMU_LOG"; then
 		status=ok
 	else
 		if ((exit_code >= 129 && exit_code <= 255)); then
@@ -201,15 +204,40 @@ write_summary()
 		line="$(grep -a 'TIMER command=mount ' "$QEMU_LOG" | head -n1)"
 		ns="$(field_from_line "$line" elapsed_ns)"
 		[[ -n "$ns" ]] && mount_seconds="$(awk -v ns="$ns" 'BEGIN { printf "%.3f", ns / 1000000000 }')"
-		line="$(grep -aE 'TIMER command=(e2fsck|btrfs)' "$QEMU_LOG" | head -n1)"
+		line="$(grep -aE 'TIMER command=(e2fsck|fsck\.f2fs|btrfs)' "$QEMU_LOG" | head -n1)"
 		ns="$(field_from_line "$line" elapsed_ns)"
 		[[ -n "$ns" ]] && fsck_seconds="$(awk -v ns="$ns" 'BEGIN { printf "%.3f", ns / 1000000000 }')"
+		setup_seconds="$(awk '
+			/T7_SETUP_DONE/ { complete = 1; exit }
+			/TIMER command=/ {
+				command = ""
+				elapsed_ns = ""
+				for (i = 1; i <= NF; i++) {
+					if ($i ~ /^command=/) {
+						command = $i
+						sub(/^command=/, "", command)
+					}
+					if ($i ~ /^elapsed_ns=/) {
+						elapsed_ns = $i
+						sub(/^elapsed_ns=/, "", elapsed_ns)
+					}
+				}
+				if (command !~ /^mkfs\./ && command != "mount" && elapsed_ns ~ /^[0-9]+$/) {
+					total_ns += elapsed_ns
+				}
+			}
+			END {
+				if (complete) {
+					printf "%.3f", total_ns / 1000000000
+				}
+			}
+		' "$QEMU_LOG")"
 		mem_available_kb="$(sed -n 's/.*T7_MEMAVAILABLE value=\([0-9][0-9]*\) kB.*/\1/p' "$QEMU_LOG" | tail -n1)"
 	fi
 
-	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail\n' \
+	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds\n' \
 		>"${RUN_DIR}/summary.csv"
-	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
 		"$RUN_ID" "$CONFIG" "$TEST" "$status" "$wall" "$workload_size" \
 		"$points" "$loss_points" "$mount_fail" "$fsck_fail" "$recovered" \
 		"$manifest_ok" "$quiesce_seconds" "$quiesce_write_ios" \
@@ -219,7 +247,7 @@ write_summary()
 		"$scrub_uncorrectable" "$fsck_detection" "$repaired" \
 		"$mkfs_seconds" "$mount_seconds" "$fsck_seconds" \
 		"$mem_available_kb" "$setup_points" "$setup_mount_fail" \
-		"$setup_fsck_fail" >>"${RUN_DIR}/summary.csv"
+		"$setup_fsck_fail" "$setup_seconds" >>"${RUN_DIR}/summary.csv"
 }
 
 finalize_run()
@@ -405,7 +433,12 @@ case "$TEST" in
 			start_marker='msd.fscmp: writer-start'
 			delay="$(shuf -i 30-90 -n 1)"
 		fi
-		if ! wait_for_marker "$start_marker" 180; then
+		start_marker_timeout=900
+		recovery_marker_timeout=900
+		printf 'start_marker_timeout_seconds=%s\nrecovery_marker_timeout_seconds=%s\n' \
+			"$start_marker_timeout" "$recovery_marker_timeout" \
+			>>"${RUN_DIR}/run-meta.txt"
+		if ! wait_for_marker "$start_marker" "$start_marker_timeout"; then
 			printf 'Timed out waiting for %s; see %s\n' "$start_marker" "$QEMU_LOG" >&2
 			stop_vm
 			exit 1
@@ -415,7 +448,7 @@ case "$TEST" in
 		stop_vm
 		cp "$QEMU_LOG" "${RUN_DIR}/qemu-before-reboot.log"
 		start_vm verify
-		if ! wait_for_marker 'msd.fscmp: recovery_finished' 300; then
+		if ! wait_for_marker 'msd.fscmp: recovery_finished' "$recovery_marker_timeout"; then
 			printf 'Recovery did not finish; see %s\n' "$QEMU_LOG" >&2
 			stop_vm
 			exit 1
@@ -455,11 +488,16 @@ case "$TEST" in
 	*)
 		case "$TEST" in
 			T1|T1-negative|T1-final|T1-negative-final|T1-sample) timeout=14400 ;;
-			T4-sync|T4-nosync) timeout=1500 ;;
+			T4-sync|T4-nosync) timeout=3600 ;;
 			T4-idle-control) timeout=1800 ;;
-			T6|T7) timeout=1800 ;;
+			T6) timeout=1800 ;;
+			T7) timeout=7200 ;;
 			*) timeout=600 ;;
 		esac
+		if [[ "$TEST" == T7 ]]; then
+			printf 'test_timeout_seconds=%s\n' "$timeout" |
+				tee -a "${RUN_DIR}/run-meta.txt"
+		fi
 		if ! wait_for_marker 'msd.fscmp: finished' "$timeout"; then
 			printf 'Test did not finish; see %s\n' "$QEMU_LOG" >&2
 			stop_vm
