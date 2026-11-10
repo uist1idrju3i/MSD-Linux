@@ -8,6 +8,8 @@
 |---|---|---|---|---|
 | [2026-11-09-phase0-filesystem-compare](2026-11-09-phase0-filesystem-compare.md) | なし | 2026-11-08 - 2026-11-09 | 完了（QEMU、phase-0） | T1-final、mode=all、計測器の制御結果と失敗runを統合。B2の16 failuresをsetup phaseに分類。L3非同期mark待ちとF1 manifest境界を修正。L3 mode=allは未完了、残る14構成のmode=allと実SD電源断は未実施。 |
 | [2026-11-09-phase1-pilot](2026-11-09-phase1-pilot.md) | なし | 2026-11-09 | 完了（QEMU、6構成） | T2/T3/T4-sync/T5/T6/T7の36最終plan entriesが成功。T6 mapping、4 GiB T7 setup時間、mapper統計、retryを記録。全20構成の620-row matrixと実SD電源断は未実施。 |
+| [2026-11-10-phase1-matrix-r2](2026-11-10-phase1-matrix-r2.md) | なし | 2026-11-09 - 2026-11-10 | 完了（QEMU、20構成、I2 T1 retryは運用停止） | 620 plan rowsを実行し、最終attemptは619成功、I2 T1だけ既知timeoutのためretryを運用停止。全T1-T7 metrics、失敗attempt、部分summaryの注意点を記録。実SD電源断は未実施。 |
+| [2026-11-10-phase1-t2-manifest-recheck](2026-11-10-phase1-t2-manifest-recheck.md) | なし | 2026-11-10 | 完了（QEMU、T2追試） | E5/F5/F3でrecoveredは各20/20。manifest_okはE5/F3が20/20、F5が19/20で、F5のW3 hash不一致を記録。E1 T1負対照はlossを検出。実SD電源断は未実施。 |
 | [2026-11-03-ci-cache-and-parallel](2026-11-03-ci-cache-and-parallel.md) | なし | 2026-11-03 | host回帰・実Dockerの機能検証 | 文書のみのskip、製品・未知・失敗時のbuild、完全一致archive、2並列runnerと負対照を確認。GitHub cacheの長期hit率・総費用・短縮率は未測定。 |
 | [2026-11-03-maintenance-followup](2026-11-03-maintenance-followup.md) | なし | 2026-11-03 | host・静的回帰 | 3 suite各5回、署名300 command、分類5改変の検出。OpenSSLの版と保守期限・取得失敗・週次通知を分離。製品の依存版は変更していない。 |
 | [2026-11-03-sbom-cve-monitor](2026-11-03-sbom-cve-monitor.md) | なし | 2026-11-03 | OCI pipeline・CPython・PR gate比較 | depth-1 NVD clone 5回の中央値156.062秒でcacheなし。SBOM 67件、VEX 16,047件。CPython 3.11とのsemantic tuple 16,421件が一致。PR gateのbase/headは各149 findingsで差分0、終了コード0。 |
