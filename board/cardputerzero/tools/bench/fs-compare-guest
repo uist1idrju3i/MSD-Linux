@@ -18,6 +18,9 @@ REPLAY="${SCRIPT_DIR}/replay-log"
 TEST_BYTES=$((256 * 1024 * 1024))
 TEST_SECTORS=$((TEST_BYTES / 512))
 COW_BYTES=$((64 * 1024 * 1024))
+W3_RECORD_SIZE=128
+W3_SYNC_INTERVAL=50
+W3_FULL_RECORDS=1000
 RUNS_DIR=/data/fs-compare
 
 console()
@@ -420,8 +423,10 @@ verify_manifest()
 	: >"$inflight_file"
 	awk -F '\t' -v inflight_file="$inflight_file" '
 		NR > 1 {
-			if ($6 == 1 && $4 != ".")
+			if ($6 == 1 && $4 != ".") {
 				latest[$4] = $5
+				latest_marker[$4] = $7
+			}
 			if ($2 == "W2" && $3 == "atomic_update" &&
 			    $4 == "W2/target.dat" && $6 == 1) {
 				waiting_for_w2 = 1
@@ -440,7 +445,7 @@ verify_manifest()
 		}
 		END {
 			for (path in latest)
-				print path "\t" latest[path]
+				print path "\t" latest[path] "\t" latest_marker[path]
 			if (inflight_hash != "")
 				print inflight_hash "\t" inflight_marker >inflight_file
 		}
@@ -452,7 +457,7 @@ verify_manifest()
 	fi
 	manifest_ok=yes
 	checked=0
-	while IFS="$tab" read -r relative expected; do
+	while IFS="$tab" read -r relative expected marker; do
 		[ -n "$relative" ] || continue
 		checked=$((checked + 1))
 		if [ ! -f "${WORKLOAD_ROOT}/${relative}" ]; then
@@ -461,16 +466,30 @@ verify_manifest()
 			continue
 		fi
 		actual="$(sha256sum "${WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
-		if [ "$actual" != "$expected" ]; then
-			if [ "$relative" = W2/target.dat ] &&
-			   [ "$actual" = "$w2_inflight_hash" ] &&
-			   [ -n "$w2_inflight_marker" ]; then
-				console "manifest_w2_inflight_durable path=W2/target.dat marker=$w2_inflight_marker"
-			else
-				console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual"
-				manifest_ok=no
-			fi
-		fi
+		case "$relative" in
+			W3/append.log)
+				if ! prepare_w3_expected_file "$marker" \
+					"$W3_FULL_RECORDS" || ! validate_w3_file \
+					"${WORKLOAD_ROOT}/${relative}" "$expected" "$marker"; then
+					console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual marker=$marker reason=${w3_validation_detail:-w3_validation_failed}"
+					manifest_ok=no
+				elif [ "$w3_tail_records" -gt 0 ]; then
+					console "manifest_w3_tail_durable path=W3/append.log records=$w3_tail_records"
+				fi
+				;;
+			*)
+				if [ "$actual" != "$expected" ]; then
+					if [ "$relative" = W2/target.dat ] &&
+					   [ "$actual" = "$w2_inflight_hash" ] &&
+					   [ -n "$w2_inflight_marker" ]; then
+						console "manifest_w2_inflight_durable path=W2/target.dat marker=$w2_inflight_marker"
+					else
+						console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual"
+						manifest_ok=no
+					fi
+				fi
+				;;
+		esac
 	done <"${RUN_PATH}/manifest-latest.tsv"
 	console "manifest_ok=$manifest_ok files=$checked"
 	[ "$manifest_ok" = yes ]
@@ -728,36 +747,64 @@ find_replay_points()
 
 prepare_w3_expected_file()
 {
-	w3_latest_marker="$(awk -F '\t' \
-		'$2 == "W3/append.log" && $6 ~ /^w3-record-/ && $6 > latest { latest = $6 } END { print latest }' \
-		"${RUN_PATH}/T1-markers.tsv")"
-	[ -n "$w3_latest_marker" ] || fail "t1_w3_latest_marker_missing"
+	w3_latest_marker=$1
+	w3_max_record_arg=${2:-}
+	w3_context=${3:-}
+	w3_validation_detail=
+	[ -n "$w3_latest_marker" ] || {
+		w3_validation_detail=missing_marker
+		return 1
+	}
 	w3_cycle_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $3 }')"
 	w3_record_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $4 }')"
 	case "$w3_cycle_raw:$w3_record_raw" in
-		*[!0-9:]*|:*|*:) fail "t1_w3_latest_marker_invalid=$w3_latest_marker" ;;
+		*[!0-9:]*|:*|*:)
+			w3_validation_detail=invalid_marker
+			return 1
+			;;
 	esac
 	W3_CYCLE="$(printf '%s\n' "$w3_cycle_raw" | awk '{ print $1 + 0 }')"
-	W3_MAX_RECORD="$(printf '%s\n' "$w3_record_raw" | awk '{ print $1 + 0 }')"
-	W3_EXPECTED_FILE="${RUN_PATH}/T1-w3-expected.bin"
-	W3_ACTUAL_TAIL="${RUN_PATH}/T1-w3-actual-tail.bin"
-	W3_EXPECTED_TAIL="${RUN_PATH}/T1-w3-expected-tail.bin"
+	w3_marker_record="$(printf '%s\n' "$w3_record_raw" | awk '{ print $1 + 0 }')"
+	if [ -n "$w3_max_record_arg" ]; then
+		case "$w3_max_record_arg" in
+			*[!0-9]*)
+				w3_validation_detail=invalid_max_record
+				return 1
+				;;
+		esac
+		W3_MAX_RECORD=$w3_max_record_arg
+	else
+		W3_MAX_RECORD=$w3_marker_record
+	fi
+	if [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ] ||
+	   [ "$W3_MAX_RECORD" -eq 0 ]; then
+		w3_validation_detail=marker_out_of_range
+		return 1
+	fi
+	W3_EXPECTED_FILE="${RUN_PATH}/W3-expected.bin"
+	W3_ACTUAL_TAIL="${RUN_PATH}/W3-actual-tail.bin"
+	W3_EXPECTED_TAIL="${RUN_PATH}/W3-expected-tail.bin"
 	: >"$W3_EXPECTED_FILE"
 	w3_record=1
 	while [ "$w3_record" -le "$W3_MAX_RECORD" ]; do
 		{
 			printf '%010d %010d\n' "$W3_CYCLE" "$w3_record"
 			printf '\000'
-			printf '%105s' ''
+			printf '%*s' "$((W3_RECORD_SIZE - 23))" ''
 		} >>"$W3_EXPECTED_FILE"
 		w3_record=$((w3_record + 1))
 	done
 	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
-	[ "$w3_expected_bytes" -eq "$((W3_MAX_RECORD * 128))" ] ||
-		fail "t1_w3_expected_size_invalid"
+	[ "$w3_expected_bytes" -eq "$((W3_MAX_RECORD * W3_RECORD_SIZE))" ] || {
+		w3_validation_detail=invalid_expected_size
+		return 1
+	}
 	: >"$W3_ACTUAL_TAIL"
 	: >"$W3_EXPECTED_TAIL"
-	console "T1_W3_EXPECTED cycle=$W3_CYCLE max_record=$W3_MAX_RECORD bytes=$w3_expected_bytes"
+	if [ "$w3_context" = T1 ]; then
+		console "T1_W3_EXPECTED cycle=$W3_CYCLE max_record=$W3_MAX_RECORD bytes=$w3_expected_bytes"
+	fi
+	return 0
 }
 
 validate_w3_file()
@@ -765,47 +812,54 @@ validate_w3_file()
 	w3_file=$1
 	w3_expected_hash=$2
 	w3_marker=$3
-	w3_marker_entry=$4
-	w3_point_entry=$5
+	w3_validation_detail=
+	w3_actual_prefix_hash=
+	w3_tail_records=0
 	w3_marker_cycle_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $3 }')"
 	w3_marker_record_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $4 }')"
 	case "$w3_marker_cycle_raw:$w3_marker_record_raw" in
 		*[!0-9:]*|:*|*:)
-			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_marker"
+			w3_validation_detail=invalid_marker
 			return 1
 			;;
 	esac
 	w3_marker_cycle="$(printf '%s\n' "$w3_marker_cycle_raw" | awk '{ print $1 + 0 }')"
 	w3_marker_record="$(printf '%s\n' "$w3_marker_record_raw" | awk '{ print $1 + 0 }')"
 	if [ "$w3_marker_cycle" -ne "$W3_CYCLE" ] ||
-	   [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ]; then
-		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=marker_out_of_range"
+	   [ "$w3_marker_record" -eq 0 ] ||
+	   [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ] ||
+	   [ $((w3_marker_record % W3_SYNC_INTERVAL)) -ne 0 ]; then
+		w3_validation_detail=marker_out_of_range
 		return 1
 	fi
-	w3_prefix_bytes=$((w3_marker_record * 128))
+	w3_prefix_bytes=$((w3_marker_record * W3_RECORD_SIZE))
 	w3_actual_bytes="$(wc -c <"$w3_file" | tr -d '[:space:]')"
 	case "$w3_actual_bytes" in
 		''|*[!0-9]*)
-			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_file_size"
+			w3_validation_detail=invalid_file_size
 			return 1
 			;;
 	esac
 	if [ "$w3_actual_bytes" -lt "$w3_prefix_bytes" ]; then
-		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry expected_prefix_bytes=$w3_prefix_bytes actual_bytes=$w3_actual_bytes"
+		w3_validation_detail=file_shorter_than_prefix
 		return 1
 	fi
 	w3_actual_prefix_hash="$(head -c "$w3_prefix_bytes" "$w3_file" |
 		sha256sum | awk '{ print $1 }')"
 	if [ "$w3_actual_prefix_hash" != "$w3_expected_hash" ]; then
-		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry expected_prefix_sha256=$w3_expected_hash actual_prefix_sha256=$w3_actual_prefix_hash"
+		w3_validation_detail=prefix_hash_mismatch
 		return 1
 	fi
 	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
 	if [ "$w3_actual_bytes" -gt "$w3_expected_bytes" ]; then
-		console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=tail_exceeds_final_record actual_bytes=$w3_actual_bytes expected_max_bytes=$w3_expected_bytes"
+		w3_validation_detail=tail_exceeds_final_record
 		return 1
 	fi
 	w3_tail_bytes=$((w3_actual_bytes - w3_prefix_bytes))
+	if [ $((w3_tail_bytes % W3_RECORD_SIZE)) -ne 0 ]; then
+		w3_validation_detail=partial_record_tail
+		return 1
+	fi
 	if [ "$w3_tail_bytes" -gt 0 ]; then
 		: >"$W3_ACTUAL_TAIL"
 		: >"$W3_EXPECTED_TAIL"
@@ -814,10 +868,10 @@ validate_w3_file()
 		   ! dd if="$W3_EXPECTED_FILE" of="$W3_EXPECTED_TAIL" bs=1 \
 			skip="$w3_prefix_bytes" count="$w3_tail_bytes" 2>/dev/null ||
 		   ! cmp -s "$W3_ACTUAL_TAIL" "$W3_EXPECTED_TAIL"; then
-			console "T1_MANIFEST_FAIL entry=$w3_point_entry path=W3/append.log reason=hash_mismatch marker=$w3_marker marker_entry=$w3_marker_entry detail=invalid_deterministic_tail tail_bytes=$w3_tail_bytes"
+			w3_validation_detail=invalid_deterministic_tail
 			return 1
 		fi
-		console "T1_MANIFEST_TAIL entry=$w3_point_entry path=W3/append.log marker=$w3_marker marker_entry=$w3_marker_entry prefix_bytes=$w3_prefix_bytes tail_bytes=$w3_tail_bytes deterministic=yes"
+		w3_tail_records=$((w3_tail_bytes / W3_RECORD_SIZE))
 	fi
 	return 0
 }
@@ -863,11 +917,14 @@ EOF
 							manifest_ok=no
 							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
 						fi
-						;;
+					;;
 					W3/append.log)
 						if ! validate_w3_file "${REPLAY_WORKLOAD_ROOT}/${relative}" \
-							"$expected" "$marker" "$marker_entry" "$point_entry"; then
+							"$expected" "$marker"; then
+							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry detail=$w3_validation_detail expected_prefix_sha256=$expected actual_prefix_sha256=${w3_actual_prefix_hash:-none}"
 							manifest_ok=no
+						elif [ "$w3_tail_records" -gt 0 ]; then
+							console "T1_MANIFEST_TAIL entry=$point_entry path=$relative marker=$marker marker_entry=$marker_entry prefix_bytes=$w3_prefix_bytes tail_bytes=$w3_tail_bytes records=$w3_tail_records deterministic=yes"
 						fi
 						;;
 					*)
@@ -995,7 +1052,15 @@ replay_t1()
 	wait_for_t1_log_end
 	case "$TEST" in
 		T1-negative|T1-negative-final) ;;
-		*) prepare_w3_expected_file ;;
+		*)
+			w3_latest_marker="$(awk -F '\t' \
+				'$2 == "W3/append.log" && $6 ~ /^w3-record-/ && $6 > latest { latest = $6 } END { print latest }' \
+				"${RUN_PATH}/T1-markers.tsv")"
+			[ -n "$w3_latest_marker" ] ||
+				fail "t1_w3_latest_marker_missing"
+			prepare_w3_expected_file "$w3_latest_marker" "" T1 ||
+				fail "t1_w3_latest_marker_invalid=$w3_latest_marker"
+			;;
 	esac
 	expected_ack_count="$(awk -F '\t' '$4 == 1 { paths[$2] = 1 } END { for (path in paths) count++; print count + 0 }' \
 		"${RUN_PATH}/T1-markers.tsv")"
