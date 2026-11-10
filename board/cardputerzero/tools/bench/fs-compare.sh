@@ -143,7 +143,11 @@ write_summary()
 				[[ -n "$points" ]] ||
 					points="$(grep -aEc 'T1_POINT ' "$QEMU_LOG" || true)"
 				[[ -n "$loss_points" ]] ||
-					loss_points="$(grep -aEc 'T1_POINT .*manifest=no' "$QEMU_LOG" || true)"
+					loss_points="$(awk '/T1_POINT / {
+						for (i = 1; i <= NF; i++)
+							if ($i == "manifest=no")
+								count++
+					} END { print count + 0 }' "$QEMU_LOG")"
 				[[ -n "$mount_fail" ]] ||
 					mount_fail="$(grep -aEc 'T1_POINT .*phase=workload .*mount=no' "$QEMU_LOG" || true)"
 				[[ -n "$fsck_fail" ]] ||
@@ -490,6 +494,7 @@ case "$TEST" in
 			T1|T1-negative|T1-final|T1-negative-final|T1-sample)
 				case "$CONFIG" in
 					E4|F4|B4) timeout=28800 ;;
+					I2) timeout=43200 ;;
 					*) timeout=14400 ;;
 				esac
 				;;

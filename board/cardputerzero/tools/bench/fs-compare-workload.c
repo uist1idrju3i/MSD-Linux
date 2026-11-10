@@ -336,9 +336,10 @@ static void run_w2(const char *root, const char *manifest, const char *device,
 			close(fd);
 			fail("fsync_w2_temp");
 		}
+		sha256_bytes(buffer, sizeof(buffer), hash);
 		snprintf(marker, sizeof(marker), "w2-temp-%03u-%03u", cycle, index);
 		record_event(manifest, device, sequence, "W2", "temp_fsync",
-			     "W2/target.tmp", "-", 0, marker);
+			     "W2/target.tmp", hash, 0, marker);
 		if (close(fd) < 0)
 			fail("close_w2_temp");
 		if (renameat(directory_fd, "target.tmp", directory_fd,
@@ -346,7 +347,6 @@ static void run_w2(const char *root, const char *manifest, const char *device,
 			fail("rename_w2_target");
 		if (fsync(directory_fd) < 0)
 			fail("fsync_w2_directory");
-		sha256_bytes(buffer, sizeof(buffer), hash);
 		snprintf(relative, sizeof(relative), "W2/target.dat");
 		snprintf(marker, sizeof(marker), "w2-update-%03u-%03u", cycle,
 			 index);

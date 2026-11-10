@@ -141,16 +141,28 @@ make_keyfiles()
 	case "$CONFIG" in
 		L*|B5)
 			if [ ! -s "$KEYFILE" ]; then
-				head -c 64 /dev/urandom >"$KEYFILE"
-				chmod 0600 "$KEYFILE"
+				head -c 64 /dev/urandom >"$KEYFILE" ||
+					fail "keyfile_create_failed"
+				chmod 0600 "$KEYFILE" ||
+					fail "keyfile_chmod_failed"
+				fsync "$KEYFILE" ||
+					fail "keyfile_fsync_failed"
+				fsync "$RUN_PATH" ||
+					fail "keyfile_directory_fsync_failed"
 			fi
 			;;
 	esac
 	case "$CONFIG" in
 		E5|F5)
 			if [ ! -s "$FSCRYPT_KEY" ]; then
-				head -c 64 /dev/urandom >"$FSCRYPT_KEY"
-				chmod 0600 "$FSCRYPT_KEY"
+				head -c 64 /dev/urandom >"$FSCRYPT_KEY" ||
+					fail "keyfile_create_failed"
+				chmod 0600 "$FSCRYPT_KEY" ||
+					fail "keyfile_chmod_failed"
+				fsync "$FSCRYPT_KEY" ||
+					fail "keyfile_fsync_failed"
+				fsync "$RUN_PATH" ||
+					fail "keyfile_directory_fsync_failed"
 			fi
 			;;
 	esac
@@ -261,7 +273,10 @@ mount_volume()
 				-e "s|%MOUNTPOINT%|$MOUNTPOINT|g")"
 		# shellcheck disable=SC2086
 		set -- $post_mount
-		"$@"
+		"$@" || {
+			console "fscrypt_policy_failed path=${MOUNTPOINT}/encrypted"
+			fail "fscrypt_policy_failed"
+		}
 		WORKLOAD_ROOT="${MOUNTPOINT}/encrypted"
 	fi
 	return 0
@@ -401,8 +416,40 @@ verify_manifest()
 		console "manifest_ok=no reason=missing"
 		return 1
 	}
-	awk -F '\t' 'NR > 1 && $6 == 1 && $4 != "." { latest[$4] = $5 } END { for (path in latest) print path "\t" latest[path] }' \
-		"$MANIFEST" >"${RUN_PATH}/manifest-latest.tsv"
+	inflight_file="${RUN_PATH}/manifest-w2-inflight.tsv"
+	: >"$inflight_file"
+	awk -F '\t' -v inflight_file="$inflight_file" '
+		NR > 1 {
+			if ($6 == 1 && $4 != ".")
+				latest[$4] = $5
+			if ($2 == "W2" && $3 == "atomic_update" &&
+			    $4 == "W2/target.dat" && $6 == 1) {
+				waiting_for_w2 = 1
+				inflight_hash = ""
+				inflight_marker = ""
+			} else if (waiting_for_w2 && $2 == "W2" &&
+				   $3 == "temp_fsync" && $4 == "W2/target.tmp" &&
+				   $6 == 0) {
+				if (length($5) == 64 && $5 ~ /^[0-9a-f]+$/ &&
+				    $7 ~ /^w2-temp-[0-9][0-9][0-9]-[0-9][0-9][0-9]$/) {
+					inflight_hash = $5
+					inflight_marker = $7
+				}
+				waiting_for_w2 = 0
+			}
+		}
+		END {
+			for (path in latest)
+				print path "\t" latest[path]
+			if (inflight_hash != "")
+				print inflight_hash "\t" inflight_marker >inflight_file
+		}
+	' "$MANIFEST" >"${RUN_PATH}/manifest-latest.tsv"
+	w2_inflight_hash=
+	w2_inflight_marker=
+	if [ -s "$inflight_file" ]; then
+		IFS="$tab" read -r w2_inflight_hash w2_inflight_marker <"$inflight_file"
+	fi
 	manifest_ok=yes
 	checked=0
 	while IFS="$tab" read -r relative expected; do
@@ -415,8 +462,14 @@ verify_manifest()
 		fi
 		actual="$(sha256sum "${WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
 		if [ "$actual" != "$expected" ]; then
-			console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual"
-			manifest_ok=no
+			if [ "$relative" = W2/target.dat ] &&
+			   [ "$actual" = "$w2_inflight_hash" ] &&
+			   [ -n "$w2_inflight_marker" ]; then
+				console "manifest_w2_inflight_durable path=W2/target.dat marker=$w2_inflight_marker"
+			else
+				console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual"
+				manifest_ok=no
+			fi
 		fi
 	done <"${RUN_PATH}/manifest-latest.tsv"
 	console "manifest_ok=$manifest_ok files=$checked"
