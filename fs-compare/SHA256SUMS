@@ -1,0 +1,5 @@
+9c6e8b2c36b0a0d8ba523b6fb4664d7d25d2245ba8cc0ce1379469f7003e462a  ./phase0.tar.zst
+427c5bc1dc1323908d2a402b6f8e2876fd270e29ef563a004567f466ae41cc68  ./phase1-pilot-and-fixes.tar.zst
+5138e019255284911bbee38a3cddcdf350b0c62c6d17f6cca4c206ea6a46aa79  ./phase1-r2.tar.zst
+82d3d03ef3fdd5fe97a78657e17ae250d4c8b48a863b528ab04fd3e94559e09f  ./phase1-r3-t2-invalid.tar.zst
+8562cc86cdd3c37d2b425f49a963eeb29cd42a3c503f83ae1ddfed1689faf569  ./t2fix-check.tar.zst
