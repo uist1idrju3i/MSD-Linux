@@ -4,14 +4,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../../../.." && pwd -P)"
 CONFIGS_FILE="${SCRIPT_DIR}/fs-compare-configs.tsv"
+VARIANTS_FILE="${SCRIPT_DIR}/fs-compare-phase2-variants.tsv"
 FS_COMPARE="${SCRIPT_DIR}/fs-compare.sh"
-SUMMARY_HEADER='run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds'
+SUMMARY_HEADER='run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds,base_config,variant_id'
 
 DEFAULT_RUNS_DIR="${HOME:-${REPO_ROOT}}/fscmp/runs"
 RUNS_DIR="${FS_COMPARE_RUNS_DIR:-${QEMU_LOG_DIR:-${DEFAULT_RUNS_DIR}}}"
 MATRIX_ID=
 JOBS=4
 GENERATE_PHASE1=0
+GENERATE_PHASE2=0
 PLAN_FILE=
 
 usage()
@@ -19,11 +21,13 @@ usage()
 	cat >&2 <<EOF
 Usage:
   ${BASH_SOURCE[0]} --generate-phase1
+  ${BASH_SOURCE[0]} --generate-phase2
   ${BASH_SOURCE[0]} [-j N] [--matrix-id ID] [--runs-dir DIR] PLAN.tsv
 
 PLAN.tsv contains config<TAB>test<TAB>repetition rows. The generated plan
 is written to stdout and can be saved, for example, with:
   ${BASH_SOURCE[0]} --generate-phase1 > phase1-plan.tsv
+  ${BASH_SOURCE[0]} --generate-phase2 > phase2-plan.tsv
 EOF
 	exit "${1:-2}"
 }
@@ -38,6 +42,10 @@ while (($#)); do
 	case "$1" in
 		--generate-phase1)
 			GENERATE_PHASE1=1
+			shift
+			;;
+		--generate-phase2)
+			GENERATE_PHASE2=1
 			shift
 			;;
 		-j|--jobs)
@@ -76,6 +84,7 @@ if (($#)); then
 	[[ -z "$PLAN_FILE" && $# -eq 1 ]] || usage
 	PLAN_FILE=$1
 fi
+((GENERATE_PHASE1 + GENERATE_PHASE2 <= 1)) || usage
 
 if ((GENERATE_PHASE1)); then
 	[[ -z "$PLAN_FILE" ]] || usage
@@ -122,6 +131,31 @@ if ((GENERATE_PHASE1)); then
 	exit 0
 fi
 
+if ((GENERATE_PHASE2)); then
+	[[ -z "$PLAN_FILE" ]] || usage
+	[[ -r "$VARIANTS_FILE" ]] || die "phase-2 variants list not found"
+	mapfile -t variant_rows < <(
+		awk -F '\t' '$1 ~ /^P[0-9]{3}$/ { print $1 "\t" $5 }' \
+			"$VARIANTS_FILE"
+	)
+	((${#variant_rows[@]} == 130)) ||
+		die "expected 130 phase-2 variants, found ${#variant_rows[@]}"
+	for row in "${variant_rows[@]}"; do
+		IFS=$'\t' read -r config tests <<<"$row"
+		for repetition in 1 2 3 4 5; do
+			printf '%s\tT3\t%s\n' "$config" "$repetition"
+		done
+		printf '%s\tT4-sync\t1\n' "$config"
+		printf '%s\tT5\t1\n' "$config"
+		case "$tests" in
+			std) ;;
+			std+T6) printf '%s\tT6\t1\n' "$config" ;;
+			*) die "unsupported tests value for $config: $tests" ;;
+		esac
+	done
+	exit 0
+fi
+
 [[ "$JOBS" =~ ^[1-9][0-9]*$ ]] || die "-j must be a positive integer"
 [[ -n "$PLAN_FILE" && -r "$PLAN_FILE" ]] || usage
 [[ "$RUNS_DIR" == /* ]] || die "--runs-dir must be an absolute path"
@@ -136,8 +170,15 @@ mapfile -t CONFIG_IDS < <(
 	awk -F '\t' '$1 != "id" && $1 !~ /^#/ && $1 != "" { print $1 }' \
 		"$CONFIGS_FILE"
 )
+[[ -r "$VARIANTS_FILE" ]] || die "phase-2 variants list not found"
+mapfile -t VARIANT_IDS < <(
+	awk -F '\t' '$1 ~ /^P[0-9]{3}$/ { print $1 }' "$VARIANTS_FILE"
+)
 declare -A VALID_CONFIG=()
 for config in "${CONFIG_IDS[@]}"; do
+	VALID_CONFIG["$config"]=1
+done
+for config in "${VARIANT_IDS[@]}"; do
 	VALID_CONFIG["$config"]=1
 done
 
@@ -160,7 +201,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 	IFS=$'\t' read -r config test repetition extra <<<"$line"
 	[[ -z "${extra:-}" && -n "$config" && -n "$test" && -n "$repetition" ]] ||
 		die "plan row must have exactly three non-empty columns: $line"
-	[[ "$config" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2])$ ]] ||
+	[[ "$config" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2]|P[0-9]{3})$ ]] ||
 		die "invalid configuration in plan: $config"
 	[[ -n "${VALID_CONFIG[$config]+yes}" ]] ||
 		die "unknown configuration in plan: $config"
@@ -268,7 +309,7 @@ read_summary()
 	SUMMARY_ROW="$(tail -n 1 "$summary_file")"
 	[[ -n "$SUMMARY_ROW" ]] || return 1
 	field_count="$(awk -F, '{ print NF }' <<<"$SUMMARY_ROW")"
-	[[ "$field_count" == 35 ]] || return 1
+	[[ "$field_count" == 37 ]] || return 1
 	SUMMARY_RUN_ID="$(cut -d, -f1 <<<"$SUMMARY_ROW")"
 	SUMMARY_CONFIG="$(cut -d, -f2 <<<"$SUMMARY_ROW")"
 	SUMMARY_TEST="$(cut -d, -f3 <<<"$SUMMARY_ROW")"
@@ -511,7 +552,7 @@ append_synthetic_failure()
 {
 	local config=$1 test=$2 run_id=$3 wall=$4
 	local -a fields=("$run_id" "$config" "$test" fail:summary_missing "$wall")
-	while ((${#fields[@]} < 35)); do
+	while ((${#fields[@]} < 37)); do
 		fields+=("")
 	done
 	local IFS=,

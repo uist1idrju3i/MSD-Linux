@@ -77,18 +77,24 @@ fi
 tab="$(printf '\t')"
 row="$(awk -F '\t' -v id="$CONFIG" '$1 == id { print; count++ } END { if (count != 1) exit 1 }' "$CONFIGS")" ||
 	fail "unknown_config"
-IFS="$tab" read -r _ SETUP MOUNT_OPTIONS <<EOF
+IFS="$tab" read -r _ SETUP MOUNT_OPTIONS BASE_CONFIG VARIANT_KIND \
+	VARIANT_VALUE <<EOF
 $row
 EOF
+BASE_CONFIG=${BASE_CONFIG:-$CONFIG}
+VARIANT_KIND=${VARIANT_KIND:-none}
+VARIANT_VALUE=${VARIANT_VALUE:-none}
+VARIANT_ID=none
+[ "$VARIANT_KIND" = none ] || VARIANT_ID=$CONFIG
 
-case "$CONFIG" in
+case "$BASE_CONFIG" in
 	E*) FS_TYPE=ext4 ;;
 	F*) FS_TYPE=f2fs ;;
 	B*) FS_TYPE=btrfs ;;
 	L*|I*) FS_TYPE=ext4 ;;
 	*) fail "unknown_filesystem" ;;
 esac
-case "$CONFIG" in
+case "$BASE_CONFIG" in
 	L*|B5) MAPPER_NAME=fscompare_crypt; FS_DEVICE="/dev/mapper/$MAPPER_NAME" ;;
 	I*) MAPPER_NAME=fscompare_integrity; FS_DEVICE="/dev/mapper/$MAPPER_NAME" ;;
 	*) MAPPER_NAME=; FS_DEVICE= ;;
@@ -141,7 +147,7 @@ report_version dmsetup dmsetup version
 
 make_keyfiles()
 {
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5)
 			if [ ! -s "$KEYFILE" ]; then
 				head -c 64 /dev/urandom >"$KEYFILE" ||
@@ -155,7 +161,7 @@ make_keyfiles()
 			fi
 			;;
 	esac
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		E5|F5)
 			if [ ! -s "$FSCRYPT_KEY" ]; then
 				head -c 64 /dev/urandom >"$FSCRYPT_KEY" ||
@@ -193,7 +199,7 @@ run_setup_commands()
 			set -- $step
 			"$@"
 		done
-	if [ "$CONFIG" = L3 ] || [ "$CONFIG" = B5 ]; then
+	if [ "$BASE_CONFIG" = L3 ] || [ "$BASE_CONFIG" = B5 ]; then
 		cryptsetup luksDump "$STACK_BASE" >"${RUN_PATH}/luksDump.txt"
 		grep -E 'Cipher:|Key:' "${RUN_PATH}/luksDump.txt" |
 			while IFS= read -r line; do console "luksDump $line"; done
@@ -243,21 +249,139 @@ attach_test_disk()
 	LOOP_DATA="$(losetup --find --show --direct-io=on "$DISK_FILE")" ||
 		fail "losetup_direct_io_failed"
 	STACK_BASE=$LOOP_DATA
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5) ;;
 		*) FS_DEVICE=$LOOP_DATA ;;
 	esac
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5)
 			if [ "$phase" = verify ]; then
 				make_keyfiles
-				case "$CONFIG" in
+				case "$BASE_CONFIG" in
 					L*|B5) cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ;;
 					I1) integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ;;
 					I2) integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ;;
 				esac
 			fi
 			;;
+	esac
+}
+
+apply_variant_after_mount()
+{
+	variant_setting=
+	variant_value=
+	variant_path=
+	variant_actual=
+	variant_device=
+	variant_step=
+	variant_scheduler_actual=not_applicable
+	variant_scheduler_path=
+	case "$VARIANT_KIND" in
+		none) return 0 ;;
+		setup_replace|mount_add|mount_replace|mount_remove)
+			console "variant_applied_by=host kind=$VARIANT_KIND id=$VARIANT_ID"
+			;;
+		post_mount)
+			variant_step="$(printf '%s' "$VARIANT_VALUE" |
+				sed "s|%MOUNTPOINT%|$MOUNTPOINT|g")"
+			# These are argv-only post-mount steps; no shell command is evaluated.
+			# shellcheck disable=SC2086
+			set -- $variant_step
+			case "$1" in
+				chattr)
+					shift
+					chattr "$@" || fail "variant_post_mount_failed"
+					;;
+				*) fail "variant_post_mount_unsupported=$1" ;;
+			esac
+			console "variant_applied id=$VARIANT_ID kind=post_mount readback=applied"
+			;;
+		f2fs_sysfs|queue|sysctl)
+			case "$VARIANT_VALUE" in
+				*=*)
+					variant_setting=${VARIANT_VALUE%%=*}
+					variant_value=${VARIANT_VALUE#*=}
+					;;
+				*) fail "variant_setting_invalid=$VARIANT_VALUE" ;;
+			esac
+			[ -n "$variant_setting" ] && [ -n "$variant_value" ] ||
+				fail "variant_setting_invalid=$VARIANT_VALUE"
+			case "$VARIANT_KIND" in
+				f2fs_sysfs)
+					[ "$FS_TYPE" = f2fs ] ||
+						fail "variant_sysfs_requires_f2fs"
+					case "$variant_setting" in
+						*[!A-Za-z0-9_]*|'') fail "variant_sysfs_attr_invalid" ;;
+					esac
+					variant_device=${FS_DEVICE##*/}
+					variant_path="/sys/fs/f2fs/$variant_device/$variant_setting"
+					;;
+				queue)
+					case "$variant_setting" in
+						*[!A-Za-z0-9_./-]*|*..*|'')
+							fail "variant_queue_attr_invalid"
+							;;
+					esac
+					variant_device=${LOOP_DATA##*/}
+					if [ "${variant_setting%%/*}" = iosched ]; then
+						variant_scheduler_path="/sys/block/$variant_device/queue/scheduler"
+						[ -e "$variant_scheduler_path" ] ||
+							fail "variant_scheduler_missing=$variant_scheduler_path"
+						variant_scheduler_actual="$(cat "$variant_scheduler_path")" ||
+							fail "variant_scheduler_readback_failed"
+						case "$variant_scheduler_actual" in
+							*"[mq-deadline]"*) ;;
+							*mq-deadline*)
+								printf '%s\n' mq-deadline >"$variant_scheduler_path" ||
+									fail "variant_scheduler_write_failed"
+								variant_scheduler_actual="$(cat "$variant_scheduler_path")" ||
+									fail "variant_scheduler_readback_failed"
+								case "$variant_scheduler_actual" in
+									*"[mq-deadline]"*) ;;
+									*) fail "variant_scheduler_readback_mismatch=$variant_scheduler_actual" ;;
+								esac
+								;;
+							*) fail "variant_scheduler_unavailable=mq-deadline available=$variant_scheduler_actual" ;;
+						esac
+					fi
+					variant_path="/sys/block/$variant_device/queue/$variant_setting"
+					;;
+				sysctl)
+					case "$variant_setting" in
+						*[!A-Za-z0-9_.]*|*..*|'')
+							fail "variant_sysctl_key_invalid"
+							;;
+					esac
+					sysctl -w "$variant_setting=$variant_value" >/dev/null ||
+						fail "variant_sysctl_write_failed"
+					variant_actual="$(sysctl -n "$variant_setting")" ||
+						fail "variant_sysctl_readback_failed"
+					;;
+			esac
+			if [ "$VARIANT_KIND" != sysctl ]; then
+				[ -e "$variant_path" ] ||
+					fail "variant_attribute_missing=$variant_path"
+				printf '%s\n' "$variant_value" >"$variant_path" ||
+					fail "variant_write_failed=$variant_path"
+				variant_actual="$(cat "$variant_path")" ||
+					fail "variant_readback_failed=$variant_path"
+			fi
+			case "$variant_setting" in
+				scheduler)
+					case "$variant_actual" in
+						*"[${variant_value}]"*) ;;
+						*) fail "variant_readback_mismatch=$variant_actual" ;;
+					esac
+					;;
+				*)
+					[ "$variant_actual" = "$variant_value" ] ||
+						fail "variant_readback_mismatch=$variant_actual"
+					;;
+			esac
+			console "variant_applied id=$VARIANT_ID kind=$VARIANT_KIND setting=$variant_setting requested=$variant_value readback=$variant_actual scheduler_readback=$variant_scheduler_actual"
+			;;
+		*) fail "variant_kind_unsupported=$VARIANT_KIND" ;;
 	esac
 }
 
@@ -282,6 +406,7 @@ mount_volume()
 		}
 		WORKLOAD_ROOT="${MOUNTPOINT}/encrypted"
 	fi
+	apply_variant_after_mount
 	return 0
 }
 
@@ -306,6 +431,7 @@ mount_volume_timed()
 		run_timed_step "$@"
 		WORKLOAD_ROOT="${MOUNTPOINT}/encrypted"
 	fi
+	apply_variant_after_mount
 	return 0
 }
 
@@ -320,7 +446,7 @@ setup_log_writes()
 		fail "dm_log_writes_create_failed"
 	DM_NAME=fscompare_log
 	STACK_BASE=/dev/mapper/fscompare_log
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5) ;;
 		*) FS_DEVICE=$STACK_BASE ;;
 	esac
@@ -952,7 +1078,7 @@ close_t1_original_volume()
 	if mounted_at "$MOUNTPOINT"; then
 		fail "t1_original_mount_still_mounted"
 	fi
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5)
 			dmsetup info "$MAPPER_NAME" >/dev/null 2>&1 ||
 				fail "t1_original_stack_not_open"
@@ -973,7 +1099,7 @@ assert_t1_original_volume_closed()
 	if mounted_at "$MOUNTPOINT"; then
 		fail "t1_original_mount_still_mounted"
 	fi
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5)
 			if dmsetup info "$MAPPER_NAME" >/dev/null 2>&1; then
 				fail "t1_original_stack_still_open"
@@ -988,7 +1114,7 @@ open_t1_replay_stack()
 	stack_open=not_applicable
 	REPLAY_DEVICE=$SNAPSHOT_DEVICE
 	REPLAY_WORKLOAD_ROOT=$REPLAY_MOUNT
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5)
 			if cryptsetup open --key-file "$KEYFILE" "$SNAPSHOT_DEVICE" \
 				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
@@ -1033,7 +1159,7 @@ open_t1_replay_stack()
 close_t1_replay_stack()
 {
 	[ "$stack_open" = yes ] || return 0
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5) cryptsetup close "$REPLAY_STACK_NAME" ;;
 		I*) integritysetup close "$REPLAY_STACK_NAME" ;;
 		*) return 0 ;;
@@ -1171,7 +1297,7 @@ replay_t1()
 		fi
 		FSCRYPT_REPLAY_KEY_ID=
 		if [ "$mount_ok" = yes ]; then
-			case "$CONFIG" in
+			case "$BASE_CONFIG" in
 				E5|F5)
 					if FSCRYPT_REPLAY_KEY_ID="$(fscryptctl add_key "$REPLAY_MOUNT" \
 						<"$FSCRYPT_KEY" 2>"${RUN_PATH}/fscrypt-add-key-$entry.log")" &&
@@ -1579,7 +1705,7 @@ unmount_volume()
 
 open_config_stack()
 {
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5)
 			cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ||
 				fail "T6_stack_open_failed"
@@ -1597,7 +1723,7 @@ open_config_stack()
 
 close_config_stack()
 {
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5) cryptsetup close "$MAPPER_NAME" || fail "T6_stack_close_failed" ;;
 		I*) integritysetup close "$MAPPER_NAME" || fail "T6_stack_close_failed" ;;
 	esac
@@ -1615,7 +1741,7 @@ run_t6()
 	luks_payload_sectors=0
 	plaintext_device_offset=
 	physical_copies_on_stack=
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5)
 			cryptsetup luksDump "$LOOP_DATA" >"${RUN_PATH}/T6-luksDump.txt" ||
 				fail "T6_luksDump_failed"
@@ -1664,11 +1790,11 @@ run_t6()
 	physical_block="$(printf '%s' "$extent" | sed 's/\.\..*$//')"
 	case "$FS_TYPE" in
 		ext4)
-			case "$CONFIG" in
+			case "$BASE_CONFIG" in
 				I1|I2|L3)
 					integrity_device=$LOOP_DATA
 					integrity_base_sector=0
-					if [ "$CONFIG" = L3 ]; then
+					if [ "$BASE_CONFIG" = L3 ]; then
 						integrity_base_sector=$luks_payload_sectors
 						device_sectors="$(blockdev --getsz "$LOOP_DATA")"
 						integrity_probe_sectors=$((device_sectors - integrity_base_sector))
@@ -1683,11 +1809,11 @@ run_t6()
 						>"${RUN_PATH}/T6-integrityDump.txt" 2>&1; then
 						:
 					else
-						[ "$CONFIG" != L3 ] ||
+						[ "$BASE_CONFIG" != L3 ] ||
 							dmsetup remove fscompare_t6_integrity_dump
 						fail "T6_integrityDump_failed"
 					fi
-					if [ "$CONFIG" = L3 ]; then
+					if [ "$BASE_CONFIG" = L3 ]; then
 						dmsetup remove fscompare_t6_integrity_dump ||
 							fail "T6_integrity_probe_remove_failed"
 					fi
@@ -1770,16 +1896,16 @@ run_t6()
 			plaintext_device_offset="$(printf '%s\n' "$physical_copies_on_stack" |
 				sed -n '1p')"
 			physical_copies=$physical_copies_on_stack
-			if [ "$CONFIG" = B5 ]; then
+			if [ "$BASE_CONFIG" = B5 ]; then
 				physical_copies="$(printf '%s\n' "$physical_copies" |
 					awk -v offset="$luks_payload_bytes" '{ print $1 + offset }')"
 			fi
 			physical_offset="$(printf '%s\n' "$physical_copies" | sed -n '1p')"
 			second_offset="$(printf '%s\n' "$physical_copies" | sed -n '2p')"
-			if [ "$CONFIG" = B2 ] && [ -z "$second_offset" ]; then
+			if [ "$BASE_CONFIG" = B2 ] && [ -z "$second_offset" ]; then
 				fail "btrfs_duplicate_copy_mapping_missing"
 			fi
-			if [ "$CONFIG" = B5 ]; then
+			if [ "$BASE_CONFIG" = B5 ]; then
 				second_plaintext_offset="$(printf '%s\n' "$physical_copies_on_stack" |
 					sed -n '2p')"
 				[ -n "$second_plaintext_offset" ] ||
@@ -1819,7 +1945,7 @@ run_t6()
 			fail "T6_original_second_copy_read_failed"
 		[ "$(wc -c <"${RUN_PATH}/T6-original-second.bin" | tr -d '[:space:]')" = 4096 ] ||
 			fail "T6_original_second_copy_short"
-		if [ "$CONFIG" != B5 ]; then
+		if [ "$BASE_CONFIG" != B5 ]; then
 			cmp -s "${RUN_PATH}/T6-original-first.bin" \
 				"${RUN_PATH}/T6-original-second.bin" ||
 				fail "T6_mirror_copies_differ_before_corruption"
@@ -1852,7 +1978,7 @@ run_t6()
 	LOOP_DATA="$(losetup --find --show --direct-io=on "$DISK_FILE")" ||
 		fail "corrupt_loop_direct_io_failed"
 	STACK_BASE=$LOOP_DATA
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5) ;;
 		*) FS_DEVICE=$LOOP_DATA ;;
 	esac
@@ -1879,7 +2005,7 @@ run_t6()
 	scrub_corrected=not_applicable
 	scrub_uncorrectable=not_applicable
 	repaired=not_applicable
-	if [ "$FS_TYPE" = btrfs ] && [ "$CONFIG" = B2 ]; then
+	if [ "$FS_TYPE" = btrfs ] && [ "$BASE_CONFIG" = B2 ]; then
 		mount -t tmpfs -o size=16M tmpfs /var/lib ||
 			fail "T6_scrub_state_tmpfs_mount_failed"
 		mkdir -p /var/lib/btrfs ||
@@ -1902,7 +2028,7 @@ run_t6()
 		console "T6_SCRUB_RESULT corrected=$scrub_corrected uncorrectable=$scrub_uncorrectable"
 		umount /var/lib || fail "T6_scrub_state_tmpfs_unmount_failed"
 	fi
-	if [ -n "${second_offset:-}" ] && [ "$CONFIG" != B5 ]; then
+	if [ -n "${second_offset:-}" ] && [ "$BASE_CONFIG" != B5 ]; then
 		sync
 		dd if="$DISK_FILE" of="${RUN_PATH}/T6-recovered-first.bin" bs=1 \
 			skip="$physical_offset" count=4096 \
@@ -1928,7 +2054,7 @@ run_t6()
 	"$WORKLOAD" readcheck "$known" "$expected"
 	read_status=$?
 	set -e
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L1|L2) expected_result=wrong ;;
 		L3|I1|I2) expected_result=eio ;;
 		*) expected_result=not_defined ;;
@@ -1944,7 +2070,7 @@ run_t6()
 		wrong:2|eio:3) ;;
 		wrong:*|eio:*) fail "T6_expected_result_mismatch expected=$expected_result read_exit=$read_status" ;;
 	esac
-	if [ -n "${second_offset:-}" ] && [ "$CONFIG" != B5 ]; then
+	if [ -n "${second_offset:-}" ] && [ "$BASE_CONFIG" != B5 ]; then
 		sync
 		dd if="$DISK_FILE" of="${RUN_PATH}/T6-postread-first.bin" bs=1 \
 			skip="$physical_offset" count=4096 \
@@ -1998,7 +2124,7 @@ run_t7()
 		fail "T7_loop_direct_io_failed"
 	LOOP_DATA=$device
 	STACK_BASE=$LOOP_DATA
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|I*|B5) ;;
 		*) FS_DEVICE=$LOOP_DATA ;;
 	esac
@@ -2018,7 +2144,7 @@ run_t7()
 		f2fs) run_timed_step fsck.f2fs --dry-run "$FS_DEVICE" ;;
 		btrfs) run_timed_step btrfs check --readonly "$FS_DEVICE" ;;
 	esac
-	case "$CONFIG" in
+	case "$BASE_CONFIG" in
 		L*|B5) run_timed_step cryptsetup close "$MAPPER_NAME" ;;
 		I*) run_timed_step integritysetup close "$MAPPER_NAME" ;;
 	esac
@@ -2057,7 +2183,7 @@ dispatch()
 		fail "mount_failed"
 	fi
 	mark_t1_setup_done
-	console "mounted config=$CONFIG test=$TEST"
+	console "mounted config=$CONFIG base_config=$BASE_CONFIG variant_id=$VARIANT_ID test=$TEST"
 	case "$TEST" in
 		T4-sync|T4-nosync|T5)
 			quiesce_device

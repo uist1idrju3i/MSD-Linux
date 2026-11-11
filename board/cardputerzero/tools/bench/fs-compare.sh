@@ -29,7 +29,7 @@ if [[ $# -eq 5 ]]; then
 	T1_POINTS=$5
 	[[ "$T1_POINTS" =~ ^[0-9]+(,[0-9]+)*$ ]] || usage
 fi
-[[ "$CONFIG" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2])$ ]] || usage
+[[ "$CONFIG" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2]|P[0-9]{3})$ ]] || usage
 [[ "$TEST" =~ ^(smoke|T1|T1-negative|T1-final|T1-negative-final|T1-sample|T2|T3|T4-sync|T4-nosync|T4-idle-control|T4-odirect-control|T5|T6|T7)$ ]] || usage
 [[ "$RUN_ID" =~ ^[A-Za-z0-9._-]+$ ]] || usage
 [[ "$RUNS_ROOT" = /* ]] || {
@@ -95,6 +95,8 @@ write_summary()
 	local scrub_corrected='' scrub_uncorrectable='' fsck_detection='' repaired=''
 	local mkfs_seconds='' mount_seconds='' fsck_seconds='' mem_available_kb=''
 	local setup_seconds='' completion_marker='msd.fscmp: finished' line='' ns=''
+	local summary_base=${BASE_CONFIG:-$CONFIG}
+	local summary_variant=${VARIANT_ID:-none}
 
 	if [[ -f "${RUN_DIR}/run-meta.txt" ]]; then
 		wall="$(sed -n 's/^wall_seconds=//p' "${RUN_DIR}/run-meta.txt" | tail -n1)"
@@ -239,9 +241,9 @@ write_summary()
 		mem_available_kb="$(sed -n 's/.*T7_MEMAVAILABLE value=\([0-9][0-9]*\) kB.*/\1/p' "$QEMU_LOG" | tail -n1)"
 	fi
 
-	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds\n' \
+	printf 'run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds,base_config,variant_id\n' \
 		>"${RUN_DIR}/summary.csv"
-	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+	printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
 		"$RUN_ID" "$CONFIG" "$TEST" "$status" "$wall" "$workload_size" \
 		"$points" "$loss_points" "$mount_fail" "$fsck_fail" "$recovered" \
 		"$manifest_ok" "$quiesce_seconds" "$quiesce_write_ios" \
@@ -251,7 +253,8 @@ write_summary()
 		"$scrub_uncorrectable" "$fsck_detection" "$repaired" \
 		"$mkfs_seconds" "$mount_seconds" "$fsck_seconds" \
 		"$mem_available_kb" "$setup_points" "$setup_mount_fail" \
-		"$setup_fsck_fail" "$setup_seconds" >>"${RUN_DIR}/summary.csv"
+		"$setup_fsck_fail" "$setup_seconds" "$summary_base" \
+		"$summary_variant" >>"${RUN_DIR}/summary.csv"
 }
 
 finalize_run()
@@ -273,6 +276,10 @@ finalize_run()
 			printf 'setup_done_wait_seconds=%s\n' "$setup_done_wait_seconds" \
 				>>"${RUN_DIR}/run-meta.txt"
 		fi
+		while IFS= read -r line; do
+			printf 'variant_readback=%s\n' "${line#*msd.fscmp: }" \
+				>>"${RUN_DIR}/run-meta.txt"
+		done < <(grep -aE 'msd.fscmp: variant_applied(_by=host)? ' "$QEMU_LOG")
 	fi
 	if ! write_summary "$exit_code"; then
 		printf 'Failed to write summary.csv under %s\n' "$RUN_DIR" >&2
@@ -295,11 +302,116 @@ for required in "$TEST_ROOTFS" "$BASE_IMAGE" "$KERNEL" "$DTB" \
 	}
 done
 
-ROW="$(awk -F '\t' -v id="$CONFIG" '$1 == id { print; count++ } END { if (count != 1) exit 1 }' \
-	"${SCRIPT_DIR}/fs-compare-configs.tsv")" || {
-	printf 'Configuration %s is not defined exactly once\n' "$CONFIG" >&2
-	exit 1
+BASE_CONFIG=$CONFIG
+VARIANT_ID=none
+VARIANT_KIND=none
+VARIANT_VALUE=none
+VARIANT_TESTS=none
+VARIANT_SOURCE=none
+replace_exactly_once()
+{
+	local text=$1 anchor=$2 replacement=$3 rest=$1 count=0
+	[[ -n "$anchor" ]] || return 1
+	while [[ "$rest" == *"$anchor"* ]]; do
+		count=$((count + 1))
+		rest=${rest#*"$anchor"}
+	done
+	if ((count != 1)); then
+		printf 'Variant %s replace anchor must match exactly once (matched %s): %s\n' \
+			"$VARIANT_ID" "$count" "$anchor" >&2
+		return 1
+	fi
+	printf '%s\n' "${text/"$anchor"/"$replacement"}"
 }
+
+remove_mount_option()
+{
+	local options=$1 target=$2 option result='' matches=0
+	local -a option_list=()
+	IFS=, read -r -a option_list <<<"$options"
+	for option in "${option_list[@]}"; do
+		if [[ "$option" == "$target" ]]; then
+			matches=$((matches + 1))
+			continue
+		fi
+		[[ -z "$result" ]] || result+=","
+		result+="$option"
+	done
+	if ((matches != 1)); then
+		printf 'Variant %s mount_remove value must match exactly once (matched %s): %s\n' \
+			"$VARIANT_ID" "$matches" "$target" >&2
+		return 1
+	fi
+	printf '%s\n' "$result"
+}
+
+base_row=
+if [[ "$CONFIG" =~ ^P[0-9]{3}$ ]]; then
+	variant_row="$(awk -F '\t' -v id="$CONFIG" \
+		'$1 == id { print; count++ } END { if (count != 1) exit 1 }' \
+		"${SCRIPT_DIR}/fs-compare-phase2-variants.tsv")" || {
+		printf 'Variant %s is not defined exactly once\n' "$CONFIG" >&2
+		exit 1
+	}
+	IFS=$'\t' read -r VARIANT_ID BASE_CONFIG VARIANT_KIND VARIANT_VALUE \
+		VARIANT_TESTS VARIANT_SOURCE <<<"$variant_row"
+	[[ "$VARIANT_ID" == "$CONFIG" ]] || {
+		printf 'Variant row does not match requested id %s\n' "$CONFIG" >&2
+		exit 1
+	}
+	base_row="$(awk -F '\t' -v id="$BASE_CONFIG" \
+		'$1 == id { print; count++ } END { if (count != 1) exit 1 }' \
+		"${SCRIPT_DIR}/fs-compare-configs.tsv")" || {
+		printf 'Variant %s base configuration %s is not defined exactly once\n' \
+			"$CONFIG" "$BASE_CONFIG" >&2
+		exit 1
+	}
+else
+	base_row="$(awk -F '\t' -v id="$CONFIG" \
+		'$1 == id { print; count++ } END { if (count != 1) exit 1 }' \
+		"${SCRIPT_DIR}/fs-compare-configs.tsv")" || {
+		printf 'Configuration %s is not defined exactly once\n' "$CONFIG" >&2
+		exit 1
+	}
+fi
+IFS=$'\t' read -r _ SETUP MOUNT_OPTIONS <<<"$base_row"
+case "$VARIANT_KIND" in
+	none) ;;
+	setup_replace|mount_replace)
+		[[ "$VARIANT_VALUE" == *'=>'* ]] || {
+			printf 'Variant %s replace value is missing =>: %s\n' \
+				"$CONFIG" "$VARIANT_VALUE" >&2
+			exit 1
+		}
+		old_value=${VARIANT_VALUE%%=>*}
+		new_value=${VARIANT_VALUE#*=>}
+		if [[ "$VARIANT_KIND" == setup_replace ]]; then
+			SETUP="$(replace_exactly_once "$SETUP" "$old_value" \
+				"$new_value")" || exit 1
+		else
+			MOUNT_OPTIONS="$(replace_exactly_once "$MOUNT_OPTIONS" \
+				"$old_value" "$new_value")" || exit 1
+		fi
+		;;
+	mount_add)
+		MOUNT_OPTIONS="${MOUNT_OPTIONS},${VARIANT_VALUE}"
+		;;
+	mount_remove)
+		MOUNT_OPTIONS="$(remove_mount_option "$MOUNT_OPTIONS" \
+			"$VARIANT_VALUE")" || exit 1
+		;;
+	post_mount|f2fs_sysfs|queue|sysctl) ;;
+	*)
+		printf 'Variant %s has unsupported kind: %s\n' \
+			"$CONFIG" "$VARIANT_KIND" >&2
+		exit 1
+		;;
+esac
+if [[ "$CONFIG" == P* ]]; then
+	ROW="$CONFIG"$'\t'"$SETUP"$'\t'"$MOUNT_OPTIONS"$'\t'"$BASE_CONFIG"$'\t'"$VARIANT_KIND"$'\t'"$VARIANT_VALUE"
+else
+	ROW="$base_row"
+fi
 
 unsquashfs="${OUTPUT_DIR}/host/bin/unsquashfs"
 mksquashfs="${OUTPUT_DIR}/host/bin/mksquashfs"
@@ -318,6 +430,9 @@ install -m 0755 "${OUTPUT_DIR}/fs-compare/fs-compare-workload" \
 	"${ROOTFS_DIR}/usr/libexec/fs-compare-workload"
 install -m 0644 "${SCRIPT_DIR}/fs-compare-configs.tsv" \
 	"${ROOTFS_DIR}/usr/share/fs-compare-configs.tsv"
+if [[ "$CONFIG" == P* ]]; then
+	printf '%s\n' "$ROW" >>"${ROOTFS_DIR}/usr/share/fs-compare-configs.tsv"
+fi
 rootfs_info="$("$unsquashfs" -s "$TEST_ROOTFS")"
 compression="$(awk '$1 == "Compression" { print $2; exit }' <<<"$rootfs_info")"
 block_size="$(awk '$1 == "Block" && $2 == "size" { print $3; exit }' <<<"$rootfs_info")"
@@ -345,7 +460,9 @@ dd if="${BUILD_DIR}/rootfs-fs-compare.squashfs" of="$IMAGE" bs=512 \
 truncate -s 8G "$IMAGE"
 
 {
-	printf 'config=%s\ntest=%s\nrun_id=%s\n' "$CONFIG" "$TEST" "$RUN_ID"
+	printf 'config=%s\nbase_config=%s\nvariant_id=%s\nvariant_kind=%s\nvariant_value=%s\nvariant_tests=%s\nvariant_source=%s\ntest=%s\nrun_id=%s\n' \
+		"$CONFIG" "$BASE_CONFIG" "$VARIANT_ID" "$VARIANT_KIND" \
+		"$VARIANT_VALUE" "$VARIANT_TESTS" "$VARIANT_SOURCE" "$TEST" "$RUN_ID"
 	if [[ -n "$T1_POINTS" ]]; then
 		printf 'selected_points=%s\n' "$T1_POINTS"
 	fi
@@ -373,6 +490,7 @@ sha256sum "$TEST_ROOTFS" "$BASE_IMAGE" "$KERNEL" "$DTB" "$RUN_QEMU" \
 	"${BUILD_DIR}/rootfs-fs-compare.squashfs" \
 	"${SCRIPT_DIR}/S97zz-fs-compare" "${SCRIPT_DIR}/fs-compare-guest" \
 	"${SCRIPT_DIR}/fs-compare-workload.c" "${SCRIPT_DIR}/fs-compare-configs.tsv" \
+	"${SCRIPT_DIR}/fs-compare-phase2-variants.tsv" \
 	"${SCRIPT_DIR}/fs-compare.sh" "${SCRIPT_DIR}/fs-compare-build.sh" \
 	"${SCRIPT_DIR}/fs-compare.fragment" \
 	"${SCRIPT_DIR}/fs-compare.buildroot.fragment" \
@@ -492,7 +610,7 @@ case "$TEST" in
 	*)
 		case "$TEST" in
 			T1|T1-negative|T1-final|T1-negative-final|T1-sample)
-				case "$CONFIG" in
+				case "$BASE_CONFIG" in
 					E4|F4|B4) timeout=28800 ;;
 					I2) timeout=43200 ;;
 					*) timeout=14400 ;;

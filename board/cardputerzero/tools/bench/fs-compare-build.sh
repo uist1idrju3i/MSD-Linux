@@ -83,11 +83,17 @@ fi
 required_kernel=(
 	CONFIG_BLK_DEV_LOOP
 	CONFIG_BLK_DEV_DM
+	CONFIG_BLK_WBT
+	CONFIG_MQ_IOSCHED_DEADLINE
+	CONFIG_MQ_IOSCHED_KYBER
+	CONFIG_IOSCHED_BFQ
 	CONFIG_DM_LOG_WRITES
 	CONFIG_DM_SNAPSHOT
 	CONFIG_BTRFS_FS
 	CONFIG_F2FS_FS
 	CONFIG_F2FS_FS_COMPRESSION
+	CONFIG_F2FS_FS_LZO
+	CONFIG_F2FS_FS_LZORLE
 	CONFIG_F2FS_FS_ZSTD
 	CONFIG_F2FS_FS_LZ4
 	CONFIG_FS_ENCRYPTION
@@ -98,7 +104,14 @@ required_kernel=(
 	CONFIG_CRYPTO_BLAKE2B
 	CONFIG_CRYPTO_SHA256
 	CONFIG_CRYPTO_HMAC
+	CONFIG_CRYPTO_AEAD
+	CONFIG_CRYPTO_AES
+	CONFIG_CRYPTO_GCM
 	CONFIG_CRYPTO_XTS
+	CONFIG_LZO_COMPRESS
+	CONFIG_LZO_DECOMPRESS
+	CONFIG_LZ4_COMPRESS
+	CONFIG_LZ4_DECOMPRESS
 )
 not_built=()
 printf 'kernel_config=%s\n' "${kernel_configs[0]}"
@@ -117,6 +130,34 @@ if ((${#not_built[@]})); then
 		"${not_built[*]}" >&2
 	exit 1
 fi
+
+busybox_configs=()
+while IFS= read -r config; do
+	busybox_configs+=("$config")
+done < <(find "${OUTPUT_DIR}/build" -maxdepth 3 -type f \
+	-path '*/busybox-*/.config' -print)
+if ((${#busybox_configs[@]} != 1)); then
+	printf 'Expected one BusyBox .config under %s/build, found %d\n' \
+		"$OUTPUT_DIR" "${#busybox_configs[@]}" >&2
+	exit 1
+fi
+for applet in CHATTR BB_SYSCTL; do
+	if grep -qx "CONFIG_${applet}=y" "${busybox_configs[0]}"; then
+		printf 'CONFIG_%s=y\n' "$applet"
+	else
+		printf 'Required BusyBox applet is not built: CONFIG_%s\n' \
+			"$applet" >&2
+		exit 1
+	fi
+done
+for applet in "${OUTPUT_DIR}/target/bin/chattr" \
+	"${OUTPUT_DIR}/target/sbin/sysctl"; do
+	[[ -x "$applet" ]] || {
+		printf 'Required BusyBox applet is unavailable in target: %s\n' \
+			"$applet" >&2
+		exit 1
+	}
+done
 
 mapfile -t target_compilers < <(compgen -G "${OUTPUT_DIR}/host/bin/aarch64*-gcc")
 if ((${#target_compilers[@]} != 1)); then
