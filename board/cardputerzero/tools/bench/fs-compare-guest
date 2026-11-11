@@ -1,0 +1,2124 @@
+#!/bin/sh
+set -eu
+
+guest_exit()
+{
+	guest_status=$?
+	if [ "$guest_status" -ne 0 ]; then
+		printf 'msd.fscmp: error=guest_exit status=%s\n' \
+			"$guest_status" >/dev/console
+	fi
+}
+trap guest_exit EXIT
+
+SCRIPT_DIR=/usr/libexec
+CONFIGS=/usr/share/fs-compare-configs.tsv
+WORKLOAD="${SCRIPT_DIR}/fs-compare-workload"
+REPLAY="${SCRIPT_DIR}/replay-log"
+TEST_BYTES=$((256 * 1024 * 1024))
+TEST_SECTORS=$((TEST_BYTES / 512))
+COW_BYTES=$((64 * 1024 * 1024))
+W3_RECORD_SIZE=128
+W3_SYNC_INTERVAL=50
+W3_FULL_RECORDS=1000
+RUNS_DIR=/data/fs-compare
+
+console()
+{
+	printf 'msd.fscmp: %s\n' "$*" >/dev/console
+}
+
+report_version()
+{
+	version_name=$1
+	shift
+	if version_output="$("$@" 2>&1)"; then
+		console "tool_version name=$version_name output=$version_output"
+	else
+		console "tool_version_error name=$version_name output=$version_output"
+	fi
+}
+
+fail()
+{
+	console "error=$*"
+	exit 1
+}
+
+[ "$#" -eq 2 ] || [ "$#" -eq 3 ] || fail "invalid_arguments"
+selection=$1
+phase=$2
+T1_POINTS=${3:-}
+case "$selection" in
+	*:*:*) ;;
+	*) fail "invalid_selection" ;;
+esac
+CONFIG=${selection%%:*}
+rest=${selection#*:}
+TEST=${rest%%:*}
+RUN_ID=${rest#*:}
+[ -n "$CONFIG" ] && [ -n "$TEST" ] && [ -n "$RUN_ID" ] ||
+	fail "empty_selection_field"
+case "$RUN_ID" in
+	*[!a-zA-Z0-9._-]*) fail "invalid_run_id" ;;
+esac
+case "$phase" in
+	run|verify) ;;
+	*) fail "invalid_phase" ;;
+esac
+case "$T1_POINTS" in
+	'') ;;
+	*[!0-9,]*|,*|*,|*,,*) fail "invalid_t1_points" ;;
+esac
+if [ -n "$T1_POINTS" ] && [ "$TEST" != T1-sample ]; then
+	fail "t1_points_require_sample_mode"
+fi
+
+tab="$(printf '\t')"
+row="$(awk -F '\t' -v id="$CONFIG" '$1 == id { print; count++ } END { if (count != 1) exit 1 }' "$CONFIGS")" ||
+	fail "unknown_config"
+IFS="$tab" read -r _ SETUP MOUNT_OPTIONS <<EOF
+$row
+EOF
+
+case "$CONFIG" in
+	E*) FS_TYPE=ext4 ;;
+	F*) FS_TYPE=f2fs ;;
+	B*) FS_TYPE=btrfs ;;
+	L*|I*) FS_TYPE=ext4 ;;
+	*) fail "unknown_filesystem" ;;
+esac
+case "$CONFIG" in
+	L*|B5) MAPPER_NAME=fscompare_crypt; FS_DEVICE="/dev/mapper/$MAPPER_NAME" ;;
+	I*) MAPPER_NAME=fscompare_integrity; FS_DEVICE="/dev/mapper/$MAPPER_NAME" ;;
+	*) MAPPER_NAME=; FS_DEVICE= ;;
+esac
+
+RUN_PATH="${RUNS_DIR}/${RUN_ID}"
+MOUNTPOINT="${RUN_PATH}/mount"
+REPLAY_MOUNT="${RUN_PATH}/replay"
+DISK_FILE="${RUN_PATH}/test.img"
+LOG_FILE="${RUN_PATH}/dm-log-writes.img"
+KEYFILE="${RUN_PATH}/luks.key"
+FSCRYPT_KEY="${RUN_PATH}/fscrypt.key"
+MANIFEST="${RUN_PATH}/manifest.tsv"
+WORKLOAD_ROOT="$MOUNTPOINT"
+LOOP_DATA=
+STACK_BASE=
+LOOP_LOG=
+LOOP_REPLAY=
+LOOP_COW=
+REPLAY_DEVICE=
+REPLAY_WORKLOAD_ROOT=
+FSCRYPT_REPLAY_KEY_ID=
+SNAPSHOT_NAME=fscompare_snapshot
+SNAPSHOT_DEVICE="/dev/mapper/$SNAPSHOT_NAME"
+REPLAY_STACK_NAME=fscompare_replay_stack
+DM_NAME=
+W3_EXPECTED_FILE=
+W3_ACTUAL_TAIL=
+W3_EXPECTED_TAIL=
+W3_CYCLE=
+W3_MAX_RECORD=
+T1_CSV="${RUN_PATH}/T1-points.csv"
+
+if [ "$phase" = run ]; then
+	mkdir -p "$RUNS_DIR"
+	if ! mkdir "$RUN_PATH"; then
+		fail "guest_run_directory_exists"
+	fi
+else
+	[ -d "$RUN_PATH" ] || fail "guest_run_directory_missing"
+fi
+mkdir -p "$MOUNTPOINT" "$REPLAY_MOUNT"
+report_version ext4-mkfs mkfs.ext4 -V
+report_version f2fs-mkfs mkfs.f2fs -V
+report_version btrfs-mkfs mkfs.btrfs --version
+report_version btrfs-progs btrfs --version
+report_version cryptsetup cryptsetup --version
+report_version integritysetup integritysetup --version
+report_version dmsetup dmsetup version
+
+make_keyfiles()
+{
+	case "$CONFIG" in
+		L*|B5)
+			if [ ! -s "$KEYFILE" ]; then
+				head -c 64 /dev/urandom >"$KEYFILE" ||
+					fail "keyfile_create_failed"
+				chmod 0600 "$KEYFILE" ||
+					fail "keyfile_chmod_failed"
+				fsync "$KEYFILE" ||
+					fail "keyfile_fsync_failed"
+				fsync "$RUN_PATH" ||
+					fail "keyfile_directory_fsync_failed"
+			fi
+			;;
+	esac
+	case "$CONFIG" in
+		E5|F5)
+			if [ ! -s "$FSCRYPT_KEY" ]; then
+				head -c 64 /dev/urandom >"$FSCRYPT_KEY" ||
+					fail "keyfile_create_failed"
+				chmod 0600 "$FSCRYPT_KEY" ||
+					fail "keyfile_chmod_failed"
+				fsync "$FSCRYPT_KEY" ||
+					fail "keyfile_fsync_failed"
+				fsync "$RUN_PATH" ||
+					fail "keyfile_directory_fsync_failed"
+			fi
+			;;
+	esac
+}
+
+replace_setup_tokens()
+{
+	printf '%s' "$1" |
+		sed -e "s|%BASE_DEVICE%|$STACK_BASE|g" \
+			-e "s|%DEVICE%|$FS_DEVICE|g" \
+			-e "s|%KEYFILE%|$KEYFILE|g" \
+			-e "s|%MOUNTPOINT%|$MOUNTPOINT|g"
+}
+
+run_setup_commands()
+{
+	make_keyfiles
+	pre_mount="$(printf '%s\n' "$SETUP" | tr ';' '\n' |
+		sed '/^[[:space:]]*post-mount[[:space:]]/d')"
+	printf '%s\n' "$pre_mount" |
+		while IFS= read -r step; do
+			[ -n "$step" ] || continue
+			step="$(replace_setup_tokens "$step")"
+			# shellcheck disable=SC2086
+			set -- $step
+			"$@"
+		done
+	if [ "$CONFIG" = L3 ] || [ "$CONFIG" = B5 ]; then
+		cryptsetup luksDump "$STACK_BASE" >"${RUN_PATH}/luksDump.txt"
+		grep -E 'Cipher:|Key:' "${RUN_PATH}/luksDump.txt" |
+			while IFS= read -r line; do console "luksDump $line"; done
+	fi
+}
+
+run_timed_step()
+{
+	T7_STEP_COUNT=$((T7_STEP_COUNT + 1))
+	T7_LAST_STEP_LOG="${RUN_PATH}/t7-step-${T7_STEP_COUNT}.log"
+	if "$WORKLOAD" timer "$@" >"$T7_LAST_STEP_LOG" 2>&1; then
+		step_status=0
+	else
+		step_status=$?
+	fi
+	while IFS= read -r line; do
+		console "T7_STEP command=$1 $line"
+	done <"$T7_LAST_STEP_LOG"
+	[ "$step_status" -eq 0 ] ||
+		fail "T7_step_failed_command=$1 status=$step_status"
+}
+
+run_setup_commands_timed()
+{
+	make_keyfiles
+	pre_mount="$(printf '%s\n' "$SETUP" | tr ';' '\n' |
+		sed '/^[[:space:]]*post-mount[[:space:]]/d')"
+	while IFS= read -r step; do
+		[ -n "$(printf '%s' "$step" | tr -d '[:space:]')" ] || continue
+		step="$(replace_setup_tokens "$step")"
+		# shellcheck disable=SC2086
+		set -- $step
+		run_timed_step "$@"
+	done <<EOF
+$pre_mount
+EOF
+}
+
+attach_test_disk()
+{
+	if [ "$phase" = run ]; then
+		[ ! -e "$DISK_FILE" ] || fail "test_disk_already_exists"
+		fallocate -l "$TEST_BYTES" "$DISK_FILE"
+	else
+		[ -f "$DISK_FILE" ] || fail "test_disk_missing"
+	fi
+	LOOP_DATA="$(losetup --find --show --direct-io=on "$DISK_FILE")" ||
+		fail "losetup_direct_io_failed"
+	STACK_BASE=$LOOP_DATA
+	case "$CONFIG" in
+		L*|I*|B5) ;;
+		*) FS_DEVICE=$LOOP_DATA ;;
+	esac
+	case "$CONFIG" in
+		L*|I*|B5)
+			if [ "$phase" = verify ]; then
+				make_keyfiles
+				case "$CONFIG" in
+					L*|B5) cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ;;
+					I1) integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ;;
+					I2) integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ;;
+				esac
+			fi
+			;;
+	esac
+}
+
+mount_volume()
+{
+	mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$FS_DEVICE" "$MOUNTPOINT" ||
+		return 1
+	post_mount="$(printf '%s\n' "$SETUP" | tr ';' '\n' |
+		sed -n 's/^[[:space:]]*post-mount[[:space:]]*//p')"
+	if [ -n "$post_mount" ]; then
+		make_keyfiles
+		mkdir -p "${MOUNTPOINT}/encrypted"
+		FSCRYPT_KEY_ID="$(fscryptctl add_key "$MOUNTPOINT" <"$FSCRYPT_KEY")"
+		post_mount="$(printf '%s' "$post_mount" |
+			sed -e "s|%FSCRYPT_KEY_ID%|$FSCRYPT_KEY_ID|g" \
+				-e "s|%MOUNTPOINT%|$MOUNTPOINT|g")"
+		# shellcheck disable=SC2086
+		set -- $post_mount
+		"$@" || {
+			console "fscrypt_policy_failed path=${MOUNTPOINT}/encrypted"
+			fail "fscrypt_policy_failed"
+		}
+		WORKLOAD_ROOT="${MOUNTPOINT}/encrypted"
+	fi
+	return 0
+}
+
+mount_volume_timed()
+{
+	run_timed_step mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" \
+		"$FS_DEVICE" "$MOUNTPOINT"
+	post_mount="$(printf '%s\n' "$SETUP" | tr ';' '\n' |
+		sed -n 's/^[[:space:]]*post-mount[[:space:]]*//p')"
+	if [ -n "$post_mount" ]; then
+		make_keyfiles
+		mkdir -p "${MOUNTPOINT}/encrypted"
+		run_timed_step fscryptctl add_key "$MOUNTPOINT" <"$FSCRYPT_KEY"
+		FSCRYPT_KEY_ID="$(sed '/^msd\.fscmp: TIMER /d; /^[[:space:]]*$/d' \
+			"$T7_LAST_STEP_LOG" | tail -n 1)"
+		[ -n "$FSCRYPT_KEY_ID" ] || fail "T7_fscrypt_key_id_missing"
+		post_mount="$(printf '%s' "$post_mount" |
+			sed -e "s|%FSCRYPT_KEY_ID%|$FSCRYPT_KEY_ID|g" \
+				-e "s|%MOUNTPOINT%|$MOUNTPOINT|g")"
+		# shellcheck disable=SC2086
+		set -- $post_mount
+		run_timed_step "$@"
+		WORKLOAD_ROOT="${MOUNTPOINT}/encrypted"
+	fi
+	return 0
+}
+
+setup_log_writes()
+{
+	: >"$LOG_FILE"
+	truncate -s 1G "$LOG_FILE"
+	LOOP_LOG="$(losetup --find --show --direct-io=on "$LOG_FILE")" ||
+		fail "log_loop_direct_io_failed"
+	dmsetup create fscompare_log --table \
+		"0 $TEST_SECTORS log-writes $LOOP_DATA $LOOP_LOG" ||
+		fail "dm_log_writes_create_failed"
+	DM_NAME=fscompare_log
+	STACK_BASE=/dev/mapper/fscompare_log
+	case "$CONFIG" in
+		L*|I*|B5) ;;
+		*) FS_DEVICE=$STACK_BASE ;;
+	esac
+}
+
+mark_t1_setup_done()
+{
+	case "$TEST" in
+		T1|T1-negative|T1-final|T1-negative-final|T1-sample) ;;
+		*) return ;;
+	esac
+	setup_done_started="$(date +%s)"
+	setup_done_deadline=$((setup_done_started + 900))
+	setup_done_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+		fail "t1_setup_done_status_failed"
+	case "$setup_done_status" in
+		*logging_disabled*) fail "t1_setup_done_logging_disabled" ;;
+	esac
+	setup_done_entries_before="$(printf '%s\n' "$setup_done_status" |
+		awk '$3 == "log-writes" { print $4; exit }')"
+	case "$setup_done_entries_before" in
+		''|*[!0-9]*) fail "t1_setup_done_status_invalid" ;;
+	esac
+	dmsetup message fscompare_log 0 mark setup-done ||
+		fail "t1_setup_done_mark_failed"
+	setup_done_entry=
+	while :; do
+		setup_done_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+			fail "t1_setup_done_status_failed"
+		case "$setup_done_status" in
+			*logging_disabled*)
+				console "T1_SETUP_DONE_WAIT logging_disabled status=$setup_done_status"
+				fail "t1_setup_done_logging_disabled"
+				;;
+		esac
+		setup_done_entries="$(printf '%s\n' "$setup_done_status" |
+			awk '$3 == "log-writes" { print $4; exit }')"
+		setup_done_used_sectors="$(printf '%s\n' "$setup_done_status" |
+			awk '$3 == "log-writes" { print $5; exit }')"
+		case "$setup_done_entries:$setup_done_used_sectors" in
+			*[!0-9:]*|:*|*:) fail "t1_setup_done_status_invalid" ;;
+		esac
+		if [ "$setup_done_entries" -gt "$setup_done_entries_before" ] &&
+		   setup_done_entry="$("$REPLAY" --log "$LOG_FILE" --find \
+			--end-mark setup-done 2>/dev/null)"; then
+			break
+		fi
+		setup_done_entry=
+		setup_done_now="$(date +%s)"
+		if [ "$setup_done_now" -ge "$setup_done_deadline" ]; then
+			setup_done_wait_seconds=$((setup_done_now - setup_done_started))
+			setup_done_log_used_bytes=$(((setup_done_used_sectors + 1) * 512))
+			console "T1_SETUP_DONE_WAIT timeout setup_done_wait_seconds=$setup_done_wait_seconds log_entries_before=$setup_done_entries_before log_entries_after=$setup_done_entries log_used_bytes=$setup_done_log_used_bytes"
+			fail "t1_setup_done_mark_not_found"
+		fi
+		sleep 1
+	done
+	case "$setup_done_entry" in
+		''|*[!0-9]*) fail "t1_setup_done_entry_invalid" ;;
+	esac
+	setup_done_now="$(date +%s)"
+	setup_done_wait_seconds=$((setup_done_now - setup_done_started))
+	setup_done_log_used_bytes=$(((setup_done_used_sectors + 1) * 512))
+	console "T1_SETUP_DONE entry=$setup_done_entry setup_done_wait_seconds=$setup_done_wait_seconds log_entries_before=$setup_done_entries_before log_entries_after=$setup_done_entries log_used_bytes=$setup_done_log_used_bytes"
+}
+
+prepare_test_volume()
+{
+	attach_test_disk
+	case "$TEST" in
+		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
+			setup_log_writes
+			;;
+	esac
+	if [ "$phase" = run ]; then
+		run_setup_commands
+	elif [ "$TEST" != T2 ] && [ "$TEST" != T3 ]; then
+		fail "verify_phase_only_supports_T2_T3"
+	fi
+}
+
+fsck_volume()
+{
+	fsck_log=$1
+	device=${2:-$FS_DEVICE}
+	case "$FS_TYPE" in
+		ext4) e2fsck -fn "$device" >"$fsck_log" 2>&1 ;;
+		f2fs) fsck.f2fs --dry-run "$device" >"$fsck_log" 2>&1 ;;
+		btrfs) btrfs check --readonly "$device" >"$fsck_log" 2>&1 ;;
+	esac
+}
+
+verify_manifest()
+{
+	[ -f "$MANIFEST" ] || {
+		console "manifest_ok=no reason=missing"
+		return 1
+	}
+	inflight_file="${RUN_PATH}/manifest-w2-inflight.tsv"
+	: >"$inflight_file"
+	awk -F '\t' -v inflight_file="$inflight_file" '
+		NR > 1 {
+			if ($6 == 1 && $4 != ".") {
+				latest[$4] = $5
+				latest_marker[$4] = $7
+			}
+			if ($2 == "W2" && $3 == "atomic_update" &&
+			    $4 == "W2/target.dat" && $6 == 1) {
+				waiting_for_w2 = 1
+				inflight_hash = ""
+				inflight_marker = ""
+			} else if (waiting_for_w2 && $2 == "W2" &&
+				   $3 == "temp_fsync" && $4 == "W2/target.tmp" &&
+				   $6 == 0) {
+				if (length($5) == 64 && $5 ~ /^[0-9a-f]+$/ &&
+				    $7 ~ /^w2-temp-[0-9][0-9][0-9]-[0-9][0-9][0-9]$/) {
+					inflight_hash = $5
+					inflight_marker = $7
+				}
+				waiting_for_w2 = 0
+			}
+		}
+		END {
+			for (path in latest)
+				print path "\t" latest[path] "\t" latest_marker[path]
+			if (inflight_hash != "")
+				print inflight_hash "\t" inflight_marker >inflight_file
+		}
+	' "$MANIFEST" >"${RUN_PATH}/manifest-latest.tsv"
+	w2_inflight_hash=
+	w2_inflight_marker=
+	if [ -s "$inflight_file" ]; then
+		IFS="$tab" read -r w2_inflight_hash w2_inflight_marker <"$inflight_file"
+	fi
+	manifest_ok=yes
+	checked=0
+	while IFS="$tab" read -r relative expected marker; do
+		[ -n "$relative" ] || continue
+		checked=$((checked + 1))
+		if [ ! -f "${WORKLOAD_ROOT}/${relative}" ]; then
+			console "manifest_missing path=$relative"
+			manifest_ok=no
+			continue
+		fi
+		actual="$(sha256sum "${WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
+		case "$relative" in
+			W3/append.log)
+				if ! prepare_w3_expected_file "$marker" \
+					"$W3_FULL_RECORDS" || ! validate_w3_file \
+					"${WORKLOAD_ROOT}/${relative}" "$expected" "$marker"; then
+					console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual marker=$marker reason=${w3_validation_detail:-w3_validation_failed}"
+					manifest_ok=no
+				elif [ "$w3_tail_records" -gt 0 ]; then
+					console "manifest_w3_tail_durable path=W3/append.log records=$w3_tail_records"
+				fi
+				;;
+			*)
+				if [ "$actual" != "$expected" ]; then
+					if [ "$relative" = W2/target.dat ] &&
+					   [ "$actual" = "$w2_inflight_hash" ] &&
+					   [ -n "$w2_inflight_marker" ]; then
+						console "manifest_w2_inflight_durable path=W2/target.dat marker=$w2_inflight_marker"
+					else
+						console "manifest_hash_mismatch path=$relative expected=$expected actual=$actual"
+						manifest_ok=no
+					fi
+				fi
+				;;
+		esac
+	done <"${RUN_PATH}/manifest-latest.tsv"
+	console "manifest_ok=$manifest_ok files=$checked"
+	[ "$manifest_ok" = yes ]
+}
+
+verify_recovery()
+{
+	fsck_status=0
+	if fsck_volume "${RUN_PATH}/recovery-fsck.log"; then
+		console "recovery_fsck=0"
+	else
+		fsck_status=$?
+		console "recovery_fsck=$fsck_status"
+	fi
+	if mount_volume; then
+		console "recovery_mount=ok"
+	else
+		console "recovery_mount=fail"
+		console "recovery_finished"
+		return
+	fi
+	if [ "$TEST" = T3 ]; then
+		"$WORKLOAD" verify-t3 "$WORKLOAD_ROOT" "$MANIFEST"
+	else
+		verify_manifest || true
+	fi
+	unmount_volume "$MOUNTPOINT"
+	console "recovery_finished"
+}
+
+create_mark_map()
+{
+	negative=0
+	case "$TEST" in
+		T1-negative|T1-negative-final) negative=1 ;;
+	esac
+	marker_errors=0
+	marker_lookup_started=
+	marker_lookup_deadline=
+	: >"${RUN_PATH}/T1-markers.tsv"
+	while IFS="$tab" read -r sequence workload _ path hash acknowledged marker; do
+		case "$sequence" in
+			''|*[!0-9]*) continue ;;
+		esac
+		if [ "$acknowledged" != 1 ] &&
+		   { [ "$negative" -ne 1 ] || [ "$workload" != W1 ]; }; then
+			continue
+		fi
+		marker_waited=0
+		marker_wait_started=0
+		marker_entries_before=
+		while :; do
+			if log_entry="$("$REPLAY" --log "$LOG_FILE" --find \
+				--end-mark "$marker" 2>/dev/null)"; then
+				case "$log_entry" in
+					''|*[!0-9]*) fail "t1_marker_entry_invalid marker=$marker" ;;
+				esac
+				if [ "$marker_waited" -eq 1 ]; then
+					marker_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+						fail "t1_marker_status_failed marker=$marker"
+					case "$marker_status" in
+						*logging_disabled*)
+							console "T1_MARKER_WAIT logging_disabled marker=$marker status=$marker_status"
+							fail "t1_marker_logging_disabled marker=$marker"
+							;;
+					esac
+					marker_entries_after="$(printf '%s\n' "$marker_status" |
+						awk '$3 == "log-writes" { print $4; exit }')"
+					marker_used_sectors="$(printf '%s\n' "$marker_status" |
+						awk '$3 == "log-writes" { print $5; exit }')"
+					case "$marker_entries_after:$marker_used_sectors" in
+						*[!0-9:]*|:*|*:) fail "t1_marker_status_invalid marker=$marker" ;;
+					esac
+					if [ "$marker_entries_after" -le "$log_entry" ]; then
+						marker_now="$(date +%s)"
+						if [ "$marker_now" -ge "$marker_lookup_deadline" ]; then
+							marker_wait_seconds=$((marker_now - marker_wait_started))
+							marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+							console "T1_MARKER_WAIT timeout marker=$marker wait_seconds=$marker_wait_seconds log_entry=$log_entry log_entries_before=$marker_entries_before log_entries_after=$marker_entries_after log_used_bytes=$marker_log_used_bytes"
+							fail "t1_marker_lookup_failed_count=$((marker_errors + 1))"
+						fi
+						sleep 1
+						continue
+					fi
+					marker_wait_finished="$(date +%s)"
+					marker_wait_seconds=$((marker_wait_finished - marker_wait_started))
+					marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+					console "T1_MARKER_WAIT marker=$marker log_entry=$log_entry wait_seconds=$marker_wait_seconds log_entries_before=$marker_entries_before log_entries_after=$marker_entries_after log_used_bytes=$marker_log_used_bytes"
+				fi
+				printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$sequence" "$path" "$hash" \
+					"$acknowledged" "$log_entry" "$marker" >>"${RUN_PATH}/T1-markers.tsv"
+				break
+			fi
+			marker_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+				fail "t1_marker_status_failed marker=$marker"
+			case "$marker_status" in
+				*logging_disabled*)
+					console "T1_MARKER_WAIT logging_disabled marker=$marker status=$marker_status"
+					fail "t1_marker_logging_disabled marker=$marker"
+					;;
+			esac
+			marker_entries="$(printf '%s\n' "$marker_status" |
+				awk '$3 == "log-writes" { print $4; exit }')"
+			marker_used_sectors="$(printf '%s\n' "$marker_status" |
+				awk '$3 == "log-writes" { print $5; exit }')"
+			case "$marker_entries:$marker_used_sectors" in
+				*[!0-9:]*|:*|*:) fail "t1_marker_status_invalid marker=$marker" ;;
+			esac
+			if [ -z "$marker_entries_before" ]; then
+				marker_entries_before=$marker_entries
+			fi
+			marker_now="$(date +%s)"
+			if [ "$marker_wait_started" -eq 0 ]; then
+				marker_waited=1
+				marker_wait_started=$marker_now
+				if [ -z "$marker_lookup_started" ]; then
+					marker_lookup_started=$marker_now
+					marker_lookup_deadline=$((marker_lookup_started + 900))
+				fi
+			fi
+			if [ "$marker_now" -ge "$marker_lookup_deadline" ]; then
+				marker_wait_seconds=$((marker_now - marker_wait_started))
+				marker_log_used_bytes=$(((marker_used_sectors + 1) * 512))
+				console "T1_MARKER_WAIT timeout marker=$marker wait_seconds=$marker_wait_seconds log_entries_before=$marker_entries_before log_entries_after=$marker_entries log_used_bytes=$marker_log_used_bytes"
+				fail "t1_marker_lookup_failed_count=$((marker_errors + 1))"
+			fi
+			sleep 1
+		done
+	done <"$MANIFEST"
+	if [ -n "$marker_lookup_started" ]; then
+		marker_lookup_finished="$(date +%s)"
+		marker_lookup_wait_seconds=$((marker_lookup_finished - marker_lookup_started))
+		console "T1_MARKER_LOOKUP_WAIT total_seconds=$marker_lookup_wait_seconds max_seconds=900"
+	fi
+	[ "$marker_errors" -eq 0 ] || fail "t1_marker_lookup_failed_count=$marker_errors"
+}
+
+wait_for_t1_log_end()
+{
+	required_entry=${1:-0}
+	case "$required_entry" in
+		''|*[!0-9]*) fail "t1_log_end_required_entry_invalid=$required_entry" ;;
+	esac
+	max_marker_entry="$(awk -F '\t' \
+		'$5 ~ /^[0-9]+$/ && $5 + 0 > max { max = $5 + 0 } END { print max + 0 }' \
+		"${RUN_PATH}/T1-markers.tsv")"
+	required_log_end_entry=$max_marker_entry
+	if [ "$required_entry" -gt "$required_log_end_entry" ]; then
+		required_log_end_entry=$required_entry
+	fi
+	if [ -z "$t1_log_end_wait_started" ]; then
+		t1_log_end_wait_started="$(date +%s)"
+		t1_log_end_deadline=$((t1_log_end_wait_started + 900))
+	fi
+	wait_started=$t1_log_end_wait_started
+	deadline=$t1_log_end_deadline
+	previous_entries=
+	stable_polls=0
+	while :; do
+		log_end_status="$(dmsetup status fscompare_log 2>/dev/null)" ||
+			fail "t1_log_end_status_failed"
+		case "$log_end_status" in
+			*logging_disabled*)
+				console "T1_LOG_END_WAIT logging_disabled status=$log_end_status"
+				fail "t1_log_end_logging_disabled"
+				;;
+		esac
+		log_end_entries="$(printf '%s\n' "$log_end_status" |
+			awk '$3 == "log-writes" { print $4; exit }')"
+		log_end_used_sectors="$(printf '%s\n' "$log_end_status" |
+			awk '$3 == "log-writes" { print $5; exit }')"
+		case "$log_end_entries:$log_end_used_sectors" in
+			*[!0-9:]*|:*|*:) fail "t1_log_end_status_invalid" ;;
+		esac
+		if [ "$log_end_entries" -gt "$required_log_end_entry" ]; then
+			if [ "$log_end_entries" = "$previous_entries" ]; then
+				stable_polls=$((stable_polls + 1))
+			else
+				stable_polls=0
+			fi
+			previous_entries=$log_end_entries
+			if [ "$stable_polls" -ge 2 ]; then
+				break
+			fi
+		else
+			previous_entries=$log_end_entries
+			stable_polls=0
+		fi
+		wait_now="$(date +%s)"
+		if [ "$wait_now" -ge "$deadline" ]; then
+			wait_seconds=$((wait_now - wait_started))
+			log_used_bytes=$(((log_end_used_sectors + 1) * 512))
+			console "T1_LOG_END_WAIT timeout wait_seconds=$wait_seconds max_seconds=900 log_entries=$log_end_entries max_marker_entry=$max_marker_entry required_entry=$required_entry log_used_bytes=$log_used_bytes"
+			fail "t1_log_end_wait_timeout"
+		fi
+		sleep 1
+	done
+	wait_finished="$(date +%s)"
+	wait_seconds=$((wait_finished - wait_started))
+	t1_log_end_entry=$((log_end_entries - 1))
+	[ "$t1_log_end_entry" -ge "$max_marker_entry" ] ||
+		fail "t1_log_end_before_last_marker"
+	[ "$t1_log_end_entry" -ge "$required_entry" ] ||
+		fail "t1_log_end_before_required_entry"
+	log_used_bytes=$(((log_end_used_sectors + 1) * 512))
+	console "T1_LOG_END entry=$t1_log_end_entry log_entries=$log_end_entries wait_seconds=$wait_seconds max_marker_entry=$max_marker_entry required_entry=$required_entry stable_polls=$stable_polls log_used_bytes=$log_used_bytes"
+}
+
+collect_replay_points()
+{
+	raw_points="${RUN_PATH}/T1-points-raw.tsv"
+	: >"$raw_points"
+	for kind in flush fua; do
+		start=0
+		while :; do
+			if entry="$("$REPLAY" --log "$LOG_FILE" --start-entry "$start" \
+				"--next-$kind" --find 2>/dev/null)"; then
+				printf '%s\t%s\n' "$entry" "$kind" >>"$raw_points"
+				start=$((entry + 1))
+			else
+				break
+			fi
+		done
+	done
+	sort -n -k1,1 "$raw_points" |
+		awk -F '\t' -v OFS='\t' '
+			NR == 1 { current = $1; kinds = $2; next }
+			$1 == current { if (index("+" kinds "+", "+" $2 "+") == 0) kinds = kinds "+" $2; next }
+			{ print current, kinds; current = $1; kinds = $2 }
+			END { if (NR) print current, kinds }
+		' >"${RUN_PATH}/T1-points.tsv"
+	last_point_entry="$(awk -F '\t' 'END { if (NF) print $1 }' \
+		"${RUN_PATH}/T1-points.tsv")"
+}
+
+find_replay_points()
+{
+	collect_replay_points
+	while [ -n "$last_point_entry" ] &&
+	      [ "$t1_log_end_entry" -lt "$last_point_entry" ]; do
+		console "T1_LOG_END_WAIT_FOR_POINT required_entry=$last_point_entry current_entry=$t1_log_end_entry"
+		wait_for_t1_log_end "$last_point_entry"
+		collect_replay_points
+	done
+	if [ -n "$last_point_entry" ] &&
+	   [ "$t1_log_end_entry" -lt "$last_point_entry" ]; then
+		fail "t1_log_end_before_last_flush_fua"
+	fi
+	if [ "$t1_log_end_entry" != "$last_point_entry" ]; then
+		printf '%s\tlog-end\n' "$t1_log_end_entry" \
+			>>"${RUN_PATH}/T1-points.tsv"
+		console "T1_LOG_END_POINT entry=$t1_log_end_entry previous_point=${last_point_entry:-none}"
+	fi
+}
+
+prepare_w3_expected_file()
+{
+	w3_latest_marker=$1
+	w3_max_record_arg=${2:-}
+	w3_context=${3:-}
+	w3_validation_detail=
+	[ -n "$w3_latest_marker" ] || {
+		w3_validation_detail=missing_marker
+		return 1
+	}
+	w3_cycle_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $3 }')"
+	w3_record_raw="$(printf '%s\n' "$w3_latest_marker" | awk -F '-' '{ print $4 }')"
+	case "$w3_cycle_raw:$w3_record_raw" in
+		*[!0-9:]*|:*|*:)
+			w3_validation_detail=invalid_marker
+			return 1
+			;;
+	esac
+	W3_CYCLE="$(printf '%s\n' "$w3_cycle_raw" | awk '{ print $1 + 0 }')"
+	w3_marker_record="$(printf '%s\n' "$w3_record_raw" | awk '{ print $1 + 0 }')"
+	if [ -n "$w3_max_record_arg" ]; then
+		case "$w3_max_record_arg" in
+			*[!0-9]*)
+				w3_validation_detail=invalid_max_record
+				return 1
+				;;
+		esac
+		W3_MAX_RECORD=$w3_max_record_arg
+	else
+		W3_MAX_RECORD=$w3_marker_record
+	fi
+	if [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ] ||
+	   [ "$W3_MAX_RECORD" -eq 0 ]; then
+		w3_validation_detail=marker_out_of_range
+		return 1
+	fi
+	W3_EXPECTED_FILE="${RUN_PATH}/W3-expected.bin"
+	W3_ACTUAL_TAIL="${RUN_PATH}/W3-actual-tail.bin"
+	W3_EXPECTED_TAIL="${RUN_PATH}/W3-expected-tail.bin"
+	: >"$W3_EXPECTED_FILE"
+	w3_record=1
+	while [ "$w3_record" -le "$W3_MAX_RECORD" ]; do
+		{
+			printf '%010d %010d\n' "$W3_CYCLE" "$w3_record"
+			printf '\000'
+			printf '%*s' "$((W3_RECORD_SIZE - 23))" ''
+		} >>"$W3_EXPECTED_FILE"
+		w3_record=$((w3_record + 1))
+	done
+	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
+	[ "$w3_expected_bytes" -eq "$((W3_MAX_RECORD * W3_RECORD_SIZE))" ] || {
+		w3_validation_detail=invalid_expected_size
+		return 1
+	}
+	: >"$W3_ACTUAL_TAIL"
+	: >"$W3_EXPECTED_TAIL"
+	if [ "$w3_context" = T1 ]; then
+		console "T1_W3_EXPECTED cycle=$W3_CYCLE max_record=$W3_MAX_RECORD bytes=$w3_expected_bytes"
+	fi
+	return 0
+}
+
+validate_w3_file()
+{
+	w3_file=$1
+	w3_expected_hash=$2
+	w3_marker=$3
+	w3_validation_detail=
+	w3_actual_prefix_hash=
+	w3_tail_records=0
+	w3_marker_cycle_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $3 }')"
+	w3_marker_record_raw="$(printf '%s\n' "$w3_marker" | awk -F '-' '{ print $4 }')"
+	case "$w3_marker_cycle_raw:$w3_marker_record_raw" in
+		*[!0-9:]*|:*|*:)
+			w3_validation_detail=invalid_marker
+			return 1
+			;;
+	esac
+	w3_marker_cycle="$(printf '%s\n' "$w3_marker_cycle_raw" | awk '{ print $1 + 0 }')"
+	w3_marker_record="$(printf '%s\n' "$w3_marker_record_raw" | awk '{ print $1 + 0 }')"
+	if [ "$w3_marker_cycle" -ne "$W3_CYCLE" ] ||
+	   [ "$w3_marker_record" -eq 0 ] ||
+	   [ "$w3_marker_record" -gt "$W3_MAX_RECORD" ] ||
+	   [ $((w3_marker_record % W3_SYNC_INTERVAL)) -ne 0 ]; then
+		w3_validation_detail=marker_out_of_range
+		return 1
+	fi
+	w3_prefix_bytes=$((w3_marker_record * W3_RECORD_SIZE))
+	w3_actual_bytes="$(wc -c <"$w3_file" | tr -d '[:space:]')"
+	case "$w3_actual_bytes" in
+		''|*[!0-9]*)
+			w3_validation_detail=invalid_file_size
+			return 1
+			;;
+	esac
+	if [ "$w3_actual_bytes" -lt "$w3_prefix_bytes" ]; then
+		w3_validation_detail=file_shorter_than_prefix
+		return 1
+	fi
+	w3_actual_prefix_hash="$(head -c "$w3_prefix_bytes" "$w3_file" |
+		sha256sum | awk '{ print $1 }')"
+	if [ "$w3_actual_prefix_hash" != "$w3_expected_hash" ]; then
+		w3_validation_detail=prefix_hash_mismatch
+		return 1
+	fi
+	w3_expected_bytes="$(wc -c <"$W3_EXPECTED_FILE" | tr -d '[:space:]')"
+	if [ "$w3_actual_bytes" -gt "$w3_expected_bytes" ]; then
+		w3_validation_detail=tail_exceeds_final_record
+		return 1
+	fi
+	w3_tail_bytes=$((w3_actual_bytes - w3_prefix_bytes))
+	if [ $((w3_tail_bytes % W3_RECORD_SIZE)) -ne 0 ]; then
+		w3_validation_detail=partial_record_tail
+		return 1
+	fi
+	if [ "$w3_tail_bytes" -gt 0 ]; then
+		: >"$W3_ACTUAL_TAIL"
+		: >"$W3_EXPECTED_TAIL"
+		if ! dd if="$w3_file" of="$W3_ACTUAL_TAIL" bs=1 \
+			skip="$w3_prefix_bytes" count="$w3_tail_bytes" 2>/dev/null ||
+		   ! dd if="$W3_EXPECTED_FILE" of="$W3_EXPECTED_TAIL" bs=1 \
+			skip="$w3_prefix_bytes" count="$w3_tail_bytes" 2>/dev/null ||
+		   ! cmp -s "$W3_ACTUAL_TAIL" "$W3_EXPECTED_TAIL"; then
+			w3_validation_detail=invalid_deterministic_tail
+			return 1
+		fi
+		w3_tail_records=$((w3_tail_bytes / W3_RECORD_SIZE))
+	fi
+	return 0
+}
+
+check_manifest_at_point()
+{
+	point_entry=$1
+	manifest_limit=$2
+	mount_ok=$3
+	expected_file="${RUN_PATH}/T1-expected.tsv"
+	negative=0
+	case "$TEST" in
+		T1-negative|T1-negative-final) negative=1 ;;
+	esac
+	awk -F '\t' -v limit="$manifest_limit" -v negative="$negative" \
+		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3; latest_marker[$2] = $6; latest_entry[$2] = $5; latest_sequence[$2] = $1 } END { for (path in latest) print path "\t" latest[path] "\t" latest_marker[path] "\t" latest_entry[path] "\t" latest_sequence[path] }' \
+		"${RUN_PATH}/T1-markers.tsv" >"$expected_file"
+	ack_count="$(wc -l <"$expected_file" | tr -d ' ')"
+	manifest_ok=not_mounted
+	if [ "$mount_ok" = yes ]; then
+		manifest_ok=yes
+		while IFS="$tab" read -r relative expected marker marker_entry marker_sequence; do
+			[ -n "$relative" ] || continue
+			if [ ! -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ]; then
+				manifest_ok=no
+				console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=missing marker=$marker marker_entry=$marker_entry"
+				continue
+			fi
+			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
+			if [ "$actual" != "$expected" ]; then
+				case "$relative" in
+					W2/target.dat)
+						matched_update="$(awk -F '\t' \
+							-v start="$marker_sequence" -v hash="$actual" \
+							'$1 + 0 >= start + 0 && $2 == "W2/target.dat" && $3 == hash && $4 == 1 { print $6 "\t" $5; exit }' \
+							"${RUN_PATH}/T1-markers.tsv")"
+						if [ -n "$matched_update" ]; then
+							IFS="$tab" read -r matched_marker matched_entry <<EOF
+$matched_update
+EOF
+							console "T1_MANIFEST_ADVANCE entry=$point_entry path=$relative expected_marker=$marker expected_marker_entry=$marker_entry matched_marker=$matched_marker matched_marker_entry=$matched_entry"
+						else
+							manifest_ok=no
+							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+						fi
+					;;
+					W3/append.log)
+						if ! validate_w3_file "${REPLAY_WORKLOAD_ROOT}/${relative}" \
+							"$expected" "$marker"; then
+							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry detail=$w3_validation_detail expected_prefix_sha256=$expected actual_prefix_sha256=${w3_actual_prefix_hash:-none}"
+							manifest_ok=no
+						elif [ "$w3_tail_records" -gt 0 ]; then
+							console "T1_MANIFEST_TAIL entry=$point_entry path=$relative marker=$marker marker_entry=$marker_entry prefix_bytes=$w3_prefix_bytes tail_bytes=$w3_tail_bytes records=$w3_tail_records deterministic=yes"
+						fi
+						;;
+					*)
+						manifest_ok=no
+						console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+						;;
+				esac
+			fi
+		done <"$expected_file"
+	fi
+	printf '%s\t%s\t%s\n' "$ack_count" "$manifest_ok" "$expected_file"
+}
+
+mounted_at()
+{
+	awk -v path="$1" '$2 == path { found = 1 } END { exit !found }' \
+		/proc/mounts
+}
+
+close_t1_original_volume()
+{
+	mounted_at "$MOUNTPOINT" ||
+		fail "t1_original_mount_missing_before_replay"
+	unmount_volume "$MOUNTPOINT"
+	if mounted_at "$MOUNTPOINT"; then
+		fail "t1_original_mount_still_mounted"
+	fi
+	case "$CONFIG" in
+		L*|B5)
+			dmsetup info "$MAPPER_NAME" >/dev/null 2>&1 ||
+				fail "t1_original_stack_not_open"
+			cryptsetup close "$MAPPER_NAME" ||
+				fail "t1_original_stack_close_failed"
+			;;
+		I*)
+			dmsetup info "$MAPPER_NAME" >/dev/null 2>&1 ||
+				fail "t1_original_stack_not_open"
+			integritysetup close "$MAPPER_NAME" ||
+				fail "t1_original_stack_close_failed"
+			;;
+	esac
+}
+
+assert_t1_original_volume_closed()
+{
+	if mounted_at "$MOUNTPOINT"; then
+		fail "t1_original_mount_still_mounted"
+	fi
+	case "$CONFIG" in
+		L*|I*|B5)
+			if dmsetup info "$MAPPER_NAME" >/dev/null 2>&1; then
+				fail "t1_original_stack_still_open"
+			fi
+			;;
+	esac
+}
+
+open_t1_replay_stack()
+{
+	entry=$1
+	stack_open=not_applicable
+	REPLAY_DEVICE=$SNAPSHOT_DEVICE
+	REPLAY_WORKLOAD_ROOT=$REPLAY_MOUNT
+	case "$CONFIG" in
+		L*|B5)
+			if cryptsetup open --key-file "$KEYFILE" "$SNAPSHOT_DEVICE" \
+				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		I1)
+			if integritysetup open "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
+				>"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		I2)
+			if integritysetup open --integrity-bitmap-mode "$SNAPSHOT_DEVICE" \
+				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+				stack_open=yes
+				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+			else
+				stack_open=no
+			fi
+			;;
+		E5|F5)
+			REPLAY_WORKLOAD_ROOT="${REPLAY_MOUNT}/encrypted"
+			;;
+	esac
+	if [ "$stack_open" = no ]; then
+		head -n 20 "${RUN_PATH}/stack-open-$entry.log" |
+			while IFS= read -r line; do
+				console "T1_STACK_OPEN_ERR entry=$entry $line"
+			done
+		return 1
+	fi
+	return 0
+}
+
+close_t1_replay_stack()
+{
+	[ "$stack_open" = yes ] || return 0
+	case "$CONFIG" in
+		L*|B5) cryptsetup close "$REPLAY_STACK_NAME" ;;
+		I*) integritysetup close "$REPLAY_STACK_NAME" ;;
+		*) return 0 ;;
+	esac || fail "t1_replay_stack_close_failed"
+	if dmsetup info "$REPLAY_STACK_NAME" >/dev/null 2>&1; then
+		fail "t1_replay_stack_still_open"
+	fi
+}
+
+replay_t1()
+{
+	mode=${1:-all}
+	create_mark_map
+	t1_log_end_wait_started=
+	t1_log_end_deadline=
+	wait_for_t1_log_end
+	case "$TEST" in
+		T1-negative|T1-negative-final) ;;
+		*)
+			w3_latest_marker="$(awk -F '\t' \
+				'$2 == "W3/append.log" && $6 ~ /^w3-record-/ && $6 > latest { latest = $6 } END { print latest }' \
+				"${RUN_PATH}/T1-markers.tsv")"
+			[ -n "$w3_latest_marker" ] ||
+				fail "t1_w3_latest_marker_missing"
+			prepare_w3_expected_file "$w3_latest_marker" "" T1 ||
+				fail "t1_w3_latest_marker_invalid=$w3_latest_marker"
+			;;
+	esac
+	expected_ack_count="$(awk -F '\t' '$4 == 1 { paths[$2] = 1 } END { for (path in paths) count++; print count + 0 }' \
+		"${RUN_PATH}/T1-markers.tsv")"
+	find_replay_points
+	raw_points="${RUN_PATH}/T1-points-raw.tsv"
+	all_points="${RUN_PATH}/T1-points.tsv"
+	point_total="$(wc -l <"$all_points" | tr -d ' ')"
+	candidate_setup_points="$(awk -F '\t' -v marker="$setup_done_entry" \
+		'$1 < marker { count++ } END { print count + 0 }' "$all_points")"
+	candidate_workload_points=$((point_total - candidate_setup_points))
+	raw_total="$(wc -l <"$raw_points" | tr -d ' ')"
+	flush_total="$(awk -F '\t' '$2 == "flush" { count++ } END { print count + 0 }' "$raw_points")"
+	fua_total="$(awk -F '\t' '$2 == "fua" { count++ } END { print count + 0 }' "$raw_points")"
+	selected_points="${RUN_PATH}/T1-points-selected.tsv"
+	case "$mode" in
+		all) cp "$all_points" "$selected_points" ;;
+		final) tail -n 1 "$all_points" >"$selected_points" ;;
+		sample)
+			if [ -n "$T1_POINTS" ]; then
+				selected_entries="${RUN_PATH}/T1-selected-entry-list.txt"
+				printf '%s\n' "$T1_POINTS" | tr ',' '\n' >"$selected_entries"
+				previous_entry=-1
+				while IFS= read -r selected_entry; do
+					case "$selected_entry" in
+						''|*[!0-9]*) fail "invalid_t1_point=$selected_entry" ;;
+					esac
+					[ "$selected_entry" -gt "$previous_entry" ] ||
+						fail "t1_points_not_strictly_increasing"
+					if ! awk -F '\t' -v selected="$selected_entry" \
+						'$1 == selected { print; found = 1 } END { exit !found }' \
+						"$all_points" >>"$selected_points"; then
+						fail "t1_point_not_found=$selected_entry"
+					fi
+					previous_entry=$selected_entry
+				done <"$selected_entries"
+			else
+				awk -F '\t' -v total="$point_total" \
+					'NR == 1 || NR == int((total + 3) / 4) || NR == int((total + 1) / 2) || NR == int((3 * total + 3) / 4) || NR == total' \
+					"$all_points" >"$selected_points"
+			fi
+			;;
+		*) fail "unknown_t1_point_mode=$mode" ;;
+	esac
+	[ -s "$selected_points" ] || fail "t1_replay_points_missing"
+	close_t1_original_volume
+	assert_t1_original_volume_closed
+	REPLAY_IMAGE="${RUN_PATH}/replay.img"
+	COW_IMAGE="${RUN_PATH}/snapshot-cow.img"
+	[ ! -e "$REPLAY_IMAGE" ] || fail "replay_image_already_exists"
+	[ ! -e "$COW_IMAGE" ] || fail "snapshot_cow_image_already_exists"
+	truncate -s "$TEST_BYTES" "$REPLAY_IMAGE" ||
+		fail "replay_image_create_failed"
+	LOOP_REPLAY="$(losetup --find --show --direct-io=on "$REPLAY_IMAGE")" ||
+		fail "replay_loop_direct_io_failed"
+	replay_next=0
+	printf 'entry,phase,kind,stack_open,checked_files,mount_ok,fsck_exit,manifest_ok\n' >"$T1_CSV"
+	points=0
+	loss_points=0
+	setup_points=0
+	setup_mount_fail=0
+	setup_fsck_fail=0
+	workload_points=0
+	workload_mount_fail=0
+	workload_fsck_fail=0
+	while IFS="$tab" read -r entry kind; do
+		[ -n "$entry" ] || continue
+		points=$((points + 1))
+		if [ "$entry" -lt "$setup_done_entry" ]; then
+			point_phase=setup
+			setup_points=$((setup_points + 1))
+		else
+			point_phase=workload
+			workload_points=$((workload_points + 1))
+		fi
+		point_started="$(date +%s)"
+		limit=$((entry - replay_next + 1))
+		manifest_limit=$entry
+		[ "$limit" -gt 0 ] || fail "t1_replay_entry_not_increasing"
+		if "$REPLAY" --log "$LOG_FILE" --replay "$LOOP_REPLAY" \
+			--start-entry "$replay_next" --limit "$limit" \
+			>"${RUN_PATH}/replay-$entry.log" 2>&1; then
+			replay_status=0
+		else
+			replay_status=$?
+			fail "t1_incremental_replay_failed_entry=$entry"
+		fi
+		replay_next=$((entry + 1))
+		truncate -s 0 "$COW_IMAGE" ||
+			fail "snapshot_cow_reset_failed"
+		fallocate -l "$COW_BYTES" "$COW_IMAGE" ||
+			fail "snapshot_cow_allocate_failed"
+		LOOP_COW="$(losetup --find --show --direct-io=on "$COW_IMAGE")" ||
+			fail "snapshot_cow_loop_direct_io_failed"
+		dmsetup create "$SNAPSHOT_NAME" --table \
+			"0 $TEST_SECTORS snapshot $LOOP_REPLAY $LOOP_COW N 8" ||
+			fail "snapshot_device_create_failed"
+		if open_t1_replay_stack "$entry"; then
+			if mount -t "$FS_TYPE" -o "$MOUNT_OPTIONS" "$REPLAY_DEVICE" "$REPLAY_MOUNT" \
+				>"${RUN_PATH}/mount-$entry.log" 2>&1; then
+				mount_ok=yes
+			else
+				mount_ok=no
+			fi
+		else
+			mount_ok=no
+			printf 'mount skipped because replay stack open failed\n' \
+				>"${RUN_PATH}/mount-$entry.log"
+		fi
+		FSCRYPT_REPLAY_KEY_ID=
+		if [ "$mount_ok" = yes ]; then
+			case "$CONFIG" in
+				E5|F5)
+					if FSCRYPT_REPLAY_KEY_ID="$(fscryptctl add_key "$REPLAY_MOUNT" \
+						<"$FSCRYPT_KEY" 2>"${RUN_PATH}/fscrypt-add-key-$entry.log")" &&
+					   [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
+						:
+					else
+						head -n 20 "${RUN_PATH}/fscrypt-add-key-$entry.log" |
+							while IFS= read -r line; do
+								console "T1_FSCRYPT_ADD_KEY_ERR entry=$entry $line"
+							done
+						fail "t1_replay_fscrypt_add_key_failed_entry=$entry"
+					fi
+					;;
+			esac
+		fi
+		result="$(check_manifest_at_point "$entry" "$manifest_limit" "$mount_ok")"
+		IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF
+$result
+EOF
+		if [ "$mount_ok" = yes ]; then
+			if [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
+				fscryptctl remove_key "$FSCRYPT_REPLAY_KEY_ID" "$REPLAY_MOUNT" \
+					>"${RUN_PATH}/fscrypt-remove-key-$entry.log" 2>&1 ||
+					fail "t1_replay_fscrypt_remove_key_failed_entry=$entry"
+				FSCRYPT_REPLAY_KEY_ID=
+			fi
+			umount "$REPLAY_MOUNT" || fail "recovery_mount_unmount_failed"
+		fi
+		if [ "$stack_open" = no ]; then
+			fsck_status=skipped
+			printf 'fsck skipped because replay stack open failed\n' \
+				>"${RUN_PATH}/fsck-$entry.log"
+		elif fsck_volume "${RUN_PATH}/fsck-$entry.log" "$REPLAY_DEVICE"; then
+			fsck_status=0
+		else
+			fsck_status=$?
+		fi
+		close_t1_replay_stack
+		if ! snapshot_status="$(dmsetup status "$SNAPSHOT_NAME" \
+			2>"${RUN_PATH}/snapshot-status-$entry.log")"; then
+			fail "snapshot_status_failed_entry=$entry"
+		fi
+		printf '%s\n' "$snapshot_status" >"${RUN_PATH}/snapshot-status-$entry.log"
+		console "T1_SNAPSHOT_STATUS entry=$entry status=$snapshot_status"
+		case "$snapshot_status" in
+			*Invalid*|*Overflow*|*invalid*|*overflow*)
+				fail "snapshot_cow_overflow_entry=$entry"
+				;;
+		esac
+		if [ "$mount_ok" != yes ]; then
+			if [ "$point_phase" = setup ]; then
+				setup_mount_fail=$((setup_mount_fail + 1))
+			else
+				workload_mount_fail=$((workload_mount_fail + 1))
+			fi
+			head -n 20 "${RUN_PATH}/mount-$entry.log" |
+				while IFS= read -r line; do
+					console "T1_MOUNT_ERR entry=$entry $line"
+				done
+		fi
+		if [ "$fsck_status" != 0 ]; then
+			if [ "$point_phase" = setup ]; then
+				setup_fsck_fail=$((setup_fsck_fail + 1))
+			else
+				workload_fsck_fail=$((workload_fsck_fail + 1))
+			fi
+			if [ "$fsck_status" != skipped ]; then
+				head -n 20 "${RUN_PATH}/fsck-$entry.log" |
+					while IFS= read -r line; do
+						console "T1_FSCK_ERR entry=$entry $line"
+					done
+			fi
+		fi
+		if [ "$manifest_ok" = no ]; then
+			loss_points=$((loss_points + 1))
+		fi
+		final_point_validation=no
+		case "$TEST" in
+			T1-final|T1-negative-final) final_point_validation=yes ;;
+			T1)
+				if [ "$mode" = all ] && [ "$points" -eq "$point_total" ]; then
+					final_point_validation=yes
+				fi
+				;;
+		esac
+		if [ "$final_point_validation" = yes ]; then
+			if [ "$TEST" = T1-negative-final ]; then
+				console "T1_NEGATIVE_FINAL_CHECK stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points"
+				if [ "$mount_ok" != yes ] || [ "$fsck_status" != 0 ] ||
+				   [ "$manifest_ok" != no ]; then
+					fail "t1_negative_final_checker_validation_failed"
+				fi
+			else
+				console "T1_FINAL_CHECK path=dm-snapshot expected_files=$expected_ack_count actual_files=$ack_count stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok"
+				if [ "$mount_ok" != yes ] || [ "$manifest_ok" != yes ] ||
+				   [ "$fsck_status" != 0 ] ||
+				   [ "$ack_count" -ne "$expected_ack_count" ]; then
+					fail "t1_final_checker_validation_failed"
+				fi
+			fi
+		fi
+		printf '%s,%s,%s,%s,%s,%s,%s,%s\n' "$entry" "$point_phase" "$kind" \
+			"$stack_open" "$ack_count" "$mount_ok" "$fsck_status" "$manifest_ok" \
+			>>"$T1_CSV"
+		point_finished="$(date +%s)"
+		point_elapsed=$((point_finished - point_started))
+		console "T1_POINT entry=$entry phase=$point_phase kind=$kind snapshot=dm-snapshot stack_open=$stack_open checked_files=$ack_count mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok replay=$replay_status elapsed_seconds=$point_elapsed"
+		dmsetup remove "$SNAPSHOT_NAME" ||
+			fail "snapshot_device_remove_failed"
+		losetup -d "$LOOP_COW" || fail "snapshot_cow_loop_detach_failed"
+		LOOP_COW=
+		truncate -s 0 "$COW_IMAGE" ||
+			fail "snapshot_cow_reset_failed"
+	done <"$selected_points"
+	losetup -d "$LOOP_REPLAY" || fail "replay_loop_detach_failed"
+	LOOP_REPLAY=
+	console "T1_POINT_COUNT raw_flush_fua=$raw_total flush_entries=$flush_total fua_entries=$fua_total unique_points=$point_total selected_points=$points candidate_setup_points=$candidate_setup_points candidate_workload_points=$candidate_workload_points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail"
+	console "T1_SUMMARY mode=$mode points=$points total_points=$point_total candidate_setup_points=$candidate_setup_points candidate_workload_points=$candidate_workload_points setup_points=$setup_points setup_mount_fail=$setup_mount_fail setup_fsck_fail=$setup_fsck_fail mount_fail=$workload_mount_fail fsck_fail=$workload_fsck_fail loss_points=$loss_points csv=$T1_CSV"
+	case "$TEST" in
+	T1-negative|T1-negative-final)
+		if [ "$loss_points" -gt 0 ]; then
+			console "T1_NEGATIVE_CONTROL loss_detected=yes"
+		else
+			console "T1_NEGATIVE_CONTROL loss_detected=no"
+		fi
+		if [ "$TEST" = T1-negative-final ] && [ "$loss_points" -eq 0 ]; then
+			fail "t1_negative_control_loss_not_detected"
+		fi
+		;;
+	esac
+}
+
+add_block_device()
+{
+	path=$1
+	[ -b "$path" ] || return 0
+	name="$(basename "$(readlink -f "$path")")"
+	if [ ! -f "/sys/class/block/$name/stat" ]; then
+		# shellcheck disable=SC2012
+		device_number="$(LC_ALL=C ls -l "$path" 2>/dev/null | awk '
+			$1 ~ /^b/ && $5 ~ /^[0-9]+,$/ && $6 ~ /^[0-9]+$/ {
+				sub(/,$/, "", $5)
+				print $5 ":" $6
+				exit
+			}
+		')"
+		[ -n "$device_number" ] ||
+			fail "block_device_number_missing_path=$path"
+		sysfs_device="/sys/dev/block/$device_number"
+		[ -e "$sysfs_device" ] ||
+			fail "block_device_sysfs_missing_path=$path"
+		name="$(basename "$(readlink -f "$sysfs_device")")"
+	fi
+	[ -f "/sys/class/block/$name/stat" ] ||
+		fail "block_device_stat_missing_path=$path name=$name"
+	case " $BLOCK_DEVICES " in
+		*" $name "*) return 0 ;;
+	esac
+	BLOCK_DEVICES="$BLOCK_DEVICES $name"
+	if [ -f "/sys/class/block/$name/partition" ]; then
+		sysfs_path="$(readlink -f "/sys/class/block/$name")"
+		parent_name="$(basename "$(dirname "$sysfs_path")")"
+		[ -b "/dev/$parent_name" ] && add_block_device "/dev/$parent_name"
+	fi
+	for slave in /sys/class/block/"$name"/slaves/*; do
+		if [ -e "$slave" ]; then
+			add_block_device "/dev/$(basename "$slave")"
+		fi
+	done
+	return 0
+}
+
+add_data_device()
+{
+	data_device="$(awk '$2 == "/data" { print $1; exit }' /proc/mounts)"
+	if [ -n "$data_device" ]; then
+		add_block_device "$data_device"
+	fi
+}
+
+find_block_devices()
+{
+	BLOCK_DEVICES=
+	add_block_device "$FS_DEVICE"
+	add_block_device "$LOOP_DATA"
+	[ -n "$LOOP_LOG" ] && add_block_device "$LOOP_LOG"
+	add_data_device
+}
+
+read_stats()
+{
+	name=$1
+	awk '{ print $5 "\t" $7 }' "/sys/class/block/$name/stat"
+}
+
+snapshot_stats()
+{
+	for name in $BLOCK_DEVICES; do
+		stats="$(read_stats "$name")"
+		IFS="$tab" read -r writes sectors <<EOF
+$stats
+EOF
+		printf '%s\t%s\t%s\n' "$name" "$writes" "$sectors"
+	done
+}
+
+run_workload_once()
+{
+	case "$TEST" in
+		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
+			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
+				--workload-size t1-reduced "$@"
+			;;
+		*)
+			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" "$@"
+			;;
+	esac
+}
+
+run_t4_idle()
+{
+	duration=$1
+	find_block_devices
+	before_stats="$(snapshot_stats)"
+	samples=
+	elapsed=0
+	while [ "$elapsed" -le "$duration" ]; do
+		now="$(date +%s)"
+		for name in $BLOCK_DEVICES; do
+			stats="$(read_stats "$name")"
+			IFS="$tab" read -r writes sectors <<EOF
+$stats
+EOF
+			samples="${samples}${elapsed},${now},${name},${writes},${sectors}
+"
+			console "T4_SAMPLE elapsed=$elapsed epoch=$now device=$name write_ios=$writes write_sectors=$sectors"
+		done
+		if [ "$elapsed" -lt "$duration" ]; then
+			sleep 1
+			elapsed=$((elapsed + 1))
+		else
+			break
+		fi
+	done
+	after_stats="$(snapshot_stats)"
+	printf '%s' "$samples" | awk -F, '
+		{
+			device = $3
+			if (device in writes && (writes[device] != $4 || sectors[device] != $5))
+				last[device] = $1
+			writes[device] = $4
+			sectors[device] = $5
+		}
+		END {
+			for (device in writes)
+				printf "msd.fscmp: T4_LAST_WRITE device=%s last_write_s=%s\n", device, (device in last ? last[device] : "none")
+		}
+	' >/dev/console
+	printf '%s\n---\n%s\n' "$before_stats" "$after_stats" |
+		awk -F '\t' '
+			$1 == "---" { after = 1; next }
+			!after {
+				before_writes[$1] = $2
+				before_sectors[$1] = $3
+				next
+			}
+			{
+				printf "msd.fscmp: T4_DELTA device=%s write_ios=%d write_sectors=%d\n",
+					$1, $2 - before_writes[$1], $3 - before_sectors[$1]
+			}
+		' >/dev/console
+	test_device="$(basename "$(readlink -f "$LOOP_DATA")")"
+	printf '%s' "$samples" | awk -F, -v device="$test_device" '
+		$3 == device {
+			if (!seen) {
+				first_ios = $4
+				first_sectors = $5
+				seen = 1
+			} else if (last_ios != $4 || last_sectors != $5) {
+				last_write = $1
+			}
+			last_ios = $4
+			last_sectors = $5
+		}
+		END {
+			if (seen)
+				printf "msd.fscmp: T4_RESULT device=%s write_ios=%d write_sectors=%d last_write_s=%s\n",
+					device, last_ios - first_ios, last_sectors - first_sectors,
+					(last_write == "" ? "none" : last_write)
+		}
+	' >/dev/console
+	console "T4_IDLE duration_seconds=$duration samples=serial_log"
+}
+
+run_t4_odirect_control()
+{
+	image="${RUN_PATH}/odirect.img"
+	fallocate -l 2M "$image"
+	device="$(losetup --find --show --direct-io=on "$image")" ||
+		fail "odirect_loop_direct_io_failed"
+	FS_DEVICE=$device
+	find_block_devices
+	sync
+	before_stats="$(snapshot_stats)"
+	"$WORKLOAD" odirect "$device"
+	after_stats="$(snapshot_stats)"
+	printf '%s\n---\n%s\n' "$before_stats" "$after_stats" |
+		awk -F '\t' '
+			$1 == "---" { after = 1; next }
+			!after {
+				before_writes[$1] = $2
+				before_sectors[$1] = $3
+				next
+			}
+			{
+				printf "msd.fscmp: T4_ODIRECT device=%s before_ios=%s after_ios=%s delta_ios=%d before_sectors=%s after_sectors=%s delta_sectors=%d bytes=1048576\n",
+					$1, before_writes[$1], $2, $2 - before_writes[$1],
+					before_sectors[$1], $3, $3 - before_sectors[$1]
+			}
+		' >/dev/console
+	losetup -d "$device"
+}
+
+run_t5()
+{
+	find_block_devices
+	sync
+	before_stats="$(snapshot_stats)"
+	run_workload_once
+	sync
+	after_stats="$(snapshot_stats)"
+	printf '%s\n---\n%s\n' "$before_stats" "$after_stats" |
+		awk -F '\t' -v logical=34706432 '
+			$1 == "---" { after = 1; next }
+			!after {
+				before_writes[$1] = $2
+				before_sectors[$1] = $3
+				next
+			}
+			{
+				printf "msd.fscmp: T5_DEVICE device=%s before_ios=%s before_sectors=%s after_ios=%s after_sectors=%s write_ios=%d write_sectors=%d logical_bytes=%d\n",
+					$1, before_writes[$1], before_sectors[$1],
+					$2, $3, $2 - before_writes[$1],
+					$3 - before_sectors[$1], logical
+			}
+		' >/dev/console
+	console "T5_LOGICAL_BYTES=34706432"
+}
+
+quiesce_device()
+{
+	device="$(basename "$(readlink -f "$LOOP_DATA")")"
+	stats="$(read_stats "$device")"
+	IFS="$tab" read -r initial_ios initial_sectors <<EOF
+$stats
+EOF
+	previous_ios=$initial_ios
+	stable_seconds=0
+	elapsed=0
+	quiesce_started="$(date +%s)"
+	sync &
+	sync_pid=$!
+	while kill -0 "$sync_pid" 2>/dev/null; do
+		sleep 1
+		stats="$(read_stats "$device")"
+		IFS="$tab" read -r current_ios current_sectors <<EOF
+$stats
+EOF
+		elapsed=$(( $(date +%s) - quiesce_started ))
+		[ "$elapsed" -lt 900 ] ||
+			fail "quiesce_timeout_seconds=900 device=$device"
+	done
+	wait "$sync_pid" || fail "quiesce_sync_failed"
+	previous_ios=${current_ios:-$initial_ios}
+	while [ "$elapsed" -lt 900 ]; do
+		sleep 1
+		stats="$(read_stats "$device")"
+		IFS="$tab" read -r current_ios current_sectors <<EOF
+$stats
+EOF
+		elapsed=$(( $(date +%s) - quiesce_started ))
+		if [ "$current_ios" -eq "$previous_ios" ]; then
+			stable_seconds=$((stable_seconds + 1))
+		else
+			stable_seconds=0
+		fi
+		previous_ios=$current_ios
+		if [ "$stable_seconds" -ge 30 ]; then
+			break
+		fi
+	done
+	[ "$stable_seconds" -ge 30 ] ||
+		fail "quiesce_timeout_seconds=900 device=$device"
+	console "QUIESCE_RESULT device=$device quiesce_seconds=$elapsed quiesce_write_ios=$((current_ios - initial_ios)) quiesce_write_sectors=$((current_sectors - initial_sectors))"
+}
+
+unmount_volume()
+{
+	path=$1
+	if awk -v path="$path" '$2 == path { found = 1 } END { exit !found }' \
+		/proc/mounts; then
+		umount "$path" || fail "umount_failed_path=$path"
+	fi
+}
+
+open_config_stack()
+{
+	case "$CONFIG" in
+		L*|B5)
+			cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ||
+				fail "T6_stack_open_failed"
+			;;
+		I1)
+			integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ||
+				fail "T6_stack_open_failed"
+			;;
+		I2)
+			integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ||
+				fail "T6_stack_open_failed"
+			;;
+	esac
+}
+
+close_config_stack()
+{
+	case "$CONFIG" in
+		L*|B5) cryptsetup close "$MAPPER_NAME" || fail "T6_stack_close_failed" ;;
+		I*) integritysetup close "$MAPPER_NAME" || fail "T6_stack_close_failed" ;;
+	esac
+}
+
+run_t6()
+{
+	known="${WORKLOAD_ROOT}/T6/known.bin"
+	dmesg >"${RUN_PATH}/T6-kernel-before.log" ||
+		fail "T6_dmesg_before_failed"
+	dmesg_before_count="$(wc -l <"${RUN_PATH}/T6-kernel-before.log" | tr -d ' ')"
+	"$WORKLOAD" known "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME"
+	expected="$(sha256sum "$known" | awk '{ print $1 }')"
+	luks_payload_bytes=0
+	luks_payload_sectors=0
+	plaintext_device_offset=
+	physical_copies_on_stack=
+	case "$CONFIG" in
+		L*|B5)
+			cryptsetup luksDump "$LOOP_DATA" >"${RUN_PATH}/T6-luksDump.txt" ||
+				fail "T6_luksDump_failed"
+			luks_offset_line="$(awk '
+				/^Data segments:/ { in_segments = 1; next }
+				in_segments && /^[[:space:]]+offset:/ { print; exit }
+			' "${RUN_PATH}/T6-luksDump.txt")"
+			if [ -n "$luks_offset_line" ]; then
+				luks_offset_value="$(printf '%s\n' "$luks_offset_line" |
+					awk '{ print $2 }')"
+				case "$luks_offset_line" in
+					*"[512-byte units]"*)
+						luks_payload_bytes=$((luks_offset_value * 512))
+						;;
+					*) luks_payload_bytes=$luks_offset_value ;;
+				esac
+			else
+				luks_payload_sectors="$(sed -n \
+					's/^[[:space:]]*Payload offset:[[:space:]]*\([0-9][0-9]*\).*/\1/p' \
+					"${RUN_PATH}/T6-luksDump.txt" | head -n 1)"
+				[ -n "$luks_payload_sectors" ] ||
+					fail "T6_luks_payload_offset_missing"
+				luks_payload_bytes=$((luks_payload_sectors * 512))
+			fi
+			case "$luks_payload_bytes" in
+				''|*[!0-9]*) fail "T6_luks_payload_offset_invalid" ;;
+			esac
+			luks_payload_sectors=$((luks_payload_bytes / 512))
+			console "T6_LUKS_DUMP payload_offset_bytes=$luks_payload_bytes payload_offset_sectors=$luks_payload_sectors"
+			;;
+	esac
+	if filefrag -b4096 -v "$known" >"${RUN_PATH}/filefrag.txt" 2>&1; then
+		:
+	else
+		filefrag_status=$?
+		while IFS= read -r line; do console "T6_FILEFRAG $line"; done \
+			<"${RUN_PATH}/filefrag.txt"
+		fail "filefrag_failed_status=$filefrag_status"
+	fi
+	extent="$(awk '$1 ~ /^[0-9]+:/ { print $4; exit }' "${RUN_PATH}/filefrag.txt")"
+	if [ -z "$extent" ]; then
+		while IFS= read -r line; do console "T6_FILEFRAG $line"; done \
+			<"${RUN_PATH}/filefrag.txt"
+		fail "filefrag_extent_missing"
+	fi
+	physical_block="$(printf '%s' "$extent" | sed 's/\.\..*$//')"
+	case "$FS_TYPE" in
+		ext4)
+			case "$CONFIG" in
+				I1|I2|L3)
+					integrity_device=$LOOP_DATA
+					integrity_base_sector=0
+					if [ "$CONFIG" = L3 ]; then
+						integrity_base_sector=$luks_payload_sectors
+						device_sectors="$(blockdev --getsz "$LOOP_DATA")"
+						integrity_probe_sectors=$((device_sectors - integrity_base_sector))
+						[ "$integrity_probe_sectors" -gt 0 ] ||
+							fail "T6_integrity_probe_size_invalid"
+						dmsetup create fscompare_t6_integrity_dump --table \
+							"0 $integrity_probe_sectors linear $LOOP_DATA $integrity_base_sector" ||
+							fail "T6_integrity_probe_create_failed"
+						integrity_device=/dev/mapper/fscompare_t6_integrity_dump
+					fi
+					if integritysetup dump "$integrity_device" \
+						>"${RUN_PATH}/T6-integrityDump.txt" 2>&1; then
+						:
+					else
+						[ "$CONFIG" != L3 ] ||
+							dmsetup remove fscompare_t6_integrity_dump
+						fail "T6_integrityDump_failed"
+					fi
+					if [ "$CONFIG" = L3 ]; then
+						dmsetup remove fscompare_t6_integrity_dump ||
+							fail "T6_integrity_probe_remove_failed"
+					fi
+					integrity_tag_size="$(sed -n 's/^tag size: \([0-9][0-9]*\).*/\1/p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					integrity_sector_size="$(sed -n 's/^sector size: \([0-9][0-9]*\).*/\1/p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					integrity_data_sectors="$(sed -n 's/^data size: \([0-9][0-9]*\).*/\1/p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					integrity_journal_sections="$(sed -n 's/^journal sections: \([0-9][0-9]*\).*/\1/p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					integrity_log2_interleave="$(sed -n 's/^log2 interleave sectors: \([0-9][0-9]*\).*/\1/p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					integrity_flags="$(sed -n 's/^flags: //p' \
+						"${RUN_PATH}/T6-integrityDump.txt" | head -n 1)"
+					for value in "$integrity_tag_size" "$integrity_sector_size" \
+						"$integrity_data_sectors" "$integrity_journal_sections" \
+						"$integrity_log2_interleave"; do
+						case "$value" in
+							''|*[!0-9]*) fail "T6_integrityDump_field_missing" ;;
+						esac
+					done
+					sectors_per_block=$((integrity_sector_size / 512))
+					interleave_sectors=$((1 << integrity_log2_interleave))
+					journal_entry_size=$(((8 + 8 * sectors_per_block + \
+						integrity_tag_size + 7) / 8 * 8))
+					journal_sector_space=504
+					case "$integrity_flags" in
+						*have_journal_mac*) journal_sector_space=$((journal_sector_space - 8)) ;;
+					esac
+					journal_entries_per_sector=$((journal_sector_space / journal_entry_size))
+					journal_section_entries=$((journal_entries_per_sector * 8))
+					journal_section_sectors=$((journal_section_entries * \
+						sectors_per_block + 8))
+					integrity_initial_sectors=$((8 + \
+						journal_section_sectors * integrity_journal_sections))
+					tag_area_bytes=$((integrity_tag_size * \
+						interleave_sectors / sectors_per_block))
+					case "$integrity_flags" in
+						*fix_padding*) tag_padding_bytes=4096 ;;
+						*) tag_padding_bytes=131072 ;;
+					esac
+					metadata_run_sectors=$((((tag_area_bytes + \
+						tag_padding_bytes - 1) / tag_padding_bytes * \
+						tag_padding_bytes) / 512))
+					integrity_logical_sector=$((physical_block * 8))
+					[ "$integrity_logical_sector" -lt "$integrity_data_sectors" ] ||
+						fail "T6_integrity_logical_sector_out_of_range"
+					area=$((integrity_logical_sector / interleave_sectors))
+					area_offset=$((integrity_logical_sector % interleave_sectors))
+					integrity_raw_sector=$((integrity_base_sector + \
+						integrity_initial_sectors + \
+						area * (interleave_sectors + metadata_run_sectors) + \
+						metadata_run_sectors + area_offset))
+					physical_offset=$((integrity_raw_sector * 512))
+					console "T6_INTEGRITY_MAP tag_size=$integrity_tag_size sector_size=$integrity_sector_size data_sectors=$integrity_data_sectors journal_sections=$integrity_journal_sections log2_interleave_sectors=$integrity_log2_interleave initial_sectors=$integrity_initial_sectors metadata_run_sectors=$metadata_run_sectors base_sector=$integrity_base_sector logical_sector=$integrity_logical_sector raw_sector=$integrity_raw_sector"
+					;;
+				*)
+					physical_offset=$((physical_block * 4096 + \
+						luks_payload_bytes))
+					;;
+			esac
+			plaintext_device_offset=$((physical_block * 4096))
+			physical_copies=$physical_offset
+			;;
+		f2fs)
+			plaintext_device_offset=$((physical_block * 4096))
+			physical_offset=$((plaintext_device_offset + luks_payload_bytes))
+			physical_copies=$physical_offset
+			;;
+		btrfs)
+			logical_offset=$((physical_block * 4096))
+			btrfs inspect-internal list-chunks --raw "$MOUNTPOINT" \
+				>"${RUN_PATH}/btrfs-chunks.txt" 2>&1
+			physical_copies_on_stack="$(awk -v logical="$logical_offset" \
+				'$3 ~ /^Data\// && logical >= $8 && logical < $8 + $5 { print $4 + logical - $8 }' \
+				"${RUN_PATH}/btrfs-chunks.txt")"
+			[ -n "$physical_copies_on_stack" ] ||
+				fail "btrfs_chunk_mapping_missing"
+			plaintext_device_offset="$(printf '%s\n' "$physical_copies_on_stack" |
+				sed -n '1p')"
+			physical_copies=$physical_copies_on_stack
+			if [ "$CONFIG" = B5 ]; then
+				physical_copies="$(printf '%s\n' "$physical_copies" |
+					awk -v offset="$luks_payload_bytes" '{ print $1 + offset }')"
+			fi
+			physical_offset="$(printf '%s\n' "$physical_copies" | sed -n '1p')"
+			second_offset="$(printf '%s\n' "$physical_copies" | sed -n '2p')"
+			if [ "$CONFIG" = B2 ] && [ -z "$second_offset" ]; then
+				fail "btrfs_duplicate_copy_mapping_missing"
+			fi
+			if [ "$CONFIG" = B5 ]; then
+				second_plaintext_offset="$(printf '%s\n' "$physical_copies_on_stack" |
+					sed -n '2p')"
+				[ -n "$second_plaintext_offset" ] ||
+					fail "btrfs_duplicate_copy_mapping_missing"
+				sync
+				dd if="$FS_DEVICE" of="${RUN_PATH}/T6-plaintext-first.bin" \
+					bs=4096 skip=$((plaintext_device_offset / 4096)) count=1 \
+					2>"${RUN_PATH}/T6-plaintext-first.log" ||
+					fail "T6_plaintext_first_copy_read_failed"
+				dd if="$FS_DEVICE" of="${RUN_PATH}/T6-plaintext-second.bin" \
+					bs=4096 skip=$((second_plaintext_offset / 4096)) count=1 \
+					2>"${RUN_PATH}/T6-plaintext-second.log" ||
+					fail "T6_plaintext_second_copy_read_failed"
+				cmp -s "${RUN_PATH}/T6-plaintext-first.bin" \
+					"${RUN_PATH}/T6-plaintext-second.bin" ||
+					fail "T6_btrfs_mapper_copies_differ_before_corruption"
+				console "T6_BTRFS_DUP plaintext_copies=match mapper_offsets=$(printf '%s' "$physical_copies_on_stack" | tr '\n' ':') raw_offsets=$(printf '%s' "$physical_copies" | tr '\n' ':')"
+			fi
+			;;
+	esac
+	console "T6_EXTENT filesystem=$FS_TYPE file=$known physical_block=$physical_block plaintext_device_offset=$plaintext_device_offset payload_offset_bytes=$luks_payload_bytes mapper_offsets=$(printf '%s' "$physical_copies_on_stack" | tr '\n' ':') offsets=$(printf '%s' "$physical_copies" | tr '\n' ':')"
+	sync
+	dd if="$FS_DEVICE" of="${RUN_PATH}/T6-plaintext-before.bin" \
+		bs=4096 skip=$((plaintext_device_offset / 4096)) count=1 \
+		2>"${RUN_PATH}/T6-plaintext-before.log" ||
+		fail "T6_plaintext_before_read_failed"
+	dd if="$DISK_FILE" of="${RUN_PATH}/T6-original-first.bin" bs=1 \
+		skip="$physical_offset" count=4096 \
+		2>"${RUN_PATH}/T6-original-first.log" ||
+		fail "T6_original_first_copy_read_failed"
+	[ "$(wc -c <"${RUN_PATH}/T6-original-first.bin" | tr -d '[:space:]')" = 4096 ] ||
+		fail "T6_original_first_copy_short"
+	if [ -n "${second_offset:-}" ]; then
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-original-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-original-second.log" ||
+			fail "T6_original_second_copy_read_failed"
+		[ "$(wc -c <"${RUN_PATH}/T6-original-second.bin" | tr -d '[:space:]')" = 4096 ] ||
+			fail "T6_original_second_copy_short"
+		if [ "$CONFIG" != B5 ]; then
+			cmp -s "${RUN_PATH}/T6-original-first.bin" \
+				"${RUN_PATH}/T6-original-second.bin" ||
+				fail "T6_mirror_copies_differ_before_corruption"
+		fi
+	fi
+	unmount_volume "$MOUNTPOINT"
+	close_config_stack
+	losetup -d "$LOOP_DATA"
+	LOOP_DATA=
+	printf '%s\n' "$physical_offset" >"${RUN_PATH}/corrupt-offset.txt"
+	raw_byte="$(od -An -N1 -j "$physical_offset" -tu1 "$DISK_FILE" |
+		tr -d '[:space:]')"
+	case "$raw_byte" in
+		''|*[!0-9]*) fail "T6_raw_byte_read_failed" ;;
+	esac
+	corrupt_byte=$((raw_byte ^ 1))
+	printf '%b' "\\$(printf '%03o' "$corrupt_byte")" |
+		dd of="$DISK_FILE" bs=1 seek="$physical_offset" count=1 \
+			conv=notrunc 2>"${RUN_PATH}/corrupt-dd.log" ||
+		fail "T6_raw_corruption_write_failed"
+	sync
+	dd if="$DISK_FILE" of="${RUN_PATH}/T6-after-corruption-first.bin" bs=1 \
+		skip="$physical_offset" count=4096 \
+		2>"${RUN_PATH}/T6-after-corruption-first.log" ||
+		fail "T6_after_corruption_read_failed"
+	raw_changed=yes
+	cmp -s "${RUN_PATH}/T6-original-first.bin" \
+		"${RUN_PATH}/T6-after-corruption-first.bin" && raw_changed=no
+	console "T6_RAW_CORRUPTION offset=$physical_offset changed=$raw_changed"
+	LOOP_DATA="$(losetup --find --show --direct-io=on "$DISK_FILE")" ||
+		fail "corrupt_loop_direct_io_failed"
+	STACK_BASE=$LOOP_DATA
+	case "$CONFIG" in
+		L*|I*|B5) ;;
+		*) FS_DEVICE=$LOOP_DATA ;;
+	esac
+	open_config_stack
+	if ! mount_volume; then
+		fail "T6_corrupted_mount_failed"
+	fi
+	plaintext_changed=unreadable
+	set +e
+	dd if="$FS_DEVICE" of="${RUN_PATH}/T6-plaintext-after.bin" \
+		bs=4096 skip=$((plaintext_device_offset / 4096)) count=1 \
+		2>"${RUN_PATH}/T6-plaintext-after.log"
+	plaintext_read_status=$?
+	set -e
+	if [ "$plaintext_read_status" -eq 0 ]; then
+		if cmp -s "${RUN_PATH}/T6-plaintext-before.bin" \
+			"${RUN_PATH}/T6-plaintext-after.bin"; then
+			plaintext_changed=no
+		else
+			plaintext_changed=yes
+		fi
+	fi
+	console "T6_PLAINTEXT_CHANGE result=$plaintext_changed read_status=$plaintext_read_status"
+	scrub_corrected=not_applicable
+	scrub_uncorrectable=not_applicable
+	repaired=not_applicable
+	if [ "$FS_TYPE" = btrfs ] && [ "$CONFIG" = B2 ]; then
+		mount -t tmpfs -o size=16M tmpfs /var/lib ||
+			fail "T6_scrub_state_tmpfs_mount_failed"
+		mkdir -p /var/lib/btrfs ||
+			fail "T6_scrub_state_directory_failed"
+		btrfs scrub start -B "$MOUNTPOINT" >"${RUN_PATH}/scrub.log" 2>&1 ||
+			fail "T6_scrub_start_failed"
+		while IFS= read -r line; do console "T6_SCRUB $line"; done \
+			<"${RUN_PATH}/scrub.log"
+		btrfs scrub status -R "$MOUNTPOINT" \
+			>"${RUN_PATH}/scrub-status.log" 2>&1 ||
+			fail "T6_scrub_status_failed"
+		while IFS= read -r line; do console "T6_SCRUB_STATUS $line"; done \
+			<"${RUN_PATH}/scrub-status.log"
+		scrub_corrected="$(awk 'tolower($1) ~ /^corrected_errors:?$/ { gsub(/[^0-9]/, "", $2); print $2; exit }' \
+			"${RUN_PATH}/scrub-status.log")"
+		scrub_uncorrectable="$(awk 'tolower($1) ~ /^uncorrectable_errors:?$/ { gsub(/[^0-9]/, "", $2); print $2; exit }' \
+			"${RUN_PATH}/scrub-status.log")"
+		[ -n "$scrub_corrected" ] && [ -n "$scrub_uncorrectable" ] ||
+			fail "T6_scrub_counts_missing"
+		console "T6_SCRUB_RESULT corrected=$scrub_corrected uncorrectable=$scrub_uncorrectable"
+		umount /var/lib || fail "T6_scrub_state_tmpfs_unmount_failed"
+	fi
+	if [ -n "${second_offset:-}" ] && [ "$CONFIG" != B5 ]; then
+		sync
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-recovered-first.bin" bs=1 \
+			skip="$physical_offset" count=4096 \
+			2>"${RUN_PATH}/T6-recovered-first.log" ||
+			fail "T6_recovered_first_copy_read_failed"
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-recovered-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-recovered-second.log" ||
+			fail "T6_recovered_second_copy_read_failed"
+		first_copy_matches=no
+		second_copy_matches=no
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-recovered-first.bin" &&
+			first_copy_matches=yes
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-recovered-second.bin" &&
+			second_copy_matches=yes
+		[ "$first_copy_matches" = yes ] &&
+			[ "$second_copy_matches" = yes ] && repaired=yes
+		console "T6_REPAIR_RESULT repaired=$repaired first_copy_matches_original=$first_copy_matches second_copy_matches_original=$second_copy_matches"
+	fi
+	set +e
+	"$WORKLOAD" readcheck "$known" "$expected"
+	read_status=$?
+	set -e
+	case "$CONFIG" in
+		L1|L2) expected_result=wrong ;;
+		L3|I1|I2) expected_result=eio ;;
+		*) expected_result=not_defined ;;
+	esac
+	console "T6_EXPECTED=$expected_result"
+	if [ "$read_status" -eq 0 ] && [ "$plaintext_changed" = no ]; then
+		console "T6_CORRUPTION_TARGET=unverified raw_changed=$raw_changed"
+	else
+		console "T6_CORRUPTION_TARGET=verified raw_changed=$raw_changed"
+	fi
+	case "$expected_result:$read_status" in
+		wrong:0|eio:0) fail "T6_corruption_not_applied" ;;
+		wrong:2|eio:3) ;;
+		wrong:*|eio:*) fail "T6_expected_result_mismatch expected=$expected_result read_exit=$read_status" ;;
+	esac
+	if [ -n "${second_offset:-}" ] && [ "$CONFIG" != B5 ]; then
+		sync
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-postread-first.bin" bs=1 \
+			skip="$physical_offset" count=4096 \
+			2>"${RUN_PATH}/T6-postread-first.log" ||
+			fail "T6_postread_first_copy_read_failed"
+		dd if="$DISK_FILE" of="${RUN_PATH}/T6-postread-second.bin" bs=1 \
+			skip="$second_offset" count=4096 \
+			2>"${RUN_PATH}/T6-postread-second.log" ||
+			fail "T6_postread_second_copy_read_failed"
+		first_copy_matches=no
+		second_copy_matches=no
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-postread-first.bin" &&
+			first_copy_matches=yes
+		cmp -s "${RUN_PATH}/T6-original-first.bin" \
+			"${RUN_PATH}/T6-postread-second.bin" &&
+			second_copy_matches=yes
+		console "T6_RAW_FINAL_RESULT first_copy_matches_original=$first_copy_matches second_copy_matches_original=$second_copy_matches"
+		[ "$first_copy_matches" = yes ] &&
+			[ "$second_copy_matches" = yes ] ||
+			fail "T6_postread_raw_copies_differ"
+	fi
+	unmount_volume "$MOUNTPOINT"
+	if fsck_volume "${RUN_PATH}/T6-fsck.log"; then
+		console "T6_FSCK result=0"
+	else
+		fsck_status=$?
+		console "T6_FSCK result=$fsck_status"
+	fi
+	close_config_stack
+	losetup -d "$LOOP_DATA" || fail "T6_loop_detach_failed"
+	LOOP_DATA=
+	dmesg >"${RUN_PATH}/T6-kernel-after.log" ||
+		fail "T6_dmesg_after_failed"
+	awk -v start="$dmesg_before_count" \
+		'NR > start && tolower($0) ~ /btrfs|csum|integrity|device-mapper/ { print }' \
+		"${RUN_PATH}/T6-kernel-after.log" \
+		>"${RUN_PATH}/T6-kernel-matching.log"
+	while IFS= read -r line; do console "T6_KERNEL $line"; done \
+		<"${RUN_PATH}/T6-kernel-matching.log"
+	console "T6_SCRUB_METRICS corrected=$scrub_corrected uncorrectable=$scrub_uncorrectable repaired=$repaired"
+	console "T6_READCHECK exit=$read_status expected_sha256=$expected"
+}
+
+run_t7()
+{
+	image="${RUN_PATH}/t7-4g.img"
+	[ ! -e "$image" ] || fail "T7_image_already_exists"
+	fallocate -l 4G "$image"
+	device="$(losetup --find --show --direct-io=on "$image")" ||
+		fail "T7_loop_direct_io_failed"
+	LOOP_DATA=$device
+	STACK_BASE=$LOOP_DATA
+	case "$CONFIG" in
+		L*|I*|B5) ;;
+		*) FS_DEVICE=$LOOP_DATA ;;
+	esac
+	T7_STEP_COUNT=0
+	run_setup_commands_timed
+	mount_volume_timed
+	console "T7_SETUP_DONE"
+	mem_available="$(awk '$1 == "MemAvailable:" { print $2 " " $3; exit }' \
+		/proc/meminfo)"
+	console "T7_MEMAVAILABLE value=$mem_available"
+	if awk -v path="$MOUNTPOINT" '$2 == path { found = 1 } END { exit !found }' \
+		/proc/mounts; then
+		run_timed_step umount "$MOUNTPOINT"
+	fi
+	case "$FS_TYPE" in
+		ext4) run_timed_step e2fsck -fn "$FS_DEVICE" ;;
+		f2fs) run_timed_step fsck.f2fs --dry-run "$FS_DEVICE" ;;
+		btrfs) run_timed_step btrfs check --readonly "$FS_DEVICE" ;;
+	esac
+	case "$CONFIG" in
+		L*|B5) run_timed_step cryptsetup close "$MAPPER_NAME" ;;
+		I*) run_timed_step integritysetup close "$MAPPER_NAME" ;;
+	esac
+	run_timed_step losetup -d "$LOOP_DATA"
+	LOOP_DATA=
+	console "T7_FINISHED filesystem=$FS_TYPE bytes=4294967296"
+}
+
+run_t6_before()
+{
+	run_t6
+}
+
+dispatch()
+{
+	if [ "$phase" = verify ]; then
+		prepare_test_volume
+		verify_recovery
+		return
+	fi
+
+	case "$TEST" in
+		T4-odirect-control)
+			run_t4_odirect_control
+			console finished
+			return
+			;;
+		T7)
+			run_t7
+			console finished
+			return
+			;;
+	esac
+	prepare_test_volume
+	if ! mount_volume; then
+		fail "mount_failed"
+	fi
+	mark_t1_setup_done
+	console "mounted config=$CONFIG test=$TEST"
+	case "$TEST" in
+		T4-sync|T4-nosync|T5)
+			quiesce_device
+			;;
+		T4-idle-control)
+			quiesce_device
+			;;
+	esac
+
+	case "$TEST" in
+		smoke)
+			console "smoke=mounted"
+			unmount_volume "$MOUNTPOINT"
+			;;
+		T1|T1-final|T1-sample)
+			run_workload_once
+			sync
+			case "$TEST" in
+				T1-final) replay_t1 final ;;
+				T1-sample) replay_t1 sample ;;
+				*) replay_t1 all ;;
+			esac
+			;;
+		T1-negative|T1-negative-final)
+			sync
+			run_workload_once --no-fsync
+			case "$TEST" in
+				T1-negative-final) replay_t1 final ;;
+				*) replay_t1 all ;;
+			esac
+			;;
+		T2)
+			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" --repeat
+			;;
+		T3)
+			"$WORKLOAD" t3 "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME"
+			;;
+		T4-sync)
+			run_workload_once
+			sync
+			run_t4_idle 600
+			;;
+		T4-nosync)
+			run_workload_once
+			run_t4_idle 600
+			;;
+		T4-idle-control)
+			run_t4_idle 60
+			;;
+		T5)
+			run_t5
+			;;
+		T6)
+			run_t6_before
+			;;
+		*)
+			fail "unknown_test"
+			;;
+	esac
+	unmount_volume "$MOUNTPOINT"
+	console finished
+}
+
+dispatch
