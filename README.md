@@ -21,7 +21,8 @@
 | `phase1-r2` | 第1段の本番（620行、622 attempt） |
 | `t2fix-check` | T2判定器（W2、W3、鍵fileの永続化）を直した後の確認 |
 | `phase1-r3-t2-invalid` | 開発用containerの外で起動したため、全行が `exit_127` で無効になった実行。測定値としては使わない |
-| `phase1-r3-t2-retry` | T2の全構成とI2・E1のT1のやり直し（終わった後に追加） |
+| `phase1-r3-t2-retry` | T2の全構成とI2・E1のT1のやり直し（402件、`docker/msd-dev` で実行） |
+| `misc` | build結果をhard linkでまとめた時の `hardlink -v` のlog（`dedup-build-hardlink-20261111.log.zst`、1 file） |
 
 ## 置いていないもの
 
