@@ -39,7 +39,7 @@ QEMU_LOG_DIR="$RUNS_DIR" nohup setsid docker/msd-dev \
   "$RUNS_DIR/phase1-r3-t2-retry/plan.tsv"
 ```
 
-容量確保のため、operator承認の下でrunごとの`build/`だけに次の重複排除を行った。`sdcard.img`、log、CSVは変更・削除していない。
+容量確保のため、利用者に知らせた上でrunごとの`build/`だけに次の重複排除を行った。`sdcard.img`、log、CSVは変更・削除していない。
 
 ```sh
 hardlink -t -X -v */build > dedup-build-hardlink-20261111.log 2>&1
@@ -51,7 +51,7 @@ T2では各回のrecovery markerとmanifest結果を別々に確認した。W2�
 
 ## 結果
 
-400件のT2はすべてrecovered 20/20、`manifest_ok` 20/20となった。event列は各成功runのQEMU logに現れた行数である。
+全20構成のT2（計400件）で、recoveredと`manifest_ok`はどれも20/20となった。event列は各成功runのQEMU logに現れた行数である。
 
 | 構成 | recovered | manifest_ok | W2 inflight | W3 tail | hash mismatch | missing | fscrypt policy failed |
 |---|---:|---:|---:|---:|---:|---:|---:|
