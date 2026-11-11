@@ -94,7 +94,7 @@ P101	B2	mount_add	nospace_cache	std	btrfs-progs:nospace_cache
 P102	B2	mount_add	lazytime	std	write-path-mount:lazytime（Btrfs）
 P103	B2	post_mount	chattr +C %MOUNTPOINT%	std+T6	write-path-attributes:chattr C
 P104	B2	post_mount	chattr +c %MOUNTPOINT%	std	write-path-attributes:chattr c, btrfs:compression property
-P110	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --integrity sha256	std+T6	dm-integrity:--integrity, internal_hash
+P110	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --integrity sha256 %BASE_DEVICE%; integritysetup open --integrity sha256 %BASE_DEVICE%	std+T6	dm-integrity:--integrity, internal_hash
 P111	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --tag-size 8	std+T6	dm-integrity:--tag-size
 P112	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --sector-size 4096	std	dm-integrity:--sector-size, block_size
 P113	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --integrity-no-journal %BASE_DEVICE%	std	dm-integrity:--integrity-no-journal, D
@@ -102,7 +102,7 @@ P114	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format 
 P115	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-watermark 10 %BASE_DEVICE%	std	dm-integrity:--journal-watermark
 P116	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 1000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time, commit_time
 P117	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 60000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time
-P118	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --journal-integrity crc32c	std	dm-integrity:--journal-integrity
+P118	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --journal-integrity crc32c %BASE_DEVICE%; integritysetup open --journal-integrity crc32c %BASE_DEVICE%	std	dm-integrity:--journal-integrity
 P119	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --allow-discards %BASE_DEVICE%	std	dm-integrity:--allow-discards
 P120	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 1000	std	dm-integrity:--bitmap-flush-time
 P121	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 60000	std	dm-integrity:--bitmap-flush-time
