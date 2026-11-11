@@ -168,7 +168,7 @@ attempt 1のrun `phase1-r2-T3-F5-r4-1794289618`は2026-11-10 05:46:58 UTCごろ�
 
 ## 結論
 
-全620 plan keyがsummaryに現れ、T1を除く619 rowが最終`ok`となった。I2 T1は既知のtimeout後、他のrowが完了してから運用判断でretryを停止したため、成功とは扱わない。F5 T3 rep 4は初回失敗を残したままretryの成功を採用した。T2のrecoveredとmanifest_okは別々のcountとして保持し、T6/T7を含む測定値はraw CSVに基づく。構成の採用推奨はこの単一matrixだけでは決めない。
+620 plan keyを記録し、最終attemptは619件成功、I2 T1は既知timeout後のoperator stopで未完了。F5 T3 rep 4は初回失敗とretry成功を区別した。T2 recovered/manifest_okは別々に保持し、単一matrixから採否は決めない。T2 manifest_okとI2 T1は[phase1-r3追試](2026-11-11-phase1-t2-rerun.md)で置換する。
 
 このQEMU環境にはSDカードのFTL、カード内write cache、物理的な電源断挙動がない。結果はQEMU上のfilesystem・stack・回復処理の比較であり、実SDカードの電源断試験ではない。
 
@@ -181,7 +181,9 @@ attempt 1のrun `phase1-r2-T3-F5-r4-1794289618`は2026-11-10 05:46:58 UTCごろ�
 
 ## ログと再集計
 
-[raw CSV](2026-11-10-phase1-matrix-r2.csv)は`matrix-summary.csv`の622 attemptを保存し、SHA-256は`47acbded029e5ac48f9f6ba6ea7ac620f57b35c6b916ab4ad1373d0b22e0e4ac`。planのSHA-256は上記のとおり。`host-load.txt`のSHA-256は`5dc4a071c913adeabee81863f57aed61d0b0d4eee22a45a3af1d413d93009cab`。aggregation outputのSHA-256は`653831297a6f2e47c1aedfaac01b164b7e377e8bbd08c9582a1411289a06c3ac`。aggregatorは620 plan row、622 attemptを検証し、最終status、failed row、host-load最大値、T1-T7の構成別metricsを出力する。run保存先の`aggregate.py`で再生成できる。
+[raw CSV](2026-11-10-phase1-matrix-r2.csv)は`matrix-summary.csv`の622 attemptを保存し、SHA-256は`47acbded029e5ac48f9f6ba6ea7ac620f57b35c6b916ab4ad1373d0b22e0e4ac`。planのSHA-256は上記のとおり。`host-load.txt`のSHA-256は`5dc4a071c913adeabee81863f57aed61d0b0d4eee22a45a3af1d413d93009cab`。aggregation outputのSHA-256は`653831297a6f2e47c1aedfaac01b164b7e377e8bbd08c9582a1411289a06c3ac`。`aggregate.py`は620 plan row、622 attemptを検証し、T1-T7の構成別metricsを出力する。
+
+raw log: [data branch](https://github.com/uist1idrju3i/MSD-Linux/tree/data/fs-compare-experiments)の`fs-compare/phase1-r2.tar.zst`。SHA-256: `5138e019255284911bbee38a3cddcdf350b0c62c6d17f6cca4c206ea6a46aa79`。
 
 ### 診断に用いた主要logのSHA-256
 

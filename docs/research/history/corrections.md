@@ -153,3 +153,7 @@
 | ES8389 | compatible 値の記載なし | compatible は `everest,es8390` | [公開出典一覧](../sources/sources.md) |
 | Rugix の Pi 3 対応 | 対応表では Pi 3 が `rpi-tryboot` とする | 【一次】（2026-10-19 確認）Pi 3 は Rugix では `rpi-uboot`（Tier 2）です。これは Rugix の target 制約であり、Raspberry Pi firmware 自体は全モデルで tryboot に対応します。CM0 で Rugix を使う場合は実験的な U-Boot flow が必要ですが、firmware 更新不可のため U-Boot 非採用の MSD 方針とは合いません。MSD 自身の tryboot 設計は影響を受けず、CM0 実機確認は継続します。 | https://rugix.org/docs/bakery/devices/<br>https://rugix.org/docs/bakery/devices/raspberry-pi<br>https://github.com/raspberrypi/documentation/blob/ddea98e98dafe9419feb4fd82710c2fbdef7dc44/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc#L91 |
 | `align = 4M` と `kernel8.img` の gzip 再圧縮の状態 | ideas-overview.md に `align = 4M` は「未着手（origin/main 未反映）」、fastboot-ideas.md に gzip 再圧縮は「案・未検証」とあった | どちらも main に実装済みです。`align = 4M` は #19 で `genimage.cfg` に入り、CI が検査しています。gzip 再圧縮は #8 で `post-image.sh` に入り、展開結果を `cmp` で比べています。実機での効果は未確認です（2026-10-20 に main のコードで確認） | [genimage.cfg](../../../board/cardputerzero/genimage.cfg)、[post-image.sh](../../../board/cardputerzero/post-image.sh) |
+
+## 2026-11-11 phase1-r2のT2/T1結果訂正
+
+phase1-r2でT2 `manifest_ok`が不足した原因は、W2のack markerとrename/fsyncの順序差、fscrypt keyfileの非永続化、最後のW3 marker後に残る有効tailを扱わない判定にあった。raw値は[phase1-r2記録](../../experiments/2026-11-10-phase1-matrix-r2.md)に保持し、修正後の[phase1-r3再測定](../../experiments/2026-11-11-phase1-t2-rerun.md)ではT2全20構成がrecovered/manifest_okとも20/20となった。I2 T1の未完了結果もtimeout延長後の再試行で完了した。いずれもQEMUの結果であり、実SDのFTL・物理電源断は未確認である。

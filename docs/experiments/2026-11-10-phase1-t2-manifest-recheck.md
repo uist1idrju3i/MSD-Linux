@@ -48,4 +48,6 @@ T1負対照としてE1の`T1-negative-final`を1回実行した。run `t2fix-che
 
 ## 制約
 
-これらはQEMU上の結果であり、実SDカードのFTL、カード内write cache、物理的な電源断挙動を検証したものではない。全run directoryとQEMU logはrun保存先に保持している。
+phase1-r2のT2 `manifest_ok`とI2 T1未完了結果は[phase1-r3再測定](2026-11-11-phase1-t2-rerun.md)で置換する。phase1-r2のraw logは[data branch](https://github.com/uist1idrju3i/MSD-Linux/tree/data/fs-compare-experiments)の`fs-compare/phase1-r2.tar.zst`（SHA-256 `5138e019255284911bbee38a3cddcdf350b0c62c6d17f6cca4c206ea6a46aa79`）にある。
+
+これらはQEMU上の結果であり、実SDカードのFTL、カード内write cache、物理的な電源断挙動を検証したものではない。
