@@ -25,8 +25,8 @@ iwdとOpenSSLの関係は[更新frameworkと暗号libraryのbuild option](update
 
 | 候補 | 役割と再評価 | 固定Buildrootでの条件・費用 | 今回の提案 |
 |---|---|---|---|
-| [wpa_supplicant](https://w1.fi/wpa_supplicant/) | 認証、scan、再接続等。IP/DNS全体のmanagerと同一視しない | 固定recipeは2.12。nl80211にlibnl。D-Busはoptionalで、CLI/control socketでも構成可能。WPA3、EAP、AP/P2P、WPS、WEP等を個別に確認する | D-Busなしのstation構成を先に試す。必要な認証方式を残し、旧方式や不要server機能の削減を測る |
-| [iwd](https://www.kernel.org/pub/linux/network/wireless/) | 認証に加え、内蔵DHCPでIP設定も可能。systemd必須として除外しない | 固定recipeと取得indexの最大releaseは3.12。ELLと実行時D-Bus。iwctlにはreadlineを使うrecipeで、clientのGPL-3.0+も別に考える。SysV init対応 | 独立した比較候補。内蔵IP設定と外部DHCPの二重起動を避け、DNSの管理方法も決める |
+| [wpa_supplicant](https://w1.fi/wpa_supplicant/) | 認証、scan、再接続等。IP/DNS全体のmanagerと同一視しない | 固定recipeは2.12。nl80211にlibnl。D-Busはoptionalで、CLI/control socketでも構成可能。WPA3、EAP、AP/P2P、WPS、WEP等を個別に確認する | 採用方針（2026-11-12 利用者決定）。OpenSSLとdhcpcdを使い、D-Busなしのstation構成を試す。必要な認証方式を残し、旧方式や不要server機能の削減を測る |
+| [iwd](https://www.kernel.org/pub/linux/network/wireless/) | 認証に加え、内蔵DHCPでIP設定も可能。systemd必須として除外しない | 固定recipeと取得indexの最大releaseは3.12。ELLと実行時D-Bus。iwctlにはreadlineを使うrecipeで、clientのGPL-3.0+も別に考える。SysV init対応 | 不採用（2026-11-12 利用者決定）。主な利点はOpenSSLを避けられることだったが、OpenSSL採用後はSAE/EAPの処理に使うELL TLSが第2の暗号・TLS実装となり、OpenSSLへの統一方針と合わない。実行時D-Busとkernel暗号APIの設定も必要で、内蔵DHCPだけではDNS処理を賄えない |
 | [ConnMan](https://git.kernel.org/pub/scm/network/connman/connman.git/plain/README) | embedded向けの接続・service管理。認証だけのdaemonより広い責務 | 固定recipeはGLib・D-Bus、Wi-Fiにwpa_supplicantとそのD-Bus。firewallはiptablesが既定だがnftablesも選べる。musl不可はこのBuildrootの条件で、全上流へ一般化しない | wired/wireless切替・VPN等の統合費用を含めて比較。WISPr、Bluetooth、telephony等の不要機能を切る |
 | [NetworkManager](https://networkmanager.dev/docs/) | 接続profile・route・DNSやCLIを統合。GUIは選択理由にも除外理由にもしない | 固定recipeにudev、GLib、D-Bus等が必要。現行mdevからの変更を伴う。nmcli、nmtui、modem等は選択式 | profile管理の利便性とdevice管理変更・RAM・policy費用を測る。最小構成と同じ依存量とは扱わない |
 | [systemd-networkd](https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd.html) | link/IP設定を管理する。Wi-Fi認証は別担当 | systemd構成を採る場合の候補。resolvedも別serviceで、PID 1の[比較](init.md)と合わせる | networkのためだけの無条件導入はしない。systemdを試す構成では比較対象へ戻す |
@@ -42,7 +42,7 @@ wpa_supplicant 2.12のupstream defconfigにはWPS・P2P等があり、TKIPを除
 |---|---|---|
 | BusyBox udhcpc | 既存multi-call binaryのDHCPv4 appletを使える候補 | 実際のapplet選択とhookを調べる。受信したhostname/domain/DNS/routeをshellへ無検査で渡さない。DHCPv6、RA、複数interface、lease保持は個別に確認 |
 | [dhcpcd](https://github.com/NetworkConfiguration/dhcpcd/tree/93df2b254caf9639f9ffb66e0fe2b584eeba6220) | DHCPv4/v6、IPv4LL等。固定recipeの10.2.4はprivilege separationが既定有効で、専用userも作る | privileged helperとparserのprocess分離、AArch64 seccomp、chroot、IPC、lease・DUIDの保存を確認。10.5.2のlatest Release応答と固定10.2.4は別に記録し、ここでは更新しない |
-| iwd内蔵IP設定 | Wi-Fi構成でdaemon間の重複を減らす候補 | Ethernetの管理、DNS連携、IPv6と再接続、複数linkのroute選択が残る。dhcpcd等と同じinterfaceを二重管理しない |
+| iwd内蔵IP設定（不採用） | Wi-Fi構成でdaemon間の重複を減らす案として検討した | Ethernetの管理、DNS連携、IPv6と再接続、複数linkのroute選択が残る。dhcpcd等と同じinterfaceを二重管理しない |
 | [openresolv](https://github.com/NetworkConfiguration/openresolv/tree/9b3691b545af83fb1ccffb2291dd4151dae6551e) + libc resolver | 複数interfaceが渡すDNS情報からresolv.confを管理する。DNS server自体ではない | `/run`の可変状態とread-only rootを接続し、切断時の古いDNS・search domainを消す。hook・権限・VPNの名前解決漏れを確認 |
 | [systemd-resolved](https://www.freedesktop.org/software/systemd/man/latest/systemd-resolved.service.html) | stub/cache、linkごとの名前解決等を持つ別service | systemd構成・libcとの接続・DNSSEC/暗号化・時刻・例外設定を一緒に評価。必要のないLLMNR/mDNS等は既定で開かない案を比較 |
 | [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) | DNS forwarding/cache、DHCP/RA等のserver用途 | 端末がDHCP clientとして接続するだけなら自動追加しない。AP・共有機能を設計する時に、bind先・待受・最小権限とともに再検討 |
@@ -83,7 +83,7 @@ wpa_supplicant 2.12のupstream defconfigにはWPS・P2P等があり、TKIPを除
 | 順 | 成果物 | 完了条件 |
 |---|---|---|
 | 1 | device/firmware/regulatoryの実機記録 | 固定image・module・firmware hash、probe、interface、rfkill、countryと合法なchannelを保存。未確認の無線IC機能を対応済みと言わない |
-| 2 | 最小station構成の比較 | wpa_supplicant + dhcpcd(privsep)を第一候補、udhcpc構成とiwd内蔵IP + openresolvを対照に、依存・license・最終option・size/RAM・CPU・起動を測る。採用決定ではない |
+| 2 | 最小station構成の比較 | 採用方針のwpa_supplicant（OpenSSL）+ dhcpcd(privsep)を基準、udhcpc構成を対照に、依存・license・最終option・size/RAM・CPU・起動を測る。iwdは不採用のため対照から外す。採用方針は決定済みだが、実装・実機確認は未実施 |
 | 3 | local登録・保存・復旧手順 | SSID/鍵のlocal入力、所有者・0600等のmode、secret非表示、削除・再設定・電源断・A/B rollbackを確認。永続化は必要pathに限定し、`/data/etc`全体のoverlayでtrust anchorやpolicyを隠さない設計を評価 |
 | 4 | 起動順・firewall・権限制限 | 通信前のpolicy強制、profile/filterのattach、非root parserと限定helper、誤設定でもoffline起動・local復旧が可能。既定で不必要な待受なし |
 | 5 | IP/DNS/時刻と再接続 | IPv4/v6、lease renew、RA、切断、Ethernet併用、DNSの優先度と消去、RTC不正・時刻同期失敗を確認。daemon二重管理・root hookの入力注入を拒否 |

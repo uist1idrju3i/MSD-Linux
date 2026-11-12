@@ -66,7 +66,7 @@ Buildrootのpackage定義と既定configは`vendor/buildroot/package/swupdate/Co
 | SSH library | libssh、libssh2 | OpenSSL、mbedTLS、libgcryptから選ぶ |
 | HTTPS取得 | libcurl 8.23.0 | OpenSSL、GnuTLS、mbedTLS、wolfSSLから1つを選ぶ |
 | Wi-Fi | wpa_supplicant 2.12 | WPA3とmeshではlibopensslが必須。DESとMD4もselectする |
-| Wi-Fiの別案 | iwd 3.12 | ELLとkernelの暗号APIを使い、OpenSSLは使わない |
+| Wi-Fiの別案（不採用） | iwd 3.12 | ELLとkernelの暗号APIを使い、OpenSSLは使わない |
 | Pythonのssl | python3 | libopensslが必須。BLAKE2をselectする |
 | text browser | links、lynx、w3m | linksはOpenSSLのみ、lynxはOpenSSLかGnuTLS |
 | GUI browser | netsurf、WebKitGTK、WPE WebKit | netsurfはcurl経由でlibopensslが必須。WebKitはlibsoup3経由でGnuTLSとlibgcryptが必須 |
@@ -76,6 +76,8 @@ Buildrootのpackage定義と既定configは`vendor/buildroot/package/swupdate/Co
 WPA3、OpenSSH、Pythonのsslのどれかを使えばtargetにもOpenSSLが入ります。OpenSSLを外す構成は将来の用途も含めると現実的ではありません。mbedTLS等も追加すると暗号libraryが複数になり、CVE監視と更新の対象が増えます。OpenSSLの任意機能は各packageからselectされるため、現在の既定値を外しても、後から追加するpackageが必要な機能を戻すことがあります。
 
 ## iwdの暗号と実行時依存
+
+2026-11-12の利用者決定でiwdは不採用とし、Wi-Fiにはwpa_supplicant（OpenSSL）+ dhcpcdを使います。主な利点だったOpenSSLの回避は、[OpenSSLを使う製品方針](../../design/product-decisions.md)の下では採用理由になりません。ELL TLSを第2の暗号・TLS実装として追加せず、実行時D-Busとkernel暗号APIの設定も増やさない方針です。内蔵DHCPを使ってもDNS処理は別途必要です。以下の調査済みの仕様は、不採用の理由を確認できるよう残します。
 
 iwdはOpenSSLを使わず、ELLとkernel暗号APIを利用します。実行時依存はD-Busと、`iwctl`のreadlineです。Buildrootのkernel fixupはDES、MD5、SHA1等の必要なkernel暗号設定を有効にします。WPA3（SAE）とEAPの処理はiwd自身とELLのTLSが担います。
 

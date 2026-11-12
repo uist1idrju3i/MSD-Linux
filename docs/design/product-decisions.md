@@ -18,6 +18,7 @@
 | 2026-11-03 | Wi-Fi、`/data`暗号化、boot image検証などを行う対話型toolをRubyまたはmrubyで作ります。画面は英語・日本語を併記します。かなだけの日本語表示案とfbcon、fbterm、kmsconなどを比べます。 | 計画のみ | [フォントとコンソールの調査](../research/presentation/fonts.md) |
 | 2026-11-03 | timezoneの既定値はAsia/Tokyoにする方向です。現行はtzdataがなくUTC表示で、`timedatectl`はありません。 | 未実装 | [CardputerZeroのdefconfig](../../configs/msd_cardputerzero_defconfig) |
 | 2026-11-03 | 部品を採用する前に代替品、build option、実行時の設定項目を調べます。更新時には新機能、新しいoption、既定値の変更を検討します。 | 規則は制定済み（PR #212） | [component-optionsスキル](../../.agents/skills/component-options/SKILL.md) |
+| 2026-11-12 | Wi-Fiにはwpa_supplicant（OpenSSL）+ dhcpcdを使い、udhcpcとの比較は残します。iwdは不採用とします。主な利点だったOpenSSLの回避はOpenSSL採用後の利点にならず、SAE/EAPの処理に使うELL TLSは第2の暗号・TLS実装になります。実行時D-Busとkernel暗号APIの設定（DES/MD5/SHA1等）も必要で、内蔵DHCPを使ってもDNS処理は別途必要です。 | 方針決定済み、実装・実機確認は未実施 | [ネットワークの比較と計画](../research/alternatives/network.md)、[iwdの暗号と実行時依存](../research/alternatives/update-build-options.md#iwdの暗号と実行時依存) |
 
 版表示の証拠は、orphan branch `data/fs-compare-experiments` のcommit `586d7e49a17fa3df8ce769c6c60404c5c5ffc1c2` にある [fs-compare/phase2-j8-check.tar.zst](https://github.com/uist1idrju3i/MSD-Linux/blob/586d7e49a17fa3df8ce769c6c60404c5c5ffc1c2/fs-compare/phase2-j8-check.tar.zst) に保存されています。archive内の `phase2-j8-check-T4-sync-P010-r1-1794370142/qemu.log` に次の表示があり、`msd login:` より前に出ています。
 
