@@ -323,4 +323,29 @@ else:
 print("ok - publisher artifacts exclude raw scan JSON and actual report step filters payloads")
 print("ok - pull failures stay failed; a successful pull records the image and enables scanning")
 print("ok - publisher gate preserves failures through tee under GitHub's default bash shell")
+
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    source = temp / "report.json"
+    output = temp / "github-output"
+    for value in ({}, {"Results": []}, {"Results": [None]},
+                  {"Results": [{"Target": "debian", "Vulnerabilities": {}}]},
+                  {"Results": [{"Target": "debian", "Error": "failed"}]}):
+        source.write_text(json.dumps(value))
+        result = subprocess.run([sys.executable, str(script), "report", str(source),
+                                 "--github-output", str(output)],
+                                capture_output=True, text=True)
+        assert result.returncode == 2, (value, result.stdout, result.stderr)
+        assert not result.stdout and not output.exists()
+    source.unlink()
+    missing = subprocess.run([sys.executable, str(script), "report", str(source)],
+                             capture_output=True, text=True)
+    assert missing.returncode == 2 and not missing.stdout
+    source.write_text(json.dumps({"Results": [{"Target": "debian", "Vulnerabilities": []}]}))
+    verified = subprocess.run([sys.executable, str(script), "report", str(source),
+                               "--github-output", str(output)],
+                              capture_output=True, text=True)
+    assert verified.returncode == 0 and "検出事項はありません" in verified.stdout
+    assert output.read_text() == "has_findings=false\n"
+print("ok - missing, malformed and unmatched Trivy results never report zero findings")
 PY

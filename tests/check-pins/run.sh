@@ -546,7 +546,7 @@ module.fetch_qemu_releases = lambda: "<html>no release tarballs</html>"
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     with contextlib.redirect_stdout(io.StringIO()):
-        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
+        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 2
     report = report_path.read_text()
     assert "| actionlint | `1.7.12` | `1.7.12` | 最新 |" in report
     assert "| ShellCheck | `0.11.0` | `0.11.0` | 最新 |" in report
@@ -651,7 +651,7 @@ for contents in ('', 'override LIBOPENSSL_VERSION = invalid\n',
     assert module.openssl_rows(passed, date(2026, 11, 12))[0][3] == '確認できず'
 override_file.write_text('override LIBOPENSSL_VERSION = 3.5.9\n')
 with patch.object(module, 'fetch', side_effect=OSError('offline')), contextlib.redirect_stderr(io.StringIO()):
-    assert module.upstream_summary(module.openssl_rows(passed, date(2026, 11, 12))) == '更新あり'
+    assert module.upstream_summary(module.openssl_rows(passed, date(2026, 11, 12))) == '監視失敗（未確認）'
 override_file.unlink()
 print('ok - monitors the override series, supported retirement candidates and invalid/offline inputs')
 
@@ -683,7 +683,7 @@ for failed_url in (
     with patch.object(module, 'fetch', unavailable), contextlib.redirect_stderr(io.StringIO()):
         rows = module.openssl_rows(passed, date(2026, 11, 2))
     assert any(row[3] == '確認できず' for row in rows)
-    assert module.upstream_summary(rows) == '更新あり'
+    assert module.upstream_summary(rows) == '監視失敗（未確認）'
 print('ok - OpenSSL recipe, release or policy failure never reports all current')
 
 for policy in ('', 'Version 3.6 will be supported until 2026-02-30',
@@ -697,16 +697,12 @@ for policy in ('', 'Version 3.6 will be supported until 2026-02-30',
         assert module.openssl_rows(passed, date(2026, 11, 2))[1][3] == '確認できず'
 print('ok - missing, invalid or ambiguous lifecycle deadlines stay unknown')
 
-workflow = (root / '.github/workflows/pins-check.yml').read_text()
-import re
-import subprocess
-issue_filter = re.search(r"if grep -qvE '([^']+)'", workflow)[1]
-for state, actionable in [('参考', False), ('保守期限超過', True), ('確認できず', True)]:
-    report = '| 依存 | 固定値 | 最新 | 状態 | 参照URL |\n|---|---|---|---|---|\n'
-    report += f'| OpenSSL upstream support | `3.6.5` | `2026-11-01` | {state} | https://example.com |\n'
-    result = subprocess.run(['grep', '-qvE', issue_filter], input=report, text=True)
-    assert result.returncode == (0 if actionable else 1)
-print('ok - weekly Issue filter keeps expired and unknown support findings open')
+for state, expected in [('参考', '全て最新'), ('保守期限超過', '更新あり'),
+                        ('確認できず', '監視失敗（未確認）')]:
+    assert module.upstream_summary([
+        ('OpenSSL upstream support', '3.6.5', '2026-11-01', state, 'https://example.com')
+    ]) == expected
+print('ok - weekly Issue status distinguishes informational, expired and unverified support')
 
 qemu_update = fixture()
 dockerfile = qemu_update / "docker/msd-dev.Dockerfile"
@@ -725,7 +721,7 @@ module.run = fake_run_without_point_tags
 with tempfile.TemporaryDirectory() as directory:
     report_path = pathlib.Path(directory) / "pins.md"
     with contextlib.redirect_stdout(io.StringIO()):
-        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 0
+        assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 2
     report = report_path.read_text()
     assert (
         "| Buildroot point release | `" + sha + "` | `確認できず` | 確認できず |"
@@ -743,6 +739,27 @@ with tempfile.TemporaryDirectory() as directory:
     assert "| Debian snapshot date | `20261103T023120Z` | `-` | 更新あり |" in report
     assert output.getvalue().strip() == "更新あり"
 print("ok - reports snapshots older than 30 days as update candidates")
+
+assert module.upstream_summary([]) == "監視失敗（未確認）"
+for row in (
+    ("test", "unknown", "1.0", "更新あり", ""),
+    ("test", "1.0", "確認できず", "参考", ""),
+    ("test", "1.0", "1.0", "確認できず", ""),
+):
+    assert module.upstream_summary([row]) == "監視失敗（未確認）"
+with patch.object(module, "fetch", side_effect=OSError("offline")), \
+     patch.object(module, "run", side_effect=OSError("offline")), \
+     patch.object(module, "fetch_go_releases", side_effect=OSError("offline")), \
+     patch.object(module, "fetch_qemu_releases", side_effect=OSError("offline")), \
+     patch.object(module, "fetch_dockerhub_digest", side_effect=OSError("offline")), \
+     contextlib.redirect_stdout(io.StringIO()) as output, \
+     contextlib.redirect_stderr(io.StringIO()), tempfile.TemporaryDirectory() as directory:
+    report_path = pathlib.Path(directory) / "pins.md"
+    assert module.upstream(report_path, passed, today=date(2026, 10, 19)) == 2
+    assert output.getvalue().strip() == "監視失敗（未確認）"
+    assert "確認できず" in report_path.read_text()
+    assert "全て最新" not in output.getvalue()
+print("ok - unavailable or unmatched upstream inputs fail distinctly from verified current pins")
 
 for path in fixtures:
     shutil.rmtree(path)

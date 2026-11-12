@@ -16,6 +16,10 @@ on:
     - cron: "31 7 * * 1"
   workflow_dispatch:
 
+concurrency:
+  group: monitor-dev-image
+  cancel-in-progress: false
+
 permissions: {}
 
 env:
@@ -100,27 +104,20 @@ jobs:
           if-no-files-found: warn
 
       - name: Maintain vulnerability issue
-        if: steps.pull.outputs.image_available == 'true'
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           HAS_FINDINGS: ${{ steps.report.outputs.has_findings }}
+          REPORT_OUTCOME: ${{ steps.report.outcome }}
+          SCAN_STATUS: ${{ job.status }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          issue="$(
-            gh issue list --state open --json number,title --limit 100 |
-              jq -r '.[] | select(.title == "開発用イメージの脆弱性") | .number' |
-              head -n 1
-          )"
-          if [[ "$HAS_FINDINGS" == "true" ]]; then
-            body="$(cat "$RUNNER_TEMP/trivy-report.md")
-
-          実行: $RUN_URL"
-            if [[ -n "$issue" ]]; then
-              gh issue edit "$issue" --body "$body"
-            else
-              gh issue create --title "開発用イメージの脆弱性" --body "$body"
-            fi
-          elif [[ -n "$issue" ]]; then
-            gh issue comment "$issue" --body "検出事項はありません。$RUN_URL"
-            gh issue close "$issue"
+          status=failed
+          if [[ "$SCAN_STATUS" == success && "$REPORT_OUTCOME" == success ]]; then
+            case "$HAS_FINDINGS" in
+              true) status=findings ;;
+              false) status=clear ;;
+            esac
           fi
+          python3 .github/scripts/tracking-issue.py --title "開発用イメージの脆弱性" \
+            --status "$status" --body-file "$RUNNER_TEMP/trivy-report.md" --run-url "$RUN_URL"

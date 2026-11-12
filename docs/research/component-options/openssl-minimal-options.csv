@@ -1,0 +1,169 @@
+option,meaning,available_3_5_9,configure_flag,default_3_5_9,observed_3_5_9,buildroot_surface,decision,reason,available_4_1_0,default_4_1_0
+acvp-tests,acvp-tests機能のbuild可否（INSTALL参照）,yes,no-acvp-tests,無効一覧にない（cascade前）,無効: cascade,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効一覧にない（cascade前）
+afalgeng,Linux AF_ALG ENGINE,yes,no-afalgeng,無効一覧にない（cascade前）,無効: option,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+allocfail-tests,allocfail-tests機能のbuild可否（INSTALL参照）,no,no-allocfail-tests,未対応,対象外,直接指定なし,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+apps,openssl CLIの構築,yes,no-apps,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（no指定）,更新CLIのEd25519を失う。ec/ ecx無効化はEdDSAを失う,yes,無効一覧にない（cascade前）
+argon2,argon2暗号・hash・鍵導出実装,yes,no-argon2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+aria,aria暗号・hash・鍵導出実装,yes,no-aria,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+asan,asan機能のbuild可否（INSTALL参照）,yes,no-asan,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+asm,CPU向けassembly実装,yes,no-asm,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+async,ASYNC job API（非同期socket指定とは別）,yes,no-async,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+atexit,終了時の自動cleanup,yes,no-atexit,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,独立tokenなし,対象外
+autoalginit,cipher/digestの自動初期化,yes,no-autoalginit,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+autoerrinit,error文字列の自動初期化,yes,no-autoerrinit,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+autoload-config,config自動読込,yes,no-autoload-config,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+bf,bf暗号・hash・鍵導出実装,yes,no-bf,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+blake2,blake2暗号・hash・鍵導出実装,yes,no-blake2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+brotli,brotli機能のbuild可否（INSTALL参照）,yes,no-brotli,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+brotli-dynamic,brotli-dynamic機能のbuild可否（INSTALL参照）,yes,no-brotli-dynamic,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+buildtest-c++,buildtest-c++機能のbuild可否（INSTALL参照）,yes,no-buildtest-c++,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+bulk,bulk処理用最適化,yes,no-bulk,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+cached-fetch,provider fetchのcache,yes,no-cached-fetch,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+camellia,camellia暗号・hash・鍵導出実装,yes,no-camellia,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+capieng,Windows CAPI ENGINE,yes,no-capieng,無効一覧にない（cascade前）,無効: cascade,直接指定なし,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+cast,cast暗号・hash・鍵導出実装,yes,no-cast,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+chacha,chacha暗号・hash・鍵導出実装,yes,no-chacha,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+cmac,cmac暗号・hash・鍵導出実装,yes,no-cmac,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+cmp,Certificate Management Protocol,yes,no-cmp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+cms,Cryptographic Message Syntax API,yes,no-cms,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,将来の更新署名・証明書検証方針に関係。kmodのPKCS7も維持する,yes,無効一覧にない（cascade前）
+comp,TLS/証明書圧縮,yes,no-comp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+crypto-mdebug,crypto-mdebug機能のbuild可否（INSTALL参照）,yes,no-crypto-mdebug,無効（cascade前）,無効: default,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+ct,Certificate Transparency支援,yes,no-ct,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,将来の更新署名・証明書検証方針に関係。kmodのPKCS7も維持する,yes,無効一覧にない（cascade前）
+ct-validation,ct-validation機能のbuild可否（INSTALL参照）,no,no-ct-validation,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+default-thread-pool,既定thread pool利用,yes,no-default-thread-pool,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+demos,demos機能のbuild可否（INSTALL参照）,yes,no-demos,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+deprecated,deprecated APIの公開,yes,no-deprecated,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,no-deprecated/--apiの組合せと全consumerのbuild・実行確認が必要,yes,無効一覧にない（cascade前）
+des,des暗号・hash・鍵導出実装,yes,no-des,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+devcryptoeng,devcrypto ENGINE,yes,no-devcryptoeng,無効（cascade前）,無効: default,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+dgram,datagram BIO,yes,no-dgram,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+dh,dh暗号・hash・鍵導出実装,yes,no-dh,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+docs,docs機能のbuild可否（INSTALL参照）,yes,no-docs,無効一覧にない（cascade前）,無効: option,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効一覧にない（cascade前）
+dsa,dsa暗号・hash・鍵導出実装,yes,no-dsa,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+dso,動的共有objectのload,yes,no-dso,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,外部providerを制限。no-moduleだけではlegacyがlibcryptoにbuilt-inになる,yes,無効一覧にない（cascade前）
+dtls,dtls protocol／method API,yes,no-dtls,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+dtls1,dtls1 protocol／method API,yes,no-dtls1,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+dtls1-method,dtls1-method protocol／method API,yes,no-dtls1-method,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+dtls1_2,dtls1_2 protocol／method API,yes,no-dtls1_2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+dtls1_2-method,dtls1_2-method protocol／method API,yes,no-dtls1_2-method,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+dtls1_3,dtls1_3 protocol／method API,no,no-dtls1_3,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+dynamic-engine,外部ENGINEの動的load,yes,no-dynamic-engine,無効一覧にない（cascade前）,無効: cascade,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+ec,楕円曲線全体（ECXもcascade）,yes,no-ec,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,更新CLIのEd25519を失う。ec/ ecx無効化はEdDSAを失う,yes,無効一覧にない（cascade前）
+ec2m,二進体の楕円曲線,yes,no-ec2m,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+ec_explicit_curves,ec_explicit_curves機能のbuild可否（INSTALL参照）,no,no-ec_explicit_curves,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+ec_nistp_64_gcc_128,GCC 128-bit型を使うNIST EC最適化,yes,no-ec_nistp_64_gcc_128,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+ecdh,楕円曲線DH鍵共有,yes,no-ecdh,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,独立tokenなし,対象外
+ecdsa,楕円曲線DSA署名,yes,no-ecdsa,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,独立tokenなし,対象外
+ech,ech機能のbuild可否（INSTALL参照）,no,no-ech,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+ecx,X25519/X448/Ed25519/Ed448実装,yes,no-ecx,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（no指定）,更新CLIのEd25519を失う。ec/ ecx無効化はEdDSAを失う,yes,無効一覧にない（cascade前）
+egd,EGD乱数socket利用,yes,no-egd,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+engine,旧ENGINE API/実装,yes,no-engine,無効一覧にない（cascade前）,無効: option,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+err,error文字列,yes,no-err,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+external-tests,external-tests機能のbuild可否（INSTALL参照）,yes,no-external-tests,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+filenames,error等のsource file名,yes,no-filenames,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+fips,FIPS provider構築（認証とは別）,yes,enable-fips,無効（cascade前）,無効: default,直接指定なし,採用しない（enable指定）,FIPS認証は要件外。検証済みmodule/構成なしにfips=yesを設定しない,yes,無効（cascade前）
+fips-jitter,fips-jitter機能のbuild可否（INSTALL参照）,yes,enable-fips-jitter,無効（cascade前）,無効: default,直接指定なし,採用しない（enable指定）,FIPS認証は要件外。検証済みmodule/構成なしにfips=yesを設定しない,yes,無効（cascade前）
+fips-post,fips-post機能のbuild可否（INSTALL参照）,yes,no-fips-post,無効一覧にない（cascade前）,無効: cascade,直接指定なし,採用しない（enable指定）,FIPS認証は要件外。検証済みmodule/構成なしにfips=yesを設定しない,yes,無効一覧にない（cascade前）
+fips-securitychecks,fips-securitychecks機能のbuild可否（INSTALL参照）,yes,no-fips-securitychecks,無効一覧にない（cascade前）,無効: cascade,直接指定なし,採用しない（enable指定）,FIPS認証は要件外。検証済みmodule/構成なしにfips=yesを設定しない,yes,無効一覧にない（cascade前）
+fuzz-afl,fuzz-afl機能のbuild可否（INSTALL参照）,yes,no-fuzz-afl,無効（cascade前）,無効: option,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+fuzz-libfuzzer,fuzz-libfuzzer機能のbuild可否（INSTALL参照）,yes,no-fuzz-libfuzzer,無効（cascade前）,無効: option,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+gost,gost暗号・hash・鍵導出実装,yes,no-gost,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効一覧にない（cascade前）
+h3demo,h3demo機能のbuild可否（INSTALL参照）,yes,no-h3demo,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+hmac-drbg-kdf,hmac-drbg-kdf機能のbuild可否（INSTALL参照）,no,no-hmac-drbg-kdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+hqinterop,hqinterop機能のbuild可否（INSTALL参照）,yes,no-hqinterop,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+http,HTTP client支援,yes,no-http,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,将来の更新署名・証明書検証方針に関係。kmodのPKCS7も維持する,yes,無効一覧にない（cascade前）
+idea,idea暗号・hash・鍵導出実装,yes,no-idea,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+ikev2kdf,ikev2kdf機能のbuild可否（INSTALL参照）,no,no-ikev2kdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+integrity-only-ciphers,暗号化しないintegrity-only cipher,yes,no-integrity-only-ciphers,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+jitter,jitter機能のbuild可否（INSTALL参照）,yes,no-jitter,無効（cascade前）,無効: default,直接指定なし,採用しない（enable指定）,FIPS認証は要件外。検証済みmodule/構成なしにfips=yesを設定しない,yes,無効（cascade前）
+kbkdf,kbkdf機能のbuild可否（INSTALL参照）,no,no-kbkdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+krb5kdf,krb5kdf機能のbuild可否（INSTALL参照）,no,no-krb5kdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+ktls,kernel TLS offload支援,yes,enable-ktls,無効（cascade前）,無効: default,直接指定なし,採用しない（enable指定）,現在無効。TLS bulk I/Oの実測とkernel側対応がなく、CPU命令も追加しない,yes,無効（cascade前）
+legacy,legacy providerの構築,yes,no-legacy,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+lms,lms機能のbuild可否（INSTALL参照）,no,no-lms,未対応,対象外,直接指定なし,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+loadereng,loader ENGINE,yes,no-loadereng,無効一覧にない（cascade前）,無効: cascade,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+makedepend,makedepend機能のbuild可否（INSTALL参照）,yes,no-makedepend,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+md2,md2暗号・hash・鍵導出実装,yes,no-md2,無効（cascade前）,無効: default,あり,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,yes,無効（cascade前）
+md4,md4暗号・hash・鍵導出実装,yes,no-md4,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+md5,md5機能のbuild可否（INSTALL参照）,no,no-md5,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+mdc2,mdc2暗号・hash・鍵導出実装,yes,no-mdc2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+ml-dsa,ml-dsa暗号・hash・鍵導出実装,yes,no-ml-dsa,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,利用者判断待ち,PQCを削除する方針を決める。TLS hybrid Groupsと同時に検討,yes,無効一覧にない（cascade前）
+ml-kem,ml-kem暗号・hash・鍵導出実装,yes,no-ml-kem,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,利用者判断待ち,PQCを削除する方針を決める。TLS hybrid Groupsと同時に検討,yes,無効一覧にない（cascade前）
+module,provider等をloadable moduleとして構築,yes,no-module,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,外部providerを制限。no-moduleだけではlegacyがlibcryptoにbuilt-inになる,yes,無効一覧にない（cascade前）
+msan,msan機能のbuild可否（INSTALL参照）,yes,no-msan,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+multiblock,複数TLS recordをまとめる処理,yes,no-multiblock,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+nextprotoneg,旧Next Protocol Negotiation,yes,no-nextprotoneg,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+ocb,ocb暗号・hash・鍵導出実装,yes,no-ocb,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+ocsp,Online Certificate Status Protocol,yes,no-ocsp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,将来の更新署名・証明書検証方針に関係。kmodのPKCS7も維持する,yes,無効一覧にない（cascade前）
+padlockeng,VIA PadLock ENGINE,yes,no-padlockeng,無効一覧にない（cascade前）,無効: cascade,あり,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+pic,位置独立code生成,yes,no-pic,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+pie,位置独立executable,yes,no-pie,無効（cascade前）,無効: default,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効（cascade前）
+pinshared,共有libraryのunload抑止,yes,no-pinshared,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+poly1305,poly1305暗号・hash・鍵導出実装,yes,no-poly1305,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+posix-io,POSIX file I/O支援,yes,no-posix-io,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+psk,TLS外部PSK cipher支援,yes,no-psk,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,利用者判断待ち,TLS-PSKはWPA-PSKとは別。EAP-FAST等とTLS1.3 resumptionを分けて確認,yes,無効一覧にない（cascade前）
+pvkkdf,pvkkdf機能のbuild可否（INSTALL参照）,no,no-pvkkdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+quic,QUIC支援,yes,no-quic,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+rc2,rc2暗号・hash・鍵導出実装,yes,no-rc2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+rc4,rc4暗号・hash・鍵導出実装,yes,no-rc4,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+rc5,rc5暗号・hash・鍵導出実装,yes,no-rc5,無効（cascade前）,無効: option,あり,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,yes,無効（cascade前）
+rdrand,x86 RDRAND乱数利用,yes,no-rdrand,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効一覧にない（cascade前）
+rfc3779,IP資源証明書extension,yes,no-rfc3779,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+rmd160,rmd160暗号・hash・鍵導出実装,yes,no-rmd160,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+scrypt,scrypt暗号・hash・鍵導出実装,yes,no-scrypt,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+sctp,sctp機能のbuild可否（INSTALL参照）,yes,no-sctp,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+secure-memory,secure heap支援,yes,no-secure-memory,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+seed,seed暗号・hash・鍵導出実装,yes,no-seed,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+shared,共有libraryの構築,yes,no-shared,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（初期案）,動的consumerを残す。静的化の総rootfs容量は未測定,yes,無効一覧にない（cascade前）
+siphash,siphash暗号・hash・鍵導出実装,yes,no-siphash,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+siv,siv暗号・hash・鍵導出実装,yes,no-siv,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+slh-dsa,slh-dsa暗号・hash・鍵導出実装,yes,no-slh-dsa,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,利用者判断待ち,PQCを削除する方針を決める。TLS hybrid Groupsと同時に検討,yes,無効一覧にない（cascade前）
+sm2,sm2暗号・hash・鍵導出実装,yes,no-sm2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+sm2-precomp,sm2-precomp機能のbuild可否（INSTALL参照）,yes,no-sm2-precomp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+sm3,sm3暗号・hash・鍵導出実装,yes,no-sm3,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+sm4,sm4暗号・hash・鍵導出実装,yes,no-sm4,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効一覧にない（cascade前）
+snmpkdf,snmpkdf機能のbuild可否（INSTALL参照）,no,no-snmpkdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+sock,socket BIO/通信支援,yes,no-sock,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+srp,TLS Secure Remote Password,yes,no-srp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+srtp,DTLS-SRTP支援,yes,no-srtp,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+srtpkdf,srtpkdf機能のbuild可否（INSTALL参照）,no,no-srtpkdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+sse2,sse2機能のbuild可否（INSTALL参照）,yes,no-sse2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効一覧にない（cascade前）
+sshkdf,sshkdf機能のbuild可否（INSTALL参照）,no,no-sshkdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+sskdf,sskdf機能のbuild可否（INSTALL参照）,no,no-sskdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+ssl,SSL3無効化のalias（TLS全体ではない）,yes,no-ssl,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,独立tokenなし,対象外
+ssl-trace,ssl-trace機能のbuild可否（INSTALL参照）,yes,no-ssl-trace,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効一覧にない（cascade前）
+ssl3,ssl3 protocol／method API,yes,no-ssl3,無効（cascade前）,無効: default,あり,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,独立tokenなし,対象外
+ssl3-method,ssl3-method protocol／method API,yes,no-ssl3-method,無効（cascade前）,無効: default,直接指定なし,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,独立tokenなし,対象外
+sslkeylog,sslkeylog機能のbuild可否（INSTALL参照）,yes,no-sslkeylog,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+static-engine,静的ENGINEの組込み,yes,no-static-engine,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,無効を維持,旧ENGINEをARM用という理由で追加しない。cascadeを含め現在無効,独立tokenなし,対象外
+static-vcruntime,static-vcruntime機能のbuild可否（INSTALL参照）,no,no-static-vcruntime,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+stdio,標準C file I/O支援,yes,no-stdio,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（初期案）,初期化・診断・I/O・共有libraryの動作を維持。測定なく変えない,yes,無効一覧にない（cascade前）
+tests,tests機能のbuild可否（INSTALL参照）,yes,no-tests,無効一覧にない（cascade前）,無効: option,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効一覧にない（cascade前）
+tfo,tfo機能のbuild可否（INSTALL参照）,yes,no-tfo,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+thread-pool,内部thread pool,yes,no-thread-pool,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+threads,thread安全なlibrary支援,yes,no-threads,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+tls,tls protocol／method API,yes,no-tls,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+tls-deprecated-ec,TLSの旧EC group,yes,no-tls-deprecated-ec,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,現行更新には不要。将来の無線group・証明書・相手要件を確認して削減する,yes,無効（cascade前）
+tls1,tls1 protocol／method API,yes,no-tls1,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+tls1-method,tls1-method protocol／method API,yes,no-tls1-method,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+tls1_1,tls1_1 protocol／method API,yes,no-tls1_1,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+tls1_1-method,tls1_1-method protocol／method API,yes,no-tls1_1-method,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+tls1_2,tls1_2 protocol／method API,yes,no-tls1_2,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+tls1_2-method,tls1_2-method protocol／method API,yes,no-tls1_2-method,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+tls1_3,tls1_3 protocol／method API,yes,no-tls1_3,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,却下（no指定）,将来SAE/TLS/SSHの基本機能と既存AArch64 asmを残す,yes,無効一覧にない（cascade前）
+trace,trace機能のbuild可否（INSTALL参照）,yes,no-trace,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+ts,Time Stamp Protocol,yes,no-ts,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効一覧にない（cascade前）
+ubsan,ubsan機能のbuild可否（INSTALL参照）,yes,no-ubsan,無効（cascade前）,無効: default,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+ui-console,対話console UI,yes,no-ui-console,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,要測定,依存cascade・API・診断・速度への影響を機能ごとに測り、将来consumerの確認なく削除しない,yes,無効一覧にない（cascade前）
+unit-test,unit-test機能のbuild可否（INSTALL参照）,yes,no-unit-test,無効（cascade前）,無効: default,あり,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効（cascade前）
+unit-tests,unit-tests機能のbuild可否（INSTALL参照）,no,no-unit-tests,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効（cascade前）
+unstable-qlog,unstable-qlog機能のbuild可否（INSTALL参照）,yes,no-unstable-qlog,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,製品では無効化または現状維持,試験・解析は別構成で使う。no-testsでも製品の正常/負の試験は省略しない,yes,無効一覧にない（cascade前）
+uplink,uplink機能のbuild可否（INSTALL参照）,yes,no-uplink,無効一覧にない（cascade前）,無効: no uplink_arch,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効一覧にない（cascade前）
+weak-ssl-ciphers,弱いSSL/TLS cipher suite,yes,no-weak-ssl-ciphers,無効（cascade前）,無効: default,あり,無効を明示する候補,既に既定またはrecipeで無効。sslはssl3 alias。再enableしない,yes,無効（cascade前）
+whirlpool,whirlpool暗号・hash・鍵導出実装,yes,no-whirlpool,無効一覧にない（cascade前）,無効一覧にない（aliasに注意）,あり,承認待ち・要測定,現行更新専用なら削減候補。旧EAPのMD4/DES等とprovider要件を先に決める,yes,無効一覧にない（cascade前）
+winstore,winstore機能のbuild可否（INSTALL参照）,yes,no-winstore,無効一覧にない（cascade前）,無効: not-windows,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効一覧にない（cascade前）
+x942kdf,x942kdf機能のbuild可否（INSTALL参照）,no,no-x942kdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+x963kdf,x963kdf機能のbuild可否（INSTALL参照）,no,no-x963kdf,未対応,対象外,対象外,対象外（4.1専用）,3.5にないtokenを追加しない。系列変更は別のAPI/ABI・保守判断,yes,無効一覧にない（cascade前）
+zlib,zlib機能のbuild可否（INSTALL参照）,yes,no-zlib,無効（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効（cascade前）
+zlib-dynamic,zlib-dynamic機能のbuild可否（INSTALL参照）,yes,no-zlib-dynamic,無効（cascade前）,無効一覧にない（aliasに注意）,直接指定なし,採用候補（no指定）,現行更新に不要。TLS1.2/1.3を残し、将来利用は再承認。recipe固定引数と競合を解消する,yes,無効（cascade前）
+zstd,zstd機能のbuild可否（INSTALL参照）,yes,no-zstd,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
+zstd-dynamic,zstd-dynamic機能のbuild可否（INSTALL参照）,yes,no-zstd-dynamic,無効（cascade前）,無効: default,直接指定なし,現状維持・追加しない,非使用backendやplatform固有機能をARM最適化として追加しない。乱数はOS経路を維持,yes,無効（cascade前）
