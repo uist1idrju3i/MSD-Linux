@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: security-report-${{ github.ref }}
+  group: security-report-${{ github.event_name == 'pull_request' && github.ref || 'monitor' }}
   cancel-in-progress: false
 
 permissions: {}
@@ -86,11 +86,6 @@ jobs:
             --in-file /work/output/images/sbom.cdx.json \
             --out-file /work/output/images/vex.cdx.json
 
-      - name: Summarize CVE analysis
-        run: |
-          docker/msd-dev python3 .github/scripts/summarize-vex.py \
-            output/images/vex.cdx.json >> "$GITHUB_STEP_SUMMARY"
-
       - name: Generate monitor state
         run: |
           docker/msd-dev python3 .github/scripts/cve-monitor.py state \
@@ -101,6 +96,11 @@ jobs:
             --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
             --now "$(docker/msd-dev date -u +%s)" \
             --output output/images/state.json
+
+      - name: Summarize CVE analysis
+        run: |
+          docker/msd-dev python3 .github/scripts/summarize-vex.py \
+            output/images/vex.cdx.json >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: github.event_name == 'pull_request'
@@ -208,7 +208,7 @@ jobs:
 
   report:
     needs: scan
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
@@ -219,12 +219,14 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       ISSUE_TITLE: 製品SBOMの脆弱性監視
+      SCAN_RESULT: ${{ needs.scan.result }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Download current state
+        if: needs.scan.result == 'success'
         env:
           CURRENT_RUN: ${{ github.run_id }}
         run: |
@@ -233,39 +235,31 @@ jobs:
 
       - name: Find previous successful state
         id: previous
+        if: needs.scan.result == 'success'
         env:
           CURRENT_RUN: ${{ github.run_id }}
         run: |
           mkdir -p report/previous
           runs="$(gh run list --workflow security.yml --branch main --status success --json databaseId -L 5)"
+          run_ids="$(printf '%s' "$runs" | python3 -c 'import json,sys; data=json.load(sys.stdin); assert isinstance(data,list); print("\n".join(str(x["databaseId"]) for x in data))')"
           while IFS= read -r run_id; do
             [[ -n "$run_id" && "$run_id" != "$CURRENT_RUN" ]] || continue
-            if gh run download "$run_id" -n product-cve-state --dir report/previous; then
-              if [[ -f report/previous/state.json ]]; then
-                printf 'available=true\n' >> "$GITHUB_OUTPUT"
-                exit 0
-              fi
-            fi
-            rm -f report/previous/*
-          done < <(printf '%s' "$runs" | python3 -c 'import json,sys; print("\n".join(str(x["databaseId"]) for x in json.load(sys.stdin)))')
+            gh run download "$run_id" -n product-cve-state --dir report/previous
+            test -s report/previous/state.json
+            printf 'available=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          done <<< "$run_ids"
           printf 'available=false\n' >> "$GITHUB_OUTPUT"
 
-      - name: Update tracking issue
+      - id: prepare
+        name: Prepare tracking report
+        if: needs.scan.result == 'success'
         env:
           PREVIOUS_AVAILABLE: ${{ steps.previous.outputs.available }}
         run: |
           python3 .github/scripts/cve-monitor.py issue-body \
             --state report/current/state.json --run-url "$RUN_URL" \
             > report/issue-body.md
-          issues="$(gh issue list --state open --json number,title -L 100)"
-          issue_number="$(printf '%s' "$issues" | python3 -c \
-            'import json,os,sys; print(next((str(i["number"]) for i in json.load(sys.stdin) if i["title"] == os.environ["ISSUE_TITLE"]), ""))')"
-          if [[ -z "$issue_number" ]]; then
-            issue_number="$(gh issue create --title "$ISSUE_TITLE" --body-file report/issue-body.md)"
-            issue_number="${issue_number##*/}"
-          else
-            gh issue edit "$issue_number" --body-file report/issue-body.md
-          fi
           if [[ "$PREVIOUS_AVAILABLE" != true ]]; then
             printf '基準を作成しました\n\n%s\n' "$RUN_URL" > report/diff.md
           else
@@ -274,6 +268,19 @@ jobs:
               --current report/current/state.json --run-url "$RUN_URL" \
               > report/diff.md
           fi
+
+      - name: Update tracking issue
+        if: always()
+        env:
+          PREPARE_OUTCOME: ${{ steps.prepare.outcome }}
+        run: |
+          status=failed
+          if [[ "$SCAN_RESULT" == success && "$PREPARE_OUTCOME" == success ]]; then
+            status=findings
+          fi
+          issue_number="$(python3 .github/scripts/tracking-issue.py \
+            --title "$ISSUE_TITLE" --status "$status" \
+            --body-file report/issue-body.md --run-url "$RUN_URL")"
           if [[ -s report/diff.md ]]; then
             gh issue comment "$issue_number" --body-file report/diff.md
           fi

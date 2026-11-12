@@ -8,9 +8,19 @@
 | `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があればamd64とarm64を作成してTrivy検査します。修正版のあるHIGH/CRITICAL脆弱性と、HIGH/CRITICALの秘密情報・設定不備を公開ゲート対象にします。`main` pushと手動実行ではGHCRへ公開し、SBOM/provenanceのattestationを付けます。`dry_run`で手動公開を省けます。 |
 | `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
-| `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新の有無や upstream の通信失敗では失敗しません。 |
+| `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新ありは通知のみ、upstream の通信失敗・未照合はjobを失敗させます。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `security.yml` | 全 PR、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。mainの定期・手動実行は「製品SBOMの脆弱性監視」Issueを更新して差分をコメント（自動closeなし）。 |
+
+## 監視Issueの更新と失敗
+
+2026-11-12に、Issueへ通知する3系統を見直しました。対象は「製品SBOMの脆弱性監視」「固定版の更新確認」「開発用イメージの脆弱性」です。[共通script](../.github/scripts/tracking-issue.py)はopen Issueを100件ずつページ送りし、PRを除いて題名の完全一致で既存Issueを探します。作成直前にも再検索します。定期・手動実行は監視ごとの固定concurrency groupで直列化し、実行中のjobは自動中止しません。製品CVEのPR用groupはrefごとに分け、Issueを更新しません。別のscriptや人間による同時作成までAPI側で排他する仕組みではありません。
+
+scan、feed・artifactの取得、SBOM/VEX・Trivy入力の検証、reportの準備に失敗した場合は、成功した検出なしと区別します。失敗時の通知は`always()`で実行し、Issue本文とjob summaryに「監視に失敗」「未確認」を表示して非ゼロ終了します。検出件数や解消を報告せず、Issueを閉じません。通信・権限の問題でIssue自体を更新できない場合もsummaryとjobの失敗に残します。runnerやcheckout自体が動かない場合の通知を保証するものではありません。
+
+固定版の「確認できず」はreportを保存したうえで終了値2となり、正常な「全て最新」から分けます。Trivyの対象なし・不正な結果を検出なしとは扱いません。製品CVEでは、空のSBOM/VEX、未知のcomponent参照や未確認のanalysis stateを拒否し、stateの検証後にだけ件数をsummaryへ載せます。前回成功stateの取得失敗も初回の基準作成と区別します。成功履歴がない場合のみ初回基準を作ります。CPEなしの依存を含む全件照合や安全性を証明する変更ではありません。
+
+回帰は`python3 tests/check-cve-monitor/run.py`、`tests/check-pins/run.sh`、`tests/trivy-gate/run.sh`で確認します。Issue検索・作成はmockを使い、live Issueへの試験投稿や同時workflowの実行はしていません。
 
 ## main の必須チェック
 

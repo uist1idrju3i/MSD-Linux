@@ -17,6 +17,7 @@
 
 ### セキュリティ
 
+- 定期監視のIssueを全ページから探し、競合による重複を防ぎます。取得・走査の失敗や未照合を検出なしと区別し、Issueとsummaryに未確認と表示してjobを失敗させます。
 - 開発用imageのDebian snapshotを更新し、apt・libapt-pkg7.0とzlib1g・zlib1g-devのsecurity修正版を取り込みます。
 - 開発用Docker imageをTrivyで検査するgateを追加しました。
 - 製品SBOMについて、PRで新たに増えた修正可能なCRITICAL CVEを失敗させるgateを追加しました。
