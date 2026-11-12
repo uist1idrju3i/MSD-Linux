@@ -4,6 +4,7 @@
 5138e019255284911bbee38a3cddcdf350b0c62c6d17f6cca4c206ea6a46aa79  ./phase1-r2.tar.zst
 82d3d03ef3fdd5fe97a78657e17ae250d4c8b48a863b528ab04fd3e94559e09f  ./phase1-r3-t2-invalid.tar.zst
 ecf3a040544671a07449a4134f355e84fe7b85f04f8df4916949acafba4d073f  ./phase1-r3-t2-retry.tar.zst
+337517ce6dc78407367b1c1babeb330baa88c21d502171c4a6a4dcd7428aa49d  ./phase2-analysis.tar.zst
 f61c606d65228f158a6822d6d2ace1825842998a444cd3427c05dfa56a950eb3  ./phase2-build-logs.tar.zst
 5be80fcfb17b54e263d99b076535ac872aa93afb7fe141e2ba043e4350c9baae  ./phase2-j8-check.tar.zst
 4e272f07e7ff21b479d2edb6988319605d61934965022a81fbe803af19259b2c  ./phase2-main-r2.tar.zst

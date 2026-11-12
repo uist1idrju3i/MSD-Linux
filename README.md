@@ -30,6 +30,7 @@
 | `phase2-main-r2` | 第2段の残行再実行 |
 | `phase2-stackfix` | stack reopen修正後の `T3`、`T6` 再実行 |
 | `stackfix-smoke` | stack reopen修正の対象構成smoke |
+| `phase2-analysis` | 第2段の集計script、最終行データ、分析記録 |
 | `phase2-plans` | 第2段のplan、input、hash、監視script |
 | `build-logs` | 各runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（4,350 file）。`build/` を削除する前に保存した |
 | `phase2-build-logs` | 第2段runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（2,386 file） |
