@@ -38,13 +38,16 @@ application、library、依存、toolchainを更新するときは、対象の�
    - 新機能、新しいoption・設定項目、既定値の変更と採否の理由
    - ライセンスまたはライセンス条件の変更
 4. 更新します。submodule は `git -C vendor/<name> fetch --depth 1 origin <tag-or-commit>` の後に `git -C vendor/<name> checkout FETCH_HEAD` を使い、`.gitmodules` の shallow 設定を残します。GitHub Actions は full commit SHA と `# vX.Y.Z` を併記します。Security tool の版・hash・workflow pin も同じ変更でそろえます。
+   - M5 submodule または kernel tarball の更新では、固定した旧・新 source の license file の差分を読み、許諾条件・例外の変更の有無と判断根拠を記録します。変更があれば package の `LICENSE`・`LICENSE_FILES` 宣言も見直します。
+   - M5 の `COPYING` は `package/m5stack-cardputerzero/m5stack-cardputerzero.hash`、Linux の `COPYING`・`LICENSES/preferred/GPL-2.0`・`LICENSES/exceptions/Linux-syscall-note` は `board/cardputerzero/patches/linux/linux.hash` で照合します。
+   - 確認した新 source の原文から SHA-256 を算出し、対応する license hash と出典 commit のコメントを更新します。本文が不変なら hash は維持し、照合した結果を記録します。archive hash の更新だけで済ませず、license hash の削除や検査の回避で不一致を隠しません。vendor 内の原文は編集しません。
 5. 更新後に回帰テストを行い、更新前の基準と比較します。
    - CI の Buildroot build と QEMU の `test-boot.sh`、`test-ab.sh`
    - `tests/msd-update/run.sh`
    - `output/images/Image`、`rootfs.squashfs`、`sdcard.img` のサイズ
    - QEMU 起動から ready marker までの時間
    - kernel の正規化後の最終 `.config` 全体の差分。fragment で要求していない項目も確認し、設定の削除・依存による無効化・重複した指定を説明する
-   - `make legal-info` の `manifest.csv` とライセンス差分。外部ツールチェーンや firmware の `unknown`・不足したソースは、出典と未確認事項を残す。SBOM の生成成功を配布許諾の確認と扱わない
+   - 更新した source を展開・同期した出力先で `docker/msd-dev make -C output legal-info` を実行し、終了値 0 と、対象 license hash の ERROR・hash 欠落の WARNING がないことを log で確認する。`manifest.csv` とライセンス差分も比較する。外部ツールチェーンや firmware の `unknown`・不足したソースは、出典と未確認事項を残す。SBOM の生成成功を配布許諾の確認と扱わない
    - SBOM/VEX の exploitable CVE 件数
 6. PR 本文に、依存ごとの旧版 → 新版、変更履歴リンク、四分類の記録、新機能・option・設定項目・既定値の採否と理由、回帰テストの比較結果を記載します。新しいoptionは対応する「component-options」の表にも反映します。Dependabot PR にも同じ確認を行い、結果を確認した後に人間がマージします。
 
