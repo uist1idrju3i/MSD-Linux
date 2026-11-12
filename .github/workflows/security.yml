@@ -98,9 +98,11 @@ jobs:
             --output output/images/state.json
 
       - name: Summarize CVE analysis
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          docker/msd-dev python3 .github/scripts/summarize-vex.py \
-            output/images/vex.cdx.json >> "$GITHUB_STEP_SUMMARY"
+          docker/msd-dev python3 .github/scripts/cve-monitor.py issue-body \
+            --state output/images/state.json --run-url "$RUN_URL" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: github.event_name == 'pull_request'
