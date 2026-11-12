@@ -6,6 +6,12 @@
 
 以下のActions 11参照・859 npm名・1,574 name/versionは、固定した当時のsource一覧です。現行の7本のworkflowには、外部Action 6参照と[ローカルAction](../../../.github/actions/setup-dev-image/action.yml) 1参照があります。ローカルActionのcache参照は、この外部6参照にも含まれます。`pages.yml`と`site-status.yml`は現在のtreeに存在しません。旧一覧の件数を現行の依存数とはせず、再帰的な母集団・実bundle・内包licenseの再監査を残します。
 
+## 両arch監視と公開権限の変更
+
+2026-11-12の変更では、公開済みOCIの定期検査をamd64・arm64の両方へ広げ、PRでbuildするjobからGHCR書込・OIDC・attestation権限を除きました。公開jobはmain限定です。[監視資料と公開境界](../../../docker/README.md#ociの監視と公開)、[Actionsの監査追記](../operations/github-actions-audit.md#2026-11-12のoci公開境界の変更)に実装と未確認を分けて記録します。
+
+この変更はworkflowと回帰試験の修正です。旧APT台帳のarm64分の再調査、Go builder・QEMU builder・runnerのscan、Action実bundleの監査を追加したものではありません。以下のamd64の231件と当時の測定値は変更しません。
+
 ## OCIとAPT
 
 2026-11-12の現況：aptとzlibの保守修正のため、開発用OCIのsnapshotを`20261103T023120Z`から`20261107T075304Z`へ更新しました。固定baseのaptはsnapshotの変更だけでは更新されないため、QEMU builderと最終stageのinstall対象に明示します。[今回の全APT差分と確認範囲](../../experiments/2026-11-12-dev-image-snapshot.md)を別記し、以下の231件の旧台帳と当時のscanner結果は保持します。日付だけの監視をpackage単位の脆弱性監視の代わりにはしません。

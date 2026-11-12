@@ -2,6 +2,12 @@
 
 文書変更で製品buildが起動する理由、PR全体差分、cache・並列化の実行ログと改善候補は[追加調査](ci-build-scope-and-performance.md)にあります。以下の監査時点と区別します。
 
+## 2026-11-12のOCI公開境界の変更
+
+`d7d9d62`を基点に、手動実行のmain制限とjobの権限分離を変更しました。以前は手動の非main実行も公開可能で、PRを含むbuild jobに書込権限とOIDCがありました。今回の定義ではbuildを`contents: read`だけにし、main限定の`publish-arch`へarch別push・SBOM attestationを移します。multi-arch indexの公開jobにもmain条件を加えます。[受け渡すartifactと権限表](../../../docker/README.md#main限定の公開)を参照してください。
+
+ローカル回帰ではmainのpush、mainの手動公開、dry run、非mainのpush・手動実行、PRの判定を検査します。image ID・OS・arch不一致と転送資料欠落は公開前に拒否し、受け取ったimageを実行しません。実際の権限付与、GHCRへの公開、SBOM/index attestationは未確認です。buildの書込権限を除く変更であり、全依存やAction bundleの監査完了を意味しません。以下の監査表と改善候補は当時の記録として保持します。
+
 ## 2026-11-12の現況
 
 `main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`でworkflowと関連scriptを照合しました。以下の監査表と「CI・mergeは未確認」「mainではまだ有効になっていない」は過去の記録として残し、現況と分けます。
@@ -15,7 +21,7 @@
 
 ## 対象と判定方法
 
-2026-11-12のR24追加対応：[3監視のIssue更新](../../CI.md#監視issueの更新と失敗)を共通化しました。先頭100件だけの探索をページ送りへ変更し、監視ごとのconcurrencyと作成直前の再検索を加えます。製品scan失敗時にもreport jobを実行し、固定版・開発imageの失敗と同じく、Issueとsummaryを未確認にしてjobを失敗させます。前回stateの取得失敗を初回の基準作成へ読み替える経路も閉じます。下記の監査原文や上記の当時の残件は保持します。100件超・競合作成・失敗と正常な検出なしはローカルのmock回帰の対象であり、live Issue、実際のschedulerの排他、rulesetは未確認です。
+2026-11-12のR24追加対応：[3監視のIssue更新](../../ci-monitoring.md)を共通化しました。先頭100件だけの探索をページ送りへ変更し、監視ごとのconcurrencyと作成直前の再検索を加えます。製品scan失敗時にもreport jobを実行し、固定版・開発imageの失敗と同じく、Issueとsummaryを未確認にしてjobを失敗させます。前回stateの取得失敗を初回の基準作成へ読み替える経路も閉じます。下記の監査原文や上記の当時の残件は保持します。100件超・競合作成・失敗と正常な検出なしはローカルのmock回帰の対象であり、live Issue、実際のschedulerの排他、rulesetは未確認です。
 
 2026-11-02 UTC、`641a6f5` を起点に、`.github/workflows/` の9本と関連するスクリプトを確認した。表の「実行」は定義から読める条件であり、GitHub の組織設定や全ブランチの実行履歴を検証した意味ではない。変更後のローカル試験は後述する。実機、公開済みのOCI、GitHub上のワークフロー実行結果をこの監査の試験と混同しない。
 
