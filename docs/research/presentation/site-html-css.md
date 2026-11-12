@@ -23,6 +23,8 @@ RESEARCH.md から分割した節です。
 
 ### 採用しないもの
 
+以下の表は2026-10-19時点の判断です。Cloudflare PagesのヘッダーとAnalyticsの例外は、末尾の2026-11-12の記録で分けています。
+
 | 項目 | 理由 |
 |---|---|
 | HTML・CSS の minify、svgo、CSS のインライン化、`content-visibility` | 上の測定のとおり |
@@ -41,3 +43,13 @@ RESEARCH.md から分割した節です。
 ### テキストブラウザーの限界
 
 lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 では切れません。lynx 2.9.0dev.10 の `-dump -width=80` の出力で全角文字を2桁と数えると、1行が最大 145 桁になります。lynx が全角文字を1桁と数えて折り返しているためです。サイトの側では直せないため、記録だけにします。
+
+## 2026-11-12: Cloudflare Pagesの応答ヘッダー
+
+現行のCloudflare Pages用に、`public_html/_headers`へCSP、Permissions-Policy、X-Frame-OptionsのDENY、COOPのsame-originを指定します。camera・microphone・geolocation・payment・usbは許可しません。既存配信のnosniff・Referrer-Policy・HSTSは重複させません。
+
+サイトの原則は、JSなし・外部資源なしです。利用者が承認した唯一の例外として、Cloudflareが注入するWeb Analyticsのscript origin `https://static.cloudflareinsights.com`と送信先`https://cloudflareinsights.com/cdn-cgi/rum`だけを許可します。自作JS・HTML内のscript要素は引き続き禁止します。inline許可・`eval`・`data:`・外部CSS・外部fontは足しません。画像とCSSはself、fontはシステムのものです。SVG内の`url(#...)`は同じ画像内の参照です。
+
+HTTPとmetaのCSPは同時に適用されるため、両HTMLのmetaも同じ資源許可へ揃えます。`frame-ancestors 'none'`はHTTPだけに指定し、埋め込みを拒否します。Pagesのproject domainとversion・branch previewには、[公式のURLパターン](https://developers.cloudflare.com/pages/configuration/headers/)で`X-Robots-Tag: noindex`を付けます。custom domainにはこのruleを適用しません。
+
+注入snippetと送信先には観測上の未確認が残っています。公式FAQの同一origin向け分岐を理由に`connect-src 'self'`を追加することはせず、別の送信先が必要なら承認と再検証を行います。取得した応答、描画比較、配信確認の範囲は[検査記録](../../experiments/2026-11-12-pages-headers.md)に残します。
