@@ -74,7 +74,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 - [メモリ信頼性（EDAC / MCE / DRAM リフレッシュ）の調査](docs/research/tuning/memory-reliability-2026-11.md) — EDAC、MCE、DRAM の完了した調査。
 - [ロスレス再圧縮ツールの調査](docs/research/tuning/lossless-recompression.md) — 再圧縮ツールの種類と特徴をまとめる調査。製品での採用状況はコードで確認。
 - [調整項目の全一覧（QEMU で取得した既定値）](docs/research/tuning/tunables-defaults.md) — script から生成した5節の一覧。
-- [sysctl の既定値](docs/research/tuning/tunables-sysctl.md) — 生成一覧から分割した QEMU の sysctl 値。
+- sysctl の既定値（[kernel・filesystem・memoryなど](docs/research/tuning/tunables-sysctl-system.md)、[IPv4](docs/research/tuning/tunables-sysctl-ipv4.md)、[その他のnetwork](docs/research/tuning/tunables-sysctl-network.md)） — 生成一覧から分割した QEMU の sysctl 値。
 - [モジュールパラメーター](docs/research/tuning/tunables-module-params.md) — 生成一覧から分割した QEMU の module parameter 値。
 
 #### 保存・電源断・更新

@@ -36,7 +36,7 @@
 | [memory-reliability-2026-11.md](tuning/memory-reliability-2026-11.md) | 履歴 | 完了した調査。pstore / ramoops の観測方法は [observability](verification/observability.md)、ハードウェア条件は [hardware spec](hardware/hardware-spec.md) | 調査結果を保持し、製品設定や実機確認へ読み替えない |
 | [lossless-recompression.md](tuning/lossless-recompression.md) | 履歴 | 再圧縮ツールの調査。製品 kernel image の生成は `board/cardputerzero/post-image.sh`、候補一覧は `fastboot-ideas.md` | tool survey として保持し、実装済み方式はコードで確認する |
 | [tunables-defaults.md](tuning/tunables-defaults.md) | 生成物 | QEMU 既定値。生成 script は5節を1ファイルに出力し、sysctl / module parameters を別文書へ分割 | 値の一覧を保持し、意味や採否は `cpu-irq-and-sysctl.md` に置く |
-| [tunables-sysctl.md](tuning/tunables-sysctl.md) | 生成物 | `tunables-defaults.md` の sysctl 節を分割した QEMU 取得値 | サイズのための分割を維持し、製品の sysctl 設定とは扱わない |
+| sysctl（[system](tuning/tunables-sysctl-system.md)、[IPv4](tuning/tunables-sysctl-ipv4.md)、[その他のnetwork](tuning/tunables-sysctl-network.md)） | 生成物 | `tunables-defaults.md` の sysctl 節を分割した QEMU 取得値 | サイズのための分割を維持し、製品の sysctl 設定とは扱わない |
 | [tunables-module-params.md](tuning/tunables-module-params.md) | 生成物 | `tunables-defaults.md` の module parameter 節を分割した QEMU 取得値 | サイズのための分割を維持し、製品の判断とは扱わない |
 
 ## 主題の本文と重複候補
@@ -128,7 +128,7 @@ K/P/S17の出典は、URL・逐語抜粋・適用範囲を同じ行で保つ一�
 | [sources-url-reachability-more.md](sources/sources-url-reachability-more.md) | もう一組の URL 取得記録。前の表と単純に重複とみなさない |
 | [sources.md](sources/sources.md) | 分割済み出典への入口と追加調査の取得記録。原文・URL の対応を保持 |
 | [tunables-module-params.md](tuning/tunables-module-params.md) | `/sys/module` の既定値・候補・適用条件の表。sysctl の表とは別に保持 |
-| [tunables-sysctl.md](tuning/tunables-sysctl.md) | `/proc/sys` の既定値・候補・条件の比較表を保持 |
+| sysctl（[system](tuning/tunables-sysctl-system.md)、[IPv4](tuning/tunables-sysctl-ipv4.md)、[その他のnetwork](tuning/tunables-sysctl-network.md)） | `/proc/sys` の既定値・候補・条件の比較表を保持 |
 | [S2 カメラ](../experiments/2026-10-19-s02-camera.md) | 条件、署名検査、失敗と実機未確認の結論が 1 実験を構成する |
 | [実験一覧](../experiments/README.md) | 状態・条件・結論を実験ごとに 1 行で引ける一覧。個別の本文と CSV は既に分離してあり、表の行を機械的に別ページへ分けない |
 | [S11 watchdog](../experiments/2026-10-20-s11-qemu-watchdog.md) | 事前 amendment、停止処理、失敗試行を含む一連の証拠を保持 |

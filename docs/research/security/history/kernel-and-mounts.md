@@ -67,7 +67,7 @@
 
 ## 13. sysctl の最適化（提示リストの照合）
 
-提示リストを、本機の現状・ハード（512 MiB、100 Mbps 級想定、microSD）と照合する。既存の `docs/research/tuning/tunables-sysctl.md` に 606 項目の既定値一覧があり、今回は提示値との差分に絞る。
+提示リストを、本機の現状・ハード（512 MiB、100 Mbps 級想定、microSD）と照合する。既存の sysctlの既定値一覧（[system](../../tuning/tunables-sysctl-system.md)、[IPv4](../../tuning/tunables-sysctl-ipv4.md)、[その他のnetwork](../../tuning/tunables-sysctl-network.md)） に 606 項目の既定値一覧があり、今回は提示値との差分に絞る。
 
 ### 採用方向でよいもの
 
