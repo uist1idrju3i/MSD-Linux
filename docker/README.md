@@ -52,7 +52,7 @@ cacheがなければ従来どおり同じDockerfileをbuildし、512 MiB以下�
 
 mainの集約jobだけが「開発用イメージの脆弱性」Issueを更新します。本文はarch別に表示し、長いレポートは切り詰め、全件JSONの参照先を残します。両方が正常に完了し、両方に検出事項がない場合だけIssueを閉じます。一方でも検査失敗、artifact欠落、不正な入力、platform不一致があれば未確認としてjobを失敗させます。既存Issueには失敗コメントを追加し、最後に確認できた本文を保持します。Issueがなければ失敗通知で作成します。main以外の手動実行はIssueへ書き込みません。
 
-Issueの検索は全ページを読み、PRを除いて題名を完全一致で照合します。workflow内の同時実行を直列化し、matrixからはIssueを書きません。人間や別workflowからの同時作成までAPI側で排他する仕組みではありません。
+Issueの更新は共通の[tracking-issue.py](../.github/scripts/tracking-issue.py)を使います。`monitor-dev-image`でworkflowの同時実行を直列化し、matrixからはIssueを書きません。検索・作成・失敗通知の詳細と限界は[監視Issueの運用](../docs/ci-monitoring.md)を参照してください。
 
 ### main限定の公開
 
@@ -90,7 +90,7 @@ commit `e9b3b3f` のツリーを変更せずに、Docker Buildx plugin がない
 
 公開時には同じ multi-arch イメージに `sha-<commit>` と `latest` のタグも付け、SPDX SBOM と provenance の attestation を付けます。`ensure` は入力タグを `docker manifest inspect` で確認し、公開済みなら pull と attestation 検証を行います。タグが見つからない場合の処理はローカルビルドです。認証や通信などの検査エラー、pull の失敗、attestation 検証の失敗は、ローカルビルドへ切り替えずエラー扱いです。`gh` がない、または未認証の場合、通常の `pull` は警告を出して検証を省略します。`MSD_DEV_REQUIRE_ATTESTATION=1` を指定すると、`gh` の未導入または未認証で失敗します。CI ではこの設定が必須です。
 
-`ghcr.io/uist1idrju3i/msd-dev` は、認証なしで pull できる公開パッケージです。毎週月曜に `latest` を検査し、検出事項があれば「開発用イメージの脆弱性」Issue を作成または更新します。検出事項がなくなった後の検査では、Issue にコメントして閉じます。
+`ghcr.io/uist1idrju3i/msd-dev` は、認証なしで pull できる公開パッケージです。定期検査とIssueの扱いは[OCIの監視と公開](#ociの監視と公開)を参照してください。
 
 ## 固定値の更新
 

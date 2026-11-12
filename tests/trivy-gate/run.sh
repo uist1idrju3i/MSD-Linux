@@ -408,22 +408,39 @@ assert "arch: amd64" in scan_job and "arch: arm64" in scan_job
 assert "runner: ubuntu-26.04-arm" in scan_job and "fail-fast: false" in scan_job
 assert "issues: write" not in scan_job
 assert "development-image-findings-${{ matrix.arch }}" in scan_job
-assert "--paginate --slurp" in scan_workflow
-assert "Issue本文は最後に確認できた結果です" in scan_workflow
+assert scan_workflow.count("\nconcurrency:\n") == 1
+assert "group: monitor-dev-image" in scan_workflow
 issue_script = workflow_step(root / ".github/workflows/dev-image-scan.yml",
                              "Maintain vulnerability issue")
-assert issue_script.startswith("set -euo pipefail\n")
-guard = re.search(r'if (\[\[ "\$SCAN_STATUS".*?\]\]); then', issue_script, re.S)[1]
-for status, findings_flag, expected in (
-    ("success", "true", "verified"), ("success", "false", "verified"),
-    ("failed", "false", "failed"), ("", "", "failed"),
-    ("success", "", "failed"), ("success", "invalid", "failed"),
-):
-    checked = subprocess.run(
-        ["bash", "-euo", "pipefail", "-c", f"if {guard}; then echo failed; else echo verified; fi"],
-        env=dict(os.environ, SCAN_STATUS=status, HAS_FINDINGS=findings_flag),
-        capture_output=True, text=True)
-    assert checked.returncode == 0 and checked.stdout.strip() == expected
+assert "gh issue" not in issue_script and "gh api" not in issue_script
+assert ".github/scripts/tracking-issue.py" in issue_script
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    calls = temp / "issue-args"
+    (temp / "python3").write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$ISSUE_ARGS"\n')
+    (temp / "python3").chmod(0o755)
+    for status, outcome, job, findings_flag, expected in (
+        ("success", "success", "success", "true", "findings"),
+        ("success", "success", "success", "false", "clear"),
+        ("failed", "success", "success", "false", "failed"),
+        ("", "", "success", "", "failed"),
+        ("success", "success", "success", "", "failed"),
+        ("success", "success", "success", "invalid", "failed"),
+        ("success", "failure", "success", "false", "failed"),
+        ("success", "success", "failure", "false", "failed"),
+        ("success", "success", "cancelled", "false", "failed"),
+    ):
+        checked = subprocess.run(
+            ["bash", "-euo", "pipefail", "-c", issue_script],
+            env=dict(os.environ, PATH=f"{temp}:{os.environ['PATH']}",
+                     RUNNER_TEMP=str(temp), RUN_URL="https://example.test/run",
+                     SCAN_STATUS=status, REPORT_OUTCOME=outcome, JOB_STATUS=job,
+                     HAS_FINDINGS=findings_flag, ISSUE_ARGS=str(calls)),
+            capture_output=True, text=True)
+        assert checked.returncode == 0, checked.stderr
+        arguments = calls.read_text().splitlines()
+        assert arguments[0] == ".github/scripts/tracking-issue.py"
+        assert arguments[arguments.index("--status") + 1] == expected
 print("ok - missing or invalid aggregate outputs cannot close the monitoring issue")
 
 publication = publisher.read_text()
@@ -457,4 +474,28 @@ with tempfile.TemporaryDirectory() as directory:
                                 env=env, capture_output=True, text=True)
         assert result.returncode == 0 and result.stdout == expected, (event, ref, result.stderr)
 print("ok - publication is main-only; builds are read-only and cannot push or attest")
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    source = temp / "report.json"
+    output = temp / "github-output"
+    for value in ({}, {"Results": []}, {"Results": [None]},
+                  {"Results": [{"Target": "debian", "Vulnerabilities": {}}]},
+                  {"Results": [{"Target": "debian", "Error": "failed"}]}):
+        source.write_text(json.dumps(value))
+        result = subprocess.run([sys.executable, str(script), "report", str(source),
+                                 "--github-output", str(output)],
+                                capture_output=True, text=True)
+        assert result.returncode == 2, (value, result.stdout, result.stderr)
+        assert not result.stdout and not output.exists()
+    source.unlink()
+    missing = subprocess.run([sys.executable, str(script), "report", str(source)],
+                             capture_output=True, text=True)
+    assert missing.returncode == 2 and not missing.stdout
+    source.write_text(json.dumps({"Results": [{"Target": "debian", "Vulnerabilities": []}]}))
+    verified = subprocess.run([sys.executable, str(script), "report", str(source),
+                               "--github-output", str(output)],
+                              capture_output=True, text=True)
+    assert verified.returncode == 0 and "検出事項はありません" in verified.stdout
+    assert output.read_text() == "has_findings=false\n"
+print("ok - missing, malformed and unmatched Trivy results never report zero findings")
 PY

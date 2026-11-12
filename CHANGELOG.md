@@ -18,6 +18,8 @@
 ### セキュリティ
 
 - 開発用imageの定期検査をamd64とarm64に広げ、両方の結果を一つのIssueへ集約します。公開はmainだけに限定し、buildの読取専用jobからpush・attestationを分離しました。
+- 定期監視のIssueを全ページから探し、競合による重複を防ぎます。取得・走査の失敗や未照合を検出なしと区別し、Issueとsummaryに未確認と表示してjobを失敗させます。
+- Buildrootの無視指定による`in_triage`は、影響あり・解消・scan失敗と別の未評価欄に記録し、状態間の移動も差分で通知します。
 - 本番更新の公開鍵だけを使うbuildと、Environmentで保護された独立署名jobを追加しました。署名対象は従来のmanifestで、SD image全体の署名や鍵失効機能は含みません。
 - 開発用imageのDebian snapshotを更新し、apt・libapt-pkg7.0とzlib1g・zlib1g-devのsecurity修正版を取り込みます。
 - 開発用Docker imageをTrivyで検査するgateを追加しました。

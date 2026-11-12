@@ -16,11 +16,11 @@ on:
     - cron: "31 7 * * 1"
   workflow_dispatch:
 
-permissions: {}
-
 concurrency:
-  group: scan-development-image
+  group: monitor-dev-image
   cancel-in-progress: false
+
+permissions: {}
 
 env:
   TRIVY_VERSION: "0.76.1"
@@ -207,30 +207,16 @@ jobs:
           GH_REPO: ${{ github.repository }}
           HAS_FINDINGS: ${{ steps.aggregate.outputs.has_findings }}
           SCAN_STATUS: ${{ steps.aggregate.outputs.status }}
+          REPORT_OUTCOME: ${{ steps.aggregate.outcome }}
+          JOB_STATUS: ${{ job.status }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          set -euo pipefail
-          issue="$(
-            gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" |
-              jq -r '[.[][] | select(.pull_request == null and .title == "開発用イメージの脆弱性")][0].number // empty'
-          )"
-          body="$(cat "$RUNNER_TEMP/trivy-report.md" 2>/dev/null || printf '監視に失敗しました。両archの結果は未確認です。')
-          実行: $RUN_URL"
-          if [[ "$SCAN_STATUS" != "success" ||
-                ( "$HAS_FINDINGS" != "true" && "$HAS_FINDINGS" != "false" ) ]]; then
-            if [[ -n "$issue" ]]; then
-              gh issue comment "$issue" --body "監視に失敗しました。Issue本文は最後に確認できた結果です。$RUN_URL"
-            else
-              gh issue create --title "開発用イメージの脆弱性" --body "$body"
-            fi
-            exit 1
-          elif [[ "$HAS_FINDINGS" == "true" ]]; then
-            if [[ -n "$issue" ]]; then
-              gh issue edit "$issue" --body "$body"
-            else
-              gh issue create --title "開発用イメージの脆弱性" --body "$body"
-            fi
-          elif [[ -n "$issue" ]]; then
-            gh issue comment "$issue" --body "検出事項はありません。$RUN_URL"
-            gh issue close "$issue"
+          status=failed
+          if [[ "$SCAN_STATUS" == success && "$REPORT_OUTCOME" == success && "$JOB_STATUS" == success ]]; then
+            case "$HAS_FINDINGS" in
+              true) status=findings ;;
+              false) status=clear ;;
+            esac
           fi
+          python3 .github/scripts/tracking-issue.py --title "開発用イメージの脆弱性" \
+            --status "$status" --body-file "$RUNNER_TEMP/trivy-report.md" --run-url "$RUN_URL"
