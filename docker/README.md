@@ -69,6 +69,9 @@ commit `e9b3b3f` のツリーを変更せずに、Docker Buildx plugin がない
 ## 固定値の更新
 
 `docker/msd-dev.Dockerfile` の `DEBIAN_SNAPSHOT` を更新するときは、snapshot.debian.org に存在する日時を選びます。固定版の更新確認では、snapshot の日時が 30 日を超えると更新ありとして通知します。
+
+2026-11-12の更新では、apt 3.0.4とzlibの`+deb13u1`を両CPUで初めて収録した`20261107T075304Z`を選びました。QEMU builderと最終stageの両方を更新し、固定baseに残るaptもsnapshotから更新するためinstall対象に明示します。全packageのupgradeは行いません。[実験記録](../docs/experiments/2026-11-12-dev-image-snapshot.md)に全APT差分、変更履歴、署名付きindex、旧新のgate結果と未確認範囲を残します。監視はDockerfileから日付を読む既存方式を維持し、30日以内でも脆弱性がないとは扱いません。
+
 QEMU を更新するときは、`QEMU_VERSION`、`QEMU_SHA256` と署名鍵の指紋を合わせて変更し、`docker/qemu-patches/README.md` の一覧と上流への提出状況も併せて更新してください。上流の最新安定版との差は固定版の更新確認で調べます。
 ベースイメージの digest を変えるときは、`docker buildx imagetools inspect debian:trixie-slim` の結果と照合してください。
 

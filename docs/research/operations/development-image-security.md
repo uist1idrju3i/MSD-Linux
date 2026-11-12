@@ -6,6 +6,8 @@
 
 開発用OCIと、CardputerZeroへ配布するBuildrootのrootfsは別の検査対象です。この記録のTrivyの件数を、配布OSの脆弱性件数とは扱いません。
 
+2026-11-12の現況：apt/libapt 3.0.4とzlibの`+deb13u1`を含む最初のsnapshot `20261107T075304Z`へ更新しました。[新しい実験](../../experiments/2026-11-12-dev-image-snapshot.md)では、同じDBでamd64の旧gate対象6件、新0件を確認しました。QEMU builderと最終stageの各4 binaryが更新対象です。arm64のbuild・scanと今回のCIは未確認であり、以下の11月2日・3日の結果を現在の全CPUの合格とは扱いません。
+
 2026-11-02の[週次検査](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41466543726)と[追跡Issue](https://github.com/uist1idrju3i/MSD-Linux/issues/59)を読み、固定したOCIをローカルで再検査しました。修正版の導入を確認した記録ではありません。
 
 | 項目 | 確認値 |

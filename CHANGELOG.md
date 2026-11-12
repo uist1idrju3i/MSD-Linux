@@ -18,6 +18,7 @@
 ### セキュリティ
 
 - 本番更新の公開鍵だけを使うbuildと、Environmentで保護された独立署名jobを追加しました。署名対象は従来のmanifestで、SD image全体の署名や鍵失効機能は含みません。
+- 開発用imageのDebian snapshotを更新し、apt・libapt-pkg7.0とzlib1g・zlib1g-devのsecurity修正版を取り込みます。
 - 開発用Docker imageをTrivyで検査するgateを追加しました。
 - 製品SBOMについて、PRで新たに増えた修正可能なCRITICAL CVEを失敗させるgateを追加しました。
 - 製品SBOMを2時間ごとにNVDと照合し、差分をIssueで通知する監視を追加しました。

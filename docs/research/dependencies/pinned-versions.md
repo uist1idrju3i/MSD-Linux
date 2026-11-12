@@ -2,6 +2,8 @@
 
 2026-11-02 UTCの取得結果。kernel-hardening-checkerのRelease取得失敗は最新版と扱わない。タグによる追加照合と各行の意味は[開発環境・CIの監査](development-and-ci.md)を参照する。Debian snapshotの日付だけは2026-11-03に再確認した。
 
+2026-11-12の現況：Dockerfileのsnapshotは`20261107T075304Z`へ更新しました。下表の`20261103T023120Z`は11月3日の取得記録として保持します。[新しい実験記録](../../experiments/2026-11-12-dev-image-snapshot.md)に選択根拠と差分を分けて記載します。固定版監視はDockerfileのARGを読み、30日超を通知する方式のままです。この追記でほかの固定値を再取得した意味ではありません。
+
 | 依存 | 固定値 | 最新 | 状態(最新・更新あり・確認できず・参考・Buildroot 安定版待ち) | 参照URL |
 |---|---|---|---|---|
 | Raspberry Pi Linux | `b3495ea401d709af0701a85babcba5e3d788a602` | `b3495ea401d709af0701a85babcba5e3d788a602` | 最新 | https://github.com/raspberrypi/linux |
