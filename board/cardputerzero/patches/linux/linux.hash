@@ -1,2 +1,7 @@
 # Locally calculated from the pinned GitHub archive.
 sha256  d3857e3906878c52719da06328a2db27784f6fb8055b570e8d8207eef3a12a14  linux-b3495ea401d709af0701a85babcba5e3d788a602.tar.gz
+
+# 固定commit b3495ea401d709af0701a85babcba5e3d788a602の上流原文と照合。
+sha256  fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0  COPYING
+sha256  8780e78a1a737e127f25a65f6d95269bffd36158dc261114de7859b490bfc5aa  LICENSES/preferred/GPL-2.0
+sha256  8e378ab93586eb55135d3bc119cce787f7324f48394777d00c34fa3d0be3303f  LICENSES/exceptions/Linux-syscall-note

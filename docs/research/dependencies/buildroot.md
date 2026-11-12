@@ -53,6 +53,8 @@ Bootlinには2026.08-1があるが、固定したBuildroot安定系列の選択�
 - Bootlinには[source](https://toolchains.bootlin.com/downloads/releases/sources/)と[license](https://toolchains.bootlin.com/downloads/releases/licenses/)の公式経路がある。必要なソースと許諾をarchive単位で収集・対応付けし、再配布時の提供方法を決める。
 - BuildrootのCPE照合は、内包glibcやlibstdc++を個別componentとして自動列挙した結果ではない。kernel versionが合ったことと、全依存のCVE判定が正しいことを分ける。
 
+2026-11-12追記：上記のhash欠落は当時の記録です。固定kernelのlicense 3 fileを[外部linux.hash](../../../board/cardputerzero/patches/linux/linux.hash)へ、M5のCOPYINGを[packageのhash](../../../package/m5stack-cardputerzero/m5stack-cardputerzero.hash)へ追加しました。固定上流原文と照合し、同じ既存出力で`legal-info`を変更前後に各1回実行した結果、対象のERROR 3行・WARNING 1行はなくなりました。[検証記録](../../experiments/2026-11-12-legal-info-hashes.md)に検査経路・manifest・残る警告を記載します。Buildroot source未保存とBootlinのlicense file未定義、M5 firmware等のunknownは未解決です。
+
 ## 再確認の手順
 
 1. [source-record.json](source-record.json)のrunからartifactを取得し、SBOMとshow-infoのbyte数・SHA-256を照合する。権限と保存期限によりartifactを取得できない場合は、同じheadではなく同じtest mergeを再現できるかも確認する。
