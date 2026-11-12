@@ -246,18 +246,25 @@ args = sys.argv[1:]
 with open(os.environ["DOCKER_CALLS"], "a") as log:
     log.write(args[0] + "\\n")
 if args[0] == "pull":
+    assert args[args.index("--platform") + 1] == "linux/" + os.environ["ARCH"]
     if os.environ.get("PULL_FAILURE"):
         print(os.environ["PULL_FAILURE"], file=sys.stderr)
         sys.exit(1)
 elif args[:2] == ["image", "inspect"]:
     if args[-1] == "{{.Id}}":
-        print("sha256:" + "a" * 64)
+        print(os.environ.get("IMAGE_ID", "sha256:" + "a" * 64))
+    elif args[-1] == "{{.Architecture}}":
+        print(os.environ.get("IMAGE_ARCH", os.environ["ARCH"]))
+    elif args[-1] == "{{.Os}}":
+        print(os.environ.get("IMAGE_OS", "linux"))
     else:
         print(json.dumps({"image_id": "sha256:" + "a" * 64}))
 elif args[0] == "save":
     Path(args[args.index("--output") + 1]).write_bytes(b"fixture")
 elif args[0] == "run":
     print("Version: fixture")
+elif args[0] == "load":
+    assert Path(args[args.index("--input") + 1]).is_file()
 else:
     raise SystemExit("unexpected docker command")
 ''', encoding="utf-8")
@@ -271,7 +278,7 @@ else:
         run_dir.mkdir()
         output = run_dir / "output"
         calls = run_dir / "docker-calls"
-        env = dict(environment, RUNNER_TEMP=str(run_dir), GITHUB_OUTPUT=str(output),
+        env = dict(environment, RUNNER_TEMP=str(run_dir), GITHUB_OUTPUT=str(output), ARCH="arm64",
                    IMAGE="example.invalid/image:latest", DOCKER_CALLS=str(calls),
                    PULL_FAILURE=failure)
         pulled = subprocess.run(["bash", "-euo", "pipefail", "-c", pull_script],
@@ -320,7 +327,134 @@ else:
         capture_output=True, text=True,
     )
     assert failed_report.returncode != 0
+    (temp / "image").mkdir()
+    (temp / "scan").mkdir()
+    (temp / "image" / "msd-dev.tar.gz").write_bytes(b"fixture")
+    (temp / "scan" / "image-provenance.json").write_text(
+        json.dumps({"image_id": "sha256:" + "a" * 64}))
+    for overrides, expected in (
+        ({}, 0), ({"IMAGE_ID": "sha256:" + "b" * 64}, 1),
+        ({"IMAGE_ARCH": "amd64"}, 1), ({"IMAGE_OS": "windows"}, 1),
+    ):
+        calls = temp / "transfer-calls"
+        calls.write_text("")
+        loaded = subprocess.run(
+            ["bash", "-euo", "pipefail", "-c", workflow_step(
+                publisher, "Load checked image without running it")],
+            env=dict(environment, RUNNER_TEMP=str(temp), ARCH="arm64",
+                     DOCKER_CALLS=str(calls), **overrides), capture_output=True, text=True)
+        assert loaded.returncode == expected, loaded.stderr
+        assert "run" not in calls.read_text().splitlines()
+    (temp / "image" / "msd-dev.tar.gz").unlink()
+    missing = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", workflow_step(
+            publisher, "Load checked image without running it")],
+        env=dict(environment, RUNNER_TEMP=str(temp), ARCH="arm64",
+                 DOCKER_CALLS=str(temp / "transfer-calls")), capture_output=True, text=True)
+    assert missing.returncode != 0
+print("ok - publish loads without executing the image and rejects missing or mismatched transfers")
 print("ok - publisher artifacts exclude raw scan JSON and actual report step filters payloads")
 print("ok - pull failures stay failed; a successful pull records the image and enables scanning")
 print("ok - publisher gate preserves failures through tee under GitHub's default bash shell")
+
+aggregate_spec = importlib.util.spec_from_file_location(
+    "dev_image_report", root / ".github/scripts/dev-image-report.py")
+aggregate = importlib.util.module_from_spec(aggregate_spec)
+aggregate_spec.loader.exec_module(aggregate)
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    def fixture(arch, entries):
+        folder = temp / arch
+        folder.mkdir(exist_ok=True)
+        (folder / "scan-status.json").write_text(json.dumps({"arch": arch, "status": "success"}))
+        (folder / "image-provenance.json").write_text(json.dumps({
+            "architecture": arch, "os": "linux", "image_id": "sha256:" + "a" * 64}))
+        (folder / "trivy-findings.json").write_text(json.dumps({
+            "schema_version": 1, "findings": entries,
+            "counts": {"vulnerabilities": len(entries), "credential_rules": 0,
+                       "misconfigurations": 0}}))
+        (folder / "trivy-report.md").write_text("fixture report\n")
+    fixture("amd64", [])
+    fixture("arm64", [])
+    assert aggregate.collect(temp, "success")[:2] == ("success", False)
+    fixture("arm64", [{"id": "CVE-arm64-only"}])
+    status, found, body = aggregate.collect(temp, "success")
+    assert (status, found) == ("success", True)
+    assert "linux/amd64" in body and "linux/arm64" in body
+    for name, payload in (("scan-status.json", '{"arch":"arm64","status":"failed"}'),
+                          ("scan-status.json", 'invalid JSON'),
+                          ("image-provenance.json", '{"architecture":"amd64"}'),
+                          ("trivy-findings.json", '{"schema_version":1,"counts":{}}'),
+                          ("trivy-report.md", "")):
+        fixture("arm64", [])
+        (temp / "arm64" / name).write_text(payload)
+        assert aggregate.collect(temp, "success")[0] == "failed", name
+    fixture("arm64", [])
+    assert aggregate.collect(temp, "failure")[0] == "failed"
+    (temp / "arm64" / "scan-status.json").unlink()
+    assert aggregate.collect(temp, "success")[0] == "failed"
+    result = subprocess.run([
+        sys.executable, str(root / ".github/scripts/dev-image-report.py"), str(temp),
+        "--scan-result", "failure", "--body", str(temp / "body"),
+        "--github-output", str(temp / "outputs")], capture_output=True, text=True)
+    assert result.returncode == 1
+    assert "status=failed" in (temp / "outputs").read_text()
+    assert "未確認" in (temp / "body").read_text()
+print("ok - both architecture reports distinguish clean, arm64-only findings and missing or failed scans")
+
+scan_workflow = (root / ".github/workflows/dev-image-scan.yml").read_text()
+scan_job = scan_workflow.split("\n  scan:\n", 1)[1].split("\n  report:\n", 1)[0]
+assert "arch: amd64" in scan_job and "arch: arm64" in scan_job
+assert "runner: ubuntu-26.04-arm" in scan_job and "fail-fast: false" in scan_job
+assert "issues: write" not in scan_job
+assert "development-image-findings-${{ matrix.arch }}" in scan_job
+assert "--paginate --slurp" in scan_workflow
+assert "Issue本文は最後に確認できた結果です" in scan_workflow
+issue_script = workflow_step(root / ".github/workflows/dev-image-scan.yml",
+                             "Maintain vulnerability issue")
+assert issue_script.startswith("set -euo pipefail\n")
+guard = re.search(r'if (\[\[ "\$SCAN_STATUS".*?\]\]); then', issue_script, re.S)[1]
+for status, findings_flag, expected in (
+    ("success", "true", "verified"), ("success", "false", "verified"),
+    ("failed", "false", "failed"), ("", "", "failed"),
+    ("success", "", "failed"), ("success", "invalid", "failed"),
+):
+    checked = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", f"if {guard}; then echo failed; else echo verified; fi"],
+        env=dict(os.environ, SCAN_STATUS=status, HAS_FINDINGS=findings_flag),
+        capture_output=True, text=True)
+    assert checked.returncode == 0 and checked.stdout.strip() == expected
+print("ok - missing or invalid aggregate outputs cannot close the monitoring issue")
+
+publication = publisher.read_text()
+build_job = publication.split("\n  build:\n", 1)[1].split("\n  publish-arch:\n", 1)[0]
+assert "packages: write" not in build_job and "id-token: write" not in build_job
+assert "attestations: write" not in build_job
+assert "docker push" not in build_job and "attest-sbom@" not in build_job
+for name in ("publish-arch", "publish"):
+    job = publication.split(f"\n  {name}:\n", 1)[1].split("\n  gate:\n", 1)[0]
+    assert "if: github.ref == 'refs/heads/main'" in job
+    assert "packages: write" in job and "id-token: write" in job
+plan_script = workflow_step(publisher, "Plan image publication")
+plan_script = plan_script.split("changed=true", 1)[0] + 'printf "%s" "$push"'
+with tempfile.TemporaryDirectory() as directory:
+    temp = pathlib.Path(directory)
+    (temp / "docker").write_text("#!/bin/sh\nprintf fixture-tag\n")
+    (temp / "docker").chmod(0o755)
+    for event, ref, dry_run, expected in (
+        ("push", "refs/heads/main", "", "true"),
+        ("push", "refs/heads/other", "", "false"),
+        ("workflow_dispatch", "refs/heads/main", "false", "true"),
+        ("workflow_dispatch", "refs/heads/main", "true", "false"),
+        ("workflow_dispatch", "refs/heads/other", "false", "false"),
+        ("pull_request", "refs/pull/1/merge", "", "false"),
+    ):
+        env = dict(os.environ, PATH=f"{temp}:{os.environ['PATH']}",
+                   EVENT_NAME=event, EVENT_REF=ref, DRY_RUN=dry_run)
+        # Avoid the wrapper path, so the plan uses the isolated docker stub.
+        command = plan_script.replace("docker/msd-dev tag", "docker tag")
+        result = subprocess.run(["bash", "-euo", "pipefail", "-c", command],
+                                env=env, capture_output=True, text=True)
+        assert result.returncode == 0 and result.stdout == expected, (event, ref, result.stderr)
+print("ok - publication is main-only; builds are read-only and cannot push or attest")
 PY

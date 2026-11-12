@@ -17,6 +17,7 @@
 
 ### セキュリティ
 
+- 開発用imageの定期検査をamd64とarm64に広げ、両方の結果を一つのIssueへ集約します。公開はmainだけに限定し、buildの読取専用jobからpush・attestationを分離しました。
 - 本番更新の公開鍵だけを使うbuildと、Environmentで保護された独立署名jobを追加しました。署名対象は従来のmanifestで、SD image全体の署名や鍵失効機能は含みません。
 - 開発用imageのDebian snapshotを更新し、apt・libapt-pkg7.0とzlib1g・zlib1g-devのsecurity修正版を取り込みます。
 - 開発用Docker imageをTrivyで検査するgateを追加しました。

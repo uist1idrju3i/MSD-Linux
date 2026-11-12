@@ -42,6 +42,32 @@ cacheがなければ従来どおり同じDockerfileをbuildし、512 MiB以下�
 
 更新・init・hardware情報・data拡張・QEMUログ・電源断ログ・wrapperのhost回帰7組は、一つのOCI内で最大2組ずつ並列実行します。全組の終了状態と分離したログを保存し、一つでも失敗・timeoutならjobを失敗させます。TrivyとSBOM等の既存検査も維持します。[起動条件と検証記録](../docs/experiments/2026-11-03-ci-cache-and-parallel.md)を参照してください。
 
+## OCIの監視と公開
+
+### 公開済みimageの定期検査
+
+[`dev-image-scan.yml`](../.github/workflows/dev-image-scan.yml)は、`latest`のindex digestを一度だけ解決し、同じindexのlinux/amd64とlinux/arm64をnative runnerで検査します。pull後のOS・archを照合し、選択したimage IDを`docker save`してTrivyへ渡します。image内のプログラムは実行しません。片方が失敗しても、もう片方の検査を中止しません。
+
+結果は`development-image-findings-amd64`と`development-image-findings-arm64`へ分けて保存します。各artifactには検査状態、image IDとplatform、検査器・DBの情報、選別済みの全件JSONとレポートを含めます。秘密値やコードを含みうる元のTrivy JSONはアップロードしません。
+
+mainの集約jobだけが「開発用イメージの脆弱性」Issueを更新します。本文はarch別に表示し、長いレポートは切り詰め、全件JSONの参照先を残します。両方が正常に完了し、両方に検出事項がない場合だけIssueを閉じます。一方でも検査失敗、artifact欠落、不正な入力、platform不一致があれば未確認としてjobを失敗させます。既存Issueには失敗コメントを追加し、最後に確認できた本文を保持します。Issueがなければ失敗通知で作成します。main以外の手動実行はIssueへ書き込みません。
+
+Issueの検索は全ページを読み、PRを除いて題名を完全一致で照合します。workflow内の同時実行を直列化し、matrixからはIssueを書きません。人間や別workflowからの同時作成までAPI側で排他する仕組みではありません。
+
+### main限定の公開
+
+[`publish-dev-image.yml`](../.github/workflows/publish-dev-image.yml)のPR・main以外の手動実行・`dry_run`はbuildと検査だけです。公開可能なのはmainへのpushと、main上で`dry_run=false`を選んだ手動実行です。planの判定に加えて、公開job自身もmainを条件にします。
+
+| job | 権限と処理 |
+|---|---|
+| `build` | `contents: read`だけで両archをbuildし、Trivy gateとSPDX生成を実行。registry login・push・attestationは行わない |
+| `publish-arch` | main限定。`actions: read`で同じrunのimageとSBOMを取得し、`packages/id-token/attestations: write`でarch別pushとSBOM attestationを実行 |
+| `publish` | 両方の`publish-arch`成功後、main限定でmulti-arch tagとindexのBuild Provenanceを公開 |
+
+公開時だけ、gate通過後のimageをgzipで圧縮し、`msd-dev-image-amd64`と`msd-dev-image-arm64`のartifactへ1日保存します。公開jobは同じrun・archのartifactだけを読み、load後のimage IDをbuildの記録と照合し、OS・archも確認します。loadしたimageは実行せず、再buildもしません。この受け渡しにはimage全体の転送容量と時間がかかります。実際の増加量は未測定です。
+
+SPDXは従来の`msd-dev-trivy-<arch>` artifactから取得します。選別済みレポート、SPDX、imageそのものは別の資料であり、SPDXやimage内の機密情報がないと個別に確認した意味ではありません。新しい公開jobでのGHCR push・attestationの実行確認は、mainへの反映後に行います。
+
 ## rootless Docker での実行
 
 `docker/msd-dev` は `docker info --format '{{.SecurityOptions}}'` の出力から rootless Docker を自動判定します。rootless の場合はコンテナー内の実行ユーザーを `0:0` にします。rootless Docker の user namespace ではコンテナー内の root がホストの実行ユーザーに対応するため、bind mount した作業ツリーにも書き込み可能です。通常の Docker ではホストの uid:gid で実行します。判定の上書きには `MSD_DEV_ROOTLESS=1` または `0` を指定します。両モードで `--cap-drop ALL` と `--security-opt no-new-privileges` が有効です。

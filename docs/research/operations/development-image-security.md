@@ -2,6 +2,12 @@
 
 [RESEARCH](../../../RESEARCH.md) / [CIの運用](../../CI.md)
 
+## 2026-11-12の両arch監視への変更
+
+今回の変更では、週次検査をamd64だけからamd64・arm64のmatrixへ広げました。同じ公開index digestを使い、arch別の結果を一つのIssueへ集約します。片方の失敗や資料欠落を検出なしと扱わず、既存Issue本文は最後の確認結果として保持します。[運用と保存資料](../../../docker/README.md#ociの監視と公開)を別記します。
+
+確認範囲はworkflow定義と`tests/trivy-gate/run.sh`の模擬入力による回帰です。両方が検出なし、arm64だけに検出あり、検査失敗、資料欠落・破損、platform不一致を区別します。実際の定期実行、両archの再scan、live Issueへの投稿は未確認です。以下の固定OCI・DBの件数を今回の両archの結果とは扱いません。製品rootfs、中間build stage、runnerの網羅も示しません。
+
 ## 対象と確認の限界
 
 開発用OCIと、CardputerZeroへ配布するBuildrootのrootfsは別の検査対象です。この記録のTrivyの件数を、配布OSの脆弱性件数とは扱いません。

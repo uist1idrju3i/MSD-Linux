@@ -2,6 +2,12 @@
 
 文書変更で製品buildが起動する理由、PR全体差分、cache・並列化の実行ログと改善候補は[追加調査](ci-build-scope-and-performance.md)にあります。以下の監査時点と区別します。
 
+## 2026-11-12のOCI公開境界の変更
+
+`d7d9d62`を基点に、手動実行のmain制限とjobの権限分離を変更しました。以前は手動の非main実行も公開可能で、PRを含むbuild jobに書込権限とOIDCがありました。今回の定義ではbuildを`contents: read`だけにし、main限定の`publish-arch`へarch別push・SBOM attestationを移します。multi-arch indexの公開jobにもmain条件を加えます。[受け渡すartifactと権限表](../../../docker/README.md#main限定の公開)を参照してください。
+
+ローカル回帰ではmainのpush、mainの手動公開、dry run、非mainのpush・手動実行、PRの判定を検査します。image ID・OS・arch不一致と転送資料欠落は公開前に拒否し、受け取ったimageを実行しません。実際の権限付与、GHCRへの公開、SBOM/index attestationは未確認です。buildの書込権限を除く変更であり、全依存やAction bundleの監査完了を意味しません。以下の監査表と改善候補は当時の記録として保持します。
+
 ## 2026-11-12の現況
 
 `main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`でworkflowと関連scriptを照合しました。以下の監査表と「CI・mergeは未確認」「mainではまだ有効になっていない」は過去の記録として残し、現況と分けます。
