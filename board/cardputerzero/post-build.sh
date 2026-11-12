@@ -199,7 +199,24 @@ if [ ! -x "$host_openssl" ]; then
 	exit 1
 fi
 
-if [ -n "${MSD_UPDATE_SIGNING_KEY:-}" ]; then
+if [ -n "${MSD_UPDATE_PUBLIC_KEY:-}" ]; then
+	key_origin=release
+	test "$(sed -n '1p' "$MSD_UPDATE_PUBLIC_KEY")" = '-----BEGIN PUBLIC KEY-----'
+	if grep -q 'PRIVATE KEY' "$MSD_UPDATE_PUBLIC_KEY"; then
+		printf '%s\n' 'Public-key input must not contain a private key.' >&2
+		exit 1
+	fi
+	"$host_openssl" pkey -pubin -in "$MSD_UPDATE_PUBLIC_KEY" -text -noout |
+		grep -q '^ED25519 Public-Key:'
+	public_key="$("$host_openssl" pkey -pubin -in "$MSD_UPDATE_PUBLIC_KEY" -pubout)"
+	if [ -n "${MSD_UPDATE_SIGNING_KEY:-}" ]; then
+		private_public="$("$host_openssl" pkey -in "$MSD_UPDATE_SIGNING_KEY" -passin pass: -pubout)"
+		if [ "$public_key" != "$private_public" ]; then
+			printf '%s\n' 'Update public and private keys do not match.' >&2
+			exit 1
+		fi
+	fi
+elif [ -n "${MSD_UPDATE_SIGNING_KEY:-}" ]; then
 	signing_key="$MSD_UPDATE_SIGNING_KEY"
 	key_origin=release
 else
@@ -216,7 +233,9 @@ else
 	fi
 	chmod 0600 "$signing_key"
 fi
-test -r "$signing_key"
+if [ -z "${MSD_UPDATE_PUBLIC_KEY:-}" ]; then
+	test -r "$signing_key"
+fi
 
 legacy_update_dir="$target_dir/etc/msd-update"
 if [ -d "$legacy_update_dir" ]; then
@@ -227,8 +246,13 @@ if [ -d "$legacy_update_dir" ]; then
 fi
 update_trust_dir="$target_dir/usr/share/msd-update"
 mkdir -p "$update_trust_dir"
-"$host_openssl" pkey -in "$signing_key" -pubout \
-	-out "$update_trust_dir/update-key.pem"
+if [ -n "${MSD_UPDATE_PUBLIC_KEY:-}" ]; then
+	"$host_openssl" pkey -pubin -in "$MSD_UPDATE_PUBLIC_KEY" -pubout \
+		-out "$update_trust_dir/update-key.pem"
+else
+	"$host_openssl" pkey -in "$signing_key" -pubout \
+		-out "$update_trust_dir/update-key.pem"
+fi
 printf '%s\n' "$key_origin" > "$update_trust_dir/key-origin"
 
 # msd-update refuses bundles older than this number unless --allow-downgrade is given.

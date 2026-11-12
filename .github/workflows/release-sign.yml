@@ -1,0 +1,152 @@
+name: Build and sign a release update
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-signing
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 150
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+      attestations: read
+    outputs:
+      commit: ${{ steps.package.outputs.commit }}
+      unsigned-sha256: ${{ steps.package.outputs.unsigned-sha256 }}
+      artifact-name: ${{ steps.package.outputs.artifact-name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          submodules: true
+          persist-credentials: false
+      - name: Require main
+        run: test "$GITHUB_REF" = refs/heads/main
+      - name: Log in to GHCR
+        env:
+          GHCR_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io \
+            --username "$GHCR_ACTOR" --password-stdin
+      - name: Ensure development image
+        uses: ./.github/actions/setup-dev-image # zizmor: ignore[self-repository] -- use the commit-pinned checkout, including vendor skill symlinks
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Build with the committed public key
+        env:
+          MSD_UPDATE_PUBLIC_KEY: /work/board/cardputerzero/keys/release-1-public.pem
+        run: |
+          # shellcheck disable=SC2016
+          docker/msd-dev bash -c '
+            set -euo pipefail
+            make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig
+            make -C output -j"$(nproc)"
+            make -C output legal-info
+            test ! -e output/msd-update-dev-key.pem
+            test ! -e output/images/msd-update-bundle.tar
+            cmp board/cardputerzero/keys/release-1-public.pem output/target/usr/share/msd-update/update-key.pem
+            test "$(cat output/target/usr/share/msd-update/key-origin)" = release
+            board/cardputerzero/check-image-layout.sh output/images/sdcard.img
+            xz -T0 -k output/images/sdcard.img
+          '
+      - id: package
+        name: Record build evidence
+        run: |
+          mkdir release-unsigned
+          cp output/images/msd-update-bundle.unsigned.tar output/images/sdcard.img.xz release-unsigned/
+          printf '%s\n' "$GITHUB_SHA" > release-unsigned/COMMIT
+          (cd release-unsigned && sha256sum msd-update-bundle.unsigned.tar sdcard.img.xz COMMIT > SHA256SUMS)
+          digest="$(sha256sum release-unsigned/msd-update-bundle.unsigned.tar)"
+          {
+            printf 'commit=%s\n' "$GITHUB_SHA"
+            printf 'unsigned-sha256=%s\n' "${digest%% *}"
+            printf 'artifact-name=release-unsigned-%s-%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+          } >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.package.outputs.artifact-name }}
+          path: release-unsigned/
+          if-no-files-found: error
+          retention-days: 7
+
+  sign:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: release-signing
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download this build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_COMMIT: ${{ needs.build.outputs.commit }}
+          ARTIFACT_NAME: ${{ needs.build.outputs.artifact-name }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$BUILD_COMMIT" = "$GITHUB_SHA"
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name "$ARTIFACT_NAME" --dir "$RUNNER_TEMP/release-payload"
+          cd "$RUNNER_TEMP/release-payload"
+          test "$(cat COMMIT)" = "$GITHUB_SHA"
+          sha256sum -c SHA256SUMS
+      - name: Sign the validated manifest
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM }}
+          UNSIGNED_SHA256: ${{ needs.build.outputs.unsigned-sha256 }}
+        run: |
+          test -n "$RELEASE_PRIVATE_KEY"
+          umask 077
+          printf '%s\n' "$RELEASE_PRIVATE_KEY" > "$RUNNER_TEMP/msd-release-private.pem"
+          unset RELEASE_PRIVATE_KEY
+          mkdir "$RUNNER_TEMP/release-signed"
+          bash .github/scripts/sign-update-bundle.sh \
+            "$RUNNER_TEMP/release-payload/msd-update-bundle.unsigned.tar" \
+            "$RUNNER_TEMP/msd-release-private.pem" \
+            board/cardputerzero/keys/release-1-public.pem \
+            ec181b24375d93e884e05888d8348900fd1bc6405e225696716dc9feeb7f1f42 \
+            "$UNSIGNED_SHA256" "$RUNNER_TEMP/release-signed/msd-update-bundle.tar"
+          cp "$RUNNER_TEMP/release-payload/COMMIT" "$RUNNER_TEMP/release-signed/"
+          cd "$RUNNER_TEMP/release-signed"
+          sha256sum msd-update-bundle.tar COMMIT > SHA256SUMS
+      - name: Remove the private key
+        if: always()
+        run: rm -f -- "$RUNNER_TEMP/msd-release-private.pem"
+      - name: Check outputs for private keys
+        if: always()
+        run: |
+          test ! -e "$RUNNER_TEMP/msd-release-private.pem"
+          for directory in "$RUNNER_TEMP/release-payload" "$RUNNER_TEMP/release-signed"; do
+            if [ -d "$directory" ]; then
+              if find "$directory" -name '*.pem' -print -quit | grep -q .; then
+                printf '%s\n' 'Unexpected PEM file in release outputs.' >&2
+                exit 1
+              fi
+              if grep -RalE -- 'BEGIN ([A-Z0-9]+ )?PRIVATE KEY' "$directory" >/dev/null; then
+                printf '%s\n' 'Private key material found in release outputs.' >&2
+                exit 1
+              fi
+            fi
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-signed-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-signed/
+          if-no-files-found: error
+          retention-days: 7

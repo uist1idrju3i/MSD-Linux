@@ -11,6 +11,8 @@ BOOTSEL_DIR="${STAGE_DIR}/bootsel"
 BOOT_DIR="${STAGE_DIR}/boot"
 UPDATE_DIR="${STAGE_DIR}/update"
 mkdir -p "$BOOTSEL_DIR" "$BOOT_DIR/overlays" "$UPDATE_DIR"
+rm -f "${BINARIES_DIR}/msd-update-bundle.tar" \
+	"${BINARIES_DIR}/msd-update-bundle.unsigned.tar"
 
 gzip -9n -c "${BINARIES_DIR}/Image" > "${STAGE_DIR}/kernel-gzip-9.img"
 pigz -11 -n -c "${BINARIES_DIR}/Image" > "${BINARIES_DIR}/kernel8.img"
@@ -54,6 +56,11 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot.vfat" "$UPDATE_DIR/"
 		printf 'version %s\n' "$update_version"
 		sha256sum rootfs.squashfs boot.vfat
 	} > manifest
+	if [ -n "${MSD_UPDATE_PUBLIC_KEY:-}" ] && [ -z "${MSD_UPDATE_SIGNING_KEY:-}" ]; then
+		tar -cf "${BINARIES_DIR}/msd-update-bundle.unsigned.tar" \
+			rootfs.squashfs boot.vfat manifest
+		exit 0
+	fi
 	host_openssl="${HOST_DIR:-}/bin/openssl"
 	if [ ! -x "$host_openssl" ]; then
 		printf 'Required Buildroot host OpenSSL binary is missing: %s\n' "$host_openssl" >&2

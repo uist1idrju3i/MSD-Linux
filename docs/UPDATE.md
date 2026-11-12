@@ -56,7 +56,7 @@ boot_partition=3
 
 `msd-update status` は `/proc/device-tree/chosen/bootloader/partition` と `tryboot` を読み、現在の A/B スロットと試験起動中かどうかを表示します。値は 32 bit big-endian です。BusyBox の `od` には `--endian=big` がないため、`od -An -v -t x1` でバイト列を読み、16 進数として変換します。
 
-post-image スクリプトは `output/images/msd-update-bundle.tar` を生成します。更新 bundle は次の 4 ファイルをルートに含む tar アーカイブです。`manifest.sig` は `manifest` の Ed25519 署名です。
+post-imageは開発鍵または互換用の秘密鍵を使う場合、`output/images/msd-update-bundle.tar`を生成します。`MSD_UPDATE_PUBLIC_KEY`だけを指定する本番buildでは、署名を行わず3 fileの`msd-update-bundle.unsigned.tar`だけを作ります。[保護された署名job](RELEASE-SIGNING.md#5-mainの公開鍵buildと保護された署名jobを実行する)が署名を追加します。端末へ渡す更新bundleは従来どおり次の4 fileで、`manifest.sig`は`manifest`のEd25519署名です。未署名tarを端末へ渡しても受理されません。
 
 ```text
 rootfs.squashfs
