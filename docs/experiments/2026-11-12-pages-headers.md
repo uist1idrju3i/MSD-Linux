@@ -2,7 +2,7 @@
 
 ## 目的と条件
 
-基準は`d7d9d622eae2f5f78dc0b891203f3641f334123b`です。HTML本文・CSS・画像は変えず、`_headers`とHTMLのmeta CSPだけを変えます。性能測定ではなく、各条件1回を1組とする静的・描画比較です。採用条件は、既存の本文・ローカル資源の描画が変わらないこと、承認したbeacon以外のCSP許可を増やさないこと、preview以外へnoindexを足さないことです。
+基準は`d7d9d622eae2f5f78dc0b891203f3641f334123b`です。HTML本文・CSS・画像は変えず、`_headers`とHTMLのmeta CSPだけを変えます。性能測定ではなく、各条件1回を1組とする静的・描画比較です。採用条件は、既存の本文・ローカル資源の描画が変わらないこと、承認したbeacon以外のCSP許可を増やさないこと、custom domainへnoindexを足さないことです。
 
 `site-review`の手順でindex・404を、w3mの40・80桁とlynxの80桁で比較します。Chromiumでは320×170の明暗（先頭・全体）、800×360の明暗（先頭）、1280×800の明暗（全体）、320×170の強制カラー（先頭）を比較します。画素差は0を条件とし、目でも確認します。比較器は同じ画像のA/Aと、既知の1画素変更で検査します。
 
@@ -57,8 +57,17 @@ curl -fsSL https://static.cloudflareinsights.com/beacon.min.js \
 | 320×170の強制カラー | 文字とロゴを判読でき、変更前後の画素差0 |
 | 比較器の対照 | A/Aの差0、既知の1画素変更の差1 |
 | check-siteと回帰suite | 成功。両metaと応答CSPの拡張、欠落・空・不正なPages rule、重複を拒否 |
-| 実配信のヘッダー・Analyticsの実送信 | push後のpreview確認が必要。ローカル比較では未確認 |
+| previewの実配信ヘッダー | push後にroot・404・CSS・branch aliasで確認。次節に記録 |
+| Analyticsの実送信 | 実snippetが未観測のため未確認 |
 
 初回の描画scriptは、Playwrightの停止後にbrowserを閉じる順序になり、`Event loop is closed! Is Playwright already stopped?`で失敗しました。終了順を直し、HTML・CSS・画像を変えずに全条件を取り直しました。回帰suiteの初回もfixture補助関数のshell変数が対象pathを上書きして失敗したため、試験側の変数名を分けて再実行しました。失敗した試行を成功の比較値に含めていません。
 
-Cloudflareへの実配信、注入されたbeaconの動作、実機は未確認です。同一originへ送る自動注入だった場合は、このCSPで通信が止まる可能性が残ります。承認済みの外部endpoint以外を推測で許可せず、実snippetの再取得とtest環境での確認を必要な作業として残します。
+## push後のPages preview
+
+実装commitは[`43dd98e7e873b37428a7b52faa8cec3ace3c939d`](https://github.com/uist1idrju3i/MSD-Linux/commit/43dd98e7e873b37428a7b52faa8cec3ace3c939d)です。PRを作らずbranchをpushしても、Cloudflare Pagesのcheckが成功し、[deployment preview](https://200397e1.msd-linux.pages.dev/)と[branch preview](https://devin-1794511826-pages-heade.msd-linux.pages.dev/)が発行されました。
+
+2026-11-12 20:05 UTCのCDG edgeで、rootのGET、存在しないpathのGET、CSSのHEAD、branch aliasのHEADを取得しました。statusは順に200・404・200・200です。全応答で、CSP・Permissions-Policy・X-Frame-Options・COOP・X-Robots-Tagの5種類が、`_headers`の値とそれぞれ1回だけ一致しました。CSPには`frame-ancestors 'none'`があり、robotsは`noindex`でした。
+
+rootと404のHTMLは、追跡中の2 HTMLとbyte単位で一致しました。previewにもscript要素はなく、beaconの注入・nonce・CSP hash・SRI・実送信は確認できていません。branch名をそのままDNS向けに置換した推測URLは404でした。正式なbranch aliasはcheckの出力にある短縮名なので、URLはcheckから取得します。
+
+この追補は記録だけを変え、検査済みの`public_html/`・検査器・回帰suiteは変えません。ローカルの画面比較と、Cloudflareでのヘッダー配信を別の確認として扱います。custom domainとproject domain本体の本番反映、ブラウザーでの拒否動作、実機は未確認です。同一originへ送る自動注入だった場合は、このCSPで通信が止まる可能性が残ります。承認済みの外部endpoint以外を推測で許可せず、実snippetの再取得とtest環境での確認を必要な作業として残します。
