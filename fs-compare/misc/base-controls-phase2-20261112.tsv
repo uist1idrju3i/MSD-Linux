@@ -1,0 +1,20 @@
+base_config	test	run_id	reason
+E1	T4-idle-control	phase0-review-T4-idle-control-E1-final-1794152324	第1段の保持image。T4-syncのbaseとは別のidle controlで、今回の削除対象外
+E1	smoke	phase2-smoke-r2-smoke-E1-r1-1794365236	第2段の保持候補。本文の基準構成smokeであり、T4/T5のbaseの代わりではない
+F1	smoke	phase2-smoke-r2-smoke-F1-r1-1794365261	第2段の保持候補。本文の基準構成smokeであり、T4/T5のbaseの代わりではない
+B2	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+B2	T5	phase0-review-T5-B2-1794152901	第1段の保持image。今回の削除対象外
+E1	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+E1	T5	phase0-review-T5-E1-1794152599	第1段の保持image。今回の削除対象外
+F1	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+F1	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
+F3	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+F3	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
+I1	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+I1	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
+I2	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+I2	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
+L1	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+L1	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
+L3	T4-sync		第1段の保持imageに該当なし。textのbase比較記録を参照
+L3	T5		第1段の保持imageに該当なし。textのbase比較記録を参照
