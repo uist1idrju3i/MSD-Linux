@@ -47,6 +47,8 @@
 
 ## CI生成物による追加確認
 
+2026-11-12の現況：開発imageのsnapshotを`20261107T075304Z`へ更新し、aptとzlibを修正する[ローカル実験](../../experiments/2026-11-12-dev-image-snapshot.md)ではamd64のgate対象が6件から0件になりました。arm64の修正版は署名付きindexまでの確認で、今回の両arch CI・attestationは未確認です。以下のR25のCI成功は11月3日の当時のpackageとDBによる記録として保持します。
+
 [PR #185のamd64実行](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41497577953/job/125456551427)は`d5f4f5d`の段階で成功したが、[保存したartifact](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/41497577953/artifacts/13167557308)には2,184件の脆弱性と1件の公開ゲート対象があった。対象は`libbrotli1 1.1.0-2+b7`の`CVE-2026-111497`。Trivyは0.76.1、DBの更新日時は2026-11-02 13:15:56 UTC、image IDは`sha256:f5b68684722c8e1eb157693695e69e9aba1053e932179e6590f7e4fff6bb4d63`だった。
 
 未指定のrun shellは`bash -e`で、ゲートの非ゼロ終了をパイプ末尾の`tee`が隠していた。この成功をゲート合格とは扱わない。公開ゲートと週次報告に`set -o pipefail`を追加し、実際のステップを`bash -e`で実行する回帰試験を加えた。ゲート対象ありでは失敗、対象なしでは成功、週次報告のJSONが壊れていたら失敗することを検査する。`build.yml`のensureステップは既に`shell: bash`を明示しており、この問題とは異なる。

@@ -8,6 +8,8 @@
 
 ## OCIとAPT
 
+2026-11-12の現況：aptとzlibの保守修正のため、開発用OCIのsnapshotを`20261103T023120Z`から`20261107T075304Z`へ更新しました。固定baseのaptはsnapshotの変更だけでは更新されないため、QEMU builderと最終stageのinstall対象に明示します。[今回の全APT差分と確認範囲](../../experiments/2026-11-12-dev-image-snapshot.md)を別記し、以下の231件の旧台帳と当時のscanner結果は保持します。日付だけの監視をpackage単位の脆弱性監視の代わりにはしません。
+
 対象はamd64の最終開発用image、`ghcr.io/uist1idrju3i/msd-dev@sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77`。Dockerfileの列挙だけでなく、dpkg databaseの導入済み231件を調べた。architecture、multiarch suffix付きのpackage名、導入版、候補、suite、結果は[CSV](development-apt.csv)と[JSON](development-apt.json)に保存した。
 
 Debian trixie、trixie-updates、trixie-securityのInReleaseをDebian archive keyringで `gpgv` 検証し、署名対象のSHA-256とbyte数をPackages.xzと照合した。署名検証したindexを読んだ結果、228件は同じで、次の3件に新しい配布版があった。upstreamの最新majorを比べる表ではない。
