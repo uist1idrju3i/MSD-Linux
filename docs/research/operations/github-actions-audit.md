@@ -2,6 +2,17 @@
 
 文書変更で製品buildが起動する理由、PR全体差分、cache・並列化の実行ログと改善候補は[追加調査](ci-build-scope-and-performance.md)にあります。以下の監査時点と区別します。
 
+## 2026-11-12の現況
+
+`main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`でworkflowと関連scriptを照合しました。以下の監査表と「CI・mergeは未確認」「mainではまだ有効になっていない」は過去の記録として残し、現況と分けます。
+
+- [security.yml](../../../.github/workflows/security.yml)は、2時間ごとの製品SBOM監視、mainの定期・手動実行時のIssue更新、PRの新規修正可能CRITICAL gateを実装した状態でmainに入っています。[PR #225](https://github.com/uist1idrju3i/MSD-Linux/pull/225)では`product CVE scan`がpassedでした。定期・手動実行の全履歴や、監視失敗時の通知が完結したという確認ではありません。
+- kernel-hardening-checkerのtag取得は[check-pins.py](../../../.github/scripts/check-pins.py)へ反映済みです。下記の回帰結果は当時の試験として保持します。
+- 現行workflowは7本です。監査表の`pages.yml`と`site-status.yml`は現在のtreeに存在せず、同表の実行条件・権限・Pagesのfork確認は現行workflowの説明ではありません。
+- #225のCI表示では`product CVE scan`と`dev-image gate`がrequiredでした。live rulesetの内容は未確認です。この表示だけで設定内容全体や全branchへの適用を確認済みとはしません。
+
+公開先のmain限定、PR用OCI jobの権限分離、Issue探索のページングと競合対策、内包依存・実bundle・runnerの監査は残ります。Actionsの旧母集団と現行参照の差は[依存監査の現況](../dependencies/development-and-ci.md#2026-11-12の現況)に記載します。
+
 ## 対象と判定方法
 
 2026-11-02 UTC、`641a6f5` を起点に、`.github/workflows/` の9本と関連するスクリプトを確認した。表の「実行」は定義から読める条件であり、GitHub の組織設定や全ブランチの実行履歴を検証した意味ではない。変更後のローカル試験は後述する。実機、公開済みのOCI、GitHub上のワークフロー実行結果をこの監査の試験と混同しない。

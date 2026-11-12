@@ -1,5 +1,11 @@
 # 開発環境とCIの依存監査
 
+## 2026-11-12の現況
+
+`main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`では、[固定版チェッカー](../../../.github/scripts/check-pins.py)がkernel-hardening-checkerのtagを取得します。下記の「monitorへ反映する必要がある」は11月2日の改善案で、現在は実装済みです。[回帰試験の記録](../operations/github-actions-audit.md#変更の検証範囲と次の順番)と、全依存の監視が未完了であることを区別します。
+
+以下のActions 11参照・859 npm名・1,574 name/versionは、固定した当時のsource一覧です。現行の7本のworkflowには、外部Action 6参照と[ローカルAction](../../../.github/actions/setup-dev-image/action.yml) 1参照があります。ローカルActionのcache参照は、この外部6参照にも含まれます。`pages.yml`と`site-status.yml`は現在のtreeに存在しません。旧一覧の件数を現行の依存数とはせず、再帰的な母集団・実bundle・内包licenseの再監査を残します。
+
 ## OCIとAPT
 
 対象はamd64の最終開発用image、`ghcr.io/uist1idrju3i/msd-dev@sha256:c5beb4973cad6bef273fd0efc51deb89e334de5f5b1700de2f41980410d65d77`。Dockerfileの列挙だけでなく、dpkg databaseの導入済み231件を調べた。architecture、multiarch suffix付きのpackage名、導入版、候補、suite、結果は[CSV](development-apt.csv)と[JSON](development-apt.json)に保存した。

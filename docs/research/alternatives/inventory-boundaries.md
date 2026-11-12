@@ -2,6 +2,10 @@
 
 [比較の索引](README.md) / [依存とSBOMの監査](../dependencies/README.md)
 
+## 2026-11-12の現況
+
+以下の11 Action参照・859 npm名・1,574 name/versionは当時の固定入力の母集団です。現行の7本のworkflowには外部Action 6参照とローカルAction 1参照があり、`pages.yml`と`site-status.yml`は存在しません。[現行参照との違い](../dependencies/development-and-ci.md#2026-11-12の現況)を分けて記録し、旧一覧を現行の全依存数とは扱いません。現行の再帰的な母集団、実bundle、全licenseの再監査は未実施です。以下の表と取得時の対応は書き換えていません。
+
 ## どこまで調べたか
 
 「全構成要素」はBuildrootの67行だけではありません。製品、構築側、開発OCI、Action、その内包物、runnerと配信サービスを別の層として比較します。次表は既知の有限な母集団と、未だ完全には列挙していない層を区別します。一覧への全行対応は、全候補の全option・license・同等性の認定ではありません。
