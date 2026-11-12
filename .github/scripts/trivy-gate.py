@@ -157,6 +157,22 @@ def write_findings_json(
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def validate_report(report: dict[str, Any]) -> None:
+    results = report.get("Results")
+    if not isinstance(results, list) or not results or report.get("Error"):
+        raise ValueError("Trivy scan has no verified results")
+    for result in results:
+        if (not isinstance(result, dict) or not isinstance(result.get("Target"), str)
+                or not result["Target"].strip() or result.get("Error")):
+            raise ValueError("Trivy scan target is unverified")
+        for _, field, _ in CATEGORIES:
+            items = result.get(field)
+            if items is not None and (
+                not isinstance(items, list) or any(not isinstance(item, dict) for item in items)
+            ):
+                raise ValueError("invalid Trivy findings")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=("gate", "report"))
@@ -169,6 +185,7 @@ def main() -> int:
         report = json.loads(args.report.read_text())
         if not isinstance(report, dict):
             raise ValueError("Trivy report must be a JSON object")
+        validate_report(report)
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"error: could not read Trivy report: {exc}", file=sys.stderr)
         return 2

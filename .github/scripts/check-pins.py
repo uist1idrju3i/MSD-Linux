@@ -145,6 +145,9 @@ def parse_buildroot_point_release(text: str, branch: str) -> tuple[str, str]:
 
 
 def upstream_summary(rows: list[tuple[str, str, str, str, str]]) -> str:
+    if not rows or any("確認できず" in (row[1], row[2], row[3])
+           or row[1] in {"unknown", "未設定"} for row in rows):
+        return "監視失敗（未確認）"
     informational = {"最新", "参考", "Buildroot 安定版待ち"}
     return "更新あり" if any(row[3] not in informational for row in rows) else "全て最新"
 
@@ -891,7 +894,7 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
                  for name, pin, latest, status, url in rows)
     report_path.write_text("\n".join(lines) + "\n")
     print(upstream_summary(rows))
-    return 0
+    return 2 if upstream_summary(rows) == "監視失敗（未確認）" else 0
 
 
 def main() -> int:
