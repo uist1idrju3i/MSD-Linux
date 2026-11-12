@@ -270,6 +270,22 @@ class ReleaseSigning(unittest.TestCase):
         self.assertNotIn(b"MSD_UPDATE_SIGNING_KEY", output)
         self.assertNotIn(b"private-key-must-not-be-forwarded", output)
 
+    def test_workflow_build_fails_closed(self):
+        workflow = (ROOT / ".github/workflows/release-sign.yml").read_text()
+        build = workflow.split("      - name: Build with the committed public key\n", 1)[1]
+        build = build.split("\n      - ", 1)[0]
+        inner = build.split("docker/msd-dev bash -c '", 1)[1].rsplit("'", 1)[0]
+        self.assertIn("set -euo pipefail", inner)
+        put(self.work / "bin/make", '#!/bin/sh\nexit "$MOCK_MAKE_STATUS"\n', True)
+        put(self.work / "bin/xz", '#!/bin/sh\ntouch "$UNEXPECTED_PACKAGE"\n', True)
+        marker = self.work / "unexpected-package"
+        env = dict(self.env, PATH=f"{self.work}/bin:{self.env['PATH']}",
+                   UNEXPECTED_PACKAGE=str(marker))
+        for prefix, status in (("", "31"), ("test() { return 1; }\n", "0")):
+            command("bash", "-c", prefix + inner,
+                    env=dict(env, MOCK_MAKE_STATUS=status), ok=False)
+            self.assertFalse(marker.exists())
+
     def test_workflow_sign_cleanup_and_leak_checks(self):
         workflow = (ROOT / ".github/workflows/release-sign.yml").read_text()
 

@@ -36,7 +36,7 @@ MSD_UPDATE_PUBLIC_KEY=/work/board/cardputerzero/keys/release-1-public.pem \
 
 target treeだけでなく、生成したSquashFSから公開鍵と`key-origin`を取り出しました。鍵はcommit対象のPEMとbyte単位で同じで、由来は`release`でした。署名scriptの正例は試験鍵で作り、変更していない端末clientの`install`で署名検証・非active slotへの書込み・読戻し照合まで確認しました。
 
-`tests/release-signing/`は10試験で、欠落・非Ed25519・別鍵、固定公開鍵との不一致、fingerprint、manifest・payload、tar hash、余分・欠落・link等を拒否します。workflowの署名step本文も、公開鍵とfingerprintだけを試験用に置き換えて実行し、0600、削除、PEM fileと秘密鍵headerの検出を確認しました。本番鍵は使っていません。
+`tests/release-signing/`は11試験で、欠落・非Ed25519・別鍵、固定公開鍵との不一致、fingerprint、manifest・payload、tar hash、余分・欠落・link等を拒否します。workflowの署名step本文も、公開鍵とfingerprintだけを試験用に置き換えて実行し、0600、削除、PEM fileと秘密鍵headerの検出を確認しました。本番鍵は使っていません。
 
 既存の`msd-update`、`msd-dev`、`version-info`、host-test runnerの7試験も成功しました。actionlintとShellCheckは終了値0、zizmor 1.31.1は新規workflowを含む8本のoffline監査を終了値0で完了しました。
 
@@ -45,6 +45,7 @@ target treeだけでなく、生成したSquashFSから公開鍵と`key-origin`�
 - 初回のpublic-key負試験は、Ed25519秘密鍵PEMを公開鍵入力に指定しても終了値0でした。公開鍵headerの確認と秘密鍵headerの拒否を追加し、同じ負試験で拒否を確認しました。
 - actionlintは、Docker内で展開する単一引用符のshellについてSC2016を報告しました。既存buildと同じ明示的な抑制を付けました。workflowの行継続の誤りもdiffで修正し、署名step本文を実行する試験を追加しました。
 - host-test runnerの既存試験はsuite集合の追加を検出して失敗しました。新suiteを期待集合へ追加し、既存suiteを除かず再検査しました。
+- 最終確認でDocker内の`bash -c`に失敗時停止の指定がないことを見つけました。`set -euo pipefail`を追加し、実際のstep本文のmake失敗と確認条件の失敗が、後続の圧縮へ進まず停止する試験を加えました。
 - build後のmetadata採取は最初にshellの引用を誤って実行前に停止しました。引用を直して確認し直し、増分buildは再実行していません。
 
 ## 記録と未確認

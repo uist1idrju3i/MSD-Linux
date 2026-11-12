@@ -48,6 +48,7 @@ jobs:
         run: |
           # shellcheck disable=SC2016
           docker/msd-dev bash -c '
+            set -euo pipefail
             make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output msd_cardputerzero_defconfig
             make -C output -j"$(nproc)"
             make -C output legal-info
