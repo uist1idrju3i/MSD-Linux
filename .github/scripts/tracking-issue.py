@@ -32,7 +32,8 @@ def find_issue(repository: str, title: str) -> str:
         page += 1
 
 
-def maintain(repository: str, title: str, body: str, clear: bool = False) -> str:
+def maintain(repository: str, title: str, body: str, clear: bool = False,
+             failed: bool = False) -> str:
     number = find_issue(repository, title)
     if clear:
         if number:
@@ -42,7 +43,10 @@ def maintain(repository: str, title: str, body: str, clear: bool = False) -> str
     if not number:
         number = find_issue(repository, title)
     if number:
-        gh("issue", "edit", number, "--repo", repository, "--body-file", "-", body=body)
+        if failed:
+            body += "\nIssue本文は最後に確認できた結果です。今回の監視結果ではありません。\n"
+        gh("issue", "comment" if failed else "edit", number, "--repo", repository,
+           "--body-file", "-", body=body)
         return number
     url = gh("issue", "create", "--repo", repository, "--title", title,
              "--body-file", "-", body=body)
@@ -77,7 +81,7 @@ def main() -> int:
         if failed:
             summary(body)
         number = maintain(os.environ["GITHUB_REPOSITORY"], args.title, body,
-                          clear=args.status == "clear")
+                          clear=args.status == "clear", failed=failed)
         if not failed:
             summary(body)
         if number:
