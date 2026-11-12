@@ -1,0 +1,3 @@
+phase,exit_code,error_lines,warning_lines,log_bytes,log_sha256
+before,0,3,3,14440,3a39917339d5e6237d430349fcd8af9308fac02bf0cc779e92d004183e5143bc
+after,0,0,2,14655,8756461fb8e05661e3deff4eeb2525b80df2bb414298b2ed5fe7156c3209713a
