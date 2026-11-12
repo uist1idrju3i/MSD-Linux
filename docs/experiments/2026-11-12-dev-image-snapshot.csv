@@ -1,0 +1,24 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+scan-old,old,1,vulnerability_records,1732,count,1,
+scan-old,old,1,gate_blockers,6,count,1,
+scan-old,old,1,gate_exit,1,exit,1,旧imageは負の対照で期待した失敗
+scan-old,old,1,secret_findings,0,count,1,
+scan-old,old,1,misconfig_findings,0,count,1,
+boot-old,old,1,ready_seconds,30,seconds,1,同一製品入力の機能確認1回。性能比較ではない
+ab-old,old,1,ready_seconds,29,seconds,1,同一製品入力の機能確認1回。性能比較ではない
+build-old,old,1,image_build_exit,0,exit,1,
+build-qemu-old,old,1,qemu_stage_build_exit,0,exit,1,
+scan-fixed,fixed,1,vulnerability_records,1724,count,1,
+scan-fixed,fixed,1,gate_blockers,0,count,1,
+scan-fixed,fixed,1,gate_exit,0,exit,1,公開gate成功
+scan-fixed,fixed,1,secret_findings,0,count,1,
+scan-fixed,fixed,1,misconfig_findings,0,count,1,
+boot-fixed,fixed,1,ready_seconds,26,seconds,1,同一製品入力の機能確認1回。性能比較ではない
+ab-fixed,fixed,1,ready_seconds,30,seconds,1,同一製品入力の機能確認1回。性能比較ではない
+build-fixed,fixed,1,image_build_exit,0,exit,1,
+build-qemu-fixed,fixed,1,qemu_stage_build_exit,0,exit,1,
+snapshot-only,snapshot-only,1,apt_version,3.0.3,version,1,snapshotだけではaptが更新されず不採用
+snapshot-only,snapshot-only,1,changed_binaries,2,count,1,
+inventory-initial,old,1,exit,125,exit,0,QEMU stage export前のtag欠落。空の台帳を採用せず
+arm64-probe,arm64,1,exit,255,exit,0,固定baseでexec format error。実build・scanなし
+arm64-scan,arm64,1,gate_exit,,exit,0,未実行。amd64結果を外挿しない
