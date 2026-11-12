@@ -5,6 +5,7 @@
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
 | `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
+| `release-sign.yml` | `main`上の手動実行だけ | 公開鍵だけで構築し、同じcommitとtar hashを確認したEnvironment `release-signing`の別jobでmanifestに署名します。tag・Releaseは作成しません。 |
 | `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があればamd64とarm64を作成してTrivy検査します。修正版のあるHIGH/CRITICAL脆弱性と、HIGH/CRITICALの秘密情報・設定不備を公開ゲート対象にします。`main` pushと手動実行ではGHCRへ公開し、SBOM/provenanceのattestationを付けます。`dry_run`で手動公開を省けます。 |
 | `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
@@ -37,7 +38,7 @@ merge後にmaintainerが`product CVE scan`をmain rulesetへ追加できます�
 
 ローカル開発とCI/CDは、[開発用Docker image](../docker/README.md)と`docker/msd-dev`を共用します。開発hostやrunnerのOS標準版とは独立して、構築・テストに必要なツールの版とパッチを管理するためです。Buildrootが使うtarget用のBootlin toolchainもコンテナー内で取得・使用します。checkout・差分判定・cache管理等はrunner上で行いますが、runner側のcompilerで製品を構築しません。
 
-`build.yml`と`lint.yml`の4jobは共通の開発image準備actionを使います。GHCRに対応する入力タグが公開済みなら、毎回pullとattestation検証を行います。未公開の場合だけ、OS・runner arch・入力タグ・形式版が完全一致するcacheを復元し、archiveのmetadata・サイズ・SHA-256・platformと、load後のimage IDを確認します。認証・通信・pull・検証のエラーを、cacheやローカルbuildへの切替で隠しません。
+`build.yml`と`lint.yml`、`release-sign.yml`のbuild jobは共通の開発image準備actionを使います。GHCRに対応する入力タグが公開済みなら、毎回pullとattestation検証を行います。未公開の場合だけ、OS・runner arch・入力タグ・形式版が完全一致するcacheを復元し、archiveのmetadata・サイズ・SHA-256・platformと、load後のimage IDを確認します。認証・通信・pull・検証のエラーを、cacheやローカルbuildへの切替で隠しません。
 
 cacheがなければ同じDockerfileをbuildし、512 MiB以下のarchiveを保存します。初回の独立jobはそれぞれbuildする場合があり、全jobで一回の構築だけを共有する設計ではありません。開発imageのcacheは破損検出を伴う再利用であり、署名やbit単位の再現性の証明ではありません。秘密情報やraw scanは保存せず、PRからmainへのcache移送も行いません。
 
@@ -51,6 +52,8 @@ build job の `=br-time=` は、Buildroot の `output/build/build-time.log` を 
 Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う外部コマンドが target の `bin`、`sbin`、`usr/bin`、`usr/sbin` にあることを確認します。BusyBox applet の symlink も追跡し、`dd`、`sha256sum -c`、`od -A` に必要な機能設定と、fstab の `/proc`、`/sys`、`/run`、`/tmp` の mount 定義も確認します。欠落があればビルドを失敗させる設定です。スクリプトにコマンドや必要な applet 機能を追加する場合は、post-build の一覧も更新します。
 
 ## 製品buildの起動条件
+
+`release-sign.yml`はmain上の手動起動専用です。公開鍵だけで構築する`build`と、Environment `release-signing`で承認後にmanifestへ署名する`sign`を分けます。通常の`build.yml`へ本番秘密鍵は渡しません。artifact名、fingerprint、公開前の確認は[署名手順](RELEASE-SIGNING.md)を参照してください。tag・Releaseの自動作成は行いません。
 
 `changes` jobはPR全体の累積差分を調べます。改名は削除と追加として扱い、製品入力を文書側へ移す変更も見落としません。製品directory内のMarkdownは拡張子で除外せず、未知のpath、base/head取得失敗、fetch・diff失敗ではbuildします。週次・手動は常にbuildします。
 

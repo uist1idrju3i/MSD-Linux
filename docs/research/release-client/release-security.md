@@ -42,6 +42,8 @@ immutable化後に不足assetを追加することはできません。draftへ�
 
 ## 3. build・署名・公開を分ける設計案
 
+2026-11-12追記：以下は当時の設計案です。現在は[署名workflow](../../../.github/workflows/release-sign.yml)で公開鍵だけのbuildとEnvironment `release-signing`の署名jobを分離しました。固定公開鍵のDER fingerprintとSecretからの導出鍵を照合し、manifestだけを署名します。管理者からSecret登録済みとの申告があり、こちらは値やlive保護設定を確認していません。本番jobの実行、SD image全体の署名、実機の鍵移行は未確認です。[現行手順](../../RELEASE-SIGNING.md)を参照してください。
+
 1. **buildと試験**: 秘密鍵を持たず、固定した公開鍵とソースから生成する。現行post-buildには公開鍵だけを受け取る経路がないため、先に改修が必要です。
 2. **対象の確定**: 承認するcommit、公開版、内部番号、機種、公開鍵fingerprint、asset名・hash・長さ、必要なCI結果を対応付ける。PR番号やlatestという名前だけでは選ばない。
 3. **署名**: 信頼できるworkflowの小さなjobがEnvironment承認後に鍵を受け取り、0600の一時ファイルからraw Ed25519署名する。欠落、型の相違、公開鍵不一致では停止する。開発鍵へのfallbackは禁止します。

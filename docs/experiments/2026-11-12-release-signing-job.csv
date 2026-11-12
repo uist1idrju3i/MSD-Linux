@@ -1,0 +1,6 @@
+check,exit_code,bytes,sha256
+incremental-public-key-build,0,,
+rootfs.squashfs,0,20680704,f3abd8cf3daded1a2bf00df9c37e71a6fcf2f408595d6bc3703fb82423d60107
+msd-update-bundle.unsigned.tar,0,87797760,209245d467e220359f7f2f753ed917cdadf6bcabdc57ad14faa2fd4ef9ef43b8
+sdcard.img,0,771751936,a4c7d1613ac0e6fa769a0d84ba610d552af261ce0b698c6e5d444dde2d67cea6
+incremental-build-log,0,22771,3b44c58d80b817b1b88037f114d6a99171a3967d98a8de9e9508768ab9e9ae14
