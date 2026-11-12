@@ -8,6 +8,7 @@
 
 | 主題 | 本文 |
 |---|---|
+| OpenSSL 3.5.9の最小化・openssl.cnf・ARM最適化の調査草案 | [現状・採否・設定案](openssl-minimal.md)、[全option表](openssl-minimal-options.csv) |
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |
 | target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md)、[OpenSSL系列差](openssl-series.md) |
