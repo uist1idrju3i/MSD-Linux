@@ -1,0 +1,194 @@
+{
+  "observed_utc": "2026-11-12",
+  "repository_base": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+  "scope": "保存済み3.5 LTS実験outputの静的再採取。新規buildではない。",
+  "configdata": {
+    "argv": [
+      "linux-aarch64",
+      "--prefix=/usr",
+      "--openssldir=/etc/ssl",
+      "threads",
+      "shared",
+      "no-rc5",
+      "enable-camellia",
+      "no-docs",
+      "no-tests",
+      "no-fuzz-libfuzzer",
+      "no-fuzz-afl",
+      "no-afalgeng",
+      "no-engine",
+      "zlib-dynamic"
+    ],
+    "cflags": "-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64  -Os -g0 -D_FORTIFY_SOURCE=3",
+    "disabled": {
+      "acvp-tests": "cascade",
+      "afalgeng": "option",
+      "asan": "default",
+      "brotli": "default",
+      "brotli-dynamic": "default",
+      "buildtest-c++": "default",
+      "capieng": "cascade",
+      "crypto-mdebug": "default",
+      "crypto-mdebug-backtrace": "default",
+      "demos": "default",
+      "devcryptoeng": "default",
+      "docs": "option",
+      "dynamic-engine": "cascade",
+      "ec_nistp_64_gcc_128": "default",
+      "egd": "default",
+      "engine": "option",
+      "external-tests": "default",
+      "fips": "default",
+      "fips-jitter": "default",
+      "fips-post": "cascade",
+      "fips-securitychecks": "cascade",
+      "fuzz-afl": "option",
+      "fuzz-libfuzzer": "option",
+      "h3demo": "default",
+      "hqinterop": "default",
+      "jitter": "default",
+      "ktls": "default",
+      "loadereng": "cascade",
+      "md2": "default",
+      "msan": "default",
+      "padlockeng": "cascade",
+      "pie": "default",
+      "rc5": "option",
+      "sctp": "default",
+      "ssl3": "default",
+      "ssl3-method": "default",
+      "sslkeylog": "default",
+      "tests": "option",
+      "tfo": "default",
+      "trace": "default",
+      "ubsan": "default",
+      "unit-test": "default",
+      "uplink": "no uplink_arch",
+      "weak-ssl-ciphers": "default",
+      "winstore": "not-windows",
+      "zstd": "default",
+      "zstd-dynamic": "default"
+    },
+    "options": "--prefix=/usr --openssldir=/etc/ssl enable-threads enable-shared enable-camellia enable-zlib-dynamic no-acvp-tests no-afalgeng no-asan no-brotli no-brotli-dynamic no-buildtest-c++ no-capieng no-crypto-mdebug no-crypto-mdebug-backtrace no-demos no-devcryptoeng no-docs no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-engine no-external-tests no-fips no-fips-jitter no-fips-post no-fips-securitychecks no-fuzz-afl no-fuzz-libfuzzer no-h3demo no-hqinterop no-jitter no-ktls no-loadereng no-md2 no-msan no-padlockeng no-pie no-rc5 no-sctp no-ssl3 no-ssl3-method no-sslkeylog no-tests no-tfo no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-winstore no-zstd no-zstd-dynamic",
+    "target": "linux-aarch64"
+  },
+  "sources": [
+    {
+      "path": "configs/msd_cardputerzero_defconfig",
+      "sha256": "b655e0a42485b841bf11cdbfbbae76eb84e832691ff2e0c548adf8330dbf43a3"
+    },
+    {
+      "path": "board/cardputerzero/package-overrides.mk",
+      "sha256": "4141475589f1287d9a43ca0f539293ddaa05da6c092d41bec40b18c6c61bc21a"
+    },
+    {
+      "path": "vendor/buildroot/package/libopenssl/libopenssl.mk",
+      "sha256": "782adef35e93f728972feeec416dac408bd2de9a52389e08cba93bec22cc7580"
+    },
+    {
+      "path": "vendor/buildroot/package/libopenssl/Config.in",
+      "sha256": "62bb9fb94f4c5d3aba64d7076700b5b87f4322e3cfda0d1d29192bb6e15c5142"
+    },
+    {
+      "path": "output-openssl-lts/.config",
+      "sha256": "c63a68cd795c8c30ea16a79070735f1f00b98390f9f0b7e34fed6f0337e43692"
+    },
+    {
+      "path": "output-openssl-lts/build/libopenssl-3.5.9/Configure",
+      "sha256": "0252034956d63b5f9bcea5957babaf89987216d14cf011a712fb725a335b3149"
+    },
+    {
+      "path": "output-openssl-lts/build/libopenssl-3.5.9/INSTALL.md",
+      "sha256": "a31767954ee48575d2b762290efa9f1d03ce1bda0900b8271c6e751986827753"
+    },
+    {
+      "path": "output-openssl-lts/build/libopenssl-3.5.9/configdata.pm",
+      "sha256": "e64a1d64643efb2760444f8068b029f7bc40dd5f7f3e0247adc45257746b2795"
+    },
+    {
+      "path": "output-openssl-lts/build/libopenssl-3.5.9/providers/build.info",
+      "sha256": "3ffff8b0a09f01cb8745ef754a403be83e249a197eab2691edd3eef401ab3362"
+    },
+    {
+      "path": "output-openssl-lts/build/libopenssl-3.5.9/crypto/armcap.c",
+      "sha256": "71abb8be9dd16dacf9501ee383f325044708dbe11e7ff48fb63ec34b1772d35c"
+    },
+    {
+      "path": "output-openssl-minimal-research/Configure-4.1.0",
+      "sha256": "b7fc90e4f8e6e30e28f29957e728db0125ed195125c3880a2b633718e1f2822c"
+    },
+    {
+      "path": "output-openssl-minimal-research/INSTALL-4.1.0.md",
+      "sha256": "d0ec703cf9b2e37d4a1130c9f9b7b5d59e295e397060040ef23ed43e032a13eb"
+    }
+  ],
+  "consumers": [
+    {
+      "path": "usr/bin/openssl",
+      "needed": [
+        "libssl.so.3",
+        "libcrypto.so.3"
+      ]
+    },
+    {
+      "path": "usr/lib/libkmod.so.2.5.1",
+      "needed": [
+        "libcrypto.so.3"
+      ]
+    },
+    {
+      "path": "usr/lib/libssl.so.3",
+      "needed": [
+        "libcrypto.so.3"
+      ]
+    },
+    {
+      "path": "usr/lib/ossl-modules/legacy.so",
+      "needed": [
+        "libcrypto.so.3"
+      ]
+    }
+  ],
+  "historical_file_csv_match": true,
+  "buildroot_options": {
+    "BR2_PACKAGE_LIBOPENSSL": "y",
+    "BR2_PACKAGE_LIBOPENSSL_TARGET_ARCH": "\"linux-aarch64\"",
+    "BR2_PACKAGE_LIBOPENSSL_BIN": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENGINES": "n",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_CHACHA": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_RC2": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_RC4": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_MD2": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_MD4": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_MDC2": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_BLAKE2": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_IDEA": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SEED": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_DES": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_RMD160": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_WHIRLPOOL": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_BLOWFISH": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SSL": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SSL3": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_WEAK_SSL": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_PSK": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_CAST": "y",
+    "BR2_PACKAGE_LIBOPENSSL_UNSECURE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_DYNAMIC_ENGINE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_COMP": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_ARGON2": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_CACHED_FETCH": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_CMP": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_THREAD_POOL": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_ECX": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_LOADER_ENGINE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_PADLOCK_ENGINE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_MODULE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_QUIC": "y",
+    "BR2_PACKAGE_LIBOPENSSL_SECURE_MEMORY": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SIV": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SM2_PRECOMP_TABLE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_SSL_TRACE": "y",
+    "BR2_PACKAGE_LIBOPENSSL_ENABLE_RC5": "n"
+  }
+}
