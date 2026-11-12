@@ -2,6 +2,10 @@
 
 [比較の索引](README.md) / [全体の範囲](inventory-boundaries.md) / [開発・CI tool](development.md)
 
+## 2026-11-12の現況
+
+以下の11参照・859 npm名とPages Actionの比較は、当時の固定入力に基づく記録です。現行treeに`pages.yml`と`site-status.yml`はありません。現在の直接参照は外部Action 6参照とローカルAction 1参照で、[旧母集団との差](../dependencies/development-and-ci.md#2026-11-12の現況)を区別します。現行の再帰的な母集団・実bundle・全licenseは再監査しておらず、以下のlockfile対応やroot LICENSEの結果を現行の全内包物の確認へ読み替えません。
+
 ## 結論と証拠
 
 [11参照の表](action-coverage.csv)は直接8参照とcompositeの子3参照を、repository・commit・subpathで区別します。同じ名前でも別commitなら別の入力です。[npmの表](npm-coverage.csv)は859名・1,574 name/versionを、元のlockfileに記載された親Actionとdev/optional/licenseへ対応づけます。これは実bundleのSBOMや全内包物の監査ではありません。

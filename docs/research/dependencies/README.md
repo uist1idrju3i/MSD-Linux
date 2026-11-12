@@ -17,6 +17,16 @@
 
 一覧に記載する版は読みやすいように一律に変換せず、tag、commit、Debian版、module版を区別して残した。`latest_observed` は指定した資料と範囲で見つかった候補であり、採用可能版とは限らない。`same` も、その比較範囲内で同じという意味である。
 
+## 2026-11-12の現況
+
+基準は`main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`です。以下の確認表、監視表、優先差分は11月2日の調査を残したものです。現況は次のとおりです。
+
+- 製品SBOMのCVE監視は[security.yml](../../../.github/workflows/security.yml)で2時間ごとに実行する設定です。mainの定期・手動実行ではIssueを更新し、PRでは新規の修正可能CRITICALをgateで判定します。下表の「週次security」と、通知をartifactだけで終えないという改善案は当時の記述です。取得失敗・未照合を追う通知、CPEなし・別名・backport等の扱いは残ります。
+- kernel-hardening-checkerのtag取得は[固定版チェッカー](../../../.github/scripts/check-pins.py)へ反映済みです。下記の優先差分1は実装済みで、全依存の監視完了を示すものではありません。
+- host/targetのOpenSSLは外部overrideで3.5.9 LTSへ変更済みです。[保守判断](openssl-maintenance.md)のとおり、3.5.10とBuildrootの段階更新は別作業です。
+- 冒頭のBrotli修正除外も11月2日の調査範囲です。その後のR25でOCIを更新し、両archのgate・SBOM attestation等の成功を[後続の確認](development-and-ci.md#scannerの結果と延期した修正)に記録済みです。公開ゲートは維持します。
+- Actionsの旧11参照・859 npm名は当時の母集団です。現行workflowの直接参照は外部6参照とローカルAction 1参照で、現行の再帰的な母集団と実bundleは再監査していません。詳細は[開発環境・CIの現況](development-and-ci.md#2026-11-12の現況)を参照してください。
+
 ## 今回確認した範囲
 
 | 層 | 確認結果 | 限界 |
