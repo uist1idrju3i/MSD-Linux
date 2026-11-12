@@ -22,7 +22,17 @@
 | `t2fix-check` | T2判定器（W2、W3、鍵fileの永続化）を直した後の確認 |
 | `phase1-r3-t2-invalid` | 開発用containerの外で起動したため、全行が `exit_127` で無効になった実行。測定値としては使わない |
 | `phase1-r3-t2-retry` | T2の全構成とI2・E1のT1のやり直し（402件、`docker/msd-dev` で実行） |
+| `phase2-smoke` | 第2段のvariant smokeと再試験 |
+| `phase2-pilot` | 第2段のpilot |
+| `phase2-j8-check` | `T4-sync` の `-j 8` 並列性確認 |
+| `phase2-t4` | 第2段の `T4-sync` 行列 |
+| `phase2-main` | 第2段の `T3`、`T5`、`T6` 行列 |
+| `phase2-main-r2` | 第2段の残行再実行 |
+| `phase2-stackfix` | stack reopen修正後の `T3`、`T6` 再実行 |
+| `stackfix-smoke` | stack reopen修正の対象構成smoke |
+| `phase2-plans` | 第2段のplan、input、hash、監視script |
 | `build-logs` | 各runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（4,350 file）。`build/` を削除する前に保存した |
+| `phase2-build-logs` | 第2段runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（2,386 file） |
 | `misc` | build結果をhard linkでまとめた時の `hardlink -v` のlog（`dedup-build-hardlink-20261111.log.zst`）、削除前の全imageの一覧（`images-inventory-20261111.tsv`：path、見かけのsize、disk上のsize、mtime）、VM上に残すimageのrun directoryの一覧（`images-kept-20261111.txt`） |
 
 ## 置いていないもの
@@ -31,6 +41,7 @@
 
 - 各runのSD image（`sdcard.img`）と、T1で書き出したpartition image（`*.ext4` など）。`misc/images-kept-20261111.txt` に挙げたrun directoryの分だけを作業用のVM上に残し、それ以外は削除しました。残したのは、実験記録で参照しているrun、電源断の後にfsyncより後の追記や1つ新しい更新が残っていたrun、診断に使ったimageです。削除したimageは、電源を切った瞬間の状態なので再現できません。
 - 各runに写した `build/`（rootfsの展開とsquashfs）。すべて削除しました。同じcommitから再生成できます。squashfsのhashは各runの `inputs.sha256` に記録しています。再生成して同じbyte列になるかは確かめていません。中のlogは `build-logs` に保存しています。
+- 第2段の各runのSD imageと `build/` の展開済みfile。archiveにはimageを含めず、`build/` からはtext logだけを別groupに収録しました。元のfileはrun directoryに残しており、削除していません。
 
 ## 確かめ方
 
