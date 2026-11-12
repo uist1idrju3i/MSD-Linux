@@ -453,6 +453,7 @@ def fake_run(*args, cwd=None):
     return (
         f"{'b' * 40}\trefs/heads/2026.08.x\n"
         f"{'c' * 40}\trefs/heads/2026.02.x\n"
+        f"{'e' * 40}\trefs/heads/2025.02.x\n"
         f"{'d' * 40}\trefs/heads/master\n"
     )
 
@@ -580,7 +581,7 @@ with tempfile.TemporaryDirectory() as directory:
         + "b" * 64 + "` | 最新 |"
     ) in report
     assert "| Debian snapshot date | `20261103T023120Z` | `-` | 最新 |" in report
-    assert "| Buildroot LTS | `2026.08.x` | `2026.02.x` | 参考 |" in report
+    assert "| Buildroot LTS | `2026.08.x` | `2025.02.x` | 参考 |" in report
     assert (
         "| Bootlin toolchain (aarch64 glibc stable) | `2025.08-1` | "
         "`2026.08-1（安定版の Buildroot では未提供）` | Buildroot 安定版待ち |"
@@ -620,6 +621,39 @@ with patch.object(module, 'fetch', fake_fetch):
     for day, expected in [(date(2026, 11, 1), '参考'), (date(2026, 11, 2), '保守期限超過')]:
         assert module.openssl_rows(passed, day)[1][1:4] == ('3.6.5', '2026-11-01', expected)
 print('ok - compares all OpenSSL stable series and checks the exact expiry boundary')
+
+override_file = passed / 'board/cardputerzero/package-overrides.mk'
+override_file.write_text('override LIBOPENSSL_VERSION = 3.5.9\n')
+for recipe, expected in [('3.5.8', '参考'), ('3.5.9', '廃止検討'),
+                         ('3.5.10', '廃止検討'), ('4.0.3', '廃止検討'),
+                         ('3.6.5', '参考')]:
+    def override_fetch(url):
+        if url.endswith('/2026.08.x/package/libopenssl/libopenssl.mk'):
+            return f'LIBOPENSSL_VERSION = {recipe}\n'
+        return openssl_fetch(url)
+    with patch.object(module, 'fetch', override_fetch):
+        rows = module.openssl_rows(passed, date(2026, 11, 12))
+    assert rows[0][1:4] == ('3.5.9', '3.5.9', '最新')
+    assert rows[1][1:4] == ('3.5.9', '2030-04-08', '参考')
+    assert rows[2][3] == '参考'  # The pinned 3.6 recipe is unsupported.
+    assert rows[3][2:4] == (recipe, expected)
+    assert module.upstream_summary([rows[3]]) == ('更新あり' if expected == '廃止検討' else '全て最新')
+with patch.object(module, 'fetch', lambda url: override_fetch(url).replace(
+        'openssl-3.5.9.tar.gz', 'openssl-3.5.10.tar.gz')):
+    assert module.openssl_rows(passed, date(2026, 11, 12))[0][1:4] == ('3.5.9', '3.5.10', '更新あり')
+for today, expected in [(date(2027, 5, 14), '廃止検討'), (date(2027, 5, 15), '参考')]:
+    with patch.object(module, 'fetch', lambda url: (
+            'LIBOPENSSL_VERSION = 4.0.3\n' if '/2026.08.x/' in url else openssl_fetch(url))):
+        assert module.openssl_rows(passed, today)[3][3] == expected
+for contents in ('', 'override LIBOPENSSL_VERSION = invalid\n',
+                 'override LIBOPENSSL_VERSION = 3.5.9\n' * 2):
+    override_file.write_text(contents)
+    assert module.openssl_rows(passed, date(2026, 11, 12))[0][3] == '確認できず'
+override_file.write_text('override LIBOPENSSL_VERSION = 3.5.9\n')
+with patch.object(module, 'fetch', side_effect=OSError('offline')), contextlib.redirect_stderr(io.StringIO()):
+    assert module.upstream_summary(module.openssl_rows(passed, date(2026, 11, 12))) == '更新あり'
+override_file.unlink()
+print('ok - monitors the override series, supported retirement candidates and invalid/offline inputs')
 
 for bad in (
     '', openssl_downloads.replace('End-of-Life', 'Unknown'),

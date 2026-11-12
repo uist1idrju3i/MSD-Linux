@@ -191,6 +191,17 @@ def openssl_rows(root: Path, today: date) -> list[tuple[str, str, str, str, str]
     expiry, support_state = "確認できず", "確認できず"
     support_source = policy_url
     releases: dict[str, tuple[str, date]] = {}
+    override_file = root / "board/cardputerzero/package-overrides.mk"
+    override_pin = ""
+    if override_file.exists():
+        matches = re.findall(
+            r"^override LIBOPENSSL_VERSION = (\d+\.\d+\.\d+)$",
+            override_file.read_text(), re.M,
+        )
+        if len(matches) != 1:
+            return [("OpenSSL override", "未設定", "確認できず", "確認できず",
+                     str(override_file.relative_to(root)))]
+        override_pin = matches[0]
     try:
         sha = buildroot_gitlink_sha(root)
         if not re.fullmatch(r"[0-9a-f]{40}", sha):
@@ -206,12 +217,18 @@ def openssl_rows(root: Path, today: date) -> list[tuple[str, str, str, str, str]
         pin = versions[0]
     except (OSError, URLError, ValueError) as exc:
         print(f"OpenSSL recipe: unavailable: {exc}", file=sys.stderr)
+    recipe_pin = pin
+    if override_pin:
+        pin = override_pin
     try:
         releases = parse_openssl_downloads(fetch(downloads_url))
-        latest = max((release[0] for release in releases.values()), key=branch_key)
+        if override_pin:
+            latest = releases[override_pin.rsplit(".", 1)[0]][0]
+        else:
+            latest = max((release[0] for release in releases.values()), key=branch_key)
         if pin != "未設定":
             version_state = "最新" if pin == latest else "更新あり"
-    except (OSError, URLError, ValueError) as exc:
+    except (OSError, URLError, ValueError, KeyError) as exc:
         print(f"OpenSSL releases: unavailable: {exc}", file=sys.stderr)
     if pin != "未設定":
         series = pin.rsplit(".", 1)[0]
@@ -233,10 +250,36 @@ def openssl_rows(root: Path, today: date) -> list[tuple[str, str, str, str, str]
             support_state = "保守期限超過" if today > deadline else "参考"
         except (OSError, URLError, ValueError) as exc:
             print(f"OpenSSL lifecycle: unavailable: {exc}", file=sys.stderr)
-    return [
+    rows = [
         ("OpenSSL (Buildroot target/host)", pin, latest, version_state, downloads_url),
         ("OpenSSL upstream support", pin, expiry, support_state, support_source),
     ]
+    if override_pin:
+        branch = parse_buildroot_branch((root / ".gitmodules").read_text())
+        for ref, upstream_pin in (("pinned", recipe_pin), (branch, "")):
+            url = ("https://raw.githubusercontent.com/buildroot/buildroot/"
+                   f"{ref}/package/libopenssl/libopenssl.mk")
+            state = "確認できず"
+            try:
+                if ref != "pinned":
+                    versions = re.findall(r"^LIBOPENSSL_VERSION\s*=\s*(\d+\.\d+\.\d+)\s*$",
+                                          fetch(url), re.M)
+                    if len(versions) != 1:
+                        raise ValueError("Missing OpenSSL branch version")
+                    upstream_pin = versions[0]
+                if not releases:
+                    raise ValueError("No OpenSSL lifecycle evidence")
+                deadline = releases.get(upstream_pin.rsplit(".", 1)[0])
+                if deadline is not None and deadline[1] >= today:
+                    state = "廃止検討" if branch_key(upstream_pin) >= branch_key(pin) else "参考"
+                elif upstream_pin != "未設定":
+                    state = "参考"
+            except (OSError, URLError, ValueError) as exc:
+                print(f"OpenSSL override retirement: unavailable: {exc}", file=sys.stderr)
+            rows.append((f"OpenSSL override retirement ({ref})", pin,
+                         upstream_pin or "確認できず", state,
+                         recipe_url if ref == "pinned" and recipe_pin != "未設定" else url))
+    return rows
 
 
 def branch_key(name: str) -> tuple[int, ...]:
@@ -559,7 +602,9 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
             if buildroot_branches
             else "確認できず"
         )
-        lts = [name for name in buildroot_branches if name.endswith(".02.x")]
+        lts = [name for name in buildroot_branches
+               if name.endswith(".02.x") and
+               (int(name[:4]) < 2025 or int(name[:4]) % 2 == 1)]
         newest_lts = max(lts, key=branch_key) if lts else "確認できず"
         current = (
             branch_key(branch) >= branch_key(buildroot_newest)

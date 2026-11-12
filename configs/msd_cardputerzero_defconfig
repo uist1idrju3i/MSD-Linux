@@ -10,6 +10,7 @@ BR2_ENABLE_LTO=y
 BR2_CCACHE=y
 BR2_CCACHE_DIR="$(BR2_EXTERNAL_MSD_PATH)/.ccache"
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/patches"
+BR2_PACKAGE_OVERRIDE_FILE="$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/package-overrides.mk"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/rootfs-overlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/post-build.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/post-image.sh"

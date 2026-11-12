@@ -45,7 +45,7 @@ glibcにはmalloc、dynamic loader、thread、CPU選択等の調整面があり�
 
 ## OpenSSL：旧機能の削減と実行時policy
 
-固定版は3.6.5。正規化したBuildroot設定はRC2・RC4・MD4・DES、SSL3・weak SSL、ECX、QUIC等のsymbolを`y`とする。recipeは無効を選んだときに`no-rc2`、`no-ssl3`等を渡す。**symbolが`y`であることは、上流で既定無効の機能を明示的にenableすることとは異なる。** 上流の既定値、Configureの依存・cascadeも読む必要がある。
+2026-11-12から外部overrideで3.5.9 LTSを使う。元のBuildroot recipeは3.6.5で、[系列差とoption token全件](openssl-series.md)を別に記録した。正規化したBuildroot設定はRC2・RC4・MD4・DES、SSL3・weak SSL、ECX、QUIC等のsymbolを`y`とする。recipeは無効を選んだときに`no-rc2`、`no-ssl3`等を渡す。**symbolが`y`であることは、上流で既定無効の機能を明示的にenableすることとは異なる。** 上流の既定値、Configureの依存・cascadeも読む必要がある。
 
 展開後のConfigureは`linux-aarch64`、`threads shared`、`no-rc5 enable-camellia no-docs no-tests no-fuzz-libfuzzer no-fuzz-afl no-afalgeng no-engine zlib-dynamic`を含む。これはBuildrootの引数の記録であり、生成した`configdata.pm`やheaderの全機能判定ではない。`no-tests`も製品全体の検証を不要にする意味ではない。
 

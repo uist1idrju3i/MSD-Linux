@@ -1,0 +1,1070 @@
+{
+  "schema_version": 1,
+  "scope": "OpenSSL 3.6.5 to 3.5.9 series change, lifecycle and Buildroot/package migration research; capture does not establish compatibility or complete license/CVE closure. Failed fetches are retained. Hashes identify raw response bytes, not rendered text.",
+  "baseline_commit": "8173185e302de8319c3831241f1233e5006fec05",
+  "implementation_baseline_commit": "8a4f3cb37bf97db86b9e8c65ed5a60da64de6b8c",
+  "buildroot_commit": "8b238854d909c9cce32ef9671d968b03e323b55d",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_decrypt_openssl.c",
+      "checked_at": "2026-11-12T04:08:41.145277+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_decrypt_openssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 3578,
+      "captured_sha256": "55d56b02eaaa328b9a99356d270541e09443758177c5c8f4e6d8ca3e3a681977"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/kmod-project/kmod/v34.2/libkmod/libkmod-signature.c",
+      "checked_at": "2026-11-12T04:07:59.013259+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/kmod-project/kmod/v34.2/libkmod/libkmod-signature.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 7846,
+      "captured_sha256": "f91d9578c9c51df787fcc800bdfd6d669030bb7e858bf8ffaa9c2c52ea5ad0d5"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_HASH_openssl.c",
+      "checked_at": "2026-11-12T04:09:36.976870+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_HASH_openssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 2518,
+      "captured_sha256": "e501bd4c524cce97148e6a0b9c34773098dff177c875a36f0633755496a351c8"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/20261011130058.3443432-1-bernd@kuhls.net/raw",
+      "checked_at": "2026-11-12T04:09:36.973773+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/20261011130058.3443432-1-bernd@kuhls.net/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 30600,
+      "captured_sha256": "2c65f1bf90c10aef0d1cb6776b59cd171546ce2c803fafb5e8f933de7784aac6"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/commit/1a73dc590cbad62d6f0329ea4779eadaa8d8fd75.patch",
+      "checked_at": "2026-11-12T04:11:47.353224+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://github.com/openssl/openssl/commit/1a73dc590cbad62d6f0329ea4779eadaa8d8fd75.patch",
+      "representation": "raw-response-body",
+      "captured_bytes": 2321,
+      "captured_sha256": "50f7cc52fb146703379ca043d17e204c4fda99c684efe3db6d6f3ae1d175bd2a"
+    },
+    {
+      "url": "https://api.github.com/repos/rauc/rauc/releases?per_page=10",
+      "checked_at": "2026-11-12T04:07:24.224317+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/rauc/rauc/releases?per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 77005,
+      "captured_sha256": "eeaf0382a060be7037e0e047a16e0dc59223ef280e011e167aba2f8259c499d6"
+    },
+    {
+      "url": "https://docs.openssl.org/4.1/man7/ossl-guide-migration/",
+      "checked_at": "2026-11-12T04:07:24.105314+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://docs.openssl.org/4.1/man7/ossl-guide-migration/",
+      "representation": "raw-response-body",
+      "captured_bytes": 260547,
+      "captured_sha256": "7fd75fd0156a427a6b2b939546d5c57bcc9a1e2c8a48b7bafc5177b4491acdd0"
+    },
+    {
+      "url": "https://api.github.com/repos/rauc/rauc/issues/1913",
+      "checked_at": "2026-11-12T04:06:41.603456+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/rauc/rauc/issues/1913",
+      "representation": "raw-response-body",
+      "captured_bytes": 8621,
+      "captured_sha256": "fd41d727cfd7c75d286c307e4badf4e03c2dc04c17e566456ae2f79dad37cbd5"
+    },
+    {
+      "url": "https://openssl-library.org/news/secadv/20261110.txt",
+      "checked_at": "2026-11-12T04:11:31.688754+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/news/secadv/20261110.txt",
+      "representation": "raw-response-body",
+      "captured_bytes": 11780,
+      "captured_sha256": "31f4c88950cd9cd310794a218361b787d293a940d2568f9f82334915ac54a402"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_decrypt_openssl_cms.c",
+      "checked_at": "2026-11-12T04:09:36.978257+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_decrypt_openssl_cms.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 4687,
+      "captured_sha256": "7cf8c15bfd06c5909a3a663bae9e6b7d1ff18c3e0256c3591bb343bf14b24d3c"
+    },
+    {
+      "url": "https://openssl-library.org/source/",
+      "checked_at": "2026-11-12T04:06:41.402663+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/source/",
+      "representation": "raw-response-body",
+      "captured_bytes": 43323,
+      "captured_sha256": "f0002819585229d62333d8f783a0ab009bc022ef9c2cf428bc26fd394dc35587"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.0.3/Configure",
+      "checked_at": "2026-11-12T04:07:58.805061+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.0.3/Configure",
+      "representation": "raw-response-body",
+      "captured_bytes": 142781,
+      "captured_sha256": "213f4015293fd98c06cc8aae425e76799ddab40a205581e0b578eac7e8ff8b12"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/rauc/rauc.mk",
+      "checked_at": "2026-11-12T04:10:31.490459+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/rauc/rauc.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 1943,
+      "captured_sha256": "e46cec2bd6d79453eeed6c88d0a43c03b904619cdc2aa0de944fcd50bb1adaa5"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/commit/257a3427aa0ef8d9dd2ef5b3e2d1c021a221b116.patch",
+      "checked_at": "2026-11-12T04:11:47.355756+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://github.com/openssl/openssl/commit/257a3427aa0ef8d9dd2ef5b3e2d1c021a221b116.patch",
+      "representation": "raw-response-body",
+      "captured_bytes": 2100,
+      "captured_sha256": "0e328604c0038de6629a29322ae5f02d2f5f5128c2625b57ca64262efab99e05"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/b4ab5d3f-e0e7-4c97-9df6-7cfd4ba3db9a@cherry.de/raw",
+      "checked_at": "2026-11-12T04:08:41.082253+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/b4ab5d3f-e0e7-4c97-9df6-7cfd4ba3db9a@cherry.de/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 13816,
+      "captured_sha256": "9fa51acf0cf315559a537591eeaa2ab7f940b9a8a2a23fc696f03618db5720cf"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/20261006162106.3439373-1-bernd@kuhls.net/raw",
+      "checked_at": "2026-11-12T04:08:41.076845+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/20261006162106.3439373-1-bernd@kuhls.net/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 43123,
+      "captured_sha256": "147b3da963a2c107482f0ce64662a65587465674d136d1a2a1ac4139d51146fe"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/commits?sha=openssl-3.6&since=2026-09-29T23:59:59Z&per_page=100",
+      "checked_at": "2026-11-12T04:07:24.104358+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/openssl/openssl/commits?sha=openssl-3.6&since=2026-09-29T23:59:59Z&per_page=100",
+      "representation": "raw-response-body",
+      "captured_bytes": 268706,
+      "captured_sha256": "4a282950ca11d8692a696637a1a1981a302496bd25f5c216509e480d8307e9ac"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/DB9PR09MB4987613996011559A9817448F649A@DB9PR09MB4987.eurprd09.prod.outlook.com/raw",
+      "checked_at": "2026-11-12T04:08:41.080984+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/DB9PR09MB4987613996011559A9817448F649A@DB9PR09MB4987.eurprd09.prod.outlook.com/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 13971,
+      "captured_sha256": "4a765fe4b01e2275da7a9de0572d757a536fc07294e74c26f1897b994e1efa12"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/libopenssl&per_page=30",
+      "checked_at": "2026-11-12T04:07:24.097052+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/libopenssl&per_page=30",
+      "representation": "raw-response-body",
+      "captured_bytes": 120366,
+      "captured_sha256": "ad7bbb1119343b92a44ecc0457255981eb11baa7f041808f6e5b3f4752fc4527"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/CHANGES.md",
+      "checked_at": "2026-11-12T04:07:59.019257+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/CHANGES.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 870369,
+      "captured_sha256": "f5d1f8eab56e088ce51e2af63e52db63a2b4eed10fd61e2845acc6bd2a919d78"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/20261011130058.3443432-53-bernd@kuhls.net/raw",
+      "checked_at": "2026-11-12T04:09:36.972688+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/20261011130058.3443432-53-bernd@kuhls.net/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 29832,
+      "captured_sha256": "8df1a4c4b623bec1c6c8cbacc0b3cc8b1e3d171ac6733938a0dbbaa152c11fd8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.14.8/Modules/_ssl.c",
+      "checked_at": "2026-11-12T04:08:41.146601+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/python/cpython/v3.14.8/Modules/_ssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 207925,
+      "captured_sha256": "2a398f210e94a9c2d635ed6339202b9f138bd90a8cca44b45230e6e86aa017f0"
+    },
+    {
+      "url": "https://api.github.com/repos/sbabic/swupdate/git/trees/2026.05.1?recursive=1",
+      "checked_at": "2026-11-12T04:08:17.411932+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/sbabic/swupdate/git/trees/2026.05.1?recursive=1",
+      "representation": "raw-response-body",
+      "captured_bytes": 102594,
+      "captured_sha256": "ac5e8b9248352ef26de7cb996b3746264478c6744e96d217636a7c805f1d3551"
+    },
+    {
+      "url": "https://openssl-library.org/policies/releasestrat/",
+      "checked_at": "2026-11-12T04:06:41.400841+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/policies/releasestrat/",
+      "representation": "raw-response-body",
+      "captured_bytes": 36826,
+      "captured_sha256": "de82c1df5b326beb5922e8d19ce6beb72a6ecb5e96ac08ae6b7b60584b4d1420"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/?q=s%3Alibopenssl+d%3A20260901..",
+      "checked_at": "2026-11-12T04:09:08.576331+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/?q=s%3Alibopenssl+d%3A20260901..",
+      "representation": "raw-response-body",
+      "captured_bytes": 12665,
+      "captured_sha256": "7db7da12f9b00bfdf59383881ef1b949fc6d1520aff6fcc7fae65f1b526370d4"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/75f325ad84251ee9d903467f84d3683e3bcf3fd5/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:08:41.084973+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/75f325ad84251ee9d903467f84d3683e3bcf3fd5/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6596,
+      "captured_sha256": "782adef35e93f728972feeec416dac408bd2de9a52389e08cba93bec22cc7580"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.0.3/Configurations/00-base-templates.conf",
+      "checked_at": "2026-11-12T04:07:58.803860+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.0.3/Configurations/00-base-templates.conf",
+      "representation": "raw-response-body",
+      "captured_bytes": 6918,
+      "captured_sha256": "5dfe2f8e568e48350d09d5915532c333407adcdef573f8679eea814bc0f01fa2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/CHANGES.md",
+      "checked_at": "2026-11-12T04:09:36.979710+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/CHANGES.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 858038,
+      "captured_sha256": "fe64d7ab95e86e783a0d0412ebbafa428dc4c71fdca51f4d5085cab6f2c1a7fb"
+    },
+    {
+      "url": "https://patchwork.buildroot.org/api/1.2/patches/?q=libopenssl&since=2026-09-01&order=-date&per_page=100",
+      "checked_at": "2026-11-12T04:09:08.574396+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://patchwork.buildroot.org/api/1.2/patches/?q=libopenssl&since=2026-09-01&order=-date&per_page=100",
+      "representation": "raw-response-body",
+      "captured_bytes": 34040,
+      "captured_sha256": "f213de8ea11e1c2caf8e7d83d0560f35ab9fc02dd7c3a57219da384f50c6dfb3"
+    },
+    {
+      "url": "https://openssl-library.org/news/vulnerabilities/",
+      "checked_at": "2026-11-12T04:10:31.488259+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/news/vulnerabilities/",
+      "representation": "raw-response-body",
+      "captured_bytes": 777349,
+      "captured_sha256": "c99fe41280218e5f2757a93db4c96ca081dafa66819ce738e12c89c7a14d9d5b"
+    },
+    {
+      "url": "https://buildroot.org/news.html",
+      "checked_at": "2026-11-12T04:08:17.411203+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://buildroot.org/news.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 498250,
+      "captured_sha256": "b65ada2a70685cb47dc01ee1485704a1649ad70645414c5c022403b55b5fdb68"
+    },
+    {
+      "url": "https://api.github.com/search/issues?q=repo:curl/curl+openssl+4.0&per_page=10",
+      "checked_at": "2026-11-12T04:07:24.403686+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/issues?q=repo:curl/curl+openssl+4.0&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 75289,
+      "captured_sha256": "7d36ea62e8f623461dc6eacbbcac4bcdde3a89b63221975e11a2dda9071b8649"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.15.0/Modules/_ssl.c",
+      "checked_at": "2026-11-12T04:10:31.492620+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/python/cpython/v3.15.0/Modules/_ssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 222790,
+      "captured_sha256": "6e7fced0678cfa147212035833cbe8af50e0883b05b0155ba2b1d94321782b44"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.1/NEWS.md",
+      "checked_at": "2026-11-12T04:11:31.692185+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/NEWS.md",
+      "checked_at": "2026-11-12T04:06:41.706391+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/NEWS.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 116246,
+      "captured_sha256": "b92d697bc5f2c5d59d5b5881310728bd54be3dd11b35a9f9ee495b0da290fc47"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/?q=%2220261011130058%22",
+      "checked_at": "2026-11-12T04:09:36.974479+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/?q=%2220261011130058%22",
+      "representation": "raw-response-body",
+      "captured_bytes": 11919,
+      "captured_sha256": "cf51122171728e1e7f3116d069eadea7329b7c490c07f80b68c721aa5a12a540"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/commit/f6244675833e097c2429a40d1b206d95385bd42f.patch",
+      "checked_at": "2026-11-12T04:11:47.354665+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://github.com/openssl/openssl/commit/f6244675833e097c2429a40d1b206d95385bd42f.patch",
+      "representation": "raw-response-body",
+      "captured_bytes": 7377,
+      "captured_sha256": "93d8e82fdc995172a6d5cc6952491658106191bd5ac221d34596adbddfcd1afe"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6/CHANGES.md",
+      "checked_at": "2026-11-12T04:07:24.103645+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6/CHANGES.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 870442,
+      "captured_sha256": "dd5e8d01fc2cce9f17470dbb920de94c4d25204315cb1cd5d492434ec5d71674"
+    },
+    {
+      "url": "https://patchwork.ozlabs.org/api/1.2/patches/?project=buildroot&q=libopenssl&since=2026-01-01&order=-date&per_page=100",
+      "checked_at": "2026-11-12T04:07:58.801317+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://patchwork.ozlabs.org/api/1.2/patches/?project=buildroot&q=libopenssl&since=2026-01-01&order=-date&per_page=100",
+      "representation": "raw-response-body",
+      "captured_bytes": 50659,
+      "captured_sha256": "b0b6a3840d1a634bb94cb33e165a05398fd695c1314c1bccae7c57364a3fe886"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/doc/man7/ossl-removed-api.pod",
+      "checked_at": "2026-11-12T04:09:08.665654+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/doc/man7/ossl-removed-api.pod",
+      "representation": "raw-response-body",
+      "captured_bytes": 17823,
+      "captured_sha256": "c56f86ec67cd86f23bd881e1c31c3034c8697e75e836ecf7a0565af908fb625f"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/curl/curl/curl-8_23_0/lib/vtls/openssl.c",
+      "checked_at": "2026-11-12T04:08:41.194211+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/curl/curl/curl-8_23_0/lib/vtls/openssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 173338,
+      "captured_sha256": "973be1862430afef1bf15bd92e80eb8733d9fb62b9b32ed1a3063471e9c51331"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/swupdate&per_page=10",
+      "checked_at": "2026-11-12T04:09:08.582628+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/swupdate&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 36389,
+      "captured_sha256": "f90c8c3141b7876e93a9a2a297215d7b73a2647dda67dc2f065d2e65b42d6c32"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/compare/openssl-3.6.5...openssl-3.6",
+      "checked_at": "2026-11-12T04:09:08.583998+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/openssl/openssl/compare/openssl-3.6.5...openssl-3.6",
+      "representation": "raw-response-body",
+      "captured_bytes": 592758,
+      "captured_sha256": "29d58f489a05533815b9fc8af0e13166a7df20ea2b008167dc3e543ea696ba0c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_rsa_verify_openssl.c",
+      "checked_at": "2026-11-12T04:08:41.139554+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_rsa_verify_openssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 5246,
+      "captured_sha256": "fcffbf5075879a39f0fbf8c9c53811d1a7453e41d8b156fc82609304e7576956"
+    },
+    {
+      "url": "https://api.github.com/repos/rauc/rauc/issues/1779",
+      "checked_at": "2026-11-12T04:08:17.420173+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/rauc/rauc/issues/1779",
+      "representation": "raw-response-body",
+      "captured_bytes": 4497,
+      "captured_sha256": "6002fd4492dcdc3b3b4f2e17867809507e4c68e4b31bfb3e50caf6f51334e1fa"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/releases/tags/openssl-3.5.10",
+      "checked_at": "2026-11-12T04:11:31.686899+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://openssl-library.org/post/2026-11-10-openssl-4.1.1-released/",
+      "checked_at": "2026-11-12T04:11:31.687565+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/8b238854d909c9cce32ef9671d968b03e323b55d/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:09:37.031221+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/8b238854d909c9cce32ef9671d968b03e323b55d/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6596,
+      "captured_sha256": "782adef35e93f728972feeec416dac408bd2de9a52389e08cba93bec22cc7580"
+    },
+    {
+      "url": "https://buildroot.org/download.html",
+      "checked_at": "2026-11-12T04:07:24.099483+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://buildroot.org/download.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 10447,
+      "captured_sha256": "a1e88f5accc41c8d290b29df84a750d45c5ba8e629583cbcbf52bed7724e9198"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/rauc/Config.in",
+      "checked_at": "2026-11-12T04:10:31.491901+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/rauc/Config.in",
+      "representation": "raw-response-body",
+      "captured_bytes": 1769,
+      "captured_sha256": "4a9014a09199676572a851822efc9eb832b92aadabcc8331a5183e1459e278f2"
+    },
+    {
+      "url": "https://w1.fi/releases/wpa_supplicant-2.12.tar.gz",
+      "checked_at": "2026-11-12T04:07:24.542986+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://w1.fi/releases/wpa_supplicant-2.12.tar.gz",
+      "representation": "raw-response-body",
+      "captured_bytes": 4247413,
+      "captured_sha256": "08e23937e16d0155e55cab2b51f51fbe10d80a1aa91c4e15442645059b737ef6"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits/aac023e8eab1",
+      "checked_at": "2026-11-12T04:10:31.489253+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits/aac023e8eab1",
+      "representation": "raw-response-body",
+      "captured_bytes": 6127,
+      "captured_sha256": "8a74470446c5f18b8c19559b1f3f53980b828ed796ab91bac58bb45aa704ec1f"
+    },
+    {
+      "url": "https://patchwork.ozlabs.org/api/1.2/patches/?project=buildroot&q=libopenssl&per_page=100",
+      "checked_at": "2026-11-12T04:07:24.100849+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://patchwork.ozlabs.org/api/1.2/patches/?project=buildroot&q=libopenssl&per_page=100",
+      "representation": "raw-response-body",
+      "captured_bytes": 159655,
+      "captured_sha256": "fcb578dbc67f04112cfa2d096d6bb842f605b70c88635ec767998f5b00e206b1"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/20260929183607.1849293-49-bernd@kuhls.net/raw",
+      "checked_at": "2026-11-12T04:09:08.578609+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/20260929183607.1849293-49-bernd@kuhls.net/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 355324,
+      "captured_sha256": "a96cd33b626e7d0b1fcde804982204a7a36ff3acd3654448dd5c0773f8fa891b"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/wpa_supplicant&per_page=10",
+      "checked_at": "2026-11-12T04:09:08.579910+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/wpa_supplicant&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 38163,
+      "captured_sha256": "073494ae3fc1b3ff52fdb8c1927755dd5fed3e91184feb0464feffb5e0543247"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/branches/2026.08.x",
+      "checked_at": "2026-11-12T04:06:41.405604+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/branches/2026.08.x",
+      "representation": "raw-response-body",
+      "captured_bytes": 3984,
+      "captured_sha256": "1529da7ee384eb6be963cac5b30b021b4208fb19c3e7741a9c8d4a2d17e38c37"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/commit/159e1de0c448d7b9f09ad768c8e141def4aa1eb4.patch",
+      "checked_at": "2026-11-12T04:11:47.350643+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://github.com/openssl/openssl/commit/159e1de0c448d7b9f09ad768c8e141def4aa1eb4.patch",
+      "representation": "raw-response-body",
+      "captured_bytes": 3483,
+      "captured_sha256": "a945077c0a978dbfe5af5e4f7174a2151466547f8fb94562f395baa7b6b7c147"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/CHANGES.md",
+      "checked_at": "2026-11-12T04:06:41.699716+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/CHANGES.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 928861,
+      "captured_sha256": "bd15a960aed3737d9a76e945089f46869f934c96155f130316773fe4e85462b6"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/corelib/verify_signature_pkcs7.c",
+      "checked_at": "2026-11-12T04:07:58.809407+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/INSTALL.md",
+      "checked_at": "2026-11-12T04:09:36.982852+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/INSTALL.md",
+      "representation": "raw-response-body",
+      "captured_bytes": 72871,
+      "captured_sha256": "d0ec703cf9b2e37d4a1130c9f9b7b5d59e295e397060040ef23ed43e032a13eb"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/corelib/verify_signature_rsa.c",
+      "checked_at": "2026-11-12T04:07:58.812155+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/releases/tags/openssl-3.6.6",
+      "checked_at": "2026-11-12T04:10:31.493376+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.10/NEWS.md",
+      "checked_at": "2026-11-12T04:11:31.694192+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/curl/curl/curl-8_23_0/.github/workflows/openssl.yml",
+      "checked_at": "2026-11-12T04:09:36.975558+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://buildroot.org/support.html",
+      "checked_at": "2026-11-12T04:08:17.409275+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://buildroot.org/support.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 9938,
+      "captured_sha256": "9ef48510e3e3f1737de12bae445ce9ae5df916a825fd3d585bab24aff2228891"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/releases/tags/openssl-4.1.1",
+      "checked_at": "2026-11-12T04:11:31.684239+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/2026.08.x/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:06:41.410074+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/2026.08.x/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6596,
+      "captured_sha256": "782adef35e93f728972feeec416dac408bd2de9a52389e08cba93bec22cc7580"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssh/openssh-portable/V_10_6_P1/configure.ac",
+      "checked_at": "2026-11-12T04:08:17.415659+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssh/openssh-portable/V_10_6_P1/configure.ac",
+      "representation": "raw-response-body",
+      "captured_bytes": 164484,
+      "captured_sha256": "8cdda6c3b5b9bb632339b22abefd8db6d2b1d4ddf805d37d49f0bbb23b081ed2"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/?q=openssl+LTS",
+      "checked_at": "2026-11-12T04:07:58.802786+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/?q=openssl+LTS",
+      "representation": "raw-response-body",
+      "captured_bytes": 29063,
+      "captured_sha256": "6729e8d5685cab3e2782d406d3e9f48ee1d5f65e172bcda2e29128901a03a481"
+    },
+    {
+      "url": "https://api.github.com/repos/curl/curl/pulls/20734",
+      "checked_at": "2026-11-12T04:08:17.414628+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/curl/curl/pulls/20734",
+      "representation": "raw-response-body",
+      "captured_bytes": 15843,
+      "captured_sha256": "30d2058590049a2d238492225a98a66414b39596c93a7695891bc3822ebe7f6a"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/rauc&per_page=10",
+      "checked_at": "2026-11-12T04:09:08.581170+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=master&path=package/rauc&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 36378,
+      "captured_sha256": "58928489286ab626f3240df450e77e1722d25f9a1cc9d1a99714336391166fbc"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=2026.08.x&path=package/libopenssl&per_page=15",
+      "checked_at": "2026-11-12T04:07:24.098339+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/commits?sha=2026.08.x&path=package/libopenssl&per_page=15",
+      "representation": "raw-response-body",
+      "captured_bytes": 64163,
+      "captured_sha256": "c023c0e7f9756acce08c94d8f96241e440f167b520f9bff45ba5f486c6081130"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_cms_verify_openssl.c",
+      "checked_at": "2026-11-12T04:08:41.139226+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_cms_verify_openssl.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 10190,
+      "captured_sha256": "167636876e8e9f7e359fb21e49ec4ebabab966feb0692dd58b0d3cfc617df966"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/doc/man7/ossl-guide-migration.pod",
+      "checked_at": "2026-11-12T04:07:58.806390+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.1.0/doc/man7/ossl-guide-migration.pod",
+      "representation": "raw-response-body",
+      "captured_bytes": 95625,
+      "captured_sha256": "37923eda18a2e9c3bc1f8300ade305aac0ed45198a896ca3de946601cff89868"
+    },
+    {
+      "url": "https://api.github.com/search/issues?q=repo:python/cpython+openssl+4.0&per_page=10",
+      "checked_at": "2026-11-12T04:07:24.527196+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/issues?q=repo:python/cpython+openssl+4.0&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 56297,
+      "captured_sha256": "4132550dcbec98023a5bc8a41e66c2b58aa13732528c3a763473ad3e8f922db9"
+    },
+    {
+      "url": "https://buildroot.org/lts.html",
+      "checked_at": "2026-11-12T04:08:41.083590+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://buildroot.org/lts.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 20958,
+      "captured_sha256": "dd4d7f045f98bf2dfaca38b741531ea596e51bf13028a593d4bab362abc24457"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rauc/rauc/v1.16/CHANGES",
+      "checked_at": "2026-11-12T04:07:59.008961+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://api.github.com/repos/python/cpython/pulls/159388",
+      "checked_at": "2026-11-12T04:08:17.413974+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/python/cpython/pulls/159388",
+      "representation": "raw-response-body",
+      "captured_bytes": 20375,
+      "captured_sha256": "bbc73f812c26d451d6b4fbce261793e2c6d688af2acfbd445c33acdecc980165"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/20260413122702.58499-1-thomas.perale@mind.be/raw",
+      "checked_at": "2026-11-12T04:08:41.079639+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/20260413122702.58499-1-thomas.perale@mind.be/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 9686,
+      "captured_sha256": "36b37e20adf48695d8a58b1514f41c006b32a58fa503e1e52b6b77216b0b4ef1"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/releases/tags/openssl-4.0.4",
+      "checked_at": "2026-11-12T04:11:31.685901+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/pan$c5588$1d87bba9$b8343b37$60ee4e78@ID-313208.user.individual.net/raw",
+      "checked_at": "2026-11-12T04:08:41.078146+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/pan$c5588$1d87bba9$b8343b37$60ee4e78@ID-313208.user.individual.net/raw",
+      "representation": "raw-response-body",
+      "captured_bytes": 8462,
+      "captured_sha256": "a3b9fda9e78dadc3ec046a32ee12eb07322e294a8d7536cfd74ca111a286510f"
+    },
+    {
+      "url": "https://api.github.com/search/issues?q=repo:sbabic/swupdate+openssl+4&per_page=10",
+      "checked_at": "2026-11-12T04:07:24.299776+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/issues?q=repo:sbabic/swupdate+openssl+4&per_page=10",
+      "representation": "raw-response-body",
+      "captured_bytes": 79,
+      "captured_sha256": "c9938edecb99d754b2d039ac9eec320a94c769b6a6417921e2dcbef9e2fe01a0"
+    },
+    {
+      "url": "https://api.github.com/repos/buildroot/buildroot/branches/master",
+      "checked_at": "2026-11-12T04:06:41.407050+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/buildroot/buildroot/branches/master",
+      "representation": "raw-response-body",
+      "captured_bytes": 4727,
+      "captured_sha256": "89437207b676dd841dc264b0d7b8449f5d3253bdd12ef31a96dc3412b4069b15"
+    },
+    {
+      "url": "https://api.github.com/repos/rauc/rauc/pulls/1914",
+      "checked_at": "2026-11-12T04:07:24.198253+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/rauc/rauc/pulls/1914",
+      "representation": "raw-response-body",
+      "captured_bytes": 17492,
+      "captured_sha256": "8062f1db9a7709210cec48211876dd9008528b3f8c5898ca6d61c76910e125f8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_openssl.h",
+      "checked_at": "2026-11-12T04:08:41.134477+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/crypto/swupdate_openssl.h",
+      "representation": "raw-response-body",
+      "captured_bytes": 1227,
+      "captured_sha256": "f6560128e62cf0ad4dde5d963022680f327bf4246fc7d422a090454701a708c4"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rauc/rauc/v1.15.2/src/signature.c",
+      "checked_at": "2026-11-12T04:08:41.311861+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/rauc/rauc/v1.15.2/src/signature.c",
+      "representation": "raw-response-body",
+      "captured_bytes": 48440,
+      "captured_sha256": "864c0e35254225f1bd2bce04988ab241c744fc925c6b20ba29064688a6ee0b8d"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rauc/rauc/v1.15.2/meson_options.txt",
+      "checked_at": "2026-11-12T04:07:58.894648+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/rauc/rauc/v1.15.2/meson_options.txt",
+      "representation": "raw-response-body",
+      "captured_bytes": 2160,
+      "captured_sha256": "e7beb3f667ac740e9ee29b36081f4e8fc6e021c7ce53d74405f01ee056ab294a"
+    },
+    {
+      "url": "https://api.github.com/repos/python/cpython/issues/159387",
+      "checked_at": "2026-11-12T04:08:17.413039+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/python/cpython/issues/159387",
+      "representation": "raw-response-body",
+      "captured_bytes": 8275,
+      "captured_sha256": "d88db1f391592807791664ca5a30848af3803c589a98887087686b999a59da5b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sbabic/swupdate/2026.05.1/corelib/verify_signature.c",
+      "checked_at": "2026-11-12T04:07:58.807851+00:00",
+      "status": "fetch-failed",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://www.openssh.com/releasenotes.html",
+      "checked_at": "2026-11-12T04:07:24.540934+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://www.openssh.org/releasenotes.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 785160,
+      "captured_sha256": "0219fe09a6fd2a5b442540235c883262edb0ff05d901ed932da29bfd6c2b7452"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/master/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:06:41.412147+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/master/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6680,
+      "captured_sha256": "a3d43c25faee6bfc87c662e9f87da7654b3ad8fae88ec3618f19581f05c4237c"
+    },
+    {
+      "url": "https://lore.kernel.org/buildroot/?q=openssl+4.0",
+      "checked_at": "2026-11-12T04:07:24.102287+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://lore.kernel.org/buildroot/?q=openssl+4.0",
+      "representation": "raw-response-body",
+      "captured_bytes": 41622,
+      "captured_sha256": "8715b0c50194b81d5818538e8bf212b283a4b514939555825d2637ff41a137cf"
+    },
+    {
+      "url": "https://buildroot.org/manual.html",
+      "checked_at": "2026-11-12T04:06:41.413316+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://buildroot.org/downloads/manual/manual.html",
+      "representation": "raw-response-body",
+      "captured_bytes": 598832,
+      "captured_sha256": "1a7aba19fb9e236a8eb3305f52283a0c97539a7ba8373045ae1d903ad73961ef"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/commit/a0051cfe699bf5a047bc1c4faef65f80f7987366.patch",
+      "checked_at": "2026-11-12T04:11:47.352266+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://github.com/openssl/openssl/commit/a0051cfe699bf5a047bc1c4faef65f80f7987366.patch",
+      "representation": "raw-response-body",
+      "captured_bytes": 3375,
+      "captured_sha256": "77d3759d279c71af59629c4a0fa82d8272a099762f2fa9e3f66d7ca5ed544157"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:08:41.088017+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/dc10246725957f68dfea7a47a2d3b1726567452f/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6680,
+      "captured_sha256": "a3d43c25faee6bfc87c662e9f87da7654b3ad8fae88ec3618f19581f05c4237c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/libopenssl.mk",
+      "checked_at": "2026-11-12T04:09:08.577566+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/libopenssl.mk",
+      "representation": "raw-response-body",
+      "captured_bytes": 6596,
+      "captured_sha256": "80be96cc7fff539c3426fb42a64555a165c893ae9e14b76b6c2912de5f7d475a"
+    },
+    {
+      "url": "https://api.github.com/repos/rauc/rauc/issues/1914",
+      "checked_at": "2026-11-12T04:06:41.612786+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/rauc/rauc/issues/1914",
+      "representation": "raw-response-body",
+      "captured_bytes": 4965,
+      "captured_sha256": "f7be7258c297935c234cd433a05141dce69380a5a21171fd009d1565800529ab"
+    },
+    {
+      "url": "https://api.github.com/repos/openssl/openssl/releases?per_page=50",
+      "checked_at": "2026-11-12T04:06:41.404084+00:00",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://api.github.com/repos/openssl/openssl/releases?per_page=50",
+      "representation": "raw-response-body",
+      "captured_bytes": 507727,
+      "captured_sha256": "c58d8a686602990776d250b0c5a1e88d6ad2797475191afa15a61faa24e0940c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/CHANGES.md",
+      "checked_at": "2026-11-12T10:20:10.498874+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/CHANGES.md",
+      "captured_bytes": 870369,
+      "captured_sha256": "f5d1f8eab56e088ce51e2af63e52db63a2b4eed10fd61e2845acc6bd2a919d78"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/CHANGES.md",
+      "checked_at": "2026-11-12T10:20:10.501063+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/CHANGES.md",
+      "captured_bytes": 858038,
+      "captured_sha256": "fe64d7ab95e86e783a0d0412ebbafa428dc4c71fdca51f4d5085cab6f2c1a7fb"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/INSTALL.md",
+      "checked_at": "2026-11-12T10:20:10.501748+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/INSTALL.md",
+      "captured_bytes": 71231,
+      "captured_sha256": "a31767954ee48575d2b762290efa9f1d03ce1bda0900b8271c6e751986827753"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/Configure",
+      "checked_at": "2026-11-12T10:20:10.502800+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.6.5/Configure",
+      "captured_bytes": 144858,
+      "captured_sha256": "622e9c7013848b2b14adf5e5d20cadd5cc1555928bfcb9b9715c0099ae578e36"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/Configure",
+      "checked_at": "2026-11-12T10:20:10.503924+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/Configure",
+      "captured_bytes": 142172,
+      "captured_sha256": "3d3ed5a3e4c69a917cee593643c4614a0d6ccc074c0e2b4ecad3293de47aa452"
+    },
+    {
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.sha256",
+      "checked_at": "2026-11-12T10:20:10.504654+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/7634677/baf3c550-2fd6-47d3-bfbd-e6bdf2f1c6d3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-12T11%3A15%3A00Z&rscd=attachment%3B+filename%3Dopenssl-3.5.9.tar.gz.sha256&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-12T10%3A14%3A32Z&ske=2026-11-12T11%3A15%3A00Z&sks=b&skv=2018-11-09&sig=8Bv9roqu6a3hE3LwSfgictEoXntjM1lU11%2FD0AeWbvM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDQ3OTExMCwibmJmIjoxNzk0NDc4ODEwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZGknzT7qLUFkwyIhIqGm1eBENfyTRCuEJwtDYodRBzg&response-content-disposition=attachment%3B%20filename%3Dopenssl-3.5.9.tar.gz.sha256&response-content-type=application%2Foctet-stream",
+      "captured_bytes": 87,
+      "captured_sha256": "f482705825eb43b47ce08d5cf4287ae062cdbada1a142d728a8d89c387300bf0"
+    },
+    {
+      "url": "https://openssl-library.org/news/secadv/20260407.txt",
+      "checked_at": "2026-11-12T10:20:10.750477+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/news/secadv/20260407.txt",
+      "captured_bytes": 14083,
+      "captured_sha256": "23ca2cf204b526238beb24e2e828b41c186eba772579ab2e4245c28a8743a1a2"
+    },
+    {
+      "url": "https://openssl-library.org/news/secadv/20260609.txt",
+      "checked_at": "2026-11-12T10:20:10.754072+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/news/secadv/20260609.txt",
+      "captured_bytes": 39264,
+      "captured_sha256": "1dc76a90158cb7ee22577184df3b5a46d8c1538cd1110df581aa3454b645cb4f"
+    },
+    {
+      "url": "https://openssl-library.org/news/secadv/20260825.txt",
+      "checked_at": "2026-11-12T10:20:10.755378+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://openssl-library.org/news/secadv/20260825.txt",
+      "captured_bytes": 20932,
+      "captured_sha256": "eb8914d564766f1cbf1e5a77a4262bc07729c2d3dcb22d272041d6db61e5bd4e"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/libopenssl.hash",
+      "checked_at": "2026-11-12T10:20:10.781890+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/libopenssl.hash",
+      "captured_bytes": 300,
+      "captured_sha256": "372d49e1a794fe661e22cdafec8c952d601777da229c74a46d000dce51ce995b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/0001-Reproducible-build-do-not-leak-compiler-path.patch",
+      "checked_at": "2026-11-12T10:20:10.784617+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/0001-Reproducible-build-do-not-leak-compiler-path.patch",
+      "captured_bytes": 1045,
+      "captured_sha256": "dabe2ee1ec9a53b94b43a8974b8f66f145b1d2d7987734cb5da8d066b947084b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/0002-Revert-Fix-static-builds.patch",
+      "checked_at": "2026-11-12T10:20:10.795098+00:00",
+      "representation": "raw-response-body",
+      "status": "fetched",
+      "http_status": 200,
+      "final_url": "https://raw.githubusercontent.com/buildroot/buildroot/2025.02.x/package/libopenssl/0002-Revert-Fix-static-builds.patch",
+      "captured_bytes": 1435,
+      "captured_sha256": "b3d30cc63d85ae8c7a5d780a02eb503e16c17155ae335e2b517730043390ec5b"
+    },
+    {
+      "url": "https://openssl-library.org/news/secadv/20260929.txt",
+      "checked_at": "2026-11-12T10:20:22.829079+00:00",
+      "status": "fetched",
+      "representation": "raw-response-body",
+      "http_status": 200,
+      "captured_bytes": 34045,
+      "captured_sha256": "2a6766a213b2dac48b4666aa54c39dbe3af96f73444081a4a25c1e3dc496aeb9"
+    }
+  ]
+}
