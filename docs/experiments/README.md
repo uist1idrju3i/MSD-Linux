@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-12-openssl-3.5-lts](2026-11-12-openssl-3.5-lts.md) | [測定](2026-11-12-openssl-3.5-lts.csv) / [file一覧](2026-11-12-openssl-3.5-lts-files.csv) | 2026-11-12 | QEMU・署名確認済み | Buildroot固定版のままhost/targetを外部overrideで3.5.9へ変更。両側のfull build・A/B起動に成功。既存legal-info警告と実機未確認を残す。 |
 | [2026-11-12-phase2-option-variants](2026-11-12-phase2-option-variants.md) | なし | 2026-11-11 - 2026-11-12 | 完了（QEMU） | 125 variantのT3/T4/T5/T6結果、失敗と再測定を記録。QEMUのみで、実SDのdurabilityや採否は未確認。 |
 | [2026-11-09-phase0-filesystem-compare](2026-11-09-phase0-filesystem-compare.md) | なし | 2026-11-08 - 2026-11-09 | 完了（QEMU、phase-0） | T1-final、mode=all、計測器の制御結果と失敗runを統合。B2の16 failuresをsetup phaseに分類。L3非同期mark待ちとF1 manifest境界を修正。L3 mode=allは未完了、残る14構成のmode=allと実SD電源断は未実施。 |
 | [2026-11-09-phase1-pilot](2026-11-09-phase1-pilot.md) | なし | 2026-11-09 | 完了（QEMU、6構成） | T2/T3/T4-sync/T5/T6/T7の36最終plan entriesが成功。T6 mapping、4 GiB T7 setup時間、mapper統計、retryを記録。全20構成の620-row matrixと実SD電源断は未実施。 |

@@ -10,7 +10,7 @@
 |---|---|
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |
-| target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md) |
+| target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md)、[OpenSSL系列差](openssl-series.md) |
 | host 49件、configure、Meson/Make等、圧縮、FS・disk image生成 | [host・image生成](host-image.md) |
 | 開発用OCI、APT、pip/Go、CI tools、Actionsとrunner | [OCI・CI tools](ci-tools.md) |
 | 取得元・hash、母集団、失敗試行、同じ入力での再生成、検査の範囲 | [採取・再生成](reproduction.md) |

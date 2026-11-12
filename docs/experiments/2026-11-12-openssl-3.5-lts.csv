@@ -1,0 +1,86 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+openssl35-main-r1,main,1,image.Image.bytes,18016768,bytes,true,
+openssl35-main-r1,main,1,image.Image.sha256,09f5f7814bdd62260269e93a82fa73345bd84c53aff7e8f3c25e24bf9e4f0103,sha256,true,
+openssl35-main-r1,main,1,image.rootfs.squashfs.bytes,20729856,bytes,true,
+openssl35-main-r1,main,1,image.rootfs.squashfs.sha256,7bbf68a9d591aeab38b96256ee64afc950703f918600e8a6ba7e8f3188dd126f,sha256,true,
+openssl35-main-r1,main,1,image.sdcard.img.bytes,771751936,bytes,true,
+openssl35-main-r1,main,1,image.sdcard.img.sha256,1c3cab424668a00c9f1a3c59ae14168e522cac4530ae75212e6203bb0a7357be,sha256,true,
+openssl35-main-r1,main,1,kernel.config.normalized.sha256,cf08c7bb0445fad0bd267fae76b3f882102f43bd02487a1a009ba3965f1f2fa0,sha256,true,
+openssl35-main-r1,main,1,buildroot.config.sha256,158bb54c2fcdcda3beaf8e275ef1da615603efea2bc956b819f863aca5c35b0e,sha256,true,
+openssl35-main-r1,main,1,target.file_count,1700,files,true,
+openssl35-main-r1,main,1,target.regular_bytes,37265280,bytes,true,
+openssl35-main-r1,main,1,target.openssl_file_count,11,files,true,
+openssl35-main-r1,main,1,target.openssl_regular_bytes,7413380,bytes,true,
+openssl35-main-r1,main,1,target.openssl_version,3.6.5,version,true,
+openssl35-main-r1,main,1,host-openssl.file_count,167,files,true,
+openssl35-main-r1,main,1,host-openssl.regular_bytes,25650008,bytes,true,
+openssl35-main-r1,main,1,host-openssl.openssl_file_count,167,files,true,
+openssl35-main-r1,main,1,host-openssl.openssl_regular_bytes,25650008,bytes,true,
+openssl35-main-r1,main,1,host-openssl.openssl_version,3.6.5,version,true,
+openssl35-main-r1,main,1,full_build.exit,0,exit-code,true,
+openssl35-main-r1,main,1,qemu.slot_a.exit,0,exit-code,true,
+openssl35-main-r1,main,1,qemu.slot_b.exit,0,exit-code,true,
+openssl35-main-r1,main,1,legal_info.exit,0,exit-code,true,
+openssl35-main-r1,main,1,evidence.main-build.log.sha256,4d9a9e40702ce9ac5b55a4e0e61fb559414d253d4e88677f31d7f8967c7320fd,sha256,true,
+openssl35-main-r1,main,1,evidence.main-show-info.json.sha256,83306e32632f9af61586ffe9af8eb9188c21f6b749c688529211214c6eec7979,sha256,true,
+openssl35-main-r1,main,1,evidence.qemu-main.log.sha256,ed4bd5f625babf0e1160df999612dc0f649c69d8c0decf92c721d5a1f4434b5e,sha256,true,
+openssl35-main-r1,main,1,evidence.qemu-main/serial-mmcblk0p5.log.sha256,7a8a0e5d773624458230acd5dde70385235bb8d50bbee0125565f5e17cb4fa2d,sha256,true,
+openssl35-main-r1,main,1,evidence.qemu-main/serial-mmcblk0p6.log.sha256,8fb49de681173d16250f175240e58467592305798619fa0bc33032dbc8af6a0d,sha256,true,
+openssl35-main-r1,main,1,evidence.legal-main.log.sha256,413ea1c5c5888f86cdc7d531047b6dd46dae4fc09fff56c24a83a921c5484939,sha256,true,
+openssl35-main-r1,main,1,legal_info.host-manifest.csv.sha256,312d39d92f0c490a5e62b73f40be36f01aa3851e183f28672e699efd130073a3,sha256,true,
+openssl35-main-r1,main,1,legal_info.manifest.csv.sha256,b593150e5796a8f762371fc9036e28573313843473f92c5e70bfaba6006881f6,sha256,true,
+openssl35-main-r1,main,1,legal_info.licenses.openssl_license.sha256,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,true,
+openssl35-main-r1,main,1,legal_info.host-licenses.openssl_license.sha256,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,true,
+openssl35-lts-r1,lts,1,image.Image.bytes,18016768,bytes,true,
+openssl35-lts-r1,lts,1,image.Image.sha256,982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434,sha256,true,
+openssl35-lts-r1,lts,1,image.rootfs.squashfs.bytes,20680704,bytes,true,
+openssl35-lts-r1,lts,1,image.rootfs.squashfs.sha256,919d2926f5968df39ccc0a66bfbde2d7ac3682e206307387ed5f6790d78d4c9a,sha256,true,
+openssl35-lts-r1,lts,1,image.sdcard.img.bytes,771751936,bytes,true,
+openssl35-lts-r1,lts,1,image.sdcard.img.sha256,47a8e5956f987e81e0805a910a56a7140fa50448c6b5f9b5f3652405bfff5008,sha256,true,
+openssl35-lts-r1,lts,1,kernel.config.normalized.sha256,cf08c7bb0445fad0bd267fae76b3f882102f43bd02487a1a009ba3965f1f2fa0,sha256,true,
+openssl35-lts-r1,lts,1,buildroot.config.sha256,c63a68cd795c8c30ea16a79070735f1f00b98390f9f0b7e34fed6f0337e43692,sha256,true,
+openssl35-lts-r1,lts,1,target.file_count,1700,files,true,
+openssl35-lts-r1,lts,1,target.regular_bytes,37099270,bytes,true,
+openssl35-lts-r1,lts,1,target.openssl_file_count,11,files,true,
+openssl35-lts-r1,lts,1,target.openssl_regular_bytes,7246628,bytes,true,
+openssl35-lts-r1,lts,1,target.openssl_version,3.5.9,version,true,
+openssl35-lts-r1,lts,1,host-openssl.file_count,167,files,true,
+openssl35-lts-r1,lts,1,host-openssl.regular_bytes,25281246,bytes,true,
+openssl35-lts-r1,lts,1,host-openssl.openssl_file_count,167,files,true,
+openssl35-lts-r1,lts,1,host-openssl.openssl_regular_bytes,25281246,bytes,true,
+openssl35-lts-r1,lts,1,host-openssl.openssl_version,3.5.9,version,true,
+openssl35-lts-r1,lts,1,full_build.exit,0,exit-code,true,
+openssl35-lts-r1,lts,1,qemu.slot_a.exit,0,exit-code,true,
+openssl35-lts-r1,lts,1,qemu.slot_b.exit,0,exit-code,true,
+openssl35-lts-r1,lts,1,legal_info.exit,0,exit-code,true,
+openssl35-lts-r1,lts,1,evidence.lts-build.log.sha256,deb5c1dec5f1f2758d4c3900d7e87550168ad312ba623bf524ac22446d287a50,sha256,true,
+openssl35-lts-r1,lts,1,evidence.lts-show-info.json.sha256,4b1e5bac9c9e48606b50de9537198f3e03739660cb77797c13ade77c3ba5d03b,sha256,true,
+openssl35-lts-r1,lts,1,evidence.qemu-lts.log.sha256,b20cdca3bd77ce1ae6383a0c3b45448bc4451f50b792ad07f7395df185e780a0,sha256,true,
+openssl35-lts-r1,lts,1,evidence.qemu-lts/serial-mmcblk0p5.log.sha256,bdf60182cec30c85b7602911d130b55c27c2d70d3f3c18328d2071f321814a5d,sha256,true,
+openssl35-lts-r1,lts,1,evidence.qemu-lts/serial-mmcblk0p6.log.sha256,28d53d5fcc7656b3da34aa7ee86d687c5bf2f8fa29efa452acf85a09d40990b6,sha256,true,
+openssl35-lts-r1,lts,1,evidence.legal-lts.log.sha256,3a39917339d5e6237d430349fcd8af9308fac02bf0cc779e92d004183e5143bc,sha256,true,
+openssl35-lts-r1,lts,1,legal_info.host-manifest.csv.sha256,66225d0e1bed6f4e2b7e0af0c3b3eded7620ca07803e0dd2763a84ee556ec0f1,sha256,true,
+openssl35-lts-r1,lts,1,legal_info.manifest.csv.sha256,2c5cad13e6f7e2edf15c8f472204ee775f846b70846221a1f38df5a8cf2af9ad,sha256,true,
+openssl35-lts-r1,lts,1,legal_info.licenses.openssl_license.sha256,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,true,
+openssl35-lts-r1,lts,1,legal_info.host-licenses.openssl_license.sha256,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,true,
+openssl35-main-r1,main,1,cve.target,142,affected-refs,true,固定NVD 8a4923e。CPE照合のみ。到達性と11月10日advisoryの網羅は未確認。
+openssl35-main-r1,main,1,cve.host,7,affected-refs,true,固定NVD 8a4923e。CPE照合のみ。到達性と11月10日advisoryの網羅は未確認。
+openssl35-main-r1,main,1,cve.openssl,0,cves,true,固定feedの照合結果。安全の証明ではない。
+openssl35-main-r1,main,1,evidence.main-sbom-final.cdx.json.sha256,d6f31e720b24f91d3ef977838755614252ba82f2d1e8d70c933b1afdf20de686,sha256,true,build基準commitをproject versionに指定。
+openssl35-main-r1,main,1,evidence.main-vex-final.cdx.json.sha256,dbe1bf621c3fe36f4fe7d398e08948fc51c83affccd6363954448c7d0526aebb,sha256,true,build基準commitをproject versionに指定。
+openssl35-lts-r1,lts,1,cve.target,142,affected-refs,true,固定NVD 8a4923e。CPE照合のみ。到達性と11月10日advisoryの網羅は未確認。
+openssl35-lts-r1,lts,1,cve.host,7,affected-refs,true,固定NVD 8a4923e。CPE照合のみ。到達性と11月10日advisoryの網羅は未確認。
+openssl35-lts-r1,lts,1,cve.openssl,0,cves,true,固定feedの照合結果。安全の証明ではない。
+openssl35-lts-r1,lts,1,evidence.lts-sbom-final.cdx.json.sha256,89ef8c46227d764fbafc2aebed101527913ff6912f8a62975bc0b9cea898a996,sha256,true,build基準commitをproject versionに指定。
+openssl35-lts-r1,lts,1,evidence.lts-vex-final.cdx.json.sha256,f25b100404d0993c9ef6d3d4a9910c32b73ebe471b9aae846faab94a9467bef7,sha256,true,build基準commitをproject versionに指定。
+openssl35-lts-r1,lts,1,evidence.msd-update.log.sha256,e385d176db2055e86775efb669bf265e1c48aa45dd25b0d35bb273c7ae225bbb,sha256,true,target-probe.logはstdinを渡せず失敗した初回。
+openssl35-lts-r1,lts,1,evidence.target-probe-final.log.sha256,76d743abad8b609bd1e1270f2732f87feedc6b204d06f1b28213abb3afff3c3d,sha256,true,target-probe.logはstdinを渡せず失敗した初回。
+openssl35-lts-r1,lts,1,evidence.version-strings-final.log.sha256,8e2ab0a1e84b3e64822e329d904eb1d97e96add2abec0c9e3fd0166b112d4b3b,sha256,true,target-probe.logはstdinを渡せず失敗した初回。
+openssl35-lts-r1,lts,1,evidence.target-probe.log.sha256,2ce2c265973081e450cde7b2ac782c95e54300ee7b7f36e54cfb02908cccabdc,sha256,true,target-probe.logはstdinを渡せず失敗した初回。
+openssl35-lts-r1,lts,1,evidence.cve-compare-final.log.sha256,cb32b6b5651faa62e2672fd94c23ba30420871774af1eb0ad58e16d1f2143dc6,sha256,true,target-probe.logはstdinを渡せず失敗した初回。
+openssl35-lts-r1,lts,1,input.configs/msd_cardputerzero_defconfig.sha256,b655e0a42485b841bf11cdbfbbae76eb84e832691ff2e0c548adf8330dbf43a3,sha256,true,build時と検査時に使った実装入力。
+openssl35-lts-r1,lts,1,input.board/cardputerzero/package-overrides.mk.sha256,4141475589f1287d9a43ca0f539293ddaa05da6c092d41bec40b18c6c61bc21a,sha256,true,build時と検査時に使った実装入力。
+openssl35-lts-r1,lts,1,input.board/cardputerzero/patches/libopenssl/libopenssl.hash.sha256,2ce0ed89f91701788779861497136d0630577af043f16bd8a4004dee021e0291,sha256,true,build時と検査時に使った実装入力。
+openssl35-lts-r1,lts,1,input.board/cardputerzero/qemu/run-qemu.sh.sha256,2f720d3703340ba9b4f28dfec30281dc7e690fe8eb367a4c14cc618063724f9c,sha256,true,build時と検査時に使った実装入力。
+openssl35-lts-r1,lts,1,input.board/cardputerzero/qemu/test-qemu.sh.sha256,8a19b4df1398b85fb53fceb61ec3fb9609fb623d17e035cd8837816d391977d5,sha256,true,build時と検査時に使った実装入力。
+openssl35-lts-r1,lts,1,input.tests/msd-update/run.sh.sha256,226a75d44703bfa5da47db04881c7ae2009d0cd0d8aa8cf5e152acacc8dd4efd,sha256,true,build時と検査時に使った実装入力。

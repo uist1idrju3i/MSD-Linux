@@ -4,6 +4,7 @@
 
 | 決めた日 | 方針 | 状態 | 関連 |
 |---|---|---|---|
+| 2026-11-12 | Buildroot 2026.08.xを維持し、host/targetのOpenSSLを外部treeで3.5.9 LTS（保守期限2030-04-08）に固定します。2026.11.x、その後2027.02 LTSへの更新は後日行います。12月1日予定の3.5.10は別作業とし、11月10日のadvisory修正は自前backportしません。 | 外部overrideと週次監視を実装。検証範囲は実験記録に記載。基盤更新と3.5.10は未実施 | [保守判断](../research/dependencies/openssl-maintenance.md)、[実験記録](../experiments/2026-11-12-openssl-3.5-lts.md) |
 | 2026-11-03 | RAUCまたはSWUpdateへ移行した後は、公開の`msd-update` commandを残さず、bundleの検証とslotへの書き込みをframeworkに任せます。 | 未実装（frameworkは比較中） | [更新frameworkの比較](../research/alternatives/updates.md) |
 | 2026-11-03 | framework移行後の更新処理と暗号実装にはOpenSSLを使います。 | 未実装 | [更新frameworkと暗号libraryのbuild option](../research/alternatives/update-build-options.md) |
 | 2026-11-03 | 配信先はGitHub Releasesを候補とし、IPFSは今回のPoCに含めません。 | 調査済み | [更新経路と差分配信](../research/alternatives/update-delivery.md) |
