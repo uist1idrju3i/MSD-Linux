@@ -8,6 +8,8 @@
 
 現行のmount・初期化・overlay・healthと、置換時に一緒に変える契約は[保存領域と実行時検証の比較](../alternatives/filesystems.md)にまとめています。以下の設計案や過去の資料を、現行実装や本機の実測に読み替えません。
 
+2026-11-12のrootfs・init・生成configの棚卸しと判断待ちは[書き込みの台帳](../../design/write-policy.md)、起動後idleのpartition別counterは[今回の実験](../../experiments/2026-11-12-write-inventory.md)に記録します。通常imageのgenimageはinode tableとjournalをlazy初期化しませんが、起動時のonline resizeや空partitionのfallback formatは別の経路です。
+
 この文書は、CardputerZero の現在の書き込み経路をコードで確認し、`/etc`・`/data` の read-only 化、ファイルシステム選択、障害試験を提案する。提案や未測定の性能評価は【推測】、コードや取得済み一次資料で確認した事項は【一次】、未確認事項は【未確認】と記す。ファイルシステム比較の範囲は Linux 6.18 系で microSD 用途に関係する、依頼指定の候補である。
 
 ## 現在のマウントと書き込み先
@@ -23,7 +25,7 @@
 | A/B payload と selector | rootfs は p5/p6、boot payload は p2/p3 の inactive raw partition に書く。状態記録は `/data/msd-update`、`autoboot.txt` の切替は p1 上で行う。A/B payload を `/data` に保存する方式ではない。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-update:56,170-179,220-231` |
 | data partition grow | partition table の p4/p7 を調整し、`resize2fs` で p7 の ext4 を拡張する。 | `board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow:25,116-134` |
 | hwinfo・ready marker | hwinfo cache は `/run/msd/hardware`、ready marker は `/run/msd-ready`。これらの書き込み先は揮発領域である。 | `board/cardputerzero/rootfs-overlay/etc/init.d/S97msd-hwinfo:3-9`、`board/cardputerzero/rootfs-overlay/etc/init.d/S98msd-ready:3` |
-| `/var` とログ | `/var` 自体の mount はない。skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` への symlink、`/var/lock`、`/var/run` が `/run` への symlink、`/var/lib/misc` が `/tmp` への symlink。対象 runtime scripts に syslog daemon の `/var/log` 書き込み設定も見つからなかった。 | fstab、Buildroot `system/skeleton/var`、`board/cardputerzero/post-build.sh:5` |
+| `/var` とログ | `/var` 自体の mount はない。skeleton では `/var/cache`、`/var/log`、`/var/spool`、`/var/tmp` が `/tmp` への symlink、`/var/lock`、`/var/run` が `/run` への symlink、`/var/lib/misc` が `/tmp` への symlink。2026-11-12の生成rootfsとQEMUではsyslogd・klogdが起動し、syslogdの既定log先はRAM上の `/var/log/messages`。 | fstab、Buildroot `system/skeleton/var`、生成S01syslogd・S02klogd、[台帳](../../design/write-policy.md) |
 | RTC | `RESEARCH.md:40` は I2C1 上の RX8130CE を記録する。対象 init scripts に時刻を `/data` または `/etc` へ保存する処理は見つからなかった。RTC 初期化と実機時刻取得の経路は未確認。 | `RESEARCH.md:40`、上記 init scripts の調査 |
 | BCM2835 RNG | kernel の BCM2835 RNG driver は存在する【一次】が、`linux.fragment` に `CONFIG_HW_RANDOM_BCM2835` の明示設定はない。生成済み Linux `.config` を取得できていないため、有効状態は【未確認】。seedrng の `/data/seedrng` 保存を RNG hardware による代替とみなさない。 | `board/cardputerzero/linux.fragment`、生成 `.config` 未取得、[K1] |
 

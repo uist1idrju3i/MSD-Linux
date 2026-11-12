@@ -17,7 +17,7 @@
 | 2026-11-03 | `/data`は初回起動から暗号化する方向で設計します。鍵は端末ごとに作り、build時に共通鍵を作りません。既定passwordの間も起動を止めません。passwordまたはPINを設定する時は、既定でvolume keyを替え、替えないoptionも用意します。解錠方式はpasswordなし・PIN・passwordから利用者が選びます。 | 計画のみ | （リンクなし。計画はリポジトリに入れていない） |
 | 2026-11-03 | 一般userの初期名は`muromi`、UID/GIDは1000、homeは`/data/home/muromi`にします。 | 未実装 | R02の設計に反映予定 |
 | 2026-11-03 | Wi-Fi、`/data`暗号化、boot image検証などを行う対話型toolをRubyまたはmrubyで作ります。画面は英語・日本語を併記します。かなだけの日本語表示案とfbcon、fbterm、kmsconなどを比べます。 | 計画のみ | [フォントとコンソールの調査](../research/presentation/fonts.md) |
-| 2026-11-03 | timezoneの既定値はAsia/Tokyoにする方向です。現行はtzdataがなくUTC表示で、`timedatectl`はありません。 | 未実装 | [CardputerZeroのdefconfig](../../configs/msd_cardputerzero_defconfig) |
+| 2026-11-03 | timezoneの既定値はAsia/Tokyoにする方向です。`timedatectl`は導入しません。 | 2026-11-12にtzdataのasiaと既定localtimeを実装。QEMUのdateはJST +0900。RTC・NTP・実機は未確認 | [CardputerZeroのdefconfig](../../configs/msd_cardputerzero_defconfig)、[採用範囲](../research/component-options/timezone.md)、[実験](../experiments/2026-11-12-write-inventory.md) |
 | 2026-11-03 | 部品を採用する前に代替品、build option、実行時の設定項目を調べます。更新時には新機能、新しいoption、既定値の変更を検討します。 | 規則は制定済み（PR #212） | [component-optionsスキル](../../.agents/skills/component-options/SKILL.md) |
 | 2026-11-12 | Wi-Fiにはwpa_supplicant（OpenSSL）+ dhcpcdを使い、udhcpcとの比較は残します。iwdは不採用とします。主な利点だったOpenSSLの回避はOpenSSL採用後の利点にならず、SAE/EAPの処理に使うELL TLSは第2の暗号・TLS実装になります。実行時D-Busとkernel暗号APIの設定（DES/MD5/SHA1等）も必要で、内蔵DHCPを使ってもDNS処理は別途必要です。 | 方針決定済み、実装・実機確認は未実施 | [ネットワークの比較と計画](../research/alternatives/network.md)、[iwdの暗号と実行時依存](../research/alternatives/update-build-options.md#iwdの暗号と実行時依存) |
 

@@ -1,0 +1,418 @@
+{
+  "base_commit": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+  "buildroot_commit": "8b238854d909c9cce32ef9671d968b03e323b55d",
+  "development_image": "sha256:47cc0b8cfd878a4fb413c376d52a2b6a9199454c97b1d2aec8df7a3a1b4a8e7d",
+  "host_os": "Ubuntu 26.04.1 LTS",
+  "container_os": "Debian GNU/Linux 13 (trixie)",
+  "ccache_final_cumulative": "Cacheable calls:    31665 / 43864 (72.19%)\n  Hits:              8441 / 31665 (26.66%)\n    Direct:          6590 /  8441 (78.07%)\n    Preprocessed:    1851 /  8441 (21.93%)\n  Misses:           23224 / 31665 (73.34%)\nUncacheable calls:  12199 / 43864 (27.81%)\nLocal storage:\n  Cache size (GiB):   0.4 /   5.0 ( 8.15%)\n  Hits:              8441 / 31665 (26.66%)\n  Misses:           23224 / 31665 (73.34%)\n",
+  "inventory_before": {
+    "files": {
+      "etc/default/seedrng": "617e75e4c65db61d22d9a109559fd95224b661d39f1a5bdef4e1def2c75e17f2",
+      "etc/fstab": "5a0b76d5ef35a8a429522039a80cb0f5257e42b256db8a72204b01c7c81c9295",
+      "etc/init.d/S01msd-watchdog": "825ac1b50ff5206877171203ada456bd670b306a9bf3c62211de65fbb49dde8d",
+      "etc/init.d/S01syslogd": "04e70e4d94d046c59f4863e33b3f78ec43faceb3e31e1115c78b682b78a052de",
+      "etc/init.d/S02klogd": "ef65712b8ff3ba7b244f03f15bc855ecb8120a72b6031a64160afa3ee6945e65",
+      "etc/init.d/S02msd-data": "c6a6fb7fe06ae7269fddfb95a910146cf38189345c21ac6bfced89103983051a",
+      "etc/init.d/S02sysctl": "cd6398f21c96f6a2578ee1aa54039abdc20aea7c446e2f9b4b40c18977d70d44",
+      "etc/init.d/S03msd-etc-overlay": "04f252c6c52b1b0c6dc554306289f6f5fe856f604fa6fe4d10375c371968960c",
+      "etc/init.d/S04msd-keymap": "9a605c463feba56f095211dcefe3c78cd7b9abee0c2805d177b5b4b8295b56bd",
+      "etc/init.d/S05seedrng": "8cf53d7f3533b38b420f998dae1087ca3ac51579fe10baaf53f5614941a10c8b",
+      "etc/init.d/S10mdev": "4af2e811a8843ba9e24baf7418f1aecf1c75a0a4bf8419858a92c42efe1c28cd",
+      "etc/init.d/S11modules": "e192b8afc301c338a38babb1c39f07c2e34ad6dee97a7ce8469aaa73cff90c1f",
+      "etc/init.d/S40network": "27eac7a647b151a9688d972b6668f082e1a01b699e0f6435b5fe10693135abf5",
+      "etc/init.d/S50crond": "f95a35e05520a86da3770cb051eab3ad411385bb8ae505cb5ec4c7821821aa8a",
+      "etc/init.d/S97msd-hwinfo": "b022fa56f1e40c3ec11ae44ebfe6b8c79214c17d3101bfae75a3c310ea63cf95",
+      "etc/init.d/S98msd-ready": "7d78e4ca595227da53cb7520ba45038f831c2de49dc0b0e204b2d29066fc2c92",
+      "etc/init.d/S99msd-health": "01036849d8eb73130b70ed342f93f2a9d7c05d4a3cdd848a0df2517a7af0f548",
+      "etc/init.d/rcK": "5219dbe517144b4330bbe7c4af184bee47c141849459ac5f3c03c09af3644779",
+      "etc/init.d/rcS": "fe972753ee864f1276a2242be93b45ef5854ce54ce828b0c68f51f833b92ae9f",
+      "etc/inittab": "18400d8b3247d23c856e5103b45c05cb8c320299a1f2f6e45a66a6e4b15dc86c",
+      "etc/network/interfaces": "bf24145cc4a9986989955f512359a6ded0dffb789a93dc94ad5b41e7a378b1b2",
+      "etc/profile": "82aaa6819e07689a9ff2f1bf7fdb306e91bc9fac89dd650d214996b937cf49c6"
+    },
+    "var_symlinks": {
+      "var/cache": "../tmp",
+      "var/lib/misc": "../../tmp",
+      "var/lock": "../run/lock",
+      "var/log": "../tmp",
+      "var/run": "../run",
+      "var/spool": "../tmp",
+      "var/tmp": "../tmp"
+    },
+    "config_hashes": {
+      "output-openssl-lts/.config": "b036a28985a778f35acc673fe5b7253c94746571e4293b1203a8dd5a18e1d0bf",
+      "output-openssl-lts/build/busybox-1.38.0/.config": "68830596f4399fec2e38ad911d09cabb09451fa740faea258e735c75c2264f13",
+      "output-openssl-lts/build/linux-custom/.config": "74d625a1c9dad65fd2999abd0b0a572874a39b32dbd1d685edcb3153ea8a0739"
+    }
+  },
+  "sizes": {
+    "before": {
+      "rootfs.squashfs": {
+        "bytes": 20680704,
+        "sha256": "519fa51d2e24fe1b76b6f6b53d9413beb4df3d8d7cae8e4ee0c7de5340d4f052"
+      },
+      "rootfs.tar": {
+        "bytes": 40509440,
+        "sha256": "552f6e8e4ab3acf583d2250bc5a6c78bb19b01b1d1046f4caa799bf380d8c63e"
+      },
+      "Image": {
+        "bytes": 18016768,
+        "sha256": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434"
+      },
+      "sdcard.img": {
+        "bytes": 771751936,
+        "sha256": "590b2dbf5c62d396449577bdac35fecdda794916ea1fc52e1acc996a433915f1"
+      },
+      "zoneinfo_regular_file_bytes": 0,
+      "zoneinfo_regular_files": 0
+    },
+    "after": {
+      "rootfs.squashfs": {
+        "bytes": 20725760,
+        "sha256": "588d1eefa0a48fe2b7797f211d6ba71cdc094688e3987bdb95b30a5f952531c1"
+      },
+      "rootfs.tar": {
+        "bytes": 40919040,
+        "sha256": "d4fe91b9c50fdf40a5d703932b514e951f641a4c360eeaf3d80cf794efc25977"
+      },
+      "Image": {
+        "bytes": 18016768,
+        "sha256": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434"
+      },
+      "sdcard.img": {
+        "bytes": 771751936,
+        "sha256": "d8eab2c2ecdc1a386bb3d35fffe9ae2a7e9cc54de1124df4526e6288e12eacf3"
+      },
+      "zoneinfo_regular_file_bytes": 183198,
+      "zoneinfo_regular_files": 121
+    },
+    "existing_content_changes": [
+      "./usr/lib/os-release",
+      "./etc/issue"
+    ],
+    "added_paths": [
+      "./etc/localtime",
+      "./etc/timezone",
+      "./usr/share/zoneinfo",
+      "./usr/share/zoneinfo/Asia",
+      "./usr/share/zoneinfo/Indian",
+      "./usr/share/zoneinfo/iso3166.tab",
+      "./usr/share/zoneinfo/leap-seconds.list",
+      "./usr/share/zoneinfo/posix",
+      "./usr/share/zoneinfo/posix/Asia",
+      "./usr/share/zoneinfo/posix/Asia/Almaty",
+      "./usr/share/zoneinfo/posix/Asia/Amman",
+      "./usr/share/zoneinfo/posix/Asia/Aqtau",
+      "./usr/share/zoneinfo/posix/Asia/Aqtobe",
+      "./usr/share/zoneinfo/posix/Asia/Ashgabat",
+      "./usr/share/zoneinfo/posix/Asia/Atyrau",
+      "./usr/share/zoneinfo/posix/Asia/Baghdad",
+      "./usr/share/zoneinfo/posix/Asia/Baku",
+      "./usr/share/zoneinfo/posix/Asia/Bangkok",
+      "./usr/share/zoneinfo/posix/Asia/Beirut",
+      "./usr/share/zoneinfo/posix/Asia/Bishkek",
+      "./usr/share/zoneinfo/posix/Asia/Colombo",
+      "./usr/share/zoneinfo/posix/Asia/Damascus",
+      "./usr/share/zoneinfo/posix/Asia/Dhaka",
+      "./usr/share/zoneinfo/posix/Asia/Dili",
+      "./usr/share/zoneinfo/posix/Asia/Dubai",
+      "./usr/share/zoneinfo/posix/Asia/Dushanbe",
+      "./usr/share/zoneinfo/posix/Asia/Famagusta",
+      "./usr/share/zoneinfo/posix/Asia/Gaza",
+      "./usr/share/zoneinfo/posix/Asia/Hebron",
+      "./usr/share/zoneinfo/posix/Asia/Ho_Chi_Minh",
+      "./usr/share/zoneinfo/posix/Asia/Hong_Kong",
+      "./usr/share/zoneinfo/posix/Asia/Hovd",
+      "./usr/share/zoneinfo/posix/Asia/Jakarta",
+      "./usr/share/zoneinfo/posix/Asia/Jayapura",
+      "./usr/share/zoneinfo/posix/Asia/Jerusalem",
+      "./usr/share/zoneinfo/posix/Asia/Kabul",
+      "./usr/share/zoneinfo/posix/Asia/Karachi",
+      "./usr/share/zoneinfo/posix/Asia/Kathmandu",
+      "./usr/share/zoneinfo/posix/Asia/Kolkata",
+      "./usr/share/zoneinfo/posix/Asia/Kuching",
+      "./usr/share/zoneinfo/posix/Asia/Macau",
+      "./usr/share/zoneinfo/posix/Asia/Makassar",
+      "./usr/share/zoneinfo/posix/Asia/Manila",
+      "./usr/share/zoneinfo/posix/Asia/Nicosia",
+      "./usr/share/zoneinfo/posix/Asia/Oral",
+      "./usr/share/zoneinfo/posix/Asia/Pontianak",
+      "./usr/share/zoneinfo/posix/Asia/Pyongyang",
+      "./usr/share/zoneinfo/posix/Asia/Qatar",
+      "./usr/share/zoneinfo/posix/Asia/Qostanay",
+      "./usr/share/zoneinfo/posix/Asia/Qyzylorda",
+      "./usr/share/zoneinfo/posix/Asia/Riyadh",
+      "./usr/share/zoneinfo/posix/Asia/Samarkand",
+      "./usr/share/zoneinfo/posix/Asia/Seoul",
+      "./usr/share/zoneinfo/posix/Asia/Shanghai",
+      "./usr/share/zoneinfo/posix/Asia/Singapore",
+      "./usr/share/zoneinfo/posix/Asia/Taipei",
+      "./usr/share/zoneinfo/posix/Asia/Tashkent",
+      "./usr/share/zoneinfo/posix/Asia/Tbilisi",
+      "./usr/share/zoneinfo/posix/Asia/Tehran",
+      "./usr/share/zoneinfo/posix/Asia/Thimphu",
+      "./usr/share/zoneinfo/posix/Asia/Tokyo",
+      "./usr/share/zoneinfo/posix/Asia/Ulaanbaatar",
+      "./usr/share/zoneinfo/posix/Asia/Urumqi",
+      "./usr/share/zoneinfo/posix/Asia/Yangon",
+      "./usr/share/zoneinfo/posix/Asia/Yerevan",
+      "./usr/share/zoneinfo/posix/Indian",
+      "./usr/share/zoneinfo/posix/Indian/Chagos",
+      "./usr/share/zoneinfo/posix/Indian/Maldives",
+      "./usr/share/zoneinfo/right",
+      "./usr/share/zoneinfo/right/Asia",
+      "./usr/share/zoneinfo/right/Asia/Almaty",
+      "./usr/share/zoneinfo/right/Asia/Amman",
+      "./usr/share/zoneinfo/right/Asia/Aqtau",
+      "./usr/share/zoneinfo/right/Asia/Aqtobe",
+      "./usr/share/zoneinfo/right/Asia/Ashgabat",
+      "./usr/share/zoneinfo/right/Asia/Atyrau",
+      "./usr/share/zoneinfo/right/Asia/Baghdad",
+      "./usr/share/zoneinfo/right/Asia/Baku",
+      "./usr/share/zoneinfo/right/Asia/Bangkok",
+      "./usr/share/zoneinfo/right/Asia/Beirut",
+      "./usr/share/zoneinfo/right/Asia/Bishkek",
+      "./usr/share/zoneinfo/right/Asia/Colombo",
+      "./usr/share/zoneinfo/right/Asia/Damascus",
+      "./usr/share/zoneinfo/right/Asia/Dhaka",
+      "./usr/share/zoneinfo/right/Asia/Dili",
+      "./usr/share/zoneinfo/right/Asia/Dubai",
+      "./usr/share/zoneinfo/right/Asia/Dushanbe",
+      "./usr/share/zoneinfo/right/Asia/Famagusta",
+      "./usr/share/zoneinfo/right/Asia/Gaza",
+      "./usr/share/zoneinfo/right/Asia/Hebron",
+      "./usr/share/zoneinfo/right/Asia/Ho_Chi_Minh",
+      "./usr/share/zoneinfo/right/Asia/Hong_Kong",
+      "./usr/share/zoneinfo/right/Asia/Hovd",
+      "./usr/share/zoneinfo/right/Asia/Jakarta",
+      "./usr/share/zoneinfo/right/Asia/Jayapura",
+      "./usr/share/zoneinfo/right/Asia/Jerusalem",
+      "./usr/share/zoneinfo/right/Asia/Kabul",
+      "./usr/share/zoneinfo/right/Asia/Karachi",
+      "./usr/share/zoneinfo/right/Asia/Kathmandu",
+      "./usr/share/zoneinfo/right/Asia/Kolkata",
+      "./usr/share/zoneinfo/right/Asia/Kuching",
+      "./usr/share/zoneinfo/right/Asia/Macau",
+      "./usr/share/zoneinfo/right/Asia/Makassar",
+      "./usr/share/zoneinfo/right/Asia/Manila",
+      "./usr/share/zoneinfo/right/Asia/Nicosia",
+      "./usr/share/zoneinfo/right/Asia/Oral",
+      "./usr/share/zoneinfo/right/Asia/Pontianak",
+      "./usr/share/zoneinfo/right/Asia/Pyongyang",
+      "./usr/share/zoneinfo/right/Asia/Qatar",
+      "./usr/share/zoneinfo/right/Asia/Qostanay",
+      "./usr/share/zoneinfo/right/Asia/Qyzylorda",
+      "./usr/share/zoneinfo/right/Asia/Riyadh",
+      "./usr/share/zoneinfo/right/Asia/Samarkand",
+      "./usr/share/zoneinfo/right/Asia/Seoul",
+      "./usr/share/zoneinfo/right/Asia/Shanghai",
+      "./usr/share/zoneinfo/right/Asia/Singapore",
+      "./usr/share/zoneinfo/right/Asia/Taipei",
+      "./usr/share/zoneinfo/right/Asia/Tashkent",
+      "./usr/share/zoneinfo/right/Asia/Tbilisi",
+      "./usr/share/zoneinfo/right/Asia/Tehran",
+      "./usr/share/zoneinfo/right/Asia/Thimphu",
+      "./usr/share/zoneinfo/right/Asia/Tokyo",
+      "./usr/share/zoneinfo/right/Asia/Ulaanbaatar",
+      "./usr/share/zoneinfo/right/Asia/Urumqi",
+      "./usr/share/zoneinfo/right/Asia/Yangon",
+      "./usr/share/zoneinfo/right/Asia/Yerevan",
+      "./usr/share/zoneinfo/right/Indian",
+      "./usr/share/zoneinfo/right/Indian/Chagos",
+      "./usr/share/zoneinfo/right/Indian/Maldives",
+      "./usr/share/zoneinfo/zone.tab",
+      "./usr/share/zoneinfo/zone1970.tab",
+      "./usr/share/zoneinfo/zonenow.tab"
+    ],
+    "removed_paths": []
+  },
+  "runs": {
+    "before-01": {
+      "metadata": {
+        "variant": "before",
+        "seconds": 120,
+        "windows": 5,
+        "base_commit": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+        "inputs": {
+          "output-openssl-lts/images/sdcard.img": "590b2dbf5c62d396449577bdac35fecdda794916ea1fc52e1acc996a433915f1",
+          "output-openssl-lts/images/rootfs.squashfs": "519fa51d2e24fe1b76b6f6b53d9413beb4df3d8d7cae8e4ee0c7de5340d4f052",
+          "output-openssl-lts/images/Image": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434",
+          "output-openssl-lts/images/bcm2710-rpi-cm0.dtb": "f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+          "output-openssl-lts/.config": "b036a28985a778f35acc673fe5b7253c94746571e4293b1203a8dd5a18e1d0bf",
+          "board/cardputerzero/tools/bench/write-inventory/run.py": "f615d153cd6068ae6c428639e23bc99eb8c4d8b2912cb0c3f3e61f7a3b8625cf",
+          "board/cardputerzero/tools/bench/write-inventory/guest.sh": "c3804e7f40fcb74071dc9f95c4788d597a2904497641b722b9e335bcabcfab47"
+        }
+      },
+      "exit_status": 1,
+      "serial_sha256": "6be894401cae33cfeddd5a7e2fb0d916d1f1b47d48c6b98951938bc56de96b9c",
+      "qemu_provenance": [
+        "run-qemu: dtb bluetooth=disabled base_sha256=f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+        "run-qemu: version=QEMU emulator version 11.1.2",
+        "run-qemu: machine=raspi3ap memory=512M icount=off",
+        "run-qemu: sha256 c8cf5be13646711580e18346dcd036c0f2a210dd90f84bf784247c5838940410  /usr/local/bin/qemu-system-aarch64",
+        "run-qemu: sha256 982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434  /work/output-openssl-lts/images/Image",
+        "run-qemu: sha256 211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5  /tmp/tmp.CI4eg9hHcl/qemu.dtb",
+        "run-qemu: sha256 26311e9432d6359330326ebf77c3e2d35ac3f5497ac96f3de68921d262925828  /work/output-write-inventory/before-01/sdcard.img"
+      ],
+      "environment": [],
+      "control_summary": [
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/work/board/cardputerzero/tools/bench/write-inventory/run.py\", line 124, in main",
+        "    receive(b\"\\n# \", 30)",
+        "    ~~~~~~~^^^^^^^^^^^^^",
+        "  File \"/work/board/cardputerzero/tools/bench/write-inventory/run.py\", line 95, in receive",
+        "    raise TimeoutError(f\"waiting for {marker!r}\")",
+        "TimeoutError: waiting for b'\\n# '"
+      ]
+    },
+    "before-02": {
+      "metadata": {
+        "variant": "before",
+        "seconds": 120,
+        "windows": 5,
+        "base_commit": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+        "inputs": {
+          "output-openssl-lts/images/sdcard.img": "590b2dbf5c62d396449577bdac35fecdda794916ea1fc52e1acc996a433915f1",
+          "output-openssl-lts/images/rootfs.squashfs": "519fa51d2e24fe1b76b6f6b53d9413beb4df3d8d7cae8e4ee0c7de5340d4f052",
+          "output-openssl-lts/images/Image": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434",
+          "output-openssl-lts/images/bcm2710-rpi-cm0.dtb": "f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+          "output-openssl-lts/.config": "b036a28985a778f35acc673fe5b7253c94746571e4293b1203a8dd5a18e1d0bf",
+          "board/cardputerzero/tools/bench/write-inventory/run.py": "97a45b4105801cd84546b0b38a7ae4bac7956d5c0f64931a6299ef08b8d764bf",
+          "board/cardputerzero/tools/bench/write-inventory/guest.sh": "c3804e7f40fcb74071dc9f95c4788d597a2904497641b722b9e335bcabcfab47"
+        }
+      },
+      "exit_status": 0,
+      "serial_sha256": "bc58fb2f0bd727bb5d20acc5f9958a28acaa8cb71a7f86e648504a7783ff1e6b",
+      "qemu_provenance": [
+        "run-qemu: dtb bluetooth=disabled base_sha256=f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+        "run-qemu: version=QEMU emulator version 11.1.2",
+        "run-qemu: machine=raspi3ap memory=512M icount=off",
+        "run-qemu: sha256 c8cf5be13646711580e18346dcd036c0f2a210dd90f84bf784247c5838940410  /usr/local/bin/qemu-system-aarch64",
+        "run-qemu: sha256 982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434  /work/output-openssl-lts/images/Image",
+        "run-qemu: sha256 211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5  /tmp/tmp.ziETc3AHoL/qemu.dtb",
+        "run-qemu: sha256 26311e9432d6359330326ebf77c3e2d35ac3f5497ac96f3de68921d262925828  /work/output-write-inventory/before-02/sdcard.img"
+      ],
+      "environment": [
+        "MSDENV timezone=UTC +0000",
+        "MSDENV core_limit=0 core_pattern=core"
+      ],
+      "control_summary": [
+        "before idle repeat=1 sectors={'mmcblk0': 8320, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 8320}",
+        "before idle repeat=2 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "before idle repeat=3 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "before idle repeat=4 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "before idle repeat=5 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "before ram repeat=0 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "before disk repeat=0 sectors={'mmcblk0': 2104, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 2104}",
+        "ok - complete counters and positive control: /work/output-write-inventory/before-02"
+      ]
+    },
+    "mature-01": {
+      "metadata": {
+        "variant": "mature",
+        "seconds": 120,
+        "windows": 1,
+        "base_commit": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+        "inputs": {
+          "output-write-inventory/mature-input/images/sdcard.img": "d1a4c3fcf9ab7443f341a5488b58fe2868f6b392453f7e298fec03abb7a4e283",
+          "output-write-inventory/mature-input/images/rootfs.squashfs": "519fa51d2e24fe1b76b6f6b53d9413beb4df3d8d7cae8e4ee0c7de5340d4f052",
+          "output-write-inventory/mature-input/images/Image": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434",
+          "output-write-inventory/mature-input/images/bcm2710-rpi-cm0.dtb": "f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+          "output-write-inventory/mature-input/.config": "b036a28985a778f35acc673fe5b7253c94746571e4293b1203a8dd5a18e1d0bf",
+          "board/cardputerzero/tools/bench/write-inventory/run.py": "97a45b4105801cd84546b0b38a7ae4bac7956d5c0f64931a6299ef08b8d764bf",
+          "board/cardputerzero/tools/bench/write-inventory/guest.sh": "c3804e7f40fcb74071dc9f95c4788d597a2904497641b722b9e335bcabcfab47"
+        }
+      },
+      "exit_status": 0,
+      "serial_sha256": "91c364a24283f19ce72259a89eb28fda329d5034c7f331e0aa9f078362a9e008",
+      "qemu_provenance": [
+        "run-qemu: dtb bluetooth=disabled base_sha256=f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+        "run-qemu: version=QEMU emulator version 11.1.2",
+        "run-qemu: machine=raspi3ap memory=512M icount=off",
+        "run-qemu: sha256 c8cf5be13646711580e18346dcd036c0f2a210dd90f84bf784247c5838940410  /usr/local/bin/qemu-system-aarch64",
+        "run-qemu: sha256 982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434  /work/output-write-inventory/mature-input/images/Image",
+        "run-qemu: sha256 211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5  /tmp/tmp.iTLqoW9W3R/qemu.dtb",
+        "run-qemu: sha256 d1a4c3fcf9ab7443f341a5488b58fe2868f6b392453f7e298fec03abb7a4e283  /work/output-write-inventory/mature-01/sdcard.img"
+      ],
+      "environment": [
+        "MSDENV timezone=UTC +0000",
+        "MSDENV core_limit=0 core_pattern=core"
+      ],
+      "control_summary": [
+        "mature idle repeat=1 sectors={'mmcblk0': 64, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 64}",
+        "mature ram repeat=0 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "mature disk repeat=0 sectors={'mmcblk0': 2096, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 2096}",
+        "ok - complete counters and positive control: /work/output-write-inventory/mature-01"
+      ]
+    },
+    "after-01": {
+      "metadata": {
+        "variant": "after",
+        "seconds": 120,
+        "windows": 5,
+        "base_commit": "d7d9d622eae2f5f78dc0b891203f3641f334123b",
+        "inputs": {
+          "output-openssl-lts/images/sdcard.img": "d8eab2c2ecdc1a386bb3d35fffe9ae2a7e9cc54de1124df4526e6288e12eacf3",
+          "output-openssl-lts/images/rootfs.squashfs": "588d1eefa0a48fe2b7797f211d6ba71cdc094688e3987bdb95b30a5f952531c1",
+          "output-openssl-lts/images/Image": "982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434",
+          "output-openssl-lts/images/bcm2710-rpi-cm0.dtb": "f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+          "output-openssl-lts/.config": "fe1b38852b0f4e73c1c0f3762f5ee57c901356ab75cb5b7e046f805d799da185",
+          "board/cardputerzero/tools/bench/write-inventory/run.py": "fdbf160759bcab986319a3ba4fdf8ee13bcd3d31450940a80980a5e988db2911",
+          "board/cardputerzero/tools/bench/write-inventory/guest.sh": "c3804e7f40fcb74071dc9f95c4788d597a2904497641b722b9e335bcabcfab47",
+          "board/cardputerzero/qemu/run-qemu.sh": "2f720d3703340ba9b4f28dfec30281dc7e690fe8eb367a4c14cc618063724f9c",
+          "board/cardputerzero/qemu/check-serial-log.sh": "a955ece90c22416a3552fe8f1b908b5c313c15770f2886b18a9ba1bdd1b5fa1c",
+          "board/cardputerzero/qemu/serial-allowlist.txt": "4a88637ae9593329d2d191da9a92efb62c56162f670d069816b952a359d9bece"
+        }
+      },
+      "exit_status": 0,
+      "serial_sha256": "a566137a00d3a1a5a9c79a104e7f9a173b2aa0089e535b9fffe4d512097782ce",
+      "qemu_provenance": [
+        "run-qemu: dtb bluetooth=disabled base_sha256=f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094",
+        "run-qemu: version=QEMU emulator version 11.1.2",
+        "run-qemu: machine=raspi3ap memory=512M icount=off",
+        "run-qemu: sha256 c8cf5be13646711580e18346dcd036c0f2a210dd90f84bf784247c5838940410  /usr/local/bin/qemu-system-aarch64",
+        "run-qemu: sha256 982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434  /work/output-openssl-lts/images/Image",
+        "run-qemu: sha256 211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5  /tmp/tmp.oBXvXkXGNc/qemu.dtb",
+        "run-qemu: sha256 7277ac29eb898c3aea0e0f654297f4f3eb516e15aa21b02a08a635e720a1f1d8  /work/output-write-inventory/after-01/sdcard.img"
+      ],
+      "environment": [
+        "MSDENV timezone=JST +0900",
+        "MSDENV core_limit=0 core_pattern=core"
+      ],
+      "control_summary": [
+        "after idle repeat=1 sectors={'mmcblk0': 8320, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 8320}",
+        "after idle repeat=2 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "after idle repeat=3 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "after idle repeat=4 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "after idle repeat=5 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "after ram repeat=0 sectors={'mmcblk0': 0, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 0}",
+        "after disk repeat=0 sectors={'mmcblk0': 2104, 'mmcblk0p1': 0, 'mmcblk0p2': 0, 'mmcblk0p3': 0, 'mmcblk0p4': 0, 'mmcblk0p5': 0, 'mmcblk0p6': 0, 'mmcblk0p7': 2104}",
+        "ok - complete counters and positive control: /work/output-write-inventory/after-01"
+      ]
+    }
+  },
+  "log_hashes": {
+    "after-legal-info.log": "275bf1d3b6fa7c1e212bc705468b19deb782467b21531e5c9af49b5100982a99",
+    "after-build.log": "565a22c126fbc496bde00c54c23c5eab967a227a68fc0177e28f2971ce03b76e",
+    "gcc-version.log": "01c9229d9e492c7f448cd3bfead53b560e5d7fdfb322d0dc5ddecca79713dc13",
+    "mature-01.log": "2f774498167977ff17b6b393f6aae0f2ebe08abc36f89294e6a65aa3d7281f78",
+    "tool-versions.log": "9c6f64638902b42dbab9784e14ad1292b89e6039587766e87574dc521fef21e4",
+    "zic-help.log": "1a1bbf45ba4a940b0c0696ccd4360add69679026b4a479623a42f3538fc83aab",
+    "ccache-final.log": "692a4acede50fa36fa8b8a99bfce9ad860bceff85464ebd0f10d23a7e294d32b",
+    "after-01.log": "5e62755b42edc714cb413024f32bf8bc950066e1ab28a0238d6f323c737ad506",
+    "jis.log": "d69518ba293117bbc900d1be1634db23d58bad67871a3e866a924b7c44d18d03",
+    "before-02.log": "09f978ee8724a02f89960df891acdd0dceb11781ff398827249bc19dd2174837",
+    "measurement-tests.log": "69d3092e799b33eb7dca64bf94a3536ab4fa9fc5969f0629675edb863629b707",
+    "msd-update-tests.log": "c3c16c0d36390a424d025c28aeefa8abc20d63aca155b4dcab83fe21dab53fe7",
+    "measurement-tests-counter-fixture-failed.log": "31832421dfa7842d64d983fa7f60a5e2dfababcef28219c23f3e00939079ca63",
+    "before-01.log": "7a829cf075cc6eb20a7512e7eb29f3e5f4e732d7bcc21d2ddf40ebc98af1fe0a",
+    "doc-size.log": "283338da7dbcb9e6c019a71d5748ae205779108cf0f3a21d80169ea7d611bfd7",
+    "boot-b.log": "d3991cc5f0a5ef48dd75fcb88e6d8c40081a60320e9898d9f4af48a967993f6a",
+    "shellcheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "boot-a.log": "726d47e9894dc10a173588fe337a622c2dfb1873520e46a9c3fe94d142d8522d",
+    "zic-version.log": "e1b8c25f408c10b6c2835e9faaa0969026b6aa14c060758142daad4c3a16dc5c",
+    "links.log": "9695e28dbc0222ff3e4da02f8bbbb944dd967ffb7ccd2d09d6d4057951fa9603",
+    "baseline-build.log": "a932cccc5ccd38f03678dd701e82a96cd9eb106daede9591135b86545565ce5e"
+  }
+}
