@@ -28,14 +28,33 @@
   ],
   "images": 2381,
   "image_allocated_bytes": 231195856896,
-  "kept_sdcard_images": 1053,
-  "kept_allocated_bytes": 185635528704,
+  "kept_sdcard_images": 26,
+  "kept_allocated_bytes": 6579212288,
   "final_csv_runs": 884,
   "final_csv_images_available": 884,
   "build_dirs": 1193,
-  "delete_image_files": 139,
-  "candidate_paths": 1332,
-  "freed_allocated_bytes_estimate": 103079669760,
+  "delete_image_files": 1166,
+  "candidate_paths": 2359,
+  "freed_allocated_bytes_estimate": 282135986176,
   "shared_inode_allocated_bytes_not_freed": 0,
-  "scope_kept_phase1_protected_images": 3
+  "scope_kept_phase1_protected_images": 3,
+  "kept_categories": {
+    "follow-up": {
+      "count": 15,
+      "allocated_bytes": 4617592832
+    },
+    "base-control": {
+      "count": 2,
+      "allocated_bytes": 151621632
+    },
+    "diagnostic": {
+      "count": 6,
+      "allocated_bytes": 1469104128
+    },
+    "protected-phase1": {
+      "count": 3,
+      "allocated_bytes": 340893696
+    }
+  },
+  "retention_policy": "follow-up representatives, necessary controls, selected on-disk diagnostics, protected phase1 only; no blanket CSV or j8/j4 retention"
 }
