@@ -186,6 +186,51 @@ replace_setup_tokens()
 			-e "s|%MOUNTPOINT%|$MOUNTPOINT|g"
 }
 
+open_stack()
+{
+	stack_device=$1
+	stack_mapper_name=$2
+	setup_remaining=$SETUP
+	stack_open_command=
+	stack_open_command_count=0
+	while [ -n "$setup_remaining" ]; do
+		setup_step=${setup_remaining%%;*}
+		if [ "$setup_step" = "$setup_remaining" ]; then
+			setup_remaining=
+		else
+			setup_remaining=${setup_remaining#*;}
+		fi
+		setup_step="$(printf '%s' "$setup_step" |
+			sed -e "s|%BASE_DEVICE%|$stack_device|g" \
+				-e "s|%KEYFILE%|$KEYFILE|g")"
+		# shellcheck disable=SC2086
+		set -- $setup_step
+		if [ "${1:-}" != integritysetup ] &&
+			[ "${1:-}" != cryptsetup ] ||
+			[ "${2:-}" != open ]; then
+			continue
+		fi
+		stack_open_command_count=$((stack_open_command_count + 1))
+		[ "$#" -ge 3 ] || fail "stack_open_command_missing_mapper"
+		stack_open_command=
+		while [ "$#" -gt 1 ]; do
+			if [ -z "$stack_open_command" ]; then
+				stack_open_command=$1
+			else
+				stack_open_command="$stack_open_command $1"
+			fi
+			shift
+		done
+		stack_open_command="$stack_open_command $stack_mapper_name"
+	done
+	[ "$stack_open_command_count" -eq 1 ] ||
+		fail "stack_open_command_count=$stack_open_command_count"
+	console "stack_open_command=$stack_open_command"
+	# shellcheck disable=SC2086
+	set -- $stack_open_command
+	"$@"
+}
+
 run_setup_commands()
 {
 	make_keyfiles
@@ -257,11 +302,7 @@ attach_test_disk()
 		L*|I*|B5)
 			if [ "$phase" = verify ]; then
 				make_keyfiles
-				case "$BASE_CONFIG" in
-					L*|B5) cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ;;
-					I1) integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ;;
-					I2) integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ;;
-				esac
+				open_stack "$LOOP_DATA" "$MAPPER_NAME"
 			fi
 			;;
 	esac
@@ -1115,27 +1156,9 @@ open_t1_replay_stack()
 	REPLAY_DEVICE=$SNAPSHOT_DEVICE
 	REPLAY_WORKLOAD_ROOT=$REPLAY_MOUNT
 	case "$BASE_CONFIG" in
-		L*|B5)
-			if cryptsetup open --key-file "$KEYFILE" "$SNAPSHOT_DEVICE" \
-				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
-				stack_open=yes
-				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
-			else
-				stack_open=no
-			fi
-			;;
-		I1)
-			if integritysetup open "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
+		L*|I*|B5)
+			if open_stack "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
 				>"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
-				stack_open=yes
-				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
-			else
-				stack_open=no
-			fi
-			;;
-		I2)
-			if integritysetup open --integrity-bitmap-mode "$SNAPSHOT_DEVICE" \
-				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
 				stack_open=yes
 				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
 			else
@@ -1706,16 +1729,8 @@ unmount_volume()
 open_config_stack()
 {
 	case "$BASE_CONFIG" in
-		L*|B5)
-			cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ||
-				fail "T6_stack_open_failed"
-			;;
-		I1)
-			integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ||
-				fail "T6_stack_open_failed"
-			;;
-		I2)
-			integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ||
+		L*|I*|B5)
+			open_stack "$LOOP_DATA" "$MAPPER_NAME" ||
 				fail "T6_stack_open_failed"
 			;;
 	esac
