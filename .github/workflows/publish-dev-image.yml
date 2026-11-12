@@ -60,8 +60,9 @@ jobs:
           set -euo pipefail
           tag="$(docker/msd-dev tag)"
           push=false
-          if [[ "$EVENT_NAME" == "push" && "$EVENT_REF" == "refs/heads/main" ]] ||
-             [[ "$EVENT_NAME" == "workflow_dispatch" && "$DRY_RUN" != "true" ]]; then
+          if [[ "$EVENT_REF" == "refs/heads/main" ]] &&
+             { [[ "$EVENT_NAME" == "push" ]] ||
+               [[ "$EVENT_NAME" == "workflow_dispatch" && "$DRY_RUN" != "true" ]]; }; then
             push=true
           fi
           changed=true
@@ -100,9 +101,6 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: read
-      packages: write
-      id-token: write
-      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -111,9 +109,6 @@ jobs:
             runner: ubuntu-26.04
           - arch: arm64
             runner: ubuntu-26.04-arm
-    outputs:
-      digest_amd64: ${{ steps.publish.outputs.digest_amd64 }}
-      digest_arm64: ${{ steps.publish.outputs.digest_arm64 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -194,9 +189,73 @@ jobs:
             exit 1
           fi
 
+      - name: Compress image for publication
+        if: needs.plan.outputs.push == 'true' && github.ref == 'refs/heads/main'
+        run: gzip -1 "$RUNNER_TEMP/msd-dev.tar"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: needs.plan.outputs.push == 'true' && github.ref == 'refs/heads/main'
+        with:
+          name: msd-dev-image-${{ matrix.arch }}
+          path: ${{ runner.temp }}/msd-dev.tar.gz
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+  publish-arch:
+    needs:
+      - plan
+      - build
+    if: github.ref == 'refs/heads/main' && needs.plan.outputs.push == 'true' && needs.build.result == 'success'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-26.04
+          - arch: arm64
+            runner: ubuntu-26.04-arm
+    outputs:
+      digest_amd64: ${{ steps.publish.outputs.digest_amd64 }}
+      digest_arm64: ${{ steps.publish.outputs.digest_arm64 }}
+    steps:
+      - name: Download this run's checked image and SBOM
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          gh run download "$RUN_ID" --name "msd-dev-image-${ARCH}" --dir "$RUNNER_TEMP/image"
+          gh run download "$RUN_ID" --name "msd-dev-trivy-${ARCH}" --dir "$RUNNER_TEMP/scan"
+
+      - name: Load checked image without running it
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          docker load --input "$RUNNER_TEMP/image/msd-dev.tar.gz"
+          expected="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["image_id"])' \
+            "$RUNNER_TEMP/scan/image-provenance.json")"
+          actual="$(docker image inspect msd-dev:ci --format '{{.Id}}')"
+          architecture="$(docker image inspect msd-dev:ci --format '{{.Architecture}}')"
+          os="$(docker image inspect msd-dev:ci --format '{{.Os}}')"
+          if [[ ! "$expected" =~ ^sha256:[0-9a-f]{64}$ ||
+                "$expected" != "$actual" || "$architecture" != "$ARCH" || "$os" != "linux" ]]; then
+            printf 'Transferred image does not match the checked image or platform.\n' >&2
+            exit 1
+          fi
+
       - id: publish
         name: Push architecture image
-        if: needs.plan.outputs.push == 'true'
         env:
           IMAGE_TAG: ${{ needs.plan.outputs.tag }}
           ARCH: ${{ matrix.arch }}
@@ -222,13 +281,12 @@ jobs:
           printf 'digest_%s=%s\n' "$ARCH" "$digest" >> "$GITHUB_OUTPUT"
 
       - uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
-        if: needs.plan.outputs.push == 'true'
         env:
           IMAGE: ghcr.io/uist1idrju3i/msd-dev
           IMAGE_TAG: ${{ needs.plan.outputs.tag }}
           ARCH: ${{ matrix.arch }}
           DIGEST: ${{ steps.publish.outputs.digest }}
-          SBOM_PATH: ${{ runner.temp }}/sbom.spdx.json
+          SBOM_PATH: ${{ runner.temp }}/scan/sbom.spdx.json
         with:
           subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ env.DIGEST }}
@@ -274,8 +332,8 @@ jobs:
   publish:
     needs:
       - plan
-      - build
-    if: needs.plan.outputs.push == 'true' && needs.build.result == 'success'
+      - publish-arch
+    if: github.ref == 'refs/heads/main' && needs.plan.outputs.push == 'true' && needs.publish-arch.result == 'success'
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
@@ -292,8 +350,8 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GH_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AMD64_DIGEST: ${{ needs.build.outputs.digest_amd64 }}
-          ARM64_DIGEST: ${{ needs.build.outputs.digest_arm64 }}
+          AMD64_DIGEST: ${{ needs.publish-arch.outputs.digest_amd64 }}
+          ARM64_DIGEST: ${{ needs.publish-arch.outputs.digest_arm64 }}
         run: |
           set -euo pipefail
           for digest in "$AMD64_DIGEST" "$ARM64_DIGEST"; do

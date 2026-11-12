@@ -6,24 +6,14 @@
 |---|---|---|
 | `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
 | `release-sign.yml` | `main`上の手動実行だけ | 公開鍵だけで構築し、同じcommitとtar hashを確認したEnvironment `release-signing`の別jobでmanifestに署名します。tag・Releaseは作成しません。 |
-| `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があればamd64とarm64を作成してTrivy検査します。修正版のあるHIGH/CRITICAL脆弱性と、HIGH/CRITICALの秘密情報・設定不備を公開ゲート対象にします。`main` pushと手動実行ではGHCRへ公開し、SBOM/provenanceのattestationを付けます。`dry_run`で手動公開を省けます。 |
-| `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | GHCR の `latest` を週次で検査し、公開ゲート対象を先にIssueへ表示します。安全な全件JSON、image ID、検査器とDBの情報をartifactに保存します。検出事項では失敗しませんが、イメージの取得失敗では失敗します。 |
+| `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があれば両archを読取専用jobでbuild・検査します。公開ゲートは修正可能なHIGH/CRITICAL脆弱性とHIGH/CRITICALの秘密情報・設定不備が対象です。push・attestationはmain限定の別jobで実行します。手動の`dry_run`とmain以外の実行は公開しません。 |
+| `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | `latest`のindex digestを一度だけ解決し、amd64とarm64を検査します。arch別の選別済みJSONとimage・検査器の情報を保存し、mainでは一つのIssueへ集約します。検出事項では失敗しませんが、片方でも検査失敗・資料欠落なら未確認として失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新ありは通知のみ、upstream の通信失敗・未照合はjobを失敗させます。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
 | `security.yml` | 全 PR、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。mainの定期・手動実行は「製品SBOMの脆弱性監視」Issueを更新して差分をコメント（自動closeなし）。 |
 
-## 監視Issueの更新と失敗
-
-2026-11-12に、Issueへ通知する3系統を見直しました。対象は「製品SBOMの脆弱性監視」「固定版の更新確認」「開発用イメージの脆弱性」です。[共通script](../.github/scripts/tracking-issue.py)はopen Issueを100件ずつページ送りし、PRを除いて題名の完全一致で既存Issueを探します。作成直前にも再検索します。定期・手動実行は監視ごとの固定concurrency groupで直列化し、実行中のjobは自動中止しません。製品CVEのPR用groupはrefごとに分け、Issueを更新しません。別のscriptや人間による同時作成までAPI側で排他する仕組みではありません。
-
-scan、feed・artifactの取得、SBOM/VEX・Trivy入力の検証、reportの準備に失敗した場合は、成功した検出なしと区別します。失敗時の通知は`always()`で実行し、job summaryに「監視に失敗」「未確認」を表示して非ゼロ終了します。既存Issueの本文は保持し、本文が最後に確認できた結果であることと失敗通知・run URLをコメントします。Issueがない場合だけ失敗本文で作成します。検出件数や解消を報告せず、Issueを閉じません。通信・権限の問題でIssue自体を更新できない場合もsummaryとjobの失敗に残します。runnerやcheckout自体が動かない場合の通知を保証するものではありません。
-
-固定版の「確認できず」はreportを保存したうえで終了値2となり、正常な「全て最新」から分けます。Trivyの対象なし・不正な結果を検出なしとは扱いません。製品CVEでは、空のSBOM/VEX、未知のcomponent参照、欠落・未知のanalysis stateを拒否し、stateの検証後にだけ件数をsummaryへ載せます。前回成功stateの取得失敗も初回の基準作成と区別します。成功履歴がない場合のみ初回基準を作ります。CPEなしの依存を含む全件照合や安全性を証明する変更ではありません。
-
-Buildrootの`IGNORE_CVES`に由来する`in_triage`は有効な状態です。影響あり・解消・scan失敗とは分け、stateの`in_triage`とIssue・step summaryの「未評価（Buildrootの無視指定）」欄へCVE、component、組み合わせの件数を残します。PR #230以前はこの状態を`findings`にも解消件数にも記録していませんでした。schema 2と`findings`の意味、PR gateの対象は維持し、新しい欄だけを追加します。旧stateに欄がない場合は空として読み、初回差分での追加は新しい脆弱性の発生を示しません。影響ありと未評価の移動は「状態変更」で通知し、未評価の一覧から除外されたことだけで解消とは断定しません。
-
-回帰は`python3 tests/check-cve-monitor/run.py`、`tests/check-pins/run.sh`、`tests/trivy-gate/run.sh`で確認します。Issue検索・作成はmockを使い、live Issueへの試験投稿や同時workflowの実行はしていません。
+3系統の通知は共通scriptで処理します。ページ送り、同時実行、失敗時の本文保持、未評価stateの扱いと回帰の範囲は[監視Issueの運用](ci-monitoring.md)を参照してください。
 
 ## main の必須チェック
 
@@ -105,7 +95,7 @@ quote	<exact-path>	<characters>	<reason>
 
 ## SBOM、VEX、カーネル設定
 
-開発用OCIの週次検査は、先頭100件を超える検出事項も`development-image-findings` artifactの`trivy-findings.json`に保存します。検出した秘密値やコードを含みうる元のTrivy JSONはアップロードしません。artifactには`image-provenance.json`、`trivy-version.txt`、Issueと同じ本文も含めます。検出の適用範囲と確認の限界は[開発用OCIの調査](research/operations/development-image-security.md)を参照してください。
+開発用OCIの週次検査は、全件の選別済みJSONを`development-image-findings-amd64`と`development-image-findings-arm64`へ保存します。元のTrivy JSONはアップロードしません。集約Issue、失敗時の扱い、公開jobの権限と受け渡しは[開発用コンテナーのCI運用](../docker/README.md#ociの監視と公開)にまとめます。検出範囲の限界は[開発用OCIの調査](research/operations/development-image-security.md)を参照してください。
 
 公開前の`publish-dev-image.yml`も元のTrivy JSONをartifactへアップロードせず、選別した全件、レポート、image IDと検査器の版、SPDX SBOMを保存します。SBOMそのものの機密情報の有無を確認したという意味ではありません。[GitHub Actionsの監査](research/operations/github-actions-audit.md)に権限・実行条件・監視漏れを記録しています。
 
