@@ -54,4 +54,4 @@ M5 packageは外部moduleをbuildし、`KCFLAGS`へ`CONFIG_CARDPUTERO_V0_5=1`を
 - [固定kernelのソース](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602)、[同版のkernel引数](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/kernel-parameters.txt)、[sysctl](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/sysctl)
 - [Linux 6.18のkernel引数の説明](https://docs.kernel.org/6.18/admin-guide/kernel-parameters.html)。Raspberry Pi固有の差は固定ソースを優先する。
 - [M5 packageのbuildとoverlay生成](../../../package/m5stack-cardputerzero/m5stack-cardputerzero.mk)、[kernel fragment](../../../board/cardputerzero/linux.fragment)
-- [moduleの引数](../tuning/tunables-module-params.md)、[sysctl](../tuning/tunables-sysctl.md)、[既定値の実測](../tuning/tunables-defaults.md)。当時の測定条件を維持し、今回の設定CSVと異なる版の結果を混ぜない。
+- [moduleの引数](../tuning/tunables-module-params.md)、sysctl（[system](../tuning/tunables-sysctl-system.md)、[IPv4](../tuning/tunables-sysctl-ipv4.md)、[その他のnetwork](../tuning/tunables-sysctl-network.md)）、[既定値の実測](../tuning/tunables-defaults.md)。当時の測定条件を維持し、今回の設定CSVと異なる版の結果を混ぜない。
