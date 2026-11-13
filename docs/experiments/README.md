@@ -1,5 +1,7 @@
 # 実験記録
 
+- [2026-11-13 調査と生データの収録監査](2026-11-13-research-audit.md)：12主題、outputのraw保全、fs-compareのhash照合、未保存imageの一覧。
+
 [文書案内](../README.md) / [調査の索引](../../RESEARCH.md)。ここでの「完了」は記載した条件で実験を終えたことを表し、製品への採用や実機動作の確認とは別です。Yocto 検討は移行見送りで、[Buildroot への還元](../research/yocto-migration/buildroot-lessons.md)に再点検した範囲を記載しています。
 
 実験・測定・比較の記録を 1 件 1 ファイルで置きます。書き方は `.agents/skills/experiment-record/SKILL.md` に従います。ファイル名は `YYYY-MM-DD-sNN-<short>.md` とし、生の値は同じ名前の `.csv` にします。S1〜S17 のどれにも属さない実験の記録名は `YYYY-MM-DD-<short>.md`（sNN なし）です。これらもこの一覧に載せます。覆った結論も消さず、状態を「置換」にして新しい記録へリンクします。

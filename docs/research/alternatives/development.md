@@ -8,6 +8,8 @@
 
 ## 構築基盤と実行環境
 
+Buildrootを維持したままsourceの取得方式を変える案は、[shallow submodule・full clone・archive・subtreeの比較と容量の訂正](../verification/session-audit-2026-11-13.md)へ分けます。OS基盤の移行と同じ判断にはしません。
+
 実行中のcache・並列化と費用、Docker内toolchainとBuildroot host packageの区別、改善案の優先順は[CIの追加調査](../operations/ci-build-scope-and-performance.md)を参照してください。候補の機能と、実際に設定・検証した範囲を分けています。
 
 | 現行と候補 | 何を改善できるか | 費用・条件と再評価の結論 |

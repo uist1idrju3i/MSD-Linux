@@ -161,3 +161,9 @@ MSD_DEV_IMAGE=msd-dev-snapshot:fixed docker/msd-dev tests/msd-update/run.sh
 | fixed-gate.md | `8673e3fa154de7aae6c5fe04ed80d43ff63703a3e0ffe6566e4fbd5be14c2e4b` |
 
 採用するのはローカルamd64の公開gate解消です。arm64は修正版の署名付きindexだけを確認し、OCIのbuild・scanは未実施です。CI・公開attestation、製品のcold/full build、今回のlegal-info、実機LCD・keyboard・I2C・firmware tryboot・実電源断、全依存の安全性は未確認です。通常のbuildには既存のCA bootstrap取得も残り、完全な再現性や無脆弱性を主張しません。文書の画面表示も未確認です。
+
+## 2026-11-13の保存監査による補足
+
+上記の実験時にcommitしなかったraw Trivy JSON、build/QEMU log、APTの取得metadata等は、[保存監査](../research/verification/session-evidence-2026-11-13.md)でdata branchへ追加しました。Trivy DB本文1,764,192,256 bytesと旧新OCI tarは引き続きGit未保存で、原本を削除せず、sizeとhashを一覧へ残しています。今回再hashしたDBは元の値と一致しました。新しいscanやQEMUの再試験は行っておらず、実験当時の確認範囲は変更しません。
+
+保存した`pr229-arm64-verified.zip`の中も読みました。`image-provenance.json`はarchitectureを`arm64`、image IDを`sha256:527357b9f4129d62a3cd476fa982d7779fd1df570ea8220b2d046400a2075088`と記録しています。Trivy 0.76.1、DB UpdatedAt `2026-11-12T12:59:19.777478911Z`のreportは脆弱性1718件・公開gate対象0件で、findings JSONの`blockers`も空でした。これは保存artifact内の観測です。zip内にはrun/commitとの対応がなく、file名だけでPR #229の特定runの結果と認定したり、上記のローカル実験をarm64実行済みへ書き換えたりはしません。
