@@ -102,6 +102,7 @@ SoC・ストレージ・LCD・キーボード・I2C・音声・USB・電源な�
 
 - [固定コンポーネントの機能・設定・引数と現行値](docs/research/component-options/README.md)
 - [SBOMの生成・確認範囲と監視の限界](docs/research/operations/sbom-coverage.md)
+- [legal-info補足資料の収集と残件](docs/research/operations/legal-info-supplement.md) — 選択肢Aを実装。固定Buildroot archiveとBootlinのlicenseを補足し、原警告と未収集source・patchを保持。
 - [全依存の一覧・最新版候補・版と脆弱性の監視範囲](docs/research/dependencies/README.md)
 - [検証・測定の入口](docs/research/verification/README.md) — host、製品build、QEMU、実機の証拠の境界。
 - [S1–S17の試験台帳](docs/research/verification/experiment-catalog.md) — 個別実験の記録・条件・残る不足。

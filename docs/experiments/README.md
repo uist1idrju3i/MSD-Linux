@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-13-legal-info-supplement](2026-11-13-legal-info-supplement.md) | [採取値](2026-11-13-legal-info-supplement.csv) | 2026-11-13 | 実legal-info・hash照合 | 固定Buildroot archiveとBootlinの41 license fileを補足。原261 fileと警告2件は不変、A/A全50 fileが一致。23 source archive・patch・builder tree・Linux headers licenseは未収集。 |
 | [2026-11-13-seedrng-zram](2026-11-13-seedrng-zram.md) | [測定](2026-11-13-seedrng-zram.csv) | 2026-11-13 | 実装・QEMU確認 | seed自動保存を停止し、built-in zramをconsole開始後に有効化。boot各5回、crng時刻、圧縮可能な負荷でswap使用を確認。実機と`=y`対`=m`の単独比較は未実施。 |
 | [2026-11-12-write-inventory](2026-11-12-write-inventory.md) | [測定](2026-11-12-write-inventory.csv) | 2026-11-12 | QEMU測定、idle基準は未達 | 初回idleにp7の8320 sector増加。RAM配置を確認し既定timezoneをTokyoへ変更。拡張済み再bootも64 sector増え、原因の寄与と実機は未確認。 |
 | [2026-11-12-pages-headers](2026-11-12-pages-headers.md) | [結果](2026-11-12-pages-headers.csv) | 2026-11-12 | 描画・preview応答確認 | 画素差0。pages.devでヘッダー配信確認。Analytics注入・実送信は未確認。 |

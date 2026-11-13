@@ -55,6 +55,8 @@ Bootlinには2026.08-1があるが、固定したBuildroot安定系列の選択�
 
 2026-11-12追記：上記のhash欠落は当時の記録です。固定kernelのlicense 3 fileを[外部linux.hash](../../../board/cardputerzero/patches/linux/linux.hash)へ、M5のCOPYINGを[packageのhash](../../../package/m5stack-cardputerzero/m5stack-cardputerzero.hash)へ追加しました。固定上流原文と照合し、同じ既存出力で`legal-info`を変更前後に各1回実行した結果、対象のERROR 3行・WARNING 1行はなくなりました。[検証記録](../../experiments/2026-11-12-legal-info-hashes.md)に検査経路・manifest・残る警告を記載します。Buildroot source未保存とBootlinのlicense file未定義、M5 firmware等のunknownは未解決です。
 
+2026-11-13追記：[選択肢Aのcollector](../operations/legal-info-supplement.md)で、製品側gitlinkのBuildroot sourceとBootlinのlicense原文を補足しました。実legal-infoの原261 fileと警告2件は不変です。25 componentのmanifestと41 license fileのSHA-256を照合しましたが、23 source archive、patch、Bootlin builder tree、Linux headers licenseは未収集です。SBOMのunknownを書き換えたり、完全な対応sourceや配布許諾を確認したりしたものではありません。
+
 ## 再確認の手順
 
 1. [source-record.json](source-record.json)のrunからartifactを取得し、SBOMとshow-infoのbyte数・SHA-256を照合する。権限と保存期限によりartifactを取得できない場合は、同じheadではなく同じtest mergeを再現できるかも確認する。

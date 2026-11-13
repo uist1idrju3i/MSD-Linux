@@ -36,9 +36,9 @@
 
 ## 2026-11-13のlegal-info方針
 
-[利用者の決定](../../design/product-decisions.md)は選択肢Aの補足資料collectorです。まだ実装していません。固定Buildroot sourceと外部treeの対応、Bootlinのlicense原文とcomponent別source・patchの参照を補足する方針で、全sourceを集める選択肢Bは今回の範囲にしません。
+[利用者の決定](../../design/product-decisions.md)に従い、選択肢Aの[補足資料collector](../../../.github/scripts/legal-info-supplement.py)を実装しました。CIの`make legal-info`直後に実行し、固定Buildroot source、Bootlinのlicense原文とcomponent別source・patchの参照を追加します。全sourceを集める選択肢Bは今回の範囲にしません。
 
-原ログ・manifest・警告を保持し、追加した材料と未収集の範囲を明記します。Buildroot source未保存・Bootlin license file未定義の警告を、変数宣言だけで消す扱いにはしません。補足後も警告ゼロ、完全な対応source、全配布物の許諾確認を主張しません。collectorの実装・収集・照合と`make legal-info`による確認は今後の作業です。
+実legal-infoで25 component・41 license fileのhashを検査し、原261 fileの不変と警告2件の保持を照合しました。[実験記録](../../experiments/2026-11-13-legal-info-supplement.md)と[再実行・metadata更新手順](legal-info-supplement.md)を参照してください。原ログ・manifest・警告を保持し、補足後も警告ゼロ、完全な対応source、全配布物の許諾確認を主張しません。外部tree全体、23 source archive、patch、Bootlin builder tree、Linux headersのlicenseは未収集です。
 
 ## 根拠となる実装
 

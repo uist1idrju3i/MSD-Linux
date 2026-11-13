@@ -260,6 +260,7 @@ jobs:
             CCACHE_DIR="${BR2_CCACHE_DIR}" "$ccache_bin" -z
             make -C output -j"$(nproc)"
             make -C output legal-info
+            python3 .github/scripts/legal-info-supplement.py --output output
           '
 
       - name: Check module dependency index
