@@ -1,0 +1,178 @@
+[
+  {
+    "root": "repo/output-dev-image-scan-arm64",
+    "apparent_bytes": 407364,
+    "selected_files": 52,
+    "selected_bytes": 407364,
+    "new_files": 48,
+    "new_bytes": 392122
+  },
+  {
+    "root": "repo/output-dev-image-snapshot",
+    "apparent_bytes": 2430283144,
+    "selected_files": 175,
+    "selected_bytes": 139294084,
+    "new_files": 107,
+    "new_bytes": 39021832
+  },
+  {
+    "root": "repo/output-legal-info-remaining",
+    "apparent_bytes": 180388,
+    "selected_files": 14,
+    "selected_bytes": 180388,
+    "new_files": 14,
+    "new_bytes": 180388
+  },
+  {
+    "root": "repo/output-legal-supplement",
+    "apparent_bytes": 865604894,
+    "selected_files": 338,
+    "selected_bytes": 16096901,
+    "new_files": 213,
+    "new_bytes": 14011877
+  },
+  {
+    "root": "repo/output-monitor-issue-paging",
+    "apparent_bytes": 55353955,
+    "selected_files": 42,
+    "selected_bytes": 55353955,
+    "new_files": 39,
+    "new_bytes": 55349872
+  },
+  {
+    "root": "repo/output-openssl-evidence",
+    "apparent_bytes": 1485766306,
+    "selected_files": 5545,
+    "selected_bytes": 330991650,
+    "new_files": 5494,
+    "new_bytes": 329876180
+  },
+  {
+    "root": "repo/output-openssl-lts",
+    "apparent_bytes": 7473228755,
+    "selected_files": 264,
+    "selected_bytes": 15605285,
+    "new_files": 12,
+    "new_bytes": 252622
+  },
+  {
+    "root": "repo/output-openssl-main",
+    "apparent_bytes": 7476533256,
+    "selected_files": 208,
+    "selected_bytes": 7360846,
+    "new_files": 7,
+    "new_bytes": 311418
+  },
+  {
+    "root": "repo/output-openssl-minimal-research",
+    "apparent_bytes": 483221,
+    "selected_files": 15,
+    "selected_bytes": 483221,
+    "new_files": 13,
+    "new_bytes": 259883
+  },
+  {
+    "root": "repo/output-pages-headers",
+    "apparent_bytes": 18443391,
+    "selected_files": 200,
+    "selected_bytes": 18029915,
+    "new_files": 107,
+    "new_bytes": 9375995
+  },
+  {
+    "root": "repo/output-pqc-groups",
+    "apparent_bytes": 261028120,
+    "selected_files": 7,
+    "selected_bytes": 2225955
+  },
+  {
+    "root": "repo/output-pqc-groups-driver.log",
+    "apparent_bytes": 1604,
+    "selected_files": 1,
+    "selected_bytes": 1604
+  },
+  {
+    "root": "repo/output-pqc-groups-r2",
+    "apparent_bytes": 895901615,
+    "selected_files": 15,
+    "selected_bytes": 10953356
+  },
+  {
+    "root": "repo/output-pqc-groups-r2-driver.log",
+    "apparent_bytes": 74,
+    "selected_files": 1,
+    "selected_bytes": 74
+  },
+  {
+    "root": "repo/output-pqc-qemu",
+    "apparent_bytes": 1242885785,
+    "selected_files": 3,
+    "selected_bytes": 24449
+  },
+  {
+    "root": "repo/output-pqc-qemu-driver.log",
+    "apparent_bytes": 309,
+    "selected_files": 1,
+    "selected_bytes": 309
+  },
+  {
+    "root": "repo/output-pqc-qemu-r2",
+    "apparent_bytes": 1242923466,
+    "selected_files": 4,
+    "selected_bytes": 62130
+  },
+  {
+    "root": "repo/output-pqc-qemu-r2-driver.log",
+    "apparent_bytes": 58,
+    "selected_files": 1,
+    "selected_bytes": 58
+  },
+  {
+    "root": "repo/output-release-signing-qemu",
+    "apparent_bytes": 3977539976,
+    "selected_files": 32,
+    "selected_bytes": 121218,
+    "new_files": 18,
+    "new_bytes": 38189
+  },
+  {
+    "root": "repo/output-seedrng-zram",
+    "apparent_bytes": 11142248680,
+    "selected_files": 107,
+    "selected_bytes": 4304947,
+    "new_files": 91,
+    "new_bytes": 3894563
+  },
+  {
+    "root": "repo/output-vendor-update-copying-hash",
+    "apparent_bytes": 21813,
+    "selected_files": 2,
+    "selected_bytes": 21813,
+    "new_files": 2,
+    "new_bytes": 21813
+  },
+  {
+    "root": "repo/output-write-inventory",
+    "apparent_bytes": 8667939619,
+    "selected_files": 108,
+    "selected_bytes": 1405585,
+    "new_files": 101,
+    "new_bytes": 1247936
+  },
+  {
+    "root": "repo/output",
+    "apparent_bytes": 6173,
+    "selected_files": 9,
+    "selected_bytes": 6173,
+    "new_files": 9,
+    "new_bytes": 6173
+  },
+  {
+    "root": "fs-compare-local",
+    "apparent_bytes": 1146797074917,
+    "selected_files": 74943,
+    "selected_bytes": 1753409891,
+    "new_files": 44546,
+    "new_bytes": 1151338435
+  }
+]

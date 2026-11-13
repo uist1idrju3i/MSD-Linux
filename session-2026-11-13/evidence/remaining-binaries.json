@@ -1,0 +1,57 @@
+{
+  "output-openssl-evidence": {
+    "files": 10,
+    "apparent_bytes": 968950138,
+    "allocated_bytes": 125886464
+  },
+  "output-openssl-lts": {
+    "files": 10,
+    "apparent_bytes": 969052242,
+    "allocated_bytes": 126054400
+  },
+  "output-openssl-main": {
+    "files": 10,
+    "apparent_bytes": 968999308,
+    "allocated_bytes": 126038016
+  },
+  "output-pqc-groups-r2": {
+    "files": 6,
+    "apparent_bytes": 124088320,
+    "allocated_bytes": 124088320
+  },
+  "output-pqc-qemu": {
+    "files": 2,
+    "apparent_bytes": 1207959552,
+    "allocated_bytes": 811982848
+  },
+  "output-pqc-qemu-r2": {
+    "files": 2,
+    "apparent_bytes": 1207959552,
+    "allocated_bytes": 816185344
+  },
+  "output-release-signing-qemu": {
+    "files": 13,
+    "apparent_bytes": 3706318525,
+    "allocated_bytes": 2846859264
+  },
+  "output-seedrng-zram": {
+    "files": 22,
+    "apparent_bytes": 11063380312,
+    "allocated_bytes": 5152882688
+  },
+  "output-write-inventory": {
+    "files": 35,
+    "apparent_bytes": 8275604590,
+    "allocated_bytes": 3824709632
+  },
+  "fs-compare-local/runs": {
+    "files": 132,
+    "apparent_bytes": 1062467534848,
+    "allocated_bytes": 33629392896
+  },
+  "fs-compare-local/phase1-r2-investigation": {
+    "files": 6,
+    "apparent_bytes": 49425678336,
+    "allocated_bytes": 279072768
+  }
+}
