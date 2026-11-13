@@ -9,6 +9,7 @@
 - CardputerZero向けBuildroot構成、A/B更新手順、QEMUを含む検証手順を整備しました。
 - 調査・測定記録を主題別に整理し、再現条件と未確認範囲を追跡できるようにしました。
 - 起動時の `/etc/issue` と `os-release` に、版、commit時刻（JST）、commit IDを記録します。
+- 初回起動からRAM約50%のzram swapを使います。console開始後にbackgroundで有効化し、zstdを優先します。永続storageへのwritebackは使いません。
 
 ### 変更
 
@@ -17,6 +18,8 @@
 - CIの文書検査と開発用imageの構築・検査を改善しました。
 
 ### セキュリティ
+
+- seedrngの起動・停止時の永続seed保存と`/data/seedrng`の作成をやめ、kernelのhwrngを維持します。既存SDの古いseedを消去する変更ではなく、乱数の品質と実機の起動時保証は未確認です。
 
 - Cloudflare PagesにCSP・機能制限・埋め込み拒否を指定し、previewの検索登録を抑止します。外部資源の例外は承認済みのWeb Analyticsだけです。
 - 開発用imageの定期検査をamd64とarm64に広げ、両方の結果を一つのIssueへ集約します。公開はmainだけに限定し、buildの読取専用jobからpush・attestationを分離しました。

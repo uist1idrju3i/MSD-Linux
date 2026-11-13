@@ -4,6 +4,7 @@ set -eu
 seconds="${1:?interval seconds}"
 windows="${2:?window count}"
 case "$seconds:$windows" in *[!0-9:]*|0:*|*:0) exit 2 ;; esac
+dmesg -n 1
 
 snapshot() {
 	phase="$1"

@@ -57,6 +57,7 @@ for script in \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S97msd-hwinfo \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S98msd-ready \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health \
+	board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-zram \
 	board/cardputerzero/tools/bench/boottime/rcS \
 	board/cardputerzero/tools/bench/boottime/S99zz-boottime-dump \
 	board/cardputerzero/tools/bench/s3/S02zz-s3verify \

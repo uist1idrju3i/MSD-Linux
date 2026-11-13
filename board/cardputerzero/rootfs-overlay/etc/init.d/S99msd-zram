@@ -1,0 +1,48 @@
+#!/bin/sh
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+mkdir /run/msd-zram.lock 2>/dev/null || exit 0
+(
+	set -eu
+	trap 'rmdir /run/msd-zram.lock' EXIT
+	console_started() {
+		# shellcheck disable=SC2013 # children contains space-separated PIDs.
+		for pid in $(cat /proc/1/task/1/children); do
+			name="$(cat "/proc/$pid/comm" 2>/dev/null || true)"
+			case "$name" in
+				getty|login|sh|-sh) return 0 ;;
+			esac
+		done
+		return 1
+	}
+	attempt=0
+	until console_started; do
+		attempt=$((attempt + 1))
+		[ "$attempt" -lt 60 ] || exit 1
+		sleep 1
+	done
+	sleep 1
+
+	if awk '$1 == "/dev/zram0" { found = 1 } END { exit !found }' /proc/swaps; then
+		exit 0
+	fi
+	test -b /dev/zram0
+	algorithms=" $(cat /sys/block/zram0/comp_algorithm) "
+	case "$algorithms" in
+		*" zstd "*|*" [zstd] "*) algorithm=zstd ;;
+		*" lzo-rle "*|*" [lzo-rle] "*) algorithm=lzo-rle ;;
+		*) exit 1 ;;
+	esac
+	size="$(awk '$1 == "MemTotal:" { printf "%.0f\n", int($2 / 2) * 1024; exit }' /proc/meminfo)"
+	case "$size" in
+		''|*[!0-9]*|0) exit 1 ;;
+	esac
+	printf '%s\n' "$algorithm" > /sys/block/zram0/comp_algorithm
+	printf '%s\n' "$size" > /sys/block/zram0/disksize
+	mkswap /dev/zram0
+	swapon -p 100 /dev/zram0
+) </dev/null >/run/msd-zram.log 2>&1 &
