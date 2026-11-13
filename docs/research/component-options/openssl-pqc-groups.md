@@ -1,7 +1,7 @@
-# PQCとhybrid TLS groupsの判断資料（未決定）
+# PQCとhybrid TLS groupsの判断資料（維持を決定）
 
 [OpenSSL削減案](openssl-minimal.md) / [実行時設定](openssl-minimal-runtime.md) / [索引](README.md)。
-2026-11-13の資料です。**採否は利用者が決めます。製品のConfigure引数・openssl.cnf・署名形式は変更していません。**
+2026-11-13の資料です。**同日19:52 JSTに利用者がDEFAULT groupsとML-KEMの維持を決定しました。ML-DSA／SLH-DSAの削除は署名移行の計画時に判断します。製品のConfigure引数・openssl.cnf・署名形式は変更していません。**
 
 ## 3.5.9の既定groups
 
@@ -70,7 +70,7 @@ HNDL（Harvest Now, Decrypt Later）は、暗号化通信を今記録して将�
 
 TLS key exchangeをPQC化しても、現在のEd25519更新署名は量子耐性署名に変わりません。署名では将来の偽造・信頼鍵の長寿命が課題です。ML-DSAをbuildに残すだけでも解決しません。新しい署名形式、trust anchorの配備、旧／新鍵の重複期間、鍵IDとalgorithmの拘束、失効・rollback防止、旧端末の復旧を設計する必要があります。RAUC／SWUpdateのCMS受理形式・TLS signature scheme・単独EVP署名APIを同一視しません。[鍵と信頼状態](../release-client/trust-and-state.md)の未実装事項を先に詰めます。
 
-## 選択肢と推奨（利用者の判断待ち）
+## 比較した選択肢と利用者の決定
 
 | 案 | 利点 | 失うもの・確認事項 |
 |---|---|---|
@@ -80,7 +80,9 @@ TLS key exchangeをPQC化しても、現在のEd25519更新署名は量子耐性
 | `no-ml-kem`または三つ全部を削除 | 容量と実装面を小さくする | hybrid接続・将来の署名選択を失う。残存DEFAULTのfallbackと全consumerの回帰が必要 |
 | algorithmを残しhybridの予測shareだけ抑制 | 公式のClientHello縮小策として候補を維持 | 対応相手で追加roundtrip。自動で全middleboxを救う保証はない |
 
-**暫定推奨はDEFAULTとML-KEMの維持を比較の基準にすること**です。速度優先の製品方針、将来の利用者通信、未測定の実機・経路互換を考え、容量だけでhybridを外さない案です。ML-DSA／SLH-DSAの削減は署名移行の方針と別に決められます。これは採用決定でも、実機性能が十分という判定でもありません。利用者には、公開更新専用機として機能を狭めるか、将来の機密通信を含めるかを容量実測と合わせて選んでもらいます。
+**DEFAULT groupsとML-KEMを維持する推奨を、2026-11-13に利用者が採用しました。** 容量だけでhybridを外さず、将来の利用者通信も考慮する判断です。ML-DSA／SLH-DSAを今削除する決定はせず、署名移行の計画時に採否を決めます。当面は既存のbuild設定を維持します。
+
+これは実機性能が十分という判定ではありません。実機速度・電力・起動時間、企業middlebox、将来のEAP-TLS／CMS consumer、鍵移行と失効・復旧は未確認のままです。以前の容量・QEMU・endpoint観測の範囲も変わりません。
 
 ## 一次資料
 

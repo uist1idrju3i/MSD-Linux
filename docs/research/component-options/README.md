@@ -8,9 +8,9 @@
 
 | 主題 | 本文 |
 |---|---|
-| 2026-11-13の利用者判断と未実装・未決定の区別 | [製品方針](../../design/product-decisions.md)。seed非保存・初回zram・速度優先・更新移行までのCMS／CLI維持・legal-info補足collectorを決定。PQCと`/data`の具体値は未決定 |
+| 2026-11-13の利用者判断と未実装・未決定の区別 | [製品方針](../../design/product-decisions.md)。seed非保存・初回zram・速度優先・更新移行までのCMS／CLI維持・legal-info補足collector・DEFAULTとML-KEM維持を決定。ML-DSA／SLH-DSA削除は署名移行時に判断。`/data`の具体値は未決定 |
 | OpenSSL 3.5.9の最小化・openssl.cnf・ARM最適化の調査草案 | [現状・採否・設定案](openssl-minimal.md)、[全option表](openssl-minimal-options.csv) |
-| PQCとhybrid TLS groupsの判断資料（未決定） | [DEFAULT・consumer・HNDL・選択肢](openssl-pqc-groups.md)、[5構成の容量とVM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md) |
+| PQCとhybrid TLS groupsの判断資料（維持を決定） | [DEFAULT・consumer・HNDL・選択肢と決定](openssl-pqc-groups.md)、[5構成の容量とVM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md) |
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |
 | target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md)、[OpenSSL系列差](openssl-series.md) |

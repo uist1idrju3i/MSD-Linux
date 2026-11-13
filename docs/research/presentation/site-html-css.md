@@ -46,6 +46,8 @@ lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 で�
 
 ## 2026-11-12: Cloudflare Pagesの応答ヘッダー
 
+この節は同日時点の指定です。2026-11-13の同一origin許可は、次の節へ分けます。
+
 現行のCloudflare Pages用に、`public_html/_headers`へCSP、Permissions-Policy、X-Frame-OptionsのDENY、COOPのsame-originを指定します。camera・microphone・geolocation・payment・usbは許可しません。既存配信のnosniff・Referrer-Policy・HSTSは重複させません。
 
 サイトの原則は、JSなし・外部資源なしです。利用者が承認した唯一の例外として、Cloudflareが注入するWeb Analyticsのscript origin `https://static.cloudflareinsights.com`と送信先`https://cloudflareinsights.com/cdn-cgi/rum`だけを許可します。自作JS・HTML内のscript要素は引き続き禁止します。inline許可・`eval`・`data:`・外部CSS・外部fontは足しません。画像とCSSはself、fontはシステムのものです。SVG内の`url(#...)`は同じ画像内の参照です。
@@ -53,3 +55,13 @@ lynx 2.9.0 では、長い段落の行の右端が切れます。w3m 0.5.3 で�
 HTTPとmetaのCSPは同時に適用されるため、両HTMLのmetaも同じ資源許可へ揃えます。`frame-ancestors 'none'`はHTTPだけに指定し、埋め込みを拒否します。Pagesのproject domainとversion・branch previewには、[公式のURLパターン](https://developers.cloudflare.com/pages/configuration/headers/)で`X-Robots-Tag: noindex`を付けます。custom domainにはこのruleを適用しません。
 
 注入snippetと送信先には観測上の未確認が残っています。公式FAQの同一origin向け分岐を理由に`connect-src 'self'`を追加することはせず、別の送信先が必要なら承認と再検証を行います。取得した応答、描画比較、配信確認の範囲は[検査記録](../../experiments/2026-11-12-pages-headers.md)に残します。
+
+## 2026-11-13: Analytics継続と同一originへの接続許可
+
+利用者はWeb Analyticsを有効のまま維持すると決めました。[公式FAQ](https://developers.cloudflare.com/web-analytics/faq/#what-do-i-need-to-add-to-my-content-security-policy-csp)は自動注入で同一domainへ送るため`connect-src 'self'`が必要と説明し、[proxy時の説明](https://developers.cloudflare.com/web-analytics/faq/#i-am-proxying-my-site-through-cloudflare-should-i-manually-add-the-js-beacon)は自動setupの`/cdn-cgi/rum`と手動snippetの`cloudflareinsights.com/cdn-cgi/rum`を区別しています。
+
+今回の指示は「同一origin送信が可能または観測されたら追加」であり、一次資料の自動注入の分岐が該当します。HTTPの`_headers`と両HTMLのmetaを、`connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum`へ揃えました。**selfは同一origin全体への接続許可で、`/cdn-cgi/rum`だけのpath制限ではありません。** 他のdirective、script許可、inline禁止、自作JSなしは維持します。
+
+productionの`/`はHTTP 200、存在しないpathは404でした。curlとheadless Chromeで取得したHTMLにscript要素・`data-cf-beacon`はなく、browserのloadと離脱でもRUM requestは観測しませんでした。したがって実際のscript src・beacon設定・送信先は未確認で、上のURLは一次資料上の候補です。設定OFFや全訪問者での不在は断定しません。注入されない原因も調べていません。HTTP・metaの取得時のCSPにはselfがなく、新CSPのproduction配信はこのbranchの検査対象外です。
+
+条件・応答headerとHTMLのhash・browser観測・ローカルの描画比較は[実験記録](../../experiments/2026-11-13-cloudflare-analytics.md)に残します。ローカルの許可検査はproductionのAnalytics成功ではありません。DNSSEC・CAA・DMARC・`pages.dev` redirectも、今回新しく検証した設定ではありません。

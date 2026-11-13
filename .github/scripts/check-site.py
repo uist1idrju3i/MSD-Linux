@@ -43,7 +43,7 @@ CSP_SOURCES = {
     "img-src": ("'self'",),
     "style-src": ("'self'",),
     "script-src": ("https://static.cloudflareinsights.com",),
-    "connect-src": ("https://cloudflareinsights.com/cdn-cgi/rum",),
+    "connect-src": ("'self'", "https://cloudflareinsights.com/cdn-cgi/rum"),
     "base-uri": ("'none'",),
     "form-action": ("'none'",),
 }

@@ -8,8 +8,9 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-13-cloudflare-analytics](2026-11-13-cloudflare-analytics.md) | [結果](2026-11-13-cloudflare-analytics.csv) | 2026-11-13 | production取得・ローカルCSP検査 | root 200と404の応答にbeaconを観測せず。公式の自動注入は同一origin送信なのでselfを追加。実送信と新CSPのproduction配信は未確認。 |
 | [2026-11-13-release-signing-qemu](2026-11-13-release-signing-qemu.md) | [結果・hash](2026-11-13-release-signing-qemu.csv) | 2026-11-13 | QEMU受入・B指定起動 | run 43331379685の本番署名を同一versionで通常受理。改変signature・未署名を拒否しstandby不変。Bのversion・health commit確認。初回測定器timeoutを保存。実機firmware tryboot・実SDは未確認。 |
-| [2026-11-13-pqc-groups](2026-11-13-pqc-groups.md) | [測定](2026-11-13-pqc-groups.csv) | 2026-11-13 | 判断資料、製品未適用 | OpenSSL 3.5.9のPQC 5構成の容量、VMの6 hostとQEMUを比較。DEFAULTのkeyshareと署名算法を分離し、利用者の採否は未決定。実機・将来consumerは未確認。 |
+| [2026-11-13-pqc-groups](2026-11-13-pqc-groups.md) | [測定](2026-11-13-pqc-groups.csv) | 2026-11-13 | 判断資料・維持を決定 | OpenSSL 3.5.9のPQC 5構成の容量、VMの6 hostとQEMUを比較。同日利用者がDEFAULTとML-KEM維持を決定。ML-DSA／SLH-DSAは署名移行時に判断。実機・将来consumerは未確認。 |
 | [2026-11-13-legal-info-supplement](2026-11-13-legal-info-supplement.md) | [採取値](2026-11-13-legal-info-supplement.csv) | 2026-11-13 | 実legal-info・hash照合 | 固定Buildroot archiveとBootlinの41 license fileを補足。原261 fileと警告2件は不変、A/A全50 fileが一致。23 source archive・patch・builder tree・Linux headers licenseは未収集。 |
 | [2026-11-13-seedrng-zram](2026-11-13-seedrng-zram.md) | [測定](2026-11-13-seedrng-zram.csv) | 2026-11-13 | 実装・QEMU確認 | seed自動保存を停止し、built-in zramをconsole開始後に有効化。boot各5回、crng時刻、圧縮可能な負荷でswap使用を確認。実機と`=y`対`=m`の単独比較は未実施。 |
 | [2026-11-12-write-inventory](2026-11-12-write-inventory.md) | [測定](2026-11-12-write-inventory.csv) | 2026-11-12 | QEMU測定、idle基準は未達 | 初回idleにp7の8320 sector増加。RAM配置を確認し既定timezoneをTokyoへ変更。拡張済み再bootも64 sector増え、原因の寄与と実機は未確認。 |

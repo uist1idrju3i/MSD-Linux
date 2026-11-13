@@ -20,6 +20,8 @@
 
 ### セキュリティ
 
+- Web Analyticsの自動注入に備え、サイトのCSPで同一originへの接続を許可します。既存のCloudflare RUM URLを維持し、他の許可は広げません。productionの注入・実送信を確認した変更ではありません。
+
 - seedrngの起動・停止時の永続seed保存と`/data/seedrng`の作成をやめ、kernelのhwrngを維持します。既存SDの古いseedを消去する変更ではなく、乱数の品質と実機の起動時保証は未確認です。
 
 - Cloudflare PagesにCSP・機能制限・埋め込み拒否を指定し、previewの検索登録を抑止します。外部資源の例外は承認済みのWeb Analyticsだけです。
