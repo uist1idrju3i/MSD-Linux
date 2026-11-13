@@ -147,3 +147,7 @@ GitHubが自動生成するsource zip/tarballは、このasset検証の対象外
 ## この手順で確認した範囲
 
 試験鍵による署名・client検証、改変と鍵不一致等の負試験は[`tests/release-signing/`](../tests/release-signing/run.py)で再実行できます。本番鍵の読み取り、GitHub設定の変更、本番Environment jobの実行、SD image全体の署名、実機での鍵移行は実施していません。過去の確認範囲は[調査記録](research/release-client/release-security.md)に保持します。
+
+2026-11-13、管理者がrun `43331379685`から取得した本番署名artifactを[QEMU受入試験](experiments/2026-11-13-release-signing-qemu.md)に使いました。imageとguestのrelease公開鍵を照合し、同じ内部version `1794526865`の通常installが受理され、signature改変と署名なしが拒否されることを観測しました。書き込み済みBのpayloadを指定した起動とhealth commitも確認しました。
+
+これはartifactを使ったguest試験です。こちらが本番Secretを読み取ったりEnvironment jobを起動したりしたという意味ではなく、live保護設定・immutable公開・実SD・実機firmware trybootは未確認です。
