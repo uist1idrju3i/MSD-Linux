@@ -72,6 +72,10 @@ GitHub Secretを交換しても、既存端末の信頼鍵は変わりません�
 
 ## 6. 確認したことと次の完了条件
 
+2026-11-13追記：管理者がrun `43331379685`から取得した本番署名artifactについて、image内のrelease公開鍵とguestの信頼鍵を照合し、同一versionの通常install受理と、signature改変・署名なしの拒否をQEMUで観測しました。[受入試験の記録](../../experiments/2026-11-13-release-signing-qemu.md)にraw log、失敗した測定器試行、slot起動の境界を保存しました。本番Secretをこちらが読み取った証拠、live環境保護、immutable公開、SD image全体の署名、実機の鍵移行の完了にはしません。[R10残件台帳](../pending-work.csv)もこの範囲で更新しました。
+
+以下は2026-11-02時点の確認と完了条件です。
+
 試験鍵でのCLI手順は、OpenSSL 3.0.2で5回、鍵生成・導出・署名・検証と、改変・別鍵による拒否を確認しました。既存mutableな `v0.0.0` に対する `gh release verify` は終了値1で、`no attestations for tag` でした。公開済みの署名運用の成功例にはしません。条件と生の終了値は [確認記録](../../experiments/2026-11-02-release-key-audit.md) にあります。
 
 本番鍵、Secret登録、Environment設定、署名・公開job、image署名、端末のGitHub取得、実機での鍵移行は試していません。今後の完了条件は次のとおりです。
