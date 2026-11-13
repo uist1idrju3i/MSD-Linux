@@ -6,7 +6,7 @@ checker="$repo_root/.github/scripts/check-site.py"
 pattern_generator="$repo_root/docs/logo/tools/site_patterns.py"
 test_root="$(mktemp -d)"
 fixture="$test_root/repo"
-policy="default-src 'none'; img-src 'self'; style-src 'self'; script-src https://static.cloudflareinsights.com; connect-src https://cloudflareinsights.com/cdn-cgi/rum; base-uri 'none'; form-action 'none'"
+policy="default-src 'none'; img-src 'self'; style-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum; base-uri 'none'; form-action 'none'"
 
 cleanup() {
 	rm -rf "$test_root"
@@ -216,8 +216,11 @@ for csp_file in public_html/index.html public_html/404.html public_html/_headers
 		"img-src 'self'|img-src 'self' data:" \
 		"script-src https://static.cloudflareinsights.com|script-src https://static.cloudflareinsights.com 'self'" \
 		"script-src https://static.cloudflareinsights.com|script-src https://evil.example" \
-		"connect-src https://cloudflareinsights.com/cdn-cgi/rum|connect-src https://cloudflareinsights.com" \
-		"connect-src https://cloudflareinsights.com/cdn-cgi/rum|connect-src 'self'" \
+		"connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum|connect-src 'self' https://cloudflareinsights.com" \
+		"connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum|connect-src 'self'" \
+		"connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum|connect-src" \
+		"connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum|connect-src https://cloudflareinsights.com/cdn-cgi/rum" \
+		"connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum|connect-src 'self' https://cloudflareinsights.com/cdn-cgi/rum https://example.com" \
 		"form-action 'none'|form-action 'none'; worker-src 'self'" \
 		"base-uri 'none'|base-uri 'none'; base-uri 'none'"; do
 		new_repo

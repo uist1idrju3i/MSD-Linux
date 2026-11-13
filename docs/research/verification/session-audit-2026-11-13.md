@@ -2,6 +2,16 @@
 
 [検証の索引](README.md) / [生データの保存監査](session-evidence-2026-11-13.md)
 
+## 同日の利用者決定と保存記録の訂正
+
+以下の主題表は、基準`121e9ae`での監査当時の状態です。その後のfresh main `e4f3e6e4f7e80dc31508afe73cf28624adeb3f73`には、seedrng/zram・write-inventory・OpenSSL・PQC・本番署名QEMU・fs-compare・開発image snapshotの実験記録が存在します。表でmerge待ちだったPR #240/#241も、この基準には収録済みです。
+
+利用者は2026-11-13 19:52 JSTにDEFAULT groupsとML-KEMの維持を決定し、ML-DSA／SLH-DSAの削除は署名移行の計画時に判断することにしました。Analyticsも継続します。[最新のPQC判断](../component-options/openssl-pqc-groups.md)と[productionの取得記録](../../experiments/2026-11-13-cloudflare-analytics.md)を参照してください。後者では注入と実送信は観測せず、一次資料で同一origin送信が可能と確認したためCSPを変更します。当時の「FAQだけでselfを追加しない」方針と、今回の利用者指示に基づく変更を分けます。
+
+以前の「size/hashの一覧」や報告を、binary 251件がhash記録済みという意味に使うのは誤りでした。元の`remaining-binaries.csv`はpath・容量だけで、事前の個別hashはscan入力3件に限られます。全251件のSHA-256・size・mtimeは、今回の[削除前snapshot](https://github.com/uist1idrju3i/MSD-Linux/blob/5375e420a6d0704f651f5f285c8345d658f88b34/session-2026-11-13/evidence/remaining-binaries-sha256.csv)で初めて揃えました。測定時との同一性は証明しません。
+
+remote保存とmanifestの一致を確認した後、利用者の同日承認に従い251 pathだけを削除しました。保持は0件で、秘密鍵と一覧外のfileは削除していません。`df`の空き増加は50,143,150,080 bytesです。[削除結果と制限](session-evidence-2026-11-13.md#削除前snapshotと承認後の限定削除)に、前後値・data枝commit・復元できない範囲を記録しています。
+
 ## 対象と読み方
 
 利用者から指定された12主題について、本文と生データの所在を照合しました。基準は`origin/main`の`121e9ae1878252a675efb6714bc36e91f488e331`です。PR #240は`c27b9a9b5dae5c32e9029250835c6990d8739a9a`、PR #241は`0c77ff9a92be9a2b2bdba7a0df26fb27be9234cf`を読みました。両PRは監査時点でopenであり、mainへの収録済みとは扱いません。
@@ -21,7 +31,7 @@
 | 9. Cloudflare Pages | mainの[サイト調査](../presentation/site-html-css.md)、[header実験](../../experiments/2026-11-12-pages-headers.md)と、今回の補足 | CSP例外はCloudflareだけ。production HTMLでAnalytics注入は未確認で、FAQだけを理由に`connect-src 'self'`を追加しない。DNSSEC/CAA/DMARC/redirectの推奨と、`530d91d`の失敗を下記へ追記。現在のDNS・配信設定の合格を主張しない |
 | 10. `/data` | mainの[write inventory](../../experiments/2026-11-12-write-inventory.md)、[方針とS03/S4/GPIO6/rootfs-roの資料・追加計画](../../design/write-policy.md)、[storage研究](../storage/write-policy-and-s3.md) | 最初の120秒の8320 sectorsは原因未分離。resize/ext4lazyinit等は候補で、帰属の確認ではない。seed変更後の8304との差16 sectorsもseed量と断定しない。具体的なrw/journal/commit値は未決定 |
 | 11. stacked PRとCHANGELOG | mainの[AGENTS §7](../../../AGENTS.md)と、下の利用者方針を今回追加 | PR作成・base設定・mergeの権限を区別。CHANGELOG fragment方式は採用しない。エージェントはmergeしない |
-| 12. 開発imageと監視 | mainの[Debian snapshot実験](../../experiments/2026-11-12-dev-image-snapshot.md)、[開発環境の依存](../dependencies/development-and-ci.md)、[OCI security](../operations/development-image-security.md)、[`in_triage`の扱い](../../ci-monitoring.md) | 当時のDB・arch・gate対象の差と、全CVE不存在は別。`in_triage`は有効な状態で、finding・解決済み・scan失敗と混ぜない。将来の監視は継続が必要。DB本文・OCI tarはGit未保存で、[size/hashの一覧](session-evidence-2026-11-13.md)へ分けた |
+| 12. 開発imageと監視 | mainの[Debian snapshot実験](../../experiments/2026-11-12-dev-image-snapshot.md)、[開発環境の依存](../dependencies/development-and-ci.md)、[OCI security](../operations/development-image-security.md)、[`in_triage`の扱い](../../ci-monitoring.md) | 当時のDB・arch・gate対象の差と、全CVE不存在は別。`in_triage`は有効な状態で、finding・解決済み・scan失敗と混ぜない。将来の監視は継続が必要。DB本文・OCI tarはGit未保存で、[容量一覧とscan入力3件のhash](session-evidence-2026-11-13.md)へ分けた |
 
 ## Buildrootのsource管理方式
 

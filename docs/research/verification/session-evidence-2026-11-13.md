@@ -30,7 +30,7 @@
 
 選択対象は計20,333 fileです。今回追加した27 archiveは圧縮後100,354,408 bytesで、同一内容はhashでまとめています。archive作成後に各memberを読み、元fileのSHA-256と照合しました。既存fs-compare archiveも実際に読み、25,417 memberを各manifestと照合しました。678,361,912 bytesのhardlink logは、既存の圧縮logを展開して同じhashを得たため追加不要でした。
 
-## Gitへ入れず残したもの
+## Gitへ入れず残したもの（削除前の監査時点）
 
 測定値・選択対象の生ログの未保存は、今回の追加で解消しました。ただし、**binary imageまで遠隔保存済みという意味ではありません**。`remaining-binaries.csv`に個々のpathとsizeを残しました。集計は次のとおりで、単位はbytesです。
 
@@ -54,3 +54,21 @@ Trivy DBの今回のSHA-256は元の実験記録の`99fdc77556d4c2870c4288db54e6
 実験用の`msd-update-dev-key.pem`は3 file各119 bytesを意図して除外しました。本番秘密鍵の値は調べていません。取得し直せる上流source、別作業tree、Git object/cache、展開rootfs等も保全対象とは分けました。大きなimageを通常Gitへ入れず、原本・診断image・初回の広い走査で作った補助packも削除していません。
 
 Pagesの`530d91d`の失敗job logはAPIで`Not Found`となり、取得できませんでした。失敗checkと利用者の`Build failed.`報告は[監査本文](session-audit-2026-11-13.md)へ残しています。失われた過去のfs-compare imageに関する既存data READMEの制限も、今回の照合で解消したとは扱いません。
+
+## 削除前snapshotと承認後の限定削除
+
+以前の記録と報告は、251件全体をhash記録済みと読める点が不正確でした。`remaining-binaries.csv`はpathと容量だけで、`coverage.csv`の直接対応は0件、`remaining-scan-inputs.json`の個別hashは3件でした。textやarchiveのhashを、収録していないbinary本文のhashへ読み替えません。
+
+利用者の2026-11-13の承認を受け、全251件の現在のSHA-256・size・mtimeを[data枝の削除前CSV](https://github.com/uist1idrju3i/MSD-Linux/blob/5375e420a6d0704f651f5f285c8345d658f88b34/session-2026-11-13/evidence/remaining-binaries-sha256.csv)へ記録しました。**これは削除前のsnapshotで、過去の測定時との同一性を証明しません。** 同commitの通常push後、remote SHA一致と取得したmanifestのSHA-256 `cc4c444a20e6d29aaebc48b17fda232d4d6cf7c9aded5bbec527000212d93573`を確認してから、一覧の251 pathだけを削除しました。保持は0件です。
+
+[削除結果JSON](https://github.com/uist1idrju3i/MSD-Linux/blob/8802310d8572b6062ea7a95de0c636dbd1aa75ac/session-2026-11-13/evidence/binary-deletion-report.json)と[data README](https://github.com/uist1idrju3i/MSD-Linux/blob/8802310d8572b6062ea7a95de0c636dbd1aa75ac/session-2026-11-13/evidence/README.md)も通常pushし、remote SHAを照合しました。削除前に全pathのsize・mtime・ctime・device・inodeを照合し、symlinkと追跡file、秘密鍵らしい名前を拒否しました。参照できたprocessのFDには対象がありませんでしたが、200 processのFD directoryは権限不足で読めず、全processで未使用だったという保証はしません。
+
+同一filesystemの`df -B1`は次のとおりです。同期処理を前後に行いましたが、他processの書き込みを止めた測定ではありません。
+
+| 時点 | 使用bytes | 空きbytes |
+|---|---:|---:|
+| 削除前 | 174,867,914,752 | 299,157,540,864 |
+| 削除後 | 124,724,764,672 | 349,300,690,944 |
+| 空きの観測増加 | — | 50,143,150,080 |
+
+見かけの合計1,142,665,527,771 bytes、path別割り当て合計50,143,170,560 bytesとは分けます。上の容量表と「削除していない」は元監査時点の記録です。現在は承認対象の本文を削除済みで、hashから復元はできません。秘密鍵、一覧外のfileやdirectory、保存済みの生ログは削除していません。

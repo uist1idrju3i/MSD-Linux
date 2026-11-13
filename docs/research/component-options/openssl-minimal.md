@@ -2,7 +2,7 @@
 
 [component option索引](README.md)へ戻る。2026-11-12、基準は`d7d9d622eae2f5f78dc0b891203f3641f334123b`。**製品設定・recipe・binaryは変更していない。以下の「採用候補」は実験後の提案であり、採用済みという意味ではない。**
 
-2026-11-13に[利用者の方針](../../design/product-decisions.md)が追加された。legacy EAP／TLS-PSK互換は維持せず、標準更新frameworkへの移行比較が終わるまではCMSと現行CLIを残す。速度を容量より優先し、asmを維持する。PQC／hybrid Groupsは[判断資料](openssl-pqc-groups.md)を追加したが、採否は未決定である。以下はその方針に沿う削減候補で、製品設定への反映は未実施。保存済み採取値とCSVの2026-11-12時点の採否は変更しない。
+2026-11-13に[利用者の方針](../../design/product-decisions.md)が追加された。legacy EAP／TLS-PSK互換は維持せず、標準更新frameworkへの移行比較が終わるまではCMSと現行CLIを残す。速度を容量より優先し、asmを維持する。同日19:52 JSTにDEFAULT groupsとML-KEMの維持を決定した。[PQCの決定と残件](openssl-pqc-groups.md)を参照する。以下はその方針に沿う削減候補で、製品設定への反映は未実施。保存済み採取値とCSVの2026-11-12時点の採否は変更しない。
 
 ## 現在の入力と保存済みrootfs
 
@@ -69,7 +69,7 @@ no-fuzz-afl no-afalgeng no-engine zlib-dynamic
 | `no-psk` | TLS-PSK互換を維持しない方針に沿う削減候補、未実装 | 残す認証方式とTLS 1.3 resumptionへの影響を別に試験する。WPA passphrase認証との名前の一致で決めない |
 | `no-cms` | 更新frameworkの比較・移行までは却下 | CMSを維持する決定。比較後も選定したframeworkの署名要件から判断する |
 | `no-cmp no-ocsp no-ct no-http no-ts no-rfc3779` | 機能別に要測定 | CMP等は削減候補だが、OCSP等は証明書検証の設計に関係する。一括採用しない |
-| `no-ml-kem no-ml-dsa no-slh-dsa` | [容量とgroupsの判断資料](openssl-pqc-groups.md)を追加、利用者の採否待ち | ML-KEM削除はTLS hybridに、ML-DSA／SLH-DSA削除は署名の選択肢に影響する。Groupsだけの制限ではlibrary容量は減らず、三つを同一視しない |
+| `no-ml-kem no-ml-dsa no-slh-dsa` | [判断](openssl-pqc-groups.md)はML-KEM維持。ML-DSA／SLH-DSA削除は署名移行時に判断 | ML-KEM削除はTLS hybridに、ML-DSA／SLH-DSA削除は署名の選択肢に影響する。Groupsだけの制限ではlibrary容量は減らず、三つを同一視しない |
 | `no-module no-dso` | 要測定 | **`no-module`だけではlegacyは消えず、libcryptoへbuilt-inになる**。`providers/build.info`で確認。外部provider／PKCS#11の計画も変わる |
 | `no-shared` | 初期案では却下 | 現行の動的consumerとBuildroot全体のlink方式に関わる。libcryptoだけ静的化して総rootfsが縮むとは限らない |
 | `enable-ktls` | 今回は不採用 | 現在は無効。TLS bulk I/O利用者も測定もなく、kernel側のKconfig・cipher・RX/TX対応が別途必要。CPUにAES命令を追加する機能ではない |
@@ -113,7 +113,7 @@ INSTALLのmacro表記はprotocol／algorithm tokenへ展開した。内部`crmf`
 
 OpenSSL削減実験では、asmを維持した同一条件でrootfs容量、実機の署名検証・TLS速度とRAM、QEMUと実機のboot時間を比較する。bootへの影響は小さい見込みだが未測定であり、影響なしを合格済みの前提にしない。QEMUの`openssl speed`は実機速度の根拠にしない。機能削減と3.5.10への更新を同時に比較しない。
 
-PQC／hybrid Groupsは未決定。[PQC判断資料](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を追加した。実機CPU負荷と将来consumerの互換性は未確認である。RAUC対SWUpdateの比較完了後にはCMSの必要機能と移行試験を確定し、公開`msd-update`を廃止してから`no-apps`を再検討する。
+PQC／hybrid GroupsはDEFAULTとML-KEMの維持を決定した。ML-DSA／SLH-DSAの削除は署名移行の計画時に判断する。[PQC判断資料](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を参照する。実機CPU負荷と将来consumerの互換性は未確認である。RAUC対SWUpdateの比較完了後にはCMSの必要機能と移行試験を確定し、公開`msd-update`を廃止してから`no-apps`を再検討する。
 
 ## 一次資料
 

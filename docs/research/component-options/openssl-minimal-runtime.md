@@ -2,7 +2,7 @@
 
 [OpenSSL最小化の調査](openssl-minimal.md) / [component option索引](README.md)。一次資料の一覧は親文書を参照する。
 
-2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。PQC／hybrid Groupsは未決定であり、下記のGroups固定もまだ採用しない。[PQCの判断資料](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を追加したが、この設定案は未適用であり、実機の互換性・速度・boot時間は未測定である。
+2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。同日DEFAULT groupsとML-KEMの維持を決定したため、下記の草案でもclassical groupsへ固定しない。[PQCの決定](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を参照する。この設定案は未適用であり、実機の互換性・速度・boot時間は未測定である。
 
 ## openssl.cnf案
 
@@ -31,10 +31,10 @@ system_default = tls_policy
 MinProtocol = TLSv1.2
 CipherString = ECDHE+AESGCM:ECDHE+CHACHA20:!aNULL:!eNULL:!PSK:@SECLEVEL=2
 Ciphersuites = TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384
-Groups = X25519:P-256:P-384
+Groups = DEFAULT
 ```
 
-TLS 1.2のCBC／static RSA key exchange等を除く案であり、互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。Groupsの固定は3.5既定のPQC hybridも外す判断なので、採否資料が整うまではこの行を採用しない。採用時は実際のbuildに存在するgroupを選ぶ。
+TLS 1.2のCBC／static RSA key exchange等を除く案であり、互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。以前の草案の`Groups = X25519:P-256:P-384`は、DEFAULT維持の決定に合わないため採用しない。草案をDEFAULTへ揃えたことは、製品のopenssl.cnfを変更した意味ではない。
 
 SignatureAlgorithmsとClientSignatureAlgorithmsは初期案では固定しない。ClientSignatureAlgorithmsはTLS 1.2/1.3のclient証明書認証用で、serverのCertificateRequestとclientの証明書署名選択に関わる。固定する場合はEd25519、ECDSA、RSA-PSSとchain署名の要件を試験し、古い相手へのSHA-1緩和をdefaultへ混ぜない。SECLEVELの閾値を下げて試験を通す変更は別の利用者判断とする。
 
