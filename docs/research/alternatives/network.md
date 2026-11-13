@@ -4,6 +4,8 @@
 
 ## 現在どこまで使えるか
 
+2026-11-13にlegacy EAP（MSCHAPv2等）とTLS-PSKの互換性を維持しないと決定しました。対応するOpenSSL機能は[削減候補](../component-options/openssl-minimal.md)ですが、まだ削減・接続試験をしていません。[製品方針](../../design/product-decisions.md)と以下の過去の比較を区別します。
+
 **Wi-Fiを利用可能とはまだ言えません。** 2026-11-02にMSD/Linuxの`551eee4`と固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`を調べました。無線driver・firmwareの選択と、認証・IP設定・DNS・安全な通信開始は別です。この文書は比較と未実装機能の計画であり、製品設定を変えていません。候補のbuild・実行、実機の無線接続・firewall・権限制限は本リポジトリでは試していません。
 
 iwdとOpenSSLの関係は[更新frameworkと暗号libraryのbuild option](update-build-options.md)、SSH clientの候補は[SSH clientの比較](ssh-clients.md)を参照してください。

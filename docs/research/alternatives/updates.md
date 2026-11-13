@@ -4,6 +4,8 @@
 
 ## 比較の前提
 
+2026-11-13に[標準frameworkへの移行方針](../../design/product-decisions.md)を再確認しました。RAUC対SWUpdateの比較完了後に移行先を決め、移行後は公開`msd-update`を廃止します。現時点ではframeworkを採用・実装していません。比較・移行までCMSを残し、`msd-update`存続中はOpenSSL CLIを維持します。移行後に`no-apps`を再検討します。
+
 現行の`msd-update`を、RAUC、SWUpdate、Mender等で置換・補完できるか比較します。更新framework、bootloaderのslot選択、配信server、署名metadataは役割が違います。frameworkを入れても、CM0のfirmware・SD・電源断・healthの検証は残ります。
 
 2026-11-02にMSD/Linuxの`c0214b380c046100592cd427ab3013347dff1758`と固定Buildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。代替frameworkのbuild・実行、CM0でのslot切替、署名方式の相互運用、性能測定は本リポジトリでは試していません。製品設定と更新形式は変更しません。

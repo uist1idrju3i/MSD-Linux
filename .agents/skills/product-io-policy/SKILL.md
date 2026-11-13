@@ -19,7 +19,7 @@ AGENTS.md §10 の規則を、設計と実装のたびに確かめる手順で�
    - 利用者の操作の直後（確認の画面で同意した後など）
    - progressを表示している間
 3. 起動のたび、停止のたび、一定間隔で書き込む処理は、原則として作りません。避けられない場合は、台帳に例外として登録し、理由、時機、量の目安、利用者への見え方を書きます。
-4. log、cache、lock、一時fileはRAMに置きます。`/var/log`、`/var/cache` は `/tmp`（tmpfs）へのsymlinkです。圧縮したRAM（zram）を使うかは、まだ決まっていません。
+4. log、cache、lock、一時fileはRAMに置きます。`/var/log`、`/var/cache` は `/tmp`（tmpfs）へのsymlinkです。zram swapは2026-11-13に採用を決めましたが、まだ実装していません。tmpfsの配置を変える決定ではなく、現在の状態は台帳で確かめます。
 5. kernelとfile systemが裏で行う書き込みも対象にします。例：ext4のjournal commitと `lazy_itable_init`、F2FSのcheckpoint・background GC・discard、btrfsのcommit・scrub・balance、dm-integrityのjournalとbitmap、LUKS2のheaderとkeyslot。optionを選ぶときは、[file systemのoption表](../../../docs/research/storage/README.md) の判断理由と台帳を合わせます。
 6. Wi-FiのDHCP lease、SSHの `known_hosts`、shellのhistory、乱数のseed、更新の状態も、書き込み先と時機を台帳で確かめます。
 

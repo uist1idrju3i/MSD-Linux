@@ -2,6 +2,8 @@
 
 [OpenSSL最小化の調査](openssl-minimal.md) / [component option索引](README.md)。一次資料の一覧は親文書を参照する。
 
+2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。PQC／hybrid Groupsは未決定であり、下記のGroups固定もまだ採用しない。設定の実装と互換性・速度・boot時間の測定は未実施である。
+
 ## openssl.cnf案
 
 現在は上流example configで、`openssl_conf`、`config_diagnostics=1`、provider sectionはあるが、defaultの`activate`はcomment。TLSの`system_default`やMinProtocolは設定していない。legacy.soがrootfsに存在することは、自動load済みという証拠ではない。
@@ -32,7 +34,7 @@ Ciphersuites = TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_256_G
 Groups = X25519:P-256:P-384
 ```
 
-TLS 1.2のCBC／static RSA key exchange等を除く案であり、互換性は未確認。TLS-PSKを使うEAP methodにはそのまま適用しない。TLS 1.3のPSKやresumptionをCipherStringの`!PSK`で一括禁止できるとも扱わない。Groupsの固定は3.5既定のPQC hybridも外す判断なので、PQCを保つならこの行を採用せず、実際のbuildに存在するgroupを選ぶ。
+TLS 1.2のCBC／static RSA key exchange等を除く案であり、互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。Groupsの固定は3.5既定のPQC hybridも外す判断なので、採否資料が整うまではこの行を採用しない。採用時は実際のbuildに存在するgroupを選ぶ。
 
 SignatureAlgorithmsとClientSignatureAlgorithmsは初期案では固定しない。ClientSignatureAlgorithmsはTLS 1.2/1.3のclient証明書認証用で、serverのCertificateRequestとclientの証明書署名選択に関わる。固定する場合はEd25519、ECDSA、RSA-PSSとchain署名の要件を試験し、古い相手へのSHA-1緩和をdefaultへ混ぜない。SECLEVELの閾値を下げて試験を通す変更は別の利用者判断とする。
 
@@ -42,7 +44,7 @@ SSL_CONFの`system_default`はSSL_CTX作成時の既定で、applicationが設�
 
 ## ARM専用最適化の判断
 
-`linux-aarch64`は`Configurations/10-main.conf`で`asm_arch=aarch64`を選ぶ。asmを削除せず、wrapperの`-mcpu=cortex-a53`と既存のruntime dispatchを維持するのが初期案であり、単なるgeneric C buildから新たにARM化する状況ではない。
+`linux-aarch64`は`Configurations/10-main.conf`で`asm_arch=aarch64`を選ぶ。asmを維持する方針は決定済みで、wrapperの`-mcpu=cortex-a53`と既存のruntime dispatchを残す。単なるgeneric C buildから新たにARM化する状況ではない。実機速度のためにrootfsが大きくなることを許容するが、bootへの影響が小さいという見込みはOpenSSL削減実験で測定する。
 
 **Cortex-A53という名前だけではAES/SHA/PMULL命令は保証されない。** Arm TRMのoptional extensionという説明は[既存調査](../tuning/fastboot-and-cpu-tuning.md#cm0のcpu機能と確認度)にもある。今回、メーカー一次回答として[PhilE（Raspberry Pi Engineer）のBCM2837B0説明](https://forums.raspberrypi.com/viewtopic.php?t=263234)を取得した。3B+のFeaturesはCRC32を含むがSHA/AESを含まないとの報告で、ソフトウェアoptionで暗号命令を有効にできるという根拠にはならない。
 
