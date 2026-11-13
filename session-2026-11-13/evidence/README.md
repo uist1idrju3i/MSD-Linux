@@ -28,6 +28,8 @@ OpenSSLのupstream展開source、別作業treeのGit object/cache、生成した
 
 ## 再確認
 
+2026-11-13の追加調査は`decisions-analytics.tar.gz`へ保存しました。productionのroot・404のHTMLとheader、Cloudflare一次資料、browserのrequest記録、before/afterのサイト写し・描画・text出力と計測scriptを含みます。全memberを原本のbyte列と照合しました。注入scriptも実送信も観測しておらず、描画比較をproduction Analyticsの成功とは扱いません。binary削除時の補助scriptも監査用に含めますが、削除を再実行する指示ではありません。
+
 ### 2026-11-13の削除承認と削除前snapshot
 
 `remaining-binaries.csv`は251 pathの容量一覧で、個別hashの表ではありませんでした。従来の`coverage.csv`と`SHA256SUMS`は選択したtextやarchiveを対象とし、binary 251件を直接覆うものではありません。削除前から個別hashが別記されていたscan入力は3件です。
