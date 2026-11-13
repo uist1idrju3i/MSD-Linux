@@ -2,7 +2,7 @@
 
 [OpenSSL最小化の調査](openssl-minimal.md) / [component option索引](README.md)。一次資料の一覧は親文書を参照する。
 
-2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。PQC／hybrid Groupsは未決定であり、下記のGroups固定もまだ採用しない。設定の実装と互換性・速度・boot時間の測定は未実施である。
+2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。PQC／hybrid Groupsは未決定であり、下記のGroups固定もまだ採用しない。[PQCの判断資料](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を追加したが、この設定案は未適用であり、実機の互換性・速度・boot時間は未測定である。
 
 ## openssl.cnf案
 

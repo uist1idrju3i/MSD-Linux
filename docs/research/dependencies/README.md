@@ -17,6 +17,10 @@
 
 一覧に記載する版は読みやすいように一律に変換せず、tag、commit、Debian版、module版を区別して残した。`latest_observed` は指定した資料と範囲で見つかった候補であり、採用可能版とは限らない。`same` も、その比較範囲内で同じという意味である。
 
+## 2026-11-13のlegal-info補足
+
+[選択肢Aの収集手順と残件](../operations/legal-info-supplement.md)を追加しました。[実験](../../experiments/2026-11-13-legal-info-supplement.md)では固定Buildroot archiveとBootlinの41 license fileを補足し、原README・警告2件・261 fileを保持しました。23 source archive約335 MiB、patch、builder tree、Linux headers licenseは未収集で、toolchain内部のCVE監視や配布許諾の確認を完了したものではありません。
+
 ## 2026-11-12の現況
 
 基準は`main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`です。以下の確認表、監視表、優先差分は11月2日の調査を残したものです。現況は次のとおりです。

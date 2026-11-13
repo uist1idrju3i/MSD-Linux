@@ -10,6 +10,7 @@
 - 調査・測定記録を主題別に整理し、再現条件と未確認範囲を追跡できるようにしました。
 - 起動時の `/etc/issue` と `os-release` に、版、commit時刻（JST）、commit IDを記録します。
 - 初回起動からRAM約50%のzram swapを使います。console開始後にbackgroundで有効化し、zstdを優先します。永続storageへのwritebackは使いません。
+- legal-infoへ固定Buildroot sourceとBootlinのlicense原文を補足します。SHA-256を検査し、原警告と未収集のsource・patch等を明記します。完全な対応sourceや配布許諾の確認を意味しません。
 
 ### 変更
 

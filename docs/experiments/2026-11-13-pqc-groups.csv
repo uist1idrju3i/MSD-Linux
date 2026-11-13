@@ -1,0 +1,73 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+build-r1-default,default,1,usr/lib/libcrypto.so.3,5205008,byte,0,incomplete trial; sha256=791a59387568a32921c102cf14cd314ab660afffd669a297dbbf5e85c1145b9f
+build-r1-default,default,1,usr/lib/libssl.so.3,929464,byte,0,incomplete trial; sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r1-default,default,1,usr/bin/openssl,959608,byte,0,incomplete trial; sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r1-default,default,1,usr/lib/ossl-modules/legacy.so,124744,byte,0,incomplete trial; sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r1-default,default,1,build,1,exit,0,"incomplete trial; Command '['/work/output-openssl-lts/host/bin/mksquashfs', '/work/output-pqc-groups/default/root', '/work/output-pqc-groups/default/rootfs-1.squashfs', '-noappend', '-processors', '2', '-b', '128K', '-comp', 'zstd', '-Xcompression-level', '22', '-all-root', '-all-time', '0', '-mkfs-time', '0', '-no-xattrs']' returned non-zero exit status 1."
+build-r2-default,default,1,usr/lib/libcrypto.so.3,5205008,byte,1,sha256=791a59387568a32921c102cf14cd314ab660afffd669a297dbbf5e85c1145b9f
+build-r2-default,default,1,usr/lib/libssl.so.3,929464,byte,1,sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r2-default,default,1,usr/bin/openssl,959608,byte,1,sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r2-default,default,1,usr/lib/ossl-modules/legacy.so,124744,byte,1,sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r2-default-1,default,1,rootfs.squashfs,20705280,byte,1,sha256=7512efb105d76341100b46ed6ca4ba3060f63bf5e2e5328f02f80f48f3fd364e
+build-r2-default-2,default,2,rootfs.squashfs,20705280,byte,1,sha256=7512efb105d76341100b46ed6ca4ba3060f63bf5e2e5328f02f80f48f3fd364e
+build-r2-no-ml-kem,no-ml-kem,1,usr/lib/libcrypto.so.3,5131120,byte,1,sha256=517b23ee67d20eb12c19b7ad020062b2631eb8109a159253663e178e6e646ca5
+build-r2-no-ml-kem,no-ml-kem,1,usr/lib/libssl.so.3,929464,byte,1,sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r2-no-ml-kem,no-ml-kem,1,usr/bin/openssl,959608,byte,1,sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r2-no-ml-kem,no-ml-kem,1,usr/lib/ossl-modules/legacy.so,124744,byte,1,sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r2-no-ml-kem-1,no-ml-kem,1,rootfs.squashfs,20680704,byte,1,sha256=654d384cccdff8dddcd8ffc88c2c082fea75d05abd06558511d56a18dac2341e
+build-r2-no-ml-dsa,no-ml-dsa,1,usr/lib/libcrypto.so.3,5135256,byte,1,sha256=114684ff3e4cd8c440964d08d2b3f8cf613dc3aa2e86400bef651c16e8e73f4d
+build-r2-no-ml-dsa,no-ml-dsa,1,usr/lib/libssl.so.3,929464,byte,1,sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r2-no-ml-dsa,no-ml-dsa,1,usr/bin/openssl,959608,byte,1,sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r2-no-ml-dsa,no-ml-dsa,1,usr/lib/ossl-modules/legacy.so,124744,byte,1,sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r2-no-ml-dsa-1,no-ml-dsa,1,rootfs.squashfs,20684800,byte,1,sha256=3c6df43a0c5ac3b3f8e15b263f86d35924024deb73bdd21005b4d6fc16de644f
+build-r2-no-slh-dsa,no-slh-dsa,1,usr/lib/libcrypto.so.3,5061528,byte,1,sha256=bc2988624a18734ddf9bf97e631e3f05bd1d7ee8959a46a4c16b7af954aedccc
+build-r2-no-slh-dsa,no-slh-dsa,1,usr/lib/libssl.so.3,929464,byte,1,sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r2-no-slh-dsa,no-slh-dsa,1,usr/bin/openssl,959608,byte,1,sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r2-no-slh-dsa,no-slh-dsa,1,usr/lib/ossl-modules/legacy.so,124744,byte,1,sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r2-no-slh-dsa-1,no-slh-dsa,1,rootfs.squashfs,20680704,byte,1,sha256=7f8eec895749a0d95f07a691b6116549cff29a1c7c7b53572c3d3e3428f2c012
+build-r2-all-three,all-three,1,usr/lib/libcrypto.so.3,4909696,byte,1,sha256=68bf971e1b5603e0eb2198c9b7f1056b14a70b8d8609e2f10e284ef1657565fb
+build-r2-all-three,all-three,1,usr/lib/libssl.so.3,929464,byte,1,sha256=0012ab31602f971ca275ff5651cbea1ff80845be92e915b7c66ec479907c7e33
+build-r2-all-three,all-three,1,usr/bin/openssl,959608,byte,1,sha256=062fffc82a0c1bc2ba3482d683723a705b196e1730710ee17d2210ec65cd88d2
+build-r2-all-three,all-three,1,usr/lib/ossl-modules/legacy.so,124744,byte,1,sha256=a5d8417127541949ddbd64e9e52b5bc06132a390a1e102201a79690a07be2aa9
+build-r2-all-three-1,all-three,1,rootfs.squashfs,20631552,byte,1,sha256=25335b4920aad6e53c5bd1815df9d461c9f1c25b1dd85a78ad3f53a933c509a2
+qemu-r1,all,1,guest_exit,1,exit,0,req extra +; raw serial and original guest script archived
+qemu-r2-1,X25519,1,keygen,1208.474576,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-1,X25519,1,encaps,568.055556,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-1,X25519,1,decaps,1344.303797,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-1,X25519MLKEM768,1,keygen,380.597015,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-1,X25519MLKEM768,1,encaps,365.625,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-1,X25519MLKEM768,1,decaps,334.848485,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519,2,keygen,968.181818,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519,2,encaps,577.61194,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519,2,decaps,1186.486486,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519MLKEM768,2,keygen,451.5625,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519MLKEM768,2,encaps,236.666667,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-2,X25519MLKEM768,2,decaps,316.438356,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519,3,keygen,1244.262295,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519,3,encaps,538.80597,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519,3,decaps,1304.615385,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519MLKEM768,3,keygen,323.943662,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519MLKEM768,3,encaps,281.818182,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-3,X25519MLKEM768,3,decaps,379.104478,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519,4,keygen,1415.277778,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519,4,encaps,534.42623,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519,4,decaps,1143.859649,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519MLKEM768,4,keygen,432.857143,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519MLKEM768,4,encaps,370.689655,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-4,X25519MLKEM768,4,decaps,369.565217,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519,5,keygen,1447.619048,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519,5,encaps,514.0625,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519,5,decaps,1156.756757,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519MLKEM768,5,keygen,386.486486,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519MLKEM768,5,encaps,342.647059,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-5,X25519MLKEM768,5,decaps,367.164179,operation/s,1,guest CPU timing; not TLS handshake or hardware performance
+qemu-r2-hello,DEFAULT,1,ClientHello,1552,byte,1,BIO output including TLS record; SNI example.test
+qemu-r2-hello,X25519,1,ClientHello,318,byte,1,BIO output including TLS record; SNI example.test
+qemu-r2-hello,X25519MLKEM768,1,ClientHello,1494,byte,1,BIO output including TLS record; SNI example.test
+qemu-r2-hello,?X25519MLKEM768:DEFAULT,1,ClientHello,332,byte,1,BIO output including TLS record; SNI example.test
+qemu-r2-functional,no-ml-kem,1,Ed25519_CMS,1,boolean,1,Ed25519 sign verify and tampered rejection; RSA CMS sign verify cmp
+qemu-r2-functional,no-ml-dsa,1,Ed25519_CMS,1,boolean,1,Ed25519 sign verify and tampered rejection; RSA CMS sign verify cmp
+qemu-r2-functional,no-slh-dsa,1,Ed25519_CMS,1,boolean,1,Ed25519 sign verify and tampered rejection; RSA CMS sign verify cmp
+qemu-r2-functional,default,1,Ed25519_CMS,1,boolean,1,Ed25519 sign verify and tampered rejection; RSA CMS sign verify cmp
+qemu-r2-functional,all-three,1,Ed25519_CMS,1,boolean,1,Ed25519 sign verify and tampered rejection; RSA CMS sign verify cmp
+qemu-r2,all,1,guest_exit,0,exit,1,
