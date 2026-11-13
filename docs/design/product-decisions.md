@@ -4,6 +4,14 @@
 
 | 決めた日 | 方針 | 状態 | 関連 |
 |---|---|---|---|
+| 2026-11-13 | seedrngのseedを永続保存せず、起動・停止時を含め`/data/seedrng`へ書き込みません。内蔵hwrng（`CONFIG_HW_RANDOM_BCM2835=y`）とjitterに依存する方針です。seed保存のための定期的なSD書き込みと、暗号化されていない`/data`へのseed残存を避けます。一方、hwrngが弱い場合に保存seedのbackupがありません。 | 未実装。early bootのcrng初期化時間、jitterの供給経路と起動時の保証はQEMU・実機とも未確認 | [書き込みの台帳](write-policy.md)、[既存の棚卸し](../experiments/2026-11-12-write-inventory.md) |
+| 2026-11-13 | 初回起動からzram swapを使い、login prompt表示後にbackgroundで有効化します。容量はRAMの約50%、圧縮はzstdまたはlzo-rleを候補とします。built-in（`CONFIG_ZRAM=y`）を方針とし、現行の`=m`との差を測ります。圧縮のCPU負荷、小さいmetadata用RAM、早いOOMの代わりにthrashする可能性を受け入れます。 | 未実装。圧縮方式の選定、built-inとの差・RAM不足時の挙動・起動時間の測定は未実施 | [書き込みの台帳](write-policy.md)、[過去のQEMU実験](../experiments/2026-10-21-qemu-zram.md) |
+| 2026-11-13 | `/data`のrw・journal・commit方針は、S03 ext4書き込み・電断、S4 fs-compare、rootfs-stay-ro、GPIO6 powerfailの既存実験から判断します。実機の耐電断性を優先する従来方針は維持し、追加実験を計画します。 | 具体的な設定値は未決定。既存結果の適用範囲の整理と追加実験待ち。現行mountは変更しない | [既存証拠と追加計画](write-policy.md#dataのmount方針を決めるための資料と追加計画) |
+| 2026-11-13 | Wi-Fiではlegacy EAP（MSCHAPv2等）とTLS-PSKの互換性を維持しません。対応するOpenSSL機能を削減候補にします。WPAのPSKとTLS-PSKは区別します。 | 方針決定済み、削減・接続確認は未実施 | [OpenSSL最小化](../research/component-options/openssl-minimal.md)、[ネットワーク比較](../research/alternatives/network.md) |
+| 2026-11-13 | RAUCのような標準更新frameworkへ移り、公開の`msd-update`を廃止します。ただしRAUCとSWUpdateの比較完了後に移行先を決めます。それまではOpenSSLのCMSを残し、CLIも`msd-update`が存在する間は維持します。移行後に`no-apps`を再検討します。 | 未実装。移行先の選定・比較は未完了。CLIの恒久利用は決定していない | [更新framework比較](../research/alternatives/updates.md)、[OpenSSL最小化](../research/component-options/openssl-minimal.md) |
+| 2026-11-13 | 機器の速度を容量より優先し、速度のためにrootfsが大きくなることを許容します。OpenSSLのasmを維持します。boot時間への影響は小さい見込みですが、測定で確かめます。 | 方針決定済み。asmは現行でも使用。容量・実機速度・boot時間への影響は未測定 | [OpenSSLの測定方針](../research/component-options/openssl-minimal.md#実験と残る判断) |
+| 2026-11-13 | PQCとhybrid Groupsの採否は未決定とし、容量・相互運用性・実機速度・保守上の利点と負担を比較する判断資料を準備します。 | 未決定、資料作成待ち | [OpenSSL設定案](../research/component-options/openssl-minimal-runtime.md) |
+| 2026-11-13 | legal-infoは選択肢Aの補足資料collectorを採用します。固定Buildroot sourceと外部treeの対応、Bootlinのlicense原文とsource・patchへの参照を補足し、原警告を保持します。警告ゼロや完全な対応sourceの収集・配布許諾確認を主張しません。全source収集の選択肢Bは今回の範囲にしません。 | 未実装。Buildroot source未保存・Bootlin license file未定義の警告は残る | [SBOMとlegal-infoの確認範囲](../research/operations/sbom-coverage.md) |
 | 2026-11-12 | Buildroot 2026.08.xを維持し、host/targetのOpenSSLを外部treeで3.5.9 LTS（保守期限2030-04-08）に固定します。2026.11.x、その後2027.02 LTSへの更新は後日行います。12月1日予定の3.5.10は別作業とし、11月10日のadvisory修正は自前backportしません。 | 外部overrideと週次監視を実装。検証範囲は実験記録に記載。基盤更新と3.5.10は未実施 | [保守判断](../research/dependencies/openssl-maintenance.md)、[実験記録](../experiments/2026-11-12-openssl-3.5-lts.md) |
 | 2026-11-03 | RAUCまたはSWUpdateへ移行した後は、公開の`msd-update` commandを残さず、bundleの検証とslotへの書き込みをframeworkに任せます。 | 未実装（frameworkは比較中） | [更新frameworkの比較](../research/alternatives/updates.md) |
 | 2026-11-03 | framework移行後の更新処理と暗号実装にはOpenSSLを使います。 | 未実装 | [更新frameworkと暗号libraryのbuild option](../research/alternatives/update-build-options.md) |

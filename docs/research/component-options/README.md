@@ -8,6 +8,7 @@
 
 | 主題 | 本文 |
 |---|---|
+| 2026-11-13の利用者判断と未実装・未決定の区別 | [製品方針](../../design/product-decisions.md)。seed非保存・初回zram・速度優先・更新移行までのCMS／CLI維持・legal-info補足collectorを決定。PQCと`/data`の具体値は未決定 |
 | OpenSSL 3.5.9の最小化・openssl.cnf・ARM最適化の調査草案 | [現状・採否・設定案](openssl-minimal.md)、[全option表](openssl-minimal-options.csv) |
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |

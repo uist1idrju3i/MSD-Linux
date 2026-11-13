@@ -4,6 +4,8 @@
 
 コードの書き込み経路、未実装のpolicy案、S3の条件と結果を分けて読んでください。現在は`/data`を通常運用中もread-onlyに保つ書き込み窓を実装していません。[現在のコードと限界](README.md#現在の実装とまだ確かめていないこと)と[権限の設計](../security/README.md)を先に確認します。
 
+2026-11-13に[seed非保存と初回起動からのzram swap採用](../../design/product-decisions.md)を決めましたが、実装は未対応です。以下のseed保存を含む書き込み窓の案は当時の検討として残し、現在の採用方針とは区別します。`/data`の具体的なrw・journal・commit値は未決定で、既存実験の適用範囲と[追加計画](../../design/write-policy.md#dataのmount方針を決めるための資料と追加計画)を台帳にまとめています。
+
 生成`.config`の未取得などは、以下の調査を行った時点の確認範囲です。後の生成物を調べた範囲は[BSPの確認記録](../../experiments/2026-11-02-hardware-artifact-audit.md)へ分けています。K/P系列のURL・逐語抜粋・適用範囲は[共通出典](filesystem-sources.md)、候補比較は[filesystem候補](filesystem-candidates.md)、S17は[故障注入の計画](fault-injection-s17.md)です。
 
 現行のmount・初期化・overlay・healthと、置換時に一緒に変える契約は[保存領域と実行時検証の比較](../alternatives/filesystems.md)にまとめています。以下の設計案や過去の資料を、現行実装や本機の実測に読み替えません。
