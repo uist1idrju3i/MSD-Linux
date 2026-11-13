@@ -34,6 +34,10 @@ OpenSSLのupstream展開source、別作業treeのGit object/cache、生成した
 
 利用者の2026-11-13の承認に従い、`remaining-binaries-sha256.csv`へ251件の削除直前のSHA-256・size・mtimeを記録します。これは現在の状態のsnapshotで、測定時と同一だったことの証明ではありません。remoteへ通常pushして確認した後、一覧のpathだけを削除し、実施結果と`df`の前後値を`binary-deletion-report.json`へ記録します。秘密鍵・一覧外のfile・directoryは削除対象ではありません。
 
+snapshot commit `5375e420a6d0704f651f5f285c8345d658f88b34`を通常pushし、remote SHAとmanifestのSHA-256一致を確認してから、2026-11-13に251 pathだけを削除しました。保持対象は0件です。削除直前にsize・mtime・ctime・inode・deviceを全件照合し、symlink・秘密鍵らしい名前・追跡fileを拒否し、参照可能なprocessのFDに対象がないことを確認しました。
+
+`df -B1`の空きは299,157,540,864から349,300,690,944 bytesへ増え、観測差は50,143,150,080 bytesです。前後の同期処理を含む観測で、他processの書き込みを排除した測定ではありません。見かけの合計1,142,665,527,771 bytesやpath別割り当て合計50,143,170,560 bytesとは分けます。削除した本文はGitから復元できません。上の未遠隔保存一覧は、削除前の監査時点の記録として残しています。
+
 このdirectoryで`sha256sum -c SHA256SUMS`を実行できます。archive内の各fileは`coverage.csv`の`record`にある`#`以降のmember名で取り出し、同じ行のSHA-256と照合します。CSVが別の既存保存物を参照する場合は、その固定commitのfileまたはarchive memberを読みます。圧縮されたlogの参照は展開後のhashです。
 
 archiveへの保存は、licenseの義務の完了、CVEの不存在、実機対応、今後のartifactの永続保管を保証しません。imageの未保存、失われた過去のimage、取得できなかったlogは、今回のtext保存で復元したとは扱いません。
