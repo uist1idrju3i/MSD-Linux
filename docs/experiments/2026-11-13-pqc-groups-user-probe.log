@@ -1,0 +1,14 @@
+2026-11-13T04:18:53Z
+OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
+github.com groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Peer Temp Key: X25519, 253 bits 
+github.com groups=X25519MLKEM768: 4077A9B9F9750000:error:0A000410:SSL routines:ssl3_read_bytes:ssl/tls alert handshake failure:../ssl/record/rec_layer_s3.c:918:SSL alert number 40 
+api.github.com groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Peer Temp Key: X25519, 253 bits 
+api.github.com groups=X25519MLKEM768: 40678F0A5A780000:error:0A000410:SSL routines:ssl3_read_bytes:ssl/tls alert handshake failure:../ssl/record/rec_layer_s3.c:918:SSL alert number 40 
+codeload.github.com groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Peer Temp Key: X25519, 253 bits 
+codeload.github.com groups=X25519MLKEM768: 40578E6745790000:error:0A000410:SSL routines:ssl3_read_bytes:ssl/tls alert handshake failure:../ssl/record/rec_layer_s3.c:918:SSL alert number 40 
+objects.githubusercontent.com groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
+objects.githubusercontent.com groups=X25519MLKEM768: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
+release-assets.githubusercontent.com groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
+release-assets.githubusercontent.com groups=X25519MLKEM768: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
+muromi.moe groups=X25519MLKEM768:X25519: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
+muromi.moe groups=X25519MLKEM768: Protocol version: TLSv1.3 Negotiated TLS1.3 group: X25519MLKEM768 
