@@ -22,9 +22,9 @@
 |---|---|---|---|---|
 | [S02msd-data](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) の `mkfs.ext4` | 空の `/data`（p7）を、初回起動の時にformatします | なし | 未対応 | `/data` の初期暗号化を実装する時に、progressを表示する処理へ置き換えます |
 | S02msd-data の `fsck.ext4 -p` | `/data` に問題があれば、起動のたびに修復を書き込みます | なし | 未対応 | 電源断の後の回復は必要なので、例外にする案です。修復した時は、そのことを表示します |
-| S02msd-data の `mkdir -p` | `/data/etc`、`/data/msd-update`、`/data/seedrng` を、起動のたびに作ります（既にあれば書き込まない見込み、推測） | なし | 未確認 | QEMUの記録で確かめます |
+| S02msd-data の `mkdir -p` | `/data/etc`、`/data/msd-update` を、起動のたびに作ります（既にあれば書き込まない見込み、推測）。seed用directoryの作成は削除しました | なし | 未確認 | 残るdirectory作成の寄与は未分離です |
 | [msd-data-grow](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | 初回起動の時に、partition tableを書き換え、`resize2fs` で `/data` を広げます | なし | 未対応 | 初期暗号化と同じ処理の中で、progressを表示します |
-| seedrng（`S05seedrng`、`--seed-dir=/data/seedrng`） | 起動・停止・restart・reloadでseedを保存します。古いseedの読込み・削除、directoryのfsync、新しいseedのfsyncを伴います（BuildrootのS01seedrngを後ろに移したもの） | なし | 未対応 | 2026-11-13に永続seedを保存しないと決定しましたが、まだ実装していません。`/data/seedrng`の作成・保存経路をなくし、hwrngとjitterに依存する方針です。保存seedのbackupがない負担とcrng初期化時間の未確認を[製品方針](product-decisions.md)に記録します |
+| seedrngの自動保存（旧`S05seedrng`） | post-buildでS01・S05のseed initと既定設定を除去し、S02の`/data/seedrng`作成も削除しました。起動・停止・reloadからseedrngを呼びません | なし | 対応済み | [QEMU記録](../experiments/2026-11-13-seedrng-zram.md)で新規imageのdirectory・init・設定の不在を確認しました。内蔵hwrngは維持しますが品質は未確認です。既存SDの古いseedは自動消去しません |
 | [msd-update](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) の `install` | 利用者が実行した時に、待機中のslot（p2/p3、p5/p6）へ `dd ... conv=fsync` で書き、`/data/msd-update` に状態を書きます | なし | 未対応 | RAUCかSWUpdateへ移る時に、progressを表示します。利用者の操作で始まる点は規則に合います |
 | [S99msd-health](../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health) からの `msd-update commit` | 試し起動（tryboot）の時だけ、`/data/msd-update` とFATの `autoboot.txt` を書きます | なし | 未対応 | 利用者が始めた更新の続きです。例外にする案で、起動の画面に更新中であることを表示します |
 | ext4のjournal commit | 書き込みがある時に、既定で5秒ごとにcommitします。書き込みがなければ動かない見込みです（推測） | 対象外 | 未確認 | QEMUの記録で確かめます |
@@ -47,7 +47,7 @@
 | watchdog、sysctl、keymap、module load | device・kernelの状態。pidや診断logは `/run`・`/tmp` | S01msd-watchdog、S02sysctl、S04msd-keymap、S10mdev、S11modules。SDへの保存処理ではありません |
 | 更新bundleの展開・検証 | `${TMPDIR:-/tmp}/msd-update.*` | msd-update。既定はRAMで、利用者がTMPDIRを変えた場合は別です |
 
-tmpfsは圧縮していないRAMです。2026-11-13に初回起動からzram swapを使うと決定しましたが、まだ実装していません。tmpfsの配置を変える決定ではありません。過去にQEMUで試した記録は [zramの実験](../experiments/2026-10-21-qemu-zram.md) にあります。
+tmpfs自体は圧縮していません。2026-11-13にzram swapを実装し、memory pressure時にRAMのpageを圧縮して保持します。tmpfsの配置は変えません。[今回の記録](../experiments/2026-11-13-seedrng-zram.md)と[過去のQEMU実験](../experiments/2026-10-21-qemu-zram.md)を分けて参照します。
 
 ## daemon・任意実行toolの棚卸し
 
@@ -62,17 +62,17 @@ tmpfsは圧縮していないRAMです。2026-11-13に初回起動からzram swa
 | SSH / host key / known_hosts | Dropbear・OpenSSHは未選択。`/etc/dropbear`、host key生成init、SSHのknown_hosts更新は現行経路にありません | 導入時にhost keyの安全な永続化と保存時機を設計します。鍵を毎回RAMで作る案は採用していません |
 | shell history | BusyBox ashの保存機能は有効。既定HISTFILEは `$HOME/.ash_history`、rootのHOMEはSquashFS上の `/root` | 既定pathへ永続書き込みはできません。利用者によるHOME/HISTFILE変更や、アプリの作業directory変更は別扱いです |
 | hwclock / fake-hwclock | hwclock appletはありますが、呼ぶinit・cron job・fake-hwclock packageはありません。`/etc/adjtime`を作る操作はetc overlayのRAM側 | RTCへの明示書込みはSDとは別。RX8130CEの実機挙動、起動時のRTC読込みは今回未確認です |
-| swap / zram / zswap | inittabに `swapon -a` はありますがfstabにswapはなく、QEMUの `/proc/swaps` も空。zramは `CONFIG_ZRAM=m`、writeback機能あり。自動設定はありません | 未対応。zram swap採用は決定済みですが、動作中ではありません。login prompt後にbackgroundで有効化する実装待ちです。zswapはkernelの既定で無効。disk swapやzram backing deviceは追加しません |
+| swap / zram / zswap | `CONFIG_ZRAM=y`、zstd backendとzsmallocもbuilt-in。S99msd-zramのbackground workerがPID 1のconsole getty／login／shell開始を待ち、1秒後にMemTotalの約50%をpriority 100でswaponします | 対応済み。QEMUでlogin prompt後の有効化と負荷時のswap使用を確認。圧縮はzstd優先、なければlzo-rle。writebackはkernelで無効にし、disk swapやbacking deviceを使いません。zswapも既定で無効です |
 | core dump | `CONFIG_COREDUMP=y`、既定patternは `core`。QEMUのshellのsoft limitは0。kernelの初期RLIMIT_COREも0 | 任意のprocessがlimitと作業directoryを変えれば `/data` へcoreを書けます。全processのlimitsとcrash動作は未測定です |
 | pstore / ramoops | kernel設定は有効。予約RAMを使い、SDへ回収するdaemonはありません | RAMの保持とSD永続化を区別します。panic・再起動後の回収は今回未測定です |
 | atime / periodic metadata | `/data` は `noatime`、rootはSquashFS ro。tmpfsのrelatimeはRAMだけ。ext4 journal、resize、修復、`sync` は上表の経路です | atime・commit・flush・SD内部FTLを同じ量と扱いません。mount optionは変更していません |
 
-## 決定済みの未対応項目と判断待ち
+## 決定済み項目と残る測定・判断
 
 | 判断 | 選択肢と推奨 | 今回の扱い |
 |---|---|---|
-| seedの保存 | 2026-11-13に永続保存しないと決定。hwrngが弱い場合に保存seedのbackupがなく、early bootのcrng初期化時間をQEMUと実機で測る必要があります | 未対応。現行の保存処理は残っています。jitterの供給・起動時の保証も未確認です |
-| zram | 初回起動から採用し、RAM約50%、zstdまたはlzo-rle、login prompt後のbackground有効化を予定。built-inの`=y`と現行`=m`の差、圧縮CPU負荷・thrash・metadata RAMを測ります | 未対応。採用決定と実装を区別します。方式選定と測定は未実施で、永続writeback先も設定しません |
+| seedの保存 | 永続保存しない方針を実装。hwrngが弱い場合に保存seedのbackupはありません | 対応済み。crng初期化時刻はQEMUで採取しましたが、実機の時刻・品質、jitterの供給経路と起動時の保証は未確認です |
+| zram | 初回からbuilt-in zramを採用し、RAM約50%、zstd優先、console開始後にbackgroundで有効化 | 対応済み。QEMUの圧縮可能な負荷でswap使用とOOMなしを確認。`=y`対`=m`の単独比較、実機CPU負荷・thrash・metadata RAMの評価は未実施です |
 | `/data` のmount・journal | 既存実験を材料にrw・journal・commit方針を決め、追加試験で耐電断性と書き込み量を一緒に評価します | 未対応、具体値は未決定。idleが0でも常時roの代わりにはなりません |
 | format・grow・fsck・tryboot commit・powerfail | 初期設定や更新のprogress付き処理へまとめるか、理由付き例外にするか。緊急flushと回復を黙って無効にしない案を推奨します | 未対応。今回の計測で例外を承認したとは扱いません |
 

@@ -1,0 +1,1192 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+20261113T020014Z-before-tcg,before,0,t_init,6.661026,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,t_data,13.231196,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,t_ready,27.729866,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,t_rcs_begin,11.070967,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S01msd-watchdog,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S01msd-watchdog,0.209059,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S01syslogd,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S01syslogd,0.199201,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S02klogd,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S02klogd,0.189572,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S02msd-data,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S02msd-data,6.123653,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S02sysctl,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S02sysctl,0.579289,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S03msd-etc-overlay,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S03msd-etc-overlay,0.363156,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S04msd-keymap,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S04msd-keymap,0.388820,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S05seedrng,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S05seedrng,0.392677,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S10mdev,123,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S10mdev,6.265932,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S11modules,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S11modules,0.258324,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S40network,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S40network,0.726816,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S50crond,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S50crond,0.191849,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S97msd-hwinfo,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S97msd-hwinfo,0.170533,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S98msd-ready,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S98msd-ready,0.404543,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script_status:S99msd-health,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,script:S99msd-health,0.267884,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall_count,773,count,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall_total,5.081422,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:sock_init,0.052000,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:of_platform_default_populate_init,0.152000,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:net_dev_init,0.068000,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:chr_dev_init,0.303436,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:inet_init,0.103324,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:kvm_arm_init,0.176024,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:bcm2708_fb_init,0.161545,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:brd_init,0.162332,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:loop_init,0.070965,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:dwc_otg_driver_init,0.670188,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:raspberrypi_cpufreq_driver_init,0.059752,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:param_sysfs_builtin_init,0.865248,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:load_system_certificate_list,0.081995,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:slab_late_init,0.244082,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,initcall:deferred_probe_initcall,0.408240,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,module_initcall_count,5,count,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,module_initcall_total,0.031505,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,wall,35.221689,s,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,exit_status,0,code,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,0,log_sha256,d3a0ef3b20bb0c6801f9581809e63409287b2cb287063b4bbd96a9a25467a0de,sha256,1,first_boot=1;mode=tcg
+20261113T020014Z-before-tcg,before,1,t_init,6.245787,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,t_data,13.470878,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,t_ready,24.659973,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,t_rcs_begin,10.644350,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S01msd-watchdog,0.200630,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S01syslogd,0.243340,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S02klogd,0.185355,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S02msd-data,6.204568,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S02sysctl,0.549175,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S03msd-etc-overlay,0.367628,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S04msd-keymap,0.302703,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S05seedrng,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S05seedrng,0.531384,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S10mdev,3.249182,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S11modules,0.309093,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S40network,0.892263,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S50crond,0.186215,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S97msd-hwinfo,0.158751,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S98msd-ready,0.425855,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,script:S99msd-health,0.124283,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall_count,773,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall_total,4.665703,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:sock_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:of_platform_default_populate_init,0.140000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:net_dev_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:chr_dev_init,0.249977,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:inet_init,0.123198,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:kvm_arm_init,0.088975,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:bcm2708_fb_init,0.153155,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:brd_init,0.153413,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:loop_init,0.068640,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:dwc_otg_driver_init,0.640627,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:raspberrypi_cpufreq_driver_init,0.051409,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:armv8_pmu_driver_init,0.050335,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:param_sysfs_builtin_init,0.719607,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:load_system_certificate_list,0.105958,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:slab_late_init,0.278799,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,initcall:deferred_probe_initcall,0.357030,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,module_initcall_total,0.018099,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,wall,32.004652,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,1,log_sha256,04a4a8b1c289469f152231aed8fd257bb01fe1847020f5b62f5a3a835eda8321,sha256,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,t_init,6.121726,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,t_data,12.761522,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,t_ready,22.468350,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,t_rcs_begin,9.917752,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S01msd-watchdog,0.187045,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S01syslogd,0.215982,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S02klogd,0.177592,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S02msd-data,4.700380,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S02sysctl,0.486636,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S03msd-etc-overlay,0.298515,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S04msd-keymap,0.396435,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S05seedrng,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S05seedrng,0.497871,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S10mdev,3.549810,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S11modules,0.306683,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S40network,0.816047,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S50crond,0.191305,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S97msd-hwinfo,0.170314,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S98msd-ready,0.369309,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,script:S99msd-health,0.184169,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall_count,773,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall_total,4.552303,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:sock_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:of_platform_default_populate_init,0.108000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:net_dev_init,0.056000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:chr_dev_init,0.243283,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:inet_init,0.072497,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:kvm_arm_init,0.077525,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:bcm2708_fb_init,0.167344,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:brd_init,0.247968,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:loop_init,0.092322,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:dwc_otg_driver_init,0.625853,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:raspberrypi_cpufreq_driver_init,0.058230,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:param_sysfs_builtin_init,0.600298,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:load_system_certificate_list,0.103332,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:slab_late_init,0.267828,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,initcall:deferred_probe_initcall,0.396752,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,module_initcall_total,0.035418,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,wall,29.965114,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,2,log_sha256,224f028c2050044f4e1fadaec71d8e84cfa3a28153e6c700ca95153fa19a3db5,sha256,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,t_init,6.186290,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,t_data,11.996308,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,t_ready,21.823048,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,t_rcs_begin,9.114006,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S01msd-watchdog,0.201196,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S01syslogd,0.226872,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S02klogd,0.182857,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S02msd-data,4.857214,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S02sysctl,0.457934,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S03msd-etc-overlay,0.314555,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S04msd-keymap,0.440350,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S05seedrng,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S05seedrng,0.574578,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S10mdev,3.348597,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S11modules,0.228410,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S40network,0.865325,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S50crond,0.203903,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S97msd-hwinfo,0.164907,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S98msd-ready,0.408142,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,script:S99msd-health,0.231296,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall_count,773,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall_total,4.583177,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:sock_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:of_platform_default_populate_init,0.124000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:net_dev_init,0.056000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:chr_dev_init,0.280431,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:inet_init,0.077987,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:kvm_arm_init,0.130561,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:bcm2708_fb_init,0.152713,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:brd_init,0.162773,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:loop_init,0.144565,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:dwc_otg_driver_init,0.577771,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:raspberrypi_cpufreq_driver_init,0.074861,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:param_sysfs_builtin_init,0.552706,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:load_system_certificate_list,0.093168,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:slab_late_init,0.255313,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,initcall:deferred_probe_initcall,0.419888,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,module_initcall_total,0.035600,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,wall,28.959785,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,3,log_sha256,8185f6a49155be0465442c51b4e9bdd01d0cab5b0f9b7fc98ecf62ac24ebe061,sha256,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,t_init,6.580308,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,t_data,13.027805,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,t_ready,23.085582,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,t_rcs_begin,10.441620,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S01msd-watchdog,0.218643,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S01syslogd,0.215489,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S02klogd,0.204294,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S02msd-data,4.426038,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S02sysctl,0.596505,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S03msd-etc-overlay,0.360738,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S04msd-keymap,0.450173,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S05seedrng,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S05seedrng,0.633854,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S10mdev,3.588552,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S11modules,0.220988,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S40network,0.835225,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S50crond,0.159811,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S97msd-hwinfo,0.160439,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S98msd-ready,0.333442,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,script:S99msd-health,0.254746,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall_count,773,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall_total,4.890956,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:sock_init,0.060000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:of_platform_default_populate_init,0.112000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:fbmem_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:chr_dev_init,0.247055,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:inet_init,0.138780,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:kvm_arm_init,0.097720,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:bcm2708_fb_init,0.132490,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:brd_init,0.250946,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:loop_init,0.154343,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:dwc_otg_driver_init,0.636544,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:raspberrypi_cpufreq_driver_init,0.056787,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:param_sysfs_builtin_init,0.787011,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:load_system_certificate_list,0.080347,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:slab_late_init,0.240423,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,initcall:deferred_probe_initcall,0.396721,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,module_initcall_total,0.024690,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,wall,29.973905,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,4,log_sha256,db9da0440dc6773a64709469e3ea9984f431d587b0c4f9c5b74c7c8d0cdeaecb,sha256,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,t_init,7.014043,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,t_data,13.304773,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,t_ready,22.797078,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,t_rcs_begin,10.485637,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S01msd-watchdog,0.195560,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S01syslogd,0.226826,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S02klogd,0.178751,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S02msd-data,4.433280,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S02sysctl,0.558836,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S03msd-etc-overlay,0.310660,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S04msd-keymap,0.399801,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S05seedrng,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S05seedrng,0.642233,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S10mdev,3.382617,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S11modules,0.280479,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S40network,0.785824,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S50crond,0.199630,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S97msd-hwinfo,0.157063,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S98msd-ready,0.348032,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,script:S99msd-health,0.241428,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall_count,773,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall_total,5.288764,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:sock_init,0.108000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:irq_sysfs_init,0.100000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:of_platform_default_populate_init,0.228000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:net_dev_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:chr_dev_init,0.285439,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:inet_init,0.147987,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:kvm_arm_init,0.101351,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:bcm2708_fb_init,0.169915,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:brd_init,0.191863,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:loop_init,0.069519,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:dwc_otg_driver_init,0.668452,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:raspberrypi_cpufreq_driver_init,0.062313,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:param_sysfs_builtin_init,0.894862,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:load_system_certificate_list,0.090801,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:slab_late_init,0.338612,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,initcall:deferred_probe_initcall,0.374163,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,module_initcall_total,0.020250,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,wall,29.987821,s,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020014Z-before-tcg,before,5,log_sha256,7a4ae1ee9f7de792ee2220fef1977825e40569541c9c91f1be649b969afdc0e2,sha256,1,first_boot=0;mode=tcg
+boot-before,before,0,crng_init,2.902820,s,1,first_boot=1;initcall_debug=1
+boot-before,before,1,crng_init,2.668113,s,1,first_boot=0;initcall_debug=1
+boot-before,before,2,crng_init,2.476772,s,1,first_boot=0;initcall_debug=1
+boot-before,before,3,crng_init,2.723618,s,1,first_boot=0;initcall_debug=1
+boot-before,before,4,crng_init,2.704825,s,1,first_boot=0;initcall_debug=1
+boot-before,before,5,crng_init,3.070187,s,1,first_boot=0;initcall_debug=1
+before-images,before,0,Image.bytes,18016768,B,1,
+before-images,before,0,bcm2710-rpi-cm0.dtb.bytes,33736,B,1,
+before-images,before,0,rootfs.squashfs.bytes,20725760,B,1,
+before-images,before,0,sdcard.img.bytes,771751936,B,1,
+probe-before,before,0,crng_init,2.129048,s,1,single functional probe;initcall_debug=0
+20261113T020943Z-after-tcg,after,0,t_init,6.229089,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,t_data,11.875955,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,t_ready,25.567503,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,t_rcs_begin,9.592954,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S01msd-watchdog,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S01msd-watchdog,0.180922,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S01syslogd,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S01syslogd,0.227634,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S02klogd,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S02klogd,0.165460,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S02msd-data,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S02msd-data,6.063427,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S02sysctl,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S02sysctl,0.573080,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S03msd-etc-overlay,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S03msd-etc-overlay,0.327866,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S04msd-keymap,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S04msd-keymap,0.436406,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S10mdev,123,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S10mdev,6.241001,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S11modules,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S11modules,0.291790,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S40network,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S40network,0.699938,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S50crond,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S50crond,0.143494,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S97msd-hwinfo,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S97msd-hwinfo,0.145371,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S98msd-ready,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S98msd-ready,0.281886,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S99msd-health,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S99msd-health,0.212754,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script_status:S99msd-zram,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,script:S99msd-zram,0.284114,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall_count,774,count,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall_total,4.721254,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:sock_init,0.052000,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:of_platform_default_populate_init,0.220000,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:net_dev_init,0.060000,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:chr_dev_init,0.276307,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:inet_init,0.114001,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:kvm_arm_init,0.082372,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:bcm2708_fb_init,0.166908,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:brd_init,0.123395,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:loop_init,0.067937,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:dwc_otg_driver_init,0.630003,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:raspberrypi_cpufreq_driver_init,0.070090,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:param_sysfs_builtin_init,0.789129,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:load_system_certificate_list,0.072345,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:slab_late_init,0.231521,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,initcall:deferred_probe_initcall,0.409783,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,module_initcall_count,5,count,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,module_initcall_total,0.864610,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,module_initcall:raspberrypi_gpiomem:rpi_gpiomem_driver_init,0.843974,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,wall,33.078680,s,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,exit_status,0,code,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,0,log_sha256,b5ed6e9e4d779c61178b0956dcb858970670ad6d42b9cb16cfdd6af39f833167,sha256,1,first_boot=1;mode=tcg
+20261113T020943Z-after-tcg,after,1,t_init,6.056822,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,t_data,12.072293,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,t_ready,23.951127,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,t_rcs_begin,9.408629,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S01msd-watchdog,0.213753,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S01syslogd,0.225640,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S02klogd,0.181315,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S02msd-data,6.864583,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S02sysctl,0.540792,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S03msd-etc-overlay,0.280906,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S04msd-keymap,0.458995,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S10mdev,3.675512,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S11modules,0.279710,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S40network,0.936184,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S50crond,0.171343,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S97msd-hwinfo,0.167903,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S98msd-ready,0.401291,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S99msd-health,0.203118,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script_status:S99msd-zram,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,script:S99msd-zram,0.223376,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall_count,774,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall_total,4.432872,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:sock_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:of_platform_default_populate_init,0.120000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:chr_dev_init,0.241321,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:inet_init,0.080467,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:kvm_arm_init,0.079127,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:bcm2708_fb_init,0.134663,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:brd_init,0.167254,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:loop_init,0.067872,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:dwc_otg_driver_init,0.628392,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:raspberrypi_cpufreq_driver_init,0.063135,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:param_sysfs_builtin_init,0.644969,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:load_system_certificate_list,0.075142,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:slab_late_init,0.238430,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,initcall:deferred_probe_initcall,0.435682,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,module_initcall_total,0.016838,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,wall,30.986162,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,1,log_sha256,a56de00f0c096079cc4eaad319a0cf967a3e272dd66caf07b5d5fbb1eda31f49,sha256,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,t_init,6.753780,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,t_data,13.130089,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,t_ready,22.324116,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,t_rcs_begin,10.190645,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S01msd-watchdog,0.214022,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S01syslogd,0.229719,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S02klogd,0.177416,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S02msd-data,4.716689,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S02sysctl,0.627157,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S03msd-etc-overlay,0.306523,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S04msd-keymap,0.425773,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S10mdev,3.457609,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S11modules,0.252039,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S40network,0.809267,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S50crond,0.188102,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S97msd-hwinfo,0.168662,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S98msd-ready,0.405872,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S99msd-health,0.241465,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script_status:S99msd-zram,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,script:S99msd-zram,0.241201,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall_count,774,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall_total,4.992664,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:sock_init,0.056000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:of_platform_default_populate_init,0.232000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:chr_dev_init,0.300434,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:inet_init,0.117252,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:kvm_arm_init,0.158127,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:bcm2708_fb_init,0.164201,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:brd_init,0.174542,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:loop_init,0.069151,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:dwc_otg_driver_init,0.668391,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:raspberrypi_cpufreq_driver_init,0.080647,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:param_sysfs_builtin_init,0.687170,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:load_system_certificate_list,0.109724,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:slab_late_init,0.238958,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,initcall:deferred_probe_initcall,0.413330,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,module_initcall_total,0.016969,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,wall,29.972165,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,2,log_sha256,769df217a0f6bd79be13028cd49dd21f115b37135e7ea70d80b9843b617d1284,sha256,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,t_init,6.734018,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,t_data,13.071369,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,t_ready,22.981949,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,t_rcs_begin,10.113193,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S01msd-watchdog,0.205340,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S01syslogd,0.249948,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S02klogd,0.177096,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S02msd-data,5.362163,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S02sysctl,0.596557,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S03msd-etc-overlay,0.315820,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S04msd-keymap,0.403966,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S10mdev,3.494797,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S11modules,0.247972,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S40network,0.886876,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S50crond,0.203207,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S97msd-hwinfo,0.170294,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S98msd-ready,0.399712,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S99msd-health,0.236031,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script_status:S99msd-zram,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,script:S99msd-zram,0.278726,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall_count,774,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall_total,4.974470,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:sock_init,0.108000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:of_platform_default_populate_init,0.112000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:fbmem_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:chr_dev_init,0.317562,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:inet_init,0.112248,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:kvm_arm_init,0.171734,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:bcm2835_pinctrl_driver_init,0.062099,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:gpio_led_driver_init,0.055114,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:bcm2708_fb_init,0.155626,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:brd_init,0.188050,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:loop_init,0.073214,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:dwc_otg_driver_init,0.661909,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:raspberrypi_cpufreq_driver_init,0.058985,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:param_sysfs_builtin_init,0.762800,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:load_system_certificate_list,0.120994,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:slab_late_init,0.283031,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,initcall:deferred_probe_initcall,0.240328,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,module_initcall_total,0.013512,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,wall,30.990611,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,3,log_sha256,5b0eba8f8a7815edb1515f7389e1011d55d17ed4b583d88287d4aafbf7fa3794,sha256,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,t_init,6.064080,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,t_data,12.754111,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,t_ready,21.603241,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,t_rcs_begin,10.159380,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S01msd-watchdog,0.205739,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S01syslogd,0.205643,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S02klogd,0.169892,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S02msd-data,4.595645,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S02sysctl,0.534494,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S03msd-etc-overlay,0.297322,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S04msd-keymap,0.438668,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S10mdev,3.317173,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S11modules,0.176660,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S40network,0.751104,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S50crond,0.159913,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S97msd-hwinfo,0.148448,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S98msd-ready,0.307584,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S99msd-health,0.201630,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script_status:S99msd-zram,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,script:S99msd-zram,0.264520,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall_count,774,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall_total,4.517151,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:sock_init,0.112000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:irq_sysfs_init,0.056000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:of_platform_default_populate_init,0.216000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:net_dev_init,0.056000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:chr_dev_init,0.296312,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:inet_init,0.114877,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:kvm_arm_init,0.089783,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:bcm2708_fb_init,0.157688,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:brd_init,0.232098,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:loop_init,0.078592,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:dwc_otg_driver_init,0.548344,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:param_sysfs_builtin_init,0.525635,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:load_system_certificate_list,0.065745,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:slab_late_init,0.237778,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,initcall:deferred_probe_initcall,0.324236,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,module_initcall_total,0.022204,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,wall,28.962663,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,4,log_sha256,07bb3abf9d03346af9449abd676280cfc50a69457f4b1f13159fc4d17f15dbec,sha256,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,t_init,6.323028,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,t_data,12.743172,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,t_ready,22.212664,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,t_rcs_begin,10.286818,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S01msd-watchdog,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S01msd-watchdog,0.207249,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S01syslogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S01syslogd,0.231976,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S02klogd,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S02klogd,0.165861,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S02msd-data,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S02msd-data,4.421643,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S02sysctl,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S02sysctl,0.625063,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S03msd-etc-overlay,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S03msd-etc-overlay,0.288214,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S04msd-keymap,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S04msd-keymap,0.395724,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S10mdev,123,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S10mdev,3.534029,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S11modules,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S11modules,0.322955,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S40network,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S40network,0.849865,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S50crond,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S50crond,0.192118,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S97msd-hwinfo,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S97msd-hwinfo,0.164956,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S98msd-ready,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S98msd-ready,0.381790,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S99msd-health,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S99msd-health,0.252186,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script_status:S99msd-zram,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,script:S99msd-zram,0.296018,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall_count,774,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall_total,4.783459,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:sock_init,0.052000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:of_platform_default_populate_init,0.112000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:net_dev_init,0.064000,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:chr_dev_init,0.212800,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:inet_init,0.071108,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:kvm_arm_init,0.192156,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:bcm2708_fb_init,0.152397,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:brd_init,0.162352,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:loop_init,0.071046,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:dwc_otg_driver_init,0.640154,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:raspberrypi_cpufreq_driver_init,0.067651,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:armv8_pmu_driver_init,0.052265,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:param_sysfs_builtin_init,0.738265,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:load_system_certificate_list,0.143249,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:slab_late_init,0.270315,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,initcall:deferred_probe_initcall,0.326540,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,module_initcall_count,5,count,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,module_initcall_total,0.022431,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,wall,29.966934,s,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,exit_status,0,code,1,first_boot=0;mode=tcg
+20261113T020943Z-after-tcg,after,5,log_sha256,7743fb7263507ceb7fe8f135a906c9fdcc738796ee3ce9845cf48e005ba5dd32,sha256,1,first_boot=0;mode=tcg
+boot-after,after,0,crng_init,2.803784,s,1,first_boot=1;initcall_debug=1
+boot-after,after,1,crng_init,2.532518,s,1,first_boot=0;initcall_debug=1
+boot-after,after,2,crng_init,3.015805,s,1,first_boot=0;initcall_debug=1
+boot-after,after,3,crng_init,3.038366,s,1,first_boot=0;initcall_debug=1
+boot-after,after,4,crng_init,2.912791,s,1,first_boot=0;initcall_debug=1
+boot-after,after,5,crng_init,2.727958,s,1,first_boot=0;initcall_debug=1
+final-images,after,0,Image.bytes,18082304,B,1,
+final-images,after,0,bcm2710-rpi-cm0.dtb.bytes,33736,B,1,
+final-images,after,0,rootfs.squashfs.bytes,20701184,B,1,
+final-images,after,0,sdcard.img.bytes,771751936,B,1,
+probe-after-final,after,0,crng_init,2.293392,s,1,single functional probe;initcall_debug=0
+probe-after-final,after,0,available_before_load,383944,KiB,1,
+probe-after-final,after,0,allocation,426713088,B,1,
+probe-after-final,after,0,swap_used,33792,KiB,1,
+probe-after-final,after,0,oom_markers,0,count,1,
+idle-before,before,0,mmcblk0.write_sectors,8728,sector512,1,phase=boot;uptime=22.04;stat=     304        0     8928     4134       32       38     8728     7117        0     6388    11252        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p1.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p2.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p3.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p4.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p5.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p6.write_sectors,0,sector512,1,phase=boot;uptime=22.04;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p7.write_sectors,8712,sector512,1,phase=boot;uptime=22.04;stat=      58        0      556      441       30       38     8712     7107        0     3168     7549        0        0        0        0        0        0
+idle-before,before,1,mmcblk0.write_sectors,8728,sector512,1,phase=idle-before;uptime=22.48;stat=     304        0     8928     4134       32       38     8728     7117        0     6388    11252        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=22.48;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p7.write_sectors,8712,sector512,1,phase=idle-before;uptime=22.48;stat=      58        0      556      441       30       38     8712     7107        0     3168     7549        0        0        0        0        0        0
+idle-before,before,1,mmcblk0.write_sectors,17048,sector512,1,phase=idle-after;uptime=142.92;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=142.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,1,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-after;uptime=142.92;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,2,mmcblk0.write_sectors,17048,sector512,1,phase=idle-before;uptime=143.59;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=143.59;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-before;uptime=143.59;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,2,mmcblk0.write_sectors,17048,sector512,1,phase=idle-after;uptime=264.11;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=264.11;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,2,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-after;uptime=264.11;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,3,mmcblk0.write_sectors,17048,sector512,1,phase=idle-before;uptime=264.47;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=264.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-before;uptime=264.47;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,3,mmcblk0.write_sectors,17048,sector512,1,phase=idle-after;uptime=384.79;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=384.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,3,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-after;uptime=384.79;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,4,mmcblk0.write_sectors,17048,sector512,1,phase=idle-before;uptime=385.18;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=385.18;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-before;uptime=385.18;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,4,mmcblk0.write_sectors,17048,sector512,1,phase=idle-after;uptime=505.7;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=505.7;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,4,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-after;uptime=505.7;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,5,mmcblk0.write_sectors,17048,sector512,1,phase=idle-before;uptime=506.21;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=506.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-before;uptime=506.21;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,5,mmcblk0.write_sectors,17048,sector512,1,phase=idle-after;uptime=626.58;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=626.58;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,5,mmcblk0p7.write_sectors,17032,sector512,1,phase=idle-after;uptime=626.58;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,0,mmcblk0.write_sectors,17048,sector512,1,phase=ram-before;uptime=627.17;stat=     304        0     8928     4134       52       42    17048    13765        0     8156    17900        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p1.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p2.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p3.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p4.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p5.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=     197        0     7012     3122        0        0        0        0        0     3168     3122        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p6.write_sectors,0,sector512,1,phase=ram-before;uptime=627.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p7.write_sectors,17032,sector512,1,phase=ram-before;uptime=627.17;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,0,mmcblk0.write_sectors,17048,sector512,1,phase=ram-after;uptime=627.87;stat=     306        0     8940     4151       52       42    17048    13765        0     8172    17917        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p1.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p2.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p3.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p4.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p5.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=     199        0     7024     3139        0        0        0        0        0     3184     3139        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p6.write_sectors,0,sector512,1,phase=ram-after;uptime=627.87;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p7.write_sectors,17032,sector512,1,phase=ram-after;uptime=627.87;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,0,mmcblk0.write_sectors,17048,sector512,1,phase=disk-before;uptime=628.56;stat=     306        0     8940     4151       52       42    17048    13765        0     8172    17917        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p1.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p2.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p3.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p4.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p5.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=     199        0     7024     3139        0        0        0        0        0     3184     3139        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p6.write_sectors,0,sector512,1,phase=disk-before;uptime=628.56;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p7.write_sectors,17032,sector512,1,phase=disk-before;uptime=628.56;stat=      58        0      556      441       50       42    17032    13755        0     5508    14197        0        0        0        0        0        0
+idle-before,before,0,mmcblk0.write_sectors,19152,sector512,1,phase=disk-after;uptime=630.17;stat=     306        0     8940     4151       56       47    19152    15332        0     8980    19484        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p1.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p2.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p3.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p4.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p5.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=     199        0     7024     3139        0        0        0        0        0     3184     3139        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p6.write_sectors,0,sector512,1,phase=disk-after;uptime=630.17;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-before,before,0,mmcblk0p7.write_sectors,19136,sector512,1,phase=disk-after;uptime=630.17;stat=      58        0      556      441       54       47    19136    15323        0     6316    15764        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0.write_sectors,8664,sector512,1,phase=boot;uptime=24.91;stat=     316        0     9322     5280       29       33     8664     6978        0     6624    12259        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p1.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p2.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p3.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p4.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p5.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p6.write_sectors,0,sector512,1,phase=boot;uptime=24.91;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p7.write_sectors,8648,sector512,1,phase=boot;uptime=24.91;stat=      58        0      556      369       27       33     8648     6952        0     3148     7322        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0.write_sectors,8664,sector512,1,phase=idle-before;uptime=25.61;stat=     319        0     9426     5367       29       33     8664     6978        0     6712    12345        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=25.61;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p7.write_sectors,8648,sector512,1,phase=idle-before;uptime=25.61;stat=      58        0      556      369       27       33     8648     6952        0     3148     7322        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0.write_sectors,16968,sector512,1,phase=idle-after;uptime=146.22;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=146.22;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,1,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-after;uptime=146.22;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0.write_sectors,16968,sector512,1,phase=idle-before;uptime=146.81;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=146.81;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-before;uptime=146.81;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0.write_sectors,16968,sector512,1,phase=idle-after;uptime=267.53;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=267.53;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,2,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-after;uptime=267.53;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0.write_sectors,16968,sector512,1,phase=idle-before;uptime=268.09;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=268.09;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-before;uptime=268.09;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0.write_sectors,16968,sector512,1,phase=idle-after;uptime=388.78;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=388.78;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,3,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-after;uptime=388.78;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0.write_sectors,16968,sector512,1,phase=idle-before;uptime=389.47;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=389.47;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-before;uptime=389.47;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0.write_sectors,16968,sector512,1,phase=idle-after;uptime=510.21;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=510.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,4,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-after;uptime=510.21;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0.write_sectors,16968,sector512,1,phase=idle-before;uptime=510.92;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-before;uptime=510.92;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-before;uptime=510.92;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0.write_sectors,16968,sector512,1,phase=idle-after;uptime=631.55;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p1.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p2.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p3.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p4.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p5.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p6.write_sectors,0,sector512,1,phase=idle-after;uptime=631.55;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,5,mmcblk0p7.write_sectors,16952,sector512,1,phase=idle-after;uptime=631.55;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0.write_sectors,16968,sector512,1,phase=ram-before;uptime=632.25;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p1.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p2.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p3.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p4.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p5.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p6.write_sectors,0,sector512,1,phase=ram-before;uptime=632.25;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p7.write_sectors,16952,sector512,1,phase=ram-before;uptime=632.25;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0.write_sectors,16968,sector512,1,phase=ram-after;uptime=633.07;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p1.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p2.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p3.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p4.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p5.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p6.write_sectors,0,sector512,1,phase=ram-after;uptime=633.07;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p7.write_sectors,16952,sector512,1,phase=ram-after;uptime=633.07;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0.write_sectors,16968,sector512,1,phase=disk-before;uptime=633.79;stat=     319        0     9426     5367       48       36    16968    13471        0     8660    18838        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p1.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p2.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p3.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p4.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p5.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p6.write_sectors,0,sector512,1,phase=disk-before;uptime=633.79;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p7.write_sectors,16952,sector512,1,phase=disk-before;uptime=633.79;stat=      58        0      556      369       46       36    16952    13446        0     5472    13816        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0.write_sectors,19080,sector512,1,phase=disk-after;uptime=635.21;stat=     319        0     9426     5367       52       42    19080    14526        0     9216    19893        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p1.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p2.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p3.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p4.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p5.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=     212        0     7510     4226        0        0        0        0        0     4252     4226        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p6.write_sectors,0,sector512,1,phase=disk-after;uptime=635.21;stat=       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0
+idle-after-retry,after,0,mmcblk0p7.write_sectors,19064,sector512,1,phase=disk-after;uptime=635.21;stat=      58        0      556      369       50       42    19064    14501        0     6028    14871        0        0        0        0        0        0
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0,     316        0     9338     4605       29       33     8664     6814        0     6392    11419        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p5,     209        0     7422     3569        0        0        0        0        0     3480     3569        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,boot,0,22.00,mmcblk0p7,      58        0      556      331       27       33     8648     6789        0     2856     7120        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0,     316        0     9338     4605       29       33     8664     6814        0     6392    11419        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0[   23.248550] Adding 215440k swap on /dev/zram0.  Priority:100 extents:1 across:215440k SS",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,1,22.57,mmcblk0p7,      58        0      556      331       27       33     8648     6789        0     2856     7120        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,1,143.35,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,2,143.92,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,2,264.45,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,3,264.82,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,3,385.36,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,4,385.86,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,4,506.27,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-before,5,506.96,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,idle-after,5,627.66,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-before,0,628.36,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,ram-after,0,629.10,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0,     319        0     9442     4681       48       36    16968    14148        0     8628    18830        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-before,0,629.73,mmcblk0p7,      58        0      556      331       46       36    16952    14123        0     5496    14454        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0,     319        0     9442     4681       52       42    19080    15208        0     9184    19890        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p1,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p2,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p3,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p4,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p5,     212        0     7526     3646        0        0        0        0        0     3556     3646        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p6,       0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,failed_serial_sample,"MSDSTAT,disk-after,0,631.13,mmcblk0p7,      58        0      556      331       50       42    19064    15183        0     6052    15514        0        0        0        0        0        0",raw,0,invalid run: kernel console output interleaved into a sample
+idle-after,after,0,exit_status,1,code,0,interleaved console; retried
+source,after,0,product_patch,a5e2335de1fb8404ee6b26b8ec6642e4d945bbf09486c5d2594b5e187479a29d,sha256,1,base=0d86c849db69d2f544ec9695ff7c07380932cd99
+probe-before/inputs.json,metadata,0,input_sha256,982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434,sha256,1,output-seedrng-zram/before/images/Image
+probe-before/inputs.json,metadata,0,input_sha256,89b54f0453212027532531b8d98c5261ad47fd50eaac06446dcdd0afc6444925,sha256,1,output-seedrng-zram/before/images/sdcard.img
+probe-before/inputs.json,metadata,0,input_sha256,0997b9f658b6a63ee6ed9e65b3b3d63aea8b4ece97b6aeffe6fcab7a9b4945d3,sha256,1,output-seedrng-zram/before/images/rootfs.squashfs
+probe-before/inputs.json,metadata,0,input_sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,output-seedrng-zram/before/images/bcm2710-rpi-cm0.dtb
+probe-before/inputs.json,metadata,0,input_sha256,cbb593019fbc389c205f653ee1e909c6af0f6b246a916a0aa41034b8e027def7,sha256,1,board/cardputerzero/tools/bench/seedrng-zram/run.py
+probe-before/inputs.json,metadata,0,input_sha256,1882ee3ea1a750c6a8c12a5f3008bef7f219bcc1464e078d72976d57a0447a72,sha256,1,board/cardputerzero/tools/bench/seedrng-zram/pressure.c
+probe-after-final/inputs.json,metadata,0,input_sha256,d3a6e2845154b006d867ede6f25274d4c2ef0dfd763ed7b2a02ae5af08da943e,sha256,1,output-openssl-lts/images/Image
+probe-after-final/inputs.json,metadata,0,input_sha256,30532855733cfa915d4f3f86cffd38861b8b7d3863d3b68aa24f90e88bb00de5,sha256,1,output-openssl-lts/images/sdcard.img
+probe-after-final/inputs.json,metadata,0,input_sha256,bdf333e9e5a2278a358daf5a944dc6f99ef790823c75ca315a4660687c2ef9a6,sha256,1,output-openssl-lts/images/rootfs.squashfs
+probe-after-final/inputs.json,metadata,0,input_sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,output-openssl-lts/images/bcm2710-rpi-cm0.dtb
+probe-after-final/inputs.json,metadata,0,input_sha256,cbb593019fbc389c205f653ee1e909c6af0f6b246a916a0aa41034b8e027def7,sha256,1,board/cardputerzero/tools/bench/seedrng-zram/run.py
+probe-after-final/inputs.json,metadata,0,input_sha256,1882ee3ea1a750c6a8c12a5f3008bef7f219bcc1464e078d72976d57a0447a72,sha256,1,board/cardputerzero/tools/bench/seedrng-zram/pressure.c
+probe-after-final/inputs.json,metadata,0,input_sha256,5bc114a48e49073c396d8ec8d486985c29b7f47182c848524f1ef07846f36970,sha256,1,output-seedrng-zram/pressure
+idle-before/metadata.json,metadata,0,input_sha256,89b54f0453212027532531b8d98c5261ad47fd50eaac06446dcdd0afc6444925,sha256,1,output-seedrng-zram/before/images/sdcard.img
+idle-before/metadata.json,metadata,0,input_sha256,0997b9f658b6a63ee6ed9e65b3b3d63aea8b4ece97b6aeffe6fcab7a9b4945d3,sha256,1,output-seedrng-zram/before/images/rootfs.squashfs
+idle-before/metadata.json,metadata,0,input_sha256,982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434,sha256,1,output-seedrng-zram/before/images/Image
+idle-before/metadata.json,metadata,0,input_sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,output-seedrng-zram/before/images/bcm2710-rpi-cm0.dtb
+idle-before/metadata.json,metadata,0,input_sha256,14f140d2b7c47b9e81f853f242655c7b6b61fb2ecdd38722a7050bed76c9ca42,sha256,1,output-seedrng-zram/before/.config
+idle-before/metadata.json,metadata,0,input_sha256,ae59e914eacd075ae03130fd531a9780945ca9a3854531c50ca198188db94e73,sha256,1,board/cardputerzero/tools/bench/write-inventory/run.py
+idle-before/metadata.json,metadata,0,input_sha256,df9dfe196b4c57806b28106cb8c08bda27d845230896c7c6dd0198ae405eec4d,sha256,1,board/cardputerzero/tools/bench/write-inventory/guest.sh
+idle-before/metadata.json,metadata,0,input_sha256,2f720d3703340ba9b4f28dfec30281dc7e690fe8eb367a4c14cc618063724f9c,sha256,1,board/cardputerzero/qemu/run-qemu.sh
+idle-before/metadata.json,metadata,0,input_sha256,a955ece90c22416a3552fe8f1b908b5c313c15770f2886b18a9ba1bdd1b5fa1c,sha256,1,board/cardputerzero/qemu/check-serial-log.sh
+idle-before/metadata.json,metadata,0,input_sha256,4a88637ae9593329d2d191da9a92efb62c56162f670d069816b952a359d9bece,sha256,1,board/cardputerzero/qemu/serial-allowlist.txt
+idle-after-retry/metadata.json,metadata,0,input_sha256,30532855733cfa915d4f3f86cffd38861b8b7d3863d3b68aa24f90e88bb00de5,sha256,1,output-openssl-lts/images/sdcard.img
+idle-after-retry/metadata.json,metadata,0,input_sha256,bdf333e9e5a2278a358daf5a944dc6f99ef790823c75ca315a4660687c2ef9a6,sha256,1,output-openssl-lts/images/rootfs.squashfs
+idle-after-retry/metadata.json,metadata,0,input_sha256,d3a6e2845154b006d867ede6f25274d4c2ef0dfd763ed7b2a02ae5af08da943e,sha256,1,output-openssl-lts/images/Image
+idle-after-retry/metadata.json,metadata,0,input_sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,output-openssl-lts/images/bcm2710-rpi-cm0.dtb
+idle-after-retry/metadata.json,metadata,0,input_sha256,40651ca6854ffdfa2e5bfad824a8401712bddcf7209ea2346bdc7121c4423ae8,sha256,1,output-openssl-lts/.config
+idle-after-retry/metadata.json,metadata,0,input_sha256,ae59e914eacd075ae03130fd531a9780945ca9a3854531c50ca198188db94e73,sha256,1,board/cardputerzero/tools/bench/write-inventory/run.py
+idle-after-retry/metadata.json,metadata,0,input_sha256,0cb73029e843a6cadfdcbc3c7e75e6d785339b312cf43ab84dcebeae4d17c43f,sha256,1,board/cardputerzero/tools/bench/write-inventory/guest.sh
+idle-after-retry/metadata.json,metadata,0,input_sha256,2f720d3703340ba9b4f28dfec30281dc7e690fe8eb367a4c14cc618063724f9c,sha256,1,board/cardputerzero/qemu/run-qemu.sh
+idle-after-retry/metadata.json,metadata,0,input_sha256,a955ece90c22416a3552fe8f1b908b5c313c15770f2886b18a9ba1bdd1b5fa1c,sha256,1,board/cardputerzero/qemu/check-serial-log.sh
+idle-after-retry/metadata.json,metadata,0,input_sha256,4a88637ae9593329d2d191da9a92efb62c56162f670d069816b952a359d9bece,sha256,1,board/cardputerzero/qemu/serial-allowlist.txt
+artifact,metadata,0,sha256,6c15889ba7ff6071f43ec931ffd065d9be50d76f01e04a7b073d183e56ce5453,sha256,1,after-build.log
+artifact,metadata,0,sha256,d3a6e2845154b006d867ede6f25274d4c2ef0dfd763ed7b2a02ae5af08da943e,sha256,1,after-images/Image
+artifact,metadata,0,sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,after-images/bcm2710-rpi-cm0.dtb
+artifact,metadata,0,sha256,600c14b3c324c1b4d98e34e8a76346cebd04bed21323f59d471be425d3d1505f,sha256,1,after-images/rootfs.squashfs
+artifact,metadata,0,sha256,10d6facf2880af9fa0c7ab8f0315a0b19bad06742826b100e84cf3685b581a20,sha256,1,after-images/sdcard.img
+artifact,metadata,0,sha256,31bc48444108a0de66aa282f9c49c23607e42b6ba52a2c48f9f21162534200d4,sha256,1,after-kernel.config
+artifact,metadata,0,sha256,40651ca6854ffdfa2e5bfad824a8401712bddcf7209ea2346bdc7121c4423ae8,sha256,1,after.config
+artifact,metadata,0,sha256,825c3b6cce3ebfd61d84604be2405450287c887cfe5ddcfd82d90c7d2d3afe3c,sha256,1,before-build.log
+artifact,metadata,0,sha256,982c8617205d36d331e3909519e48d68a694c1b67cfacc35739658fceb73a434,sha256,1,before-images/Image
+artifact,metadata,0,sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,before-images/bcm2710-rpi-cm0.dtb
+artifact,metadata,0,sha256,0997b9f658b6a63ee6ed9e65b3b3d63aea8b4ece97b6aeffe6fcab7a9b4945d3,sha256,1,before-images/rootfs.squashfs
+artifact,metadata,0,sha256,89b54f0453212027532531b8d98c5261ad47fd50eaac06446dcdd0afc6444925,sha256,1,before-images/sdcard.img
+artifact,metadata,0,sha256,74d625a1c9dad65fd2999abd0b0a572874a39b32dbd1d685edcb3153ea8a0739,sha256,1,before-kernel.config
+artifact,metadata,0,sha256,14f140d2b7c47b9e81f853f242655c7b6b61fb2ecdd38722a7050bed76c9ca42,sha256,1,before.config
+artifact,metadata,0,sha256,d777bbac8430c56ccc94bd94afb31cd96f403db3f8ab0db5434b160061be197e,sha256,1,boot-a/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,08acfd2a20531870c07503b894c6039600de5c2a6033f20d9e51765274e78e87,sha256,1,boot-ab.log
+artifact,metadata,0,sha256,2030acc9be49b14703765470d4c4c08e37cb468acd190d75a02c4e1f9e83690e,sha256,1,boot-after.log
+artifact,metadata,0,sha256,d452f9506746052e7ef4b4032178b6e09c331c87e8385cac7a9ac1d66b89b444,sha256,1,boot-b/serial-mmcblk0p6.log
+artifact,metadata,0,sha256,9dcad2cc544d44ebf463ac97874ccfde8fe0845884b78d5c09d9386f66d0426d,sha256,1,boot-before.log
+artifact,metadata,0,sha256,b5ed6e9e4d779c61178b0956dcb858970670ad6d42b9cb16cfdd6af39f833167,sha256,1,bt-after/boot0/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,eee5b80239f7053db87935bc558be01602ef0e54efa4fbb2768c4291a0cd2f83,sha256,1,bt-after/boot0/test-boot.log
+artifact,metadata,0,sha256,a56de00f0c096079cc4eaad319a0cf967a3e272dd66caf07b5d5fbb1eda31f49,sha256,1,bt-after/boot1/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,9f3505b1f2cf197e8bac5bc2a2d7c1738b8b52fc0408e4d85b65978a912d9fc8,sha256,1,bt-after/boot1/test-boot.log
+artifact,metadata,0,sha256,769df217a0f6bd79be13028cd49dd21f115b37135e7ea70d80b9843b617d1284,sha256,1,bt-after/boot2/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,160b175d875b73f85b4752d80533bd9d3416505ccb4e774158cdae6cf222ea05,sha256,1,bt-after/boot2/test-boot.log
+artifact,metadata,0,sha256,5b0eba8f8a7815edb1515f7389e1011d55d17ed4b583d88287d4aafbf7fa3794,sha256,1,bt-after/boot3/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,9f3505b1f2cf197e8bac5bc2a2d7c1738b8b52fc0408e4d85b65978a912d9fc8,sha256,1,bt-after/boot3/test-boot.log
+artifact,metadata,0,sha256,07bb3abf9d03346af9449abd676280cfc50a69457f4b1f13159fc4d17f15dbec,sha256,1,bt-after/boot4/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,5679917f2575c6f50f98284b2c9556379bf4f909a620f9322b47a162c159d3f2,sha256,1,bt-after/boot4/test-boot.log
+artifact,metadata,0,sha256,7743fb7263507ceb7fe8f135a906c9fdcc738796ee3ce9845cf48e005ba5dd32,sha256,1,bt-after/boot5/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,9f3505b1f2cf197e8bac5bc2a2d7c1738b8b52fc0408e4d85b65978a912d9fc8,sha256,1,bt-after/boot5/test-boot.log
+artifact,metadata,0,sha256,cc453d6bfada4bc25b5c18776be9cc59affff1a4409e9a73b9bb364df75c7d4d,sha256,1,bt-after/image-build-20261113T020941Z/mksquashfs.log
+artifact,metadata,0,sha256,f07fc9173779473369403789895532fc9d31d0e6d41dc8f365cc522576da54fa,sha256,1,bt-after/image-build-20261113T020941Z/unsquashfs.log
+artifact,metadata,0,sha256,d3a0ef3b20bb0c6801f9581809e63409287b2cb287063b4bbd96a9a25467a0de,sha256,1,bt-before/boot0/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,c2e8e72d5a5e9a954bed105aba0ac8a1d9c875d8ef64c0fedaa214a1b8fb0ffb,sha256,1,bt-before/boot0/test-boot.log
+artifact,metadata,0,sha256,04a4a8b1c289469f152231aed8fd257bb01fe1847020f5b62f5a3a835eda8321,sha256,1,bt-before/boot1/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,fe074d1472ca3e8948b6e9710c2b2e56b62f1f0767a69454db03b64be79bb542,sha256,1,bt-before/boot1/test-boot.log
+artifact,metadata,0,sha256,224f028c2050044f4e1fadaec71d8e84cfa3a28153e6c700ca95153fa19a3db5,sha256,1,bt-before/boot2/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,160b175d875b73f85b4752d80533bd9d3416505ccb4e774158cdae6cf222ea05,sha256,1,bt-before/boot2/test-boot.log
+artifact,metadata,0,sha256,8185f6a49155be0465442c51b4e9bdd01d0cab5b0f9b7fc98ecf62ac24ebe061,sha256,1,bt-before/boot3/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,5679917f2575c6f50f98284b2c9556379bf4f909a620f9322b47a162c159d3f2,sha256,1,bt-before/boot3/test-boot.log
+artifact,metadata,0,sha256,db9da0440dc6773a64709469e3ea9984f431d587b0c4f9c5b74c7c8d0cdeaecb,sha256,1,bt-before/boot4/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,160b175d875b73f85b4752d80533bd9d3416505ccb4e774158cdae6cf222ea05,sha256,1,bt-before/boot4/test-boot.log
+artifact,metadata,0,sha256,7a4ae1ee9f7de792ee2220fef1977825e40569541c9c91f1be649b969afdc0e2,sha256,1,bt-before/boot5/serial-mmcblk0p5.log
+artifact,metadata,0,sha256,160b175d875b73f85b4752d80533bd9d3416505ccb4e774158cdae6cf222ea05,sha256,1,bt-before/boot5/test-boot.log
+artifact,metadata,0,sha256,4db67a58384075ebf9352fc64a70f07a86cc5f94397a041e21c9d198e5c8c9bd,sha256,1,bt-before/image-build-20261113T020013Z/mksquashfs.log
+artifact,metadata,0,sha256,72e1418fa1254bb4c479dd24283e5abdd81d7e80132f81c80887cf0925d3bdb5,sha256,1,bt-before/image-build-20261113T020013Z/unsquashfs.log
+artifact,metadata,0,sha256,bba219fbded0a1d83f3546a9b53062b1fb4883ff6314853aad11ab24d4eb8fb9,sha256,1,final-build.log
+artifact,metadata,0,sha256,d3a6e2845154b006d867ede6f25274d4c2ef0dfd763ed7b2a02ae5af08da943e,sha256,1,final-images/Image
+artifact,metadata,0,sha256,f6c9ee59ccc5adb164ddba6508acc99e8038d2fe2017bd1f5fd5567af4999094,sha256,1,final-images/bcm2710-rpi-cm0.dtb
+artifact,metadata,0,sha256,bdf333e9e5a2278a358daf5a944dc6f99ef790823c75ca315a4660687c2ef9a6,sha256,1,final-images/rootfs.squashfs
+artifact,metadata,0,sha256,30532855733cfa915d4f3f86cffd38861b8b7d3863d3b68aa24f90e88bb00de5,sha256,1,final-images/sdcard.img
+artifact,metadata,0,sha256,a2c3f4e9ef5713090ef62d61edc8fa0f7cd89f6bb73e0e093420f27d80bb3679,sha256,1,fragment-tests.log
+artifact,metadata,0,sha256,11bd5734f5a811fc6d67e7adc0fec5e32525de2ee7357dabc78fed3c023b8c75,sha256,1,grow-tests.log
+artifact,metadata,0,sha256,de99681aa51bbcc7a5fb7edf6cbb7a9b2e3e82cd34a844f29805765cee5ccb0f,sha256,1,idle-after/metadata.json
+artifact,metadata,0,sha256,7ef024ae608e13e60c3d9b659eab90b7950a9a916b49cf17815cc58ed2670936,sha256,1,idle-after/sdcard.img
+artifact,metadata,0,sha256,08a9e9239dcc8353bf2dc924d6fffdd422bf6db03ed2be3d2e1b444969af6d7c,sha256,1,idle-after/serial.log
+artifact,metadata,0,sha256,05ac014650d7ad4684e53d82deb33778d1712048de6f3f61cf8c8f2eb823b27c,sha256,1,idle-after-retry/metadata.json
+artifact,metadata,0,sha256,542d0d75a93d0732dc5cc6d81651a0f4e27f4bddf222cb9d93cd48c4cef90693,sha256,1,idle-after-retry/sdcard.img
+artifact,metadata,0,sha256,1dd0c8c90742bc225d7a12e3875b07bff2367c522a710ed069c17ee225fceabc,sha256,1,idle-after-retry/serial.log
+artifact,metadata,0,sha256,1388fb0c43adcaa49a777dc74aa9a7f87d6fbc78854ac9160531b28a11440292,sha256,1,idle-after-retry.log
+artifact,metadata,0,sha256,26080ebb8d6627d66951f40df4f5900532689d67d7d28a22478b44affdf45367,sha256,1,idle-after.log
+artifact,metadata,0,sha256,a332975fa6e60ecc1089072c899e0c6e0a7d8cfaad737382991c7efd404d78ac,sha256,1,idle-before/metadata.json
+artifact,metadata,0,sha256,c3fa234e1166e83f7e6754f1579c684d8101726382b67618dc7f6f0d5847925f,sha256,1,idle-before/sdcard.img
+artifact,metadata,0,sha256,8a6a7b7ced9f5e5d65c90cb383da1ead475afbd6ae67ca6e3f4b36be7fa865cd,sha256,1,idle-before/serial.log
+artifact,metadata,0,sha256,aca2f3b613461da3d359c3c7fbdc7fa2b7b31813b458535ddadf3742e5db35d2,sha256,1,idle-before.log
+artifact,metadata,0,sha256,a7a61a6a8ba32809e30bcd1dd881095d305096f0d081a053aaf46112ab962484,sha256,1,init-tests-final.log
+artifact,metadata,0,sha256,a7a61a6a8ba32809e30bcd1dd881095d305096f0d081a053aaf46112ab962484,sha256,1,init-tests.log
+artifact,metadata,0,sha256,38eeff1237d74275801617a271eced659e08b1cad8069897d18e659ae40641d8,sha256,1,inventory-tests-final.log
+artifact,metadata,0,sha256,69d3092e799b33eb7dca64bf94a3536ab4fa9fc5969f0629675edb863629b707,sha256,1,inventory-tests.log
+artifact,metadata,0,sha256,5bc114a48e49073c396d8ec8d486985c29b7f47182c848524f1ef07846f36970,sha256,1,pressure
+artifact,metadata,0,sha256,1e9ad10995b10c42dc56dba900cc929940345b1ee529f3e6eae5d163f633143e,sha256,1,probe-after/inputs.json
+artifact,metadata,0,sha256,b8c4fe9395187af5bcb11f29a92fbf89b94d72b81fdbc643741bdbcf949e87df,sha256,1,probe-after/sdcard.img
+artifact,metadata,0,sha256,e5986a78a4670d4826b4972590d9e1d0b913f60c49a7adbb89de6a160a9efae1,sha256,1,probe-after/serial.log
+artifact,metadata,0,sha256,c0db2317cbff61aa1462f6bdd8e440aa2a59e8f1003b4377c0a35a6833f04558,sha256,1,probe-after-final/inputs.json
+artifact,metadata,0,sha256,ebde59aa8b8b6685f768e9a0cb6123d309521222da1c5c35c6acfc0ed1f1ee23,sha256,1,probe-after-final/sdcard.img
+artifact,metadata,0,sha256,eaa6a81314a07a1c30a50583ab7c129a8c3cd94b216f7f8fe099a70ad2e2917b,sha256,1,probe-after-final/serial.log
+artifact,metadata,0,sha256,6beec1a61932a5fd65410776c383d9c3aca13f56dd5215b2ef0b12ad6fca682b,sha256,1,probe-after-final.log
+artifact,metadata,0,sha256,8f229d1548b4c3a1422700043880187a04cd4868d5d29b2eeef6e43debbcd4e2,sha256,1,probe-after.log
+artifact,metadata,0,sha256,d9827ef93de8c13a3a110230c6b4bea70bf9fda5d60cb2d12a8303968674f813,sha256,1,probe-before/inputs.json
+artifact,metadata,0,sha256,3c152ebec9312b98d01cf217d7eece848e334e941de16184de17525fc73dc837,sha256,1,probe-before/sdcard.img
+artifact,metadata,0,sha256,22534f94082c24df50a1608620012e647ae62c3792faf7579164e027ded0145f,sha256,1,probe-before/serial.log
+artifact,metadata,0,sha256,05624cdf39eb242d3e2eae87c64940f42a7e8d306d5669692d30356d8f564c0d,sha256,1,probe-before.log
+artifact,metadata,0,sha256,5108a7917626f7a26d1ecb6a5bd9fcf3a265530a6be9dbb72cbc3217584fc4bd,sha256,1,records-tests.log
+artifact,metadata,0,sha256,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,sha256,1,shellcheck-all-final.log
+artifact,metadata,0,sha256,4b6256970f4968f4ed3b978768c740f3d41e3fad48a775c7e0b5373428ba83de,sha256,1,shellcheck-final.log
+artifact,metadata,0,sha256,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,sha256,1,shellcheck-passed.log
+artifact,metadata,0,sha256,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,sha256,1,shellcheck.log
+artifact,metadata,0,sha256,cc2b44621a3881776d0130b158172ea8524352020dc0b0e11826972839399df9,sha256,1,skills.log
+artifact,metadata,0,sha256,0b3b69c0289ac0bcf14e02e1be50676d38c32bbd9d1acb397ea4b762162cf10a,sha256,1,update-tests.log
+artifact,metadata,0,sha256,92ec5a8cccfd5e0528b887eb46de0c194196c097bed2e067087a7e62d50ceac8,sha256,1,versions.log
+artifact,metadata,0,sha256,44b8ce16a05927cc4b7f9a03216d72c6aa78426e4d5cced668b8230932443009,sha256,1,zram-and-records-final.log
+artifact,metadata,0,sha256,3a540c257a9425fa528ff1910a656c0b9e0b821a3d55db4ae99ff6bd536bd86e,sha256,1,zram-tests-final.log
+artifact,metadata,0,sha256,f833959f57ee01d43554882f85a7622e57086f2ad7b60d965466d81b1f52f451,sha256,1,zram-tests.log

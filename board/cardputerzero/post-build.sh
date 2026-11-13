@@ -21,6 +21,7 @@ loadkeys
 media-ctl
 mkdir
 mkfs.ext4
+mkswap
 mount
 msd-data-grow
 msd-hwinfo
@@ -34,11 +35,14 @@ readlink
 reboot
 resize2fs
 rm
+rmdir
 sfdisk
 sha256sum
 sed
 sh
+sleep
 sync
+swapon
 tar
 touch
 tr
@@ -70,31 +74,12 @@ if [ "$missing_target_commands" -ne 0 ]; then
 	exit 1
 fi
 
-seedrng_defaults="$target_dir/etc/default/seedrng"
-if ! grep -Fxq 'SEEDRNG_ARGS="--seed-dir=/data/seedrng"' "$seedrng_defaults"; then
-	printf 'Seedrng state directory must be configured on /data: %s\n' \
-		"$seedrng_defaults" >&2
-	exit 1
-fi
-
-seedrng_init="$target_dir/etc/init.d/S01seedrng"
-seedrng_late_init="$target_dir/etc/init.d/S05seedrng"
-if [ -f "$seedrng_init" ]; then
-	if [ ! -e "$seedrng_late_init" ]; then
-		mv "$seedrng_init" "$seedrng_late_init"
-	elif cmp -s "$seedrng_init" "$seedrng_late_init"; then
-		# Per-package directories merge the package's S01seedrng again on rebuilds.
-		rm "$seedrng_init"
-	else
-		printf 'Both seedrng init paths exist and differ: %s and %s\n' \
-			"$seedrng_init" "$seedrng_late_init" >&2
-		exit 1
-	fi
-elif [ ! -f "$seedrng_late_init" ]; then
-	printf 'Buildroot seedrng init script is missing: %s\n' "$seedrng_init" >&2
-	exit 1
-fi
-test -x "$seedrng_late_init"
+rm -f "$target_dir/etc/init.d/S01seedrng" \
+	"$target_dir/etc/init.d/S05seedrng" "$target_dir/etc/default/seedrng"
+for seedrng_file in etc/init.d/S01seedrng etc/init.d/S05seedrng etc/default/seedrng; do
+	test ! -e "$target_dir/$seedrng_file"
+done
+test -x "$target_dir/etc/init.d/S99msd-zram"
 
 test -x "$target_dir/etc/init.d/S98msd-ready"
 test -f "$target_dir/etc/fstab"
@@ -180,6 +165,7 @@ required_busybox_options='
 CONFIG_DESKTOP=y
 CONFIG_FEATURE_DD_IBS_OBS=y
 CONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y
+CONFIG_FEATURE_SWAPON_PRI=y
 '
 while IFS= read -r busybox_option; do
 	if [ -z "$busybox_option" ]; then

@@ -154,12 +154,14 @@ class ReleaseSigning(unittest.TestCase):
         put(target / "etc/default/seedrng", 'SEEDRNG_ARGS="--seed-dir=/data/seedrng"\n')
         put(target / "etc/init.d/S01seedrng", "#!/bin/sh\nexit 0\n", True)
         put(target / "etc/init.d/S98msd-ready", "#!/bin/sh\nexit 0\n", True)
+        put(target / "etc/init.d/S99msd-zram", "#!/bin/sh\nexit 0\n", True)
         put(target / "etc/fstab", "".join(f"none {p} tmpfs defaults 0 0\n"
                                          for p in ("/proc", "/sys", "/run", "/tmp")))
         put(target / "etc/mdev.conf", "$MODALIAS=.* 0:0 660 @modprobe\n")
         put(target / "usr/share/keymaps/tca8418_keypad_m5stack_keymap.map", "")
         put(base / "build/busybox-fixture/.config",
-            "CONFIG_DESKTOP=y\nCONFIG_FEATURE_DD_IBS_OBS=y\nCONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y\n")
+            "CONFIG_DESKTOP=y\nCONFIG_FEATURE_DD_IBS_OBS=y\nCONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y\n"
+            "CONFIG_FEATURE_SWAPON_PRI=y\n")
         for name in ("scripts/sign-file", "certs/signing_key.pem", "certs/signing_key.x509"):
             put(base / "build/linux-custom" / name, "")
         (target / "lib/modules").mkdir(parents=True)
