@@ -1,0 +1,444 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+real,legal-info-supplement,1,original:README,34733abfe1a06f8c76ab07ba74a263db922f81ed7dbb19cd7a44a00325741e63,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:buildroot.config,40651ca6854ffdfa2e5bfad824a8401712bddcf7209ea2346bdc7121c4423ae8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/acl-2.4.0/doc/COPYING,a45a845012742796534f7e91fe623262ccfb99460a2bd04015bd28d66fba95b8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/acl-2.4.0/doc/COPYING.LGPL,01b1f9f2c8ee648a7a596a1abe8aa4ed7899b1c9e5551bda06da6e422b04aa55,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/attr-2.6.0/doc/COPYING,98f318493be6b08bff3cd295791cde06c54e17882a3c74a1ed245eaa02533d52,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/attr-2.6.0/doc/COPYING.LGPL,5decad7e58d90d44335bf2f45ce27563bd911065c6a1a02dfa7647c4efee75c8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/autoconf-2.73/COPYING.EXCEPTION,1f1cde9fb68b9b3cff18c420894bec5bd4defacd700b7d13df54a887301e5350,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/autoconf-2.73/COPYINGv3,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/autoconf-archive-2024.10.16/COPYING,e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/autoconf-archive-2024.10.16/COPYING.EXCEPTION,23ed0b84fa023bfa33433b498192cd08a3bfb1f4864a8ed791a84f3eb48b2dd2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/automake-1.16.5/COPYING,ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/bison-3.8.2/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/blake3-1.8.3/LICENSE_A2,00fcc7a934ddbc9ece2a7cc063ac788e284b703b1d705ccbba72d462aa97921e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/blake3-1.8.3/LICENSE_A2LLVM,a5695f57ea0c221e0e8b7d784ff774c35e88c3d3270353646a925880bb3492cc,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/blake3-1.8.3/LICENSE_CC0,a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/buildroot/COPYING,9755181e27175cb3510b4da8629caa406fb355a19aa8e7d55f06bf8ab33323c4,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/ccache-4.13.6/GPL-3.0.txt,80b5112739a423dfac7bed1ca8a1df3cccda3d794425441997d4462b83db4dd5,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/ccache-4.13.6/LICENSE.adoc,072c40891d4ec8e1bcc93420031ebbbeb90b8f2c49fcd7c872d1bb05564c345c,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/dosfstools-4.2/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/dtc-1.7.2/BSD-2-Clause,6313108c23efffa36948f8b2cff1560a5935373b527b0e1a837cc77e6ed1bacd,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/dtc-1.7.2/GPL,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/dtc-1.7.2/README.license,78e1e1ce5728a990d59c7de61d4741c49185d5129daf783b386380a214328d68,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/e2fsprogs-1.47.4/NOTICE,5da5ef153e559c1d990d4c3eedbedd4442db892d37eae1f35fff069de8ec9020,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/e2fsprogs-1.47.4/lib/et/internal.h,47182fe6631a32f271a15bbe210751b3825b7199f588879aac7d4804fc8b4b8f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/e2fsprogs-1.47.4/lib/ss/mit-sipb-copyright.h,032989b508f1a72ebee5b3417e55d06d473f9ee203e45ab11864a7e49cdec63d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/expat-2.9.0/COPYING,31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/fakeroot-1.37.2/COPYING,fc82ca8b6fdb18d4e3e85cfd8ab58d1bcd3f1b29abe782895abd91d64763f8e7,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/flex-2.6.4/COPYING,97fd685958d93be7f8dab939bb8161dbd6afb0718c63bfc337c24321aea44273,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/genimage-20/COPYING,edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/gettext-tiny-0.3.3/LICENSE,4c938aa3d8fa3c184bba5e87a8a2febc89560627c9d0567536879e3eca1a7b4f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/gettext-tiny-0.3.3/extra/COPYING,e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/hiredis-1.3.0/COPYING,dca05ce8fc87a8261783b4aed0deef8becc9350b6aa770bc714d0c1833b896eb,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/kmod-34.2/libkmod/COPYING,6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libarchive-3.8.9/COPYING,30e556b3959e3985d66efefec5eaac51d4995053caa1d3cffe6eb916f146f229,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libconfuse-3.3/LICENSE,dc3ff4b62f851dd2e94a151061ffeb7d28ddfc880a442068dc5283dbaa927306,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libffi-3.8.0/LICENSE,17b64dc60f3b6897a60f971e288b973f655c2edcdf08b25f3c3dd5549857881c,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libopenssl-3.5.9/LICENSE.txt,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libtool-2.5.4/COPYING,edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libtool-2.5.4/libltdl/COPYING.LIB,20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/libzlib-1.3.2/LICENSE,e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/lz4-1.10.0/lib/LICENSE,8b58c446121a109ccf32edc094bba3010a3d85e4ee3702950db55e4d3e87736c,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/lz4-1.10.0/programs/COPYING,609b910ef05c9c855ecc1da155a36ed0f57514eac452cf93446530b5ea4b3bc3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/lzip-1.25/COPYING,022e9c2e9cc1aac3622313df6f971fbb39c1d1b0cb45324c16b8a1fe231c5ea6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/lzo-2.10/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/m4-1.4.21/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/meson-1.11.1/COPYING,cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/mtools-4.0.49/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/ninja-1.13.2/COPYING,eb7e9ab9690124c5c9f42bdc81383d886a3dede26345b6ed15bbad7caf81f7ea,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/patchelf-0.13/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/pigz-2.8/README,328634933a65dbc7f97a0f51df52741dc67f593bbe9eccabc9eedc6934c4983b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/pkgconf-2.3.0/COPYING,07ee94b50a41ee3fc4e13a9b9c60b26fc28488494c465639f7e5f07a3952ec04,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-flit-core-3.12.0/LICENSE,35b4f1dec512e617077fd6980dbb43ef8c2887adc5d0185edb4c04da175dd816,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-installer-1.0.0/LICENSE,37b8b9f2569892fa54406383d431169dbb2115980d78b7efba6eeae5664c484f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-packaging-26.2/LICENSE,cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-packaging-26.2/LICENSE.APACHE,0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-packaging-26.2/LICENSE.BSD,b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-pypa-build-1.3.0/LICENSE,aaf9a29ca5907971ccf07de025375db34539a8d5eeebce20b46099805722106f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-pyproject-hooks-1.2.0/LICENSE,1b22b049b5267d6dfc23a67bf4a84d8ec04b9fdfb1a51d360e42b4342c8b4154,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-setuptools-80.9.0/LICENSE,86da0f01aeae46348a3c3d465195dc1ceccde79f79e87769a64b8da04b2a4741,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python-wheel-0.47.0/LICENSE.txt,30c23618679108f3e8ea1d2a658c7ca417bdfc891c98ef1a89fa4ff0c9828654,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/python3-3.14.8/LICENSE,b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/squashfs-4.7.5/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/tzdata-2026e/LICENSE,0613408568889f5739e5ae252b722a2659c02002839ad970a63dc5e9174b27cf,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-2-Clause,527f738966ca396cd5a68c1509390de2a780c6b614d9ee57f7544a6161938ed1,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-3-Clause,9b718a9460fed5952466421235bc79eb49d4e9eacc920d7a9dd6285ab8fd6c6d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-4-Clause-UC,ba7640f00d93e72e92b94b9d71f25ec53bac2f1682f5c4adcccb0018359f60f8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.EUPL-1.2,6fc9e709ccbfe0d77fbffa2427a983282be2eb88e47b1cdb49f21a83b4d1e665,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-2.0-only,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-2.0-or-later,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-3.0-or-later,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.ISC,e53348ce276358e9997014071c5294b36a18c4b34f32f00ee57b9acce0aafd63,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.LGPL-2.1-or-later,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/Documentation/licenses/COPYING.MIT,8555341619542abb48c102afd954e42d4478e5be16ad3d5af7b0ff71009e7348,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/util-linux-2.41.5/README.licensing,4c2db318192bda62f3f8fcf71488bb5e602ae4385eba281d711b46cc13a40bb3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xxhash-0.8.3/LICENSE,6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xxhash-0.8.3/cli/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xz-5.8.4/COPYING,616a3ad264ce29b8f1cb97e53037b139d406899ca8d1f799651e17bfa09830b8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xz-5.8.4/COPYING.0BSD,0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xz-5.8.4/COPYING.GPLv2,edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xz-5.8.4/COPYING.GPLv3,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/xz-5.8.4/COPYING.LGPLv2.1,20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/zic-2026b/LICENSE,0613408568889f5739e5ae252b722a2659c02002839ad970a63dc5e9174b27cf,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/zstd-1.5.7/COPYING,f9c375a1be4a41f7b70301dd83c91cb89e41567478859b77eef375a52d782505,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-licenses/zstd-1.5.7/LICENSE,7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-manifest.csv,ab3615ec1d4e223bc0a0dbdadc742d92b928cc5b3084eb6318b81ca15344b6b0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/acl-2.4.0/0001-Build-with-old-GCC-versions.patch,cc1ddc4f2fa72c1d1555ee4639ba85409ff9f46ef29619b0fab21d05dc951217,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/acl-2.4.0/acl-2.4.0.tar.xz,e661131456d2708a01c614a0f400e11d7d1bfaeb6f3e74b75bb980b72f0161a3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/acl-2.4.0/series,ecc16be946d16bbaa3091152be9a3af885acbae478946f6ca74e4e7e1ca4342f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/attr-2.6.0/0001-build-with-older-GCCs.patch,6150b5d5f6becba49d06bad7720583661e0090c155d6566dc44c8f7f329eb1e3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/attr-2.6.0/attr-2.6.0.tar.xz,6c8a2148a7b85043b68492bce43316b0e2e214fc4e628c7ede078e76e216330b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/attr-2.6.0/series,9817d669b691651122875d161b06071704a6b67f0c48586a8787e4dd1b16cd4b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/autoconf-2.73/0001-dont-add-dirty-to-version.patch,c326c51b172e54dd190f57b5da2acbb6657411402cd5ffd1c3feff68ae8032a8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/autoconf-2.73/autoconf-2.73.tar.xz,9fd672b1c8425fac2fa67fa0477b990987268b90ff36d5f016dae57be0d6b52e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/autoconf-2.73/series,ec25e5b3a63f517720e2fc3f45c7b085b90604ff2f9e1b0905280131f22a5eb9,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/autoconf-archive-2024.10.16/autoconf-archive-2024.10.16.tar.xz,7bcd5d001916f3a50ed7436f4f700e3d2b1bade3ed803219c592d62502a57363,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/automake-1.16.5/0001-noman.patch,9e81c72b12abfa374d47cb40a602345eb9dda006736ea17d864ed57007b40159,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/automake-1.16.5/automake-1.16.5.tar.xz,f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/automake-1.16.5/series,9c2fd1ecc1613bc967087f12bf372cefff7f2b12af174f8aaebf815ed6500040,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/bison-3.8.2/bison-3.8.2.tar.xz,9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/blake3-1.8.3/blake3-1.8.3.tar.gz,5a11e3f834719b6c1cae7aced1e848a37013f6f10f97272e7849aa0da769f295,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/ccache-4.13.6/ccache-4.13.6.tar.xz,a7de667ca08cf67c3c8af9f213f6aa701a1188a2b3163fb74483858ce5e79fbb,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/dosfstools-4.2/dosfstools-4.2.tar.gz,64926eebf90092dca21b14259a5301b7b98e7b1943e8a201c7d726084809b527,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/dtc-1.7.2/0001-Fix-include-guards-for-older-kernel-u-boot-sources.patch,d3bbb65980a4c7e3ec372c25036e2e821302ed16ee6d6d7ea1538c6f407b5608,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/dtc-1.7.2/0002-fix-discarded-const-qualifiers.patch,07a1f3adfbb834f54cdda9e75f3da7feb0bd4216a411323a454e86dfa3aa0197,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/dtc-1.7.2/dtc-1.7.2.tar.xz,92d8ca769805ae1f176204230438fe52808f4e1c7944053c9eec0e649b237539,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/dtc-1.7.2/series,ebbd3a69bbf7f3aa7147a4a1db40d465929f100154869c215c2f29ed59cb1d6a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/e2fsprogs-1.47.4/e2fsprogs-1.47.4.tar.xz,fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/expat-2.9.0/expat-2.9.0.tar.xz,1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/fakeroot-1.37.2/fakeroot_1.37.2.orig.tar.gz,0eea60fbe89771b88fcf415c8f2f0a6ccfe9edebbcf3ba5dc0212718d98884db,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/0001-build-AC_USE_SYSTEM_EXTENSIONS-in-configure.ac.patch,04a1c5d6197a71572e55877da8e3595982ebefd6af5c3c329099670aa9ca2f80,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/0002-build-make-it-possible-to-disable-the-build-of-the-f.patch,301a0109c677cc1979659b0cfa2719ed292d5a2e08a2a1939e5ad3e1a7e31bcf,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/0003-build-make-it-possible-to-disable-the-build-of-the-d.patch,9e40b1bfde373a040fa2b896bb5ace565d969e08e1fd234937316ae61cc1c88a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/0004-Match-malloc-signature-to-its-use.patch,cc226adfbf442b578f15c720f666c068c91fde1d58573fb1aa93667575144f2d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/0005-build-Update-AX_PROG_CC_FOR_BUILD-to-fix-BUILD_EXEEX.patch,8923e9275c5b9cd88e7847c101c8b96a220b2f53fb7b712ac64ff9bd74592d3a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/flex-2.6.4.tar.gz,e87aae032bf07c26f85ac0ed3250998c37621d95f8bd748b31f15b33c45ee995,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/flex-2.6.4/series,720ff0bb9fd4f017d0df872a5b665cdb74702d100bb0ebd35d9f6bcca22ccae0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/genimage-20/genimage-20.tar.xz,397545be2fa52d482c5fba9a11897c61324bfc559ea0efb700b9edba7a807b55,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/gettext-tiny-0.3.3/gettext-0.22.4.tar.xz,29217f1816ee2e777fa9a01f9956a14139c0c23cc1b20368f06b2888e8a34116,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/gettext-tiny-0.3.3/gettext-tiny-0.3.3.tar.gz,daff8b4a7863745710ec0b02657fd20bda2d90398f54945751259bb94d6ebffd,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/hiredis-1.3.0/hiredis-1.3.0.tar.gz,25cee4500f359cf5cad3b51ed62059aadfc0939b05150c1f19c7e2829123631c,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/kmod-34.2/kmod-34.2.tar.xz,5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libarchive-3.8.9/libarchive-3.8.9.tar.xz,888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libconfuse-3.3/0001-Fix-163-unterminated-username-used-with-getpwnam.patch,507bff50ef64a3d7a59e264248e9e33e8bc7c647fa637262d7d436dc217125a0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libconfuse-3.3/confuse-3.3.tar.xz,1dd50a0320e135a55025b23fcdbb3f0a81913b6d0b0a9df8cc2fdf3b3dc67010,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libconfuse-3.3/series,59af23e8f5ad14167a4ed39ea8e8fd8178121d94db99776a21fa0041460bce57,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libffi-3.8.0/0001-Fix-use-of-compact-eh-frames-on-MIPS.patch,c34863b864eb7bb8c823197cdd055f2bee2bc06142e064c5971358648bc4283e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libffi-3.8.0/libffi-3.8.0.tar.gz,7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libffi-3.8.0/series,73fc0d35fdcf701fa31226857cf998f5a27d2ad508825cd06825095a35a63145,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libopenssl-3.5.9/0001-Reproducible-build-do-not-leak-compiler-path.patch,7f7e9dfa12cfdbb60141e92d741355ea461e40fa19a8745529a48153c8698424,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libopenssl-3.5.9/0002-Revert-Fix-static-builds.patch,8ed6e3c61b0af2113348e63c1a45d840edffd33d65a32e5c376d255e983911f0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libopenssl-3.5.9/openssl-3.5.9.tar.gz,603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libopenssl-3.5.9/series,1765a217dfba5c27763dfc2b435e7f912eb0dd9982f7580ac2e0216d1bdb673d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libtool-2.5.4/libtool-2.5.4.tar.xz,f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libzlib-1.3.2/0001-fix-buffer-overflow-bug-in-non-blocking-gzwrite.patch,1470b9861c54fb1b5cf41dd8570e5d3133305c74185d28fc8f08fbe23ff5350e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libzlib-1.3.2/series,6841bdc132e8baa521de98fbfb2bbdb50a91cd6dbc6db5b0fb663296eb34e8a8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/libzlib-1.3.2/zlib-1.3.2.tar.xz,d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/lz4-1.10.0/lz4-1.10.0.tar.gz,537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/lzip-1.25/lzip-1.25.tar.gz,09418a6d8fb83f5113f5bd856e09703df5d37bae0308c668d0f346e3d3f0a56f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/lzo-2.10/0001-cmake-bump-compatibility-level-up-to-3.10.patch,160cedd156342fcc8f072614920f46ab96d5b91a37744ba6992bfa810d1b5f25,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/lzo-2.10/lzo-2.10.tar.gz,c0f892943208266f9b6543b3ae308fab6284c5c90e627931446fb49b4221a072,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/lzo-2.10/series,f092a44c01392ea7e4339a1331400c440e3359376bb71eaefef2337010667e28,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/m4-1.4.21/m4-1.4.21.tar.xz,f25c6ab51548a73a75558742fb031e0625d6485fe5f9155949d6486a2408ab66,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/meson-1.11.1/0001-Prefer-ext-static-libs-when-default-library-static.patch,b708e8d8490567737f5ffebcc2a04813c5a201a98edeea69a2a39b54b0fe2ede,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/meson-1.11.1/0002-mesonbuild-dependencies-base.py-add-pkg_config_stati.patch,39657a41b64afaeeefabd060d828be4516814858d84fe2abc9a17e7be9e85caa,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/meson-1.11.1/meson-1.11.1.tar.gz,6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/meson-1.11.1/series,1eaf21991f88db7893b739e58f40808a3c0f27e4abeaefbf089832d64511fd1a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/mtools-4.0.49/mtools-4.0.49.tar.lz,76dfea98d923dfc9806ce34bd1786aa9b5a39d70f56f26c0670a348c664f1d2a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/ninja-1.13.2/ninja-1.13.2.tar.gz,974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/patchelf-0.13/0001-Add-option-to-make-the-rpath-relative-under-a-specif.patch,f29fbe0e32a375d89d6bd5d525dac803af8777f4d4935c6d99249d9ffe83aaa7,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/patchelf-0.13/patchelf-0.13.tar.bz2,4c7ed4bcfc1a114d6286e4a0d3c1a90db147a4c3adda1814ee0eee0f9ee917ed,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/patchelf-0.13/series,241ad0744e4dae2be6b6237ea5d809847bc7f7b8a385f445be1f78e44c8f0539,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/pigz-2.8/pigz-2.8.tar.gz,eb872b4f0e1f0ebe59c9f7bd8c506c4204893ba6a8492de31df416f0d5170fd0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/pkgconf-2.3.0/0001-Only-prefix-with-the-sysroot-a-subset-of-variables.patch,fe8906a9fb3ba719cbd719c6bc45a8a854bac3f8bdd70d4fc834de821e60930b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/pkgconf-2.3.0/pkgconf-2.3.0.tar.xz,3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/pkgconf-2.3.0/series,ac3f3fe8aeb3015258d1949702f992f0988b377bcc8e5a1e6681a401739d4741,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-flit-core-3.12.0/flit_core-3.12.0.tar.gz,18f63100d6f94385c6ed57a72073443e1a71a4acb4339491615d0f16d6ff01b2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-installer-1.0.0/installer-1.0.0.tar.gz,c6d691331621cf3fec4822f5c6f83cab3705f79b316225dc454127411677c71f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-packaging-26.2/packaging-26.2.tar.gz,ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-pypa-build-1.3.0/build-1.3.0.tar.gz,698edd0ea270bde950f53aed21f3a0135672206f3911e0176261a31e0e07b397,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-pyproject-hooks-1.2.0/pyproject_hooks-1.2.0.tar.gz,1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-setuptools-80.9.0/0001-add-executable.patch,6d49779b98d369c13c06bf11abb690dfa8ce9682eb908afe050f09ecacfa3514,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-setuptools-80.9.0/series,db12e26893d416efec1ce7d441c4c3a50ce231d1edd5247285bfbbad52d47813,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-setuptools-80.9.0/setuptools-80.9.0.tar.gz,f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python-wheel-0.47.0/wheel-0.47.0.tar.gz,cc72bd1009ba0cf63922e28f94d9d83b920aa2bb28f798a31d0691b02fa3c9b3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0001-Make-the-build-of-pyc-files-conditional.patch,8062fb2ed999a9d7ce66892c80b18f4faf0260b07a622f5aec16fda05c6a3dcd,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0002-Add-an-option-to-disable-pydoc.patch,35261a8751db4fc46ef0194ab9242d4e874ab91259c25ada43896991471353c9,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0003-Add-an-option-to-disable-IDLE.patch,bd26953aa8f5fcad941e18ea2cdc72a3c2745d0b88429e0de6cbd79873ca221e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0004-configure.ac-move-PY_STDLIB_MOD_SET_NA-further-up.patch,4927a2e8928895d356ee4469afb969d2264120d281a912a82ae94a1e3d93cb45,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0005-Add-option-to-disable-the-sqlite3-module.patch,8735a295918083ddfa1aa1331452da420631bf12954372be17191c8e668ab136,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0006-Add-an-option-to-disable-the-tk-module.patch,ab6f1de160b542a8ce80818b6f3c84ca7260336bd19325cd33fb4a3594802468,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0007-Add-an-option-to-disable-the-curses-module.patch,9b778049dea06c5e9628e0fc1ec15c7737b4e79922ad51e064433dc33fcd4cc1,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0008-Add-an-option-to-disable-expat.patch,6393a28d03b459cf846510381219673c6bc7c4f7ea15b5a3676a16304dd4462d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0009-configure.ac-detect-unusable-termio-operations.patch,4c23a0b9c83eaba4a4495ae9f32e55d5e42be00f4f79aedaf71043df32c47365,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/0010-gh-139275-Fix-compilation-of-Modules-_remote_debuggi.patch,3b08ef5a29324903c88d59cff534d7b08ec724efb0562acabdfc320bd4449724,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/Python-3.14.8.tar.xz,c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/python3-3.14.8/series,04caee21cd6b93ea6fa8d6c2073b3964d57ba590966b35c671ff65aaf032d89a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/squashfs-4.7.5/squashfs-tools-4.7.5.tar.gz,547b7b7f4d2e44bf91b6fc554664850c69563701deab9fd9cd7e21f694c88ea6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/tzdata-2026e/tzdata2026e.tar.gz,b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/util-linux-2.41.5/0001-include-mount-api-utils.h-fix-LSMT_ROOT-definition.patch,08b842937e25d1a33974dfb47d0dbe8db37d5b6458dc012633a01e14732aa248,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/util-linux-2.41.5/0002-autotools-optionally-add-libpthread-to-uuid.pc.patch,b488f9b7b1d0a6fe171b04d72cb79ef8f262945925a19cad2eeee2c372882877,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/util-linux-2.41.5/0003-loopdev-use-openat2-RESOLVE_NO_SYMLINKS-for-backing-.patch,298a6cdf0c9bc43387816ab9d038958f9ab5577fc447a7efd86db6c4d0a53600,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/util-linux-2.41.5/series,9dfca5367c601f2ce6ba6394cf6bf8a53f2859f1247538918842cff54d706a75,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/util-linux-2.41.5/util-linux-2.41.5.tar.xz,f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/xxhash-0.8.3/xxhash-0.8.3.tar.gz,aae608dfe8213dfd05d909a57718ef82f30722c392344583d3f39050c7f29a80,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/xz-5.8.4/xz-5.8.4.tar.bz2,3340ae48f88665abc78d71dc43446fb3f7e70b48fd59844ac0e14958cef6e00b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/zic-2026b/0001-remove-dependency-check-on-version-file.patch,d00a750edfbfb6f96e77efdf4f2b25042a149a536eae23d12c4c84f03154a6d5,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/zic-2026b/series,dd9d97e2f89d682246f0ec39286a3c5eff0e4f9bb9634c7b6fa26bef97eb400f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/zic-2026b/tzcode2026b.tar.gz,37e9ed8427f5d3521c22fc58e293cbfb043d70eedf1003870b33f363f61ca344,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:host-sources/zstd-1.5.7/zstd-1.5.7.tar.gz,eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:legal-info.sha256,05e042e230da86d205058d9539ced8c13a2416661c64843aeae9c951a40a64f6,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2/LICENSE,ea8b7b7b6cfc6fd30587ed977100f6a542734ce53218b5b63de16180acddd599,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/busybox-1.38.0/LICENSE,bbfc9843646d483c334664f651c208b9839626891d8f17604db2146962f43548,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/busybox-1.38.0/archival/libarchive/bz/LICENSE,b5a136ed67798e51fe2e0ca0b2a21cb01b904ff0c9f7d563a6292e276607e58f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/e2fsprogs-1.47.4/NOTICE,5da5ef153e559c1d990d4c3eedbedd4442db892d37eae1f35fff069de8ec9020,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/e2fsprogs-1.47.4/lib/et/internal.h,47182fe6631a32f271a15bbe210751b3825b7199f588879aac7d4804fc8b4b8f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/e2fsprogs-1.47.4/lib/ss/mit-sipb-copyright.h,032989b508f1a72ebee5b3417e55d06d473f9ee203e45ab11864a7e49cdec63d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/kbd-2.9.0/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/kbd-2.9.0/CREDITS,5a16340fe773f422144b436df90319114a2884933c56e9be6fad642e59be5e1f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/kmod-34.2/libkmod/COPYING,6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/libopenssl-3.5.9/LICENSE.txt,7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/libv4l-1.32.0/COPYING,ef79a4373399a83c4ed8ee96af23824a8f4fabc9e48470c06d7f2194f4a74fce,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/libv4l-1.32.0/COPYING.libv4l,6db18e1c5b47fd0b84a9ddf763cebae7bf6b9c56f1a1eeceae76a157ed9cd26e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/libv4l-1.32.0/lib/libv4l1/libv4l1-kernelcode-license.txt,34229b5aadfb768d0d083987cba54203a920904a3ec8320823c6125b9831acd1,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/libzlib-1.3.2/LICENSE,e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/linux-custom/COPYING,fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/linux-custom/LICENSES/exceptions/Linux-syscall-note,8e378ab93586eb55135d3bc119cce787f7324f48394777d00c34fa3d0be3303f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/linux-custom/LICENSES/preferred/GPL-2.0,8780e78a1a737e127f25a65f6d95269bffd36158dc261114de7859b490bfc5aa,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2/COPYING,ee5808b032a67f587d3541099d46de34f5bec8cd5976114ba07f1299ee6001ff,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68/boot/LICENCE.broadcom,c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/tzdata-2026e/LICENSE,0613408568889f5739e5ae252b722a2659c02002839ad970a63dc5e9174b27cf,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-2-Clause,527f738966ca396cd5a68c1509390de2a780c6b614d9ee57f7544a6161938ed1,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-3-Clause,9b718a9460fed5952466421235bc79eb49d4e9eacc920d7a9dd6285ab8fd6c6d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.BSD-4-Clause-UC,ba7640f00d93e72e92b94b9d71f25ec53bac2f1682f5c4adcccb0018359f60f8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.EUPL-1.2,6fc9e709ccbfe0d77fbffa2427a983282be2eb88e47b1cdb49f21a83b4d1e665,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-2.0-only,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-2.0-or-later,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.GPL-3.0-or-later,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.ISC,e53348ce276358e9997014071c5294b36a18c4b34f32f00ee57b9acce0aafd63,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.LGPL-2.1-or-later,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/Documentation/licenses/COPYING.MIT,8555341619542abb48c102afd954e42d4478e5be16ad3d5af7b0ff71009e7348,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:licenses/util-linux-2.41.5/README.licensing,4c2db318192bda62f3f8fcf71488bb5e602ae4385eba281d711b46cc13a40bb3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:manifest.csv,bcce23fdc872a3387ca6a6119dc4f33d495737333855342699238ec96d241655,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2/brcmfmac_sdio-firmware-rpi-6596d332eaadd63e2413e3937715a084f61c39e2.tar.gz,d9835b33bea65cf15f41753e215a11e5eca818a6e3bfacaa750aeac12456c24f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0001-networking-libiproute-use-linux-if_packet.h-instead-.patch,d4324e1972fd86e20b6b9524c8738baf51a2ad5536f95794493d21990c94cdc3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0002-Makefile.flags-strip-non-l-arguments-returned-by-pkg.patch,bbb362d7beefab00adfef46e7053eaf3786c476e62cd254f08af286f9cf4fe0b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0003-libbb-sockaddr2str-ensure-only-printable-characters-.patch,5d063d321e86c0a40cbc9875491675becb6474123c3426a994c7afb076555f3e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0004-nslookup-sanitize-all-printed-strings-with-printable.patch,dc494525a7120c28dbc0afa238c6cfebfd2a5ee59bb255c481bfd675bcb2a4dd,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0005-seedrng-fix-getrandom-detection-for-non-glibc-libc.patch,8f6634f457ad26ab6f88dffe64c971a75f81251e1565085904f9b44bfd3fbc52,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0006-tc-Fix-compilation-with-Linux-v6.8-rc1.patch,1e07632c8c7f76eb2d87bcd574dd0f785874c4d307ad0a22e822943c66cc6978,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0007-awk.c-fix-CVE-2023-42366-bug-15874.patch,3f221c1015776a8e9f18a2c6941dd6c2a54b0257f7136fd88e86543742de58fc,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0008-hwclock-Check-for-SYS_settimeofday-before-calling-sy.patch,f50dae9976a0022de9f0122d724394561daad6266b39e27f1c3fe5eb4164b759,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0009-syslogd-fix-wrong-OPT_locallog-flag-detection.patch,f6644c4c40c48c43edd8650b95bb42d685aeb9d7487270226864ec93bf46bb27,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0010-testsuite-tar-tests-fix-test-after-cve-2025-46394.patch,738615776b0dca878b170f9242bab7d07023e5cb70dfe7c19fcfed3e72dfad4b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0011-wget-dont-allow-control-characters-or-spaces-in-the-URL.patch,0506f13375c2425d2ff46a453616a9cb88de1a0c6878d26cd5fdc8ae9ebea51f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/0012-netstat-sanitize-argv0-for-p-CVE-2024-58251.patch,c111e4aec4459a6a79b4e2a0b990ddbf1d8337cb45f66bcd4b88bb4b9f72b7ea,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/busybox-1.38.0.tar.bz2,34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/busybox-1.38.0/series,0d76c8833124b6af33f157fea64925a17125f5ac79ad2033929413d2967c06f2,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/e2fsprogs-1.47.4/e2fsprogs-1.47.4.tar.xz,fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/kbd-2.9.0/0001-libkbdfile-fix-zlib-build.patch,08e09001c1f759f3198cecdbc4d04c586d36e7628013d7690bc5c442f19738a0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/kbd-2.9.0/0002-libkbdfile-Require-dlopen-and-memfd_create-for-libra.patch,789aedee3888c481b15971f7bc398fc27788d296c6fd45611b068991de923bd4,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/kbd-2.9.0/kbd-2.9.0.tar.xz,fb3197f17a99eb44d22a3a1a71f755f9622dd963e66acfdea1a45120951b02ed,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/kbd-2.9.0/series,66d0463a6c1b1b0de90e03e3bc7ec559043c6b8b046aebe43a7dcec73e46ea17,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/kmod-34.2/kmod-34.2.tar.xz,5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libopenssl-3.5.9/0001-Reproducible-build-do-not-leak-compiler-path.patch,7f7e9dfa12cfdbb60141e92d741355ea461e40fa19a8745529a48153c8698424,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libopenssl-3.5.9/0002-Revert-Fix-static-builds.patch,8ed6e3c61b0af2113348e63c1a45d840edffd33d65a32e5c376d255e983911f0,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libopenssl-3.5.9/openssl-3.5.9.tar.gz,603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libopenssl-3.5.9/series,1765a217dfba5c27763dfc2b435e7f912eb0dd9982f7580ac2e0216d1bdb673d,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libv4l-1.32.0/v4l-utils-1.32.0.tar.xz,6828828a17775526eb93fb258a9294d1d1073d633c344dd71ecd4e7a1ffb7dfc,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libzlib-1.3.2/0001-fix-buffer-overflow-bug-in-non-blocking-gzwrite.patch,1470b9861c54fb1b5cf41dd8570e5d3133305c74185d28fc8f08fbe23ff5350e,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libzlib-1.3.2/series,6841bdc132e8baa521de98fbfb2bbdb50a91cd6dbc6db5b0fb663296eb34e8a8,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/libzlib-1.3.2/zlib-1.3.2.tar.xz,d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/linux-custom/linux-b3495ea401d709af0701a85babcba5e3d788a602.tar.gz,d3857e3906878c52719da06328a2db27784f6fb8055b570e8d8207eef3a12a14,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2/m5stack-cardputerzero-37b42d9451495b5597dd7e50cab502da8028f9c2.tar.gz,d909d7169fdc54194affd13f3384bd86309b43490d5a8f6f32a48d8176423c7f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68/rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz,812cb64617d6ffbc76f9b8dce8237b31159a1216b31845faec1bb75b6b6b291f,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/toolchain-external-bootlin-2025.08-1/aarch64--glibc--stable-2025.08-1.tar.xz,dfb47eee874eef9e8a7fc042eee4e0a183f444b6bcde6a82fef8f009918389c9,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/tzdata-2026e/tzdata2026e.tar.gz,b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/util-linux-2.41.5/0001-include-mount-api-utils.h-fix-LSMT_ROOT-definition.patch,08b842937e25d1a33974dfb47d0dbe8db37d5b6458dc012633a01e14732aa248,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/util-linux-2.41.5/0002-autotools-optionally-add-libpthread-to-uuid.pc.patch,b488f9b7b1d0a6fe171b04d72cb79ef8f262945925a19cad2eeee2c372882877,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/util-linux-2.41.5/0003-loopdev-use-openat2-RESOLVE_NO_SYMLINKS-for-backing-.patch,298a6cdf0c9bc43387816ab9d038958f9ab5577fc447a7efd86db6c4d0a53600,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/util-linux-2.41.5/series,9dfca5367c601f2ce6ba6394cf6bf8a53f2859f1247538918842cff54d706a75,sha256,1,unchanged after collection
+real,legal-info-supplement,1,original:sources/util-linux-2.41.5/util-linux-2.41.5.tar.xz,f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728,sha256,1,unchanged after collection
+real,legal-info-supplement,1,supplement:README.md,6317000414d64f8f42deccb92f15380a9d4729919b41ddebfe1202a264dd97ca,sha256,1,
+real,legal-info-supplement,1,supplement:SHA256SUMS,73e1c8b3cce98498013971c43b6e1adba0e9fc59cec6edc852c94973e82723d1,sha256,1,
+real,legal-info-supplement,1,supplement:buildroot-8b238854d909c9cce32ef9671d968b03e323b55d.tar.gz,3c39d8ce82ddcf59c1c2b30a302a27205a24dba265bd940ae1811fd778e66591,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/autoconf-2.72/COPYING.EXCEPTION,1f1cde9fb68b9b3cff18c420894bec5bd4defacd700b7d13df54a887301e5350,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/autoconf-2.72/COPYINGv3,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/autoconf-archive-2023.02.20/COPYING,e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/autoconf-archive-2023.02.20/COPYING.EXCEPTION,23ed0b84fa023bfa33433b498192cd08a3bfb1f4864a8ed791a84f3eb48b2dd2,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/automake-1.16.5/COPYING,ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/binutils-2.43.1/COPYING.LIB,56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/binutils-2.43.1/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/bison-3.8.2/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/buildroot/COPYING,9755181e27175cb3510b4da8629caa406fb355a19aa8e7d55f06bf8ab33323c4,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/expat-2.7.1/COPYING,31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gawk-5.3.1/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING.LIB,a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING.RUNTIME,9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING.LIB,a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING.LIB,56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING.LIB,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/LICENSES,b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gmp-6.3.0/COPYING.LESSERv3,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/gmp-6.3.0/COPYINGv2,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/libffi-3.4.8/LICENSE,67894089811f93fca47a76f85e017da6f8582d4ba0905963c6e0f1ad6df7a195,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/libtool-2.4.6/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/libtool-2.4.6/libltdl/COPYING.LIB,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/libzlib-1.3.1/LICENSE,845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/m4-1.4.20/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/mpc-1.3.1/COPYING.LESSER,da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/mpfr-4.1.1/COPYING.LESSER,e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/ncurses-6.5-20250720/COPYING,708999f95527e1ffa670c6fce288c6c600cb477dd04afcc1171422b3dd4ee226,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/patchelf-0.13/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/pkgconf-2.3.0/COPYING,07ee94b50a41ee3fc4e13a9b9c60b26fc28488494c465639f7e5f07a3952ec04,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/python3-3.13.5/LICENSE,78b12c3a81360b357002334f0e70ea0e92eebf7a9b358805c03c48484945f3bb,sha256,1,
+real,legal-info-supplement,1,supplement:licenses/tar-1.35/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+real,legal-info-supplement,1,supplement:manifest.csv,0def466e11eefab8c2f3352c22e1ad08c98f819fce97222ffc90a634ca9a614d,sha256,1,
+real,legal-info-supplement,1,supplement:manifest.json,b1de6437193b9a43a6ec04f9c1ffedec0df83a82f521fac27c8fd4c131de6a87,sha256,1,
+real,legal-info-supplement,1,supplement:metadata/README.txt,cf8e19adc4bdc354476be7c248dddcfb2ecde34f6fc8a981c6835b75659697af,sha256,1,
+real,legal-info-supplement,1,supplement:metadata/bootlin-pins.json,2801ae0d6bf688586039e310ead13eebbf3cd015e12988153737887b8fed387c,sha256,1,
+real,legal-info-supplement,1,supplement:metadata/buildroot.config,16491230e2210ea99e8b31448869f1fda071637bd39a03e6cf6da859fc661995,sha256,1,
+real,legal-info-supplement,1,supplement:metadata/summary.csv,a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66,sha256,1,
+real,legal-info-supplement,1,bytes:manifest.json,87910,bytes,1,
+real,legal-info-supplement,1,bytes:manifest.csv,18167,bytes,1,
+real,legal-info-supplement,1,bytes:buildroot-8b238854d909c9cce32ef9671d968b03e323b55d.tar.gz,7166761,bytes,1,
+aa-offline,legal-info-supplement,1,supplement:README.md,6317000414d64f8f42deccb92f15380a9d4729919b41ddebfe1202a264dd97ca,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:SHA256SUMS,73e1c8b3cce98498013971c43b6e1adba0e9fc59cec6edc852c94973e82723d1,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:buildroot-8b238854d909c9cce32ef9671d968b03e323b55d.tar.gz,3c39d8ce82ddcf59c1c2b30a302a27205a24dba265bd940ae1811fd778e66591,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/autoconf-2.72/COPYING.EXCEPTION,1f1cde9fb68b9b3cff18c420894bec5bd4defacd700b7d13df54a887301e5350,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/autoconf-2.72/COPYINGv3,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/autoconf-archive-2023.02.20/COPYING,e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/autoconf-archive-2023.02.20/COPYING.EXCEPTION,23ed0b84fa023bfa33433b498192cd08a3bfb1f4864a8ed791a84f3eb48b2dd2,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/automake-1.16.5/COPYING,ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/binutils-2.43.1/COPYING.LIB,56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/binutils-2.43.1/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/bison-3.8.2/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/buildroot/COPYING,9755181e27175cb3510b4da8629caa406fb355a19aa8e7d55f06bf8ab33323c4,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/expat-2.7.1/COPYING,31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gawk-5.3.1/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING.LIB,a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING.RUNTIME,9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-final-14.3.0/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING.LIB,a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gcc-initial-14.3.0/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING,231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING.LIB,56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING3,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gdb-15.2/COPYING3.LIB,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING.LIB,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/LICENSES,b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gmp-6.3.0/COPYING.LESSERv3,a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/gmp-6.3.0/COPYINGv2,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/libffi-3.4.8/LICENSE,67894089811f93fca47a76f85e017da6f8582d4ba0905963c6e0f1ad6df7a195,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/libtool-2.4.6/COPYING,8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/libtool-2.4.6/libltdl/COPYING.LIB,dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/libzlib-1.3.1/LICENSE,845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/m4-1.4.20/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/mpc-1.3.1/COPYING.LESSER,da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/mpfr-4.1.1/COPYING.LESSER,e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/ncurses-6.5-20250720/COPYING,708999f95527e1ffa670c6fce288c6c600cb477dd04afcc1171422b3dd4ee226,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/patchelf-0.13/COPYING,8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/pkgconf-2.3.0/COPYING,07ee94b50a41ee3fc4e13a9b9c60b26fc28488494c465639f7e5f07a3952ec04,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/python3-3.13.5/LICENSE,78b12c3a81360b357002334f0e70ea0e92eebf7a9b358805c03c48484945f3bb,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:licenses/tar-1.35/COPYING,3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:manifest.csv,0def466e11eefab8c2f3352c22e1ad08c98f819fce97222ffc90a634ca9a614d,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:manifest.json,b1de6437193b9a43a6ec04f9c1ffedec0df83a82f521fac27c8fd4c131de6a87,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:metadata/README.txt,cf8e19adc4bdc354476be7c248dddcfb2ecde34f6fc8a981c6835b75659697af,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:metadata/bootlin-pins.json,2801ae0d6bf688586039e310ead13eebbf3cd015e12988153737887b8fed387c,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:metadata/buildroot.config,16491230e2210ea99e8b31448869f1fda071637bd39a03e6cf6da859fc661995,sha256,1,
+aa-offline,legal-info-supplement,1,supplement:metadata/summary.csv,a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66,sha256,1,
+aa-offline,legal-info-supplement,1,bytes:manifest.json,87910,bytes,1,
+aa-offline,legal-info-supplement,1,bytes:manifest.csv,18167,bytes,1,
+aa-offline,legal-info-supplement,1,bytes:buildroot-8b238854d909c9cce32ef9671d968b03e323b55d.tar.gz,7166761,bytes,1,
+real,legal-info-supplement,1,original_files,261,files,1,
+real,legal-info-supplement,1,components,25,components,1,
+real,legal-info-supplement,1,license_files,41,files,1,
+real,legal-info-supplement,1,uncollected_archives,23,archives,1,
+real,legal-info-supplement,1,uncollected_archive_bytes,351536922,bytes,1,prior HEAD metadata; archive bodies not collected
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/gcc-final-14.3.0/gcc-14.3.0.tar.xz,95212220,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/gcc-final-14.3.0/gcc-14.3.0.tar.xz,cb4e3259640721bbd275c723fe4df53d12f9b1673afb3db274c22c6aa457865dccf2d6ea20b4fd4c591f6152e6d4b87516c402015900f06ce9d43af66d3b7a93,sha512,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830.tar.gz,38626222,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830.tar.gz,166b6e7637bb45cb9352e4813005f83dd48f03ef634d3e9e94a30aa5a0300fab,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/linux-headers-5.4.296/linux-5.4.296.tar.xz,113049108,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/linux-headers-5.4.296/linux-5.4.296.tar.xz,3d63614e58bf1befaba3f5713145200d09f26e564832c8948094fdf5b11fa73a,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/gdb-15.2/gdb-15.2.tar.xz,24332820,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/gdb-15.2/gdb-15.2.tar.xz,624007deceb5b15ba89c0725883d1a699fa46714ef30887f3d0165e17c5d65d634671740a135aa69e437d916218abb08cfa2a38ed309ff19d48f51da56b2a8ba,sha512,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/bison-3.8.2/bison-3.8.2.tar.xz,2817324,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/bison-3.8.2/bison-3.8.2.tar.xz,9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/m4-1.4.20/m4-1.4.20.tar.xz,2044756,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/m4-1.4.20/m4-1.4.20.tar.xz,e236ea3a1ccf5f6c270b1c4bb60726f371fa49459a8eaaebc90b216b328daf2b,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/tar-1.35/tar-1.35.cpio.gz,4625633,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/tar-1.35/tar-1.35.cpio.gz,c77a38fcf25b21fd8209d20d35638744344ded239cfc7df80138bf46d3c6b16d,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/gawk-5.3.1/gawk-5.3.1.tar.xz,3510032,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/gawk-5.3.1/gawk-5.3.1.tar.xz,694db764812a6236423d4ff40ceb7b6c4c441301b72ad502bb5c27e00cd56f78,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/binutils-2.43.1/binutils-2.43.1.tar.xz,28174300,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/binutils-2.43.1/binutils-2.43.1.tar.xz,20977ad17729141a2c26d358628f44a0944b84dcfefdec2ba029c2d02f40dfc41cc91c0631044560d2bd6f9a51e1f15846b4b311befbe14f1239f14ff7d57824,sha512,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/gmp-6.3.0/gmp-6.3.0.tar.xz,2094196,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/gmp-6.3.0/gmp-6.3.0.tar.xz,a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/autoconf-2.72/autoconf-2.72.tar.xz,1389680,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/autoconf-2.72/autoconf-2.72.tar.xz,ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/libtool-2.4.6/libtool-2.4.6.tar.xz,973080,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/libtool-2.4.6/libtool-2.4.6.tar.xz,7c87a8c2c8c0fc9cd5019e402bed4292462d00a718a7cd5f11218153bf28b26f,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/automake-1.16.5/automake-1.16.5.tar.xz,1601740,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/automake-1.16.5/automake-1.16.5.tar.xz,f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/mpc-1.3.1/mpc-1.3.1.tar.gz,773573,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/mpc-1.3.1/mpc-1.3.1.tar.gz,ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/mpfr-4.1.1/mpfr-4.1.1.tar.xz,1429836,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/mpfr-4.1.1/mpfr-4.1.1.tar.xz,ffd195bd567dbaffc3b98b23fd00aad0537680c9896171e44fe3ff79e28ac33d,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/expat-2.7.1/expat-2.7.1.tar.xz,496108,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/expat-2.7.1/expat-2.7.1.tar.xz,354552544b8f99012e5062f7d570ec77f14b412a3ff5c7d8d0dae62c0d217c30,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/ncurses-6.5-20250720/ncurses-6.5-20250720.tar.gz,3659703,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/ncurses-6.5-20250720/ncurses-6.5-20250720.tar.gz,fc3871f051e941a637488c07c81d984f731003e65c0f78353606e18296011aac,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/python3-3.13.5/Python-3.13.5.tar.xz,22856016,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/python3-3.13.5/Python-3.13.5.tar.xz,93e583f243454e6e9e4588ca2c2662206ad961659863277afcdb96801647d640,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/autoconf-archive-2023.02.20/autoconf-archive-2023.02.20.tar.xz,678184,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/autoconf-archive-2023.02.20/autoconf-archive-2023.02.20.tar.xz,e26d15db0f1ec60e9ea8ff024cf3ee895fa2eabd,sha1,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/autoconf-archive-2023.02.20/autoconf-archive-2023.02.20.tar.xz,71d4048479ae28f1f5794619c3d72df9c01df49b1c628ef85fde37596dc31a33,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/libffi-3.4.8/libffi-3.4.8.tar.gz,1397992,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/libffi-3.4.8/libffi-3.4.8.tar.gz,bc9842a18898bfacb0ed1252c4febcc7e78fa139fd27fdc7a3e30d9d9356119b,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/pkgconf-2.3.0/pkgconf-2.3.0.tar.xz,316160,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/pkgconf-2.3.0/pkgconf-2.3.0.tar.xz,3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/libzlib-1.3.1/zlib-1.3.1.tar.xz,1305740,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/libzlib-1.3.1/zlib-1.3.1.tar.xz,38ef96b8dfe510d42707d9c781877914792541133e1870841463bfa73f883e32,sha256,1,Bootlin builder metadata reference; no archive-body verification
+uncollected,legal-info-supplement,1,archive:https://toolchains.bootlin.com/downloads/releases/sources/patchelf-0.13/patchelf-0.13.tar.bz2,172499,bytes,1,reference size; not a local archive
+uncollected,legal-info-supplement,1,archive_hash:https://toolchains.bootlin.com/downloads/releases/sources/patchelf-0.13/patchelf-0.13.tar.bz2,4c7ed4bcfc1a114d6286e4a0d3c1a90db147a4c3adda1814ee0eee0f9ee917ed,sha256,1,Bootlin builder metadata reference; no archive-body verification
+logs,legal-info-supplement,1,log:output-legal-supplement/actionlint.log,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/ci-cache.log,ef23f89dd38cd917cd4ccb0ced07b56629e4cb2e1ddbfd14d3c1bc9c97a16c31,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/ci-scope.log,35643956503802041bd71dcd2e2f280c9e7d7b993d49edd9d8aa7f15cf84e783,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/collect-aa-first.log,aa2c3725f5962c3d96ecf67b86e774edee3a478af7111dc074e7a36bd1e80d31,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/collect-aa-retry.log,87070f0d5651badc036cefc9fe63936ef9962605d66a7643a81a6deeb07b3dc9,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/collect-online.log,87070f0d5651badc036cefc9fe63936ef9962605d66a7643a81a6deeb07b3dc9,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/host-tests-final.log,e82fdd666ea64291787e8f381c138a95a6da10967902036f935f95b97498c22d,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/host-tests.log,f07c42413c0b153a36ea2d67515589186433db76dbc32ece6e05512c45e56baa,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/legal-info.log,275bf1d3b6fa7c1e212bc705468b19deb782467b21531e5c9af49b5100982a99,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/shellcheck.log,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,sha256,1,
+logs,legal-info-supplement,1,log:output-legal-supplement/zizmor.log,28ef60c71dc560322469dc42c121bbbc1e70a08c463f0493350471413469d7e3,sha256,1,
+legal-info,legal-info-supplement,1,exit_code,0,exit,1,docker/msd-dev make -C output-openssl-lts legal-info
+real,legal-info-supplement,1,exit_code,0,exit,1,online collection
+aa-first,legal-info-supplement,1,exit_code,1,exit,0,absolute host SDK symlink not visible in container
+aa-retry,legal-info-supplement,1,exit_code,0,exit,1,relative SDK symlink; offline license tree
+host-final,legal-info-supplement,1,tests,12,tests,1,"all passed; includes mismatch, missing input, shallow gitlink and network failure"
+aa-retry,legal-info-supplement,1,all_supplement_files_match,50,files,1,all SHA-256 values equal
+inputs,legal-info-supplement,1,.github/scripts/legal-info-supplement.py,3713a892e6c8c1ce20bc68673c29a15a610ea83f7058055dca1b785fab3ce98e,sha256,1,
+inputs,legal-info-supplement,1,tests/legal-info-supplement/run.py,d1f77e1689d3d5a43fe3943cadd481122a81c0c6c5d925f78a1b840148324d4f,sha256,1,
+inputs,legal-info-supplement,1,board/cardputerzero/legal-info/bootlin-2025.08-1.json,2801ae0d6bf688586039e310ead13eebbf3cd015e12988153737887b8fed387c,sha256,1,
+inputs,legal-info-supplement,1,board/cardputerzero/legal-info/README.md,6317000414d64f8f42deccb92f15380a9d4729919b41ddebfe1202a264dd97ca,sha256,1,
+inputs,legal-info-supplement,1,output-openssl-lts/host/opt/ext-toolchain/summary.csv,a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66,sha256,1,
+inputs,legal-info-supplement,1,output-openssl-lts/host/opt/ext-toolchain/README.txt,cf8e19adc4bdc354476be7c248dddcfb2ecde34f6fc8a981c6835b75659697af,sha256,1,
+inputs,legal-info-supplement,1,output-openssl-lts/host/opt/ext-toolchain/buildroot.config,16491230e2210ea99e8b31448869f1fda071637bd39a03e6cf6da859fc661995,sha256,1,
