@@ -6,6 +6,7 @@ checker="$repo_root/.github/scripts/check-site.py"
 pattern_generator="$repo_root/docs/logo/tools/site_patterns.py"
 test_root="$(mktemp -d)"
 fixture="$test_root/repo"
+policy="default-src 'none'; img-src 'self'; style-src 'self'; script-src https://static.cloudflareinsights.com; connect-src https://cloudflareinsights.com/cdn-cgi/rum; base-uri 'none'; form-action 'none'"
 
 cleanup() {
 	rm -rf "$test_root"
@@ -61,7 +62,7 @@ new_repo() {
 
 	write_file public_html/index.html "<!doctype html>
 <html><head>
-<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src 'self'; style-src 'self'\">
+<meta http-equiv=\"Content-Security-Policy\" content=\"$policy\">
 <link rel=\"canonical\" href=\"https://muromi.moe/\">
 <meta property=\"og:url\" content=\"https://muromi.moe/\">
 <meta property=\"og:image\" content=\"https://muromi.moe/images/msd-linux-social-1280x640.webp\">
@@ -72,13 +73,25 @@ new_repo() {
 </head><body><img src=\"images/msd-linux-mark.svg\"></body></html>
 "
 	write_file public_html/404.html "<!doctype html>
-<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src 'self'; style-src 'self'\">
+<meta http-equiv=\"Content-Security-Policy\" content=\"$policy\">
 <link rel=\"stylesheet\" href=\"/site.css\">
 <img src=\"/images/msd-linux-mark.svg\">
 <a href=\"/\">Home</a>
 "
 	write_file public_html/site.css 'body { background-image: url("images/flow-light.svg"); }
 '
+	write_file public_html/_headers "/*
+  Content-Security-Policy: $policy; frame-ancestors 'none'
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+"
 
 	write_file docs/logo/msd-linux-logo.svg '<svg>logo</svg>
 '
@@ -187,6 +200,75 @@ run_check
 expect_status 1
 expect_output 'script 要素は禁止です'
 printf 'ok - rejects script elements\n'
+
+new_repo
+printf '<script src="https://static.cloudflareinsights.com/beacon.min.js"></script>\n' >> "$fixture/public_html/index.html"
+git -C "$fixture" add public_html/index.html
+run_check
+expect_status 1
+expect_output 'script 要素は禁止です'
+printf 'ok - the beacon exception never permits committed script elements\n'
+
+for csp_file in public_html/index.html public_html/404.html public_html/_headers; do
+	for change in \
+		"default-src 'none'|default-src 'self'" \
+		"style-src 'self'|style-src 'self' 'unsafe-inline'" \
+		"img-src 'self'|img-src 'self' data:" \
+		"script-src https://static.cloudflareinsights.com|script-src https://static.cloudflareinsights.com 'self'" \
+		"script-src https://static.cloudflareinsights.com|script-src https://evil.example" \
+		"connect-src https://cloudflareinsights.com/cdn-cgi/rum|connect-src https://cloudflareinsights.com" \
+		"connect-src https://cloudflareinsights.com/cdn-cgi/rum|connect-src 'self'" \
+		"form-action 'none'|form-action 'none'; worker-src 'self'" \
+		"base-uri 'none'|base-uri 'none'; base-uri 'none'"; do
+		new_repo
+		old="${change%%|*}"
+		new="${change#*|}"
+		python3 - "$fixture/$csp_file" "$old" "$new" <<'PY'
+import sys
+from pathlib import Path
+path = Path(sys.argv[1])
+path.write_text(path.read_text().replace(sys.argv[2], sys.argv[3]))
+PY
+		git -C "$fixture" add "$csp_file"
+		run_check
+		expect_status 1
+		expect_output 'CSP'
+	done
+done
+printf 'ok - both meta policies and response CSP reject broader or duplicate allowances\n'
+
+for mode in missing empty duplicate malformed extra no-preview no-framing wrong-permissions; do
+	new_repo
+	python3 - "$fixture/public_html/_headers" "$mode" <<'PY'
+import sys
+from pathlib import Path
+path = Path(sys.argv[1])
+mode = sys.argv[2]
+text = path.read_text()
+if mode == "missing":
+    path.unlink()
+else:
+    if mode == "empty":
+        text = ""
+    elif mode == "duplicate":
+        text = text.replace("  X-Frame-Options: DENY", "  X-Frame-Options: DENY\n  x-frame-options: DENY")
+    elif mode == "malformed":
+        text = "  X-Frame-Options: DENY\n" + text
+    elif mode == "extra":
+        text = text.replace("/*\n", "/*\n  X-Robots-Tag: noindex\n", 1)
+    elif mode == "no-preview":
+        text = text.split("https://:version.")[0]
+    elif mode == "no-framing":
+        text = text.replace("frame-ancestors 'none'", "frame-ancestors 'self'")
+    elif mode == "wrong-permissions":
+        text = text.replace("camera=()", "camera=*")
+    path.write_text(text)
+PY
+	git -C "$fixture" add public_html/_headers
+	run_check
+	expect_status 1
+done
+printf 'ok - Pages rules require complete headers and preview-only noindex without duplicates\n'
 
 new_repo
 printf '<img src="https://example.com/image.png">\n' >> "$fixture/public_html/index.html"

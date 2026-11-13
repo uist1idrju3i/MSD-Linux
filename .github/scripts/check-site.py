@@ -22,6 +22,7 @@ FIXED_SITE_PATHS = {
     "public_html/index.html",
     "public_html/404.html",
     "public_html/site.css",
+    "public_html/_headers",
 }
 IMAGE_PATH_RE = re.compile(r"public_html/images/[^/]+\.(?:svg|png|webp)\Z")
 LOGO_FILES = (
@@ -37,7 +38,25 @@ REQUIRED_IMAGES = (
     "seigaiha-light.svg",
     "seigaiha-dark.svg",
 )
-CSP_DEFAULT_RE = re.compile(r"(?:^|;)\s*default-src\s+'none'\s*(?:;|$)", re.IGNORECASE)
+CSP_SOURCES = {
+    "default-src": ("'none'",),
+    "img-src": ("'self'",),
+    "style-src": ("'self'",),
+    "script-src": ("https://static.cloudflareinsights.com",),
+    "connect-src": ("https://cloudflareinsights.com/cdn-cgi/rum",),
+    "base-uri": ("'none'",),
+    "form-action": ("'none'",),
+}
+PAGES_HEADERS = {
+    "/*": {
+        "content-security-policy": None,
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+        "x-frame-options": "DENY",
+        "cross-origin-opener-policy": "same-origin",
+    },
+    "https://:project.pages.dev/*": {"x-robots-tag": "noindex"},
+    "https://:version.:project.pages.dev/*": {"x-robots-tag": "noindex"},
+}
 CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 CSS_URL_RE = re.compile(r"""url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*?))\s*\)""", re.IGNORECASE)
 SITE_PATTERNS = "docs/logo/tools/site_patterns.py"
@@ -327,32 +346,71 @@ class SiteHTMLParser(html.parser.HTMLParser):
         self.handle_starttag(tag, attrs)
 
 
+def check_csp_value(path: str, line: int, value: str, reporter: Reporter,
+                    *, response_header: bool = False) -> None:
+    expected = dict(CSP_SOURCES)
+    if response_header:
+        expected["frame-ancestors"] = ("'none'",)
+    directives: dict[str, tuple[str, ...]] = {}
+    for part in value.split(";"):
+        words = part.split()
+        if not words:
+            continue
+        name = words[0].lower()
+        if name in directives:
+            reporter.error(path, line, f"CSP directive が重複しています: {name}")
+        directives[name] = tuple(words[1:])
+    if directives != expected:
+        reporter.error(path, line, "CSP はローカル資源と承認済みの Web Analytics 例外だけを指定してください")
+
+
+def check_pages_headers(text: str, reporter: Reporter) -> None:
+    path = "public_html/_headers"
+    rules: dict[str, dict[str, str]] = {}
+    current: str | None = None
+    for line, raw in enumerate(text.splitlines(), 1):
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        if not raw[0].isspace():
+            current = raw.strip()
+            if current in rules:
+                reporter.error(path, line, f"Pages rule が重複しています: {current}")
+            rules.setdefault(current, {})
+            continue
+        if current is None or ":" not in raw:
+            reporter.error(path, line, "Pages header の形式が不正です")
+            continue
+        name, value = (part.strip() for part in raw.split(":", 1))
+        name = name.lower()
+        if name in rules[current]:
+            reporter.error(path, line, f"Pages header が重複しています: {name}")
+        rules[current][name] = value
+        if name == "content-security-policy":
+            check_csp_value(path, line, value, reporter, response_header=True)
+    if rules.keys() != PAGES_HEADERS.keys():
+        reporter.error(path, 1, "Pages の全体・project・version rule を過不足なく指定してください")
+    for rule, headers in rules.items():
+        expected = PAGES_HEADERS.get(rule, {})
+        if headers.keys() != expected.keys() or any(
+            value is not None and headers.get(name) != value for name, value in expected.items()
+        ):
+            reporter.error(path, 1, f"Pages header が承認済みの設定と一致しません: {rule}")
+
+
 def check_csp(
     path: str,
     parser: SiteHTMLParser,
     reporter: Reporter,
 ) -> None:
-    if not parser.csp_lines:
+    if len(parser.csp_lines) != 1:
         reporter.error(
             path,
             1,
-            "Content-Security-Policy meta に default-src 'none' を指定してください",
+            "Content-Security-Policy meta を一つ指定してください",
         )
         return
     for line, content in parser.csp_lines:
-        value = (content or "").lower()
-        if not CSP_DEFAULT_RE.search(value):
-            reporter.error(
-                path,
-                line,
-                "Content-Security-Policy に default-src 'none' が必要です",
-            )
-        if "unsafe-inline" in value or "unsafe-eval" in value:
-            reporter.error(
-                path,
-                line,
-                "Content-Security-Policy で unsafe-inline と unsafe-eval は使えません",
-            )
+        check_csp_value(path, line, content or "", reporter)
 
 
 def check_html(
@@ -546,6 +604,11 @@ def main() -> int:
         return 1
 
     check_site_allowlist(site_paths, reporter)
+
+    if "public_html/_headers" in site_paths:
+        text = read_text(root, "public_html/_headers", reporter)
+        if text is not None:
+            check_pages_headers(text, reporter)
 
     for path in sorted(item for item in site_paths if item.lower().endswith(".html")):
         text = read_text(root, path, reporter)
