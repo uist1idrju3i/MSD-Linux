@@ -53,5 +53,10 @@
     "files": 6,
     "apparent_bytes": 49425678336,
     "allocated_bytes": 279072768
+  },
+  "output-dev-image-snapshot": {
+    "files": 3,
+    "apparent_bytes": 2280002048,
+    "allocated_bytes": 2280017920
   }
 }

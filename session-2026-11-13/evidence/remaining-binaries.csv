@@ -247,3 +247,6 @@ fs-compare-local/phase1-r2-investigation/phase1-r2-T2-F5-r4-1794301168-sdcard.im
 fs-compare-local/phase1-r2-investigation/phase1-r2-T2-E5-r2-1794296528-data-p7.ext4,7885291520,16363520
 fs-compare-local/phase1-r2-investigation/phase1-r2-T2-F5-r4-1794301168-data-p7.ext4,7885291520,6598656
 fs-compare-local/phase1-r2-investigation/phase1-r2-T2-E5-r16-1794297137-data-p7.ext4,7885291520,13963264
+repo/output-dev-image-snapshot/trivy-cache/db/trivy.db,1764192256,1764196352
+repo/output-dev-image-snapshot/old.tar,256824832,256831488
+repo/output-dev-image-snapshot/fixed.tar,258984960,258990080

@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "repo/output-dev-image-snapshot/trivy-cache/db/trivy.db",
+      "apparent_bytes": 1764192256,
+      "allocated_bytes": 1764196352,
+      "sha256": "99fdc77556d4c2870c4288db54e6cddc88a7234a3db6e6895d101d441ed86e57"
+    },
+    {
+      "path": "repo/output-dev-image-snapshot/old.tar",
+      "apparent_bytes": 256824832,
+      "allocated_bytes": 256831488,
+      "sha256": "dff39e429be2ae5dcba67c70fe0c62dccd215672d1d2495a4412888aaaba4339"
+    },
+    {
+      "path": "repo/output-dev-image-snapshot/fixed.tar",
+      "apparent_bytes": 258984960,
+      "allocated_bytes": 258990080,
+      "sha256": "502b7aea7281b3d5c18d536ca49e3a5c452b7e83ec25c61bf9dd5f01ea88d569"
+    }
+  ],
+  "db_metadata": {
+    "Version": 2,
+    "NextUpdate": "2026-11-13T12:59:19.777478511Z",
+    "UpdatedAt": "2026-11-12T12:59:19.777478911Z",
+    "DownloadedAt": "2026-11-12T15:49:54.641864833Z"
+  }
+}
