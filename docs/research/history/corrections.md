@@ -1,5 +1,11 @@
 # 訂正済み事項
 
+## 2026-11-12の書き込み経路
+
+| 原記述・推測 | 訂正と理由 | 根拠 |
+|---|---|---|
+| 台帳の「mkfsに指定がないので通常imageでもlazy初期化」、syslogの起動は未確認 | 通常imageはgenimageが `lazy_itable_init=0,lazy_journal_init=0` を付けます。空partitionのfallback format・起動時のonline resizeは別経路です。生成rootfsとQEMUではsyslogd・klogdが起動していますが、log先はRAMです | [台帳](../../design/write-policy.md)、[測定条件とraw値](../../experiments/2026-11-12-write-inventory.md) |
+
 ## 2026-11-12のBuildroot LTS判定
 
 固定版監視がすべての`.02.x`をLTS候補とし、`pinned-versions.md`に2026.02.xを表示していました。[公式方針](https://buildroot.org/lts.html)は2025.02以降、奇数年の最初のreleaseを3年間保守します。現行は2025.02.x（2028年3月まで）、次は2027.02です。生成側とfixtureも修正し、[固定版表](../dependencies/pinned-versions.md)の他行の取得日とは区別しました。

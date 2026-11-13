@@ -6,6 +6,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-12-write-inventory](2026-11-12-write-inventory.md) | [測定](2026-11-12-write-inventory.csv) | 2026-11-12 | QEMU測定、idle基準は未達 | 初回idleにp7の8320 sector増加。RAM配置を確認し既定timezoneをTokyoへ変更。拡張済み再bootも64 sector増え、原因の寄与と実機は未確認。 |
 | [2026-11-12-pages-headers](2026-11-12-pages-headers.md) | [結果](2026-11-12-pages-headers.csv) | 2026-11-12 | 描画・preview応答確認 | 画素差0。pages.devでヘッダー配信確認。Analytics注入・実送信は未確認。 |
 | [2026-11-12-openssl-minimal-plan](2026-11-12-openssl-minimal-plan.md) | [採取値](2026-11-12-openssl-minimal-plan.csv) / [入力](2026-11-12-openssl-minimal-plan.json) | 2026-11-12 | 静的採取・比較は計画 | 保存済み3.5.9の実引数・4 fileのhashとサイズ・ELF参照を照合。削減build、TLS、QEMU、実機の比較は未実施。 |
 | [2026-11-12-release-signing-job](2026-11-12-release-signing-job.md) | [結果](2026-11-12-release-signing-job.csv) | 2026-11-12 | host・増分build確認済み | 公開鍵をSquashFSから照合。独立署名と負試験に成功。本番鍵・Environment job・実機は未確認。 |

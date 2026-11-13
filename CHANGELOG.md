@@ -12,6 +12,7 @@
 
 ### 変更
 
+- 製品の既定timezoneをAsia/Tokyoにし、tzdataのasiaを収録します。log・cache・一時fileのRAM配置を棚卸しし、QEMUの起動直後に残る永続書き込みと判断待ちを台帳に記録しました。
 - Buildrootを現行のbuild基盤とし、Yoctoへの移行を見送りました。
 - CIの文書検査と開発用imageの構築・検査を改善しました。
 

@@ -4,7 +4,7 @@
 
 ## 何が分かるか
 
-固定した版のsource、正規化した設定、Buildrootの変数展開、CIの生成物、SDKとOCIのhelpを照合した。製品設定や依存版は変更していない。機能・設定面・現行値・候補の効果と背反・追加検証を、以下の本文と台帳に分ける。
+固定した版のsource、正規化した設定、Buildrootの変数展開、CIの生成物、SDKとOCIのhelpを照合した。固定時点の採取では製品設定や依存版を変更していない。後日のtimezone採用は別の記録とし、機能・設定面・現行値・候補の効果と背反・追加検証を、以下の本文と台帳に分ける。
 
 | 主題 | 本文 |
 |---|---|
@@ -12,6 +12,7 @@
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |
 | target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md)、[OpenSSL系列差](openssl-series.md) |
+| timezoneの既定値、tzdataの収録範囲、host-zicの引数 | [timezone](timezone.md)。2026-11-12に追加した採用記録で、下の固定時点の18件の採取結果とは別です |
 | host 49件、configure、Meson/Make等、圧縮、FS・disk image生成 | [host・image生成](host-image.md) |
 | 開発用OCI、APT、pip/Go、CI tools、Actionsとrunner | [OCI・CI tools](ci-tools.md) |
 | 取得元・hash、母集団、失敗試行、同じ入力での再生成、検査の範囲 | [採取・再生成](reproduction.md) |
