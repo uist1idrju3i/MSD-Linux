@@ -1,0 +1,20 @@
+scope,metric,value,unit,status,condition
+audit,topics,12,count,recorded,origin/main 121e9ae and PR240/241 fixed heads
+audit,selected_files,20333,count,matched,existing artifact or new archive member
+fs-compare,existing_archive_members,25417,count,hash-matched,tar.zst content against files.sha256
+fs-compare,current_text_files,18682,count,matched,current run and root audit files
+fs-compare,already_stored_files,18677,count,hash-matched,existing data branch
+fs-compare,additional_files,5,count,preserved,audit and retention scripts
+fs-compare,additional_bytes,38686,byte,preserved,5 additional files
+new-data,archives,27,count,preserved,unique content
+new-data,compressed_size,100354408,byte,preserved,27 gzip archives
+buildroot-tree,allocated_size,870383616,byte,observed,du -s -B1 vendor/buildroot
+buildroot-tree,apparent_size,800057001,byte,observed,du -sb vendor/buildroot
+buildroot-git,allocated_size,303972352,byte,observed,du -s -B1 .git/modules/vendor/buildroot
+buildroot-git,apparent_size,302690297,byte,observed,du -sb .git/modules/vendor/buildroot
+buildroot-git,shallow,true,boolean,observed,git rev-parse --is-shallow-repository
+pages-530d91d,check_failed,1,count,observed,Cloudflare Pages check 131211622894
+pages-530d91d,job_log,,text,unavailable,API returned Not Found
+saved-arm64-report,vulnerabilities,1718,count,artifact-observed,pr229-arm64-verified.zip; not mapped to run/commit
+saved-arm64-report,blockers,0,count,artifact-observed,report and findings JSON agree
+saved-arm64-report,architecture,arm64,text,artifact-observed,image-provenance.json inside saved zip
