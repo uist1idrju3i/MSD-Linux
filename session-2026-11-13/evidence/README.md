@@ -28,6 +28,12 @@ OpenSSLのupstream展開source、別作業treeのGit object/cache、生成した
 
 ## 再確認
 
+### 2026-11-13の削除承認と削除前snapshot
+
+`remaining-binaries.csv`は251 pathの容量一覧で、個別hashの表ではありませんでした。従来の`coverage.csv`と`SHA256SUMS`は選択したtextやarchiveを対象とし、binary 251件を直接覆うものではありません。削除前から個別hashが別記されていたscan入力は3件です。
+
+利用者の2026-11-13の承認に従い、`remaining-binaries-sha256.csv`へ251件の削除直前のSHA-256・size・mtimeを記録します。これは現在の状態のsnapshotで、測定時と同一だったことの証明ではありません。remoteへ通常pushして確認した後、一覧のpathだけを削除し、実施結果と`df`の前後値を`binary-deletion-report.json`へ記録します。秘密鍵・一覧外のfile・directoryは削除対象ではありません。
+
 このdirectoryで`sha256sum -c SHA256SUMS`を実行できます。archive内の各fileは`coverage.csv`の`record`にある`#`以降のmember名で取り出し、同じ行のSHA-256と照合します。CSVが別の既存保存物を参照する場合は、その固定commitのfileまたはarchive memberを読みます。圧縮されたlogの参照は展開後のhashです。
 
 archiveへの保存は、licenseの義務の完了、CVEの不存在、実機対応、今後のartifactの永続保管を保証しません。imageの未保存、失われた過去のimage、取得できなかったlogは、今回のtext保存で復元したとは扱いません。
