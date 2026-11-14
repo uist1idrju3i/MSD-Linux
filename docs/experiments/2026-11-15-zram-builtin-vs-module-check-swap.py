@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path("/work")
 OUT = Path(sys.argv[1]).resolve()          # e.g. /work/output-zram-m
 LOG = Path(sys.argv[2]).resolve()          # serial log path
+if LOG.exists():
+    sys.exit(f"refusing to overwrite existing log: {LOG}")
 images = OUT / "images"
 image = Path("/work/output-e2/zram-check-sdcard.img")
 import shutil
@@ -43,10 +45,14 @@ try:
     receive(b"login:", 300); send("root\n"); receive(b"\n# ", 60)
     send("sleep 25; cat /proc/swaps; cat /run/msd-zram.log; ls -l /dev/zram0; cat /sys/block/zram0/disksize\n")
     receive(b"# ", 90)
-    for _ in range(3):
-        sel.select(timeout=1)
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        if not sel.select(timeout=1):
+            continue
         c = os.read(proc.stdout.fileno(), 65536)
-        if c: log.write(c); log.flush(); pending.extend(c)
+        if not c:
+            break
+        log.write(c); log.flush(); pending.extend(c)
 finally:
     log.close(); proc.terminate()
     try: proc.wait(timeout=10)
