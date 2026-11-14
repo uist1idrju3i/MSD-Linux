@@ -39,6 +39,10 @@ for path in sorted(glob.glob(runs_dir + "/*")):
                 rows[(variant, rep)][f"idle{repeat}"] = None
             else:
                 rows[(variant, rep)][f"idle{repeat}"] = val - before
+    # idle-beforeだけある欠損区間も列として残す（after欠損は空欄）
+    for (phase, repeat) in cumulative:
+        if phase == "idle-before":
+            rows[(variant, rep)].setdefault(f"idle{repeat}", None)
 
 if missing:
     print("warn: raw.csvがないrun dirを除外:", ", ".join(missing), file=sys.stderr)
