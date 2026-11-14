@@ -1,5 +1,9 @@
 # 訂正済み事項
 
+## 2026-11-15の/data初回起動の書き込み帰属（未帰属問題の解決）
+
+[書き込み方針とS3](../storage/write-policy-and-s3.md)は、初回60秒の17,000 sectorについて「lazy-init thread単独の書き込み量ではない」と帰属を未解決のまま残していました。variant別15回測定で解決しました。16,384 sector（約97%）は online resize2fs が `INODE_UNINIT` で残した新規2 groupのinode tableを埋める ext4lazyinit の書き込み、sfdiskのpartition表は p7 ではなく mmcblk0 側（MBR/EBR）の16 sector、resize2fs自身は328 sector、fsck・mount・mkdir・journal等の実処理はbootで120–424 sectorです。`pregrown-nolazy`では計192 sectorに減ることで裏付けています。条件・raw値・失敗した試行は[実験記録](../../experiments/2026-11-15-data-first-boot-writes.md)に残し、QEMUの結果で実SDは未確認です。
+
 ## 2026-11-13のbinary hashと削除
 
 保存監査の「size/hashの一覧」や報告を、残っていたbinary 251件のhashが記録済みという意味には使いません。従来の一覧はpath・容量で、個別hashがあったscan入力は3件でした。全251件の現在のhash・size・mtimeをdata枝へ通常pushして照合した後、利用者の2026-11-13の承認で一覧の本文だけを削除しました。[保存監査の追記](../verification/session-evidence-2026-11-13.md#削除前snapshotと承認後の限定削除)に固定commitと`df`の前後値があります。現在のsnapshotは測定時との同一性も、本文の復元可能性も証明しません。
