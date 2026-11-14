@@ -1,8 +1,9 @@
-import csv, importlib.util
+import csv, importlib.util, sys
 from pathlib import Path
+# 使い方: python3 salvage.py [RUN_DIR]（既定 /work/output-dwcause/runs/mature-r1）
 spec = importlib.util.spec_from_file_location("wi_run", "/work/board/cardputerzero/tools/bench/write-inventory/run.py")
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-run_dir = Path("/work/output-dwcause/runs/mature-r1")
+run_dir = Path(sys.argv[1] if len(sys.argv) > 1 else "/work/output-dwcause/runs/mature-r1")
 text = (run_dir/"serial.log").read_bytes().decode(errors="replace")
 windows = 3
 samples = m.parse_samples(text, windows)

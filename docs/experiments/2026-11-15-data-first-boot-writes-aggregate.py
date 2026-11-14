@@ -1,34 +1,52 @@
 #!/usr/bin/env python3
-"""E1 集計: output-dwcause/runs/*/raw.csv を variant 別に集約する。
-出力: variant,rep,boot,idle1..idle3(各 p7 write_sectors の累積値ではなく差分)"""
+"""E1 集計: runs dir 以下の */raw.csv を variant 別に集約する。
+使い方: python3 aggregate.py [RUNS_DIR]（既定 /work/output-dwcause/runs）
+出力: variant,rep,boot,idle1..idle3(各区間は after-before の差分)。
+raw.csv を持たない run dir は警告して除外する。欠けた phase は 0 にせず
+空欄にして区別する。"""
 import csv, glob, sys, collections
 
-rows = collections.defaultdict(dict)  # (variant, rep) -> {phase/repeat: sectors delta on p7}
-for path in sorted(glob.glob("/work/output-dwcause/runs/*/raw.csv")):
-    run = path.split("/")[-2]
-    with open(path) as f:
-        data = list(csv.DictReader(f))
-    # phase 順に累積値を持つ p7 行を取り差分化
+runs_dir = sys.argv[1] if len(sys.argv) > 1 else "/work/output-dwcause/runs"
+rows = collections.defaultdict(dict)  # (variant, rep) -> {column: sectors}
+missing = []
+for path in sorted(glob.glob(runs_dir + "/*")):
+    run = path.split("/")[-1]
+    csv_path = path + "/raw.csv"
+    try:
+        data = list(csv.DictReader(open(csv_path)))
+    except OSError:
+        missing.append(run)
+        continue
+    # phase 順の累積値から、各区間は直前 before と after の差を取る
     seq = []
     for r in data:
         if r["metric"] != "mmcblk0p7.write_sectors":
             continue
-        note = r["note"]
-        phase = note.split(";")[0].split("=")[1]
+        phase = r["note"].split(";")[0].split("=")[1]
         seq.append((phase, int(r["repeat"]), int(r["value"])))
     variant = data[0]["variant"]
     rep = run.rsplit("-r", 1)[-1]
-    prev = 0
+    cumulative = {}
     for phase, repeat, val in seq:
-        if phase.endswith("-after") or phase == "boot":
-            delta = val - prev
-            rows[(variant, rep)][f"{phase}{repeat}"] = delta
-        if not phase.endswith("-before"):
-            prev = val
+        cumulative[(phase, repeat)] = val
+        if phase == "boot":
+            rows[(variant, rep)]["boot"] = val
+        elif phase.endswith("-after"):
+            before = cumulative.get((phase[:-6] + "-before", repeat))
+            if before is None:
+                rows[(variant, rep)][f"idle{repeat}"] = None
+            else:
+                rows[(variant, rep)][f"idle{repeat}"] = val - before
+
+if missing:
+    print("warn: raw.csvがないrun dirを除外:", ", ".join(missing), file=sys.stderr)
+
+def cell(v):
+    return "" if v is None else str(v)
 
 hdr = ["variant", "rep", "boot", "idle1", "idle2", "idle3", "total"]
 print("\t".join(hdr))
 for (variant, rep), d in sorted(rows.items()):
-    boot = d.get("boot0", 0)
-    i1, i2, i3 = d.get("idle-after1", 0), d.get("idle-after2", 0), d.get("idle-after3", 0)
-    print(f"{variant}\t{rep}\t{boot}\t{i1}\t{i2}\t{i3}\t{boot+i1+i2+i3}")
+    parts = [d.get("boot"), d.get("idle1"), d.get("idle2"), d.get("idle3")]
+    total = "" if any(p is None for p in parts) else str(sum(parts))
+    print("\t".join([variant, rep] + [cell(p) for p in parts] + [total]))
