@@ -17,7 +17,10 @@ run_one() { # $1=variant $2=output-dir $3=repeat
     rd="$RUNS/$1-r$3"
     # 完全なrunのみskip。失敗したrun（raw.csvなし）はやり直す
     if [ -f "$rd/raw.csv" ]; then echo "skip $1 r$3 (raw.csv exists)"; return 0; fi
-    if [ -d "$rd" ]; then echo "warn: $rd 存在するがraw.csvがない。消去して再実行" >&2; rm -rf "$rd"; fi
+    if [ -d "$rd" ]; then
+        echo "warn: $rd 存在するがraw.csvがない。失敗試行として退避して再実行" >&2
+        mv "$rd" "$rd.failed-$(date +%s)"
+    fi
     echo "=== run $1 r$3 $(date -Is) ==="
     python3 "$RUNPY" --output "$2" --run-dir "$rd" \
         --variant "$1" --seconds "$WINDOW_SECONDS" --windows "$WINDOWS"
