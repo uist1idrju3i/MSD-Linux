@@ -58,8 +58,6 @@ def main():
     parser.add_argument("--variant", required=True)
     parser.add_argument("--seconds", type=positive, default=120)
     parser.add_argument("--windows", type=positive, default=5)
-    parser.add_argument("--pad", choices=["pow2", "none"], default="pow2",
-                        help="pad the SD image to a power of two so the guest can grow /data")
     args = parser.parse_args()
     output = args.output.resolve()
     run_dir = args.run_dir.resolve()
@@ -75,16 +73,14 @@ def main():
     ]
     metadata = {
         "variant": args.variant, "seconds": args.seconds, "windows": args.windows,
-        "pad": args.pad,
         "base_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "inputs": {str(path.relative_to(ROOT)): sha256(path) for path in inputs},
     }
     (run_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     image = run_dir / "sdcard.img"
     shutil.copyfile(images / "sdcard.img", image)
-    if args.pad == "pow2":
-        with image.open("r+b") as stream:
-            stream.truncate(1 << (image.stat().st_size - 1).bit_length())
+    with image.open("r+b") as stream:
+        stream.truncate(1 << (image.stat().st_size - 1).bit_length())
     env = dict(os.environ, OUTPUT_DIR=str(output), QEMU_COPY_IMAGE="0",
                QEMU_MACHINE="raspi3ap", QEMU_ICOUNT="", QEMU_EXTRA_APPEND="",
                QEMU_EXTRA_ARGS="", QEMU_QMP_SOCKET="", QEMU_HASH_IMAGE="1",

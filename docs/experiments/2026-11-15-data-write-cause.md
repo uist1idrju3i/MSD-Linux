@@ -9,7 +9,7 @@
 
 2026-11-12-write-inventoryで、初回bootの最初の120秒に `/data`（mmcblk0p7）へ8320 sector（約4.1 MiB）が書き込まれ、その後は0だった。拡張済みimageの再bootでは64 sectorだけだった。起動直後に重なっている候補は次の3つで、寄与を変種で分解する。
 
-- `msd-data-grow` が行う p7 の拡張と `resize2fs`（新しいgroupのdescriptor・bitmap・inode tableなど）
+- `msd-data-grow` が行う p4・p7 の拡張と `resize2fs`（新しいgroupのdescriptor・bitmap・inode tableなど）
 - mkfs時に初期化を後回しにされた inode tableなどを kernel の `ext4lazyinit` worker が埋める処理
 - `fsck -p`、`mkdir -p /data/etc /data/msd-update`、mount時のjournal処理などの残差
 
@@ -17,14 +17,15 @@
 
 ## 採否の基準（計測前）
 
-- 各変種の最初の120秒区間で、mmcblk0p7の書き込みsector差分を測る。変種の差から次の寄与を算出する。
+- 各変種の最初の120秒区間で、mmcblk0p7の書き込みsector差分を測る。変種の差から次の寄与を算出する（各変種の中央値で計算する）。
   - grow+resizeの寄与 = nolazy − nolazy-nogrow
-  - lazyinitの寄与 = nogrow − nolazy-nogrow
+  - lazyinitの寄与 = base − nolazy（fs約960 MiB規模）で、参考として nogrow − nolazy-nogrow（fs約350 MiB規模）も併記する
   - 残差 = nolazy-nogrow
-- baselineは8320 sectorを±20%の範囲で再現すること。外れた場合は、製品の変更（seedrngの非保存など）による差として記録し、分解の比較はこのbuild内で完結させる。
+- baselineの中央値が8320 sectorを±20%の範囲で再現すること。外れた場合は、製品の変更（seedrngの非保存など）による差として記録し、分解の比較はこのbuild内で完結させる。
 - 全量が分解できなくても、各変種の実測値とlogをそのまま記録する。寄与が分かれなかった場合は「未分解」と結論し、block単位の追跡を追加計画に残す。
 - どの変種でもdisk positive controlが2048 sector以上を登録すること。満たさない試行は無効として扱い、run IDと理由を残す。
 - serial logの `msd-data-grow:` 行で、growが実際に走ったか（`extending partition 7`）を各runで確認し、想定と違う場合はその変種を無効の扱いとせず別の結論として記録する。
+- nogrow系の変種では、p7の末尾がdisk末尾と一致することを、variant作成時の `sfdisk -d` 出力で確認する。
 
 ## 条件
 
@@ -34,39 +35,43 @@
 | ホスト | Ubuntu（VM。版は記録時に埋める） |
 | QEMU | （`run-qemu:` 行から記録時に埋める） |
 | Buildroot / GCC / カーネル | `8b238854d909c9cce32ef9671d968b03e323b55d` / （記録時） / （記録時） |
-| 使ったツールの版 | genimage・mke2fsは `output/host/` の実binaryから取る |
+| 使ったツールの版 | genimage・mke2fsは `output/host/` の実binaryから取る（variant-image.shがPATHの先頭に置く） |
 | 出力先と状態 | `O=output`、このVMでのcold build |
-| 変える条件 | (a) data.ext4のmke2fs lazy init（`lazy_itable_init=0,lazy_journal_init=0` の有無）、(b) SD imageを2のべき乗に拡張するか（growの有無） |
+| 変える条件 | (a) data.ext4のmke2fs lazy init（`lazy_itable_init=0,lazy_journal_init=0` の有無）、(b) 初回boot時点でp4・p7がdisk末尾まで拡張済みか（growの有無） |
 | 変えない条件 | kernel、DTB、rootfs、probe、QEMUの引数、120秒×5区間 |
-| 繰り返し | 各変種1回。原因分解は観測量の大小ではなく変種間の差で行う。baselineが前回と大きく違う場合だけ追加試行する |
+| 繰り返し | 各変種5回。寄与の計算には中央値を使い、最小・最大も併記する |
 | 入力とバイナリ | runごとの `metadata.json`（入力hash）と serial logの `run-qemu:` 行 |
 | 初回と失敗の扱い | timeout・control失敗の試行は生logを残して次のrun IDで再試行 |
 
 ## 手順
 
+nogrow条件の作り方が計測の肝なので、先に説明する。QEMUのSDは2のべき乗サイズしか受け付けないため、「imageを拡張しない」は起動しない。代わりに、host側で `msd-data-grow` と同じsfdisk操作をbase imageの写しに適用し、guestが「拡張済み」と見なす状態を作る。さらに `msd-data-grow` はgrowの有無に関わらず `resize2fs` を無条件で呼ぶため、resize2fsがno-opになるよう、data.ext4自体をp7の新しい大きさまで拡げた変種を使う。このときlazyinitの規模はfsの大きさに依存するため、寄与の算出では規模の違いを明記する。
+
+`variant-image.sh` はgenimage.cfgの写しで `data.ext4` のextraargsとsizeだけを書き換えてgenimageを再実行し、できたdata.ext4をbase imageの写しのp7位置にddで差し替える。p1〜p6はbase imageとbyte単位で同じになるため、変種間で変わるのはp7の中身と、nogrow変種のpartition tableだけである。同一性の証拠は `partition-hashes.txt` に各partition領域のSHA-256を残す。
+
 ```sh
-# lazy init無効の変種だけを作る（lazy側はstockの output/images をそのまま使う）
+# 変種の作成（TOTAL_BYTES を付けると image を pow2 に切り詰め、p4・p7 を末尾まで
+# sfdisk で拡張し、p7 を埋める大きさの data.ext4 を差し込む）
 docker/msd-dev board/cardputerzero/tools/bench/write-inventory/variant-image.sh \
   output "-E lazy_itable_init=0,lazy_journal_init=0" output-data-cause/nolazy
+docker/msd-dev board/cardputerzero/tools/bench/write-inventory/variant-image.sh \
+  output "" output-data-cause/nogrow 1073741824
+docker/msd-dev board/cardputerzero/tools/bench/write-inventory/variant-image.sh \
+  output "-E lazy_itable_init=0,lazy_journal_init=0" output-data-cause/nolazy-nogrow 1073741824
 
-# 各run（--pad none はimageを2のべき乗に拡張しない）
+# 各変種5回（iは1..5）
 docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output                  --run-dir output-data-cause/runs/base           --variant base           --pad pow2
-docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/nolazy --run-dir output-data-cause/runs/nolazy        --variant nolazy         --pad pow2
-docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output                  --run-dir output-data-cause/runs/nogrow         --variant nogrow         --pad none
-docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/nolazy --run-dir output-data-cause/runs/nolazy-nogrow --variant nolazy-nogrow  --pad none
+  --output <variant_dir> --run-dir output-data-cause/runs/<variant>-<i> --variant <variant>
 ```
 
-`nolazy` は `data.ext4` のmke2fs引数だけを変えた写しで、それ以外（kernel、DTB、rootfs、imageの他partition）はstockと同じgenimage出力から作る。variant-image.shはgenimage.cfgの写しで `data.ext4` のextraargsだけを書き換えてgenimageを再実行し、run.py互換の入力dir（symlink + 変種sdcard.img）を作る。run.pyには `--pad` 選択を追加した（このPRに含む）。
+base は `output`、nolazy は `output-data-cause/nolazy`、nogrow は `output-data-cause/nogrow`、nolazy-nogrow は `output-data-cause/nolazy-nogrow` を `--output` に渡す。TOTAL_BYTES はrun.pyが行うpow2切り詰めと同じ1 GiBを選び、base・nolazyと同じdiskサイズで比較する。
 
 ## 計測器の検証
 
 - 前回の実績：RAM controlが0、disk controlがmmcblk0・p7で2048 sector超を登録。
 - 今回も各runで同じpositive controlを行い、serialの `msd-data-grow:` 行でgrowの有無を確認する。
-- baselineが8320 sectorに対して大きくずれた場合は、計測器のA/Aとして同じ条件の再試行を1回行う。
+- baselineの中央値が8320 sectorに対して大きくずれた場合は、計測器のA/Aとして同じ条件の再試行を1回行う。
+- variant作成時に `partition-hashes.txt` でp1〜p6がbaseとbyte同一であることを確認する。
 
 ## 結果
 
