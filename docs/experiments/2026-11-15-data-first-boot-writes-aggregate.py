@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """E1 集計: runs dir 以下の */raw.csv を variant 別に集約する。
 使い方: python3 aggregate.py [RUNS_DIR]（既定 /work/output-dwcause/runs）
-出力: variant,rep,boot,idle1..idle3(各区間は after-before の差分)。
+出力: variant,rep,boot,idle1..idleN(各区間は after-before の差分、
+区間数はデータから検出)。
 raw.csv を持たない run dir は警告して除外する。欠けた phase は 0 にせず
 空欄にして区別する。"""
 import csv, glob, sys, collections
@@ -31,8 +32,9 @@ for path in sorted(glob.glob(runs_dir + "/*")):
         cumulative[(phase, repeat)] = val
         if phase == "boot":
             rows[(variant, rep)]["boot"] = val
-        elif phase.endswith("-after"):
-            before = cumulative.get((phase[:-6] + "-before", repeat))
+        elif phase == "idle-after":
+            # ram/disk probeのwindowは記録の定義上totalに含めない
+            before = cumulative.get(("idle-before", repeat))
             if before is None:
                 rows[(variant, rep)][f"idle{repeat}"] = None
             else:
@@ -44,9 +46,11 @@ if missing:
 def cell(v):
     return "" if v is None else str(v)
 
-hdr = ["variant", "rep", "boot", "idle1", "idle2", "idle3", "total"]
+idle_ns = sorted({k for d in rows.values() for k in d if k.startswith("idle")},
+                 key=lambda k: int(k[4:]))
+hdr = ["variant", "rep", "boot"] + idle_ns + ["total"]
 print("\t".join(hdr))
 for (variant, rep), d in sorted(rows.items()):
-    parts = [d.get("boot"), d.get("idle1"), d.get("idle2"), d.get("idle3")]
+    parts = [d.get("boot")] + [d.get(k) for k in idle_ns]
     total = "" if any(p is None for p in parts) else str(sum(parts))
     print("\t".join([variant, rep] + [cell(p) for p in parts] + [total]))
