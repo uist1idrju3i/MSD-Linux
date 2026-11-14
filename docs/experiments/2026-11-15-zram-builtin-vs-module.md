@@ -56,7 +56,7 @@ t_ready（kernel開始からrcS完了までの経過、秒）:
 
 - QEMUのicountは決定的ですが、wall timeはhost負荷で変わります（warm wall median: =y 157秒、=m 160秒）。sector数・t_ready等のicount値は負荷非依存です。
 - 実機ではmicroSDの読み出し速度でkernel本体のload時間が変わり、=mにした分のkernel削減が実時間に効く可能性はあります。実機未測定です。
-- =m側のserial logでS10mdevがstatus=123を返しますが、これはmdev本体の終了コードでありmodaliasのload失敗を意味しません（zram含め問題なくloadされています）。
+- =m側のserial logでS10mdevがstatus=123を返しますが、これはmdev本体の終了コードです。zram.ko.xz は rootfs に入っていますが、hardware modalias を持たないため `modprobe -abq` ではloadされず、`/etc/modules-load.d/` も空なので、実際にはloadされずswapは無効のままです（serialログインして `/proc/swaps`・`/dev/zram0` を実測確認）。=mにするなら明示的なload機構が別途必要です。
 
 ## 再生成
 
