@@ -8,13 +8,16 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 WORK="$REPO/output-dwcause"
 RUNS="$WORK/runs"
 RUNPY="board/cardputerzero/tools/bench/write-inventory/run.py"
-WINDOW_SECONDS=120
-WINDOWS=3
+WINDOW_SECONDS="${WINDOW_SECONDS:-120}"
+WINDOWS="${WINDOWS:-3}"
+REPEATS="${REPEATS:-3}"
 mkdir -p "$RUNS"
 
 run_one() { # $1=variant $2=output-dir $3=repeat
     rd="$RUNS/$1-r$3"
-    if [ -d "$rd" ]; then echo "skip $1 r$3 (exists)"; return 0; fi
+    # 完全なrunのみskip。失敗したrun（raw.csvなし）はやり直す
+    if [ -f "$rd/raw.csv" ]; then echo "skip $1 r$3 (raw.csv exists)"; return 0; fi
+    if [ -d "$rd" ]; then echo "warn: $rd 存在するがraw.csvがない。消去して再実行" >&2; rm -rf "$rd"; fi
     echo "=== run $1 r$3 $(date -Is) ==="
     python3 "$RUNPY" --output "$2" --run-dir "$rd" \
         --variant "$1" --seconds "$WINDOW_SECONDS" --windows "$WINDOWS"
@@ -35,7 +38,7 @@ mk_mature_input() { # $1=base run の run-dir
     ln -sf "$REPO/output-openssl-lts/host" "$d/host"
 }
 
-for rep in 1 2 3; do
+for rep in $(seq 1 "$REPEATS"); do
     run_one base "$REPO/output-openssl-lts" "$rep" || continue
     run_one grown-fs64 "$WORK/input-grown-fs64" "$rep" || true
     run_one pregrown "$WORK/input-pregrown" "$rep" || true
