@@ -8,6 +8,8 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-15-data-first-boot-writes](2026-11-15-data-first-boot-writes.md) | [測定](2026-11-15-data-first-boot-writes.csv) | 2026-11-15 | QEMU測定・原因特定 | 初回bootのp7への16,952 sectorは約97%がresize2fsの新規groupへのext4lazyinit。sfdiskは実質0、実処理は約570 sector。 |
+| [2026-11-15-zram-builtin-vs-module](2026-11-15-zram-builtin-vs-module.md) | [測定](2026-11-15-zram-builtin-vs-module.csv) | 2026-11-15 | 完了（QEMU・icount、各6回） | zram `=y`と`=m`のt_readyはほぼ同じ（warm中央値1.645対1.640秒）。`=m`でもmodalias自動loadでswap有効。実機は未測定。 |
 | [2026-11-13-cloudflare-analytics](2026-11-13-cloudflare-analytics.md) | [結果](2026-11-13-cloudflare-analytics.csv) | 2026-11-13 | production取得・ローカルCSP検査 | root 200と404の応答にbeaconを観測せず。公式の自動注入は同一origin送信なのでselfを追加。実送信と新CSPのproduction配信は未確認。 |
 | [2026-11-13-release-signing-qemu](2026-11-13-release-signing-qemu.md) | [結果・hash](2026-11-13-release-signing-qemu.csv) | 2026-11-13 | QEMU受入・B指定起動 | run 43331379685の本番署名を同一versionで通常受理。改変signature・未署名を拒否しstandby不変。Bのversion・health commit確認。初回測定器timeoutを保存。実機firmware tryboot・実SDは未確認。 |
 | [2026-11-13-pqc-groups](2026-11-13-pqc-groups.md) | [測定](2026-11-13-pqc-groups.csv) | 2026-11-13 | 判断資料・維持を決定 | OpenSSL 3.5.9のPQC 5構成の容量、VMの6 hostとQEMUを比較。同日利用者がDEFAULTとML-KEM維持を決定。ML-DSA／SLH-DSAは署名移行時に判断。実機・将来consumerは未確認。 |
