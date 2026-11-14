@@ -45,24 +45,22 @@
 ## 手順
 
 ```sh
-# 変種imageの生成（lazy init無効。growの有無はrunnerの --pad で切替）
+# lazy init無効の変種だけを作る（lazy側はstockの output/images をそのまま使う）
 docker/msd-dev board/cardputerzero/tools/bench/write-inventory/variant-image.sh \
   output "-E lazy_itable_init=0,lazy_journal_init=0" output-data-cause/nolazy
-docker/msd-dev board/cardputerzero/tools/bench/write-inventory/variant-image.sh \
-  output "" output-data-cause/lazy   # genimageと同じ引数で再生成した対照
 
-# 各run（--output は変種input dir、--pad none はtruncateをしない）
+# 各run（--pad none はimageを2のべき乗に拡張しない）
 docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/lazy    --run-dir output-data-cause/runs/base           --variant base           --pad pow2
+  --output output                  --run-dir output-data-cause/runs/base           --variant base           --pad pow2
 docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/nolazy  --run-dir output-data-cause/runs/nolazy         --variant nolazy         --pad pow2
+  --output output-data-cause/nolazy --run-dir output-data-cause/runs/nolazy        --variant nolazy         --pad pow2
 docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/lazy    --run-dir output-data-cause/runs/nogrow         --variant nogrow         --pad none
+  --output output                  --run-dir output-data-cause/runs/nogrow         --variant nogrow         --pad none
 docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-data-cause/nolazy  --run-dir output-data-cause/runs/nolazy-nogrow  --variant nolazy-nogrow  --pad none
+  --output output-data-cause/nolazy --run-dir output-data-cause/runs/nolazy-nogrow --variant nolazy-nogrow  --pad none
 ```
 
-`lazy` は `output/images/sdcard.img` ではなくgenimageを同じ引数で再実行した写しを使う。`nolazy` は `data.ext4` のmke2fs引数だけを変えた写し。これらを runner に渡すため、run.py に `--pad` 選択を追加し、variant-image.sh でgenimageを再実行して run.py 互換の入力dirを作る変更を加えた（このPRに含む）。
+`nolazy` は `data.ext4` のmke2fs引数だけを変えた写しで、それ以外（kernel、DTB、rootfs、imageの他partition）はstockと同じgenimage出力から作る。variant-image.shはgenimage.cfgの写しで `data.ext4` のextraargsだけを書き換えてgenimageを再実行し、run.py互換の入力dir（symlink + 変種sdcard.img）を作る。run.pyには `--pad` 選択を追加した（このPRに含む）。
 
 ## 計測器の検証
 
