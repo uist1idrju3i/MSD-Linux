@@ -1,5 +1,7 @@
 # /data file system比較実験の生データ
 
+2026-11-15の/data初回書き込み帰属とzram =y/=m起動時間の保全は、[セッションの証拠](session-2026-11-15/evidence/README.md)にあります。fs-compare matrix `e34-2026-11-15`は完了後に追加します。
+
 2026-11-13のOpenSSL・seedrng/zram・legal-info・Pages・開発image・更新署名・write inventoryを含む追加の保全は、[セッションの証拠](session-2026-11-13/evidence/README.md)にあります。以下の従来のfs-compare保存物は変更していません。
 
 このbranchは、`/data` のfile system比較実験（QEMU）の生データを保管するためのものです。`main` とは履歴を共有しないorphan branchで、mergeもしません。削除しないでください。
