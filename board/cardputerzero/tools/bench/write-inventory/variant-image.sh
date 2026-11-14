@@ -55,9 +55,9 @@ printf 'variant-image: genimage=%s\n' "$("${GENIMAGE}" --version 2>&1 | head -n 
 
 # Partition 7 start (sectors) and size decide how large data.ext4 must be.
 p7_start="$(sfdisk -d "${BINARIES_DIR}/sdcard.img" |
-	awk -v part="sdcard.img7" '
-		$1 ~ (part "$") || $1 ~ (part "[[:space:]]*:$") {
-			gsub(/[[:space:]]*=[[:space:]]*/, "=", $0)
+	awk '
+		{ gsub(/[[:space:]]*=[[:space:]]*/, "=", $0) }
+		match($1, /[0-9]+$/) && $2 == ":" && substr($1, RSTART) + 0 == 7 {
 			for (i = 3; i <= NF; i++) {
 				field = $i; sub(/,$/, "", field)
 				if (field ~ /^start=/) { sub(/^start=/, "", field); print field; exit }
@@ -110,7 +110,7 @@ else
 fi
 awk -v sz="${data_size}" '
 	/^image / { blk = ($0 ~ /^image data\.ext4/) ? "data" : "" }
-	/blk == ""/ && /^[[:space:]]*partition data[[:space:]]*\{/ { blk = "part" }
+	blk == "" && /^[[:space:]]*partition data[[:space:]]*\{/ { blk = "part" }
 	blk == "data" && /^[[:space:]]*size = / { sub(/size = [0-9]+[A-Za-z]*/, "size = " sz) }
 	blk == "part" && /^[[:space:]]*size = / { sub(/size = [0-9]+[A-Za-z]*/, "size = " sz) }
 	blk == "part" && /^[[:space:]]*}/ { blk = "" }
@@ -137,8 +137,8 @@ IMG="${DEST_DIR}/images/sdcard.img"
 if [ -n "${TOTAL_BYTES}" ]; then
 	truncate -s "${TOTAL_BYTES}" "${IMG}"
 	dump="$(sfdisk -d "${IMG}")"
-	p4_line="$(printf '%s\n' "${dump}" | grep -E 'sdcard\.img4[[:space:]]*:')"
-	p7_line="$(printf '%s\n' "${dump}" | grep -E 'sdcard\.img7[[:space:]]*:')"
+	p4_line="$(printf '%s\n' "${dump}" | awk '$2 == ":" && match($1, /[0-9]+$/) && substr($1, RSTART) + 0 == 4')"
+	p7_line="$(printf '%s\n' "${dump}" | awk '$2 == ":" && match($1, /[0-9]+$/) && substr($1, RSTART) + 0 == 7')"
 	p4_start="$(printf '%s\n' "${p4_line}" | sed -n 's/.*start=[[:space:]]*\([0-9]*\).*/\1/p')"
 	p4_type="$(printf '%s\n' "${p4_line}" | sed -n 's/.*type=[[:space:]]*\([0-9a-fA-F]*\).*/\1/p')"
 	p7_type="$(printf '%s\n' "${p7_line}" | sed -n 's/.*type=[[:space:]]*\([0-9a-fA-F]*\).*/\1/p')"
@@ -161,10 +161,19 @@ cp "${VARIANT_OUT}/data.ext4" "${DEST_DIR}/images/data.ext4"
 	head -c "$((p7_start * 512))" "${IMG}" | sha256sum
 	printf '%s\n' "== partition region sha256 (base / variant) =="
 	sfdisk -d "${BINARIES_DIR}/sdcard.img" |
-		awk 'match($0, /(sdcard\.img[0-9]+)[[:space:]]*:[[:space:]]*start=[[:space:]]*([0-9]+),[[:space:]]*size=[[:space:]]*([0-9]+)/, m) { print m[1], m[2], m[3] }' |
-		while read -r part start size; do
-			[ "${part}" = "sdcard.img4" ] && continue
-			[ "${part}" = "sdcard.img7" ] && continue
+		awk '{ gsub(/[[:space:]]*=[[:space:]]*/, "=", $0) }
+		$2 == ":" && match($1, /[0-9]+$/) {
+			part = $1; n = substr($1, RSTART) + 0; start = ""; size = ""
+			for (i = 3; i <= NF; i++) {
+				field = $i; sub(/,$/, "", field)
+				if (field ~ /^start=/) { sub(/^start=/, "", field); start = field }
+				if (field ~ /^size=/) { sub(/^size=/, "", field); size = field }
+			}
+			print part, n, start, size
+		}' |
+		while read -r part pnum start size; do
+			[ "${pnum}" -eq 4 ] && continue
+			[ "${pnum}" -eq 7 ] && continue
 			b="$(dd if="${BINARIES_DIR}/sdcard.img" bs=512 skip="${start}" count="${size}" status=none | sha256sum | cut -d' ' -f1)"
 			v="$(dd if="${IMG}" bs=512 skip="${start}" count="${size}" status=none | sha256sum | cut -d' ' -f1)"
 			printf '%s base=%s variant=%s %s\n' "${part}" "${b}" "${v}" "$([ "${b}" = "${v}" ] && echo SAME || echo DIFF)"
