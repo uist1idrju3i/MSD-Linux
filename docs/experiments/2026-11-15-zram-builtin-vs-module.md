@@ -1,6 +1,6 @@
 # zram の CONFIG_ZRAM=y と =m の起動時間
 
-- 状態: QEMUで測定。起動時間の差は実質なし。=mでも起動中に自動loadされzram swapは有効
+- 状態: QEMUで測定。起動時間の差は実質なし。=mではzram moduleがloadされずswapは無効
 - 日付: 2026-11-15
 - 担当: Devin
 - 関連: [起動時間の測定器](../../board/cardputerzero/tools/bench/boottime/)、[書き込みの台帳](../design/write-policy.md)
@@ -14,6 +14,7 @@ zramをモジュール（`CONFIG_ZRAM=m`）にするとkernel本体の初期化�
 - 各variantで独立したbootを6回（初回1回＋2回目以降5回）行い、t_readyの中央値・最小・最大を記録します。
 - icount mode（`QEMU_ICOUNT=shift=0`）で測り、host負荷の影響を除きます。
 - 両variantでzram swapが実際に有効かを確認します。=mで有効化されていなければ公平な比較にならないため、その旨を明記します。
+  → 結果として =m 側は swap が有効化されておらず（後述）、起動時間の比較自体は成立しますが「機能込みの等価比較」ではありません。
 
 ## 条件と手順
 
@@ -43,13 +44,13 @@ t_ready（kernel開始からrcS完了までの経過、秒）:
 ## 帰属
 
 - 差はwarm中央値で約0.005秒（=mの方がわずかに小さい）。最小・最大の帯域がほぼ重なり、計測系のばらつき以下です。**起動時間の差は実質ありません。**
-- =mでもzram swapは有効でした。`zram.ko.xz` がimageに入り、S10mdevの `modprobe -abq`（modalias自動load）で起動中にloadされ、`/dev/zram0` が作られて `S99msd-zram` が `zstd`・`MemTotal/2`・`swapon -p 100` を完了しています（status=0、所要0.006秒）。
+- =mではzram swapは有効になりませんでした。`zram.ko.xz` はimageに入りますが、zramにはhardware modaliasがなく、S10mdevの `modprobe -abq`（modalias自動load）ではloadされません。`/etc/modules-load.d/` も空で、`S99msd-zram` のworkerは `test -b /dev/zram0` でexit 1します。serialログインでの実測: `/proc/swaps` はheaderのみ、`/dev/zram0` 不在、`/run/msd-zram.log` は空（status=0・所要0.006秒はworkerの起動結果で、swap有効化の完了ではありません）。
 - zramのinit自体が0.001秒級のmodule_initcall_totalから見て、組込みでもモジュールでも支配項ではありません。
 - module_initcall_totalは両variantとも5件・0.001秒程度で、=mにしてもmodprobeによる遅延は発生していません。
 
 ## 結論
 
-`CONFIG_ZRAM` を `=y` → `=m` に変えても起動時間は変わりません。zram自体のinitが支配項でなく、mdevのmodalias自動loadで実害なく有効化されるためです。`=y` を維持するか、モジュール化でrootfs容量をわずかに減らすかは、起動時間以外の観点（容量、署名方針）で判断すればよい状態です。
+`CONFIG_ZRAM` を `=y` → `=m` に変えても起動時間は変わりませんが、そのままでは **zram swap自体が有効化されません**。`=m` にするには `/etc/modules-load.d/zram.conf` か `S99msd-zram` への `modprobe` 追加が必要です。loadの仕組みを足しても起動時間の利得は得られないため、現行の `=y` を維持するのが妥当です（モジュール化する利点はImage容量だけで、機能を黙って失う欠点が上回ります）。
 
 ## 失敗・限界
 
@@ -62,12 +63,18 @@ t_ready（kernel開始からrcS完了までの経過、秒）:
 ```sh
 # m側の環境（output-zram-m。fragmentは output-zram-m/linux-zram-m.fragment）
 docker/msd-dev sh -c 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output-zram-m msd_cardputerzero_defconfig && make -C output-zram-m -j8'
-# 計測（各variant）
-board/cardputerzero/tools/bench/boottime/run-boottime.sh \
-  --output output-e2 --variant y --runs 5 --csv output-e2/zram-y.csv \
-  --log-dir output-e2/logs-y --mode icount \
-  --kernel output-openssl-lts/images/Image --dtb output-openssl-lts/images/bcm2710-rpi-cm0.dtb \
-  --rootfs output-openssl-lts/images/rootfs.squashfs
+# 計測（各variant。入力rootfsなどはOUTPUT_DIR環境変数で指定）
+docker/msd-dev env OUTPUT_DIR=/work/output-openssl-lts \
+  board/cardputerzero/tools/bench/boottime/run-boottime.sh \
+  --variant y --runs 5 --csv /work/output-e2/zram-y.csv \
+  --log-dir /work/output-e2/logs-y --mode icount
+docker/msd-dev env OUTPUT_DIR=/work/output-zram-m \
+  board/cardputerzero/tools/bench/boottime/run-boottime.sh \
+  --variant m --runs 5 --csv /work/output-e2/zram-m.csv \
+  --log-dir /work/output-e2/logs-m --mode icount
+# swap有効の確認（serialログインで /proc/swaps を採取）
+docker/msd-dev python3 docs/experiments/2026-11-15-zram-builtin-vs-module-check-swap.py \
+  /work/output-zram-m /work/output-e2/zram-check-m.log
 ```
 
 raw CSVは [2026-11-15-zram-builtin-vs-module.csv](2026-11-15-zram-builtin-vs-module.csv)。logのSHA-256はCSVの `log_sha256` 列に入っています。

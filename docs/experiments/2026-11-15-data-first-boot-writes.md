@@ -66,10 +66,10 @@ growで広げた領域はsparse（ゼロ）のため、lazyinitが未初期化�
 ## 帰属
 
 - **ext4lazyinit**: 16,384 sector（新規2 group × 8192 sectorのinode table）。初回書き込みの約97%。pregrownでも残るためresize2fs自身の書き込みではなく、mount後のkernel threadの処理です。pregrown-nolazyで消えたことが裏付けです。
-- **sfdiskのpartition表**: 実質0。grown-fs64はbaseと完全一致で、MBR・EBRの書き換えはcounterの分解能以下です。
+- **sfdiskのpartition表**: 16 sector（8 KiB）。partition表はp7ではなく `mmcblk0` 側（先頭のMBRと拡張領域先頭のEBR）へ書かれるため、p7のcounterには出ません。baseのmmcblk0全体とp7の差は全3回とも16 sector、grown-fs64は0で、guest内のsfdisk分がそのままこの差として分離できました。
 - **resize2fs**: baseとpregrownのboot差 328 sectorが、hostへ移したresize2fs自身の書き込みに相当します。同じ処理をguest内でやるかhostで済ませるかだけで、lazyinitの仕事量は変わりません。
 - **fsck＋mount＋mkdir・journal等の実書き込み**: pregrown-nolazyのboot=120、matureのboot=424が下限と典型値です。
-- baseの16952は「実処理 約570 sector＋lazyinit 16,384 sector」の合成です。
+- baseの16952（p7）＋16（disk側のpartition表）＝16,968が初回bootの書き込み量で、その内訳は「実処理 約570 sector＋lazyinit 16,384 sector＋partition表 16 sector」です。
 
 初回bootの書き込みは、ほぼ全量が「resizeで追加されたgroupのinode tableを埋める」lazyinit由来と確定しました。
 write-policy.mdの「online resize後の書き込み」の未対応項目は、この帰属に更新します。
@@ -89,14 +89,12 @@ write-policy.mdの「online resize後の書き込み」の未対応項目は、�
 ```sh
 # 画像の再生成（warm build）
 docker/msd-dev sh -c 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output-openssl-lts msd_cardputerzero_defconfig && make -C output-openssl-lts -j8'
-# variant入力の生成
-sh output-dwcause/prepare-variants.sh
-# 測定（variantごと、独立bootで複数回）
-docker/msd-dev python3 board/cardputerzero/tools/bench/write-inventory/run.py \
-  --output output-dwcause/input-pregrown --run-dir output-dwcause/runs/pregrown-r1 \
-  --variant pregrown --seconds 120 --windows 3
-# host側比較
-sh output-dwcause/forensic-p7.sh output-dwcause/runs/base-r1
+# variant入力の生成と測定ドライバー（収録スクリプト。出力先はoutput-dwcause）
+sh docs/experiments/2026-11-15-data-first-boot-writes-prepare-variants.sh
+sh docs/experiments/2026-11-15-data-first-boot-writes-run.sh
+# host側比較・集計
+sh docs/experiments/2026-11-15-data-first-boot-writes-forensic-p7.sh <run dir>
+docker/msd-dev python3 docs/experiments/2026-11-15-data-first-boot-writes-aggregate.py
 ```
 
 raw CSVは [2026-11-15-data-first-boot-writes.csv](2026-11-15-data-first-boot-writes.csv)。run directoryのmetadata.jsonに入力hash、serial.logにQEMU provenanceが入っています。

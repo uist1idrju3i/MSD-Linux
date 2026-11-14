@@ -29,7 +29,7 @@
 | [S99msd-health](../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health) からの `msd-update commit` | 試し起動（tryboot）の時だけ、`/data/msd-update` とFATの `autoboot.txt` を書きます | なし | 未対応 | 利用者が始めた更新の続きです。例外にする案で、起動の画面に更新中であることを表示します |
 | ext4のjournal commit | 書き込みがある時に、既定で5秒ごとにcommitします。書き込みがなければ動かない見込みです（推測） | 対象外 | 未確認 | QEMUの記録で確かめます |
 | ext4の `lazy_itable_init` | 通常imageはgenimageが `lazy_itable_init=0,lazy_journal_init=0` を付けて構築します。S02msd-dataの空partitionへのfallback formatは別経路で、これらを指定していません | なし | 未確認 | 従来の「全て既定でlazy」という推測を訂正します。fallback formatの量とresize単独の寄与は未測定です |
-| online resize後の書き込み | 新規imageを1 GiBのQEMU SDへ広げた初回bootではp7へ計16,952 sector（boot中8,648＋idle 120秒に8,304）。[帰属測定](../experiments/2026-11-15-data-first-boot-writes.md)で、約97%（16,384 sector）はonline resize2fsが残した2個の `INODE_UNINIT` groupへのext4lazyinitの初期化書き込みと分離しました。sfdiskのpartition表は実質0、resize2fsとmount・mkdir・journal等の実書き込みは約570 sectorまでです。拡張済みの再bootでも少量残ります | なし | 未対応 | 帰属は確定。直す側の設計（初期設定のprogress・完了条件、初回formatでの回避）は未実施です |
+| online resize後の書き込み | 新規imageを1 GiBのQEMU SDへ広げた初回bootではp7へ計16,952 sector（boot中8,648＋idle 120秒に8,304）。[帰属測定](../experiments/2026-11-15-data-first-boot-writes.md)で、約97%（16,384 sector）はonline resize2fsが残した2個の `INODE_UNINIT` groupへのext4lazyinitの初期化書き込みと分離しました。sfdiskのpartition表はdisk側（MBR・EBR）に16 sectorのみ、resize2fsとmount・mkdir・journal等の実書き込みは約570 sectorまでです。拡張済みの再bootでも少量残ります | なし | 未対応 | 帰属は確定。直す側の設計（初期設定のprogress・完了条件、初回formatでの回避）は未実施です |
 | [powerfail-notify](../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/powerfail-notify) | power-failのmdev eventでbackgroundの `sync` を呼び、既存のdirty dataをflushし得ます | なし | 未対応 | 従来の台帳の欠落です。緊急退避の例外候補ですが、許容時間・実機event・表示は未確認のままです |
 | `/data` の常時rw | アプリや利用者が `/data` に作ったfileの更新に加え、ext4のmetadata・journalも永続書き込みになります | なし | 未対応 | 書き込み窓、roへの切替、`commit=`、discard等を、この調査だけで変更しません |
 
@@ -72,7 +72,7 @@ tmpfs自体は圧縮していません。2026-11-13にzram swapを実装し、me
 | 判断 | 選択肢と推奨 | 今回の扱い |
 |---|---|---|
 | seedの保存 | 永続保存しない方針を実装。hwrngが弱い場合に保存seedのbackupはありません | 対応済み。crng初期化時刻はQEMUで採取しましたが、実機の時刻・品質、jitterの供給経路と起動時の保証は未確認です |
-| zram | 初回からbuilt-in zramを採用し、RAM約50%、zstd優先、console開始後にbackgroundで有効化 | 対応済み。QEMUの圧縮可能な負荷でswap使用とOOMなしを確認。`=y`対`=m`の起動時間比較は[実測済み](../experiments/2026-11-15-zram-builtin-vs-module.md)で差は実質なし（=mでもmodalias自動loadでswap有効）。実機CPU負荷・thrash・metadata RAMの評価は未実施です |
+| zram | 初回からbuilt-in zramを採用し、RAM約50%、zstd優先、console開始後にbackgroundで有効化 | 対応済み。QEMUの圧縮可能な負荷でswap使用とOOMなしを確認。`=y`対`=m`の起動時間比較は[実測済み](../experiments/2026-11-15-zram-builtin-vs-module.md)で差は実質なし。`=m`はmodalias自動loadの対象外で、load機構を足さない限りswapが無効になるため`=y`維持が妥当です。実機CPU負荷・thrash・metadata RAMの評価は未実施です |
 | `/data` のmount・journal | 既存実験を材料にrw・journal・commit方針を決め、追加試験で耐電断性と書き込み量を一緒に評価します | 未対応、具体値は未決定。idleが0でも常時roの代わりにはなりません |
 | format・grow・fsck・tryboot commit・powerfail | 初期設定や更新のprogress付き処理へまとめるか、理由付き例外にするか。緊急flushと回復を黙って無効にしない案を推奨します | 未対応。今回の計測で例外を承認したとは扱いません |
 
