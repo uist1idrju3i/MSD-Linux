@@ -7,6 +7,7 @@ set -eu
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 OUT="$REPO/output-openssl-lts"
 WORK="$REPO/output-dwcause"
+mkdir -p "$WORK"
 IMGS="$OUT/images"
 E2FS="$OUT/host/sbin"
 
