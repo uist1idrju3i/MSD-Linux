@@ -5,8 +5,13 @@ case "${1:-start}" in
 	*) exit 0 ;;
 esac
 
-touch /run/msd-ready
-module_list="$(sed -n 's/.*[[:space:]]msd.module-test=\([^[:space:]]*\).*/\1/p' /proc/cmdline)"
+cmdline_file="${MSD_READY_CMDLINE:-/proc/cmdline}"
+console="${MSD_READY_CONSOLE:-/dev/console}"
+kmsg="${MSD_READY_KMSG:-/dev/kmsg}"
+tty1="${MSD_READY_TTY1:-/dev/tty1}"
+cmdline="$(cat "$cmdline_file" 2>/dev/null)"
+touch "${MSD_READY_RUN_DIR:-/run}/msd-ready"
+module_list="$(printf '%s\n' "$cmdline" | sed -n 's/.*[[:space:]]msd.module-test=\([^[:space:]]*\).*/\1/p')"
 remaining_modules="$module_list"
 while [ -n "$remaining_modules" ]; do
 	case "$remaining_modules" in
@@ -24,17 +29,43 @@ while [ -n "$remaining_modules" ]; do
 	if modprobe "$module" &&
 		lsmod | awk -v name="$lsmod_name" '$1 == name { found = 1 } END { exit !found }'; then
 		printf 'msd-module-check: %s loaded via modprobe and listed by lsmod\n' \
-			"$module" >/dev/console
+			"$module" >"$console"
 	else
 		printf 'msd-module-check: %s modprobe or lsmod failed\n' \
-			"$module" >/dev/console
+			"$module" >"$console"
 	fi
 done
-case " $(cat /proc/cmdline) " in
-	*" msd.sweep=1 "*)
-		printf '<6>MSD/Linux ready\n' > /dev/kmsg
-		;;
+slot='?'
+trial=
+status="$(msd-update status 2>/dev/null)" || status=
+case "$status" in
+	'slot=A partition=2 tryboot=0') slot=A ;;
+	'slot=B partition=3 tryboot=0') slot=B ;;
+	'slot=A partition=2 tryboot=1') slot=A; trial=' (try)' ;;
+	'slot=B partition=3 tryboot=1') slot=B; trial=' (try)' ;;
 	*)
-		printf '%s\n' 'MSD/Linux ready' > /dev/console
+		root_device="$(printf '%s\n' "$cmdline" | awk '{
+			for (i = 1; i <= NF; i++)
+				if ($i ~ /^root=/) root = substr($i, 6)
+		} END { print root }')"
+		case "$root_device" in
+			/dev/mmcblk0p5) slot=A ;;
+			/dev/mmcblk0p6) slot=B ;;
+		esac
 		;;
 esac
+banner="Boot from slot $slot$trial"
+case " $cmdline " in
+	*" msd.sweep=1 "*)
+		{
+			printf '<6>%s\n' "$banner"
+			printf '<6>MSD/Linux ready\n'
+		} > "$kmsg"
+		;;
+	*)
+		printf '%s\nMSD/Linux ready\n' "$banner" > "$console"
+		;;
+esac
+if [ -w "$tty1" ]; then
+	{ printf '%s\nMSD/Linux ready\n' "$banner" > "$tty1"; } 2>/dev/null || :
+fi

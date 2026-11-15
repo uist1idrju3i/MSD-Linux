@@ -6,6 +6,8 @@
 
 ### 追加
 
+- `S98msd-ready`でready直前に起動slotを表示します。DTを優先し、root p5/p6からの推定、試し起動の`(try)`、不明時の`?`に対応します。serialと利用可能なtty1へ表示し、`/etc/issue`は変更しません。この行だけは利用者判断により英語のみです。LCDとfirmware trybootの実機確認は未実施です。
+
 - kernel fragmentにdm-verity/FEC、dm-crypt、btrfsと関連cryptoを、Buildroot defconfigにcryptsetup・btrfs-progs等を追加します。機能のbuild有効化であり、製品のverity付きroot・LUKS+btrfs移行・破損時A/B復帰の実装完了ではありません。
 - CardputerZero向けBuildroot構成、A/B更新手順、QEMUを含む検証手順を整備しました。
 - 調査・測定記録を主題別に整理し、再現条件と未確認範囲を追跡できるようにしました。
