@@ -63,11 +63,36 @@ sed -i "\|^::sysinit:/bin/mount -o remount,rw /\$|d" "$inittab"
 after_count="$(grep -Fxc -- "$remount_line" "$inittab" || true)"
 [[ "$after_count" == 0 ]]
 
-# 全 file を読んで decompress させる readall script（rcS の前に実行）
+# 全 file を読んで decompress させる readall script（rcS の前に実行）。
+# 計測: readall 中の MemAvailable 最小値と、drop_caches 後の MemAvailable を
+# /dev/kmsg に出す（zstd level 等の decompress 側メモリ比較用）。
 cat >"${tree}/usr/sbin/msd-readall" <<'EOF'
 #!/bin/sh
 # 全 file の内容を読ませて SquashFS の decompress 経路を確実に通す。
+min_file=/dev/.readall-min-avail
+printf 'squashfs-readall-begin\n' >/dev/kmsg
+(
+	min_avail=
+	while :; do
+		v="$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)"
+		if [ -n "$v" ] && { [ -z "$min_avail" ] || [ "$v" -lt "$min_avail" ]; }; then
+			min_avail="$v"
+			printf '%s\n' "$min_avail" >"$min_file"
+		fi
+		sleep 0.5
+	done
+) &
+sampler=$!
 find / -xdev -type f -exec cat {} + >/dev/null 2>&1
+kill "$sampler" 2>/dev/null
+wait "$sampler" 2>/dev/null
+min_avail="$(cat "$min_file" 2>/dev/null)"
+rm -f "$min_file"
+sync
+echo 3 >/proc/sys/vm/drop_caches 2>/dev/null
+post_avail="$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)"
+printf 'squashfs-readall-mem min_avail_kb=%s post_drop_avail_kb=%s\n' \
+	"$min_avail" "$post_avail" >/dev/kmsg
 printf 'squashfs-readall-complete\n' >/dev/kmsg
 EOF
 chmod 755 "${tree}/usr/sbin/msd-readall"
