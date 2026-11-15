@@ -45,10 +45,10 @@
 
 ### B4. /data LUKS cipher throughput（QEMU guest 内）
 
-- 目的: cipher {aes-xts-plain64, xchacha12,aes-adiantum-plain64, xchacha20,aes-adiantum-plain64}、sector-size {512,4096}、integrity 有無の read/write throughput。
-- 背景: host コンテナでは algif_skcipher が無く `cryptsetup benchmark` の cipher 計測ができないため QEMU guest 内で `cryptsetup benchmark` / dd ベースで測る。
-- 採否基準: CardputerZero（BCM2837B0 ARMv8、AES-NI 無し想定）で adiantum 系が AES 系を上回るかどうか。adiantum 系の sequential write throughput が AES 系の 1.2 倍を超える場合のみ adiantum 採用を検討し、1.2 倍未満なら AES 系（aes-xts-plain64）でよいとする。
-- 反復: 各 cipher 5回。
+- 目的: **kernel crypto API が提供する全 cipher**（ゲストの /proc/crypto で列挙: aes/camellia/chacha/sm4/twofish/serpent/aria/xchacha12・20-adiantum 等、利用者指示 2026-11-15）の read/write throughput。同じ枠組みで **全ハッシュアルゴリズム**（crc32c/sha1/sha256/sha512/sha3/blake2b/2s/xxhash64/wp512/streebog/md5 等）の throughput も測る。verity hash_alg と btrfs csum 選定の根拠。sector-size {512,4096}、integrity 有無の差も比較。
+- 背景: host コンテナでは algif_skcipher が無く `cryptsetup benchmark` の cipher 計測ができないため QEMU guest 内で `cryptsetup benchmark` / dd ベースで測る。QEMU TCG は cycle 相当ではないため絶対性能は[実機計測](../research/verification/hardware-measurements.md)（cipher・hash 全数）で確定し、ここでは相対比較と機能確認を行う。
+- 採否基準: CardputerZero（BCM2837B0 ARMv8、AES-NI 無し想定）で adiantum 系が AES 系を上回るかどうか。adiantum 系の sequential write throughput が AES 系の 1.2 倍を超える場合のみ adiantum 採用を検討し、1.2 倍未満なら AES 系（aes-xts-plain64）でよいとする。最終決定はセキュリティビット数（key size 込み）と実機 throughput の両方。
+- 反復: 各 cipher・hash 5回。
 
 ### B5. btrfs mkfs/mount option（QEMU guest + fs-compare 連携）
 
