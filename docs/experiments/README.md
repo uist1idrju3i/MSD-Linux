@@ -8,6 +8,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-15-dm-verity-fec-stage-a](2026-11-15-dm-verity-fec-stage-a.md) | [CSV](2026-11-15-dm-verity-fec-stage-a.csv) | 2026-11-15 | amendment後35 boot | v3期待35/35一致。F3はFEC内hash検査からpanicが5/5、F6はdriver有効で自然終了0が5/5。readall独立marker/login・module署名・実機は残件 |
 | [2026-11-15-dm-verity-fec-stage-a-smoke](2026-11-15-dm-verity-fec-stage-a-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-a-smoke.csv) | 2026-11-15 | 計測器smoke | v3の位置記録・既知消失復号・F3 mode対照とF6自然終了/reset分離。各1 bootのみで、正式反復・原因確定ではない |
 | [2026-11-15-dm-verity-fec-followup-prereg](2026-11-15-dm-verity-fec-followup-prereg.md) | なし | 2026-11-15 | 事前登録・未実行 | F3原因切り分け、F6自然終了/reset、未注入領域を48条件・240 bootで段階検証。RSは監査並行の研究限定承認、製品出荷は禁止 |
 | [2026-11-15-boot-slot-banner](2026-11-15-boot-slot-banner.md) | なし | 2026-11-15 | host fixture・最終QEMU A/BとA sweep各1回 | DT優先とcmdline fallback。QEMU serialでslot行とready直前の順序を照合。初回rawも保存。English-onlyは限定承認、LCD/firmwareは実機待ち |
