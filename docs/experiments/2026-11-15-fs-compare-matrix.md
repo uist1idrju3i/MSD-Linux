@@ -47,7 +47,7 @@
 | P113 | I1 | integrity `--integrity-no-journal` | 106,560 | -252,344 (-70.3%) | 5/5 で一貫 |
 | P136 | L1 | LUKS `--perf-submit_from_crypt_cpus` | 96,168 | +8 (+0.0%) | **再現せず**（第2段は +32%） |
 
-18 variant のうち **P136 を除く 17 variant** で、第2段の 1 回測定と同じ方向・同じ大きさの差が再現した（各 run の min-max 幅は median の数 %以内）。**P136 は第2段で +32% だったが、今回は base の L1 とほぼ同値（+0.0%）** で、第2段の観測は一過性だったと判断する。`submit_from_crypt_cpus` に書き込み量への効果はない。
+18 variant のうち **P136 を除く 17 variant** で、第2段の 1 回測定と同じ方向・同じ大きさの差が再現した（各 run の min-max 幅は median の数 %以内）。**P136 は第2段で +32% だったが、今回は base の L1 とほぼ同値（+0.0%）** で、第2段の観測は一過性だったと判断する。`submit_from_crypt_cpus` の書き込み量への効果がないとまでは言い切れず、「今回の条件では第2段の増加が再現しなかった」が結論になる。
 
 その他の注目点:
 
@@ -88,7 +88,7 @@
 ## 結論
 
 1. 第2段の T5 のずれは P136 を除き全て実差。btrfs の compress 系・`-m single`・`--nodesize`・`--mixed`、integrity の no-journal・internal_hash、ext4 の fast_commit は書き込み削減として有効
-2. 継続的な idle 書き込みがあるのは **f2fs の F3 系（5,736 sector/回）と P044（F1 + active_logs、6,720 sector/回）**。dm-integrity 系・LUKS 系・btrfs は sync 後すぐに静まり、§10「操作していない時に書き込まない」の観点で問題なし（btrfs は 0）
+2. 継続的な idle 書き込みがあるのは **f2fs の F3 系（5,736 sector/回）と P044（F1 + active_logs、6,720 sector/回）**。dm-integrity 系・LUKS 系・btrfs は sync 後すぐに静まる（btrfs は 0）。ただし I2/L3 系に残る最大 88 sector の追い書きをもって直ちに §10 適合とはしない — 追い書きが終わるまでの操作・progress の扱い、または [書き込みの台帳](../design/write-policy.md) の例外としての登録が必要で、評価は台帳側で行う
 3. f2fs 圧縮系を `/data` に使う案があるなら、この idle 書き込み（どの process が何を書くか）を実機前に切り分ける価値がある
 
 ## 失敗した試行
