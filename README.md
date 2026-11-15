@@ -1,5 +1,7 @@
 # /data file system比較実験の生データ
 
+二セッション監査で見つかった未保全textと監査・復元資料は、[追加保全](sessions-2026-11-15/README.md)にあります。raw event dumpと画像本体は含めていません。
+
 2026-11-15の/data初回書き込み帰属とzram =y/=m起動時間の保全は、[セッションの証拠](session-2026-11-15/evidence/README.md)にあります。fs-compare matrix `e34-2026-11-15`は `fs-compare/e34-matrix` に追加済みです。
 
 2026-11-13のOpenSSL・seedrng/zram・legal-info・Pages・開発image・更新署名・write inventoryを含む追加の保全は、[セッションの証拠](session-2026-11-13/evidence/README.md)にあります。以下の従来のfs-compare保存物は変更していません。

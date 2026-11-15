@@ -1,0 +1,1024 @@
+[
+  {
+    "path": "candidates/main/output-e2/zram-check-m.log",
+    "bytes": 17796,
+    "sha256": "ed50bc232f08e74b548c66dec65480afa76d5881df750ca1971d10026b71bcf5",
+    "source_sha256": "ed50bc232f08e74b548c66dec65480afa76d5881df750ca1971d10026b71bcf5",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-y/image-build.txt",
+    "bytes": 1265,
+    "sha256": "3f6b0b83125f9dba3a5d49ea13d87391268c73405b94ce39ce690ee9f5aecb5f",
+    "source_sha256": "3f6b0b83125f9dba3a5d49ea13d87391268c73405b94ce39ce690ee9f5aecb5f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-y/image-build-20261114T212841Z/unsquashfs.log",
+    "bytes": 362,
+    "sha256": "c06ecc4cfde41f470b0cd5197b27de0f4263d74dee4dcc2d82b2eba3559fca40",
+    "source_sha256": "c06ecc4cfde41f470b0cd5197b27de0f4263d74dee4dcc2d82b2eba3559fca40",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-y/image-build-20261114T212841Z/mksquashfs.log",
+    "bytes": 2345,
+    "sha256": "469097020a40c19690959897cfa3ac96fff991e0dce3ff8a34b718723baf9b58",
+    "source_sha256": "469097020a40c19690959897cfa3ac96fff991e0dce3ff8a34b718723baf9b58",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-m/image-build.txt",
+    "bytes": 1265,
+    "sha256": "5a90d2001ae2b09d812a028bdc7c11eaa99c78f43d7b60e0a56eb00bca0f7405",
+    "source_sha256": "5a90d2001ae2b09d812a028bdc7c11eaa99c78f43d7b60e0a56eb00bca0f7405",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-m/image-build-20261114T212842Z/unsquashfs.log",
+    "bytes": 362,
+    "sha256": "3b59385c7a0a7acce66ad4e96e19328fa7c1aa25cf46f16e0b298597b8fa2a3f",
+    "source_sha256": "3b59385c7a0a7acce66ad4e96e19328fa7c1aa25cf46f16e0b298597b8fa2a3f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/main/output-e2/logs-m/image-build-20261114T212842Z/mksquashfs.log",
+    "bytes": 1962,
+    "sha256": "0cbaa83369ec2948196dbd55128f507bfcc763d74132de840241d5c89e48fc73",
+    "source_sha256": "0cbaa83369ec2948196dbd55128f507bfcc763d74132de840241d5c89e48fc73",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F4-A2/tamper-details.txt",
+    "bytes": 51,
+    "sha256": "8e85b355f5329222cdef6103bba0252268961ae805adb54be2969132ad0e9326",
+    "source_sha256": "8e85b355f5329222cdef6103bba0252268961ae805adb54be2969132ad0e9326",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F4-A2/qemu-extra-append.txt",
+    "bytes": 376,
+    "sha256": "841a7e811ba26efc45210b0aba58570ad21bb39bc0135d29ba60a065f6757dae",
+    "source_sha256": "841a7e811ba26efc45210b0aba58570ad21bb39bc0135d29ba60a065f6757dae",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F4-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "88a3ae66ad40210c20daa003db09e1820b468987e59d07e2904a4c7580f78c37",
+    "source_sha256": "88a3ae66ad40210c20daa003db09e1820b468987e59d07e2904a4c7580f78c37",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F1-A2/tamper-details.txt",
+    "bytes": 39,
+    "sha256": "776ac3c92756d478ea46636bc00d0239c8ce1abfe465013f0c01f560d5e881f2",
+    "source_sha256": "776ac3c92756d478ea46636bc00d0239c8ce1abfe465013f0c01f560d5e881f2",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F1-A2/qemu-extra-append.txt",
+    "bytes": 376,
+    "sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "source_sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F1-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "e00ba85ec45824b0e6d13b8a55bb491164685c6ecf10aa85cb4075a1559ebb47",
+    "source_sha256": "e00ba85ec45824b0e6d13b8a55bb491164685c6ecf10aa85cb4075a1559ebb47",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F6-A2/tamper-details.txt",
+    "bytes": 453,
+    "sha256": "f53ba339f59c52118e20273b2b089dc8689e46cbb7c226e43adf358b4313e1ed",
+    "source_sha256": "f53ba339f59c52118e20273b2b089dc8689e46cbb7c226e43adf358b4313e1ed",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F6-A2/qemu-extra-append.txt",
+    "bytes": 378,
+    "sha256": "50c7a0e05ce8e2980a864a876acb5fb1961c151a8062a612c9056323e0d4e0e7",
+    "source_sha256": "50c7a0e05ce8e2980a864a876acb5fb1961c151a8062a612c9056323e0d4e0e7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F6-A2/variant-info.txt",
+    "bytes": 894,
+    "sha256": "63a55d88b91cbe40bcfe7c739e6455876436576412d44d7e09c4e82c58aa0f46",
+    "source_sha256": "63a55d88b91cbe40bcfe7c739e6455876436576412d44d7e09c4e82c58aa0f46",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/tamper-details.txt",
+    "bytes": 51,
+    "sha256": "a258dbb24c95e252dbfde7fb50856919d6660c962172cd3f71a9925a24b2556a",
+    "source_sha256": "a258dbb24c95e252dbfde7fb50856919d6660c962172cd3f71a9925a24b2556a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/qemu-extra-append.txt",
+    "bytes": 376,
+    "sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "source_sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/unsquashfs.log",
+    "bytes": 343,
+    "sha256": "186fa76297a3661cb91b6d8802940c031f244cca41ed96adac6aff855e93ff16",
+    "source_sha256": "186fa76297a3661cb91b6d8802940c031f244cca41ed96adac6aff855e93ff16",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/format.log",
+    "bytes": 746,
+    "sha256": "c31f31bc870dbb64954d6c0d408e8bce923a8165cdc48f9d3ec54cc7f51eda4f",
+    "source_sha256": "c31f31bc870dbb64954d6c0d408e8bce923a8165cdc48f9d3ec54cc7f51eda4f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/verity-parameters.env",
+    "bytes": 274,
+    "sha256": "3ac4e32c5d86ac1f25f7aa8da639e2fd85cf34d8476fe177e50e732865e3148e",
+    "source_sha256": "3ac4e32c5d86ac1f25f7aa8da639e2fd85cf34d8476fe177e50e732865e3148e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/mksquashfs.log",
+    "bytes": 5387,
+    "sha256": "81b15f2fc2455b7d5d14609f71bb091daf169698c679e9d1c5f8c8eeafef23a8",
+    "source_sha256": "81b15f2fc2455b7d5d14609f71bb091daf169698c679e9d1c5f8c8eeafef23a8",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F0-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "a4c9b944817659ae131a137cf8e367dc2a07a14ff0426a1ce704a55efc3e7a33",
+    "source_sha256": "a4c9b944817659ae131a137cf8e367dc2a07a14ff0426a1ce704a55efc3e7a33",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F2-A2/tamper-details.txt",
+    "bytes": 453,
+    "sha256": "f53ba339f59c52118e20273b2b089dc8689e46cbb7c226e43adf358b4313e1ed",
+    "source_sha256": "f53ba339f59c52118e20273b2b089dc8689e46cbb7c226e43adf358b4313e1ed",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F2-A2/qemu-extra-append.txt",
+    "bytes": 376,
+    "sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "source_sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F2-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "fcdcaa1cbb0f26afab330cd0fd2c985580fd97efaeefe77ff90be709a4f4277f",
+    "source_sha256": "fcdcaa1cbb0f26afab330cd0fd2c985580fd97efaeefe77ff90be709a4f4277f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F3-A2/tamper-details.txt",
+    "bytes": 39,
+    "sha256": "42d548d95a07c02f3b4f44d88b85397cdd6cf5b5797c9416f5b0c0512d7a9ba5",
+    "source_sha256": "42d548d95a07c02f3b4f44d88b85397cdd6cf5b5797c9416f5b0c0512d7a9ba5",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F3-A2/qemu-extra-append.txt",
+    "bytes": 376,
+    "sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "source_sha256": "59d32edc56b003ed744c3b99b48e64bf17174646241a4300afe5294354a0fff1",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F3-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "26a4641bb9e79d1e88f483b19a8a97c507ad3f437d90cb97278cdb9a9c8ab36a",
+    "source_sha256": "26a4641bb9e79d1e88f483b19a8a97c507ad3f437d90cb97278cdb9a9c8ab36a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/tamper-details.txt",
+    "bytes": 39,
+    "sha256": "776ac3c92756d478ea46636bc00d0239c8ce1abfe465013f0c01f560d5e881f2",
+    "source_sha256": "776ac3c92756d478ea46636bc00d0239c8ce1abfe465013f0c01f560d5e881f2",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/qemu-extra-append.txt",
+    "bytes": 298,
+    "sha256": "8e8ceb8f215d4289e37d7c27fd45b775f1367bf4f0f9c1b8592f32dbf4b0424a",
+    "source_sha256": "8e8ceb8f215d4289e37d7c27fd45b775f1367bf4f0f9c1b8592f32dbf4b0424a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/unsquashfs.log",
+    "bytes": 343,
+    "sha256": "0acd1130b4ed7c55681bf6d968c39d03277ec14cdd4f5c2c7e0b7f4e6041a67e",
+    "source_sha256": "0acd1130b4ed7c55681bf6d968c39d03277ec14cdd4f5c2c7e0b7f4e6041a67e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/format.log",
+    "bytes": 452,
+    "sha256": "0e308428f9c3eb00328821672bf7142e8e9f434d4de69efdec69ed233db00747",
+    "source_sha256": "0e308428f9c3eb00328821672bf7142e8e9f434d4de69efdec69ed233db00747",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/verity-parameters.env",
+    "bytes": 204,
+    "sha256": "c42776f0397f75c403f0be6ba08f5caafd252bb25345c3684992acde0cf79490",
+    "source_sha256": "c42776f0397f75c403f0be6ba08f5caafd252bb25345c3684992acde0cf79490",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/mksquashfs.log",
+    "bytes": 5387,
+    "sha256": "414a09d06fd450433507b57df05e0ac4dcae0d32d6045de36db291834259b03b",
+    "source_sha256": "414a09d06fd450433507b57df05e0ac4dcae0d32d6045de36db291834259b03b",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases/F5-A2/variant-info.txt",
+    "bytes": 892,
+    "sha256": "c42cbc6e98e9fab71bf7d4405b2267c5f933c979885114a0c661fbe6c789d314",
+    "source_sha256": "c42cbc6e98e9fab71bf7d4405b2267c5f933c979885114a0c661fbe6c789d314",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/S-gzip128.csv",
+    "bytes": 1613,
+    "sha256": "e72ed2e4f2b85e9f73a528fdafa94fb38ef74b27a87a76f5a9796cb48a1e4d64",
+    "source_sha256": "e72ed2e4f2b85e9f73a528fdafa94fb38ef74b27a87a76f5a9796cb48a1e4d64",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/F0-A2/boot0/parse.log",
+    "bytes": 180,
+    "sha256": "5c9d237574a612c9d975aa140a914f0ddd673614ccf63fd9708dc3a0467d7cb8",
+    "source_sha256": "5c9d237574a612c9d975aa140a914f0ddd673614ccf63fd9708dc3a0467d7cb8",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/F0-A2/boot0/result.txt",
+    "bytes": 255,
+    "sha256": "27ee2a9d739ee11a828ed67bba83560035508c4db000032398d880b7398d8202",
+    "source_sha256": "27ee2a9d739ee11a828ed67bba83560035508c4db000032398d880b7398d8202",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/F0-A2/boot0/test-qemu.log",
+    "bytes": 98,
+    "sha256": "a6fdd5f611c0be6da72def1fbdc6e6b12de960465a2c79a273e30e9f93734e5b",
+    "source_sha256": "a6fdd5f611c0be6da72def1fbdc6e6b12de960465a2c79a273e30e9f93734e5b",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/F0-A2/boot0/serial-dm-0.log",
+    "bytes": 20785,
+    "sha256": "a3d45df328de39c33c83502b9ca85b433e2533d2fdeb5b27ef96470f6b6839c3",
+    "source_sha256": "a3d45df328de39c33c83502b9ca85b433e2533d2fdeb5b27ef96470f6b6839c3",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/S-gzip128/boot0/serial-mmcblk0p5.log",
+    "bytes": 18878,
+    "sha256": "d68fa05952a773063c2bd1ea99ee410b8b1813c888c9300c9487c861a584547f",
+    "source_sha256": "d68fa05952a773063c2bd1ea99ee410b8b1813c888c9300c9487c861a584547f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/S-gzip128/boot0/parse.log",
+    "bytes": 160,
+    "sha256": "b06534ac9690dc9b74bc8337daa167b0d841ac78f5f52f2a9ee2cc6b3f27d205",
+    "source_sha256": "b06534ac9690dc9b74bc8337daa167b0d841ac78f5f52f2a9ee2cc6b3f27d205",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/S-gzip128/boot0/result.txt",
+    "bytes": 361,
+    "sha256": "5d56a8c1c4d95a0686e7339c25f3267939d638837e09d1f6ab0f451210bc559b",
+    "source_sha256": "5d56a8c1c4d95a0686e7339c25f3267939d638837e09d1f6ab0f451210bc559b",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/results/S-gzip128/boot0/test-qemu.log",
+    "bytes": 197,
+    "sha256": "1f2bf697791e8439df0566120e7011766da99ad1da4bd0cfe2d0d37dcb6c28a6",
+    "source_sha256": "1f2bf697791e8439df0566120e7011766da99ad1da4bd0cfe2d0d37dcb6c28a6",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-xz128-bcja/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-xz128-bcja/unsquashfs.log",
+    "bytes": 353,
+    "sha256": "f75dc2ee2c4432286edfb53f2f68b771d5f0f927eccb8564500820bb9d7bafe2",
+    "source_sha256": "f75dc2ee2c4432286edfb53f2f68b771d5f0f927eccb8564500820bb9d7bafe2",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-xz128-bcja/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "71a036afb9e1f4eb93701fdfd2da8d91f31935e08033d02309dd04122418e346",
+    "source_sha256": "71a036afb9e1f4eb93701fdfd2da8d91f31935e08033d02309dd04122418e346",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-xz128-bcja/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-xz128-bcja/variant-info.txt",
+    "bytes": 746,
+    "sha256": "7778653b0cf1b10a15a2014594ead5212a74a4269cda12c372da155d43a3bae7",
+    "source_sha256": "7778653b0cf1b10a15a2014594ead5212a74a4269cda12c372da155d43a3bae7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-def/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-def/unsquashfs.log",
+    "bytes": 351,
+    "sha256": "e15eb93dd2ad454d37c0a6e0105d18a8b3d6e6f003ba4ffc13c82a6770966a3d",
+    "source_sha256": "e15eb93dd2ad454d37c0a6e0105d18a8b3d6e6f003ba4ffc13c82a6770966a3d",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-def/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "7bd12251e9535f30eebb271899972ecc8867da189bae8700a832d0e8092b6749",
+    "source_sha256": "7bd12251e9535f30eebb271899972ecc8867da189bae8700a832d0e8092b6749",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-def/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-def/variant-info.txt",
+    "bytes": 728,
+    "sha256": "371e541242fe520c97888965196d44663705e24e9d8286abfd70593f241356fc",
+    "source_sha256": "371e541242fe520c97888965196d44663705e24e9d8286abfd70593f241356fc",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z512k-l19/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z512k-l19/unsquashfs.log",
+    "bytes": 352,
+    "sha256": "7f815741eded8a5aa9329912e77179da964ccea9bf8220337e090130779227c2",
+    "source_sha256": "7f815741eded8a5aa9329912e77179da964ccea9bf8220337e090130779227c2",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z512k-l19/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "8b0a5153b860ea3fe476a8236b386f178012ee576e7316b259dd566a40cb888c",
+    "source_sha256": "8b0a5153b860ea3fe476a8236b386f178012ee576e7316b259dd566a40cb888c",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z512k-l19/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z512k-l19/variant-info.txt",
+    "bytes": 756,
+    "sha256": "d4e8f3bbf11d6b3032ee1b988979c6263d2d42f089c32a93c1f34cec860603d7",
+    "source_sha256": "d4e8f3bbf11d6b3032ee1b988979c6263d2d42f089c32a93c1f34cec860603d7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l22/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l22/unsquashfs.log",
+    "bytes": 350,
+    "sha256": "5e5dd05c8dff199fe0441108454e2b43da9ac5cac0ea9ad4e8845979d1ddd205",
+    "source_sha256": "5e5dd05c8dff199fe0441108454e2b43da9ac5cac0ea9ad4e8845979d1ddd205",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l22/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "1ecb71aef38174e7bf4ab47dae9ba78f3de7494a0bc76a6d895dbe274d0df02b",
+    "source_sha256": "1ecb71aef38174e7bf4ab47dae9ba78f3de7494a0bc76a6d895dbe274d0df02b",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l22/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l22/variant-info.txt",
+    "bytes": 744,
+    "sha256": "b276db07e4abb0c6d8d11ecb970f3b598075703a8f304cf7a322ef19a0370210",
+    "source_sha256": "b276db07e4abb0c6d8d11ecb970f3b598075703a8f304cf7a322ef19a0370210",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l19/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l19/unsquashfs.log",
+    "bytes": 350,
+    "sha256": "58c6e38703080132425df668107c06b1791fea1609e14467cc56ac19e00c9335",
+    "source_sha256": "58c6e38703080132425df668107c06b1791fea1609e14467cc56ac19e00c9335",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l19/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "c4ee65a071f32a42bb04f4a47122eb38cfcf4b0fa16e960027891d64e3751741",
+    "source_sha256": "c4ee65a071f32a42bb04f4a47122eb38cfcf4b0fa16e960027891d64e3751741",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l19/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z1m-l19/variant-info.txt",
+    "bytes": 744,
+    "sha256": "380962616e948d1947a768314ead91dbc3911ad838bda9f2c996dd23684f2bd5",
+    "source_sha256": "380962616e948d1947a768314ead91dbc3911ad838bda9f2c996dd23684f2bd5",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-lz4-128/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-lz4-128/unsquashfs.log",
+    "bytes": 350,
+    "sha256": "f6289d66f09eb9d8ab492b434380a08f5ba9b40b785fef5b7f53a3e1b93624a8",
+    "source_sha256": "f6289d66f09eb9d8ab492b434380a08f5ba9b40b785fef5b7f53a3e1b93624a8",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-lz4-128/mksquashfs.log",
+    "bytes": 5393,
+    "sha256": "2e6a3f3f0b66981f4b14326061dbda27bb7fa773d3b594cefbf133f96eae975b",
+    "source_sha256": "2e6a3f3f0b66981f4b14326061dbda27bb7fa773d3b594cefbf133f96eae975b",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-lz4-128/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-lz4-128/variant-info.txt",
+    "bytes": 722,
+    "sha256": "22f3f7e50de0b7bb6ad93c8d3644914f05a9bce47dd401882c4cba2c089f0799",
+    "source_sha256": "22f3f7e50de0b7bb6ad93c8d3644914f05a9bce47dd401882c4cba2c089f0799",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-gzip128/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-gzip128/unsquashfs.log",
+    "bytes": 350,
+    "sha256": "4af42567ffec8cccd59b3d1170be4238242e9acf9d2eb8706567c3bec119e337",
+    "source_sha256": "4af42567ffec8cccd59b3d1170be4238242e9acf9d2eb8706567c3bec119e337",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-gzip128/mksquashfs.log",
+    "bytes": 5394,
+    "sha256": "be91ad67686e24d80f0e2bdfdde500230ec98ed12771cce4ae04317094a907a5",
+    "source_sha256": "be91ad67686e24d80f0e2bdfdde500230ec98ed12771cce4ae04317094a907a5",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-gzip128/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-gzip128/variant-info.txt",
+    "bytes": 723,
+    "sha256": "1a9139e0d9512440d9091f44bb8f3080e98d81520abfe3cf2d07058e930e4bdb",
+    "source_sha256": "1a9139e0d9512440d9091f44bb8f3080e98d81520abfe3cf2d07058e930e4bdb",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-l19/qemu-extra-append.txt",
+    "bytes": 71,
+    "sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "source_sha256": "e03abb8fc83a76f3d573bbaaebe4e7e31167ee925861783af504b9283ca2ab2a",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-l19/unsquashfs.log",
+    "bytes": 351,
+    "sha256": "914271896234c4db4a229ac3bd6d50052d17eb67b5aecd900ba1f82ff4ab848e",
+    "source_sha256": "914271896234c4db4a229ac3bd6d50052d17eb67b5aecd900ba1f82ff4ab848e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-l19/mksquashfs.log",
+    "bytes": 5395,
+    "sha256": "d7b91b19c6d6f8cff5f2dfeac33c9e917fa4ffad10fc97cd4fbc743c27b41da4",
+    "source_sha256": "d7b91b19c6d6f8cff5f2dfeac33c9e917fa4ffad10fc97cd4fbc743c27b41da4",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-l19/inittab-readall-count.txt",
+    "bytes": 35,
+    "sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "source_sha256": "bb00e4d0a2e538f212c0d1ecfb83c36e0b94df6a30eafba5c96c6939f5004479",
+    "redacted_lines": 0
+  },
+  {
+    "path": "candidates/fscmp/output-b3/cases-b2/S-z128-l19/variant-info.txt",
+    "bytes": 751,
+    "sha256": "5ac579fa6077f597f84e9f09a5d747dd9c8ee7b69772d0a7ee293e62e3855cf6",
+    "source_sha256": "5ac579fa6077f597f84e9f09a5d747dd9c8ee7b69772d0a7ee293e62e3855cf6",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-failed-commands.txt",
+    "bytes": 2311,
+    "sha256": "fcaea94408c1a7ae76488cc33d9659cd71cd57d5dde0512badaea8cb96b5f2ea",
+    "source_sha256": "fcaea94408c1a7ae76488cc33d9659cd71cd57d5dde0512badaea8cb96b5f2ea",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-failed-commands.txt",
+    "bytes": 36965,
+    "sha256": "c1af4ac157805ee2067c18ca4df0de8e7257c3e9b345ad08986dc609cc2b1c50",
+    "source_sha256": "c1af4ac157805ee2067c18ca4df0de8e7257c3e9b345ad08986dc609cc2b1c50",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-commands.txt",
+    "bytes": 20896,
+    "sha256": "a5f34e6ec439e8fdd3fac08248cd4a32c1f70cbfbe8566a87de87df781c6f02f",
+    "source_sha256": "a5f34e6ec439e8fdd3fac08248cd4a32c1f70cbfbe8566a87de87df781c6f02f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-commands.txt",
+    "bytes": 264948,
+    "sha256": "fa485e05c5338f2a990d123bccfe99e91631e10a5772ac228cc1321752d88f50",
+    "source_sha256": "fa485e05c5338f2a990d123bccfe99e91631e10a5772ac228cc1321752d88f50",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-file-events.json",
+    "bytes": 1728,
+    "sha256": "1dcf6359e9b50fddbe5c68371f829ebe45ebbbf1edb21c8abc061c265c8fbac7",
+    "source_sha256": "1dcf6359e9b50fddbe5c68371f829ebe45ebbbf1edb21c8abc061c265c8fbac7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-file-events.json",
+    "bytes": 97050,
+    "sha256": "b9e59a4189f156cd0f645012e92a5f8a8c34ae0af94714abd3c41bf60ba1525e",
+    "source_sha256": "b9e59a4189f156cd0f645012e92a5f8a8c34ae0af94714abd3c41bf60ba1525e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-248.txt",
+    "bytes": 6585,
+    "sha256": "2a928cead43207ad141fd64286e21f2d7ab5399b124ed459827a631ca427cc51",
+    "source_sha256": "2a928cead43207ad141fd64286e21f2d7ab5399b124ed459827a631ca427cc51",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-247.txt",
+    "bytes": 9656,
+    "sha256": "b4419253c222f341e119030392def1d00eb68bdba3bb3752ec2060c0371e425c",
+    "source_sha256": "b4419253c222f341e119030392def1d00eb68bdba3bb3752ec2060c0371e425c",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-246.txt",
+    "bytes": 7713,
+    "sha256": "488c3cdf3e628c357e3221cf7c4b6e2d5df7e59e4c35e685e26617c418ad174d",
+    "source_sha256": "488c3cdf3e628c357e3221cf7c4b6e2d5df7e59e4c35e685e26617c418ad174d",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-245.txt",
+    "bytes": 8324,
+    "sha256": "d0adf77492c79cae5a0f27d707bd45849c3ca87320d0736298f7ad33e4a4b760",
+    "source_sha256": "d0adf77492c79cae5a0f27d707bd45849c3ca87320d0736298f7ad33e4a4b760",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-248-cve.log",
+    "bytes": 10241,
+    "sha256": "9af5e66dc927db09b023d082506e59a8f1ed1a21102cbea5fd154ef0aeb55c26",
+    "source_sha256": "9af5e66dc927db09b023d082506e59a8f1ed1a21102cbea5fd154ef0aeb55c26",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-246-cve.log",
+    "bytes": 10241,
+    "sha256": "18b4a7577c9ee3dc1c8dc0dd2d4b8871582725921578e8bd39d65aac0d09c7bf",
+    "source_sha256": "18b4a7577c9ee3dc1c8dc0dd2d4b8871582725921578e8bd39d65aac0d09c7bf",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-245-cve.log",
+    "bytes": 10241,
+    "sha256": "8dbcde4747d33db4b84ddfa27dd86a3819286ee7ecfec5ba566c2fb82db1dbe3",
+    "source_sha256": "8dbcde4747d33db4b84ddfa27dd86a3819286ee7ecfec5ba566c2fb82db1dbe3",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-users.txt",
+    "bytes": 18652,
+    "sha256": "5f89c354217cf5da66230bf8d37d505fbaee36e9ef6a576520af7a120f5c48ef",
+    "source_sha256": "5f89c354217cf5da66230bf8d37d505fbaee36e9ef6a576520af7a120f5c48ef",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-users.txt",
+    "bytes": 7058,
+    "sha256": "50bf70a26eeeb9ad76868ed6b2d7cb57417243ab38669c097adb6599e59b503e",
+    "source_sha256": "50bf70a26eeeb9ad76868ed6b2d7cb57417243ab38669c097adb6599e59b503e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-attachments.txt",
+    "bytes": 689,
+    "sha256": "6bcd1e53c239e9ba27bc45eb91c06d064cb95b648a9b6134aa9406fbaf4d7ce3",
+    "source_sha256": "6bcd1e53c239e9ba27bc45eb91c06d064cb95b648a9b6134aa9406fbaf4d7ce3",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-attachments.txt",
+    "bytes": 1043,
+    "sha256": "78cfe3349bb179825eae51ccb950a57132b6cc900f932b9315ecd364b0b21986",
+    "source_sha256": "78cfe3349bb179825eae51ccb950a57132b6cc900f932b9315ecd364b0b21986",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/5917cbf6493a4629beebffd56807a507-messages.txt",
+    "bytes": 52697,
+    "sha256": "760f738eaa7996fb379861dd4fa023f4e2b80576db662f9da7b76305cc169fc3",
+    "source_sha256": "760f738eaa7996fb379861dd4fa023f4e2b80576db662f9da7b76305cc169fc3",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/03914d06ecff4447a74024c8c9c5eabc-messages.txt",
+    "bytes": 18247,
+    "sha256": "353c4ca2ed6b7f55ad7aa6868926971115c6742f4ca56bf94ef6b7cc0bf897ff",
+    "source_sha256": "353c4ca2ed6b7f55ad7aa6868926971115c6742f4ca56bf94ef6b7cc0bf897ff",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/archive-verification.json",
+    "bytes": 2109,
+    "sha256": "4302e429432927240ca23b86e1867024edc71d67f78bcae3ac3170cd18e80f85",
+    "source_sha256": "4302e429432927240ca23b86e1867024edc71d67f78bcae3ac3170cd18e80f85",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/b3-recheck.json",
+    "bytes": 20703,
+    "sha256": "e1ab667bf56d97481f0d69adef1ff77b96c90c524202608a0975b314d30fe469",
+    "source_sha256": "e1ab667bf56d97481f0d69adef1ff77b96c90c524202608a0975b314d30fe469",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/pr-static-rules.json",
+    "bytes": 3207,
+    "sha256": "d63d254735c63884f873a4fbcfb47f9decc5449aef2dee7955664060cc8d6dab",
+    "source_sha256": "d63d254735c63884f873a4fbcfb47f9decc5449aef2dee7955664060cc8d6dab",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/dump-coverage.txt",
+    "bytes": 213,
+    "sha256": "9ecaa1585497d752b0187331b4bacccd6b4b32b134c448c97c5c1d8738d573b4",
+    "source_sha256": "9ecaa1585497d752b0187331b4bacccd6b4b32b134c448c97c5c1d8738d573b4",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/live-output-inventory.csv",
+    "bytes": 370140,
+    "sha256": "16239a7fe52b43a2ae1c768d8ff0166e4f44cec1318044abb0bcc1cbd77f3299",
+    "source_sha256": "16239a7fe52b43a2ae1c768d8ff0166e4f44cec1318044abb0bcc1cbd77f3299",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/output-directory-sizes-kib.tsv",
+    "bytes": 2019,
+    "sha256": "1c9a6ddd2ea11c3940955fff275d3cfd8c373e157892e462916aee7b75a63212",
+    "source_sha256": "1c9a6ddd2ea11c3940955fff275d3cfd8c373e157892e462916aee7b75a63212",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/surviving-final-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 18353,
+    "sha256": "643919b03c0869d0a2defa877d997da3f770b001b19039721d293f6a7d6f2945",
+    "source_sha256": "643919b03c0869d0a2defa877d997da3f770b001b19039721d293f6a7d6f2945",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/f3e84d6f-2192-43db-b538-1474a762cd46-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "d8254fef8f8904d167a2ae95b19f1b4af6a6b3108d25b7d1ef5aaae86501927c",
+    "source_sha256": "d8254fef8f8904d167a2ae95b19f1b4af6a6b3108d25b7d1ef5aaae86501927c",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/8c7fc1b4-9cdf-4f0b-be67-fcae4b6d182b-msd-linux-phase-a-plan-2026-11-15.md",
+    "bytes": 3125,
+    "sha256": "54243b24de033841f5e269df91f2521bbb09e836e6b3b3dc9f6acbb7b75f9ebf",
+    "source_sha256": "54243b24de033841f5e269df91f2521bbb09e836e6b3b3dc9f6acbb7b75f9ebf",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/6bc7c15d-6372-4320-8942-5cb61e37edf8-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "caf29643f2e60fe26ab846b0770c71f7c5f50572c349054fd6df65cd5d877c16",
+    "source_sha256": "caf29643f2e60fe26ab846b0770c71f7c5f50572c349054fd6df65cd5d877c16",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/dca531e3-ebdd-4f78-a6ff-6e542ed54e2c-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 12715,
+    "sha256": "4a84a19448b9faf962dbf922f8a95e3b15e9053016a923b1592f4567ad8e042e",
+    "source_sha256": "4a84a19448b9faf962dbf922f8a95e3b15e9053016a923b1592f4567ad8e042e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/3bf4b160-da1e-4ddf-8205-4bde5947c027-plan-2026-11-15-measurements.md",
+    "bytes": 4361,
+    "sha256": "0470a1bfb5da19550b950a80b9236102b69f7e745cc5150fe028f7d3362e91bc",
+    "source_sha256": "0470a1bfb5da19550b950a80b9236102b69f7e745cc5150fe028f7d3362e91bc",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/manifest.csv",
+    "bytes": 5407,
+    "sha256": "39645572dd255810375030336e6fd8b9bc9c149da71cd39bea3c2a0e8ef991f4",
+    "source_sha256": "39645572dd255810375030336e6fd8b9bc9c149da71cd39bea3c2a0e8ef991f4",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/ee3391ed-4743-48b6-b74a-f912a1389600-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "7560c31ffe38c77d19a94373666f8a5b2e5650c634e9c899547f745e135defb2",
+    "source_sha256": "7560c31ffe38c77d19a94373666f8a5b2e5650c634e9c899547f745e135defb2",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/05ad25a8-d0d2-4874-b59f-8afc78bd0a6b-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "8a076fd5fed60098a31edce1b333af87671c4f57770a97560d175709c9de9bec",
+    "source_sha256": "8a076fd5fed60098a31edce1b333af87671c4f57770a97560d175709c9de9bec",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/2bf59401-9711-495f-a43d-aad16be8d990-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 15431,
+    "sha256": "81ef51ec69219ef9a9523528ac079dde5858bc3e1ddb8b89b2d958af4d9f5f31",
+    "source_sha256": "81ef51ec69219ef9a9523528ac079dde5858bc3e1ddb8b89b2d958af4d9f5f31",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/a250b99d-67ea-4f95-a637-5d9e786fbb95-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13329,
+    "sha256": "003674a53354d084fbd9244aff6f2ec807fc23b96f9cadf4466faa3b711ee223",
+    "source_sha256": "003674a53354d084fbd9244aff6f2ec807fc23b96f9cadf4466faa3b711ee223",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/0038c2b8-1c70-40e2-a13a-f17c040db552-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "d595a1be7a456845fe2f304b4971aadf045f34af2da3bf74c033d7742f19d78e",
+    "source_sha256": "d595a1be7a456845fe2f304b4971aadf045f34af2da3bf74c033d7742f19d78e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/surviving-final-plan-2026-11-15-measurements.md",
+    "bytes": 4361,
+    "sha256": "0470a1bfb5da19550b950a80b9236102b69f7e745cc5150fe028f7d3362e91bc",
+    "source_sha256": "0470a1bfb5da19550b950a80b9236102b69f7e745cc5150fe028f7d3362e91bc",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/1ea71a54-a87b-4724-9c36-f2404ddc1509-msd-boot-slot-display-memo-2026-11-15.md",
+    "bytes": 12323,
+    "sha256": "9f792a1158967cbfd03191eb00e1bb782b18a1d97ad6353d2d5bfd370b76931e",
+    "source_sha256": "9f792a1158967cbfd03191eb00e1bb782b18a1d97ad6353d2d5bfd370b76931e",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/695f6877-519a-42be-adc3-01d91df5e4ca-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 16563,
+    "sha256": "1fc95bd6b42393f71ac5ca4cb9c2891f4b5847c6d1a842dd5dddaf8d93212dd7",
+    "source_sha256": "1fc95bd6b42393f71ac5ca4cb9c2891f4b5847c6d1a842dd5dddaf8d93212dd7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/ab414227-01aa-4d45-822e-e30a96e21e03-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 14481,
+    "sha256": "772b4e47c135f2d8b20dec6c5f7767ee408a104f557c693ef942e09991ef577d",
+    "source_sha256": "772b4e47c135f2d8b20dec6c5f7767ee408a104f557c693ef942e09991ef577d",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/surviving-final-user-actions-2026-11-15.md",
+    "bytes": 2415,
+    "sha256": "ab046afa9bb1cc691467b9ecbd1c9c543c9ad354667364bc15ac4b30f34f6536",
+    "source_sha256": "ab046afa9bb1cc691467b9ecbd1c9c543c9ad354667364bc15ac4b30f34f6536",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/e15e82ef-4917-4cbe-b730-1cdd91e637be-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "e8adbc9ff3f7a69202c46a25aa18a85a797b8021f94b118e256f05b346891b56",
+    "source_sha256": "e8adbc9ff3f7a69202c46a25aa18a85a797b8021f94b118e256f05b346891b56",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/f6c4be80-12ae-42b7-a8da-61aa6f1e15bb-msd-linux-plan-2026-11-15.md",
+    "bytes": 2594,
+    "sha256": "97e4dbe6a7c012f413820c88ad35d24e05787a2a35c13f0d0e3bf769dad62a5f",
+    "source_sha256": "97e4dbe6a7c012f413820c88ad35d24e05787a2a35c13f0d0e3bf769dad62a5f",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/2f2ab19c-01b9-4c74-bab4-5e1ea80b24f3-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 18353,
+    "sha256": "643919b03c0869d0a2defa877d997da3f770b001b19039721d293f6a7d6f2945",
+    "source_sha256": "643919b03c0869d0a2defa877d997da3f770b001b19039721d293f6a7d6f2945",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/a48ed7c4-79d7-4cee-9c13-53ccb3149cdd-user-actions-2026-11-15.md",
+    "bytes": 2415,
+    "sha256": "ab046afa9bb1cc691467b9ecbd1c9c543c9ad354667364bc15ac4b30f34f6536",
+    "source_sha256": "ab046afa9bb1cc691467b9ecbd1c9c543c9ad354667364bc15ac4b30f34f6536",
+    "redacted_lines": 0
+  },
+  {
+    "path": "attachments/221d4cd1-80a1-4088-9401-88e2de0477da-memo-2026-11-15-interruption-and-new-task.md",
+    "bytes": 13785,
+    "sha256": "c4764cebe978afd16b8a25240795b50c0318d416a8596a25405a2561a1c09d02",
+    "source_sha256": "c4764cebe978afd16b8a25240795b50c0318d416a8596a25405a2561a1c09d02",
+    "redacted_lines": 0
+  },
+  {
+    "path": "audit/analysis-2026-11-15.md",
+    "bytes": 45752,
+    "sha256": "36c563a445ced1aa66a78dad1c2414648ca7e09ce0126bcf7695ec7405e585bb",
+    "source_sha256": "36c563a445ced1aa66a78dad1c2414648ca7e09ce0126bcf7695ec7405e585bb",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/check_fec.c",
+    "bytes": 3646,
+    "sha256": "036117517fe0a20e23845f8a5315d0100c82e93b6df20e1530a2abc0b8beb8eb",
+    "source_sha256": "036117517fe0a20e23845f8a5315d0100c82e93b6df20e1530a2abc0b8beb8eb",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/check_fec_syndrome.py",
+    "bytes": 3429,
+    "sha256": "903f20cf6a1f3658d6efe34182098711d7ee50770db521c906e2c4f527517aa7",
+    "source_sha256": "903f20cf6a1f3658d6efe34182098711d7ee50770db521c906e2c4f527517aa7",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/check_fec_syndrome_np.py",
+    "bytes": 3374,
+    "sha256": "9c293397c66138ca2ab03da168ee8c9a2b64fab4e87fca290611adbf4aa35dea",
+    "source_sha256": "9c293397c66138ca2ab03da168ee8c9a2b64fab4e87fca290611adbf4aa35dea",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/output-e1-build.log",
+    "bytes": 658260,
+    "sha256": "d2285e04b721a972c65953953ff72192d998af45309827ba105280a8ccdcade5",
+    "source_sha256": "d2285e04b721a972c65953953ff72192d998af45309827ba105280a8ccdcade5",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/output-e2-build.log",
+    "bytes": 7045176,
+    "sha256": "a6f9917bb206655d4b54dd7e37d7e4967b5e19923047651792cdf46bcec87640",
+    "source_sha256": "a6f9917bb206655d4b54dd7e37d7e4967b5e19923047651792cdf46bcec87640",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/b2-aggregate.csv",
+    "bytes": 1308,
+    "sha256": "db8c2fddba601eb736ed2d6e2eb6ecb577fe1435ced18a8bbe35fa5b6e3dca28",
+    "source_sha256": "db8c2fddba601eb736ed2d6e2eb6ecb577fe1435ced18a8bbe35fa5b6e3dca28",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/b2-per-boot.csv",
+    "bytes": 1563,
+    "sha256": "cb2757a2f33652aaee48b762397e489cf67c73a4c2128b2059a7f1c478a06da3",
+    "source_sha256": "cb2757a2f33652aaee48b762397e489cf67c73a4c2128b2059a7f1c478a06da3",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/b2-backfill.log",
+    "bytes": 14,
+    "sha256": "3a476a55a3b2960c2612af4a0a6fab0d877672b15c10bafca218376609e48a22",
+    "source_sha256": "3a476a55a3b2960c2612af4a0a6fab0d877672b15c10bafca218376609e48a22",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/b2-run.log",
+    "bytes": 374,
+    "sha256": "b6b2f046f4608d791882d8563bcc6b948a627184363cf6e401639ab33b4b5d11",
+    "source_sha256": "b6b2f046f4608d791882d8563bcc6b948a627184363cf6e401639ab33b4b5d11",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/b3-run.log",
+    "bytes": 245,
+    "sha256": "52d2f41aa9f6743fbf7850f6efa13eada945b3712dcb9725c7613ab6246cb993",
+    "source_sha256": "52d2f41aa9f6743fbf7850f6efa13eada945b3712dcb9725c7613ab6246cb993",
+    "redacted_lines": 0
+  },
+  {
+    "path": "drivers/build-integrity.log",
+    "bytes": 7139327,
+    "sha256": "811fb8737ecbb1f1f17067f47d3ba50524af8af89f20671d28c77ff6c034c34f",
+    "source_sha256": "811fb8737ecbb1f1f17067f47d3ba50524af8af89f20671d28c77ff6c034c34f",
+    "redacted_lines": 0
+  }
+]
