@@ -46,6 +46,12 @@ event IDは元sessionのIDです。原文と当時の履行評価はS0 archive�
 
 本sessionで利用者は、provenance監査を並行して続けながらRS formatterを**研究限定で利用する**ことを承認しました。製品への組込み・出荷は監査完了まで禁止のままです。[B3追試の事前登録](../../experiments/2026-11-15-dm-verity-fec-followup-prereg.md)と[固定上流sourceの初期監査](../storage/rs-formatter-provenance-2026-11-15.md)へ記録しました。監査完了・license違反・追試成功の判断ではなく、03914の台帳同期保留も解除しません。この追記の判断元は本sessionの利用者指示で、過去sessionのevent IDは付けません。
 
+### stage A実行条件の承認と訂正
+
+2026-11-15 22:36 JSTの承認とその後の利用者訂正により、実測後に事前期待を変えないこと、restart系でwatchdog driverを有効にする条件逸脱、F5の当初pack方式維持（別pack条件の対照はstage B）を決定しました。chat提案の「EIO期待はpanic」は誤記です。AのF3=`verity-panic`、F3 EIO対照=`verity-eio`を維持し、訂正成功を反証として保存する意図です。
+
+[実行前amendment](../../experiments/2026-11-15-dm-verity-fec-followup-prereg.md#stage-a実行前amendment2026-11-15)を先にcommit・pushしてから、Aの7条件各5回を実行します。clean失敗・入力不一致で後続停止。製品採用、実機復帰、stage B以降の実行承認ではなく、03914の台帳同期保留も維持します。
+
 ## 進捗・停止・Automation
 
 2026-11-15のP2追記：上記は判断保存時点の状態です。slot表示をS98msd-readyへ実装し、[host fixtureとQEMU A/B](../../experiments/2026-11-15-boot-slot-banner.md)で検査しました。実機LCD/firmware trybootは未確認のままです。今回の限定的な実装承認で、03914の台帳同期保留は解除しません。

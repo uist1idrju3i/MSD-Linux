@@ -101,3 +101,16 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 新しい追試の結果・CSV・serial/QMP・入力binary hashは未取得です。未実行なので捨てた新試行もなく、採否・原因・license監査完了の結論は出しません。途中停止した試行も次回は理由とrun IDを残します。
 
 実機限定: firmware trybootと既定/trial slot選択、watchdog/panic timeout、S99health後・両slot破損の復旧、永続flag書込み時機/電断整合、SD実I/Oエラー、LCD/操作表示、全hashの実機性能。QEMU resetをA/B自動復帰・§10適合・製品安全性へ拡張しない。03914の台帳同期保留を維持する。
+
+## stage A実行前amendment（2026-11-15）
+
+本sessionの利用者は2026-11-15 22:36 JSTに以下の意図を承認し、その後EIO期待の誤記を訂正しました。これは次の正式反復を始める前の追記です。上記の当初計画と旧期待表は残します。
+
+- **実測後に事前期待を変更しない**。AのF3は`verity-panic`、BのF3 EIO対照は既存の読取り-EIO（v3は`verity-eio`）を維持し、訂正成功は仮説の反証として保存します。chat提案がEIOの期待をpanicと書いたのは誤記であり、panicへの期待変更を承認したものではありません。stage AにはEIO対照を含めません。
+- restart系は`QEMU_WATCHDOG=1`としてbcm2835 driverを有効にします。既存wrapper既定のdriver blacklistからの**事前登録条件の逸脱**です。[smoke](2026-11-15-dm-verity-fec-stage-a-smoke.md)で無効時のrestart失敗と有効時の自然終了を観測したため、次回実行前に明示します。stage AではF6だけが該当し、他の6条件は無効のままです。mode単独の因果比較には使いません。
+- F5は当初の別pack方式を維持します。pack条件を揃えた追加対照はstage Bへ送り、stage Aの入力・期待を事後に作り替えません。
+- stage Aは最終v3 runnerでF0〜F6各5回、計35 bootです。v3の`--runs 5`は5回そのもので、旧v2の`--runs 4`とは引数の意味が違います。restart期待はv3の`restart-request`で、`-no-reboot`下のcorruption・restart marker・自然終了0を要求します。QMP RESET継続は別段階Fであり、35回には含めません。
+- 逐次実行し、F0を先に5回実施します。1回でもclean失敗なら後続を開始せず停止。入力hash不一致でも停止します。他条件の期待不一致は全5回を保存し、期待を書き換えません。追加の判断が必要な事象では中断して相談します。
+- standalone Docker clone、smokeで保存した入力hashを照合したcase、fresh結果先、600秒/bootを固定します。kernel/rootfsはsmokeと同じwarmな再利用入力で、module署名拒否など既知の制限も保存します。正常製品bootや実機検証へ拡張しません。
+
+この追記を先にcommit・pushし、そのSHAを実行metadataへ固定してから開始します。RSの研究限定利用、製品出荷禁止、36時間上限、03914の台帳同期保留は維持します。
