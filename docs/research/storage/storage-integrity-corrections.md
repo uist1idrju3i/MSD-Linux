@@ -37,6 +37,8 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 利用者承認後の[再開smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-resume-smoke.md)では、明示的shell経由の新helper・新packで通常経路のreadall→ready→loginを観測しました。一方RAM cleanはlibresolv探索失敗でinitが終了し、再停止しました。実CPIOにはlibrary本体がありますが、元treeのlib64 aliasがなく、実loaderの既定探索先と合いません。alias欠落を強く支持し、動的traceと修正後bootは未確認です。RAM読取り・F3 mode比較・正式B・C〜Fは未実行で、次の修正承認を待ちます。
 
+利用者承認後の[host一括検査](../../experiments/2026-11-15-dm-verity-fec-host-dry.md)では、alias保存と実DT_NEEDED閉包を実装し、旧CPIOを同じcheckerで拒否しました。新CPIOはhost検査成功ですが、修正後RAM bootはまだ未確認です。37/43入力の生成時点で、DのSHA-256/roots2・同column 3 block破損にveritysetupがhash失敗を表示しながら終了0を返し、host gateで停止しました。独立RS復号はsyndromeゼロでも元bytesと異なるcodewordとなり、CLI終了0を完全回復の根拠にできません。残りD6入力・B clean再試行・正式B〜Fは未実行で、boot期待は変えていません。共通pack・D新規suffix・initramfs・metadata・rawを上記archiveに保存しました。次はhost回復判定の修正と中間値の即時保存の承認が必要です。
+
 ## 次回harness
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
