@@ -1,0 +1,2 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+stage-b-smoke-20261115,B-clean-normal,0,wall,236.06956884099054,s,0,expected=normal-read;stop=unexpected-terminal;ready=True;login=True;readall=False;host_stop=True;formal_runs=0

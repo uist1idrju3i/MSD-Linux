@@ -8,9 +8,10 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-15-dm-verity-fec-stage-b-smoke](2026-11-15-dm-verity-fec-stage-b-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-b-smoke.csv) | 2026-11-15 | clean smoke停止・承認待ち | ready/loginは出たがreadall markerなし。BusyBox initのexec変換と整合。正式B・C〜F未実行、期待は変更せず |
 | [2026-11-15-dm-verity-fec-stage-a](2026-11-15-dm-verity-fec-stage-a.md) | [CSV](2026-11-15-dm-verity-fec-stage-a.csv) | 2026-11-15 | amendment後35 boot | v3期待35/35一致。F3はFEC内hash検査からpanicが5/5、F6はdriver有効で自然終了0が5/5。readall独立marker/login・module署名・実機は残件 |
 | [2026-11-15-dm-verity-fec-stage-a-smoke](2026-11-15-dm-verity-fec-stage-a-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-a-smoke.csv) | 2026-11-15 | 計測器smoke | v3の位置記録・既知消失復号・F3 mode対照とF6自然終了/reset分離。各1 bootのみで、正式反復・原因確定ではない |
-| [2026-11-15-dm-verity-fec-followup-prereg](2026-11-15-dm-verity-fec-followup-prereg.md) | なし | 2026-11-15 | 事前登録・未実行 | F3原因切り分け、F6自然終了/reset、未注入領域を48条件・240 bootで段階検証。RSは監査並行の研究限定承認、製品出荷は禁止 |
+| [2026-11-15-dm-verity-fec-followup-prereg](2026-11-15-dm-verity-fec-followup-prereg.md) | なし | 2026-11-15 | 事前登録・A済/B smoke停止 | 当初48条件・240 boot、Bの実行前amendmentで同一pack対照2条件追加。RSは研究限定、製品出荷は禁止 |
 | [2026-11-15-boot-slot-banner](2026-11-15-boot-slot-banner.md) | なし | 2026-11-15 | host fixture・最終QEMU A/BとA sweep各1回 | DT優先とcmdline fallback。QEMU serialでslot行とready直前の順序を照合。初回rawも保存。English-onlyは限定承認、LCD/firmwareは実機待ち |
 | [2026-11-15-storage-options-prereg](2026-11-15-storage-options-prereg.md) | なし | 2026-11-15 | 事前登録（実行前） | SquashFS圧縮matrix、verity(crc32c)+FEC+破損注入、LUKS cipher、btrfs dup+xxhash64+zstd圧縮、zram/zswapのoption全測定の計画。B1のhost速報は取得済み、正式記録は反復後。 |
 | [2026-11-15-dm-verity-fec-corruption](2026-11-15-dm-verity-fec-corruption.md) | [結果](2026-11-15-dm-verity-fec-corruption.csv) | 2026-11-15 | 限定条件の35 boot | 1 byte反転の訂正・panicを観測。F3は旧ready期待と不一致。再入依存は有力な説明で原因未確定、F6はhost SIGTERMでrestart完了未確認。次回v2期待表を別に保存。 |

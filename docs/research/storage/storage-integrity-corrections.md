@@ -33,6 +33,8 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 [amendment後のstage A](../../experiments/2026-11-15-dm-verity-fec-stage-a.md)は7条件各5回でv3期待35/35一致でした。F3のFEC内hash検査からのpanicと、F6のdriver有効時の自然終了0をそれぞれ5/5観測しました。反復性とguard自体の因果は別で、後者は未計装です。通常起動のreadall独立marker/loginとmodule署名は残件のため、原計画の全検証や製品boot成功とは扱いません。
 
+[Bの最初のclean smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-smoke.md)はready/loginまで進みましたがreadall完了markerがなく、厳密なclean判定で停止しました。実inittabと実BusyBox binaryの逆assemblyから、initが加えるexecによりdd後のechoが実行されない説明を強く支持します。旧A/v3の結果は当時のmarker判定として保持し、期待や判定を後付けで緩めていません。B正式反復・C〜Fは未実行、研究用helperと再packの承認待ちです。
+
 ## 次回harness
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
