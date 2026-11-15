@@ -34,7 +34,7 @@ mkdir -p "$cases_dir" "$results_dir"
 # B1 最小の zstd 1M/l19、中間 512K/l19、既定 level、codec 対照）
 variants=(
 	"S-z128-l19|-comp zstd -b 128K -Xcompression-level 19"
-	"S-z1M-l19|-comp zstd -b 1M -Xcompression-level 19"
+	"S-z1m-l19|-comp zstd -b 1M -Xcompression-level 19"
 	"S-z512k-l19|-comp zstd -b 512K -Xcompression-level 19"
 	"S-z128-def|-comp zstd -b 128K"
 	"S-xz128-bcja|-comp xz -b 128K -Xbcj arm"

@@ -55,6 +55,10 @@ failed=0
 for ((repeat = 0; repeat <= runs; repeat++)); do
 	boot_dir="${log_dir}/boot${repeat}"
 	serial_log="${boot_dir}/serial-$(basename -- "${ROOT_DEVICE_OVERRIDE:-/dev/dm-0}").log"
+	if [[ -e "$boot_dir" ]]; then
+		printf 'refusing to overwrite existing evidence: %s\n' "$boot_dir" >&2
+		exit 1
+	fi
 	mkdir -p "$boot_dir"
 	: >"${boot_dir}/test-qemu.log"
 	start_ns="$(date +%s%N)"
@@ -80,7 +84,7 @@ for ((repeat = 0; repeat <= runs; repeat++)); do
 		while jobs -pr | grep -Fxq "$test_pid"; do
 			if [[ -f "$serial_log" ]] &&
 				! grep -aFq 'MSD/Linux ready' "$serial_log" &&
-				grep -aFq 'device-mapper: verity' "$serial_log"; then
+				grep -aEq 'is corrupted|Kernel panic|invalid.*(root hash|hash)|hash verification' "$serial_log"; then
 				printf 'terminated-after-verity-error\n' >"${boot_dir}/monitor.log"
 				kill -TERM "$test_pid" 2>/dev/null || true
 				break
@@ -91,6 +95,13 @@ for ((repeat = 0; repeat <= runs; repeat++)); do
 			exit_status=0
 		else
 			exit_status=$?
+		fi
+		if [[ ! -f "$serial_log" ]] ||
+			! grep -aEq 'is corrupted|Kernel panic|invalid.*(root hash|hash)|hash verification' \
+				"$serial_log"; then
+			printf 'verity-error expected but no corruption marker in serial\n' \
+				>"${boot_dir}/monitor.log"
+			failed=1
 		fi
 	else
 		if "${test_env[@]}" "${repo_root}/board/cardputerzero/qemu/test-qemu.sh" "$image" \
