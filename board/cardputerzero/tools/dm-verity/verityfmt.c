@@ -530,6 +530,10 @@ int main(int argc, char **argv)
 		die("fstat");
 	uint64_t data_bytes = ((uint64_t)st.st_size + bs - 1) / bs * bs;
 	uint64_t data_blocks = data_bytes / bs;
+	if (data_blocks < 2) {
+		fprintf(stderr, "verityfmt: input image too small: need at least 2 data blocks\n");
+		return 1;
+	}
 	if (data_bytes != (uint64_t)st.st_size && ftruncate(fd, (off_t)data_bytes) < 0)
 		die("ftruncate pad");
 
@@ -549,27 +553,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "verityfmt: too many tree levels\n");
 		return 1;
 	}
-	if (!levels) {
-		/* single data block: no hash area, root hash is H(salt||data) */
-		uint8_t *b0 = calloc(1, bs);
-		if (!b0 || pread_full(fd, b0, bs, 0) < 0)
-			die("read data");
-		uint8_t rh[64];
-		verity_hash(alg, salt, salt_size, b0, bs, rh);
-		char rh_hex[129], salt_hex0[513];
-		hex_encode(rh, ds, rh_hex);
-		hex_encode(salt, salt_size, salt_hex0);
-		printf("data_bytes=%llu\ndata_blocks=1\nhash_offset=%llu\n"
-		       "hash_start_block=0\nhash_area_blocks=0\nroot_hash=%s\n"
-		       "salt=%s\nhash_alg=%s\n",
-		       (unsigned long long)data_bytes,
-		       (unsigned long long)(hash_offset_blocks * bs),
-		       rh_hex, salt_size ? salt_hex0 : "-", alg->name);
-		free(b0);
-		close(fd);
-		return 0;
-	}
-
 	uint64_t level_blocks[64], level_size[64];
 	uint64_t pos = hash_start_block;
 	int i;
