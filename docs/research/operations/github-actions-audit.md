@@ -1,5 +1,7 @@
 # GitHub Actions の実行境界と監視の監査
 
+2026-11-15の[NVD feed停止と保護先変更](nvd-feed-staleness-2026-11-15.md)に、mainの失敗開始、上流commit・更新間隔、利用者によるCVE checkのrequired移動、tag/dispatch運用の未確認事項を記録しました。以下の過去のrequired表示とは区別します。
+
 文書変更で製品buildが起動する理由、PR全体差分、cache・並列化の実行ログと改善候補は[追加調査](ci-build-scope-and-performance.md)にあります。以下の監査時点と区別します。
 
 ## 2026-11-12のOCI公開境界の変更

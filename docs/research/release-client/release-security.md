@@ -20,7 +20,7 @@
 | `docker/msd-dev` | 許可した環境変数だけを転送。署名鍵と更新番号は転送対象でない | ホストでのexportだけで、コンテナー内の署名が切り替わるわけではない |
 | `.github/workflows/build.yml` | defaultの `contents: read`。Release署名Environmentを使うjobはない | Secretを登録すれば自動的に利用されるわけではない |
 | Repository / Releases API | public。`v0.0.0` はprerelease、`immutable=false`。8assetにSD imageはあるがbundle・image署名metadataはない | 安定版、署名済みの初回導入、完成した自己更新の配布物ではない |
-| release ruleset | active、`refs/tags/v*`、deletion / non_fast_forward | 新規タグの認可、SemVer、CI成功、Release assetの改変防止を全て強制する設定ではない |
+| release ruleset | **2026-11-15再確認**: `26334422`、active、tag対象の`refs/tags/v*`＋`~ALL`、deletion / non_fast_forward / update / creation / required_status_checks（`product CVE scan`、integration `15368`、strict=false）。利用者がmainのrequiredから移動 | `~ALL`は全tagへ広がり、意図の確認待ち。bypass actorは公開APIで見えず、作成可否・bypass時のcheck迂回は未検証。SemVerやRelease assetの保護、Release時点のfeed鮮度を保証しない。[根拠とdispatchの制限](../operations/nvd-feed-staleness-2026-11-15.md) |
 | Environments API | 確認できた環境は `github-pages` | signing環境と承認付き署名jobがあるという証拠ではない |
 | Secrets / workflow permissions API | いずれもHTTP 403 | Secretなし、既定権限が安全、とは判定しない |
 
