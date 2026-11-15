@@ -35,6 +35,8 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 [Bの最初のclean smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-smoke.md)はready/loginまで進みましたがreadall完了markerがなく、厳密なclean判定で停止しました。実inittabと実BusyBox binaryの逆assemblyから、initが加えるexecによりdd後のechoが実行されない説明を強く支持します。旧A/v3の結果は当時のmarker判定として保持し、期待や判定を後付けで緩めていません。B正式反復・C〜Fは未実行、研究用helperと再packの承認待ちです。
 
+利用者承認後の[再開smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-resume-smoke.md)では、明示的shell経由の新helper・新packで通常経路のreadall→ready→loginを観測しました。一方RAM cleanはlibresolv探索失敗でinitが終了し、再停止しました。実CPIOにはlibrary本体がありますが、元treeのlib64 aliasがなく、実loaderの既定探索先と合いません。alias欠落を強く支持し、動的traceと修正後bootは未確認です。RAM読取り・F3 mode比較・正式B・C〜Fは未実行で、次の修正承認を待ちます。
+
 ## 次回harness
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。

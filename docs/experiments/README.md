@@ -8,7 +8,8 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
-| [2026-11-15-dm-verity-fec-stage-b-smoke](2026-11-15-dm-verity-fec-stage-b-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-b-smoke.csv) | 2026-11-15 | clean smoke停止・承認待ち | ready/loginは出たがreadall markerなし。BusyBox initのexec変換と整合。正式B・C〜F未実行、期待は変更せず |
+| [2026-11-15-dm-verity-fec-stage-b-resume-smoke](2026-11-15-dm-verity-fec-stage-b-resume-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-b-resume-smoke.csv) | 2026-11-15 | 通常clean成功・RAM clean停止 | 明示的shellのreadall markerは実bootで観測。RAMはlibrary探索失敗でinit終了panic、lib64 alias欠落を強く支持。正式B・C〜F未実行 |
+| [2026-11-15-dm-verity-fec-stage-b-smoke](2026-11-15-dm-verity-fec-stage-b-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-b-smoke.csv) | 2026-11-15 | 初回clean smoke停止 | ready/loginは出たがreadall markerなし。BusyBox initのexec変換と整合。利用者承認後の試行は上の再開記録へ分離 |
 | [2026-11-15-dm-verity-fec-stage-a](2026-11-15-dm-verity-fec-stage-a.md) | [CSV](2026-11-15-dm-verity-fec-stage-a.csv) | 2026-11-15 | amendment後35 boot | v3期待35/35一致。F3はFEC内hash検査からpanicが5/5、F6はdriver有効で自然終了0が5/5。readall独立marker/login・module署名・実機は残件 |
 | [2026-11-15-dm-verity-fec-stage-a-smoke](2026-11-15-dm-verity-fec-stage-a-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-a-smoke.csv) | 2026-11-15 | 計測器smoke | v3の位置記録・既知消失復号・F3 mode対照とF6自然終了/reset分離。各1 bootのみで、正式反復・原因確定ではない |
 | [2026-11-15-dm-verity-fec-followup-prereg](2026-11-15-dm-verity-fec-followup-prereg.md) | なし | 2026-11-15 | 事前登録・A済/B smoke停止 | 当初48条件・240 boot、Bの実行前amendmentで同一pack対照2条件追加。RSは研究限定、製品出荷は禁止 |
