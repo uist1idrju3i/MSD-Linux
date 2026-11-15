@@ -1,6 +1,6 @@
 # zram の CONFIG_ZRAM=y と =m の起動時間
 
-- 状態: QEMUで測定。起動時間の差は実質なし。=mではzram moduleがloadされずswapは無効
+- 状態: QEMUで測定。m側swap無効で機能非等価。明示loadを加えた場合の起動時間は未測定
 - 日付: 2026-11-15
 - 担当: Devin
 - 関連: [起動時間の測定器](../../board/cardputerzero/tools/bench/boottime/)、[書き込みの台帳](../design/write-policy.md)
