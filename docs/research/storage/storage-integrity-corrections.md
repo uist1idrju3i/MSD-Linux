@@ -29,6 +29,8 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 2026-11-15追記：利用者は監査と並行する研究限定利用を承認しました。[初期監査](rs-formatter-provenance-2026-11-15.md)に固定上流比較を、[B3追試](../../experiments/2026-11-15-dm-verity-fec-followup-prereg.md)に次回の条件を保存しました。監査未完了・製品出荷禁止は変わりません。
 
+同日の[v3計測器smoke](../../experiments/2026-11-15-dm-verity-fec-stage-a-smoke.md)では、同じF3破損がpanic modeではFEC内のhash検査でpanic、両flagなしでは1 error訂正後にreadyとなりました。各1回の対照で、再入guard自体は未計装です。F6は既存wrapperのwatchdog driver無効化を外した対照で自然終了とQMP RESET・2回目bannerを観測しました。旧F6を成功へ変更せず、実機A/B復帰とも扱いません。
+
 ## 次回harness
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
