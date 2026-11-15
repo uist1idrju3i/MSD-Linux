@@ -1,0 +1,10 @@
+Required kernel crypto interface not available.
+Ensure you have algif_skcipher kernel module loaded.
+# Tests are approximate using memory only (no storage IO).
+PBKDF2-sha1      1088863 iterations per second for 256-bit key
+PBKDF2-sha256    1458381 iterations per second for 256-bit key
+PBKDF2-sha512    1091130 iterations per second for 256-bit key
+PBKDF2-ripemd160  576774 iterations per second for 256-bit key
+PBKDF2-whirlpool  409600 iterations per second for 256-bit key
+argon2i       4 iterations, 627213 memory, 4 parallel threads (CPUs) for 256-bit key (requested 2000 ms time)
+argon2id      4 iterations, 688505 memory, 4 parallel threads (CPUs) for 256-bit key (requested 2000 ms time)
