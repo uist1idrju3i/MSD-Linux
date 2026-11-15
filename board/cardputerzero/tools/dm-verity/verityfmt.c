@@ -750,7 +750,9 @@ int main(int argc, char **argv)
 			       (unsigned long long)hash_start_block,
 			       alg->name, root_hex, salt_size ? salt_hex : "-",
 			       fec_roots, (unsigned long long)fec_blocks,
-			       (unsigned long long)fec_area_offset);
+			       /* fec_start is in hash_block_size units
+				* (kernel shifts it by block_bits - SECTOR_SHIFT) */
+			       (unsigned long long)(fec_area_offset / bs));
 		}
 	}
 
