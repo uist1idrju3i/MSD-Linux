@@ -39,6 +39,12 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 利用者承認後の[host一括検査](../../experiments/2026-11-15-dm-verity-fec-host-dry.md)では、alias保存と実DT_NEEDED閉包を実装し、旧CPIOを同じcheckerで拒否しました。新CPIOはhost検査成功ですが、修正後RAM bootはまだ未確認です。37/43入力の生成時点で、DのSHA-256/roots2・同column 3 block破損にveritysetupがhash失敗を表示しながら終了0を返し、host gateで停止しました。独立RS復号はsyndromeゼロでも元bytesと異なるcodewordとなり、CLI終了0を完全回復の根拠にできません。残りD6入力・B clean再試行・正式B〜Fは未実行で、boot期待は変えていません。共通pack・D新規suffix・initramfs・metadata・rawを上記archiveに保存しました。次はhost回復判定の修正と中間値の即時保存の承認が必要です。
 
+## 正式Bの結果（2026-11-15 UTC）
+
+上の停止・未確認の記述は各記録作成時点の状態です。[正式B](../../experiments/2026-11-15-dm-verity-fec-stage-b.md)はalias修正・host全43入力照合後、両cleanを含む10 smokeと正式50 bootを完了しました。正式は40期待一致、EIO通常/RAMの10件は訂正後read成功で既存のEIO期待に対する反証です。clean失敗・timeoutはなく、旧期待は変更していません。
+
+同じbio IDでFEC内hash lookupの再入、level1 guardの-EIO、その後のpanic/restartを全反復で観測しました。EIOは各243 guard後にRSが1 symbol訂正してread成功となり、容量超過だけの説明を反証します。RAMの明示read後も同じ経路なのでroot mount前だけの説明にも反します。本条件での経路は高確度ですが、guard無効化対照や全hash/rootsの一般化、RS誤訂正のkernel拒否、実機適合は未検証です。C〜Fはまだ未実行です。
+
 ## 次回harness
 
 ### 容量超過の誤訂正と製品設計への示唆（2026-11-15承認、host限定）
