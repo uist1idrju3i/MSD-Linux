@@ -349,6 +349,10 @@ static int pread_full(int fd, void *buf, size_t count, off_t off)
 	while (count) {
 		ssize_t r = pread(fd, buf, count, off);
 
+		if (r < 0 && errno == EINTR)
+			continue;
+		if (r == 0)
+			errno = EIO;
 		if (r <= 0)
 			return -1;
 		buf = (uint8_t *)buf + r;
@@ -363,6 +367,10 @@ static int pwrite_full(int fd, const void *buf, size_t count, off_t off)
 	while (count) {
 		ssize_t r = pwrite(fd, buf, count, off);
 
+		if (r < 0 && errno == EINTR)
+			continue;
+		if (r == 0)
+			errno = EIO;
 		if (r <= 0)
 			return -1;
 		buf = (const uint8_t *)buf + r;
@@ -372,18 +380,30 @@ static int pwrite_full(int fd, const void *buf, size_t count, off_t off)
 	return 0;
 }
 
+static int hex_digit(unsigned char c)
+{
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	if (c >= 'a' && c <= 'f')
+		return c - 'a' + 10;
+	if (c >= 'A' && c <= 'F')
+		return c - 'A' + 10;
+	return -1;
+}
+
 static int hex_decode(const char *hex, uint8_t *out, size_t out_size)
 {
 	size_t len = strlen(hex), i;
 
-	if (len % 2 || len / 2 > out_size)
+	if (!len || len % 2 || len / 2 > out_size)
 		return -1;
 	for (i = 0; i < len / 2; i++) {
-		unsigned int v;
+		int hi = hex_digit((unsigned char)hex[i * 2]);
+		int lo = hex_digit((unsigned char)hex[i * 2 + 1]);
 
-		if (sscanf(hex + i * 2, "%2x", &v) != 1)
+		if (hi < 0 || lo < 0)
 			return -1;
-		out[i] = (uint8_t)v;
+		out[i] = (uint8_t)((hi << 4) | lo);
 	}
 	return (int)(len / 2);
 }
@@ -401,6 +421,46 @@ static void die(const char *msg)
 {
 	fprintf(stderr, "verityfmt: %s: %s\n", msg, strerror(errno));
 	exit(1);
+}
+
+static uint64_t parse_number(const char *text, uint64_t maximum)
+{
+	char *end;
+	unsigned long long value;
+
+	errno = 0;
+	if (*text < '0' || *text > '9') {
+		fprintf(stderr, "verityfmt: invalid number '%s'\n", text);
+		exit(2);
+	}
+	value = strtoull(text, &end, 0);
+	if (errno == ERANGE || *end || value > maximum) {
+		fprintf(stderr, "verityfmt: invalid number '%s'\n", text);
+		exit(2);
+	}
+	return (uint64_t)value;
+}
+
+static void random_bytes(uint8_t *out, size_t size)
+{
+	int fd = open("/dev/urandom", O_RDONLY);
+
+	if (fd < 0)
+		die("open random source");
+	while (size) {
+		ssize_t n = read(fd, out, size);
+
+		if (n < 0 && errno == EINTR)
+			continue;
+		if (n == 0)
+			errno = EIO;
+		if (n <= 0)
+			die("read random source");
+		out += n;
+		size -= (size_t)n;
+	}
+	if (close(fd) < 0)
+		die("close random source");
 }
 
 /* ------------------------------------------------------------------ */
@@ -456,15 +516,15 @@ int main(int argc, char **argv)
 			salt_given = 1;
 			break;
 		case 'r':
-			salt_size = (size_t)strtoul(optarg, NULL, 0);
+			salt_size = (size_t)parse_number(optarg, sizeof(salt));
 			if (!salt_size || salt_size > 256) {
 				fprintf(stderr, "verityfmt: invalid random salt size\n");
 				return 2;
 			}
-			salt_given = 1;
+			salt_given = 0;
 			break;
 		case 'f':
-			fec_roots = (int)strtol(optarg, NULL, 0);
+			fec_roots = (int)parse_number(optarg, 24);
 			if (fec_roots && (fec_roots < 2 || fec_roots > 24)) {
 				fprintf(stderr, "verityfmt: fec-roots must be 0 or 2..24\n");
 				return 2;
@@ -474,7 +534,7 @@ int main(int argc, char **argv)
 			use_superblock = 0;
 			break;
 		case 'b':
-			bs = strtoull(optarg, NULL, 0);
+			bs = parse_number(optarg, 512 * 1024);
 			break;
 		case 'p':
 			params_file = optarg;
@@ -491,7 +551,8 @@ int main(int argc, char **argv)
 					    (const uint8_t *)"abc", 3, d);
 				hex_encode(d, 32, hex);
 				printf("sha256(\"abc\") = %s\n(expect ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad)\n", hex);
-				return crc == 0xe3069283 ? 0 : 1;
+				return crc == 0xe3069283 && !strcmp(hex,
+					"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad") ? 0 : 1;
 			}
 		default:
 			fprintf(stderr, "usage: verityfmt [--hash crc32c|sha256] [--salt HEX|-] [--salt-random N] "
@@ -500,8 +561,8 @@ int main(int argc, char **argv)
 			return 2;
 		}
 	}
-	if (optind >= argc) {
-		fprintf(stderr, "verityfmt: missing IMAGE\n");
+	if (optind + 1 != argc) {
+		fprintf(stderr, "verityfmt: expected one IMAGE\n");
 		return 2;
 	}
 	image_path = argv[optind];
@@ -513,13 +574,8 @@ int main(int argc, char **argv)
 
 	crc32c_init_table();
 
-	if (!salt_given) {
-		int rfd = open("/dev/urandom", O_RDONLY);
-		if (rfd < 0 || read(rfd, salt, salt_size) != (ssize_t)salt_size)
-			die("cannot read /dev/urandom for salt");
-		if (rfd >= 0)
-			close(rfd);
-	}
+	if (!salt_given)
+		random_bytes(salt, salt_size);
 
 	int fd = open(image_path, O_RDWR);
 	if (fd < 0)
@@ -528,6 +584,11 @@ int main(int argc, char **argv)
 	struct stat st;
 	if (fstat(fd, &st) < 0)
 		die("fstat");
+	if (!S_ISREG(st.st_mode) || st.st_size < 0 ||
+	    (uint64_t)st.st_size > (uint64_t)INT64_MAX / 2) {
+		fprintf(stderr, "verityfmt: unsupported image type or size\n");
+		return 1;
+	}
 	uint64_t data_bytes = ((uint64_t)st.st_size + bs - 1) / bs * bs;
 	uint64_t data_blocks = data_bytes / bs;
 	if (data_blocks < 2) {
@@ -580,13 +641,7 @@ int main(int argc, char **argv)
 		memcpy(sb.signature, "verity\0\0", 8);
 		sb.version = 1;
 		sb.hash_type = 1;
-		{
-			int rfd = open("/dev/urandom", O_RDONLY);
-			if (rfd < 0 || read(rfd, sb.uuid, 16) != 16)
-				die("uuid");
-			if (rfd >= 0)
-				close(rfd);
-		}
+		random_bytes(sb.uuid, sizeof(sb.uuid));
 		strncpy((char *)sb.algorithm, alg->name, sizeof(sb.algorithm) - 1);
 		sb.data_block_size = (uint32_t)bs;
 		sb.hash_block_size = (uint32_t)bs;
@@ -696,8 +751,10 @@ int main(int argc, char **argv)
 		free(bufs);
 		free(par);
 	}
-	fsync(fd);
-	close(fd);
+	if (fsync(fd) < 0)
+		die("sync image");
+	if (close(fd) < 0)
+		die("close image");
 
 	/* report */
 	char root_hex[129], salt_hex[513];
@@ -757,7 +814,14 @@ int main(int argc, char **argv)
 				(unsigned long long)fec_area_offset,
 				(unsigned long long)fec_blocks, fec_roots,
 				(unsigned long long)fec_bytes);
-		fclose(f);
+		if (ferror(f) || fflush(f) == EOF)
+			die("write params file");
+		if (fsync(fileno(f)) < 0)
+			die("sync params file");
+		if (fclose(f) == EOF)
+			die("close params file");
 	}
+	if (fflush(stdout) == EOF)
+		die("write report");
 	return 0;
 }

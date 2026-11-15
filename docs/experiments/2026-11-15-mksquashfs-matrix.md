@@ -35,14 +35,14 @@
 | zstd 任意 block l1 | 26.3-27.0 MB | 120-290 | +11-14% |
 | lz4 128K 既定 | 30,842,880 | 113 | +30.2% |
 
-- level 19→22 では全 block size で bytes が完全に一致（飽和）。build 時間は level 22 が長い（128K で 5.8s→6.3s、64K ではばらつき大）。
+- level 19→22では測定したblock sizeごとのimageサイズが一致しました。byte列や同じimageという意味ではありません。後続B2で1M/l19とl22のSHA-256は異なります。build時間は128Kで5.8s→6.3s、64Kではばらつきが大きいという観測です。
 - build 時間: zstd は level 9 以下なら 0.2-0.6s、level 19-22 で 2.3-6.3s。xz は 5.2s 一定。
 
 ## 考察
 
 - xz は最小（22.16 MB）だが kernel xz decompressor の read 遅延が zstd より悪いことが一般的で、差は 1M zstd 対比 -1.0% しかない。rootfs 読み取り面積の方が大きい製品では zstd の方が釣り合う（B2 で read 側を確認）。
 - 現行既定 `128K l22` から 512K/1M への拡大で -3.0%/-5.6%。dm-verity は data block 4096B 固定で hash tree は image 全体に掛かるため、squashfs の block size は verity とは独立に選べる。
-- level 19 と 22 は同じ image を出すので、build 時間の短い **level 19 が無駄なく有利**（EXTREME_COMP の 22 を選ぶ理由は無かった）。
+- サイズ一致だけではl19/l22の内容・展開性能の同等性を示しません。配布はCIでのbuildなので生成時間を選定理由にせず、利用者の「展開側に悪影響がなければ22」という条件を保持します。B1だけでlevelを決めません。
 
 ## 失敗した試行・注意
 

@@ -6,6 +6,7 @@
 
 ### 追加
 
+- kernel fragmentにdm-verity/FEC、dm-crypt、btrfsと関連cryptoを、Buildroot defconfigにcryptsetup・btrfs-progs等を追加します。機能のbuild有効化であり、製品のverity付きroot・LUKS+btrfs移行・破損時A/B復帰の実装完了ではありません。
 - CardputerZero向けBuildroot構成、A/B更新手順、QEMUを含む検証手順を整備しました。
 - 調査・測定記録を主題別に整理し、再現条件と未確認範囲を追跡できるようにしました。
 - 起動時の `/etc/issue` と `os-release` に、版、commit時刻（JST）、commit IDを記録します。

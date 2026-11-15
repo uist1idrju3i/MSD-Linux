@@ -9,7 +9,7 @@ set -euo pipefail
 # case:
 #   F0-A2  FEC roots=8、破損なし -> ready 期待
 #   F1-A2  data 1 byte 破損 -> FEC が訂正 -> ready 期待
-#   F2-A2  同一 round の 9 block（roots+1）を同じ byte 位置で破損 -> 訂正不能 -> verity error
+#   F2-A2  同一 round の 24 block を同じ byte 位置で破損 -> 訂正不能 -> verity error
 #   F3-A2  hash area 1 byte 破損 -> FEC が訂正 -> ready 期待
 #   F4-A2  root_hash を 1 桁だけ改ざん -> verity error
 #   F5-A2  FEC なし + data 1 byte 破損 -> verity error（F1 の対照）
@@ -50,12 +50,9 @@ remount_line='::sysinit:/bin/mount -o remount,rw /'
 }
 mkdir -p "$case_dir/images"
 
-# verityfmt を一度だけ build（base_dir 配下で共有）
-verityfmt_bin="${base_dir}/verityfmt-bin/verityfmt"
-if [[ ! -x "$verityfmt_bin" ]]; then
-	mkdir -p "${base_dir}/verityfmt-bin"
-	cc -O2 -Wall -Wextra -o "$verityfmt_bin" "$verityfmt_src"
-fi
+verityfmt_bin="${case_dir}/verityfmt"
+cc -O2 -Wall -Wextra -o "$verityfmt_bin" "$verityfmt_src"
+sha256sum "$verityfmt_src" "$verityfmt_bin" >"${case_dir}/formatter.sha256"
 
 build_squashfs_with_readall() {
 	# $1 = source squashfs, $2 = dest squashfs, $3 = work dir
@@ -150,7 +147,7 @@ case "$case_kind" in
 			F1) offset="$((4096 * (data_blocks / 2) + 123))" ;;
 			F2)
 				# 同一 round（block index が rounds で合同）の
-				# fec_roots+1 block の同じ byte 位置を破損させて
+				# 24 block の同じ byte 位置を破損させて
 				# 訂正不能にする。covered = data+hash blocks。
 				multi_offsets=yes
 				;;
@@ -188,10 +185,8 @@ bs = 4096
 covered = data_blocks + hash_area_blocks
 rsn = 255 - fec_roots
 rounds = (covered + rsn - 1) // rsn
-# round 0 の block 集合 {i*rounds + 0} から fec_roots+1 block を選び、
-# すべて byte offset 0 を反転する -> codeword (round=0, byte=0) の
-# erasure が roots+1 になり RS(255, rsn) は訂正できない。
-blocks = [i * rounds for i in range(fec_roots + 1)]
+# round 0 の24 blockについて同じbyte位置を反転する。
+blocks = [i * rounds for i in range(24)]
 data = bytearray(path.read_bytes())
 lines = ["mode=multi", f"rounds={rounds}", f"rsn={rsn}", f"covered={covered}"]
 for blk in blocks:
@@ -199,7 +194,7 @@ for blk in blocks:
     if off >= len(data):
         raise SystemExit(f"offset out of range: {off} / {len(data)}")
     before = data[off]
-    data[off] ^= 0x01
+    data[off] ^= 0xff
     lines.append(f"offset={off} block={blk} before=0x{before:02x} after=0x{data[off]:02x}")
 path.write_bytes(data)
 pathlib.Path(sys.argv[5]).write_text("\n".join(lines) + "\n", encoding="ascii")
@@ -216,7 +211,7 @@ data = bytearray(path.read_bytes())
 if offset < 0 or offset >= len(data):
     raise SystemExit(f"offset out of range: {offset} / {len(data)}")
 before = data[offset]
-data[offset] ^= 0x01
+data[offset] ^= 0xff
 path.write_bytes(data)
 pathlib.Path(sys.argv[3]).write_text(
     f"offset={offset}\nbefore=0x{before:02x}\nafter=0x{data[offset]:02x}\n",

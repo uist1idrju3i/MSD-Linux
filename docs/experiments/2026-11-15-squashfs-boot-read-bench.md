@@ -13,7 +13,7 @@
 - 各 variant 5 boot（repeat 0〜4）。QEMU 11.1.2 `raspi3ap`、memory 512M、`icount=shift=0`（guest 時刻 = printk timestamp）
 - guest 側の計測: `msd-readall` が `/dev/kmsg` に `squashfs-readall-begin`・`squashfs-readall-mem`（0.5 秒ごとの `MemAvailable` 最小値と `drop_caches` 後の値）・`squashfs-readall-complete` を書き込む。`squashfs-readall-complete` の timestamp を「全 file 展開完了時刻」として使う
 - なお `begin`/`mem` marker は測定の途中で追加したため、新しい計装を含むのは `S-z1m-l19`・`S-z1m-l22` の 2 case だけ。他 6 variant は `complete` timestamp と ready 時刻のみ
-- image サイズは B1 matrix の値。kernel は S-z128-def・S-z128-l19・S-z512k-l19 と他 variant で Image size が約 135 KB 異なる（生成時期の違いによる build 差。ready 時間の大小比較には影響しないと判断）
+- imageサイズはB1 matrixの値。kernelはS-z128-def・S-z128-l19・S-z512k-l19と他variantでImage sizeが約135 KB異なります。生成時期によるbuild差があり、ready時間への影響を除外できません。
 
 ## 結果
 
@@ -40,16 +40,25 @@
 | readall 中の MemAvailable 最小 | 351,336 kB | 354,424 kB |
 | drop_caches 後の MemAvailable | 358,508 kB | 367,028 kB |
 
-level 19 と 22 で展開時間・メモリの差は測定誤差の範囲（l22 の readall 所要時間の中央値差は +0.001 s）。SquashFS は block 独立圧縮のため、level 22 でも展開側の window は実質 block size + kernel workspace 程度に収まり、実測でも悪影響は確認できなかった。**展開側に悪影響がないため zstd level 22 を採用できる**。
+l22のreadall所要時間の中央値差は+0.001 sでした。誤差幅を校正していないので統計的同等性とはしません。RAMは0.5秒間隔のMemAvailableサンプルであり、瞬間peakやdecompressor単独のworkspace量は測っていません。block独立圧縮という性質だけで、l22の展開側に悪影響がないとは結論できません。利用者の条件付きl22判断に対する限定的なQEMU資料です。
 
 ## 結論
 
-- **codec・block size は展開速度に支配的な影響**がある。lz4 が最速だが image は最大（30.8 MB）。zstd 128K は gzip より速く小さい。xz(+bcj) は最小サイズだが readall が 6.1 s と zstd 128K の約 2.3 倍、ready で +3.4 s
-- **zstd の block size を上げると展開が遅くなる**（128K→512K→1M で readall が 2.6→3.5→4.7 s）。圧縮率は 1M が最小だが、boot/read の遅さを考えると 128K〜512K が実用的
-- 現行の採用候補: `zstd -b 128K -Xcompression-level 19`（サイズと速度のバランス）。level は 19→22 でも展開側の差なし
+- この条件ではlz4のreadall完了時刻が最小でimageは最大（30.8 MB）。xz(+bcj)の完了時刻は6.1 s、zstd 128Kの約2.3倍でした。時刻差にはreadall開始以前の起動処理も入り、全variantでbegin計装が揃っていません。
+- zstdの128K→512K→1Mで完了時刻は2.6→3.5→4.7 sでしたが、kernel差もあるためblock sizeだけの因果効果・実機順位とはしません。
+- 製品既定を本測定だけで変更しません。l22は展開側の悪影響がないという利用者条件を保持し、同一kernel・計装と実機で追加確認します。
 
 ## 未確認
 
-- QEMU/TCG のゲスト時刻での比較。codec 間の順位は傾向として使えるが、絶対値と実機での差は実機計測で確かめる（`docs/research/verification/hardware-measurements.md`）
-- `S-z128-def`・`S-z128-l19`・`S-z512k-l19` と他 variant で kernel Image が約 135 KB 違う（case 生成時期の差）。ready 時刻の codec 間差（最小で約 0.5 s）に対して影響は小さいと判断したが、厳密な同一条件ではない
+- QEMU/TCGの絶対速度も相対順位も実機の代理にはしません。[実機計画](../research/verification/hardware-measurements.md)で別途確認します。
+- kernel約135 KB差と途中のbegin/mem計装追加があり、影響なしとはしません。新runnerは全caseを同じ入力kernelと現行計装で新規生成しますが、その再測定は今回未実施です。
 - 実機 SD の I/O 帯域では lz4 の大きい image の読み出しコストが変わる可能性がある（QEMU の raw image 読み出しは host page cache 依存）
+- 登録したrandom read p95は未測定です。実施したのは全fileの順次catと起動時刻の観測で、ランダムI/Oの代用ではありません。
+
+## 次回の一括再現（今回未実行）
+
+V0とT0を揃えたbase入力に対し、次の一命令で8 case（1M/l19・l22を含む）を生成し各5 bootします。出力先は存在しないpathを指定し、旧case・CSVは再利用しません。各caseのvariant-infoにkernel/image hashを保存します。
+
+```sh
+docker/msd-dev bash board/cardputerzero/tools/bench/squashfs-opts/run-all.sh /work/output-fscmp /work/output-b3/cases /work/output-b2-next/cases /work/output-b2-next/results 4 180
+```

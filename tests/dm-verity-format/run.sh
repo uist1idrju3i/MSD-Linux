@@ -27,6 +27,8 @@ printf 'ok - verityfmt builds\n'
 "$test_root/verityfmt" --selftest >/dev/null \
 	|| fail "verityfmt built-in test vectors"
 printf 'ok - crc32c/sha256 test vectors\n'
+python3 "$repo_root/tests/dm-verity-format/test-inputs.py" "$test_root/verityfmt"
+python3 "$repo_root/tests/dm-verity-format/test-harness.py"
 
 # 732 x 4096 bytes の乱数 image（block 境界で切り詰め）
 data_blocks=732
@@ -87,7 +89,7 @@ veritysetup verify --no-superblock \
 	--data-block-size="$bs" --hash-block-size="$bs" \
 	--data-blocks="$data_blocks" \
 	--hash-offset="$data_bytes" --salt="$salt" --hash=sha256 \
-	"$test_root/ref-fec.img" "$test_root/ref-fec.img" "$ref_root" \
+	"$test_root/tool-fec.img" "$test_root/tool-fec.img" "$tool_root" \
 	>"$test_root/verify.log" 2>&1 \
 	|| fail "veritysetup verify failed"
 printf 'ok - veritysetup verify accepts the generated image\n'

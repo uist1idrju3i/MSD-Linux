@@ -12,11 +12,11 @@ runs=
 timeout_seconds=
 csv=
 log_dir=
-expected=verity-error
+expected=
 container_id="${CONTAINER_ID:-}"
 
 usage() {
-	printf 'Usage: %s --case NAME --image FILE --runs N --timeout SEC --csv FILE --log-dir DIR [--expected ready|verity-error]\n' "$0" >&2
+	printf 'Usage: %s --case NAME --image FILE --runs N --timeout SEC --csv FILE --log-dir DIR --expected ready|verity-panic|verity-restart\n' "$0" >&2
 }
 
 while (($#)); do
@@ -38,7 +38,8 @@ if [[ -z "$case_name" || -z "$image" || ! "$runs" =~ ^[0-9]+$ ||
 	usage
 	exit 2
 fi
-if [[ "$expected" != ready && "$expected" != verity-error ]]; then
+if [[ "$expected" != ready && "$expected" != verity-panic && "$expected" != verity-restart ]] ||
+	((timeout_seconds == 0)); then
 	usage
 	exit 2
 fi
@@ -48,7 +49,12 @@ case_dir="$(dirname -- "$image_dir")"
 case_append="${case_dir}/qemu-extra-append.txt"
 [[ -f "$case_append" ]]
 extra_append="${QEMU_EXTRA_APPEND:-$(<"$case_append")}"
-mkdir -p "$log_dir" "$(dirname "$csv")"
+if [[ -e "$log_dir" || -L "$log_dir" || -e "$csv" || -L "$csv" ]]; then
+	printf 'refusing to overwrite existing evidence\n' >&2
+	exit 1
+fi
+mkdir -p "$(dirname "$log_dir")" "$(dirname "$csv")"
+mkdir "$log_dir"
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-${case_name}-icount"
 failed=0
 
@@ -77,15 +83,16 @@ for ((repeat = 0; repeat <= runs; repeat++)); do
 		"QEMU_COPY_IMAGE=1"
 		"QEMU_EXTRA_APPEND=${extra_append}"
 	)
-	if [[ "$expected" == verity-error ]]; then
+	monitor=none
+	if [[ "$expected" == verity-panic ]]; then
 		"${test_env[@]}" "${repo_root}/board/cardputerzero/qemu/test-qemu.sh" "$image" \
 			>"${boot_dir}/test-qemu.log" 2>&1 &
 		test_pid=$!
 		while jobs -pr | grep -Fxq "$test_pid"; do
 			if [[ -f "$serial_log" ]] &&
-				! grep -aFq 'MSD/Linux ready' "$serial_log" &&
-				grep -aEq 'is corrupted|Kernel panic|invalid.*(root hash|hash)|hash verification' "$serial_log"; then
-				printf 'terminated-after-verity-error\n' >"${boot_dir}/monitor.log"
+				grep -aFq 'Kernel panic' "$serial_log"; then
+				monitor=panic-observed
+				printf '%s\n' "$monitor" >"${boot_dir}/monitor.log"
 				kill -TERM "$test_pid" 2>/dev/null || true
 				break
 			fi
@@ -96,34 +103,32 @@ for ((repeat = 0; repeat <= runs; repeat++)); do
 		else
 			exit_status=$?
 		fi
-		if [[ ! -f "$serial_log" ]] ||
-			! grep -aEq 'is corrupted|Kernel panic|invalid.*(root hash|hash)|hash verification' \
-				"$serial_log"; then
-			printf 'verity-error expected but no corruption marker in serial\n' \
-				>"${boot_dir}/monitor.log"
-			failed=1
-		fi
 	else
 		if "${test_env[@]}" "${repo_root}/board/cardputerzero/qemu/test-qemu.sh" "$image" \
 			>"${boot_dir}/test-qemu.log" 2>&1; then
 			exit_status=0
 		else
 			exit_status=$?
-			failed=1
 		fi
 	fi
 	end_ns="$(date +%s%N)"
 	wall_ns=$((end_ns - start_ns))
 	printf -v wall_seconds '%d.%06d' \
 		"$((wall_ns / 1000000000))" "$(((wall_ns % 1000000000) / 1000))"
+	python3 "${script_dir}/verdict.py" --serial "$serial_log" \
+		--harness "${boot_dir}/test-qemu.log" --expected "$expected" \
+		--exit-status "$exit_status" --monitor "$monitor" \
+		>"${boot_dir}/functional.json" || failed=1
+	timing_status=0
 	python3 "$parser" --log "$serial_log" --csv "$csv" --run-id "$run_id" \
 		--variant "$case_name" --mode icount --repeat "$repeat" \
 		--first-boot "$((repeat == 0 ? 1 : 0))" \
 		--wall-seconds "$wall_seconds" --exit-status "$exit_status" \
-		>"${boot_dir}/parse.log" 2>&1 || failed=1
+		>"${boot_dir}/parse.log" 2>&1 || timing_status=$?
 	{
-		printf 'run_id=%s\nrepeat=%s\nexpected=%s\nexit_status=%s\n' \
-			"$run_id" "$repeat" "$expected" "$exit_status"
+		printf 'run_id=%s\nrepeat=%s\nexpected=%s\nexit_status=%s\ntiming_parser_status=%s\n' \
+			"$run_id" "$repeat" "$expected" "$exit_status" "$timing_status"
+		cat "${boot_dir}/functional.json"
 		if [[ -f "$serial_log" ]]; then
 			grep -aniE 'MSD/Linux ready|login:|device-mapper: verity|Kernel panic' \
 				"$serial_log" || true

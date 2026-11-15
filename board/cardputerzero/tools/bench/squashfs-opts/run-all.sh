@@ -28,13 +28,21 @@ if [[ ! -x "$make_case" || ! -x "$run_boots" || ! -d "$base_dir" ]]; then
 	printf 'missing tools or base dir\n' >&2
 	exit 2
 fi
-mkdir -p "$cases_dir" "$results_dir"
+for destination in "$cases_dir" "$results_dir"; do
+	if [[ -e "$destination" || -L "$destination" ]]; then
+		printf 'refusing to overwrite existing evidence: %s\n' "$destination" >&2
+		exit 1
+	fi
+done
+mkdir -p "$(dirname "$cases_dir")" "$(dirname "$results_dir")"
+mkdir "$cases_dir" "$results_dir"
 
 # variant と mksquashfs args（B1 matrix の代表値。現行 128K/l19、
 # B1 最小の zstd 1M/l19、中間 512K/l19、既定 level、codec 対照）
 variants=(
 	"S-z128-l19|-comp zstd -b 128K -Xcompression-level 19"
 	"S-z1m-l19|-comp zstd -b 1M -Xcompression-level 19"
+	"S-z1m-l22|-comp zstd -b 1M -Xcompression-level 22"
 	"S-z512k-l19|-comp zstd -b 512K -Xcompression-level 19"
 	"S-z128-def|-comp zstd -b 128K"
 	"S-xz128-bcja|-comp xz -b 128K -Xbcj arm"
@@ -48,15 +56,11 @@ for entry in "${variants[@]}"; do
 	args_str="${entry#*|}"
 	read -r -a mkfs_args <<<"$args_str"
 	case_dir="${cases_dir}/${case_name}"
-	if [[ -e "$case_dir" ]]; then
-		printf 'skip existing case dir %s\n' "$case_dir"
-	else
-		printf '=== generate %s ===\n' "$case_name"
-		if ! "$make_case" "$case_name" "$output_dir" "$base_dir" \
-			"$case_dir" -- "${mkfs_args[@]}"; then
-			failed=1
-			continue
-		fi
+	printf '=== generate %s ===\n' "$case_name"
+	if ! "$make_case" "$case_name" "$output_dir" "$base_dir" \
+		"$case_dir" -- "${mkfs_args[@]}"; then
+		failed=1
+		continue
 	fi
 	printf '=== boot %s ===\n' "$case_name"
 	OUTPUT_DIR="$output_dir" \
