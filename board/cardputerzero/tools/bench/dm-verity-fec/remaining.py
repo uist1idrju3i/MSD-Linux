@@ -71,6 +71,28 @@ def header_probe(image, p):
     return dict(signature='verity', version=1, hash_type=1, algorithm=p['hash_alg'])
 
 
+def verify_sha(destination, prefix, p):
+    results = []
+    for kind, fec, accepted in (('clean', False, True), ('data', False, False),
+                                ('data', True, True), ('over', True, False)):
+        image = destination / (prefix + '-' + kind) / 'rootfs.img'
+        command = ['veritysetup', 'verify', '--no-superblock', '--hash=sha256',
+                   '--data-blocks=' + p['data_blocks'],
+                   '--hash-offset=' + str(int(p['hash_start_block']) * 4096),
+                   '--salt=' + p['salt']]
+        if fec:
+            command += ['--fec-device=' + str(image), '--fec-roots=' + p['fec_roots'],
+                        '--fec-offset=' + p['fec_area_offset']]
+        command += [str(image), str(image), p['root_hash']]
+        name = prefix + '-' + kind + ('-fec' if fec else '-nofec')
+        with (destination / (name + '.log')).open('w') as log:
+            status = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT).returncode
+        results.append(dict(name=name, command=command, status=status, expected_accept=accepted))
+        if (status == 0) != accepted:
+            raise ValueError('veritysetup independent check failed: ' + name)
+    return results
+
+
 def generate(args):
     validate(args.base / 'B-clean-normal')
     seed = args.base / 'repacked-seed'
@@ -122,6 +144,8 @@ def generate(args):
                         ('data', [int(params['data_blocks']) // 2 * 4096 + 123], 'normal-read'),
                         ('over', column_offsets(params, roots + 1), 'verity-panic')):
                     emit(f'D-{algorithm}-r{roots}-{kind}', params, packed, offsets, expected)
+                if algorithm == 'sha256':
+                    checks[template.name + '-veritysetup'] = verify_sha(args.destination, f'D-{algorithm}-r{roots}', params)
     save(args.destination / 'host-check.json', dict(cases=rows, checks=checks, generator=sha(Path(__file__))))
 
 

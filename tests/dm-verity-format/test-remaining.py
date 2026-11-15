@@ -2,7 +2,9 @@
 from pathlib import Path
 import struct
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parents[2] / 'board/cardputerzero/tools/bench/dm-verity-fec'
 sys.path.insert(0, str(HERE))
@@ -56,6 +58,19 @@ class Remaining(unittest.TestCase):
             self.assertRaises(ValueError, decode, [1] * 254, roots)
             self.assertRaises(ValueError, decode, [0] * 255, roots, range(roots + 1))
         self.assertRaises(ValueError, remaining.column_offsets, self.p, 0)
+
+    def test_sha_verifier(self):
+        p = dict(self.p, root_hash='abc', salt='00', hash_alg='sha256')
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(remaining.subprocess, 'run') as run:
+                run.side_effect = [remaining.subprocess.CompletedProcess([], code) for code in (0, 1, 0, 1)]
+                results = remaining.verify_sha(Path(temp), 'D-sha256-r8', p)
+                self.assertEqual([r['status'] for r in results], [0, 1, 0, 1])
+                self.assertIn('--hash-offset=' + str(2301 * 4096), results[0]['command'])
+                run.side_effect = None
+                run.return_value = remaining.subprocess.CompletedProcess([], 1)
+                self.assertRaisesRegex(ValueError, 'independent check', remaining.verify_sha,
+                                       Path(temp), 'D-sha256-r8', p)
 
 
 if __name__ == '__main__':
