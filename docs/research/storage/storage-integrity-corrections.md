@@ -41,6 +41,12 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 ## 次回harness
 
+### 容量超過の誤訂正と製品設計への示唆（2026-11-15承認、host限定）
+
+RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤訂正されることは想定される挙動です。syndromeゼロは元bytesへの回復を保証しません。上のhost観測をRSの保証範囲内の不具合やkernelの回復成功とは扱いません。利用者承認により、hostの回復判定は独立decoder出力とclean参照bytesの一致に限定し、誤訂正・拒否を分け、CLI応答は観測値として記録します。
+
+**製品設計への示唆：veritysetupの終了0やrepairable表示をintegrityの証明にしてはいけません。** FECで得た候補をhashで再検査するkernel側の防御が重要です。今回の検証範囲はhostで、kernelのFEC後hash再検査を今回のQEMUや実機で検証したわけではありません。製品適合・安全性の結論へ拡張せず、研究限定と出荷禁止を維持します。
+
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
 
 B2は既存caseの黙示再利用を廃止し、l22を含む8 caseを一括生成します。旧計測値の補完や過去の再現済みという主張はしません。今回QEMU suiteを再実行せず、host fixtureで計測器の正常・空・誤検知・上書き拒否を検査します。

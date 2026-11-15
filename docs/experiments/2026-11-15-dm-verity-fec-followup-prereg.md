@@ -169,3 +169,14 @@ EはBの同じcrc32c/roots8 packを使います。9/24 blockについて、集�
 ### F入力の固定（2026-11-15 UTC、生成・boot前）
 
 FはBの同じcrc32c/roots8 packに、旧F6の実注入方式と同じ24 block（i×rounds、byte0、XOR ff）を適用します。restart mode・watchdog有効でno-rebootを外し、corruption→restart→QMP RESET→2個目のLinux bannerを要求します。readyや別slotへの復帰は要求せず、証拠採取後のhost停止を別記します。新packなのでAのF6と同一bytesとはしません。全33条件（C10/D18/E4/F1）のhost生成・fixture・manifest検査を終えてからB正式反復へ進みます。
+
+### host回復判定のamendment（2026-11-15 18:35 UTC承認、修正・再生成前）
+
+利用者はhost一括検査の停止を受け、次を承認しました。この追記を先にcommit・pushしてから修正・再生成します。
+
+- veritysetupのCLI終了値・表示は観測値として保存し、終了0やrepairable表示を回復判定には使いません。SHA-256 cleanの非FEC検査と破損の非FEC負対照も記録します。
+- 実入力の独立RS復号出力をclean参照bytesと比較し、一致だけを回復とします。拒否・元と異なるcodewordへの誤訂正は別分類とし、syndromeゼロだけでは回復にしません。容量超過時の誤訂正は保証範囲外で想定される挙動で、元bytesへの回復ではありません。
+- 各pack、各独立check、CLIのargv・終了値・logを、その処理の直後・例外前に保存します。旧Dの部分生成と欠損した中間rawは保持し、新しい出力先でD全18入力を生成・検査します。B/C/E/Fの既存成功入力は保持し、全43入力がそろってからB clean通常/RAMへ進みます。
+- 両clean成功を後続smoke・正式反復の前提とし、B以降の既存boot期待・5反復・停止規則は変更しません。CLI終了0をkernel boot成功やpanic仮説の反証とは扱いません。
+
+製品設計への示唆は研究文書へ分離します。CLI終了0/repairableをintegrityの証明にせず、FEC後のhash再検査が必要という点を明記します。今回確認したのはhostのみで、kernelの該当guardの実測・製品適合・実機検証済みとはしません。RS研究限定・製品出荷禁止、03914台帳同期保留、起点2026-11-15 12:17:52 UTCとdeadline2026-11-17 00:17:52 UTCは不変です。
