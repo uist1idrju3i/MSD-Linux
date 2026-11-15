@@ -113,7 +113,7 @@ rootfs 系:
 
 1. **SquashFS**: `-comp zstd -b {4K,8K,16K,32K,64K,128K,256K,512K,1M}` × `-Xcompression-level {1,3,9,15,19,22}` の圧縮率・build 時間・QEMU mount/boot 時間・ランダム read 時間。`-tailends`, `-no-fragments`, `-exports` 有無の差。比較に `-comp xz/lz4/gzip` 少量。
 2. **zstd**: level vs 圧縮率・展開速度（SquashFS 側で測）。kernel decompressor の上限レベル確認（= 22 が使えるかの検証を兼ねる）。
-3. **dm-verity**: hash {sha256, crc32c（自前 formatter）}、data/hash block {4K}、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}、破損注入（1 block ビット化け / 連続領域化け / hash tree 自身の化け）での検出・訂正・切り戻し。`error_as_corruption` の挙動差。
+3. **dm-verity**: hash {sha256, crc32c（自前 formatter）}、data/hash block {4K}、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}、破損注入（1 block ビット化け / 連続領域化け / hash tree 自身の化け）での検出・訂正・切り戻し。`error_as_corruption` の挙動差。hash_alg の最終選定は kernel crypto API の全ハッシュの実機 throughput（crc32c, sha1/sha256/sha512, sha3, blake2b/2s, xxhash64 等、[hardware-measurements](../verification/hardware-measurements.md) の実機計画）と digest 長・検出特性で行う。
 4. **起動時間影響**: verity あり/なし、FEC あり/なしでの T0〜T5（icount 既存手法）。
 
 /data 系は `data-luks-btrfs-design.md`、zstd 系は `zstd-usage-and-options.md` に分割。

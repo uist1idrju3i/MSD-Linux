@@ -85,7 +85,7 @@ rootfs = SquashFS+zstd+dm-verity(crc32c)+FEC、/data = LUKS+btrfs(dup)+xxhash64+
 | 項目 | 実機で確かめること |
 |---|---|
 | CPU crypto features | `/proc/cpuinfo` の flags（crc32, asimd, sha2, aes, pmull の有無）。BCM2710A1 の公開 cpuinfo は `fp asimd evtstrm crc32 cpuid` のみだが実機で確認 |
-| hash 速度 | crc32c（CRC32 命令）vs sha256（NEON、SHA2 命令なし）の実測 throughput。dm-verity 負荷込みの起動・read 時間で比較 |
+| hash 速度 | kernel crypto API が提供する全ハッシュアルゴリズムの実測 throughput（/proc/crypto 列挙: crc32c・sha1/sha256/sha512・sha3・blake2b/2s・xxhash64・wp512・streebog・md5 等。dm-crypt 全 cipher 計測と同じ枠組みで実施）。verity の hash_alg 選定（crc32c 方針の実機検証＋sha256-NEON fallback 比較）と btrfs csum 選定の根拠に使う。dm-verity 負荷込みの起動・read 時間でも比較 |
 | verity+FEC 起動影響 | dm-verity 有無での起動時間・全 file read 時間。FEC の訂正読み込み経路の遅延（破損注入は QEMU で検証、速度は実機） |
 | verity 破損時の挙動 | restart_on_corruption/panic_on_corruption での実際の再起動・tryboot 連携。起動後の破損検出でスロット不良を永続化する仕組みの動作 |
 | SquashFS codec/block | B2 の zstd/xz/gzip/lz4 × block size を実機で再測（boot→全 read 時間）。QEMU では相対順位のみ |

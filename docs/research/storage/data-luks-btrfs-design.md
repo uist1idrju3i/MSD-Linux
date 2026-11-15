@@ -128,7 +128,7 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 
 1. **btrfs mkfs**: `-m dup -d dup` 固定で `csum {crc32c, xxhash, sha256, blake2b}`、`nodesize {4K,16K,32K}`、`sectorsize {4K}` の差。btrfs-progs の csum 指定名は `blake2b`（kernel 表記 BLAKE2b-256）。既存 [filesystem-options-btrfs](filesystem-options-btrfs.md) 表の `blake2` は同じものの表記揺れで、実験コマンドは `blake2b` で統一する。
 2. **btrfs mount**: `compress=zstd:{1,3,9}`、`compress-force` 有無、`commit={30,5,0}`、`ssd/nossd`、`autodefrag` 有無、`space_cache` v2/none、`thread_pool`、`flushoncommit`。
-3. **LUKS**: cipher は **実機の kernel crypto API が提供する全 cipher**（aes, camellia, chacha, sm4, twofish, serpent, aria, xchacha12/20-adiantum 等、ゲストの /proc/crypto で列挙）をベンチする（利用者指示 2026-11-15）。`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無も比較。cipher の最終決定はセキュリティビット数（key size 込み）と実機での throughput 測定の両方で行う。暫定は既定の `aes-xts-plain64`。
+3. **LUKS**: cipher は **実機の kernel crypto API が提供する全 cipher**（aes, camellia, chacha, sm4, twofish, serpent, aria, xchacha12/20-adiantum 等、ゲストの /proc/crypto で列挙）をベンチする（利用者指示 2026-11-15）。同じ枠組みで **kernel crypto API の全ハッシュアルゴリズム**（crc32c, sha1/sha256/sha512, sha3, blake2b/2s, xxhash64, wp512, streebog 等、同じく /proc/crypto で列挙）も実機で throughput を測る（利用者指示 2026-11-15）。verity の hash_alg と btrfs csum の選定根拠に使う。`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無も比較。cipher の最終決定はセキュリティビット数（key size 込み）と実機での throughput 測定の両方で行う。暫定は既定の `aes-xts-plain64`。
 4. **fs-compare 連携**: 新設定を `B*`（plain btrfs）、`L*`（LUKS+btrfs 新規系統）として fs-compare-configs に追加し、T4-sync/T5/write inventory を既存手法で測る（E3/E4 matrix 完了後に同じ harness で）。
 5. **写り性能**: 200MB data file 書き込み・ランダム 4K rw・fsync 頻度差。
 6. **電源断・破損試験**: dup+xxhash の復旧動作、scrub、btrfs check。電源断反復（既存 harness）。
