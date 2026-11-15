@@ -1,5 +1,15 @@
 # 訂正済み事項
 
+## 2026-11-15 storage設計
+
+[option・鍵・A/B説明の訂正](../storage/storage-option-coverage.md)。利用者判断と台帳同期保留は維持します。
+
+## 2026-11-15の/data帰属とzram比較の訂正
+
+[旧調査](../storage/write-policy-and-s3.md)の未帰属問題に対し、15回のQEMU比較からext4lazyinitが主因と考えました。当初は「帰属確定」「16,384 sector、約97%を分離」としましたが、nolazy側は別mkfsでinode数も異なるため、独立した寄与量の測定ではありません。前回の8320は最初の120秒のidle増分、今回の16952はboot累積＋idle合計です。[E1記録](../../experiments/2026-11-15-data-first-boot-writes.md)へ範囲・対照の限界を追記し、完了記録・全phase・重複検査を追加しました。旧rawと失敗試行は保持します。
+
+[zram比較](../../experiments/2026-11-15-zram-builtin-vs-module.md)も「mへ変更しても利得なし」から、m側swap無効で機能非等価へ限定しました。明示load後・実機の速度は未測定。module_initcall_totalはzram単体ではありません。
+
 ## 2026-11-13のbinary hashと削除
 
 保存監査の「size/hashの一覧」や報告を、残っていたbinary 251件のhashが記録済みという意味には使いません。従来の一覧はpath・容量で、個別hashがあったscan入力は3件でした。全251件の現在のhash・size・mtimeをdata枝へ通常pushして照合した後、利用者の2026-11-13の承認で一覧の本文だけを削除しました。[保存監査の追記](../verification/session-evidence-2026-11-13.md#削除前snapshotと承認後の限定削除)に固定commitと`df`の前後値があります。現在のsnapshotは測定時との同一性も、本文の復元可能性も証明しません。
