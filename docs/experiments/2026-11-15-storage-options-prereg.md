@@ -26,7 +26,7 @@
 - 条件: source=既存 build の target tree。`-b {4K,8K,16K,32K,64K,128K,256K,512K,1M}` × `-Xcompression-level {1,3,9,15,19,22}`。codec 比較に `xz -Xbcj arm`、`lz4`、`gzip`（128K・既定 level）を各1点。
 - 採否基準: image サイズと QEMU での mount・起動時間の兼ね合い。現行 `-b 128K -Xcompression-level 22` との差が 5% 以内なら block 拡大を検討。
 - 反復: build は3回、QEMU read は5回、median/min/max を記録。
-- 状態: **単発速報済み**（作業 VM の `output-opt-mtx` 出力、正式記録は data 枝へ保存予定。xz=22.21MB・zstd 1M l19/22=22.37MB・zstd 128K default=23.90MB・lz4=30.84MB）。正式記録は反復後。
+- 状態: **単発速報済み**（xz=22.21MB・zstd 1M l19/22=22.37MB・zstd 128K default=23.90MB・lz4=30.84MB）。生データ（matrix.csv・script・driver.log・SHA256SUMS）は orphan branch `data/fs-compare-experiments` の commit `328bece4cd9f724aaafa83e5cc350c632762dc20` の `storage-options/mksquashfs-quick-scan/` に保存済み。正式記録は反復後。
 
 ### B2. SquashFS 展開・read 性能（QEMU）
 
@@ -47,21 +47,21 @@
 
 - 目的: cipher {aes-xts-plain64, xchacha12,aes-adiantum-plain64, xchacha20,aes-adiantum-plain64}、sector-size {512,4096}、integrity 有無の read/write throughput。
 - 背景: host コンテナでは algif_skcipher が無く `cryptsetup benchmark` の cipher 計測ができないため QEMU guest 内で `cryptsetup benchmark` / dd ベースで測る。
-- 採否基準: CardputerZero（BCM2837B0 ARMv8、AES-NI 無し想定）で adiantum 系が AES 系を上回るかどうか。書き込み規則上は差が小さいなら AES 系でよい。
+- 採否基準: CardputerZero（BCM2837B0 ARMv8、AES-NI 無し想定）で adiantum 系が AES 系を上回るかどうか。adiantum 系の sequential write throughput が AES 系の 1.2 倍を超える場合のみ adiantum 採用を検討し、1.2 倍未満なら AES 系（aes-xts-plain64）でよいとする。
 - 反復: 各 cipher 5回。
 
 ### B5. btrfs mkfs/mount option（QEMU guest + fs-compare 連携）
 
 - 目的: `mkfs.btrfs --csum xxhash -m dup -d dup` を基準に csum {crc32c,xxhash,sha256,blake2b}、nodesize {4K,16K,32K}、mount `compress=zstd:{1,3,9}`/compress-force/commit={30,5,0}/ssd, nossd/autodefrag/space_cache/thread_pool/flushoncommit/max_inline を測る。
 - 方法: 既存 fs-compare harness（`fs-compare-configs.tsv`）に variant を追加して T4-sync・T5・write inventory を測る。E3/E4 matrix 完了後に同じ機構で。
-- 採否基準: idle 書き込みが規則（§10: 操作なし・progress なしで書き込みなし）を満たす構成であること、write inventory が ext4 base から大幅に悪化しないこと。
+- 採否基準: idle 書き込みが規則（§10: 操作なし・progress なしで書き込みなし）を満たす構成であること。数値基準として、T4-sync/T5 の idle window で quiesce 後の書き込みが 0 sector であること、write inventory の総 sector 数が ext4 base 比 +15% 以内であること。
 - 反復: 各 variant 5回。
 
 ### B6. zram/zswap（QEMU guest）
 
 - 目的: zram `comp_algorithm` {lz4, lzo, zstd 既定/1/9}、zswap `compressor` {lzo,lz4,zstd}、`zpool` {zbud,z3fold,zsmalloc}、`max_pool_percent` {10,20,40} の圧縮率・swap 速度・CPU 時間。
 - 方法: メモリ圧 workload（fs-compare-workload.c にメモリプレッシャー版追加）で swap out→in。`mm_stat`/`io_stat` で圧縮率取得。
-- 採否基準: 現行 zstd 既定との圧縮率・速度差。lz4 は低圧縮高速の比較点として残す。
+- 採否基準: 圧縮率（orig_data_size/mem_used_total）と swap in/out の所要時間が現行 zstd 既定から ±10% 以内の差なら現行構成を維持する。lz4 は比較点で、圧縮率が zstd 既定比 -15% を超えて落ちるなら不採用とする。
 - 反復: 各構成5回。
 
 ### B7. 起動時間の統合影響
