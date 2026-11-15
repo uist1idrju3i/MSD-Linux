@@ -9,7 +9,8 @@
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
 | [2026-11-15-storage-options-prereg](2026-11-15-storage-options-prereg.md) | なし | 2026-11-15 | 事前登録（実行前） | SquashFS圧縮matrix、verity(crc32c)+FEC+破損注入、LUKS cipher、btrfs dup+xxhash64+zstd圧縮、zram/zswapのoption全測定の計画。B1のhost速報は取得済み、正式記録は反復後。 |
-| [2026-11-15-dm-verity-fec-corruption](2026-11-15-dm-verity-fec-corruption.md) | [結果](2026-11-15-dm-verity-fec-corruption.csv) | 2026-11-15 | 完了（QEMU、7 case x 5 boot） | verity(crc32c)+FEC の破損注入。data block の 1 bit 破損は FEC が訂正して起動、訂正能力超過・root_hash 改ざん・FEC 無しは検出して panic/restart。最上位 hash block の破損は parity が正しくても kernel の再帰検証制約で panic（A/B 切り戻しで対応）。 |
+| [2026-11-15-dm-verity-fec-corruption](2026-11-15-dm-verity-fec-corruption.md) | [結果](2026-11-15-dm-verity-fec-corruption.csv) | 2026-11-15 | 完了（QEMU、7 case x 5 boot） | verity(crc32c)+FEC の破損注入。data block の 1 bit 破損は FEC が訂正して起動、訂正能力超過・root_hash 改ざん・FEC 無しは検出して panic/restart。最上位 hash block の破損は parity が正しくても kernel の再帰検証制約で panic（別slotへの復帰は未確認）。 |
+| [storage option分類](../research/storage/storage-option-coverage.md) | source監査 | 2026-11-15 | 未測定範囲を分類 | 固定版のhelp・parser・Kconfig入力、hash、全token分類CSVと照合fixture。性能の新規測定ではない。 |
 | [2026-11-15-data-first-boot-writes](2026-11-15-data-first-boot-writes.md) | [測定](2026-11-15-data-first-boot-writes.csv) | 2026-11-15 | QEMU測定・原因特定 | 初回bootのp7への16,952 sectorは約97%がresize2fsの新規groupへのext4lazyinit。sfdiskはdisk側に16 sectorのみ、実処理は約570 sector。 |
 | [2026-11-15-zram-builtin-vs-module](2026-11-15-zram-builtin-vs-module.md) | [測定](2026-11-15-zram-builtin-vs-module.csv) | 2026-11-15 | 完了（QEMU・icount、各6回） | zram `=y`と`=m`のt_readyはほぼ同じ（warm中央値1.645対1.640秒）。ただし`=m`はmodalias自動loadの対象外でswapが無効のまま。`=y`維持が妥当。実機は未測定。 |
 | [2026-11-15-mksquashfs-matrix](2026-11-15-mksquashfs-matrix.md) | [測定](2026-11-15-mksquashfs-matrix.csv) | 2026-11-15 | 完了（host、138 run） | zstd 1M/l19=22.37MB が最小（xz 22.16MB の +1.0%）。現行 128K/l22 比 -5.6%。l19→l22 は bytes 不変で build 増、l19 が有利。read 側は B2 待ち。 |

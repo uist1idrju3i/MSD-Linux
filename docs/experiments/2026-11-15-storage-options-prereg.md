@@ -5,6 +5,8 @@
 - 背景: 利用者方針（2026-11-15）により root=SquashFS+zstd+dm-verity(crc32c)+FEC+A/B 切り戻し、data=LUKS+btrfs dup+xxhash64+zstd 透過圧縮とし、SquashFS/zstd/dm-verity/LUKS/btrfs の全 option を測定する。設計根拠は [rootfs完全性設計](../research/storage/rootfs-squashfs-verity-fec-design.md)、[data LUKS+btrfs設計](../research/storage/data-luks-btrfs-design.md)、[zstd使用箇所とoption](../research/storage/zstd-usage-and-options.md)。
 - 本 doc は実行前の登録。各実験は完了後に別の `YYYY-MM-DD-<short>.md` + `.csv` へ記録する。
 
+監査による追記: 以下の初回条件・数値閾値・raw保存参照を保持したまま、固定版で存在しないoptionと誤った説明を訂正しました。[全token分類と未実施範囲](../research/storage/storage-option-coverage.md)を併読してください。全optionの測定は未完了です。03914の台帳同期保留は解除せず、製品設定も変更しません。
+
 ## 固定版（実験の全 run で固定）
 
 | 部品 | 版 |
@@ -28,27 +30,29 @@
 - 反復: build は3回、QEMU read は5回、median/min/max を記録。
 - 状態: **単発速報済み**（xz=22.21MB・zstd 1M l19/22=22.37MB・zstd 128K default=23.90MB・lz4=30.84MB）。生データ（matrix.csv・script・driver.log・SHA256SUMS）は orphan branch `data/fs-compare-experiments` の commit `328bece4cd9f724aaafa83e5cc350c632762dc20` の `storage-options/mksquashfs-quick-scan/` に保存済み。正式記録は反復後。
 
+追記: 保存scriptの実行ループは16K〜1Mで、4K/8Kがありません。除外理由・失敗logは保存資料から確認できず、未実施の計画逸脱として残します。小blockが実行不能だったとはしません。後続の46構成×3回も元の54点全部の代わりではありません。
+
 ### B2. SquashFS 展開・read 性能（QEMU）
 
-- 目的: block size×level が decompress 時間と read 遅延に与える差。kernel decompressor が level 22（wlog 27 相当 window）を扱えるかの検証を兼ねる。
+- 目的: block size×levelがdecompress時間とread遅延に与える差。旧登録の「level 22はwlog 27相当」という一般CLIの説明をSquashFSへ直結させず、独立blockの実際の展開時間・RAM・起動可否を測る。
 - 条件: B1 の代表点（128K/l15・128K/l22・512K/l19・1M/l19）で rootfs を作り、boot 時間（既存 icount 手法 T0〜T5）と `/usr` 以下ランダム read（固定 seed）を測る。
 - 採否基準: T0 起動成功が前提。boot 時間増加が no-verity ベースライン比 +10% 以内、read p95 が既定比 +20% 以内なら採用候補。
 - 反復: 各構成5回。
 
 ### B3. dm-verity + FEC（crc32c formatter・破損注入・error mode）
 
-- 目的: hash=crc32c での tree 生成・起動・破損検出・FEC 訂正・error mode→tryboot 切り戻しを検証。
+- 目的: hash=crc32c での tree生成・起動・破損検出・FEC訂正・error modeを検証。別slot復帰はfirmware・永続flagを含む別の完了条件で、restart/panicの検出だけでは成立しない。
 - 前提: veritysetup は crc32c を拒否するため、hash tree+FEC 生成は自前 formatter（`board/cardputerzero/tools/` に新規、超過用語なしの小 tool）を先に実装してから測定。
 - 条件: hash {sha256(比較基準), crc32c}、4K block、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}。破損注入: ①data 1 block ビット化け ②連続 region 化け（FEC 訂正限界確認）③hash tree 自身の化け。
 - 採否基準: ①は FEC 範囲内なら訂正して起動継続、②③は検出して error mode 通りの動作、切り戻しは tryboot で別スロット起動を serial log で確認。
 - 反復: 各破損 case 5回。
 
-### B4. /data LUKS cipher throughput（QEMU guest 内）
+### B4. /data LUKS cipher・hash（QEMU機能確認と実機計画）
 
-- 目的: **kernel crypto API が提供する全 cipher**（ゲストの /proc/crypto で列挙: aes/camellia/chacha/sm4/twofish/serpent/aria/xchacha12・20-adiantum 等、利用者指示 2026-11-15）の read/write throughput。同じ枠組みで **全ハッシュアルゴリズム**（crc32c/sha1/sha256/sha512/sha3/blake2b/2s/xxhash64/wp512/streebog/md5 等）の throughput も測る。verity hash_alg と btrfs csum 選定の根拠。sector-size {512,4096}、integrity 有無の差も比較。
-- 背景: host コンテナでは algif_skcipher が無く `cryptsetup benchmark` の cipher 計測ができないため QEMU guest 内で `cryptsetup benchmark` / dd ベースで測る。QEMU TCG は cycle 相当ではないため絶対性能は[実機計測](../research/verification/hardware-measurements.md)（cipher・hash 全数）で確定し、ここでは相対比較と機能確認を行う。
-- 採否基準: CardputerZero（BCM2837B0 ARMv8、AES-NI 無し想定）で adiantum 系が AES 系を上回るかどうか。adiantum 系の sequential write throughput が AES 系の 1.2 倍を超える場合のみ adiantum 採用を検討し、1.2 倍未満なら AES 系（aes-xts-plain64）でよいとする。最終決定はセキュリティビット数（key size 込み）と実機 throughput の両方。
-- 反復: 各 cipher・hash 5回。
+- 目的: 利用者要求のkernel crypto APIの全cipher（AES/Camellia/ChaCha/SM4/Twofish/Serpent/ARIA/xchacha12・20-Adiantum等）と全hash（crc32c/sha1/sha256/sha512/sha3/blake2b/2s/xxhash64/wp512/streebog/md5等）を対象にする。sector-size {512,4096}、integrity有無、data cipher throughput、PBKDF時間/RAMを別々に測定する。hashはPBKDF2・verity・btrfs checksum・独立throughputの用途を分ける。
+- 背景: hostではalgif_skcipher不足を観測。QEMUは機能確認・計測器検証用で、絶対速度も相対順位もARM実機の代理にしない。ARMのAES拡張・NEON実装を確認し、x86のAES-NIと混同しない。`/proc/crypto` は登録済み実装だけなので、固定Kconfig・module一覧・明示load結果・benchmarkが受理する組合せと照合し、不在/未load/不適用を区別する。性能は[実機計測](../research/verification/hardware-measurements.md)（cipher・hash全数）で確定する。
+- 採否基準: 元の「adiantum sequential writeがAESの1.2倍超なら検討」という数値を保持するが、適用先は同条件の実機測定。LUKS cipherは利用者指定どおり当面aes-xts-plain64を維持。key sizeとsecurity strengthは別（XTSの2本分合計長を安全性bit数にしない）。最終判断は安全性要件と実機性能の両方で行い、QEMU順位で変更しない。
+- 反復: 各cipher・hash 5回。全候補の入力・非対応理由・失敗logとbinary/config hashを保存する。
 
 ### B5. btrfs mkfs/mount option（QEMU guest + fs-compare 連携）
 
@@ -59,7 +63,7 @@
 
 ### B6. zram/zswap（QEMU guest）
 
-- 目的: zram `comp_algorithm` {lz4, lzo, zstd 既定/1/9}、zswap `compressor` {lzo,lz4,zstd}、`zpool` {zbud,z3fold,zsmalloc}、`max_pool_percent` {10,20,40} の圧縮率・swap 速度・CPU 時間。
+- 目的: zramは `comp_algorithm` で名前、`algorithm_params` でzstdの既定/1/9を設定。zswapは実装可能なcompressor、`max_pool_percent` {10,20,40}等の5 parameterを比較。旧計画のzpool {zbud,z3fold,zsmalloc}切替は6.18.59に公開parameterがなく実行不能として分離する。
 - 方法: メモリ圧 workload（fs-compare-workload.c にメモリプレッシャー版追加）で swap out→in。`mm_stat`/`io_stat` で圧縮率取得。
 - 採否基準: 圧縮率（orig_data_size/mem_used_total）と swap in/out の所要時間が現行 zstd 既定から ±10% 以内の差なら現行構成を維持する。lz4 は比較点で、圧縮率が zstd 既定比 -15% を超えて落ちるなら不採用とする。
 - 反復: 各構成5回。

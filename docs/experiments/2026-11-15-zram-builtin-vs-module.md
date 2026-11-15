@@ -1,6 +1,6 @@
 # zram の CONFIG_ZRAM=y と =m の起動時間
 
-- 状態: QEMUで測定。起動時間の差は実質なし。=mではzram moduleがloadされずswapは無効
+- 状態: QEMUで測定。m側swap無効で機能非等価。明示loadを加えた場合の起動時間は未測定
 - 日付: 2026-11-15
 - 担当: Devin
 - 関連: [起動時間の測定器](../../board/cardputerzero/tools/bench/boottime/)、[書き込みの台帳](../design/write-policy.md)
@@ -43,14 +43,13 @@ t_ready（kernel開始からrcS完了までの経過、秒）:
 
 ## 帰属
 
-- 差はwarm中央値で約0.005秒（=mの方がわずかに小さい）。最小・最大の帯域がほぼ重なり、計測系のばらつき以下です。**起動時間の差は実質ありません。**
+- 差はwarm中央値で約0.005秒（=mの方がわずかに小さい）。最小・最大の帯域は重なります。この条件では明確な差を検出していませんが、機能非等価の比較で、同等性の証明ではありません。
 - =mではzram swapは有効になりませんでした。`zram.ko.xz` はimageに入りますが、zramにはhardware modaliasがなく、S10mdevの `modprobe -abq`（modalias自動load）ではloadされません。`/etc/modules-load.d/` も空で、`S99msd-zram` のworkerは `test -b /dev/zram0` でexit 1します。serialログインでの実測: `/proc/swaps` はheaderのみ、`/dev/zram0` 不在、`/run/msd-zram.log` は空（status=0・所要0.006秒はworkerの起動結果で、swap有効化の完了ではありません）。
-- zramのinit自体が0.001秒級のmodule_initcall_totalから見て、組込みでもモジュールでも支配項ではありません。
-- module_initcall_totalは両variantとも5件・0.001秒程度で、=mにしてもmodprobeによる遅延は発生していません。
+- module_initcall_totalは両variantとも5件・0.001秒程度ですが、全moduleの集計でありzram単体の初期化時間ではありません。m側ではzramをloadしていないため、load追加時の遅延は測れていません。
 
 ## 結論
 
-`CONFIG_ZRAM` を `=y` → `=m` に変えても起動時間は変わりませんが、そのままでは **zram swap自体が有効化されません**。`=m` にするには `/etc/modules-load.d/zram.conf` か `S99msd-zram` への `modprobe` 追加が必要です。loadの仕組みを足しても起動時間の利得は得られないため、現行の `=y` を維持するのが妥当です（モジュール化する利点はImage容量だけで、機能を黙って失う欠点が上回ります）。
+このimageのm側は **zram swap自体が有効化されていません**。現行の `=y` を維持する判断材料ですが、明示loadを追加して機能を揃えた比較は未実施です。load追加後の速度・RAM・Image容量を含む利得の有無や、実機での性能は、この測定から決められません。
 
 ## 失敗・限界
 
@@ -61,8 +60,11 @@ t_ready（kernel開始からrcS完了までの経過、秒）:
 ## 再生成
 
 ```sh
-# m側の環境（output-zram-m。fragmentは output-zram-m/linux-zram-m.fragment）
-docker/msd-dev sh -c 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output-zram-m msd_cardputerzero_defconfig && make -C output-zram-m -j8'
+# m側の環境。保存済みのm用fragmentを先に取得して配置する（本文参照）。
+docker/msd-dev make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output-zram-m msd_cardputerzero_defconfig
+docker/msd-dev vendor/buildroot/utils/config --file output-zram-m/.config --set-str BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES '$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/linux.fragment /work/output-zram-m/linux-zram-m.fragment'
+docker/msd-dev make -C output-zram-m olddefconfig
+docker/msd-dev make -C output-zram-m -j8
 # 計測（各variant。入力rootfsなどはOUTPUT_DIR環境変数で指定）
 docker/msd-dev env OUTPUT_DIR=/work/output-openssl-lts \
   board/cardputerzero/tools/bench/boottime/run-boottime.sh \
@@ -78,3 +80,11 @@ docker/msd-dev python3 docs/experiments/2026-11-15-zram-builtin-vs-module-check-
 ```
 
 raw CSVは [2026-11-15-zram-builtin-vs-module.csv](2026-11-15-zram-builtin-vs-module.csv)。logのSHA-256はCSVの `log_sha256` 列に入っています。
+
+rawは[data枝の保存directory](https://github.com/uist1idrju3i/MSD-Linux/tree/ab61a9ffa86635b02e0382f357d7da9e7d084077/session-2026-11-15/evidence)にあります。m用fragmentを `e2-zram-m-inputs.tar.zst` から新規の `output-zram-m/linux-zram-m.fragment` へ配置してから上記を実行します。fragmentを設定せずdefconfigだけ再生成してもm構成になりません。warm treeを再利用する場合はkernelの再configure/buildが必要です。当時のimageとのbyte一致は未確認です。
+
+| archive | SHA-256 |
+|---|---|
+| `e2-zram-boottime.tar.zst` | `7869e1ef833fb6ca74b67c5f72ebeba40635db5475e956fd4f6a7614fe04d8a1` |
+| `e2-zram-m-inputs.tar.zst` | `43af747e5919115649e0778f1c092325f6a4af6339dbe22ac8fb8fdd89dc2903` |
+| `e2-zram-swap-check.tar.zst` | `3124e6221ad2313eb5302fd7256b8fdb623f0ac215db7162ade4ccc234019972` |

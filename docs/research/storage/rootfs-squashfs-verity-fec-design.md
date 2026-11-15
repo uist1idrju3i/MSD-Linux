@@ -41,11 +41,13 @@ p5/p6 rootfs パーティション (256MB 固定)
 | `CONFIG_REED_SOLOMON` | =y（enc8/dec8） | 維持 | FEC の RS 符号化 |
 | `CONFIG_SQUASHFS` / `SQUASHFS_ZSTD` | =y | 維持 | 現行どおり |
 
-### 2.3 mksquashfs 4.7.5 の全 option（一次資料: `mksquashfs -help-all`）
+### 2.3 mksquashfs 4.7.5 の代表 option（一次資料: `mksquashfs -help-all`）
 
-圧縮関連: `-b <4K..1M>`（既定 128K）、`-comp {gzip,lzo,lz4,xz,zstd,lzma}`、`-noI/-noId/-noD/-noF/-noX/-no-compression`、zstd 固有 `-Xcompression-level <1..22>`（既定 15、`EXTREME_COMP` は 22）。
+ここは要約です。[全tokenの分類表](storage-option-coverage.md)で、既測定・未実施・対象外・実行不能を分けます。B1の代表matrixを全option測定完了とは扱いません。
 
-level の暫定方針（2026-11-15 利用者確認）: **zstd は 19**。B1 matrix（[mksquashfs-matrix](../../experiments/2026-11-15-mksquashfs-matrix.md)）で `-b 1M -Xcompression-level 19` と `22` が同一サイズ（22,372,352B。両 image の SHA-256 は異なり内容は非同一）だったため、19 より上げる根拠がない。配布は CI 上の build なので圧縮時間は考慮しない。展開側メモリは block 単位の独立圧縮のため実質 block size + kernel workspace 程度で、level 22・ultra でも大差はない。`-comp xz -b 128K -Xbcj arm` が全体最小（22,155,264B、zstd 1M 比 −1%）だが展開速度は zstd が優位と予想されるため、codec の最終決定は B2 の boot/read 測定後。
+圧縮関連: `-b <4K..1M>`（既定 128K）、`-comp {gzip,lzo,lz4,xz,zstd,lzma}`、`-noI/-noId/-noD/-noF/-noX/-no-compression`。zstd 固有 `-Xcompression-level` は正の1..22に加えて負のfast levelも受理します（0は不可、下限はリンク先libzstd依存）。既定15、`EXTREME_COMP`は22。zstd CLIの `--ultra` はmksquashfsへ渡しません。
+
+levelの判断は「展開側に悪影響がなければ22」という利用者の条件付き判断を保持します。旧記述の「zstdは19」を現行判断としません。B1 matrix（[mksquashfs-matrix](../../experiments/2026-11-15-mksquashfs-matrix.md)）で `-b 1M -Xcompression-level 19` と22が同一サイズ（22,372,352B。imageのSHA-256は異なる）だった事実と、l22を選ぶ判断は別です。配布はCI上のbuildなので圧縮時間は選定理由にしません。`-comp xz -b 128K -Xbcj arm` の22,155,264B（zstd 1M比 −1%）も保存します。[B2の限定的なQEMU結果](../../experiments/2026-11-15-squashfs-boot-read-bench.md)はl19/l22の展開側に測定上の差を認めていませんが、実機RAM・速度の保証ではありません。block独立圧縮でもworkspace等を実測せず「大差なし」と保証しません。
 
 構築関連: `-tar/-no-strip/-cpiostyle{,0}`、`-reproducible`（既定）/`-not-reproducible`、`-mkfs-time/-all-time/-root-time`、`-root-mode/-root-uid/-root-gid`、`-all-root/-force-uid/-force-gid/-pseudo-override`、`-exports/-no-exports`、`-no-sparse`、`-tailends/-no-tailends`（既定 off）、`-no-fragments`、`-no-duplicates`、`-no-hardlinks`、`-keep-as-directory`。
 
@@ -85,7 +87,7 @@ veritysetup 側の format/open option: `--hash`、`--no-superblock`、`--format 
 
 現行 p5/p6 は 256MB 固定、squashfs image がそのまま入る（`genimage.cfg`）。hash tree と FEC の置き場:
 
-- **案 A（同一パーティション内連結）**: squashfs 末尾に hash tree → FEC を続けて書き、verity の hash_dev=fec_dev=同一パーティション。`--hash-offset`/`fec_start` で指定。メリット: パーティション表不変。256MB 内に収まるかが条件（hash tree は sha256 4K block で約 1/4096×log、128MB data なら数 MB。crc32c は 4B/hash でさらに小さい。FEC は fec_roots に比例）。
+- **案 A（同一パーティション内連結）**: squashfs 末尾に hash tree → FEC を続けて書き、verity の hash_dev=fec_dev=同一パーティション。`--hash-offset`/`fec_start` で指定。メリット: パーティション表不変。256MB 内に収まるかが条件。4K blockではsha256の第1段はdataの約1/128、crc32cは約1/1024で、上位段と整列分を加えます。FEC領域も別途必要です。
 - **案 B（別パーティション）**: p8 などに verity 領域。genimage 変更が必要。管理は楽。
 - **推奨**: 案 A を既定案とし、256MB 制約内で fec_roots を決める。
 
@@ -94,13 +96,23 @@ veritysetup 側の format/open option: `--hash`、`--no-superblock`、`--format 
 現行 A/B は tryboot + msd-update で update 失敗時に戻す設計（[ab-design-history](ab-design-history.md)、[recovery-and-watchdog](recovery-and-watchdog.md)）。verity の破損検出を「このスロットは壊れている」として A/B に接続する案:
 
 - **FEC が有効な間**: 読み出し時に訂正して継続（dm-verity が自動）。訂正が発生したことの観測は status 取得のみ。
-- **訂正不能な破損**: `panic_on_corruption` は即 panic → 再起動。watchdog/boot counter 機構（既設計）が tryboot で別スロットへ。ただし panic は再起動理由を残しにくい。
-- **restart_on_corruption**: kernel reboot。boot counter が進んで tryboot 切り戻し。
+- **訂正不能な破損**: `panic_on_corruption` はpanicを起こしますが、再起動するかはpanic timeoutまたはwatchdog次第です。別slotの選択までは実装しません。
+- **restart_on_corruption**: kernelのrestartを要求しますが、次にどのslotを選ぶかはfirmware設定と更新状態によります。trybootの一回限りの復帰と、既定slotの破損回復は別です。
 - **ignore_corruption** は方針外（検出して無視はしない）。
 - **error_as_corruption**: I/O error も破損扱いにして FEC 経路へ流す。SD 読み出し error を破損とみなすかは要検討。
 - **check_at_most_once**: 2 回目以降の読み出しを検査しない → 起動後の再検査を省く用途。セキュリティ低下、不採用候補。
 
-**推奨**: `use_fec_from_device + fec_roots N` + `restart_on_corruption`（panic ではなく再起動で tryboot に委ねる）。panic_on_corruption との差を QEMU 実測で比較する。起動直後でなければ boot counter は既に良い起動として確定している可能性があるので、verity 破損検出時に「スロット不良」をどこへ永続化するかが未解決点（write-policy に合わせて bootsel フラグで扱う案）。
+**候補**: FECと `restart_on_corruption` の組合せ。ただしrestartだけでA/B復帰が成立するとはしません。以下を設計・検証するまで製品実装完了ではありません。
+
+| 未決定項目 | 必要な設計・確認 |
+|---|---|
+| panic timeout / watchdog | panic時も動くreset手段、時間上限、watchdogの給餌停止条件と実firmwareでの再起動 |
+| 既定slot / trial slot | trial失敗の一回復帰と既定slot破損を分け、次回選択と試行上限を定義 |
+| S99msd-health後の破損 | commit済み・稼働後の検出でも不良slotを再選択しない経路。単純なboot成功counterだけでは足りない |
+| 両slot破損 | 無限A/B往復を避ける停止・復旧導線と、利用者への進捗・中断可否表示 |
+| 永続flagの書込み時機 | kernelのpanic経路でFATへ安全に書けると仮定しない。事前のtrial記録か次回boot時の処理か、電断時の整合、摩耗、書込み規則上の例外を設計 |
+
+目的は利用者指定の偶発破損検出と切り戻しです。crc32cを暗号学的root of trustへ読み替えません。03914の台帳同期保留は継続し、`pending-work.csv` / `roadmap.md` を本件で同期しません。
 
 ### 4.3 起動経路
 

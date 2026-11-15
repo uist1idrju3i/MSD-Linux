@@ -85,11 +85,11 @@ rootfs = SquashFS+zstd+dm-verity(crc32c)+FEC、/data = LUKS+btrfs(dup)+xxhash64+
 | 項目 | 実機で確かめること |
 |---|---|
 | CPU crypto features | `/proc/cpuinfo` の flags（crc32, asimd, sha2, aes, pmull の有無）。BCM2710A1 の公開 cpuinfo は `fp asimd evtstrm crc32 cpuid` のみだが実機で確認 |
-| hash 速度 | kernel crypto API が提供する全ハッシュアルゴリズムの実測 throughput（/proc/crypto 列挙: crc32c・sha1/sha256/sha512・sha3・blake2b/2s・xxhash64・wp512・streebog・md5 等。dm-crypt 全 cipher 計測と同じ枠組みで実施）。verity の hash_alg 選定（crc32c 方針の実機検証＋sha256-NEON fallback 比較）と btrfs csum 選定の根拠に使う。dm-verity 負荷込みの起動・read 時間でも比較 |
+| hash 速度 | kernel crypto APIの全hash（crc32c・sha1/sha256/sha512・sha3・blake2b/2s・xxhash64・wp512・streebog・md5等）を測る。`/proc/crypto` は登録済み実装だけなので、固定Kconfig・module一覧・明示load結果と照合し、未load・未build・API不適用を分ける。dm-crypt全cipherと同じ枠組みで実施し、crc32c方針の実機検証とsha256-NEON比較、btrfs csumの判断に使う。dm-verity負荷込みの起動・read時間も比較 |
 | verity+FEC 起動影響 | dm-verity 有無での起動時間・全 file read 時間。FEC の訂正読み込み経路の遅延（破損注入は QEMU で検証、速度は実機） |
 | verity 破損時の挙動 | restart_on_corruption/panic_on_corruption での実際の再起動・tryboot 連携。起動後の破損検出でスロット不良を永続化する仕組みの動作 |
-| SquashFS codec/block | B2 の zstd/xz/gzip/lz4 × block size を実機で再測（boot→全 read 時間）。QEMU では相対順位のみ |
-| LUKS cipher 全ベンチ | kernel crypto API の全 cipher（aes/camellia/chacha/sm4/twofish/serpent/aria/adiantum 等）の dm-crypt read/write throughput。暫定は aes-xts-plain64、セキュリティビット数と性能で最終決定 |
+| SquashFS codec/block | B2のzstd/xz/gzip/lz4×block sizeを実機で再測（boot→全read時間）。QEMUの相対順位も実機の代理にはしない |
+| LUKS cipher 全ベンチ | kernel crypto APIの全cipher（aes/camellia/chacha/sm4/twofish/serpent/aria/adiantum等）のdm-crypt read/write throughput。暫定はaes-xts-plain64。PBKDF時間/RAM・data cipher・hashの用途を分け、key sizeとsecurity strengthを同一視せず、安全性要件と実機性能で判断する |
 | btrfs on SD | dup data/metadata の書き込み倍率の実測、xxhash64 vs crc32c の scrub 時間、zstd 圧縮の CPU 負荷、commit= 変更の fsync latency |
 | zram/zswap | zstd backend の実機圧縮速度・swap 有無の体感と OOM 挙動 |
 | microSD との整合 | 実カードの erase block・preferred_erase_size と 4K sector、verity/FEC 配置の整列 |

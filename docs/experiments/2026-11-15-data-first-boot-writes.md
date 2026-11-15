@@ -1,6 +1,6 @@
 # /data 初回起動の書き込み帰属
 
-- 状態: QEMUで測定。原因は ext4lazyinit による新規groupのinode table初期化と特定
+- 状態: このQEMU条件ではext4lazyinitが主因と考えられる。単独の寄与量には比較条件の差が残る
 - 日付: 2026-11-15
 - 担当: Devin
 - 関連: [書き込みの台帳](../design/write-policy.md)、[起動後idleのpartition別書き込み](2026-11-12-write-inventory.md)
@@ -38,11 +38,11 @@ variantごとに `output-dwcause/input-<variant>/` へ `sdcard.img` と `Image`�
 grown系の拡張は `sfdisk --no-reread -N` を `msd-data-grow` と同じ引数列（`start=…, size=…, type=…`）で行い、partxによるkernel通知だけは除きました。
 pregrown-nolazyは `mke2fs -t ext4 -F -b 4096 -L data -E lazy_itable_init=0,lazy_journal_init=0` で352 MiB分を作り直してp7へ書き戻しています。
 resize2fs 1.47.4では新規groupが `INODE_UNINIT` のまま残ることをdumpe2fsで確認済みです（group 1・2）。
-inode数はresize後49,152（16384/group）で、pregrown-nolazyの新規mkfsは90,144です。inode tableの総量が違うためpregrown-nolazyは別のFSですが、「初期化済みか」の条件比較には使えます。
+inode数はresize後49,152（16384/group）で、pregrown-nolazyの新規mkfsは90,144です。inode tableの総量・FS metadataも異なり、lazy初期化だけを切り替えた対照ではありません。差の全量をlazyinitだけへ帰属することはできません。
 
 ## 結果
 
-p7のwrite_sectors差分（512 bytes単位）。bootはprobe開始時の累積、idleNは各120秒区間の増分です。
+p7のwrite_sectors差分（512 bytes単位）。bootはprobe開始時の累積、idleNは各120秒区間の増分です。前回の8320はboot後最初の120秒のidle増分で、この表のbase合計16952（boot累積8648＋idle1の8304＋idle2/3の0）とは測定範囲が違います。同じ量の再測定値として比較しません。
 
 | variant | boot | idle1 | idle2 | idle3 | 計 | n |
 |---|---:|---:|---:|---:|---:|---|
@@ -65,14 +65,13 @@ growで広げた領域はsparse（ゼロ）のため、lazyinitが未初期化�
 
 ## 帰属
 
-- **ext4lazyinit**: 16,384 sector（新規2 group × 8192 sectorのinode table）。初回書き込みの約97%。pregrownでも残るためresize2fs自身の書き込みではなく、mount後のkernel threadの処理です。pregrown-nolazyで消えたことが裏付けです。
+- **ext4lazyinit**: 新規2 group × 8192 sectorのinode tableは16,384 sectorで、base合計の約97%に相当します。pregrownでも書き込みが残り、初期化済みFSで減ることは主因という仮説を支持します。ただし別mkfsとの比較なので、この数値を独立に測った寄与量とはしません。
 - **sfdiskのpartition表**: 16 sector（8 KiB）。partition表はp7ではなく `mmcblk0` 側（先頭のMBRと拡張領域先頭のEBR）へ書かれるため、p7のcounterには出ません。baseのmmcblk0全体とp7の差は全3回とも16 sector、grown-fs64は0で、guest内のsfdisk分がそのままこの差として分離できました。
-- **resize2fs**: baseとpregrownのboot差 328 sectorが、hostへ移したresize2fs自身の書き込みに相当します。同じ処理をguest内でやるかhostで済ませるかだけで、lazyinitの仕事量は変わりません。
-- **fsck＋mount＋mkdir・journal等の実書き込み**: pregrown-nolazyのboot=120、matureのboot=424が下限と典型値です。
-- baseの16952（p7）＋16（disk側のpartition表）＝16,968が初回bootの書き込み量で、その内訳は「実処理 約570 sector＋lazyinit 16,384 sector＋partition表 16 sector」です。
+- **resize2fs**: baseとpregrownのboot差は320〜328 sectorです。hostで処理を済ませた条件との差であり、起動順序・metadata状態の影響を含み得ます。
+- **fsck＋mount＋mkdir・journal等**: pregrown-nolazyのboot=120、matureのboot=424を観測しました。FSと起動履歴が違うため一般的な下限や典型値とはしません。
+- baseの16952（p7）＋16（disk側のpartition表）＝16,968がこの条件で観測した合計です。以前の「実処理約570＋lazyinit 16,384＋partition表16」は推定内訳で、全処理を個別に測った値ではありません。
 
-初回bootの書き込みは、ほぼ全量が「resizeで追加されたgroupのinode tableを埋める」lazyinit由来と確定しました。
-write-policy.mdの「online resize後の書き込み」の未対応項目は、この帰属に更新します。
+このQEMU条件では、resize後のinode table初期化が主因と考えられます。別image・実機への一般化と、lazy設定以外を揃えた寄与量の測定は未実施です。書き込み台帳にもこの限界を残します。
 
 ## 失敗・限界
 
@@ -80,7 +79,7 @@ write-policy.mdの「online resize後の書き込み」の未対応項目は、�
 |---|---|
 | grown-fs64-r1・pregrown-r1・pregrown-nolazy-r1（初回） | input内のsymlinkをhostの絶対pathで作り、開発OCIの `/work` から解決できずFileNotFoundError。失敗したrun dirは保存し、相対symlinkに直して再試行・完走 |
 | mature-r1 | 測定中にrun dirを移動してしまい後処理が失敗。serial.logからraw.csvを再生成して救済。値は正常範囲 |
-| QEMUのcounter | guestから見たblock書き込みで、SD実機・FTLの書き込み量ではありません。sparse imageのため「ゼロへのゼロ書き込み」はbyte差分に出ませんが、sector数の帰属は成立します |
+| QEMUのcounter | guestから見たblock書き込みで、SD実機・FTLの書き込み量ではありません。sparse imageのため「ゼロへのゼロ書き込み」はbyte差分に出ません。counterだけでは書いたprocessを特定できません |
 | 実機 | 未測定。実SDでは新規領域の内容がゼロとは限らず、lazyinitの書き込み量自体は同じでも消費・寿命への意味づけは別途評価が要ります |
 | 測定の並行負荷 | fs-compare matrix・kernel buildと同時実行。sector counterはhost負荷で変わらないが、wall timeは伸びています |
 
@@ -90,12 +89,22 @@ write-policy.mdの「online resize後の書き込み」の未対応項目は、�
 # 画像の再生成（warm build）
 docker/msd-dev sh -c 'make -C vendor/buildroot BR2_EXTERNAL=/work O=/work/output-openssl-lts msd_cardputerzero_defconfig && make -C output-openssl-lts -j8'
 # variant入力の生成と測定ドライバー（収録スクリプト。出力先はoutput-dwcause）
-sh docs/experiments/2026-11-15-data-first-boot-writes-prepare-variants.sh
-sh docs/experiments/2026-11-15-data-first-boot-writes-run.sh
+docker/msd-dev sh docs/experiments/2026-11-15-data-first-boot-writes-prepare-variants.sh
+docker/msd-dev sh docs/experiments/2026-11-15-data-first-boot-writes-run.sh
 # host側比較・集計
 sh docs/experiments/2026-11-15-data-first-boot-writes-forensic-p7.sh <run dir>
-docker/msd-dev python3 docs/experiments/2026-11-15-data-first-boot-writes-aggregate.py
+docker/msd-dev python3 docs/experiments/2026-11-15-data-first-boot-writes-aggregate.py output-dwcause/runs
 ```
 
 raw CSVは [2026-11-15-data-first-boot-writes.csv](2026-11-15-data-first-boot-writes.csv)。run directoryのmetadata.jsonに入力hash、serial.logにQEMU provenanceが入っています。
-大きなsdcard.img・serial logはcommitせず、data branch `data/fs-compare-experiments` 側へ移すか上記で再生成します。
+serial log・metadata・失敗試行は[data枝のE1 archive](https://github.com/uist1idrju3i/MSD-Linux/blob/ab61a9ffa86635b02e0382f357d7da9e7d084077/session-2026-11-15/evidence/e1-data-first-boot.tar.zst)に保存済みです。archiveのSHA-256は `df346838ac22c9fe5d0dcf1a1fe7b116fe7bb8cd8a1207008d97d062a71f946b`。image本体は含みません。
+
+### 再現用scriptの修正（監査後）
+
+上記は新しい出力先で行う手順です。既存の `input-*` は上書きせず停止し、中間imageも実行ごとの別directoryへ保持します。入力のp4/p7位置はsfdiskから取得し、DOS/512 byte sector・64 MiB p7という前提を検査します。相対symlinkと `inputs.sha256` を作り、container内でも参照できるようにしました。別の出力先を使う場合は、同じcontainer内で `env E1_WORK_DIR=<新規作業先> E1_OUTPUT_DIR=<build出力>` をscriptに渡します。
+
+run driverはrunner成功後に全8 deviceのboot・idle・RAM/disk controlのphase数、単調counter、区間長、正の対照、serial完了markerを検査し、raw・serial・metadataのhashを `e1-complete.json` に記録します。この記録と条件が一致したrunだけ再利用します。不完全runは一意の `.failed-*` 配下へ退避し、1件でも失敗した実行は終了値1にします。集計は既定で5 variant各3回も検査し、一部のrunだけで要約を出しません。条件を変えた場合は `--windows`・`--seconds`・`--repeats`・`--variants` を揃えます。既存の測定中directoryへ並行実行しません。
+
+旧runにはこの完了記録がありません。旧rawの構造だけを再検査する場合は集計に `--legacy` を明示します。このmodeは旧fileを変更せず、当時のrunner終了値の成功を新たに証明しません。mature-r1の救済履歴も消しません。集計器のfixtureは `python3 tests/e1-write-attribution/run.py`。今回はscriptのhost検査だけで、新しいQEMU測定は行っていません。
+
+未保全text87件、FEC確認器/build driver、監査と復元限界付き添付は[data枝の追加保全](https://github.com/uist1idrju3i/MSD-Linux/tree/5bc9844af3b39212252ed6361ff7c5e66f8bc110/sessions-2026-11-15)に保存しました。`manifest.json` と `evidence.files.sha256` で保存内容を照合できます。
