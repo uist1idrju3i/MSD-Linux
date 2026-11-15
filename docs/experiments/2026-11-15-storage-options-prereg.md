@@ -26,7 +26,7 @@
 - 条件: source=既存 build の target tree。`-b {4K,8K,16K,32K,64K,128K,256K,512K,1M}` × `-Xcompression-level {1,3,9,15,19,22}`。codec 比較に `xz -Xbcj arm`、`lz4`、`gzip`（128K・既定 level）を各1点。
 - 採否基準: image サイズと QEMU での mount・起動時間の兼ね合い。現行 `-b 128K -Xcompression-level 22` との差が 5% 以内なら block 拡大を検討。
 - 反復: build は3回、QEMU read は5回、median/min/max を記録。
-- 状態: **単発速報済み**（`/home/devin-worker/fscmp/MSD-Linux/output-opt-mtx/`、xz=22.21MB・zstd 1M l19/22=22.37MB・zstd 128K default=23.90MB・lz4=30.84MB）。正式記録は反復後。
+- 状態: **単発速報済み**（作業 VM の `output-opt-mtx` 出力、正式記録は data 枝へ保存予定。xz=22.21MB・zstd 1M l19/22=22.37MB・zstd 128K default=23.90MB・lz4=30.84MB）。正式記録は反復後。
 
 ### B2. SquashFS 展開・read 性能（QEMU）
 
