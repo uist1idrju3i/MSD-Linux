@@ -27,6 +27,8 @@ host回帰は `docker/msd-dev tests/dm-verity-format/run.sh`。固定salt、乱�
 
 RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な移植元revision・copyright通知・変更・license条件の監査は未解決です。違反とは断定せず、監査が済むまで製品formatterとして出荷しません。hash/FECの一致と法的な出荷可否を混同しません。
 
+2026-11-15追記：利用者は監査と並行する研究限定利用を承認しました。[初期監査](rs-formatter-provenance-2026-11-15.md)に固定上流比較を、[B3追試](../../experiments/2026-11-15-dm-verity-fec-followup-prereg.md)に次回の条件を保存しました。監査未完了・製品出荷禁止は変わりません。
+
 ## 次回harness
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
