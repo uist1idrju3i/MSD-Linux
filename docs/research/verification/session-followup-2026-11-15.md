@@ -20,7 +20,7 @@
 | 7 | Phase C設計 | FEC配置、LUKS鍵lifecycle、既定slot/trial別rollback、product-decisions/write-policy・R36等の判断が残る。既決定を維持し、台帳同期は保留。実装前に利用者判断を再提示 |
 | 8 | 製品migration | まだ測定基盤段階。genimage/post-image/cmdline、署名bundle配置、msd-update/health、data init/grow/復旧、既存card移行と進捗表示・中断可否を設計・test。Phase Aを先行し、実装承認後に進める |
 | 9 | ext4撤去 | btrfs移行後の条件付き既決定。S02/msd-data-growと旧card移行を先に置換し、その後EXT4/e2fsprogs依存・復旧手段を検査して削る。現時点では未実施 |
-| 10 | 03914 slot表示 | 最終仕様は決定・未実装。独立した小変更候補。正常A/B・trial、DT欠落/不正、cmdline fallback、未知、status error、tty1なしをhost/QEMUで検査し、LCD/firmwareは実機待ち |
+| 10 | 03914 slot表示 | 2026-11-15にS98msd-readyへ実装。[書込み・画面方針](../../design/write-policy.md#ramに置いているもの)に限定的な英語のみの判断を反映。host fixtureとQEMUの条件・結果は[検証記録](../../experiments/2026-11-15-boot-slot-banner.md)を参照。LCD/firmwareは実機待ち |
 | 11 | 03914 Phase A | 調査・計画まで。R03境界とframework比較の結果を再提示し、承認後に実装。原本3件未取得のためR01〜R44全文監査表は再現未完了。以下の順序を保持 |
 
 ## 製品rollbackと鍵の未決設計

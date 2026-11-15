@@ -44,6 +44,8 @@ event IDは元sessionのIDです。原文と当時の履行評価はS0 archive�
 
 ## 進捗・停止・Automation
 
+2026-11-15のP2追記：上記は判断保存時点の状態です。slot表示をS98msd-readyへ実装し、[host fixtureとQEMU A/B](../../experiments/2026-11-15-boot-slot-banner.md)で検査しました。実機LCD/firmware trybootは未確認のままです。今回の限定的な実装承認で、03914の台帳同期保留は解除しません。
+
 以下の要求は製品の採否を変える決定ではありませんが、引継ぎから落とさないようeventを対応付けます。
 
 | event ID | 要求・履行と限界 |
