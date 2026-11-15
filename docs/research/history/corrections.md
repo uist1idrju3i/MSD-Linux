@@ -1,5 +1,9 @@
 # 訂正済み事項
 
+## 2026-11-15 E34の反復・因果・規則適合
+
+[E34](../../experiments/2026-11-15-fs-compare-matrix.md)のT5は18 variant中17で差を反復し、P136の増加は非再現でした。idleはf2fs F3/P044に遅いwrite、I2/L3に最大88 sectorの追い書きを観測。B2/P097の各3回0も、新LUKS+btrfs設計の§10適合ではありません。174成功runを42群へ集計し、4中断attempt・harness差分・集計器をdata枝へ追補保存しました。
+
 ## 2026-11-13のbinary hashと削除
 
 保存監査の「size/hashの一覧」や報告を、残っていたbinary 251件のhashが記録済みという意味には使いません。従来の一覧はpath・容量で、個別hashがあったscan入力は3件でした。全251件の現在のhash・size・mtimeをdata枝へ通常pushして照合した後、利用者の2026-11-13の承認で一覧の本文だけを削除しました。[保存監査の追記](../verification/session-evidence-2026-11-13.md#削除前snapshotと承認後の限定削除)に固定commitと`df`の前後値があります。現在のsnapshotは測定時との同一性も、本文の復元可能性も証明しません。

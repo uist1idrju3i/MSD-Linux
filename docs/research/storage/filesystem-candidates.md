@@ -12,6 +12,8 @@ formatter、filesystem feature、mount、checksum、LUKS2、dm-integrityの個�
 
 ## Linux 6.18 系 microSD 候補の比較
 
+2026-11-15追記: [E34反復測定](../../experiments/2026-11-15-fs-compare-matrix.md)のQEMU条件では、F2FS F3系/P044のidle writeを反復し、btrfs B2/P097は各3回0でした。下表の機能比較へこの限定的な観測を補います。実機の耐久性・全構成の採否は確定しません。
+
 以下の性能・RAM・tool size の定性的比較は、kernel documentation の機能記述と形式上の特徴からの【推測】である。比較用 image、同じ SD card、同じ workload で測っていない値を既知の数値として扱わない。fsck の時間、tool size、kernel size は候補間で共通の測定条件がなく、すべて未測定とする。Linux 6.18 系の基準で、bcachefs は上流 kernel 本体から外れたため、別途導入しない限り対象 kernel に含まれない【一次: K12】。
 
 | FS | 用途 | 電断時機構 | fsck の有無・時間 | 小ファイル効率 | write amplification | RAM / kernel size cost | tool size | 成熟度 | rootfs / `/data` / boot 適合性 | 判定 |
@@ -23,8 +25,9 @@ formatter、filesystem feature、mount、checksum、LUKS2、dm-integrityの個�
 | ext2 | 汎用 writable block FS | journal なし。clean unmount 失敗時に全体 consistency check が必要になり得る【推測】。 | `e2fsck` あり。時間は未測定。 | block/inode overhead は format 条件次第。 | journal 不要だが電断後の全体修復コストを考慮【推測】。 | kernel/RAM cost 未測定。 | e2fsprogs 未測定。 | 成熟【推測】 | `/data` reference。boot は通常 FAT。 | **reference**。journal recovery を重視する用途では ext4 と比較。 |
 | ext3 | 旧 ext3 on-disk format | metadata journaling。data mode と同期条件を確認。 | ext4 driver と `e2fsck` で扱う。時間は未測定。 | ext4 と同様、format/workload 依存。 | journal write を含む【推測】。 | 6.18 に独立した `EXT3_FS` はなく、ext4 driver の共用 cost。 | e2fsprogs 未測定。 | 成熟だが旧世代との位置づけ【推測】 | `/data` reference。boot は通常 FAT。 | **reference**。ext3 format 互換の確認用。 |
 | ext4 | 汎用 writable block FS | journal と replay。 | `e2fsck` あり。時間未測定。`ro` mount でも replay し得る。 | block size、inline_data、directory metadata の影響を測る。 | journal、metadata、writeback 条件に依存【推測】。 | kernel/RAM cost 未測定。 | e2fsprogs 未測定。 | 成熟【推測】 | `/data` に適合。 | **候補**。現行実装の比較基準。 |
-| F2FS | flash/block writable FS | log-structured、checkpoint、roll-forward recovery。 | `fsck.f2fs` あり。時間未測定。 | 小ファイル性能と GC 影響を計測【推測】。 | GC/metadata amplification が media/workload 依存【推測】。 | GC/cache RAM、kernel cost 未測定。 | f2fs-tools 未測定。 | upstream と利用実績はあるが target maturity は別途評価【推測】。 | `/data` candidate。boot/rootfs は read-only image を優先。 | **候補**。ext4 と電断・fsck・書き込みを比較。 |
-| btrfs | CoW writable FS | CoW transaction、metadata tree。 | `btrfs check` 等あり。処理時間未測定。 | CoW/metadata overhead が小ファイルに影響し得る【推測】。 | CoW、metadata、snapshot 次第【推測】。 | kernel/RAM cost と tool size 未測定。 | btrfs-progs 未測定。 | 成熟した機能群だが運用複雑性を評価【推測】。 | `/data` reference。rootfs/boot の本用途には過剰な可能性。 | **reference**。比較ベースライン。 |
+| F2FS | flash/block writable FS | log-structured、checkpoint、roll-forward recovery。 | `fsck.f2fs`あり。時間未測定。 | 小ファイル性能とGC影響を計測【推測】。 | E34でF3系5,736 sector、P044 6,720 sectorのidle writeを各3回観測。writerは未同定 | GC/cache RAM、kernel cost未測定。 | f2fs-tools未測定。 | target maturityは別途評価。 | `/data`候補。 | §10適合は未対応。操作・progressとwriteの終了時刻を台帳で判断する |
+| btrfs | CoW writable FS | CoW transaction、metadata tree。 | `btrfs check`等あり。時間未測定。 | CoW/metadata overheadは条件次第。 | E34のB2圧縮variantはT5で56〜62%減。B2/P097のidleは各3回0 | kernel/RAM costとtool size未測定。 | btrfs-progs未測定。 | 運用複雑性は別途評価。 | 既測定B2は新設計LUKS+btrfsと別。 | data/metadata DUP・xxhash64・zstdの統合試験と§10判定は未完了 |
+| dm-integrity I2 / LUKS L3系 | filesystemの下のblock stackで、FS単体とは別 | journal・bitmap等の構成ごとに比較 | 回復は別に評価 | 性能とPBKDFは別 | E34で最大88 sector・24秒以内の追い書きを観測 | RAM未評価 | 製品への統合費用は別 | 実機未確認 | 新しいwrite-policy判断材料 | 収束や少量を§10適合とはしない。操作・progressまたは台帳の例外を判断する |
 | XFS | 大容量向け journaled FS | Write-ahead log と metadata transaction。 | `xfs_repair` あり。時間未測定。 | directory/inode 条件と workload 次第【推測】。 | log/metadata overhead を含む【推測】。 | kernel/RAM cost 未測定。 | xfsprogs 未測定。 | 成熟【推測】 | 大容量 `/data` の reference。boot は不適。 | **reference**。小容量 SD で採用根拠が乏しい。 |
 | NILFS2 | log-structured writable FS | log と checkpoint。 | kernel docs は通常の `fsck` 不在を記載。時間の共通測定なし。 | 小ファイル効率未測定。 | log/checkpoint に依存【推測】。 | kernel/RAM cost 未測定。 | nilfs-utils 未測定。 | 専門的用途【推測】 | `/data` reference、rootfs/boot 不適。 | **reference**。fsck/運用 tooling を先に確認。 |
 | bcachefs | CoW writable FS | CoW/transaction を持つ設計。 | 本体から分離後の tool/support 状況は構成依存。時間未測定。 | 未測定。 | 未測定。 | 6.18 上流本体には不在。外部 module/tool cost 未測定。 | 未測定。 | version/upstream status 変化中【一次: K12】。 | 既定 kernel では rootfs/`/data`/boot に利用不可。 | **除外**。6.18 上流 kernel から外れている。 |
