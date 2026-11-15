@@ -127,3 +127,15 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 - 36時間はAを含む累積上限です。保守的に初回事前登録commitの2026-11-15 12:17:52 UTCからの経過も予算へ含め、段階ごとに残数×実測wallと準備余裕を再計算します。最終deadlineは2026-11-17 00:17:52 UTCです。全timeoutを無条件に消化せず、超過見込みやclean失敗、期待の曖昧さ・計測器の予期しない失敗があれば停止して相談します。
 
 この追記はBのsmokeより前にcommitします。C以降の注入offset・新生成引数・計測器sourceは、各段階の実行前commitで固定します。入力不一致・clean失敗の停止規則、RS研究限定、実機未確認、台帳同期保留を維持します。
+
+## B clean smoke再開前amendment（2026-11-15）
+
+利用者は[最初のclean smoke停止](2026-11-15-dm-verity-fec-stage-b-smoke.md)を受け、本sessionで以下を承認しました。修正・再pack・次のbootより前に本追記をcommit・pushします。旧試行を上書きせず、新しい入力hashと出力先を使います。
+
+- 研究専用readall scriptを明示的な`/bin/sh`経由で呼び出します。BusyBox initが先頭へexecを加えても、script内部のdd成功後に独立した完了markerを出す構成です。失敗時にはmarkerを出しません。通常製品へは組み込みません。
+- host fixtureで実際のinittab行にBusyBox initのexec変換を適用し、成功時だけ完了markerが出ることを検査します。smokeでもreadall完了→ready→loginの順序を必須のままにします。
+- Aから落としていた`initcall_debug`を復元します。既存のignore_loglevel/loglevel=8と研究専用trace kernelは維持します。前回の未記載逸脱を事後に事前承認へ読み替えません。
+- helperとinittabを含むSquashFSを新たにpackし、hash tree/FECを再生成します。Aおよび前回Bとはpack hash・root hashが異なります。Bのpanic/restart/EIOの3 modeは、同じ新しいpack bytesへの同じ注入で比較し、modeと既登録のwatchdog差以外を揃えます。
+- Bのclean smokeから再開し、全10条件のsmokeが観測可能なら正式5反復へ進みます。F3 EIOは既存のverity-eio期待を維持し、訂正成功は反証です。新たなclean失敗・入力不一致・判断が必要な失敗では停止します。
+
+旧A・旧B raw/CSV/期待は保持します。累積36時間と2026-11-17 00:17:52 UTCのdeadlineを変えず、B完了時にC以降を再見積りします。RS研究限定・製品出荷禁止、実機未確認、03914台帳同期保留も維持します。
