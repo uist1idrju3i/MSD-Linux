@@ -31,6 +31,15 @@ CONFIG_SQUASHFS=y
 CONFIG_SQUASHFS_XZ=y
 CONFIG_SQUASHFS_LZ4=y
 CONFIG_SQUASHFS_ZSTD=y
+# rootfs 完全性（dm-verity + FEC）と /data の LUKS + btrfs 用。docs/research/storage/rootfs-squashfs-verity-fec-design.md と data-luks-btrfs-design.md を参照
+CONFIG_BLK_DEV_DM=y
+CONFIG_DM_INIT=y
+CONFIG_DM_VERITY=y
+CONFIG_DM_VERITY_FEC=y
+CONFIG_DM_CRYPT=y
+CONFIG_CRYPTO_CRC32C=y
+CONFIG_CRYPTO_ZSTD=y
+CONFIG_BTRFS_FS=y
 CONFIG_OVERLAY_FS=y
 CONFIG_I2C=y
 CONFIG_I2C_BCM2835=y
@@ -166,7 +175,6 @@ CONFIG_VIDEO_IMX219=m
 # CONFIG_WLAN_VENDOR_TI is not set
 # CONFIG_WLAN_VENDOR_ZYDAS is not set
 # CONFIG_XFS_FS is not set
-# CONFIG_BTRFS_FS is not set
 # CONFIG_OCFS2_FS is not set
 # CONFIG_GFS2_FS is not set
 # CONFIG_NILFS2_FS is not set
