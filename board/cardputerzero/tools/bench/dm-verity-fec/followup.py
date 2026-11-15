@@ -18,6 +18,8 @@ from stage_a import independent_check, locate, parameters
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[4]
 SALT = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'
+OLD_READALL = '::sysinit:/bin/dd if=/dev/dm-0 of=/dev/null bs=1048576 && /bin/echo verity-readall-complete > /dev/kmsg'
+READALL = '::sysinit:/bin/sh /usr/libexec/b3-readall.sh'
 
 
 def sha(path):
@@ -35,6 +37,59 @@ def validate(directory):
                            or sha(directory / name) != digest for name, digest in manifest.items()):
         raise ValueError('input hash mismatch')
     return manifest
+
+
+def install_readall(tree):
+    inittab = tree / 'etc/inittab'
+    lines = inittab.read_text().splitlines()
+    if lines.count(OLD_READALL) != 1:
+        raise ValueError('expected exactly one original readall action')
+    inittab.write_text('\n'.join(READALL if line == OLD_READALL else line for line in lines) + '\n')
+    helper = tree / 'usr/libexec/b3-readall.sh'
+    helper.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(HERE / 'readall.sh', helper)
+    helper.chmod(0o755)
+
+
+def repack_seed(seed, tree, host, destination):
+    destination.mkdir()
+    copied = destination / 'rootfs-tree'
+    shutil.copytree(tree, copied, symlinks=True)
+    install_readall(copied)
+    info = subprocess.check_output([str(host / 'bin/unsquashfs'), '-s',
+                                    str(seed / 'rootfs.squashfs')], text=True)
+    compression = re.search(r'^Compression (\S+)', info, re.M).group(1)
+    block_size = re.search(r'^Block size (\d+)', info, re.M).group(1)
+    epoch = int(time.time())
+    squashfs = destination / 'rootfs.squashfs'
+    with (destination / 'mksquashfs.log').open('w') as log:
+        subprocess.run([str(host / 'bin/mksquashfs'), str(copied), str(squashfs),
+                        '-noappend', '-all-root', '-no-xattrs', '-no-progress',
+                        '-comp', compression, '-b', block_size, '-mkfs-time', str(epoch)],
+                       stdout=log, stderr=subprocess.STDOUT, check=True)
+    rootfs = destination / 'rootfs.img'
+    shutil.copy2(squashfs, rootfs)
+    with rootfs.open('r+b') as stream:
+        stream.truncate((rootfs.stat().st_size + 4095) // 4096 * 4096)
+    with (destination / 'format.log').open('w') as log:
+        subprocess.run([str(seed / 'verityfmt'), '--hash', 'crc32c', '--salt', SALT,
+                        '--fec-roots', '8', '--params-file', str(destination / 'verity-parameters.env'),
+                        str(rootfs)], stdout=log, stderr=subprocess.STDOUT, check=True)
+    p = parameters(destination / 'verity-parameters.env')
+    save(destination / 'location.json', dict(parameters=p))
+    (destination / 'variant-info.txt').write_text(
+        'rootfs_a_start_sector=' + parameters(seed / 'variant-info.txt')['rootfs_a_start_sector'] + '\n')
+    (destination / 'images').mkdir()
+    for name in ('sdcard.img', 'bcm2710-rpi-cm0.dtb'):
+        subprocess.run(['cp', '--sparse=always', str(seed / 'images' / name),
+                        str(destination / 'images' / name)], check=True)
+    save(destination / 'repack.json', dict(original_pack=sha(seed / 'rootfs.img'),
+                                         new_pack=sha(rootfs), squashfs=sha(squashfs),
+                                         helper=sha(HERE / 'readall.sh'), epoch=epoch,
+                                         compression=compression, block_size=int(block_size)))
+    if sha(rootfs) == sha(seed / 'rootfs.img'):
+        raise ValueError('expected new research pack')
+    return destination
 
 
 def pack_initramfs(tree, destination):
@@ -77,7 +132,7 @@ def command_line(p, mode, path):
              f'4096 4096 {d} {h} {p["hash_alg"]} {p["root_hash"]} {p["salt"]} {len(opts)} '
              + ' '.join(opts))
     result = (f'dm-mod.waitfor=/dev/mmcblk0p5 dm-mod.create="{table}" '
-              'printk.time=1 log_buf_len=4M ignore_loglevel loglevel=8 msd.sweep=1 msd.boottime=1')
+              'printk.time=1 log_buf_len=4M initcall_debug ignore_loglevel loglevel=8 msd.sweep=1 msd.boottime=1')
     if path == 'ram':
         digest_bytes = {'crc32c': 4, 'sha256': 32}[p['hash_alg']]
         result += f' rdinit=/init b3.target={4 * (4096 // digest_bytes)} b3.blocks={d}'
@@ -133,15 +188,16 @@ def prepare_b(args):
     save(args.destination / 'preparation.json',
          dict(seed_manifest=sha(args.seed / 'inputs.json'), kernel=sha(args.kernel),
               formatter=formatter_hashes, harness=sha(Path(__file__))))
-    p = json.loads((args.seed / 'location.json').read_text())['parameters']
-    clean = (args.seed / 'rootfs.img').read_bytes()
+    seed = repack_seed(args.seed, args.tree, args.host, args.destination / 'repacked-seed')
+    p = json.loads((seed / 'location.json').read_text())['parameters']
+    clean = (seed / 'rootfs.img').read_bytes()
     initramfs = args.destination / 'ram.cpio.gz'
-    pack_initramfs(args.tree, initramfs)
+    pack_initramfs(seed / 'rootfs-tree', initramfs)
     for path in ('normal', 'ram'):
-        make_case(args.destination, args.seed, args.kernel, p, clean, [], f'B-clean-{path}',
+        make_case(args.destination, seed, args.kernel, p, clean, [], f'B-clean-{path}',
                   'normal-read' if path == 'normal' else 'ram-read', 'panic', path, initramfs)
         for mode, expected in (('panic', 'verity-panic'), ('restart', 'restart-request'), ('eio', 'verity-eio')):
-            make_case(args.destination, args.seed, args.kernel, p, clean,
+            make_case(args.destination, seed, args.kernel, p, clean,
                       [int(p['hash_start_block']) * 4096 + 17], f'B-F3-{mode}-{path}',
                       expected, mode, path, initramfs)
     nofec = args.destination / 'nofec-format'
@@ -159,7 +215,7 @@ def prepare_b(args):
     for name, offsets, expected in (
             ('B-nofec-clean', [], 'normal-read'),
             ('B-nofec-data', [int(p['data_blocks']) // 2 * 4096 + 123], 'verity-panic')):
-        make_case(args.destination, args.seed, args.kernel, p0, rootfs.read_bytes(),
+        make_case(args.destination, seed, args.kernel, p0, rootfs.read_bytes(),
                   offsets, name, expected, 'panic', 'normal')
 
 
@@ -303,6 +359,7 @@ def main():
     prep = subs.add_parser('prepare-b')
     for name in ('seed', 'kernel', 'tree', 'destination'):
         prep.add_argument(name, type=Path)
+    prep.add_argument('--host', type=Path, required=True)
     run_parser = subs.add_parser('run')
     for name in ('base', 'destination'):
         run_parser.add_argument(name, type=Path)

@@ -2,7 +2,10 @@
 import gzip
 import importlib.util
 import json
+import os
 from pathlib import Path
+import shlex
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -71,10 +74,45 @@ class Followup(unittest.TestCase):
         p = dict(self.p, data_blocks='5832', fec_roots='8')
         line = followup.command_line(p, 'eio', 'ram')
         self.assertIn('8 use_fec_from_device', line)
+        self.assertIn('initcall_debug', line)
         self.assertNotIn('_on_corruption', line)
         self.assertIn('rdinit=/init b3.target=4096 b3.blocks=5832', line)
         self.assertIn('1 panic_on_corruption', followup.command_line(self.p, 'panic', 'normal'))
         self.assertIn('9 use_fec_from_device', followup.command_line(p, 'restart', 'normal'))
+
+    def test_init_exec_readall(self):
+        def converted(command):
+            if any(char in command for char in '~`!$^&*()=|\\{}[];"\'<>?'):
+                return ['/bin/sh', '-c', 'exec ' + command]
+            return shlex.split(command)
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / 'etc').mkdir()
+            inittab = root / 'etc/inittab'
+            inittab.write_text('')
+            self.assertRaises(ValueError, followup.install_readall, root)
+            inittab.write_text((followup.OLD_READALL + '\n') * 2)
+            self.assertRaises(ValueError, followup.install_readall, root)
+            inittab.write_text(followup.OLD_READALL + '\n')
+            followup.install_readall(root)
+            self.assertEqual(inittab.read_text(), followup.READALL + '\n')
+            device, marker = root / 'data', root / 'marker'
+            device.write_bytes(b'data')
+            old = followup.OLD_READALL.split(':', 3)[3].replace('/dev/dm-0', str(device)).replace('/dev/kmsg', str(marker))
+            result = subprocess.run(converted(old), capture_output=True)
+            self.assertEqual(result.returncode, 0)
+            self.assertFalse(marker.exists(), 'negative control must reproduce missing marker')
+            command = inittab.read_text().strip().split(':', 3)[3].replace('/usr/libexec/', str(root / 'usr/libexec') + '/')
+            env = dict(os.environ, B3_READALL_DEVICE=str(device), B3_READALL_MARKER=str(marker))
+            result = subprocess.run(converted(command), env=env, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(marker.read_text(), 'verity-readall-complete\n')
+            marker.unlink()
+            env['B3_READALL_DEVICE'] = str(root / 'missing')
+            result = subprocess.run(converted(command), env=env, capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(marker.exists())
 
     def test_fresh_input_and_manifest(self):
         with tempfile.TemporaryDirectory() as temp:
