@@ -157,3 +157,7 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 C〜FはBの新しいreadall入りSquashFSを基準にします。Cはcrc32c/roots8/panic、10条件の期待を維持します。下位level0のdigest index 0とD-1の先頭byte、superblock署名の先頭、parity範囲の先頭/末尾、各parityと同じcolumnのdata、data block 0/D-1の先頭、parity終端直後をXOR ffで注入します。lower位置・有効digest・column・独立復号・p5読戻しをhostで検査します。
 
 固定imageのveritysetupは未破損crc32c headerにも「Hash algorithm crc32c not supported」と応答しました。この拒否を署名破損の根拠にはしません。header tool対照には、研究用の独立したon-disk header probeを使い、元の署名/version/type/algorithm/block geometry/saltの受理と、署名破損後の拒否をfixtureと実入力で確認します。kernelの直接table経路でreadyという期待は変更しません。
+
+### D入力の固定（2026-11-15 UTC、生成・boot前）
+
+DはBの同じdata bytesからhash crc32c/sha256、roots 2/8/16を各1 pack生成します。formatterは保存済みbinary/source hashを照合し、ランダムUUIDを含む生成結果そのものを固定します。各packでclean・data中央blockのbyte123・同column roots+1 blockの先頭byteを用い、期待は順に通常read成功・通常read成功・verity-panicです。集中blockはi×rounds、i=0..rootsとし、全てdata内であることを確認します。独立BM/Chien/既知消失solverで実codewordのR/2・R/2+1 errors、R・R+1 erasures、混合境界をhost検査します。容量を超えた場合の偶然の訂正や別codewordへの誤訂正も保存し、保証範囲内の訂正と混ぜません。

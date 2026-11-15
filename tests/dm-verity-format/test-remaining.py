@@ -8,6 +8,7 @@ HERE = Path(__file__).resolve().parents[2] / 'board/cardputerzero/tools/bench/dm
 sys.path.insert(0, str(HERE))
 import remaining
 from stage_a import locate
+from rs_check import decode
 
 
 class Remaining(unittest.TestCase):
@@ -40,6 +41,21 @@ class Remaining(unittest.TestCase):
         image[4096] ^= 255
         self.assertRaisesRegex(ValueError, 'signature', remaining.header_probe, image, p)
         self.assertRaises(ValueError, remaining.header_probe, b'', p)
+
+    def test_columns_and_rs_boundaries(self):
+        for roots in (2, 8, 16):
+            p = dict(self.p, fec_roots=str(roots))
+            offsets = remaining.column_offsets(p, roots + 1)
+            columns = [locate(offset, p)['fec_column'] for offset in offsets]
+            self.assertTrue(all(column == columns[0] for column in columns))
+            for errors, erasures in ((roots // 2, 0), (0, roots), (1, roots - 2)):
+                damaged = [0] * 255
+                for i in range(errors + erasures):
+                    damaged[i] = i + 1
+                self.assertEqual(decode(damaged, roots, range(erasures)), [0] * 255)
+            self.assertRaises(ValueError, decode, [1] * 254, roots)
+            self.assertRaises(ValueError, decode, [0] * 255, roots, range(roots + 1))
+        self.assertRaises(ValueError, remaining.column_offsets, self.p, 0)
 
 
 if __name__ == '__main__':

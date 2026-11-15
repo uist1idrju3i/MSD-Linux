@@ -4,9 +4,11 @@ import argparse
 import json
 from pathlib import Path
 import struct
+import subprocess
 
-from followup import make_case, parameters, save, sha, validate
+from followup import ROOT, SALT, make_case, parameters, save, sha, validate
 from stage_a import locate
+from rs_check import boundaries
 
 
 def column_offsets(p, count, dispersed=False):
@@ -78,27 +80,57 @@ def generate(args):
     clean = (seed / 'rootfs.img').read_bytes()
     args.destination.mkdir()
     rows = []
-    for name, offsets, expected in c_cases(p):
-        label = 'C-' + name
-        make_case(args.destination, seed, args.kernel, p, clean, offsets,
-                  label, expected, 'panic', 'normal', stage='C')
+    checks = {}
+
+    def emit(label, params, image, offsets, expected, mode='panic'):
+        make_case(args.destination, seed, args.kernel, params, image, offsets,
+                  label, expected, mode, 'normal', stage=args.stage)
         validate(args.destination / label)
         rows.append(dict(case=label, inputs=sha(args.destination / label / 'inputs.json')))
-    positive = header_probe(clean, p)
-    try:
-        header_probe((args.destination / 'C-superblock/rootfs.img').read_bytes(), p)
-    except ValueError as error:
-        negative = str(error)
-    else:
-        raise ValueError('header negative control accepted')
-    save(args.destination / 'host-check.json', dict(cases=rows, header_positive=positive,
-                                                   header_negative=negative, generator=sha(Path(__file__))))
+
+    if args.stage == 'C':
+        for name, offsets, expected in c_cases(p):
+            emit('C-' + name, p, clean, offsets, expected)
+        checks['header_positive'] = header_probe(clean, p)
+        try:
+            header_probe((args.destination / 'C-superblock/rootfs.img').read_bytes(), p)
+        except ValueError as error:
+            checks['header_negative'] = str(error)
+        else:
+            raise ValueError('header negative control accepted')
+    elif args.stage == 'D':
+        if args.formatter is None:
+            raise ValueError('D needs pinned formatter')
+        original = json.loads((args.base / 'preparation.json').read_text())['formatter']
+        if (sha(args.formatter) != original['verityfmt'] or
+                sha(ROOT / 'board/cardputerzero/tools/dm-verity/verityfmt.c') != original['verityfmt.c']):
+            raise ValueError('formatter provenance hash mismatch')
+        for algorithm in ('crc32c', 'sha256'):
+            for roots in (2, 8, 16):
+                template = args.destination / f'format-{algorithm}-r{roots}'
+                template.mkdir()
+                image = template / 'rootfs.img'
+                image.write_bytes(clean[:int(p['data_blocks']) * 4096])
+                with (template / 'format.log').open('w') as log:
+                    subprocess.run([str(args.formatter), '--hash', algorithm, '--salt', SALT,
+                                    '--fec-roots', str(roots), '--params-file', str(template / 'params.env'),
+                                    str(image)], stdout=log, stderr=subprocess.STDOUT, check=True)
+                params, packed = parameters(template / 'params.env'), image.read_bytes()
+                checks[template.name] = boundaries(packed, params)
+                for kind, offsets, expected in (
+                        ('clean', [], 'normal-read'),
+                        ('data', [int(params['data_blocks']) // 2 * 4096 + 123], 'normal-read'),
+                        ('over', column_offsets(params, roots + 1), 'verity-panic')):
+                    emit(f'D-{algorithm}-r{roots}-{kind}', params, packed, offsets, expected)
+    save(args.destination / 'host-check.json', dict(cases=rows, checks=checks, generator=sha(Path(__file__))))
 
 
 def main():
     parser = argparse.ArgumentParser()
     for name in ('base', 'kernel', 'destination'):
         parser.add_argument(name, type=Path)
+    parser.add_argument('--stage', choices=('C', 'D'), default='C')
+    parser.add_argument('--formatter', type=Path)
     args = parser.parse_args()
     generate(args)
 
