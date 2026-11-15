@@ -14,6 +14,7 @@ import subprocess
 import time
 
 from stage_a import independent_check, locate, parameters
+from initramfs_check import check as check_initramfs
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[4]
@@ -107,6 +108,12 @@ def pack_initramfs(tree, destination):
     entry('bin/busybox', stat.S_IFREG | 0o755, (tree / 'bin/busybox').read_bytes())
     entry('bin/sh', stat.S_IFLNK | 0o777, b'busybox')
     entry('init', stat.S_IFREG | 0o755, (HERE / 'ram-init.sh').read_bytes())
+    for name in ('lib64', 'usr/lib64'):
+        path = tree / name
+        if path.is_symlink():
+            entry(name, stat.S_IFLNK | 0o777, os.readlink(path).encode())
+        elif path.exists():
+            raise ValueError('expected library directory alias: ' + name)
     for prefix in ('lib', 'usr/lib'):
         directory = tree / prefix
         if not directory.exists():
@@ -117,7 +124,10 @@ def pack_initramfs(tree, destination):
             elif path.is_file():
                 entry(f'{prefix}/{path.name}', stat.S_IFREG | 0o755, path.read_bytes())
     entry('TRAILER!!!', 0)
-    destination.write_bytes(gzip.compress(archive, mtime=0))
+    compressed = gzip.compress(archive, mtime=0)
+    closure = check_initramfs(compressed)
+    destination.write_bytes(compressed)
+    return closure
 
 
 def command_line(p, mode, path):
@@ -137,6 +147,37 @@ def command_line(p, mode, path):
         digest_bytes = {'crc32c': 4, 'sha256': 32}[p['hash_alg']]
         result += f' rdinit=/init b3.target={4 * (4096 // digest_bytes)} b3.blocks={d}'
     return result + '\n'
+
+
+def refresh_b(args):
+    cases = sorted(path for path in args.base.iterdir() if (path / 'case.json').exists())
+    if len(cases) != 10:
+        raise ValueError('expected ten B cases')
+    for case in cases:
+        validate(case)
+    args.destination.mkdir()
+    initramfs = args.destination / 'ram.cpio.gz'
+    closure = pack_initramfs(args.tree, initramfs)
+    save(args.destination / 'closure.json', closure)
+
+    def copy(source, target):
+        subprocess.run(['cp', '--sparse=always', str(source), str(target)], check=True)
+        return target
+
+    for case in cases:
+        out = args.destination / case.name
+        shutil.copytree(case, out, copy_function=copy)
+        if (out / 'initramfs.cpio.gz').exists():
+            shutil.copy2(initramfs, out / 'initramfs.cpio.gz')
+        for name in ('rootfs.img', 'images/sdcard.img', 'images/Image', 'qemu-extra-append.txt'):
+            if sha(case / name) != sha(out / name):
+                raise ValueError('non-initramfs input changed')
+        save(out / 'inputs.json', {str(path.relative_to(out)): sha(path)
+                                  for path in sorted(out.rglob('*'))
+                                  if path.is_file() and path.name != 'inputs.json'})
+        validate(out)
+    save(args.destination / 'refresh.json', dict(source={case.name: sha(case / 'inputs.json') for case in cases},
+                                                initramfs=sha(initramfs), harness=sha(Path(__file__))))
 
 
 def make_case(destination, seed, kernel, p, clean, offsets, name, expected, mode, path, initramfs=None):
@@ -360,6 +401,9 @@ def main():
     for name in ('seed', 'kernel', 'tree', 'destination'):
         prep.add_argument(name, type=Path)
     prep.add_argument('--host', type=Path, required=True)
+    refresh = subs.add_parser('refresh-b')
+    for name in ('base', 'tree', 'destination'):
+        refresh.add_argument(name, type=Path)
     run_parser = subs.add_parser('run')
     for name in ('base', 'destination'):
         run_parser.add_argument(name, type=Path)
@@ -372,6 +416,8 @@ def main():
             setattr(args, name, getattr(args, name).resolve())
     if args.command == 'prepare-b':
         prepare_b(args)
+    elif args.command == 'refresh-b':
+        refresh_b(args)
     elif args.runs < 1 or args.timeout < 1:
         parser.error('positive runs/timeout required')
     else:
