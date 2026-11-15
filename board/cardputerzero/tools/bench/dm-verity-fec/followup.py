@@ -180,7 +180,7 @@ def refresh_b(args):
                                                 initramfs=sha(initramfs), harness=sha(Path(__file__))))
 
 
-def make_case(destination, seed, kernel, p, clean, offsets, name, expected, mode, path, initramfs=None):
+def make_case(destination, seed, kernel, p, clean, offsets, name, expected, mode, path, initramfs=None, stage='B'):
     out = destination / name
     out.mkdir()
     (out / 'images').mkdir()
@@ -211,7 +211,7 @@ def make_case(destination, seed, kernel, p, clean, offsets, name, expected, mode
         shutil.copy2(initramfs, out / 'initramfs.cpio.gz')
     (out / 'qemu-extra-append.txt').write_text(command_line(p, mode, path))
     locations = [dict(locate(offset, p), before=reference[offset], after=damaged[offset]) for offset in offsets]
-    save(out / 'case.json', dict(case=name, stage='B', expected=expected, mode=mode, path=path,
+    save(out / 'case.json', dict(case=name, stage=stage, expected=expected, mode=mode, path=path,
                                 parameters=p, locations=locations, clean=not offsets,
                                 independent=independent_check(reference, damaged, p, locations)))
     save(out / 'inputs.json', {str(f.relative_to(out)): sha(f)

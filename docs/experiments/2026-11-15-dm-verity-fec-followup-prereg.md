@@ -151,3 +151,9 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 - C〜Fのoffset/roots/hash/集中・分散/reset条件は各生成器のcommitで固定します。当初の期待を変更せず、EIO訂正成功等の不一致は反証として保存します。全caseを生成できるまでB正式反復を始めません。
 
 旧証拠・期待、研究限定、製品出荷禁止、実機未確認、03914の台帳同期保留を維持します。保守的累積時計と36時間deadlineも変えず、host検査後と各段階後に再見積りします。
+
+### C入力の固定（2026-11-15 UTC、生成・boot前）
+
+C〜FはBの新しいreadall入りSquashFSを基準にします。Cはcrc32c/roots8/panic、10条件の期待を維持します。下位level0のdigest index 0とD-1の先頭byte、superblock署名の先頭、parity範囲の先頭/末尾、各parityと同じcolumnのdata、data block 0/D-1の先頭、parity終端直後をXOR ffで注入します。lower位置・有効digest・column・独立復号・p5読戻しをhostで検査します。
+
+固定imageのveritysetupは未破損crc32c headerにも「Hash algorithm crc32c not supported」と応答しました。この拒否を署名破損の根拠にはしません。header tool対照には、研究用の独立したon-disk header probeを使い、元の署名/version/type/algorithm/block geometry/saltの受理と、署名破損後の拒否をfixtureと実入力で確認します。kernelの直接table経路でreadyという期待は変更しません。
