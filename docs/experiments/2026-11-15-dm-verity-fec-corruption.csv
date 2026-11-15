@@ -1,0 +1,8 @@
+case,injection,fec,error_mode,expected,ready_n,panic_n,restart_n,fec_corrected,result
+F0-A2,none,yes,panic,ready,5,0,0,,5/5 期待通り
+F1-A2,data block 1byte,yes,panic,ready,5,0,0,corrected 1 errors,5/5 訂正して起動
+F2-A2,data 24block 分散 1byte ずつ,yes,panic,verity-error,0,5,0,corrected 8 errors 後 failed to correct,5/5 検出して panic
+F3-A2,最上位 hash block 5833 の 1byte,yes,panic,ready,0,5,0,,5/5 panic（訂正されず。kernel の再帰検証制約）
+F4-A2,cmdline root_hash 改ざん,yes,panic,verity-error,0,5,0,,5/5 検出して panic
+F5-A2,data block 1byte,no,panic,verity-error,0,5,0,,5/5 検出して panic
+F6-A2,data 24block 分散,yes,restart_on_corruption,verity-error,0,0,5,corrected 8 errors 後 restart,5/5 検出して restart
