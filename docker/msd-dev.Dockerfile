@@ -14,7 +14,7 @@ ARG ACTIONLINT_VERSION
 ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOFLAGS=-trimpath
 RUN go install -ldflags='-s -w' github.com/rhysd/actionlint/cmd/actionlint@v${ACTIONLINT_VERSION}
 
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS qemu
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS qemu
 ARG DEBIAN_SNAPSHOT
 ARG QEMU_VERSION
 ARG QEMU_SHA256
@@ -113,7 +113,7 @@ RUN set -euxo pipefail \
     && /opt/qemu/bin/qemu-img create -f raw /tmp/qemu-smoke.raw 1M \
     && /opt/qemu/bin/qemu-img info /tmp/qemu-smoke.raw >/dev/null
 
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS msd-dev
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS msd-dev
 ARG ACTIONLINT_VERSION
 
 ARG DEBIAN_SNAPSHOT=20261107T075304Z
