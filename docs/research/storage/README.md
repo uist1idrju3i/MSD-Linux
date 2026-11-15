@@ -32,6 +32,12 @@
 | FTL、電源遮断、FS耐性、powerfailの資料 | [電源断耐性の調査](power-loss.md) |
 | RAUC等の過去の比較とS10の経緯 | [A/B設計の履歴](ab-design-history.md)。現在の比較は[更新framework](../alternatives/updates.md)と[TUF/Uptane](../alternatives/update-metadata.md) |
 | 回復案の未実装部分、watchdog、S11の成功・失敗条件 | [復旧案とwatchdog](recovery-and-watchdog.md) |
+| rootfs完全性（SquashFS+zstd+dm-verity(crc32c)+FEC+A/B切り戻し） | [rootfs完全性設計](rootfs-squashfs-verity-fec-design.md) |
+| /dataのLUKS+btrfs(dup)+xxhash64+zstd圧縮 | [data LUKS+btrfs設計](data-luks-btrfs-design.md) |
+| zstdの使用箇所（SquashFS/zram/zswap/btrfs）とoption測定計画 | [zstd使用箇所とoption](zstd-usage-and-options.md) |
+| NEON・crypto extensionとverity/LUKS/btrfsのhash・cipher選択 | [ARM64 NEON・crypto](arm64-neon-crypto.md) |
+| 全optionのtoken分類、固定版との差、未測定と設計訂正 | [storage option網羅表](storage-option-coverage.md) |
+| B1〜B3の解釈訂正、formatterとRS移植元の未解決監査 | [storage実験訂正](storage-integrity-corrections.md) |
 | 端末がReleaseを確認する将来の方式 | [自己更新の設計](../release-client/README.md)と[Release・署名鍵](../release-client/release-security.md) |
 
 ## 記録を残す単位

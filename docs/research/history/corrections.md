@@ -1,8 +1,14 @@
 # 訂正済み事項
 
-## 2026-11-15 E34の反復・因果・規則適合
+## 2026-11-15 storage設計・E34
 
-[E34](../../experiments/2026-11-15-fs-compare-matrix.md)のT5は18 variant中17で差を反復し、P136の増加は非再現でした。idleはf2fs F3/P044に遅いwrite、I2/L3に最大88 sectorの追い書きを観測。B2/P097の各3回0も、新LUKS+btrfs設計の§10適合ではありません。174成功runを42群へ集計し、4中断attempt・harness差分・集計器をdata枝へ追補保存しました。
+訂正: [設計](../storage/storage-option-coverage.md)・[実験・E34](../storage/storage-integrity-corrections.md)。
+
+## 2026-11-15の/data帰属とzram比較の訂正
+
+[旧調査](../storage/write-policy-and-s3.md)の未帰属問題に対し、15回のQEMU比較からext4lazyinitが主因と考えました。当初は「帰属確定」「16,384 sector、約97%を分離」としましたが、nolazy側は別mkfsでinode数も異なるため、独立した寄与量の測定ではありません。前回の8320は最初の120秒のidle増分、今回の16952はboot累積＋idle合計です。[E1記録](../../experiments/2026-11-15-data-first-boot-writes.md)へ範囲・対照の限界を追記し、完了記録・全phase・重複検査を追加しました。旧rawと失敗試行は保持します。
+
+[zram比較](../../experiments/2026-11-15-zram-builtin-vs-module.md)も「mへ変更しても利得なし」から、m側swap無効で機能非等価へ限定しました。明示load後・実機の速度は未測定。module_initcall_totalはzram単体ではありません。
 
 ## 2026-11-13のbinary hashと削除
 

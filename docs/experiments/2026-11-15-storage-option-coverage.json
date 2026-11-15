@@ -1,0 +1,209 @@
+[
+  {
+    "id": "mksquashfs",
+    "version": "4.7.5",
+    "url": "https://github.com/plougher/squashfs-tools/tree/4.7.5",
+    "extractor": "cli",
+    "member": "mksquashfs.txt",
+    "sha256": "93b41978393ead391b82a9a2b13591b1d4db4c0b1868e9a62d248cdc0a9b2114",
+    "command": [
+      "mksquashfs.orig",
+      "-help-all"
+    ],
+    "binary_sha256": "005d3e56ef25b590660e0592b7977725af8b156e9991edc391096e0ab63d8a0e"
+  },
+  {
+    "id": "unsquashfs",
+    "version": "4.7.5",
+    "url": "https://github.com/plougher/squashfs-tools/tree/4.7.5",
+    "extractor": "cli",
+    "member": "unsquashfs.txt",
+    "sha256": "5fc74c2b7ea61525c29bc70cc024bf5662c062ef70bc6e889faf949effbf78ab",
+    "command": [
+      "unsquashfs",
+      "-help-all"
+    ],
+    "binary_sha256": "cea3b4729f23b7618be5dc2b7d132316b993edeed983ea55a2d52ff125aa83f0"
+  },
+  {
+    "id": "zstd-cli",
+    "version": "1.5.7",
+    "url": "https://github.com/facebook/zstd/tree/v1.5.7",
+    "extractor": "cli",
+    "member": "zstd-cli.txt",
+    "sha256": "71fc215951ef0f82192e93f4a10aa6bc1d81d0b813d6b0b578e1f6d566d6a310",
+    "command": [
+      "zstd",
+      "--help"
+    ],
+    "binary_sha256": "61aa24576f2360124b9dbdb79863396060061c6211216c0742992e43596b41c8"
+  },
+  {
+    "id": "cryptsetup",
+    "version": "2.8.7",
+    "url": "https://gitlab.com/cryptsetup/cryptsetup/-/tree/v2.8.7/man",
+    "extractor": "cli",
+    "member": "cryptsetup.txt",
+    "sha256": "aa6596481b674f2b806f7dca0296b1a4e3a9bbf84f3dc5527ff924c5eeaf0cf9"
+  },
+  {
+    "id": "veritysetup",
+    "version": "2.8.7",
+    "url": "https://gitlab.com/cryptsetup/cryptsetup/-/tree/v2.8.7/man",
+    "extractor": "cli",
+    "member": "veritysetup.txt",
+    "sha256": "f9ea8e981e1f8e0ff5a417d6d5b91cc488db5eba03ce59a1046aa0b71636f6b7"
+  },
+  {
+    "id": "mkfs-btrfs",
+    "version": "6.10",
+    "url": "https://github.com/kdave/btrfs-progs/blob/v6.10/mkfs/main.c",
+    "extractor": "mkfs",
+    "member": "mkfs-btrfs.txt",
+    "sha256": "6eb9f595f2df679ff65fa65dc3487075d93fa0e633cb3e8fba5ba30a997f6ce7"
+  },
+  {
+    "id": "btrfs-tools",
+    "version": "6.10",
+    "url": "https://github.com/kdave/btrfs-progs/tree/v6.10/Documentation",
+    "extractor": "cli",
+    "member": "btrfs-tools.txt",
+    "sha256": "768396f3efd1fc64277649aee585ab5a8948acc3ac1611246df39592f0f4c913"
+  },
+  {
+    "id": "btrfs-mount",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/fs/btrfs/super.c",
+    "extractor": "mount",
+    "member": "btrfs-mount.txt",
+    "sha256": "9c744b20c472d15bfcb104c1a028e689088b003d435fc57c46f5a728ab9173a8"
+  },
+  {
+    "id": "zram",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/block/zram/zram_drv.c",
+    "extractor": "zram",
+    "member": "zram.txt",
+    "sha256": "8d41665906ba1d9c73cc7479d82041b29c1d594276a7da4208a566f0822b8ec2"
+  },
+  {
+    "id": "zswap",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/mm/zswap.c",
+    "extractor": "zswap",
+    "member": "zswap.txt",
+    "sha256": "1510302c2203f97cdb6944e1aee28792875bf24164b91b451c0c5089635962b1"
+  },
+  {
+    "id": "verity-table",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/dm-verity-target.c",
+    "extractor": "verity",
+    "member": "verity-table.txt",
+    "sha256": "5c2f0cf7519a87337fbbc2d01707767fa530f824643dc0d06d26486eef7ed105"
+  },
+  {
+    "id": "verity-table-fec",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/dm-verity-fec.h",
+    "extractor": "verity",
+    "member": "verity-table-fec.txt",
+    "sha256": "eeb5513aee823554f4774df86a6f004089a63a5fc5d0a4c9b8fd890da0161fda"
+  },
+  {
+    "id": "verity-table-sig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/dm-verity-verify-sig.h",
+    "extractor": "verity",
+    "member": "verity-table-sig.txt",
+    "sha256": "10ae0c28fe537555ee2485c39b1393e5f64dec6d5c81f95df4f43e0a9f07eb03"
+  },
+  {
+    "id": "kernel-drivers-block-zram-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/block/zram/Kconfig",
+    "extractor": "config",
+    "member": "kernel-drivers-block-zram-Kconfig.txt",
+    "sha256": "11e7d8e1f048c03d12d2cf0f0bdfe9c3f3e83cb1ed563791688ef1fcc8fa8447"
+  },
+  {
+    "id": "kernel-mm-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/mm/Kconfig",
+    "extractor": "config",
+    "member": "kernel-mm-Kconfig.txt",
+    "sha256": "3d71252af5a4fb412a06ae25735e4d8a8f4438441a5f51ca7b2e910399ba1df6"
+  },
+  {
+    "id": "kernel-fs-btrfs-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/fs/btrfs/Kconfig",
+    "extractor": "config",
+    "member": "kernel-fs-btrfs-Kconfig.txt",
+    "sha256": "076c0c8d1869a6b2b6cbf1639c40072d7da9f1aa78e992de4b2cf41d954a6293"
+  },
+  {
+    "id": "kernel-fs-squashfs-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/fs/squashfs/Kconfig",
+    "extractor": "config",
+    "member": "kernel-fs-squashfs-Kconfig.txt",
+    "sha256": "e2f3de0d2061ada76a9d071f0ac467229f3061ef27b464c95c8dcfbebcc870a0"
+  },
+  {
+    "id": "kernel-drivers-md-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/Kconfig",
+    "extractor": "config",
+    "member": "kernel-drivers-md-Kconfig.txt",
+    "sha256": "79b33f4b99587f2e653102faefce043d54ae933ba7af4e19bc5d74359f22100a"
+  },
+  {
+    "id": "kernel-crypto-Kconfig",
+    "version": "6.18.59",
+    "url": "https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/crypto/Kconfig",
+    "extractor": "config",
+    "member": "kernel-crypto-Kconfig.txt",
+    "sha256": "c6877fd11c6a465d4bcb0392444e8a74e9d6d2eb1871cc5097f6468d2454ae03"
+  },
+  {
+    "id": "zstd-lib",
+    "version": "1.5.7",
+    "url": "https://github.com/facebook/zstd/blob/v1.5.7/lib/zstd.h",
+    "extractor": "zstd-lib",
+    "member": "zstd-lib.txt",
+    "sha256": "9b4bc8245565c98ccfc61c07749928b57e7c0f6fddb0530c4f6aa1971893d88b"
+  },
+  {
+    "id": "buildroot-squashfs",
+    "version": "8b238854d909c9cce32ef9671d968b03e323b55d",
+    "url": "https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/squashfs/Config.in",
+    "extractor": "brconfig",
+    "member": "buildroot-squashfs.txt",
+    "sha256": "8498422b537532f56306264adc97e8720516f8c898e820d6fc69f52f83f53b60"
+  },
+  {
+    "id": "buildroot-zstd",
+    "version": "8b238854d909c9cce32ef9671d968b03e323b55d",
+    "url": "https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/zstd/Config.in",
+    "extractor": "brconfig",
+    "member": "buildroot-zstd.txt",
+    "sha256": "d6f1a6fcf6c30d0d8cc0da2e028f93a7333bfd2861492ba7611cc754b98c46ea"
+  },
+  {
+    "id": "buildroot-cryptsetup",
+    "version": "8b238854d909c9cce32ef9671d968b03e323b55d",
+    "url": "https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/cryptsetup/Config.in",
+    "extractor": "brconfig",
+    "member": "buildroot-cryptsetup.txt",
+    "sha256": "55add06e5a9d59261a9af6a49f33eb0132b9acaa26a43faf813b65903eec422f"
+  },
+  {
+    "id": "buildroot-btrfs-progs",
+    "version": "8b238854d909c9cce32ef9671d968b03e323b55d",
+    "url": "https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/package/btrfs-progs/Config.in",
+    "extractor": "brconfig",
+    "member": "buildroot-btrfs-progs.txt",
+    "sha256": "a913b21ee5a4c1e6cc3af847698087cfff54e64f5a8c80580ec7080d4d642d74"
+  }
+]
