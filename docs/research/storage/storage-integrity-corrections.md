@@ -1,4 +1,10 @@
-# storage実験B1〜B3の訂正とformatter監査
+# storage実験B1〜B3・E34の訂正とformatter監査
+
+## E34の反復・因果・規則適合
+
+[E34](../../experiments/2026-11-15-fs-compare-matrix.md)のT5は18 variant中17で差を反復し、P136の増加は非再現でした。idleはf2fs F3/P044に遅いwrite、I2/L3に最大88 sectorの追い書きを観測。B2/P097の各3回0も、新LUKS+btrfs設計の§10適合ではありません。174成功runを42群へ集計し、4中断attempt・harness差分・集計器をdata枝へ追補保存しました。
+
+## B1〜B3とformatter
 
 2026-11-15。過去のraw・CSVを改変せず、誤った説明と次回の計測器を訂正します。03914の台帳同期保留は維持し、全option測定や製品移行の完了とはしません。
 

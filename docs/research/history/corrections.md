@@ -1,8 +1,8 @@
 # 訂正済み事項
 
-## 2026-11-15 storage設計
+## 2026-11-15 storage設計・E34
 
-訂正: [設計](../storage/storage-option-coverage.md)・[実験](../storage/storage-integrity-corrections.md)。
+訂正: [設計](../storage/storage-option-coverage.md)・[実験・E34](../storage/storage-integrity-corrections.md)。
 
 ## 2026-11-15の/data帰属とzram比較の訂正
 
