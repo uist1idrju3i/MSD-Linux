@@ -63,6 +63,12 @@ def e_cases(p):
             for count in (9, 24) for dispersed in (False, True)]
 
 
+def f_case(p):
+    if p['hash_alg'] != 'crc32c' or int(p['fec_roots']) != 8:
+        raise ValueError('stage F requires crc32c roots8')
+    return 'F-reset', column_offsets(p, 24), 'restart-reset'
+
+
 def header_probe(image, p):
     offset = int(p['data_blocks']) * 4096
     header = image[offset:offset + 512]
@@ -158,6 +164,11 @@ def generate(args):
     elif args.stage == 'E':
         for name, offsets, expected in e_cases(p):
             emit('E-' + name, p, clean, offsets, expected)
+    elif args.stage == 'F':
+        name, offsets, expected = f_case(p)
+        emit(name, p, clean, offsets, expected, 'restart')
+    if len(rows) != dict(C=10, D=18, E=4, F=1)[args.stage]:
+        raise ValueError('stage case count mismatch')
     save(args.destination / 'host-check.json', dict(cases=rows, checks=checks, generator=sha(Path(__file__))))
 
 
@@ -165,7 +176,7 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('base', 'kernel', 'destination'):
         parser.add_argument(name, type=Path)
-    parser.add_argument('--stage', choices=('C', 'D', 'E'), default='C')
+    parser.add_argument('--stage', choices=('C', 'D', 'E', 'F'), default='C')
     parser.add_argument('--formatter', type=Path)
     args = parser.parse_args()
     generate(args)

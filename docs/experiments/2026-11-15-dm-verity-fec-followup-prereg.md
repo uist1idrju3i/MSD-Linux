@@ -165,3 +165,7 @@ DはBの同じdata bytesからhash crc32c/sha256、roots 2/8/16を各1 pack生�
 ### E入力の固定（2026-11-15 UTC、生成・boot前）
 
 EはBの同じcrc32c/roots8 packを使います。9/24 blockについて、集中はblock=i×rounds、分散はblock=i、i=0..count-1、いずれもbyte0をXOR ffとします。data内・一意offset・集中は1 column/分散はcount columnを検査し、集中2条件はverity-panic、分散2条件は通常read成功の期待を維持します。旧F2 sourceの旧コメントと実注入数を混同せず、今回は9/24を別case名・全offset一覧で固定します。
+
+### F入力の固定（2026-11-15 UTC、生成・boot前）
+
+FはBの同じcrc32c/roots8 packに、旧F6の実注入方式と同じ24 block（i×rounds、byte0、XOR ff）を適用します。restart mode・watchdog有効でno-rebootを外し、corruption→restart→QMP RESET→2個目のLinux bannerを要求します。readyや別slotへの復帰は要求せず、証拠採取後のhost停止を別記します。新packなのでAのF6と同一bytesとはしません。全33条件（C10/D18/E4/F1）のhost生成・fixture・manifest検査を終えてからB正式反復へ進みます。

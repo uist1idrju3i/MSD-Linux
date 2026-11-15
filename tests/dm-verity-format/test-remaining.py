@@ -87,6 +87,12 @@ class Remaining(unittest.TestCase):
         self.assertRaises(ValueError, remaining.e_cases, dict(p, fec_roots='2'))
         self.assertRaises(ValueError, remaining.column_offsets, self.p, 24, True)
 
+    def test_f_reset(self):
+        name, offsets, expected = remaining.f_case(self.p)
+        self.assertEqual((name, expected), ('F-reset', 'restart-reset'))
+        self.assertEqual(offsets, [i * 10 * 4096 for i in range(24)])
+        self.assertRaises(ValueError, remaining.f_case, dict(self.p, fec_roots='2'))
+
 
 if __name__ == '__main__':
     unittest.main()
