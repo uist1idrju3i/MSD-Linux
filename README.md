@@ -1,6 +1,6 @@
 # /data file system比較実験の生データ
 
-2026-11-15の/data初回書き込み帰属とzram =y/=m起動時間の保全は、[セッションの証拠](session-2026-11-15/evidence/README.md)にあります。fs-compare matrix `e34-2026-11-15`は完了後に追加します。
+2026-11-15の/data初回書き込み帰属とzram =y/=m起動時間の保全は、[セッションの証拠](session-2026-11-15/evidence/README.md)にあります。fs-compare matrix `e34-2026-11-15`は `fs-compare/e34-matrix` に追加済みです。
 
 2026-11-13のOpenSSL・seedrng/zram・legal-info・Pages・開発image・更新署名・write inventoryを含む追加の保全は、[セッションの証拠](session-2026-11-13/evidence/README.md)にあります。以下の従来のfs-compare保存物は変更していません。
 
@@ -38,6 +38,7 @@
 | `phase2-plans` | 第2段のplan、input、hash、監視script |
 | `build-logs` | 各runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（4,350 file）。`build/` を削除する前に保存した |
 | `phase2-build-logs` | 第2段runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（2,386 file） |
+| `e34-matrix` | 第3段の反復測定 `e34-2026-11-15`（174行・178 attempt。T5でずれの出た24 variant×5回とT4-syncでidle書き込みの出た18 variant×3回）。各run directoryのtext file（`summary.csv`、`qemu.log`、`run-meta.txt`、`inputs.sha256`、`qemu.log.sha256`、`*.host.log`）とdriver log、plan |
 | `misc` | build結果をhard linkでまとめた時の `hardlink -v` のlog（`dedup-build-hardlink-20261111.log.zst`）、削除前の全imageの一覧（`images-inventory-20261111.tsv`：path、見かけのsize、disk上のsize、mtime）、VM上に残すimageのrun directoryの一覧（`images-kept-20261111.txt`） |
 
 ## 置いていないもの
