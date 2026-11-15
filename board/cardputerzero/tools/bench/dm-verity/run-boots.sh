@@ -54,7 +54,7 @@ failed=0
 
 for ((repeat = 0; repeat <= runs; repeat++)); do
 	boot_dir="${log_dir}/boot${repeat}"
-	serial_log="${boot_dir}/serial-mmcblk0p5.log"
+	serial_log="${boot_dir}/serial-$(basename -- "${ROOT_DEVICE_OVERRIDE:-/dev/dm-0}").log"
 	mkdir -p "$boot_dir"
 	: >"${boot_dir}/test-qemu.log"
 	start_ns="$(date +%s%N)"
