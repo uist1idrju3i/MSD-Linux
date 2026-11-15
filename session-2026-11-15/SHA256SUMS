@@ -2,3 +2,4 @@ df346838ac22c9fe5d0dcf1a1fe7b116fe7bb8cd8a1207008d97d062a71f946b  evidence/e1-da
 7869e1ef833fb6ca74b67c5f72ebeba40635db5475e956fd4f6a7614fe04d8a1  evidence/e2-zram-boottime.tar.zst
 43af747e5919115649e0778f1c092325f6a4af6339dbe22ac8fb8fdd89dc2903  evidence/e2-zram-m-inputs.tar.zst
 3124e6221ad2313eb5302fd7256b8fdb623f0ac215db7162ade4ccc234019972  evidence/e2-zram-swap-check.tar.zst
+40ea061616f7566edf9f566b640268670b244ad40b40cef7de48909484a63ac2  evidence/b2-squashfs-boot-read.tar.zst

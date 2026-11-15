@@ -10,12 +10,14 @@
 | `e2-zram-boottime.tar.zst` | zram `=y`対`=m`の起動時間比較（E2）。output-e2の2 CSV・driver log・各6 bootのserial log（ログのSHA-256はCSVの`log_sha256`列）。`image-build-*`（rootfs/sdcard.img/展開済みtarget）は除外 |
 | `e2-zram-m-inputs.tar.zst` | =m側Buildroot出力の`linux-zram-m.fragment`と`.config` |
 | `e2-zram-swap-check.tar.zst` | =m imageをQEMU起動してserialログインで採取した`/proc/swaps`・`/run/msd-zram.log`・`/dev/zram0`の確認ログ（swap無効の証拠） |
+| `b2-squashfs-boot-read.tar.zst` | SquashFS option別 boot-read bench（B2）。8 variant x 5 boot の serial log（`squashfs-readall` marker・ready 時刻・MemAvailable 採取）、`parse.log`、`result.txt`、`test-qemu.log`、variant別 CSV |
+| `b2-squashfs-boot-read.files.sha256` | 上記 archive 内 file の SHA-256 |
 | `../SHA256SUMS` | 上記archiveのSHA-256 |
 
 ## 範囲
 
 基準は`733d27e66c8499aa306325cb4ce928c6ed2f1034`。QEMU 11.1.2・kernel 6.18.59-v8での計測で、実SD・実機ではありません。
 
-E3/E4（fs-compare matrix `e34-2026-11-15`、174行）は採取時に実行中で、完了後に`fs-compare/`へ別archiveとして追加します。
+E3/E4（fs-compare matrix `e34-2026-11-15`、174行）は `fs-compare/e34-matrix` に追加済みです。
 
 SD image・O= tree・ccache等のbinaryは含みません。各runの`metadata.json`に入力fileのSHA-256があるため、同じ入力は再生成できます。
