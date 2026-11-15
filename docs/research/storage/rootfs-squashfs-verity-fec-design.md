@@ -47,6 +47,8 @@ p5/p6 rootfs パーティション (256MB 固定)
 
 圧縮関連: `-b <4K..1M>`（既定 128K）、`-comp {gzip,lzo,lz4,xz,zstd,lzma}`、`-noI/-noId/-noD/-noF/-noX/-no-compression`。zstd 固有 `-Xcompression-level` は正の1..22に加えて負のfast levelも受理します（0は不可、下限はリンク先libzstd依存）。既定15、`EXTREME_COMP`は22。zstd CLIの `--ultra` はmksquashfsへ渡しません。
 
+levelの判断は「展開側に悪影響がなければ22」という利用者の条件付き判断を保持します。旧記述の「zstdは19」を現行判断としません。B1 matrix（[mksquashfs-matrix](../../experiments/2026-11-15-mksquashfs-matrix.md)）で `-b 1M -Xcompression-level 19` と22が同一サイズ（22,372,352B。imageのSHA-256は異なる）だった事実と、l22を選ぶ判断は別です。配布はCI上のbuildなので圧縮時間は選定理由にしません。`-comp xz -b 128K -Xbcj arm` の22,155,264B（zstd 1M比 −1%）も保存します。[B2の限定的なQEMU結果](../../experiments/2026-11-15-squashfs-boot-read-bench.md)はl19/l22の展開側に測定上の差を認めていませんが、実機RAM・速度の保証ではありません。block独立圧縮でもworkspace等を実測せず「大差なし」と保証しません。
+
 構築関連: `-tar/-no-strip/-cpiostyle{,0}`、`-reproducible`（既定）/`-not-reproducible`、`-mkfs-time/-all-time/-root-time`、`-root-mode/-root-uid/-root-gid`、`-all-root/-force-uid/-force-gid/-pseudo-override`、`-exports/-no-exports`、`-no-sparse`、`-tailends/-no-tailends`（既定 off）、`-no-fragments`、`-no-duplicates`、`-no-hardlinks`、`-keep-as-directory`。
 
 フィルタ・その他: `-p/-pf`（pseudo file）、`-e/-ef/-wildcards/-regex`、`-sort/-sortlist`（boot 時 read 順序最適化に関係）、`-processors`、`-mem`、`-quiet/-progress/-no-progress`、`-xattrs` 系。
@@ -123,7 +125,7 @@ rootfs 系:
 
 1. **SquashFS**: `-comp zstd -b {4K,8K,16K,32K,64K,128K,256K,512K,1M}` × `-Xcompression-level {1,3,9,15,19,22}` の圧縮率・build 時間・QEMU mount/boot 時間・ランダム read 時間。`-tailends`, `-no-fragments`, `-exports` 有無の差。比較に `-comp xz/lz4/gzip` 少量。
 2. **zstd**: level vs 圧縮率・展開速度（SquashFS 側で測）。kernel decompressor の上限レベル確認（= 22 が使えるかの検証を兼ねる）。
-3. **dm-verity**: hash {sha256, crc32c（自前 formatter）}、data/hash block {4K}、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}、破損注入（1 block ビット化け / 連続領域化け / hash tree 自身の化け）での検出・訂正・切り戻し。`error_as_corruption` の挙動差。
+3. **dm-verity**: hash {sha256, crc32c（自前 formatter）}、data/hash block {4K}、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}、破損注入（1 block ビット化け / 連続領域化け / hash tree 自身の化け）での検出・訂正・切り戻し。`error_as_corruption` の挙動差。hash_alg の最終選定は kernel crypto API の全ハッシュの実機 throughput（crc32c, sha1/sha256/sha512, sha3, blake2b/2s, xxhash64 等、[hardware-measurements](../verification/hardware-measurements.md) の実機計画）と digest 長・検出特性で行う。
 4. **起動時間影響**: verity あり/なし、FEC あり/なしでの T0〜T5（icount 既存手法）。
 
 /data 系は `data-luks-btrfs-design.md`、zstd 系は `zstd-usage-and-options.md` に分割。

@@ -47,10 +47,10 @@
 - 採否基準: ①は FEC 範囲内なら訂正して起動継続、②③は検出して error mode 通りの動作、切り戻しは tryboot で別スロット起動を serial log で確認。
 - 反復: 各破損 case 5回。
 
-### B4. /data LUKS cipher throughput（QEMU guest 内）
+### B4. /data LUKS cipher・hash（QEMU機能確認と実機計画）
 
-- 目的: 利用者要求の全cipher（AES/Camellia/ChaCha/SM4/Twofish/Serpent/ARIA/Adiantum等）と全hashを対象にする。sector-size {512,4096}、integrity有無、data cipher throughput、PBKDF時間/RAMを別々に測定する。hashはPBKDF2・verity・btrfs checksum・独立throughputの用途を分ける。
-- 背景: hostではalgif_skcipher不足を観測。QEMUは機能確認・計測器検証用で、絶対速度も相対順位もARM実機の代理にしない。ARMのAES拡張・NEON実装を確認し、x86のAES-NIと混同しない。`/proc/crypto` は登録済み実装だけなので、固定Kconfig・module一覧・明示load結果・benchmarkが受理する組合せと照合し、不在/未load/不適用を区別する。
+- 目的: 利用者要求のkernel crypto APIの全cipher（AES/Camellia/ChaCha/SM4/Twofish/Serpent/ARIA/xchacha12・20-Adiantum等）と全hash（crc32c/sha1/sha256/sha512/sha3/blake2b/2s/xxhash64/wp512/streebog/md5等）を対象にする。sector-size {512,4096}、integrity有無、data cipher throughput、PBKDF時間/RAMを別々に測定する。hashはPBKDF2・verity・btrfs checksum・独立throughputの用途を分ける。
+- 背景: hostではalgif_skcipher不足を観測。QEMUは機能確認・計測器検証用で、絶対速度も相対順位もARM実機の代理にしない。ARMのAES拡張・NEON実装を確認し、x86のAES-NIと混同しない。`/proc/crypto` は登録済み実装だけなので、固定Kconfig・module一覧・明示load結果・benchmarkが受理する組合せと照合し、不在/未load/不適用を区別する。性能は[実機計測](../research/verification/hardware-measurements.md)（cipher・hash全数）で確定する。
 - 採否基準: 元の「adiantum sequential writeがAESの1.2倍超なら検討」という数値を保持するが、適用先は同条件の実機測定。LUKS cipherは利用者指定どおり当面aes-xts-plain64を維持。key sizeとsecurity strengthは別（XTSの2本分合計長を安全性bit数にしない）。最終判断は安全性要件と実機性能の両方で行い、QEMU順位で変更しない。
 - 反復: 各cipher・hash 5回。全候補の入力・非対応理由・失敗logとbinary/config hashを保存する。
 

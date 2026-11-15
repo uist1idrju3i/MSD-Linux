@@ -55,6 +55,7 @@
 | 旧説明 | 訂正・一次資料の場所 |
 |---|---|
 | 正level1..22が全量、19..22はultra | zstd CLIは20..22に `--ultra` が必要、19には不要。mksquashfsはlibzstdへ `-Xcompression-level 22` を直接渡す。4.7.5のzstd wrapperは負levelも受理。`zstd_wrapper.c/.h` を参照 |
+| rootfs設計でzstdは19と記載 | 現行の利用者判断は展開側に悪影響がなければ22。B1の同一sizeとB2の限定したQEMU結果は維持し、実機RAM・速度の保証と区別する |
 | zramの `comp_algorithm` に `zstd:1` 等を指定、dict非対応 | 名前選択と `algorithm_params` を分ける。固定 `zram.rst` は `algo=zstd level=8 dict=/etc/dictionary` を例示。sourceの存在と実imageのbuild/load成功は別 |
 | zswapのzpool・exclusive_loads・same/non_same_filled_pagesを全比較 | 固定 `mm/zswap.c` の公開parameterは5件のみ。これら4旧parameterは実行不能。allocatorはzsmallocを直接使用し、zbud/z3fold切替も実行不能。旧計画として記録を残す |
 | btrfs DUPはRAID1C2相当、xxhashがLUKSの完全性を代替 | DUPは同一device内2copy、xxhashは非暗号学的checksum。別device故障耐性や認証を追加しない。LUKS AES-XTSは暗号化だが認証ではない |

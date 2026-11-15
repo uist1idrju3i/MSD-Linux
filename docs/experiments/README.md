@@ -9,9 +9,12 @@
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
 | [2026-11-15-storage-options-prereg](2026-11-15-storage-options-prereg.md) | なし | 2026-11-15 | 事前登録（実行前） | SquashFS圧縮matrix、verity(crc32c)+FEC+破損注入、LUKS cipher、btrfs dup+xxhash64+zstd圧縮、zram/zswapのoption全測定の計画。B1のhost速報は取得済み、正式記録は反復後。 |
+| [2026-11-15-dm-verity-fec-corruption](2026-11-15-dm-verity-fec-corruption.md) | [結果](2026-11-15-dm-verity-fec-corruption.csv) | 2026-11-15 | 限定条件の35 boot | 1 byte反転の訂正・panicを観測。F3は旧ready期待と不一致。再入依存は有力な説明で原因未確定、F6はhost SIGTERMでrestart完了未確認。次回v2期待表を別に保存。 |
 | [storage option分類](../research/storage/storage-option-coverage.md) | source監査 | 2026-11-15 | 未測定範囲を分類 | 固定版のhelp・parser・Kconfig入力、hash、全token分類CSVと照合fixture。性能の新規測定ではない。 |
 | [2026-11-15-data-first-boot-writes](2026-11-15-data-first-boot-writes.md) | [測定](2026-11-15-data-first-boot-writes.csv) | 2026-11-15 | QEMU測定・原因特定 | 初回bootのp7への16,952 sectorは約97%がresize2fsの新規groupへのext4lazyinit。sfdiskはdisk側に16 sectorのみ、実処理は約570 sector。 |
 | [2026-11-15-zram-builtin-vs-module](2026-11-15-zram-builtin-vs-module.md) | [測定](2026-11-15-zram-builtin-vs-module.csv) | 2026-11-15 | 完了（QEMU・icount、各6回） | zram `=y`と`=m`のt_readyはほぼ同じ（warm中央値1.645対1.640秒）。ただし`=m`はmodalias自動loadの対象外でswapが無効のまま。`=y`維持が妥当。実機は未測定。 |
+| [2026-11-15-mksquashfs-matrix](2026-11-15-mksquashfs-matrix.md) | [測定](2026-11-15-mksquashfs-matrix.csv) | 2026-11-15 | 完了（host、138 run） | zstd 1M/l19=22.37MB、128K/l22比 -5.6%。l19/l22はサイズ一致だけで同じimageではない。build時間を採否理由にせず、条件付き22を保持。 |
+| [2026-11-15-squashfs-boot-read-bench](2026-11-15-squashfs-boot-read-bench.md) | B2 | 2026-11-15 | 限定条件の40 boot | 全file読み出し・ready・RAMを観測。kernel約135 KB差、途中の計装追加、0.5秒RAM samplingがあり、l22に悪影響なしとは断定しない。random read p95・実機は未測定。 |
 | [2026-11-13-cloudflare-analytics](2026-11-13-cloudflare-analytics.md) | [結果](2026-11-13-cloudflare-analytics.csv) | 2026-11-13 | production取得・ローカルCSP検査 | root 200と404の応答にbeaconを観測せず。公式の自動注入は同一origin送信なのでselfを追加。実送信と新CSPのproduction配信は未確認。 |
 | [2026-11-13-release-signing-qemu](2026-11-13-release-signing-qemu.md) | [結果・hash](2026-11-13-release-signing-qemu.csv) | 2026-11-13 | QEMU受入・B指定起動 | run 43331379685の本番署名を同一versionで通常受理。改変signature・未署名を拒否しstandby不変。Bのversion・health commit確認。初回測定器timeoutを保存。実機firmware tryboot・実SDは未確認。 |
 | [2026-11-13-pqc-groups](2026-11-13-pqc-groups.md) | [測定](2026-11-13-pqc-groups.csv) | 2026-11-13 | 判断資料・維持を決定 | OpenSSL 3.5.9のPQC 5構成の容量、VMの6 hostとQEMUを比較。同日利用者がDEFAULTとML-KEM維持を決定。ML-DSA／SLH-DSAは署名移行時に判断。実機・将来consumerは未確認。 |

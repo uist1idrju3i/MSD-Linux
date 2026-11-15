@@ -2,7 +2,7 @@
 
 ## 2026-11-15 storage設計
 
-[option・鍵・A/B説明の訂正](../storage/storage-option-coverage.md)。利用者判断と台帳同期保留は維持します。
+訂正: [設計](../storage/storage-option-coverage.md)・[実験](../storage/storage-integrity-corrections.md)。
 
 ## 2026-11-15の/data帰属とzram比較の訂正
 

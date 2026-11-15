@@ -75,7 +75,7 @@ btrfs idle 書き込み規則（write-policy §10 との整合）: `commit` inte
 | option | 本設計での扱い |
 |---|---|
 | `--type luks2` | 採用 |
-| `--cipher aes-xts-plain64` | 利用者指定どおり当面の既定を維持。adiantum等も比較するが、ARMのAES拡張・実装ごとに実機で測る。x86のAES-NIという表現は使わない |
+| `--cipher aes-xts-plain64` | 利用者指定どおり当面の既定を維持。kernel crypto APIの全cipher（aes/camellia/chacha/sm4/twofish/serpent/aria/xchacha12・20-adiantum等）をB4で比較する。ARMのAES拡張・実装ごとに実機で測り、x86のAES-NIと混同しない |
 | `--key-size` | XTSは2本の鍵の合計長。512 bit指定を512 bitの安全性とはしない。cipher/modeとsecurity strengthを別に記録 |
 | `--hash`（PBKDF） | PBKDF2のhash選択と、data cipherのthroughput、verity/btrfsのhash用途は別。全hash要求は維持し、目的別に測定 |
 | `--pbkdf argon2id` | 既定・採用候補。`--pbkdf-memory/--pbkdf-parallel/--iter-time` はメモリ制約で測定 |
@@ -129,7 +129,7 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 
 1. **btrfs mkfs**: `-m dup -d dup` 固定で `csum {crc32c, xxhash, sha256, blake2b}`、`nodesize {4K,16K,32K}`、`sectorsize {4K}` の差。btrfs-progs の csum 指定名は `blake2b`（kernel 表記 BLAKE2b-256）。既存 [filesystem-options-btrfs](filesystem-options-btrfs.md) 表の `blake2` は同じものの表記揺れで、実験コマンドは `blake2b` で統一する。
 2. **btrfs mount**: `compress=zstd:{1,3,9}`、`compress-force` 有無、`commit={30,5,0}`、`ssd/nossd`、`autodefrag` 有無、`space_cache` v2/none、`thread_pool`、`flushoncommit`。
-3. **LUKS**: cipher {aes-xts-plain64, xchacha12-adiantum, xchacha20-adiantum}、`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無比較。
+3. **LUKS**: cipher は **実機の kernel crypto API が提供する全 cipher**（aes, camellia, chacha, sm4, twofish, serpent, aria, xchacha12/20-adiantum 等、ゲストの /proc/crypto で列挙）をベンチする（利用者指示 2026-11-15）。同じ枠組みで **kernel crypto API の全ハッシュアルゴリズム**（crc32c, sha1/sha256/sha512, sha3, blake2b/2s, xxhash64, wp512, streebog 等、同じく /proc/crypto で列挙）も実機で throughput を測る（利用者指示 2026-11-15）。verity の hash_alg と btrfs csum の選定根拠に使う。`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無も比較。cipher の最終決定はセキュリティビット数（key size 込み）と実機での throughput 測定の両方で行う。暫定は既定の `aes-xts-plain64`。
 4. **fs-compare 連携**: 新設定を `B*`（plain btrfs）、`L*`（LUKS+btrfs 新規系統）として fs-compare-configs に追加し、T4-sync/T5/write inventory を既存手法で測る（E3/E4 matrix 完了後に同じ harness で）。
 5. **写り性能**: 200MB data file 書き込み・ランダム 4K rw・fsync 頻度差。
 6. **電源断・破損試験**: dup+xxhash の復旧動作、scrub、btrfs check。電源断反復（既存 harness）。
@@ -142,5 +142,15 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 4. **keyfile の保管場所**: boot FAT（SD 抜き取りで key が漏れる）vs TPM 相当機能なし → 端末内 keyfile 前提か、起動時に user PIN を要求するか。利用者判断。
 5. **subvolume layout**: snapshot/rollback を使うか。
 6. **sector-size**: SD の erase block との整列。実機測定課題。
+
+## 6. 移行後の整理（2026-11-15 利用者指示）
+
+/data を btrfs に移行した後は **ext4 を無効化して軽量化**する方針が指示された:
+
+- `CONFIG_EXT4_FS` の削除（kernel を小さくする）。`/data` 以外に ext4 依存が無いことを移行前に確認する（rootfs は SquashFS、boot は FAT でどちらも無関係）。
+- e2fsprogs（mkfs.ext4, fsck.ext4 など）の target からの削除。`S02msd-data`・`msd-data-grow` が ext4 tool を呼んでいるので、btrfs 版の初期化・拡張処理への置き換えと同時に行う。
+- 既存の ext4 `/data` を持つカードからの移行手順（online convert か再 format か）は別途設計が必要。
+
+この段階は B5（btrfs option 実測）と並行ではなく、移行設計の確定後に行う。
 
 全optionのtoken分類とB4のcipher・PBKDF・hashの区分は[網羅表](storage-option-coverage.md)を参照します。ext4/e2fsprogsの撤去は利用者指定どおりbtrfs移行後であり、今回の文書訂正では実施しません。
