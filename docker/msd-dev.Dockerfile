@@ -9,12 +9,12 @@ ARG QEMU_VERSION=11.1.2
 ARG QEMU_SHA256=731b5681e4bb18be313231579b8efd0296c5b015fa36dc533874b639ba838016
 ARG QEMU_SIGNING_FINGERPRINT=CEACC9E15534EBABB82D3FA03353C9CEF108B584
 
-FROM golang:1.27.3-trixie@sha256:c65ecfe613b539ac74c62a4c3b2c27e8f8a6076384c8f27e8a3c0f3be17cc385 AS actionlint
+FROM golang:1.27.3-trixie@sha256:af1bfc2614ebb1dbd31af514b78740fd678850e76498762b425ecee4c5c6ea80 AS actionlint
 ARG ACTIONLINT_VERSION
 ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOFLAGS=-trimpath
 RUN go install -ldflags='-s -w' github.com/rhysd/actionlint/cmd/actionlint@v${ACTIONLINT_VERSION}
 
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS qemu
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS qemu
 ARG DEBIAN_SNAPSHOT
 ARG QEMU_VERSION
 ARG QEMU_SHA256
@@ -113,7 +113,7 @@ RUN set -euxo pipefail \
     && /opt/qemu/bin/qemu-img create -f raw /tmp/qemu-smoke.raw 1M \
     && /opt/qemu/bin/qemu-img info /tmp/qemu-smoke.raw >/dev/null
 
-FROM debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS msd-dev
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS msd-dev
 ARG ACTIONLINT_VERSION
 
 ARG DEBIAN_SNAPSHOT=20261107T075304Z
