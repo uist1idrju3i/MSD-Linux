@@ -1,0 +1,27 @@
+event-01a1ddc765977c31adfef0cc5ef79174 2026-11-15T05:56:34.839000Z
+cd /home/devin-worker/fscmp && python3 - <<'EOF'
+import csv, glob, statistics
+plan = [l.split('\t') for l in open('plans/e34-2026-11-15.tsv').read().strip().split('\n')]
+keys=[]
+for p in plan:
+    k=(p[0],p[1])
+    if k not in keys: keys.append(k)
+runs = {}
+for f in glob.glob('MSD-Linux/output-e34/runs/*/summary.csv'):
+    r = list(csv.DictReader(open(f)))[0]
+    if r['status'] != 'ok': continue
+    runs.setdefault((r['config'], r['test']), []).append(r)
+fields = ['wall_seconds','write_sectors','write_ios','quiesce_write_sectors','quiesce_write_ios','quiesce_seconds','last_write_s','mem_available_kb','mkfs_seconds','mount_seconds','fsck_seconds','lost_records','fsync_lost']
+out = open('/home/devin-worker/e34doc/MSD-Linux/docs/experiments/2026-11-15-fs-compare-matrix.csv','w')
+w = csv.writer(out)
+w.writerow(['config','test','n'] + [f'{f}_{s}' for f in fields for s in ('median','min','max')])
+for key in keys:
+    rs = runs[key]
+    row=[key[0],key[1],len(rs)]
+    for f in fields:
+        vals=[float(r[f]) for r in rs if r.get(f) not in ('','none',None)]
+        row += [statistics.median(vals), min(vals), max(vals)] if vals else ['','','']
+    w.writerow(row)
+out.close()
+print(sum(1 for _ in open('/home/devin-worker/e34doc/MSD-Linux/docs/experiments/2026-11-15-fs-compare-matrix.csv'))-1,"rows")
+EOF

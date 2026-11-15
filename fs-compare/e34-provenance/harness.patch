@@ -1,0 +1,146 @@
+diff --git a/board/cardputerzero/tools/bench/fs-compare-guest b/board/cardputerzero/tools/bench/fs-compare-guest
+index 8c1e069..91f501d 100755
+--- a/board/cardputerzero/tools/bench/fs-compare-guest
++++ b/board/cardputerzero/tools/bench/fs-compare-guest
+@@ -186,6 +186,51 @@ replace_setup_tokens()
+ 			-e "s|%MOUNTPOINT%|$MOUNTPOINT|g"
+ }
+ 
++open_stack()
++{
++	stack_device=$1
++	stack_mapper_name=$2
++	setup_remaining=$SETUP
++	stack_open_command=
++	stack_open_command_count=0
++	while [ -n "$setup_remaining" ]; do
++		setup_step=${setup_remaining%%;*}
++		if [ "$setup_step" = "$setup_remaining" ]; then
++			setup_remaining=
++		else
++			setup_remaining=${setup_remaining#*;}
++		fi
++		setup_step="$(printf '%s' "$setup_step" |
++			sed -e "s|%BASE_DEVICE%|$stack_device|g" \
++				-e "s|%KEYFILE%|$KEYFILE|g")"
++		# shellcheck disable=SC2086
++		set -- $setup_step
++		if [ "${1:-}" != integritysetup ] &&
++			[ "${1:-}" != cryptsetup ] ||
++			[ "${2:-}" != open ]; then
++			continue
++		fi
++		stack_open_command_count=$((stack_open_command_count + 1))
++		[ "$#" -ge 3 ] || fail "stack_open_command_missing_mapper"
++		stack_open_command=
++		while [ "$#" -gt 1 ]; do
++			if [ -z "$stack_open_command" ]; then
++				stack_open_command=$1
++			else
++				stack_open_command="$stack_open_command $1"
++			fi
++			shift
++		done
++		stack_open_command="$stack_open_command $stack_mapper_name"
++	done
++	[ "$stack_open_command_count" -eq 1 ] ||
++		fail "stack_open_command_count=$stack_open_command_count"
++	console "stack_open_command=$stack_open_command"
++	# shellcheck disable=SC2086
++	set -- $stack_open_command
++	"$@"
++}
++
+ run_setup_commands()
+ {
+ 	make_keyfiles
+@@ -257,11 +302,7 @@ attach_test_disk()
+ 		L*|I*|B5)
+ 			if [ "$phase" = verify ]; then
+ 				make_keyfiles
+-				case "$BASE_CONFIG" in
+-					L*|B5) cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ;;
+-					I1) integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ;;
+-					I2) integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ;;
+-				esac
++				open_stack "$LOOP_DATA" "$MAPPER_NAME"
+ 			fi
+ 			;;
+ 	esac
+@@ -1115,17 +1156,8 @@ open_t1_replay_stack()
+ 	REPLAY_DEVICE=$SNAPSHOT_DEVICE
+ 	REPLAY_WORKLOAD_ROOT=$REPLAY_MOUNT
+ 	case "$BASE_CONFIG" in
+-		L*|B5)
+-			if cryptsetup open --key-file "$KEYFILE" "$SNAPSHOT_DEVICE" \
+-				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+-				stack_open=yes
+-				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+-			else
+-				stack_open=no
+-			fi
+-			;;
+-		I1)
+-			if integritysetup open "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
++		L*|I*|B5)
++			if open_stack "$SNAPSHOT_DEVICE" "$REPLAY_STACK_NAME" \
+ 				>"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+ 				stack_open=yes
+ 				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+@@ -1133,15 +1165,6 @@ open_t1_replay_stack()
+ 				stack_open=no
+ 			fi
+ 			;;
+-		I2)
+-			if integritysetup open --integrity-bitmap-mode "$SNAPSHOT_DEVICE" \
+-				"$REPLAY_STACK_NAME" >"${RUN_PATH}/stack-open-$entry.log" 2>&1; then
+-				stack_open=yes
+-				REPLAY_DEVICE="/dev/mapper/$REPLAY_STACK_NAME"
+-			else
+-				stack_open=no
+-			fi
+-			;;
+ 		E5|F5)
+ 			REPLAY_WORKLOAD_ROOT="${REPLAY_MOUNT}/encrypted"
+ 			;;
+@@ -1706,16 +1729,8 @@ unmount_volume()
+ open_config_stack()
+ {
+ 	case "$BASE_CONFIG" in
+-		L*|B5)
+-			cryptsetup open --key-file "$KEYFILE" "$LOOP_DATA" "$MAPPER_NAME" ||
+-				fail "T6_stack_open_failed"
+-			;;
+-		I1)
+-			integritysetup open "$LOOP_DATA" "$MAPPER_NAME" ||
+-				fail "T6_stack_open_failed"
+-			;;
+-		I2)
+-			integritysetup open --integrity-bitmap-mode "$LOOP_DATA" "$MAPPER_NAME" ||
++		L*|I*|B5)
++			open_stack "$LOOP_DATA" "$MAPPER_NAME" ||
+ 				fail "T6_stack_open_failed"
+ 			;;
+ 	esac
+diff --git a/board/cardputerzero/tools/bench/fs-compare-phase2-variants.tsv b/board/cardputerzero/tools/bench/fs-compare-phase2-variants.tsv
+index 0423502..1047268 100644
+--- a/board/cardputerzero/tools/bench/fs-compare-phase2-variants.tsv
++++ b/board/cardputerzero/tools/bench/fs-compare-phase2-variants.tsv
+@@ -94,7 +94,7 @@ P101	B2	mount_add	nospace_cache	std	btrfs-progs:nospace_cache
+ P102	B2	mount_add	lazytime	std	write-path-mount:lazytime（Btrfs）
+ P103	B2	post_mount	chattr +C %MOUNTPOINT%	std+T6	write-path-attributes:chattr C
+ P104	B2	post_mount	chattr +c %MOUNTPOINT%	std	write-path-attributes:chattr c, btrfs:compression property
+-P110	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --integrity sha256	std+T6	dm-integrity:--integrity, internal_hash
++P110	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --integrity sha256 %BASE_DEVICE%; integritysetup open --integrity sha256 %BASE_DEVICE%	std+T6	dm-integrity:--integrity, internal_hash
+ P111	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --tag-size 8	std+T6	dm-integrity:--tag-size
+ P112	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --sector-size 4096	std	dm-integrity:--sector-size, block_size
+ P113	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --integrity-no-journal %BASE_DEVICE%	std	dm-integrity:--integrity-no-journal, D
+@@ -102,7 +102,7 @@ P114	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format
+ P115	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-watermark 10 %BASE_DEVICE%	std	dm-integrity:--journal-watermark
+ P116	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 1000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time, commit_time
+ P117	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 60000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time
+-P118	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --journal-integrity crc32c	std	dm-integrity:--journal-integrity
++P118	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --journal-integrity crc32c %BASE_DEVICE%; integritysetup open --journal-integrity crc32c %BASE_DEVICE%	std	dm-integrity:--journal-integrity
+ P119	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --allow-discards %BASE_DEVICE%	std	dm-integrity:--allow-discards
+ P120	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 1000	std	dm-integrity:--bitmap-flush-time
+ P121	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 60000	std	dm-integrity:--bitmap-flush-time
