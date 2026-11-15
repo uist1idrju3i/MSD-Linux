@@ -12,7 +12,7 @@ p7 data パーティション
 └── LUKS2（dm-crypt）
     └── btrfs
         ├── checksum: xxhash64（mkfs --csum xxhash）
-        ├── data profile: dup（-d dup → 実質 RAID1C2 相当で単一デバイス上2重化）
+        ├── data profile: dup（-d dup → 同一device内の2copy。別device間のRAID1系とは異なる）
         ├── metadata profile: dup（-m dup）
         └── mount: compress=zstd[:level]（透過圧縮）
 ```
@@ -27,7 +27,7 @@ p7 data パーティション
 | btrfs-progs | 6.10 |
 | kernel `CONFIG_BTRFS_FS` | **未設定** → =y 化が必要 |
 | `CONFIG_XXHASH` | =y（btrfs xxhash csum に必要、既に済） |
-| `CONFIG_CRYPTO_ZSTD` | =m → btrfs zstd 圧縮に =y が必要 |
+| `CONFIG_ZSTD_COMPRESS` / `CONFIG_ZSTD_DECOMPRESS` | BTRFS_FSが選ぶlib/zstd。crypto/zstdの有効化だけでbtrfsの設定を判断しない |
 | `CONFIG_DM_CRYPT` | =m → 起動時に unlock するなら =y 化が必要（initramfs なし想定なら =y） |
 
 ### 2.2 btrfs の option（一次資料: mkfs.btrfs 6.10 man + kernel btrfs doc + 既存 filesystem-options-btrfs.md）
@@ -75,13 +75,13 @@ btrfs idle 書き込み規則（write-policy §10 との整合）: `commit` inte
 | option | 本設計での扱い |
 |---|---|
 | `--type luks2` | 採用 |
-| `--cipher aes-xts-plain64` | 既定・採用候補。`xchacha12,aes-adiantum-plain64` / `xchacha20,aes-adiantum-plain64`（AES-NI なし ARM 向け）も測定対象 |
-| `--key-size` | cipher に応じ 256/512 bit。測定対象 |
-| `--hash sha256`（PBKDF） | 既定。測定対象外だが `--pbkdf` argon2i/argon2id/pbkdf2 の比較対象 |
+| `--cipher aes-xts-plain64` | 利用者指定どおり当面の既定を維持。adiantum等も比較するが、ARMのAES拡張・実装ごとに実機で測る。x86のAES-NIという表現は使わない |
+| `--key-size` | XTSは2本の鍵の合計長。512 bit指定を512 bitの安全性とはしない。cipher/modeとsecurity strengthを別に記録 |
+| `--hash`（PBKDF） | PBKDF2のhash選択と、data cipherのthroughput、verity/btrfsのhash用途は別。全hash要求は維持し、目的別に測定 |
 | `--pbkdf argon2id` | 既定・採用候補。`--pbkdf-memory/--pbkdf-parallel/--iter-time` はメモリ制約で測定 |
 | `--sector-size 512/4096` | 測定対象（DM integrity 込みで 4096 推奨か） |
-| `--integrity <alg>` | LUKS2 integrity（hmac-sha256 等）。**方針は btrfs csum で integrity 担保なので LUKS 側は無し前提**だが、dup+xhash64 と integrity の併用比較は測定対象（I1/I2 経験あり） |
-| `--key-slot`/`--keyfile` | 鍵 lifecycle 設計に関係（§4） |
+| `--integrity <alg>` | xxhash64は非暗号学的checksumで、LUKSへ認証を追加しない。LUKS側の認証付き構成の要否は別判断。DUPとの併用比較は測定対象 |
+| `--key-slot`/`--key-file` | 鍵 lifecycle 設計に関係（§3.4） |
 | `--luks2-metadata-size`/`--keyslots-size` | 既定。key rotation 回数見積もりに関係 |
 | `--sector-size`/`--offset`/`--align-payload` | payload 整列。256MB 中の整合 |
 | `--use-random`/`--use-urandom` | format 時の source。既定 random |
@@ -90,7 +90,8 @@ btrfs idle 書き込み規則（write-policy §10 との整合）: `commit` inte
 
 ### 2.4 LUKS ↔ btrfs の重なり（設計上の重複検査）
 
-- **完全性**: btrfs xxhash64 は data+metadata の内容 checksum。LUKS integrity（hmac-sha256）はブロック単位の完全性。両方入れると overhead 大。方針どおり btrfs 側に寄せる場合、LUKS integrity は掛けない（replay/rollback 耐性は LUKS の AEAD でも完全ではないため、別途設計が必要なら manifest 側で）。
+- **完全性**: btrfs xxhash64はdata/metadataの偶発破損を検出する非暗号学的checksumです。通常のLUKS2 AES-XTSは暗号化であり認証ではありません。key付きMACや認証付き構成の代用とはせず、LUKS integrityの要否とreplay/rollback対策は未決定です。
+- **故障耐性**: DUPは同一device内2copyで、片方の局所破損にchecksumと組み合わせて対処する構成です。同じSDの全損・controller/FTL故障・共通原因破損には別device間RAID1と同じ耐性を持ちません。「RAID1C2相当」という旧説明を撤回します。
 - **dup vs LUKS**: dup の 2 箇所書き込みは LUKS 経由で 2 回暗号化される。sector 単位では別 offset → 別 IV で問題なし。
 
 ## 3. 設計案
@@ -105,7 +106,7 @@ mkfs.btrfs -L msd-data --csum xxhash -m dup -d dup -n 16384 -s 4096 /dev/mapper/
 mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 ```
 
-初回起動時の暗号化は product-decisions 2026-11-03「/dataは初回起動から暗号化する方向」に一致。device 固有 volume key を初回起動で生成、keyfile は key-slot に。progress 表示必須（§10）。
+これは破壊的formatを含む設計例で、実行指示でも確定した製品既定でもありません。初回暗号化の進捗・中断可否表示、鍵の生成・保存・解錠を設計してから製品へ組み込みます。
 
 ### 3.2 zstd 透過圧縮
 
@@ -118,9 +119,9 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 
 ### 3.4 鍵 lifecycle
 
-- volume key: 初回起動に `/dev/urandom` から生成、LUKS keyslot0 に keyfile として登録。
-- PIN/password 変更時は `cryptsetup luksChangeKey` で key rotation（product-decisions 2026-11-03 の記述に整合）。
-- keyfile の保管: boot partition(FAT) に置くか verity 領域内に置くか → A/B 設計と整合させる必要あり（rootfs は ro+verity なので writable な場所は boot/data のみ）。
+- volume keyはdata暗号化に使い、keyslotはpassphrase/keyfile由来の鍵で保護したvolume keyを持ちます。解錠用keyfileとvolume keyそのものを同一視しません。端末固有の鍵とし、build共通鍵にはしません。
+- `luksChangeKey` はpassphrase/keyslotの変更で、dataを再暗号化せずvolume keyも替えません。利用者の「PIN/password設定時は既定でvolume keyも替える」方針を満たすには、別途reencryptの新鍵生成・中断再開・電断復旧を設計する必要があります。
+- boot FATや公開可能なverity領域へ平文keyfileを置く案を既定採用しません。同じSDから読める鍵はSD盗難時の秘密保護にならず、verityも秘匿化ではありません。passwordなし起動・PIN・passwordという利用者の選択を保ち、端末内保存の脅威モデルと鍵の保護を未決定として残します。
 
 ## 4. 測定計画（experiment-record 準拠）
 
@@ -136,8 +137,10 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 ## 5. 未解決・利用者確認点
 
 1. **dup data の容量倍率**: data が 2 倍消費される。`/data` の想定使用量と容量見積もりが要。利用者確認点。
-2. **LUKS integrity 無しの確定**: btrfs xxhash64 で破損検出する方針。悪意ある改ざんは keyslot があっても平文攻撃には非耐性（どちらも暗号学的でない）。要確認。
+2. **LUKS integrity の要否**: xxhash64は非暗号学的検査、LUKS AES-XTSは暗号化です。両者の性質を分け、認証の要否を利用者と判断します。
 3. **compress-force**: 方針は「zstd 透過圧縮」、force まで含むか。
 4. **keyfile の保管場所**: boot FAT（SD 抜き取りで key が漏れる）vs TPM 相当機能なし → 端末内 keyfile 前提か、起動時に user PIN を要求するか。利用者判断。
 5. **subvolume layout**: snapshot/rollback を使うか。
 6. **sector-size**: SD の erase block との整列。実機測定課題。
+
+全optionのtoken分類とB4のcipher・PBKDF・hashの区分は[網羅表](storage-option-coverage.md)を参照します。ext4/e2fsprogsの撤去は利用者指定どおりbtrfs移行後であり、今回の文書訂正では実施しません。

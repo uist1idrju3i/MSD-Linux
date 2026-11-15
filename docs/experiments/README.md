@@ -9,6 +9,7 @@
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
 | [2026-11-15-storage-options-prereg](2026-11-15-storage-options-prereg.md) | なし | 2026-11-15 | 事前登録（実行前） | SquashFS圧縮matrix、verity(crc32c)+FEC+破損注入、LUKS cipher、btrfs dup+xxhash64+zstd圧縮、zram/zswapのoption全測定の計画。B1のhost速報は取得済み、正式記録は反復後。 |
+| [storage option分類](../research/storage/storage-option-coverage.md) | source監査 | 2026-11-15 | 未測定範囲を分類 | 固定版のhelp・parser・Kconfig入力、hash、全token分類CSVと照合fixture。性能の新規測定ではない。 |
 | [2026-11-15-data-first-boot-writes](2026-11-15-data-first-boot-writes.md) | [測定](2026-11-15-data-first-boot-writes.csv) | 2026-11-15 | QEMU測定・原因特定 | 初回bootのp7への16,952 sectorは約97%がresize2fsの新規groupへのext4lazyinit。sfdiskはdisk側に16 sectorのみ、実処理は約570 sector。 |
 | [2026-11-15-zram-builtin-vs-module](2026-11-15-zram-builtin-vs-module.md) | [測定](2026-11-15-zram-builtin-vs-module.csv) | 2026-11-15 | 完了（QEMU・icount、各6回） | zram `=y`と`=m`のt_readyはほぼ同じ（warm中央値1.645対1.640秒）。ただし`=m`はmodalias自動loadの対象外でswapが無効のまま。`=y`維持が妥当。実機は未測定。 |
 | [2026-11-13-cloudflare-analytics](2026-11-13-cloudflare-analytics.md) | [結果](2026-11-13-cloudflare-analytics.csv) | 2026-11-13 | production取得・ローカルCSP検査 | root 200と404の応答にbeaconを観測せず。公式の自動注入は同一origin送信なのでselfを追加。実送信と新CSPのproduction配信は未確認。 |
