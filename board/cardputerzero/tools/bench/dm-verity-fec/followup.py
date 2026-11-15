@@ -46,17 +46,21 @@ def pack_initramfs(tree, destination):
         archive.extend(record + b'\0' * (-len(record) % 4))
         archive.extend(data + b'\0' * (-len(data) % 4))
 
-    for name in ('bin', 'lib', 'dev', 'proc', 'sys', 'run', 'tmp'):
+    for name in ('bin', 'lib', 'usr', 'usr/lib', 'dev', 'proc', 'sys', 'run', 'tmp'):
         entry(name, stat.S_IFDIR | 0o755)
     entry('dev/console', stat.S_IFCHR | 0o600, major=5, minor=1)
     entry('bin/busybox', stat.S_IFREG | 0o755, (tree / 'bin/busybox').read_bytes())
     entry('bin/sh', stat.S_IFLNK | 0o777, b'busybox')
     entry('init', stat.S_IFREG | 0o755, (HERE / 'ram-init.sh').read_bytes())
-    for path in sorted((tree / 'lib').iterdir()):
-        if path.is_symlink():
-            entry(f'lib/{path.name}', stat.S_IFLNK | 0o777, os.readlink(path).encode())
-        elif path.is_file():
-            entry(f'lib/{path.name}', stat.S_IFREG | 0o755, path.read_bytes())
+    for prefix in ('lib', 'usr/lib'):
+        directory = tree / prefix
+        if not directory.exists():
+            continue
+        for path in sorted(directory.iterdir()):
+            if path.is_symlink():
+                entry(f'{prefix}/{path.name}', stat.S_IFLNK | 0o777, os.readlink(path).encode())
+            elif path.is_file():
+                entry(f'{prefix}/{path.name}', stat.S_IFREG | 0o755, path.read_bytes())
     entry('TRAILER!!!', 0)
     destination.write_bytes(gzip.compress(archive, mtime=0))
 

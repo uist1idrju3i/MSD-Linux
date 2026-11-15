@@ -110,6 +110,8 @@ class Followup(unittest.TestCase):
             (root / 'bin/busybox').write_bytes(b'busybox')
             (root / 'lib/libc.so.6').write_bytes(b'libc')
             (root / 'lib/libc.so').symlink_to('libc.so.6')
+            (root / 'usr/lib').mkdir(parents=True)
+            (root / 'usr/lib/libresolv.so.2').write_bytes(b'resolver')
             one, two = root / 'one.gz', root / 'two.gz'
             followup.pack_initramfs(root, one)
             followup.pack_initramfs(root, two)
@@ -118,6 +120,8 @@ class Followup(unittest.TestCase):
             self.assertTrue(data.startswith(b'070701'))
             self.assertIn((HERE / 'ram-init.sh').read_bytes(), data)
             self.assertIn(b'TRAILER!!!', data)
+            self.assertIn(b'usr/lib/libresolv.so.2', data)
+            self.assertIn(b'resolver', data)
         header = 'unsigned int level;\t\t/* recursion level */'
         changed = trace.transform('dm-verity-fec.h', header)
         self.assertIn('u64 b3_id;', changed)
