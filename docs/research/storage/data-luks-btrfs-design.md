@@ -126,7 +126,7 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 
 /data 系の測定対象:
 
-1. **btrfs mkfs**: `-m dup -d dup` 固定で `csum {crc32c, xxhash, sha256, blake2b}`、`nodesize {4K,16K,32K}`、`sectorsize {4K}` の差。
+1. **btrfs mkfs**: `-m dup -d dup` 固定で `csum {crc32c, xxhash, sha256, blake2b}`、`nodesize {4K,16K,32K}`、`sectorsize {4K}` の差。btrfs-progs の csum 指定名は `blake2b`（kernel 表記 BLAKE2b-256）。既存 [filesystem-options-btrfs](filesystem-options-btrfs.md) 表の `blake2` は同じものの表記揺れで、実験コマンドは `blake2b` で統一する。
 2. **btrfs mount**: `compress=zstd:{1,3,9}`、`compress-force` 有無、`commit={30,5,0}`、`ssd/nossd`、`autodefrag` 有無、`space_cache` v2/none、`thread_pool`、`flushoncommit`。
 3. **LUKS**: cipher {aes-xts-plain64, xchacha12-adiantum, xchacha20-adiantum}、`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無比較。
 4. **fs-compare 連携**: 新設定を `B*`（plain btrfs）、`L*`（LUKS+btrfs 新規系統）として fs-compare-configs に追加し、T4-sync/T5/write inventory を既存手法で測る（E3/E4 matrix 完了後に同じ harness で）。

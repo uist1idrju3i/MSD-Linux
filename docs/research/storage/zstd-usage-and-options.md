@@ -10,7 +10,7 @@
 | 箇所 | レイヤ | 版・設定 | kernel symbol |
 |---|---|---|---|
 | SquashFS rootfs | fs 圧縮 | squashfs-tools 4.7.5 `-comp zstd` | `CONFIG_SQUASHFS_ZSTD=y` |
-| zram（swap） | block dev comp | `CONFIG_ZRAM=m`、def comp=zstd、multi_comp=y | `CONFIG_ZRAM_BACKEND_ZSTD` |
+| zram（swap） | block dev comp | `CONFIG_ZRAM=y`、def comp=zstd、multi_comp=y | `CONFIG_ZRAM_BACKEND_ZSTD` |
 | zswap（swap cache） | frontswap | `CONFIG_ZSWAP=y`、既定 compressor=lzo | `CONFIG_ZSWAP_COMPRESSOR_DEFAULT_*` |
 | btrfs /data | fs 透過圧縮 | `compress=zstd[:level]` | `CONFIG_CRYPTO_ZSTD` + `BTRFS` |
 
@@ -48,12 +48,12 @@ zstd 自体は 1.5.7 固定（`vendor/buildroot/package/zstd/zstd.mk`）。kerne
 |---|---|---|
 | `/sys/block/zram*/disksize` | 仮想 disk サイズ | 値差は容量設計、測定対象は既定値との差 |
 | `comp_algorithm` | `lz4`, `lzo`, `zstd`（multi_comp で列挙可能）、`zstd <level>` 等 backend params 付き | **全 algorithm × 主 level 比較** |
-| `writeback` | idle/incompressible page の backing dev への退避 | SD write 規則と衝突するため**不採用方向**（writeback 先は RAM のみ） |
-| `mem_limit` | メモリ上限 | 測定対象 |
-| `idle` | page idle 時間設定 | writeback とセット、対象外方向 |
+| `writeback` | idle/incompressible page の backing dev への退避 | **`CONFIG_ZRAM_WRITEBACK` 未設定で使用不可**。SD write 規則とも衝突するため不採用方向 |
+| `mem_limit` | メモリ上限（kernel 引数 `zram.mem_limit=`、=y でも指定可） | 測定対象 |
+| `idle` | page idle 時間設定 | `ZRAM_WRITEBACK` 未設定で使用不可、対象外 |
 | `reset`, `mm_stat`, `io_stat` | 統計 | 計測手段 |
 | module param `num_devices` | 既定 1 | 対象外 |
-| kernel `CONFIG_ZRAM_WRITEBACK` / `ZRAM_MEMORY_TRACKING` | config | 現状 =y |
+| kernel `CONFIG_ZRAM_WRITEBACK` / `ZRAM_MEMORY_TRACKING` | config | WRITEBACK 未設定 / TRACKING=y |
 
 ### 3.2 zswap
 
@@ -71,7 +71,7 @@ zstd 自体は 1.5.7 固定（`vendor/buildroot/package/zstd/zstd.mk`）。kerne
 
 ## 4. 測定計画（experiment-record 準拠）
 
-測定は 2 面:
+各測定は実行前に experiment-record 準拠の事前登録（目的・採否基準・反復回数5回以上・固定版）を `docs/experiments/` に作ってから行う。測定は 2 面:
 
 **A. squashfs/zstd 側（host + QEMU boot/read 時間）**
 

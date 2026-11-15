@@ -102,7 +102,7 @@ veritysetup 側の format/open option: `--hash`、`--no-superblock`、`--format 
 
 ### 4.3 起動経路
 
-- `dm-mod.create=verity,,,ro,0 <blockdev> <blockdev> 4096 4096 <datablocks> <hashstart> crc32c <roothash> <salt> <optparams>` を kernel 引数 or config.txt/cmdline.txt に。`dm-mod.waitfor` で mount 待ち。
+- `dm-mod.create=<name>,,,ro,0 <sectors> verity 1 <blockdev> <blockdev> 4096 4096 <datablocks> <hashstart> crc32c <roothash> <salt> <optparams>` を kernel 引数 or config.txt/cmdline.txt に。`dm-mod.waitfor` で mount 待ち。形式は[既存の試験ハーネス](../../../board/cardputerzero/tools/bench/dm-verity/make-case.sh)が `vroot,,,ro,0 <sectors> verity 1 /dev/mmcblk0p5 /dev/mmcblk0p5 4096 4096 <blocks> <hashstart> sha256 <hash> <salt> 1 panic_on_corruption` で検証済みのものと同じ（target は `verity 1`、sectors は data_blocks×8）。
 - root hash / salt は release 時に確定 → boot-a/b の autoboot.txt か cmdline に埋める。msd-update が update 時に相手スロットの verity パラメータを書き込む設計に合わせる。
 
 ## 5. 測定計画（experiment-record 準拠の対象）
@@ -114,7 +114,9 @@ rootfs 系:
 3. **dm-verity**: hash {sha256, crc32c（自前 formatter）}、data/hash block {4K}、error mode {restart_on_corruption, panic_on_corruption}、FEC {なし, fec_roots 2/8/16}、破損注入（1 block ビット化け / 連続領域化け / hash tree 自身の化け）での検出・訂正・切り戻し。`error_as_corruption` の挙動差。
 4. **起動時間影響**: verity あり/なし、FEC あり/なしでの T0〜T5（icount 既存手法）。
 
-/data 系は `data-luks-btrfs-design.md`、zstd 系は `zstd-options-survey.md` に分割。
+/data 系は `data-luks-btrfs-design.md`、zstd 系は `zstd-usage-and-options.md` に分割。
+
+各測定は実行前に experiment-record 準拠の事前登録（目的・採否基準・反復回数5回以上・固定版）を `docs/experiments/` に作ってから行う。
 
 ## 6. 未解決・利用者確認点
 
