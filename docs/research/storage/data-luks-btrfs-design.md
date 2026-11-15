@@ -75,7 +75,7 @@ btrfs idle 書き込み規則（write-policy §10 との整合）: `commit` inte
 | option | 本設計での扱い |
 |---|---|
 | `--type luks2` | 採用 |
-| `--cipher aes-xts-plain64` | 既定・採用候補。`xchacha12,aes-adiantum-plain64` / `xchacha20,aes-adiantum-plain64`（AES-NI なし ARM 向け）も測定対象 |
+| `--cipher aes-xts-plain64` | **暫定採用（既定）**。最終決定はセキュリティビット数と実機測定の演算性能で決める（利用者指示 2026-11-15）。候補: `xchacha12,aes-adiantum-plain64` / `xchacha20,aes-adiantum-plain64`（AES-NI なし ARM 向け）、`camellia-xts-plain64` |
 | `--key-size` | cipher に応じ 256/512 bit。測定対象 |
 | `--hash sha256`（PBKDF） | 既定。測定対象外だが `--pbkdf` argon2i/argon2id/pbkdf2 の比較対象 |
 | `--pbkdf argon2id` | 既定・採用候補。`--pbkdf-memory/--pbkdf-parallel/--iter-time` はメモリ制約で測定 |
@@ -128,7 +128,7 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 
 1. **btrfs mkfs**: `-m dup -d dup` 固定で `csum {crc32c, xxhash, sha256, blake2b}`、`nodesize {4K,16K,32K}`、`sectorsize {4K}` の差。btrfs-progs の csum 指定名は `blake2b`（kernel 表記 BLAKE2b-256）。既存 [filesystem-options-btrfs](filesystem-options-btrfs.md) 表の `blake2` は同じものの表記揺れで、実験コマンドは `blake2b` で統一する。
 2. **btrfs mount**: `compress=zstd:{1,3,9}`、`compress-force` 有無、`commit={30,5,0}`、`ssd/nossd`、`autodefrag` 有無、`space_cache` v2/none、`thread_pool`、`flushoncommit`。
-3. **LUKS**: cipher {aes-xts-plain64, xchacha12-adiantum, xchacha20-adiantum}、`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無比較。
+3. **LUKS**: cipher {aes-xts-plain64, xchacha12-adiantum, xchacha20-adiantum, camellia-xts-plain64}、`sector-size {512,4096}`、`--perf` 系、`--integrity` 有無比較。cipher の最終決定はセキュリティビット数（key size 込み）と実機での throughput 測定の両方で行う。Camellia は A53 に専用命令がなく software cipher のため性能面では不利と予想されるが、測定で確認する。
 4. **fs-compare 連携**: 新設定を `B*`（plain btrfs）、`L*`（LUKS+btrfs 新規系統）として fs-compare-configs に追加し、T4-sync/T5/write inventory を既存手法で測る（E3/E4 matrix 完了後に同じ harness で）。
 5. **写り性能**: 200MB data file 書き込み・ランダム 4K rw・fsync 頻度差。
 6. **電源断・破損試験**: dup+xxhash の復旧動作、scrub、btrfs check。電源断反復（既存 harness）。

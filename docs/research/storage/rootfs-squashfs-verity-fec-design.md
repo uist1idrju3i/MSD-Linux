@@ -45,6 +45,8 @@ p5/p6 rootfs パーティション (256MB 固定)
 
 圧縮関連: `-b <4K..1M>`（既定 128K）、`-comp {gzip,lzo,lz4,xz,zstd,lzma}`、`-noI/-noId/-noD/-noF/-noX/-no-compression`、zstd 固有 `-Xcompression-level <1..22>`（既定 15、`EXTREME_COMP` は 22）。
 
+level の暫定方針（2026-11-15 利用者確認）: **zstd は 19**。B1 matrix（[mksquashfs-matrix](../../experiments/2026-11-15-mksquashfs-matrix.md)）で `-b 1M -Xcompression-level 19` と `22` がバイト同一（22,372,352B）だったため、19 より上げる根拠がない。配布は CI 上の build なので圧縮時間は考慮しない。展開側メモリは block 単位の独立圧縮のため実質 block size + kernel workspace 程度で、level 22・ultra でも大差はない。`-comp xz -b 128K -Xbcj arm` が全体最小（22,155,264B、zstd 1M 比 −1%）だが展開速度は zstd が優位と予想されるため、codec の最終決定は B2 の boot/read 測定後。
+
 構築関連: `-tar/-no-strip/-cpiostyle{,0}`、`-reproducible`（既定）/`-not-reproducible`、`-mkfs-time/-all-time/-root-time`、`-root-mode/-root-uid/-root-gid`、`-all-root/-force-uid/-force-gid/-pseudo-override`、`-exports/-no-exports`、`-no-sparse`、`-tailends/-no-tailends`（既定 off）、`-no-fragments`、`-no-duplicates`、`-no-hardlinks`、`-keep-as-directory`。
 
 フィルタ・その他: `-p/-pf`（pseudo file）、`-e/-ef/-wildcards/-regex`、`-sort/-sortlist`（boot 時 read 順序最適化に関係）、`-processors`、`-mem`、`-quiet/-progress/-no-progress`、`-xattrs` 系。
