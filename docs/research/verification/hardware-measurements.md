@@ -77,3 +77,21 @@
 | Lite 機判定 | BMI270/BMM150 を持たない Lite 機での `bmi270_bmm150_overlay` probe failure と msd-hwinfo の判定（QEMU では probe 失敗が無害であることを確認済み、[記録](../../experiments/2026-10-29-qemu-lite-variants.md)） |
 | CMA の量 | graphics/camera 用途での確保量 |
 | 更新の署名検証・dm-verity・`/data` の拡張・ramoops | 実機での拒否・性能・復旧・retention（QEMU 済のものは記録参照） |
+
+##### storage 完全性・暗号化（2026-11-15 方針分）
+
+rootfs = SquashFS+zstd+dm-verity(crc32c)+FEC、/data = LUKS+btrfs(dup)+xxhash64+zstd 圧縮の方針（[rootfs 設計](../storage/rootfs-squashfs-verity-fec-design.md)、[/data 設計](../storage/data-luks-btrfs-design.md)）について、QEMU で機能確認した上で実機で再測・確認する項目。QEMU TCG は cycle 相当ではないため性能値は全て実機でのみ確定する。
+
+| 項目 | 実機で確かめること |
+|---|---|
+| CPU crypto features | `/proc/cpuinfo` の flags（crc32, asimd, sha2, aes, pmull の有無）。BCM2710A1 の公開 cpuinfo は `fp asimd evtstrm crc32 cpuid` のみだが実機で確認 |
+| hash 速度 | crc32c（CRC32 命令）vs sha256（NEON、SHA2 命令なし）の実測 throughput。dm-verity 負荷込みの起動・read 時間で比較 |
+| verity+FEC 起動影響 | dm-verity 有無での起動時間・全 file read 時間。FEC の訂正読み込み経路の遅延（破損注入は QEMU で検証、速度は実機） |
+| verity 破損時の挙動 | restart_on_corruption/panic_on_corruption での実際の再起動・tryboot 連携。起動後の破損検出でスロット不良を永続化する仕組みの動作 |
+| SquashFS codec/block | B2 の zstd/xz/gzip/lz4 × block size を実機で再測（boot→全 read 時間）。QEMU では相対順位のみ |
+| LUKS cipher 全ベンチ | kernel crypto API の全 cipher（aes/camellia/chacha/sm4/twofish/serpent/aria/adiantum 等）の dm-crypt read/write throughput。暫定は aes-xts-plain64、セキュリティビット数と性能で最終決定 |
+| btrfs on SD | dup data/metadata の書き込み倍率の実測、xxhash64 vs crc32c の scrub 時間、zstd 圧縮の CPU 負荷、commit= 変更の fsync latency |
+| zram/zswap | zstd backend の実機圧縮速度・swap 有無の体感と OOM 挙動 |
+| microSD との整合 | 実カードの erase block・preferred_erase_size と 4K sector、verity/FEC 配置の整列 |
+| 電源断 | LUKS+btrfs での書き込み中電源断反復（dup+xxhash の復旧確認、scrub 所要時間）。既存 200 回試験と同条件で |
+| kernel サイズ | DM_VERITY/FEC/DM_CRYPT/BTRFS_FS 追加後の kernel/squashfs 増分と起動時間回帰の有無 |
