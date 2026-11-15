@@ -1,0 +1,14 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+smoke-v3-final,F0-A3,0,wall,249.54318495999905,s,1,expected=ready;stop=ready;exit=None;qmp_reset=False
+smoke-v3-final,F1-A3,0,wall,246.21367834298871,s,1,expected=ready;stop=ready;exit=None;qmp_reset=False
+smoke-v3-final,F2-A3,0,wall,216.29963123000925,s,1,expected=verity-panic;stop=panic;exit=None;qmp_reset=False
+smoke-v3-final,F3-A3,0,wall,216.03814494400285,s,1,expected=verity-panic;stop=panic;exit=None;qmp_reset=False
+smoke-v3-final,F3-eio-A3,0,wall,186.6175516479998,s,0,expected=verity-eio;stop=unexpected-terminal-marker;exit=None;qmp_reset=False
+smoke-v3-final,F3-restart-A3,0,wall,600.1589851910248,s,0,expected=restart-request;stop=timeout;exit=None;qmp_reset=False
+smoke-v3-final,F4-A3,0,wall,225.75335696799448,s,1,expected=verity-panic;stop=panic;exit=None;qmp_reset=False
+smoke-v3-final,F5-A3,0,wall,229.4957934510021,s,1,expected=verity-panic;stop=panic;exit=None;qmp_reset=False
+smoke-v3-final,F6-A3,0,wall,600.0168300489895,s,0,expected=restart-request;stop=timeout;exit=None;qmp_reset=False
+smoke-v3-final,F6-reset-A3,0,wall,600.0475612469891,s,0,expected=restart-reset;stop=timeout;exit=None;qmp_reset=False
+smoke-restart-wdt,F3-restart-A3,0,wall,195.6079851689865,s,1,expected=restart-request;stop=natural-exit;exit=0;qmp_reset=False
+smoke-restart-wdt,F6-A3,0,wall,189.29595885198796,s,1,expected=restart-request;stop=natural-exit;exit=0;qmp_reset=False
+smoke-restart-wdt,F6-reset-A3,0,wall,184.8710056669952,s,1,expected=restart-reset;stop=reset-observed;exit=None;qmp_reset=True

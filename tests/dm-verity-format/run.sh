@@ -29,6 +29,7 @@ printf 'ok - verityfmt builds\n'
 printf 'ok - crc32c/sha256 test vectors\n'
 python3 "$repo_root/tests/dm-verity-format/test-inputs.py" "$test_root/verityfmt"
 python3 "$repo_root/tests/dm-verity-format/test-harness.py"
+python3 "$repo_root/tests/dm-verity-format/test-stage-a.py"
 
 # 732 x 4096 bytes の乱数 image（block 境界で切り詰め）
 data_blocks=732

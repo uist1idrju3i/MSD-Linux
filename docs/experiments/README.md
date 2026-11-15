@@ -8,6 +8,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-15-dm-verity-fec-stage-a-smoke](2026-11-15-dm-verity-fec-stage-a-smoke.md) | [CSV](2026-11-15-dm-verity-fec-stage-a-smoke.csv) | 2026-11-15 | 計測器smoke | v3の位置記録・既知消失復号・F3 mode対照とF6自然終了/reset分離。各1 bootのみで、正式反復・原因確定ではない |
 | [2026-11-15-dm-verity-fec-followup-prereg](2026-11-15-dm-verity-fec-followup-prereg.md) | なし | 2026-11-15 | 事前登録・未実行 | F3原因切り分け、F6自然終了/reset、未注入領域を48条件・240 bootで段階検証。RSは監査並行の研究限定承認、製品出荷は禁止 |
 | [2026-11-15-boot-slot-banner](2026-11-15-boot-slot-banner.md) | なし | 2026-11-15 | host fixture・最終QEMU A/BとA sweep各1回 | DT優先とcmdline fallback。QEMU serialでslot行とready直前の順序を照合。初回rawも保存。English-onlyは限定承認、LCD/firmwareは実機待ち |
 | [2026-11-15-storage-options-prereg](2026-11-15-storage-options-prereg.md) | なし | 2026-11-15 | 事前登録（実行前） | SquashFS圧縮matrix、verity(crc32c)+FEC+破損注入、LUKS cipher、btrfs dup+xxhash64+zstd圧縮、zram/zswapのoption全測定の計画。B1のhost速報は取得済み、正式記録は反復後。 |
