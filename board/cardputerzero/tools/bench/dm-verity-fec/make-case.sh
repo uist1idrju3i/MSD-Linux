@@ -41,7 +41,7 @@ fec_roots=8
 # 固定 salt（32 byte、反復で image を決定的にするため）
 salt_hex="000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
 # dm-0 の全 block を読ませる inittab 行（検証の強制）
-readall_line='::sysinit:/bin/dd if=/dev/dm-0 of=/dev/null bs=1048576 && /bin/echo verity-readall-complete > /dev/console'
+readall_line='::sysinit:/bin/dd if=/dev/dm-0 of=/dev/null bs=1048576 && /bin/echo verity-readall-complete > /dev/kmsg'
 remount_line='::sysinit:/bin/mount -o remount,rw /'
 
 [[ ! -e "$case_dir" ]] || {

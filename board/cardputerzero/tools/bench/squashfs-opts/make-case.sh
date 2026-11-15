@@ -68,7 +68,7 @@ cat >"${tree}/usr/sbin/msd-readall" <<'EOF'
 #!/bin/sh
 # 全 file の内容を読ませて SquashFS の decompress 経路を確実に通す。
 find / -xdev -type f -exec cat {} + >/dev/null 2>&1
-printf 'squashfs-readall-complete\n' >/dev/console
+printf 'squashfs-readall-complete\n' >/dev/kmsg
 EOF
 chmod 755 "${tree}/usr/sbin/msd-readall"
 if grep -q '^::sysinit:/etc/init.d/rcS' "$inittab"; then
