@@ -139,3 +139,15 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 - Bのclean smokeから再開し、全10条件のsmokeが観測可能なら正式5反復へ進みます。F3 EIOは既存のverity-eio期待を維持し、訂正成功は反証です。新たなclean失敗・入力不一致・判断が必要な失敗では停止します。
 
 旧A・旧B raw/CSV/期待は保持します。累積36時間と2026-11-17 00:17:52 UTCのdeadlineを変えず、B完了時にC以降を再見積りします。RS研究限定・製品出荷禁止、実機未確認、03914台帳同期保留も維持します。
+
+## RAM alias修正と全残条件host検査のamendment（2026-11-15 UTC）
+
+利用者は[再開smokeのRAM clean停止](2026-11-15-dm-verity-fec-stage-b-resume-smoke.md)後、本sessionで次の修正と再開を承認しました。修正・入力生成・bootより前に本追記をcommit・pushします。
+
+- 元treeのlib64およびusr/lib64のaliasを研究用initramfsへそのまま保存します。SD packはfedf1abe7f222f719b2287885079e0bcfe052f351f266b6ecbd684e26ba0a205を再利用し、SquashFS/verity/FEC bytesを変えません。新しいinitramfsとcase manifestのhashを別に固定します。
+- 実CPIOのBusyBox/interpreter/DT_NEEDEDを、実loaderの/lib64・/usr/lib64探索先から辿る依存検査を追加します。payloadがあってもaliasがない負対照、library欠落・不正ELF・link異常を拒否するfixtureを用います。host filesystemへの偶然のfallbackを許しません。
+- Bの通常・RAM両clean smokeが成功することを、後続条件と正式反復の前提にします。新しいclean失敗や判断が必要な事象では直ちに停止します。
+- 正式反復の再開前に、残る全段階のsmoke入力をhostで一括dry checkします。段階ごとの生成器・位置/範囲/独立codec/期待/fixtureを先に固定してから、新しい出力先へ全caseを生成・照合します。QEMU smokeの代替や正式反復には数えません。不整合・期待の曖昧さがあればbootを始めず相談します。
+- C〜Fのoffset/roots/hash/集中・分散/reset条件は各生成器のcommitで固定します。当初の期待を変更せず、EIO訂正成功等の不一致は反証として保存します。全caseを生成できるまでB正式反復を始めません。
+
+旧証拠・期待、研究限定、製品出荷禁止、実機未確認、03914の台帳同期保留を維持します。保守的累積時計と36時間deadlineも変えず、host検査後と各段階後に再見積りします。
