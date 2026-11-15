@@ -49,8 +49,9 @@ zstd 自体は 1.5.7 固定（`vendor/buildroot/package/zstd/zstd.mk`）。kerne
 | `/sys/block/zram*/disksize` | 仮想 disk サイズ | 値差は容量設計、測定対象は既定値との差 |
 | `comp_algorithm` | `lz4`, `lzo`, `zstd`（multi_comp で列挙可能）、`zstd <level>` 等 backend params 付き | **全 algorithm × 主 level 比較** |
 | `writeback` | idle/incompressible page の backing dev への退避 | **`CONFIG_ZRAM_WRITEBACK` 未設定で使用不可**。SD write 規則とも衝突するため不採用方向 |
-| `mem_limit` | メモリ上限（kernel 引数 `zram.mem_limit=`、=y でも指定可） | 測定対象 |
-| `idle` | page idle 時間設定 | `ZRAM_WRITEBACK` 未設定で使用不可、対象外 |
+| `mem_limit` | メモリ上限。sysfs `/sys/block/zram0/mem_limit`（WO）。module param は `num_devices` のみで kernel 引数では設定できない | 測定対象 |
+| `idle` | page の idle 時刻設定。`ZRAM_WRITEBACK` 未設定でも利用可（`CONFIG_ZRAM_MULTI_COMP` の recompress で参照される） | 測定対象 |
+| `recompress` | idle/incompressible な page の現行 algorithm での再圧縮（`CONFIG_ZRAM_MULTI_COMP` で公開） | 測定対象（algorithm 切替後の効果確認） |
 | `reset`, `mm_stat`, `io_stat` | 統計 | 計測手段 |
 | module param `num_devices` | 既定 1 | 対象外 |
 | kernel `CONFIG_ZRAM_WRITEBACK` / `ZRAM_MEMORY_TRACKING` | config | WRITEBACK 未設定 / TRACKING=y |
