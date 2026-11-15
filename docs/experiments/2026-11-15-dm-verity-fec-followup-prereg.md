@@ -114,3 +114,16 @@ B〜Fの単一実行入口・期待表・生成引数は次段のharness拡張�
 - standalone Docker clone、smokeで保存した入力hashを照合したcase、fresh結果先、600秒/bootを固定します。kernel/rootfsはsmokeと同じwarmな再利用入力で、module署名拒否など既知の制限も保存します。正常製品bootや実機検証へ拡張しません。
 
 この追記を先にcommit・pushし、そのSHAを実行metadataへ固定してから開始します。RSの研究限定利用、製品出荷禁止、36時間上限、03914の台帳同期保留は維持します。
+
+## B以降の実行前amendment（2026-11-15）
+
+利用者のB以降の実行指示に従う追記です。元の期待は変えません。段階ごとに計測器を別commitで固定し、host fixture・standalone DockerのShellCheck、各条件1 bootのsmoke、正式5反復の順とします。smokeは正式反復に数えません。
+
+- Bでは当初の8条件に加え、Aの承認でBへ送ったF5の同一pack対照を実施します。F0と同じSquashFS bytesからroots0を生成し、cleanとdata1 byteの2条件を追加します。期待は順に通常起動成功・verity-panicで、Bは10条件/50 bootです。F5の旧packや期待は改変しません。
+- Bのkernelは同じ6.18.59のwarm build treeの写しへ研究専用trace patchを適用します。bio ID、FECのtype/block/再入level/guard、RS column・neras・戻り値、modeを記録します。同じkernelのclean A/Aで計測器の起動性を確認します。製品patchではありません。
+- Bの通常経路は既存imageをmountしてreadallします。RAM経路は研究用initramfsからdm-0の対象data block（top digest index 4に対応する先頭block）を1 block、続いて全data blockを読み、終了値をserial markerへ出します。mountせずに実施し、その後のmount panicを成功へ混ぜません。
+- `ignore_loglevel loglevel=8`を加え、通常経路のreadall markerも明示的に観測します。通常起動の合格は事前登録どおりreadall完了・ready・loginを要求し、Aのreadyだけの判定へ緩めません。
+- restart系のwatchdog有効化と600秒上限はAのamendmentを継承します。正常・panic・EIO系はwatchdog無効のままで、mode単独の比較にはしません。
+- 36時間はAを含む累積上限です。保守的に初回事前登録commitの2026-11-15 12:17:52 UTCからの経過も予算へ含め、段階ごとに残数×実測wallと準備余裕を再計算します。最終deadlineは2026-11-17 00:17:52 UTCです。全timeoutを無条件に消化せず、超過見込みやclean失敗、期待の曖昧さ・計測器の予期しない失敗があれば停止して相談します。
+
+この追記はBのsmokeより前にcommitします。C以降の注入offset・新生成引数・計測器sourceは、各段階の実行前commitで固定します。入力不一致・clean失敗の停止規則、RS研究限定、実機未確認、台帳同期保留を維持します。
