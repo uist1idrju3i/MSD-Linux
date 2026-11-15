@@ -9,6 +9,7 @@ from unittest.mock import patch
 HERE = Path(__file__).resolve().parents[2] / 'board/cardputerzero/tools/bench/dm-verity-fec'
 sys.path.insert(0, str(HERE))
 import remaining
+import rs_check
 from stage_a import locate
 from rs_check import decode
 
@@ -63,14 +64,50 @@ class Remaining(unittest.TestCase):
         p = dict(self.p, root_hash='abc', salt='00', hash_alg='sha256')
         with tempfile.TemporaryDirectory() as temp:
             with patch.object(remaining.subprocess, 'run') as run:
-                run.side_effect = [remaining.subprocess.CompletedProcess([], code) for code in (0, 1, 0, 1)]
+                run.side_effect = [remaining.subprocess.CompletedProcess([], code) for code in (0, 1, 0, 0)]
                 results = remaining.verify_sha(Path(temp), 'D-sha256-r8', p)
-                self.assertEqual([r['status'] for r in results], [0, 1, 0, 1])
+                self.assertEqual([r['status'] for r in results], [0, 1, 0, 0])
                 self.assertIn('--hash-offset=' + str(2301 * 4096), results[0]['command'])
-                run.side_effect = None
-                run.return_value = remaining.subprocess.CompletedProcess([], 1)
-                self.assertRaisesRegex(ValueError, 'independent check', remaining.verify_sha,
-                                       Path(temp), 'D-sha256-r8', p)
+                self.assertTrue(all('observation only' in r['scope'] for r in results))
+                self.assertEqual(len(list(Path(temp).glob('*.json'))), 4)
+                run.side_effect = OSError('unavailable')
+                self.assertRaises(OSError, remaining.verify_sha, Path(temp), 'D-sha256-r2', p)
+                self.assertIn('unavailable', (Path(temp) / 'D-sha256-r2-clean-nofec.json').read_text())
+
+    def test_full_reference_recovery(self):
+        p = dict(self.p, data_blocks='80', hash_start_block='81', hash_area_blocks='1',
+                 fec_blocks='81', fec_roots='2', fec_area_offset=str(82 * 4096),
+                 fec_bytes=str(2 * 4096))
+        clean = bytes(84 * 4096)
+        self.assertEqual(rs_check.recovery(clean, clean, p)['outcome'], 'recovered-to-clean')
+        for count, expected in ((1, 'recovered-to-clean'), (2, 'rejected'), (3, 'other-codeword')):
+            damaged = bytearray(clean)
+            for i in range(count):
+                damaged[i * 4096] ^= 255
+            result = rs_check.recovery(clean, damaged, p)
+            self.assertEqual(result['outcome'], expected)
+            self.assertEqual(result['decoded_equals_clean'], count == 1)
+            if count == 3:
+                self.assertEqual(result['changes'][0]['offset'], 59 * 4096)
+        self.assertRaises(ValueError, rs_check.recovery, b'', b'', p)
+        damaged = bytearray(clean)
+        damaged[80 * 4096] ^= 1
+        self.assertRaisesRegex(ValueError, 'outside', rs_check.recovery, clean, damaged, p)
+
+    def test_boundary_checkpoint_before_failure(self):
+        p = dict(self.p, data_blocks='80', hash_start_block='81', hash_area_blocks='1',
+                 fec_blocks='81', fec_roots='2', fec_area_offset=str(82 * 4096),
+                 fec_bytes=str(2 * 4096))
+        with tempfile.TemporaryDirectory() as temp:
+            checkpoint = Path(temp) / 'boundary.json'
+            with patch.object(rs_check, 'decode') as decode:
+                decode.side_effect = [[0] * 255, ValueError('over capacity'), ValueError('unexpected failure')]
+                self.assertRaisesRegex(ValueError, 'guaranteed', rs_check.boundaries,
+                    bytes(84 * 4096), p, lambda values: remaining.save(checkpoint, values))
+            values = remaining.json.loads(checkpoint.read_text())
+            self.assertEqual(len(values), 3)
+            self.assertTrue(values[-1]['guaranteed'])
+            self.assertEqual(values[-1]['outcome'], 'rejected')
 
     def test_e_concentrated_and_dispersed(self):
         p = dict(self.p, data_blocks='5832', hash_start_block='5833', hash_area_blocks='7',

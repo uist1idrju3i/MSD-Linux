@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """独立したerrors/erasures位置検出と実codewordの容量境界検査。"""
-from stage_a import codeword, decode_erasures, mul, power, syndromes
+import hashlib
+
+from stage_a import codeword, decode_erasures, locate, mul, power, syndromes
 
 
 def decode(word, roots, erasures=()):
@@ -47,7 +49,58 @@ def decode(word, roots, erasures=()):
     return decode_erasures(word, all_positions, roots)
 
 
-def boundaries(clean, p):
+def recovery(clean, damaged, p, record=None):
+    roots = int(p['fec_roots'])
+    d, h, count = (int(p[k]) for k in ('data_blocks', 'hash_start_block', 'hash_area_blocks'))
+    end = int(p['fec_area_offset']) + int(p['fec_bytes'])
+    if not 1 <= roots < 255 or len(clean) != len(damaged) or len(clean) < end:
+        raise ValueError('invalid recovery geometry')
+    columns = set()
+    for offset, (before, after) in enumerate(zip(clean, damaged)):
+        if before != after:
+            column = locate(offset, p)['fec_column']
+            if column is None:
+                raise ValueError('difference outside FEC coverage')
+            columns.add(tuple(column))
+    rounds = (d + count + 254 - roots) // (255 - roots)
+    candidate, results, changes = bytearray(damaged), [], []
+    for column in sorted(columns):
+        reference = codeword(clean, p, column)
+        if any(syndromes(reference, roots)):
+            raise ValueError('invalid clean reference codeword')
+        actual = codeword(damaged, p, column)
+        try:
+            fixed = decode(actual, roots)
+            outcome = 'recovered-to-clean' if fixed == reference else 'other-codeword'
+            for i, value in enumerate(fixed):
+                if i < 255 - roots:
+                    logical = i * rounds + column[0]
+                    if logical >= d + count:
+                        continue
+                    physical = logical if logical < d else h + logical - d
+                    offset = physical * 4096 + column[1]
+                else:
+                    offset = int(p['fec_area_offset']) + (column[0] * 4096 + column[1]) * roots + i - (255 - roots)
+                if candidate[offset] != value:
+                    changes.append(dict(offset=offset, before=candidate[offset], after=value))
+                    candidate[offset] = value
+            results.append(dict(column=column, outcome=outcome))
+        except ValueError as error:
+            results.append(dict(column=column, outcome='rejected', error=str(error)))
+        if record:
+            record(list(results))
+    equal = bytes(candidate) == clean
+    rejected = any(item['outcome'] == 'rejected' for item in results)
+    other = any(item['outcome'] == 'other-codeword' for item in results)
+    outcome = 'recovered-to-clean' if equal and not (rejected or other) else ('rejected' if rejected else 'other-codeword')
+    return dict(outcome=outcome, decoded_equals_clean=equal,
+                clean_sha256=hashlib.sha256(clean).hexdigest(),
+                decoded_sha256=hashlib.sha256(candidate).hexdigest(),
+                changes=changes, columns=results,
+                scope='unknown-error decoding of all changed columns; whole candidate image compared byte-for-byte; no erasure hints')
+
+
+def boundaries(clean, p, record=None):
     roots = int(p['fec_roots'])
     reference = codeword(clean, p, (0, 0))
     if any(syndromes(reference, roots)):
@@ -65,8 +118,10 @@ def boundaries(clean, p):
         except ValueError:
             outcome = 'rejected'
         guaranteed = 2 * errors + erasures <= roots
-        if guaranteed and outcome != 'recovered-to-clean':
-            raise ValueError('failed guaranteed RS capacity')
         results.append(dict(errors=errors, erasures=erasures, bound=2 * errors + erasures,
                             roots=roots, guaranteed=guaranteed, outcome=outcome))
+        if record:
+            record(list(results))
+        if guaranteed and outcome != 'recovered-to-clean':
+            raise ValueError('failed guaranteed RS capacity')
     return results

@@ -8,7 +8,7 @@ import subprocess
 
 from followup import ROOT, SALT, make_case, parameters, save, sha, validate
 from stage_a import locate
-from rs_check import boundaries
+from rs_check import boundaries, recovery
 
 
 def column_offsets(p, count, dispersed=False):
@@ -86,10 +86,9 @@ def header_probe(image, p):
     return dict(signature='verity', version=1, hash_type=1, algorithm=p['hash_alg'])
 
 
-def verify_sha(destination, prefix, p):
+def verify_sha(destination, prefix, p, record=None):
     results = []
-    for kind, fec, accepted in (('clean', False, True), ('data', False, False),
-                                ('data', True, True), ('over', True, False)):
+    for kind, fec in (('clean', False), ('data', False), ('data', True), ('over', True)):
         image = destination / (prefix + '-' + kind) / 'rootfs.img'
         command = ['veritysetup', 'verify', '--no-superblock', '--hash=sha256',
                    '--data-blocks=' + p['data_blocks'],
@@ -100,11 +99,20 @@ def verify_sha(destination, prefix, p):
                         '--fec-offset=' + p['fec_area_offset']]
         command += [str(image), str(image), p['root_hash']]
         name = prefix + '-' + kind + ('-fec' if fec else '-nofec')
-        with (destination / (name + '.log')).open('w') as log:
-            status = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT).returncode
-        results.append(dict(name=name, command=command, status=status, expected_accept=accepted))
-        if (status == 0) != accepted:
-            raise ValueError('veritysetup independent check failed: ' + name)
+        item = dict(name=name, command=command, status='pending', scope='CLI observation only; not a recovery verdict')
+        save(destination / (name + '.json'), item)
+        try:
+            with (destination / (name + '.log')).open('x') as log:
+                item['status'] = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT).returncode
+        except OSError as error:
+            item.update(status='error', error=str(error))
+            save(destination / (name + '.json'), item)
+            raise
+        item['log_sha256'] = sha(destination / (name + '.log'))
+        save(destination / (name + '.json'), item)
+        results.append(item)
+        if record:
+            record(list(results))
     return results
 
 
@@ -119,11 +127,18 @@ def generate(args):
     rows = []
     checks = {}
 
+    def checkpoint(name=None, value=None):
+        if name is not None:
+            checks[name] = value
+        save(args.destination / 'host-check.json', dict(status='generating', cases=rows,
+             checks=checks, generator=sha(Path(__file__))))
+
     def emit(label, params, image, offsets, expected, mode='panic'):
         make_case(args.destination, seed, args.kernel, params, image, offsets,
                   label, expected, mode, 'normal', stage=args.stage)
         validate(args.destination / label)
         rows.append(dict(case=label, inputs=sha(args.destination / label / 'inputs.json')))
+        checkpoint()
 
     if args.stage == 'C':
         for name, offsets, expected in c_cases(p):
@@ -148,19 +163,32 @@ def generate(args):
                 template.mkdir()
                 image = template / 'rootfs.img'
                 image.write_bytes(clean[:int(p['data_blocks']) * 4096])
-                with (template / 'format.log').open('w') as log:
-                    subprocess.run([str(args.formatter), '--hash', algorithm, '--salt', SALT,
-                                    '--fec-roots', str(roots), '--params-file', str(template / 'params.env'),
-                                    str(image)], stdout=log, stderr=subprocess.STDOUT, check=True)
+                command = [str(args.formatter), '--hash', algorithm, '--salt', SALT,
+                           '--fec-roots', str(roots), '--params-file', str(template / 'params.env'), str(image)]
+                save(template / 'format.json', dict(command=command, status='pending'))
+                with (template / 'format.log').open('x') as log:
+                    result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+                save(template / 'format.json', dict(command=command, status=result.returncode))
+                result.check_returncode()
                 params, packed = parameters(template / 'params.env'), image.read_bytes()
-                checks[template.name] = boundaries(packed, params)
+                checkpoint(template.name + '-pack', dict(parameters=params, sha256=sha(image)))
+                checkpoint(template.name, boundaries(packed, params,
+                           lambda values: checkpoint(template.name, values)))
                 for kind, offsets, expected in (
                         ('clean', [], 'normal-read'),
                         ('data', [int(params['data_blocks']) // 2 * 4096 + 123], 'normal-read'),
                         ('over', column_offsets(params, roots + 1), 'verity-panic')):
                     emit(f'D-{algorithm}-r{roots}-{kind}', params, packed, offsets, expected)
+                    label = f'D-{algorithm}-r{roots}-{kind}'
+                    verdict = recovery(packed, (args.destination / label / 'rootfs.img').read_bytes(),
+                                       params, lambda values: checkpoint(label, dict(status='decoding', columns=values)))
+                    checkpoint(label, verdict)
+                    if kind in ('clean', 'data') and verdict['outcome'] != 'recovered-to-clean':
+                        raise ValueError('independent recovery failed within capacity: ' + label)
                 if algorithm == 'sha256':
-                    checks[template.name + '-veritysetup'] = verify_sha(args.destination, f'D-{algorithm}-r{roots}', params)
+                    checkpoint(template.name + '-veritysetup', verify_sha(args.destination,
+                        f'D-{algorithm}-r{roots}', params,
+                        lambda values: checkpoint(template.name + '-veritysetup', values)))
     elif args.stage == 'E':
         for name, offsets, expected in e_cases(p):
             emit('E-' + name, p, clean, offsets, expected)
@@ -169,7 +197,7 @@ def generate(args):
         emit(name, p, clean, offsets, expected, 'restart')
     if len(rows) != dict(C=10, D=18, E=4, F=1)[args.stage]:
         raise ValueError('stage case count mismatch')
-    save(args.destination / 'host-check.json', dict(cases=rows, checks=checks, generator=sha(Path(__file__))))
+    save(args.destination / 'host-check.json', dict(status='complete', cases=rows, checks=checks, generator=sha(Path(__file__))))
 
 
 def main():
