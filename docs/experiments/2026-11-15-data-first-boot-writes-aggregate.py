@@ -1,60 +1,139 @@
 #!/usr/bin/env python3
-"""E1 集計: runs dir 以下の */raw.csv を variant 別に集約する。
-使い方: python3 aggregate.py [RUNS_DIR]（既定 /work/output-dwcause/runs）
-出力: variant,rep,boot,idle1..idleN(各区間は after-before の差分、
-区間数はデータから検出)。
-raw.csv を持たない run dir は警告して除外する。欠けた phase は 0 にせず
-空欄にして区別する。"""
-import csv, glob, sys, collections
+"""E1の全phaseと完了記録を検査し、boot・idleの差分を集計する。"""
 
-runs_dir = sys.argv[1] if len(sys.argv) > 1 else "/work/output-dwcause/runs"
-rows = collections.defaultdict(dict)  # (variant, rep) -> {column: sectors}
-missing = []
-for path in sorted(glob.glob(runs_dir + "/*")):
-    run = path.split("/")[-1]
-    csv_path = path + "/raw.csv"
+import argparse
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+import re
+import sys
+
+
+DEVICES = {"mmcblk0"} | {f"mmcblk0p{i}" for i in range(1, 8)}
+MARKER = "e1-complete.json"
+RUN_NAME = re.compile(r"([a-z][a-z0-9-]*)-r([1-9][0-9]*)")
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def read_run(directory, windows, seconds, require_marker=True):
+    match = RUN_NAME.fullmatch(directory.name)
+    if not match:
+        raise ValueError("invalid run directory name")
+    variant, repeat = match.groups()
+    metadata = json.loads((directory / "metadata.json").read_text())
+    if (metadata["variant"], metadata["windows"], metadata["seconds"]) != (
+        variant, windows, seconds
+    ):
+        raise ValueError("metadata does not match requested conditions")
+    if "MSDPROBE finished" not in (directory / "serial.log").read_text(errors="replace"):
+        raise ValueError("missing probe completion marker")
+    phases = [("boot", 0)]
+    for number in range(1, windows + 1):
+        phases.extend([("idle-before", number), ("idle-after", number)])
+    phases.extend((phase, 0) for phase in [
+        "ram-before", "ram-after", "disk-before", "disk-after"
+    ])
+    expected = {(phase, number, device) for phase, number in phases for device in DEVICES}
+    samples = {}
+    with (directory / "raw.csv").open(newline="") as stream:
+        for row in csv.DictReader(stream):
+            if (row["variant"] != variant or row["run_id"] != directory.name or
+                    row["valid"] != "yes" or row["unit"] != "sector512"):
+                raise ValueError("invalid row identity or validity")
+            note = re.fullmatch(r"phase=([^;]+);uptime=([^;]+);stat=(.*)", row["note"])
+            if not note or not row["metric"].endswith(".write_sectors"):
+                raise ValueError("invalid metric or phase note")
+            key = note[1], int(row["repeat"]), row["metric"].removesuffix(".write_sectors")
+            value, uptime = int(row["value"]), float(note[2])
+            stat = [int(field) for field in note[3].split()]
+            if (key not in expected or key in samples or value < 0 or
+                    not math.isfinite(uptime) or uptime < 0 or
+                    len(stat) < 11 or stat[6] != value):
+                raise ValueError("duplicate, unexpected, or malformed sample")
+            samples[key] = uptime, value
+    if set(samples) != expected:
+        raise ValueError("missing phases or devices")
+    for device in DEVICES:
+        previous = (0, 0)
+        for phase, number in phases:
+            current = samples[phase, number, device]
+            if current[0] < previous[0] or current[1] < previous[1]:
+                raise ValueError("clock or counter moved backwards")
+            previous = current
+        for number in range(1, windows + 1):
+            if (samples["idle-after", number, device][0] -
+                    samples["idle-before", number, device][0] < seconds):
+                raise ValueError("idle interval too short")
+    for device in ["mmcblk0", "mmcblk0p7"]:
+        if samples["disk-after", 0, device][1] - samples["disk-before", 0, device][1] < 2048:
+            raise ValueError("disk positive control failed")
+    marker = {"windows": windows, "seconds": seconds, "sha256": {
+        name: digest(directory / name) for name in ["raw.csv", "serial.log", "metadata.json"]
+    }}
+    if require_marker and json.loads((directory / MARKER).read_text()) != marker:
+        raise ValueError("completion record does not match evidence")
+    values = [samples["boot", 0, "mmcblk0p7"][1]] + [
+        samples["idle-after", n, "mmcblk0p7"][1] - samples["idle-before", n, "mmcblk0p7"][1]
+        for n in range(1, windows + 1)
+    ]
+    return variant, repeat, values, marker
+
+
+def positive(value):
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be positive")
+    return number
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("directory", type=Path)
+    parser.add_argument("--windows", type=positive, default=3)
+    parser.add_argument("--seconds", type=positive, default=120)
+    parser.add_argument("--repeats", type=positive, default=3)
+    parser.add_argument("--variants", default="base,grown-fs64,pregrown,pregrown-nolazy,mature")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--validate", action="store_true", help="検査のみ（完了記録必須）")
+    mode.add_argument("--complete", action="store_true", help="成功したrunnerの完了記録を新規作成")
+    mode.add_argument("--legacy", action="store_true", help="旧rawを変更せず検査（完了記録なし）")
+    args = parser.parse_args()
     try:
-        data = list(csv.DictReader(open(csv_path)))
-    except OSError:
-        missing.append(run)
-        continue
-    # phase 順の累積値から、各区間は直前 before と after の差を取る
-    seq = []
-    for r in data:
-        if r["metric"] != "mmcblk0p7.write_sectors":
-            continue
-        phase = r["note"].split(";")[0].split("=")[1]
-        seq.append((phase, int(r["repeat"]), int(r["value"])))
-    variant = data[0]["variant"]
-    rep = run.rsplit("-r", 1)[-1]
-    cumulative = {}
-    for phase, repeat, val in seq:
-        cumulative[(phase, repeat)] = val
-        if phase == "boot":
-            rows[(variant, rep)]["boot"] = val
-        elif phase == "idle-after":
-            # ram/disk probeのwindowは記録の定義上totalに含めない
-            before = cumulative.get(("idle-before", repeat))
-            if before is None:
-                rows[(variant, rep)][f"idle{repeat}"] = None
-            else:
-                rows[(variant, rep)][f"idle{repeat}"] = val - before
-    # idle-beforeだけある欠損区間も列として残す（after欠損は空欄）
-    for (phase, repeat) in cumulative:
-        if phase == "idle-before":
-            rows[(variant, rep)].setdefault(f"idle{repeat}", None)
+        if args.validate or args.complete:
+            result = read_run(args.directory, args.windows, args.seconds, not args.complete)
+            if args.complete:
+                with (args.directory / MARKER).open("x") as stream:
+                    json.dump(result[3], stream, sort_keys=True)
+                    stream.write("\n")
+            return 0
+        rows = []
+        for directory in sorted(p for p in args.directory.iterdir() if p.is_dir()):
+            if ".failed-" in directory.name:
+                print(f"skip preserved failed attempt: {directory.name}", file=sys.stderr)
+                continue
+            rows.append(read_run(directory, args.windows, args.seconds, not args.legacy))
+        if not rows:
+            raise ValueError("no completed runs")
+        expected_runs = {(variant, str(repeat)) for variant in args.variants.split(",")
+                         for repeat in range(1, args.repeats + 1)}
+        identities = [(variant, repeat) for variant, repeat, _, _ in rows]
+        if len(set(identities)) != len(identities) or set(identities) != expected_runs:
+            raise ValueError("missing, duplicate, or unexpected runs")
+        print("\t".join(["variant", "rep", "boot"] + [
+            f"idle{n}" for n in range(1, args.windows + 1)
+        ] + ["total"]))
+        for variant, repeat, values, _ in rows:
+            print("\t".join([variant, repeat] + [str(v) for v in values + [sum(values)]]))
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        print(f"E1 validation failed: {error}", file=sys.stderr)
+        return 1
+    return 0
 
-if missing:
-    print("warn: raw.csvがないrun dirを除外:", ", ".join(missing), file=sys.stderr)
 
-def cell(v):
-    return "" if v is None else str(v)
-
-idle_ns = sorted({k for d in rows.values() for k in d if k.startswith("idle")},
-                 key=lambda k: int(k[4:]))
-hdr = ["variant", "rep", "boot"] + idle_ns + ["total"]
-print("\t".join(hdr))
-for (variant, rep), d in sorted(rows.items()):
-    parts = [d.get("boot")] + [d.get(k) for k in idle_ns]
-    total = "" if any(p is None for p in parts) else str(sum(parts))
-    print("\t".join([variant, rep] + [cell(p) for p in parts] + [total]))
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,8 +1,10 @@
 # 訂正済み事項
 
-## 2026-11-15の/data初回起動の書き込み帰属（未帰属問題の解決）
+## 2026-11-15の/data帰属とzram比較の訂正
 
-[書き込み方針とS3](../storage/write-policy-and-s3.md)は、初回60秒の17,000 sectorについて「lazy-init thread単独の書き込み量ではない」と帰属を未解決のまま残していました。variant別15回測定で解決しました。16,384 sector（約97%）は online resize2fs が `INODE_UNINIT` で残した新規2 groupのinode tableを埋める ext4lazyinit の書き込み、sfdiskのpartition表は p7 ではなく mmcblk0 側（MBR/EBR）の16 sector、resize2fs自身は328 sector、fsck・mount・mkdir・journal等の実処理はbootで120–424 sectorです。`pregrown-nolazy`では計192 sectorに減ることで裏付けています。条件・raw値・失敗した試行は[実験記録](../../experiments/2026-11-15-data-first-boot-writes.md)に残し、QEMUの結果で実SDは未確認です。
+[旧調査](../storage/write-policy-and-s3.md)の未帰属問題に対し、15回のQEMU比較からext4lazyinitが主因と考えました。当初は「帰属確定」「16,384 sector、約97%を分離」としましたが、nolazy側は別mkfsでinode数も異なるため、独立した寄与量の測定ではありません。前回の8320は最初の120秒のidle増分、今回の16952はboot累積＋idle合計です。[E1記録](../../experiments/2026-11-15-data-first-boot-writes.md)へ範囲・対照の限界を追記し、完了記録・全phase・重複検査を追加しました。旧rawと失敗試行は保持します。
+
+[zram比較](../../experiments/2026-11-15-zram-builtin-vs-module.md)も「mへ変更しても利得なし」から、m側swap無効で機能非等価へ限定しました。明示load後・実機の速度は未測定。module_initcall_totalはzram単体ではありません。
 
 ## 2026-11-13のbinary hashと削除
 
