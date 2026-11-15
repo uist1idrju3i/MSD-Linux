@@ -63,7 +63,7 @@ for ((repeat = 0; repeat <= runs; repeat++)); do
 		env
 		"OUTPUT_DIR=${output_dir}"
 		"QEMU_LOG_DIR=${boot_dir}"
-		"ROOT_DEVICE=/dev/dm-0"
+		"ROOT_DEVICE=${ROOT_DEVICE_OVERRIDE:-/dev/dm-0}"
 		"QEMU_SYSTEM_AARCH64=${qemu_system}"
 		"KERNEL_IMAGE=${image_dir}/Image"
 		"DTB_IMAGE=${image_dir}/bcm2710-rpi-cm0.dtb"

@@ -141,3 +141,13 @@ mount -o noatime,compress=zstd:3,ssd /dev/mapper/msd-data /data
 4. **keyfile の保管場所**: boot FAT（SD 抜き取りで key が漏れる）vs TPM 相当機能なし → 端末内 keyfile 前提か、起動時に user PIN を要求するか。利用者判断。
 5. **subvolume layout**: snapshot/rollback を使うか。
 6. **sector-size**: SD の erase block との整列。実機測定課題。
+
+## 6. 移行後の整理（2026-11-15 利用者指示）
+
+/data を btrfs に移行した後は **ext4 を無効化して軽量化**する方針が指示された:
+
+- `CONFIG_EXT4_FS` の削除（kernel を小さくする）。`/data` 以外に ext4 依存が無いことを移行前に確認する（rootfs は SquashFS、boot は FAT でどちらも無関係）。
+- e2fsprogs（mkfs.ext4, fsck.ext4 など）の target からの削除。`S02msd-data`・`msd-data-grow` が ext4 tool を呼んでいるので、btrfs 版の初期化・拡張処理への置き換えと同時に行う。
+- 既存の ext4 `/data` を持つカードからの移行手順（online convert か再 format か）は別途設計が必要。
+
+この段階は B5（btrfs option 実測）と並行ではなく、移行設計の確定後に行う。
