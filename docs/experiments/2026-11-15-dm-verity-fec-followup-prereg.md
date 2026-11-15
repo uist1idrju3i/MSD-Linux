@@ -161,3 +161,7 @@ C〜FはBの新しいreadall入りSquashFSを基準にします。Cはcrc32c/roo
 ### D入力の固定（2026-11-15 UTC、生成・boot前）
 
 DはBの同じdata bytesからhash crc32c/sha256、roots 2/8/16を各1 pack生成します。formatterは保存済みbinary/source hashを照合し、ランダムUUIDを含む生成結果そのものを固定します。各packでclean・data中央blockのbyte123・同column roots+1 blockの先頭byteを用い、期待は順に通常read成功・通常read成功・verity-panicです。集中blockはi×rounds、i=0..rootsとし、全てdata内であることを確認します。独立BM/Chien/既知消失solverで実codewordのR/2・R/2+1 errors、R・R+1 erasures、混合境界をhost検査します。容量を超えた場合の偶然の訂正や別codewordへの誤訂正も保存し、保証範囲内の訂正と混ぜません。
+
+### E入力の固定（2026-11-15 UTC、生成・boot前）
+
+EはBの同じcrc32c/roots8 packを使います。9/24 blockについて、集中はblock=i×rounds、分散はblock=i、i=0..count-1、いずれもbyte0をXOR ffとします。data内・一意offset・集中は1 column/分散はcount columnを検査し、集中2条件はverity-panic、分散2条件は通常read成功の期待を維持します。旧F2 sourceの旧コメントと実注入数を混同せず、今回は9/24を別case名・全offset一覧で固定します。

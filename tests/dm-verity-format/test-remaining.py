@@ -72,6 +72,21 @@ class Remaining(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, 'independent check', remaining.verify_sha,
                                        Path(temp), 'D-sha256-r8', p)
 
+    def test_e_concentrated_and_dispersed(self):
+        p = dict(self.p, data_blocks='5832', hash_start_block='5833', hash_area_blocks='7',
+                 fec_blocks='5839', fec_area_offset=str(5840 * 4096), fec_bytes=str(24 * 8 * 4096))
+        cases = remaining.e_cases(p)
+        self.assertEqual(len(cases), 4)
+        for name, offsets, expected in cases:
+            count = int(name.split('-')[0])
+            columns = {tuple(locate(offset, p)['fec_column']) for offset in offsets}
+            self.assertEqual(len(offsets), count)
+            dispersed = 'dispersed' in name
+            self.assertEqual(len(columns), count if dispersed else 1)
+            self.assertEqual(expected, 'normal-read' if dispersed else 'verity-panic')
+        self.assertRaises(ValueError, remaining.e_cases, dict(p, fec_roots='2'))
+        self.assertRaises(ValueError, remaining.column_offsets, self.p, 24, True)
+
 
 if __name__ == '__main__':
     unittest.main()

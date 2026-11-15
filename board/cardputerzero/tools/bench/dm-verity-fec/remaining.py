@@ -54,6 +54,15 @@ def c_cases(p):
     return result
 
 
+def e_cases(p):
+    if p['hash_alg'] != 'crc32c' or int(p['fec_roots']) != 8:
+        raise ValueError('stage E requires crc32c roots8')
+    return [(f'{count}-' + ('dispersed' if dispersed else 'concentrated'),
+             column_offsets(p, count, dispersed),
+             'normal-read' if dispersed else 'verity-panic')
+            for count in (9, 24) for dispersed in (False, True)]
+
+
 def header_probe(image, p):
     offset = int(p['data_blocks']) * 4096
     header = image[offset:offset + 512]
@@ -146,6 +155,9 @@ def generate(args):
                     emit(f'D-{algorithm}-r{roots}-{kind}', params, packed, offsets, expected)
                 if algorithm == 'sha256':
                     checks[template.name + '-veritysetup'] = verify_sha(args.destination, f'D-{algorithm}-r{roots}', params)
+    elif args.stage == 'E':
+        for name, offsets, expected in e_cases(p):
+            emit('E-' + name, p, clean, offsets, expected)
     save(args.destination / 'host-check.json', dict(cases=rows, checks=checks, generator=sha(Path(__file__))))
 
 
@@ -153,7 +165,7 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('base', 'kernel', 'destination'):
         parser.add_argument(name, type=Path)
-    parser.add_argument('--stage', choices=('C', 'D'), default='C')
+    parser.add_argument('--stage', choices=('C', 'D', 'E'), default='C')
     parser.add_argument('--formatter', type=Path)
     args = parser.parse_args()
     generate(args)
