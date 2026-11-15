@@ -1,0 +1,370 @@
+{
+  "main": "121e9ae1878252a675efb6714bc36e91f488e331",
+  "roots": [
+    {
+      "root": "repo/output-dev-image-scan-arm64",
+      "apparent_bytes": 407364,
+      "selected_files": 52,
+      "selected_bytes": 407364,
+      "new_files": 48,
+      "new_bytes": 392122
+    },
+    {
+      "root": "repo/output-dev-image-snapshot",
+      "apparent_bytes": 2430283144,
+      "selected_files": 175,
+      "selected_bytes": 139294084,
+      "new_files": 107,
+      "new_bytes": 39021832
+    },
+    {
+      "root": "repo/output-legal-info-remaining",
+      "apparent_bytes": 180388,
+      "selected_files": 14,
+      "selected_bytes": 180388,
+      "new_files": 14,
+      "new_bytes": 180388
+    },
+    {
+      "root": "repo/output-legal-supplement",
+      "apparent_bytes": 865604894,
+      "selected_files": 338,
+      "selected_bytes": 16096901,
+      "new_files": 213,
+      "new_bytes": 14011877
+    },
+    {
+      "root": "repo/output-monitor-issue-paging",
+      "apparent_bytes": 55353955,
+      "selected_files": 42,
+      "selected_bytes": 55353955,
+      "new_files": 39,
+      "new_bytes": 55349872
+    },
+    {
+      "root": "repo/output-openssl-evidence",
+      "apparent_bytes": 1485766306,
+      "selected_files": 5545,
+      "selected_bytes": 330991650,
+      "new_files": 5494,
+      "new_bytes": 329876180
+    },
+    {
+      "root": "repo/output-openssl-lts",
+      "apparent_bytes": 7473228755,
+      "selected_files": 264,
+      "selected_bytes": 15605285,
+      "new_files": 12,
+      "new_bytes": 252622
+    },
+    {
+      "root": "repo/output-openssl-main",
+      "apparent_bytes": 7476533256,
+      "selected_files": 208,
+      "selected_bytes": 7360846,
+      "new_files": 7,
+      "new_bytes": 311418
+    },
+    {
+      "root": "repo/output-openssl-minimal-research",
+      "apparent_bytes": 483221,
+      "selected_files": 15,
+      "selected_bytes": 483221,
+      "new_files": 13,
+      "new_bytes": 259883
+    },
+    {
+      "root": "repo/output-pages-headers",
+      "apparent_bytes": 18443391,
+      "selected_files": 200,
+      "selected_bytes": 18029915,
+      "new_files": 107,
+      "new_bytes": 9375995
+    },
+    {
+      "root": "repo/output-pqc-groups",
+      "apparent_bytes": 261028120,
+      "selected_files": 7,
+      "selected_bytes": 2225955
+    },
+    {
+      "root": "repo/output-pqc-groups-driver.log",
+      "apparent_bytes": 1604,
+      "selected_files": 1,
+      "selected_bytes": 1604
+    },
+    {
+      "root": "repo/output-pqc-groups-r2",
+      "apparent_bytes": 895901615,
+      "selected_files": 15,
+      "selected_bytes": 10953356
+    },
+    {
+      "root": "repo/output-pqc-groups-r2-driver.log",
+      "apparent_bytes": 74,
+      "selected_files": 1,
+      "selected_bytes": 74
+    },
+    {
+      "root": "repo/output-pqc-qemu",
+      "apparent_bytes": 1242885785,
+      "selected_files": 3,
+      "selected_bytes": 24449
+    },
+    {
+      "root": "repo/output-pqc-qemu-driver.log",
+      "apparent_bytes": 309,
+      "selected_files": 1,
+      "selected_bytes": 309
+    },
+    {
+      "root": "repo/output-pqc-qemu-r2",
+      "apparent_bytes": 1242923466,
+      "selected_files": 4,
+      "selected_bytes": 62130
+    },
+    {
+      "root": "repo/output-pqc-qemu-r2-driver.log",
+      "apparent_bytes": 58,
+      "selected_files": 1,
+      "selected_bytes": 58
+    },
+    {
+      "root": "repo/output-release-signing-qemu",
+      "apparent_bytes": 3977539976,
+      "selected_files": 32,
+      "selected_bytes": 121218,
+      "new_files": 18,
+      "new_bytes": 38189
+    },
+    {
+      "root": "repo/output-seedrng-zram",
+      "apparent_bytes": 11142248680,
+      "selected_files": 107,
+      "selected_bytes": 4304947,
+      "new_files": 91,
+      "new_bytes": 3894563
+    },
+    {
+      "root": "repo/output-vendor-update-copying-hash",
+      "apparent_bytes": 21813,
+      "selected_files": 2,
+      "selected_bytes": 21813,
+      "new_files": 2,
+      "new_bytes": 21813
+    },
+    {
+      "root": "repo/output-write-inventory",
+      "apparent_bytes": 8667939619,
+      "selected_files": 108,
+      "selected_bytes": 1405585,
+      "new_files": 101,
+      "new_bytes": 1247936
+    },
+    {
+      "root": "repo/output",
+      "apparent_bytes": 6173,
+      "selected_files": 9,
+      "selected_bytes": 6173,
+      "new_files": 9,
+      "new_bytes": 6173
+    },
+    {
+      "root": "fs-compare-local",
+      "apparent_bytes": 1146797074917,
+      "selected_files": 74943,
+      "selected_bytes": 1753409891,
+      "new_files": 44546,
+      "new_bytes": 1151338435
+    }
+  ],
+  "fs_compare_verified_members": 25417,
+  "archives": {
+    "output-dev-image-scan-arm64-1.tar.gz": {
+      "bytes": 110452,
+      "sha256": "cb1962768842f06f8d91c1c7c0a5cc5bf177d2a4e51549937359ecb5a73e0145"
+    },
+    "output-dev-image-snapshot-1.tar.gz": {
+      "bytes": 12826697,
+      "sha256": "fd227114b499b06272fae058b1fbf73f0145e5930fe59678841f9c10ad94d071"
+    },
+    "output-dev-image-snapshot-2.tar.gz": {
+      "bytes": 10681679,
+      "sha256": "55194c03aaca5e032fc07d5daf0730d9a9a58e4f71b0dd99b6be31d975492b0f"
+    },
+    "output-legal-info-remaining-1.tar.gz": {
+      "bytes": 25418,
+      "sha256": "78d741abb11becf0fdf992f06e04477c84181d42072106d1c264e24b4648495b"
+    },
+    "output-legal-supplement-1.tar.gz": {
+      "bytes": 12850239,
+      "sha256": "a1adac6ec576d5f09dfc8b0a5612a80b6bd8fafcdc71c50529c89250b96a5f78"
+    },
+    "output-monitor-issue-paging-1.tar.gz": {
+      "bytes": 61354,
+      "sha256": "9fba0f8fbcf25e8a3a436f4896e5c9348ce15933cf6ab706ec653a527369d7f4"
+    },
+    "output-monitor-issue-paging-2.tar.gz": {
+      "bytes": 8667516,
+      "sha256": "215ca45eb608ecef9268233dd93e06937acae79777b7d3872d7410d3a35494a2"
+    },
+    "output-monitor-issue-paging-3.tar.gz": {
+      "bytes": 8794968,
+      "sha256": "770c8e1d297ca8a8b388ab679d4a6cafd95fde06e6206c9b791d0039352ff49d"
+    },
+    "output-openssl-evidence-1.tar.gz": {
+      "bytes": 188729,
+      "sha256": "ff3fd4af0cbdf181b5baac0a7baecead0a8eea345a1e8b6537c1f05ee6c89041"
+    },
+    "output-openssl-evidence-2.tar.gz": {
+      "bytes": 8626175,
+      "sha256": "dcab4187fa62899b544196a3626ed0f60daf551bac8e5882a33f82de583ba3e8"
+    },
+    "output-openssl-evidence-3.tar.gz": {
+      "bytes": 1553985,
+      "sha256": "de3fde8a3faf915810f361d700157532d1460b84f81a2c425210ae4a01bee296"
+    },
+    "output-openssl-evidence-4.tar.gz": {
+      "bytes": 8626190,
+      "sha256": "688ba7300eba59f96a3c3c48a343c28374c05f86241fd81e363a06181090e394"
+    },
+    "output-openssl-evidence-5.tar.gz": {
+      "bytes": 128917,
+      "sha256": "81298bad0f8cacd5b4d28a10f3bcd04b2fa02d6eb667aaddf7d44336d27a56e8"
+    },
+    "output-openssl-evidence-6.tar.gz": {
+      "bytes": 8626191,
+      "sha256": "b97f2742979cf1352e62cbd61f687e14703a71f2f7d34380306364bcda5499eb"
+    },
+    "output-openssl-evidence-7.tar.gz": {
+      "bytes": 8278,
+      "sha256": "4f6cbd69ba59f772ab957580517204b176c4b4b0f77b6ad381f37ec1788f4de8"
+    },
+    "output-openssl-evidence-8.tar.gz": {
+      "bytes": 8626184,
+      "sha256": "5f6c1bfae32db7bdc88d771f696e381f6d97ed2ef29f9fc0448b6e37d3f4787c"
+    },
+    "output-openssl-evidence-9.tar.gz": {
+      "bytes": 9610194,
+      "sha256": "d74a08ec1b81bd6640d36174649e8e736c2acb164cbd2fcfdd8b5293f44ac321"
+    },
+    "output-openssl-evidence-10.tar.gz": {
+      "bytes": 14193001,
+      "sha256": "80d81d48933cbc29a94592ae1490d9ec9eb849cf3a2919d739cdeed79c3fa115"
+    },
+    "output-openssl-evidence-11.tar.gz": {
+      "bytes": 17710955,
+      "sha256": "62a24ff596493b570e1b0bd9cdc39212dc0de83cdb99cdf06226c8195b48d9d1"
+    },
+    "output-openssl-evidence-12.tar.gz": {
+      "bytes": 9092634,
+      "sha256": "a6062d14b82aebb6c207d65847f9addfb5d276364fde93f5170514ed908b82bd"
+    },
+    "output-openssl-evidence-13.tar.gz": {
+      "bytes": 1878135,
+      "sha256": "6328979e27dad8e1d512d19aac5ba0a9012af2791c2b8cb0e113100d4b42e866"
+    },
+    "output-openssl-lts-1.tar.gz": {
+      "bytes": 45821,
+      "sha256": "d36399a9f2b2a5df5bbccdb5602da1ed0c2896e10bc3bf0d750f7d1031d88d20"
+    },
+    "output-openssl-main-1.tar.gz": {
+      "bytes": 61037,
+      "sha256": "b0a9d6d84ac264e0d071b542c2f533134a117d9f0d9c1308e0fda4b8890b2535"
+    },
+    "output-openssl-minimal-research-1.tar.gz": {
+      "bytes": 59233,
+      "sha256": "9c9e39517c3c283fbd491e91a709962033daabd30c3658b2229c005fab5fe775"
+    },
+    "output-pages-headers-1.tar.gz": {
+      "bytes": 8696674,
+      "sha256": "f79ef1493405e262ba704c2066201a5e5639bef5f0f5d112c8b7f066e31f9a38"
+    },
+    "output-release-signing-qemu-1.tar.gz": {
+      "bytes": 11295,
+      "sha256": "b85cef94710e4b3c92a298f49dab9cd316f892be5aba3da863091ab01ccf9194"
+    },
+    "output-seedrng-zram-1.tar.gz": {
+      "bytes": 725720,
+      "sha256": "5cf71ff6e2f55494dee616cac648ebc7026991f917cd22c58d4bc8cf6883e9c1"
+    },
+    "output-vendor-update-copying-hash-1.tar.gz": {
+      "bytes": 7777,
+      "sha256": "ed2beba5928c1c6c8b7811bf4fc09e3032b993889e0afdbc3fb18b7bbdd8e887"
+    },
+    "output-write-inventory-1.tar.gz": {
+      "bytes": 297091,
+      "sha256": "df3b2456a84350368b74d390c506aeb887f8397c143c77c6130b1e8dc7d9ebba"
+    },
+    "output-1.tar.gz": {
+      "bytes": 2769,
+      "sha256": "7fa851cb9d2a019436bfc69f21d205c8c80c21514ad8259a9acd555cb08cc75f"
+    },
+    "fscmp-1.tar.gz": {
+      "bytes": 19614577,
+      "sha256": "8fecd547021dfc07ac4e60ab605bb29535367e3aba0b2895d41f8d1f9ee3e99d"
+    },
+    "fscmp-2.tar.gz": {
+      "bytes": 32911721,
+      "sha256": "652cc2557f2ca3e3916498c403c8f0f7f78e267d06bbb297ff3ab3d6235738d9"
+    },
+    "fscmp-3.tar.gz": {
+      "bytes": 33573453,
+      "sha256": "49bf59a2131907d0cd0927a87b9e13551c4cb31aaaf46c2963c1b55332deea8a"
+    },
+    "fscmp-4.tar.gz": {
+      "bytes": 33692699,
+      "sha256": "6828cec228583af10b742dbdeb5e3f5b0e2b07cd4fb87f62b1dadc77408dc187"
+    },
+    "fscmp-5.tar.gz": {
+      "bytes": 33689541,
+      "sha256": "b8899962cecd59f52018d950194cfbe20a45c10b35a2c843ecb5db6576d9e941"
+    },
+    "fscmp-6.tar.gz": {
+      "bytes": 33701415,
+      "sha256": "2636e69f66792177ce326219db4c66848bcfce18b0df920aeeecdbfabe2d8a4c"
+    },
+    "fscmp-7.tar.gz": {
+      "bytes": 33723413,
+      "sha256": "d077f51e0f90acb07f1665876bd1bcea09008041c1deb6c25f229429d708a27e"
+    },
+    "fscmp-8.tar.gz": {
+      "bytes": 33651305,
+      "sha256": "c6bc5d8fcdd352225dcd9fc74984f5320ca21e0e082ff72ea95c3bd6c7de52f0"
+    },
+    "fscmp-9.tar.gz": {
+      "bytes": 33696295,
+      "sha256": "aaa8d4395a4f52a939030b93de382bee5ec8e0b04a9754b9713118b0383998db"
+    },
+    "fscmp-10.tar.gz": {
+      "bytes": 33652730,
+      "sha256": "8eb13ae512b561a87a06c61a09eaa5776991d1baf4d36404275a27cea2e8e3a2"
+    },
+    "fscmp-11.tar.gz": {
+      "bytes": 28664369,
+      "sha256": "ce60f2511a7cec2e185a8af824d40a1ee10962be91e4f60dc665c0ff087c2fa7"
+    },
+    "fscmp-12.tar.gz": {
+      "bytes": 33696674,
+      "sha256": "3ce7a155db82443aae6d912d27e589ca7ca7325cf318ac6bf5fa757131fcb858"
+    },
+    "fscmp-13.tar.gz": {
+      "bytes": 16328112,
+      "sha256": "2e49ab2a216cc01186538bf9bdfa4cbf068dd03473c01f64b984cf8bdd63753f"
+    },
+    "fscmp-14.tar.gz": {
+      "bytes": 16094423,
+      "sha256": "f76306ce05ac3fc38c2aa8f76c504dd9f8aab9b1e9cc1cacb2cb039f27208864"
+    },
+    "fscmp-15.tar.gz": {
+      "bytes": 2116752,
+      "sha256": "30dd9558b910773aed9a2cd4699182157d85310160513a6a309d4b6014019902"
+    },
+    "fscmp-16.tar.gz": {
+      "bytes": 17535846,
+      "sha256": "199ca1a3aa14a06acd9c6172f5cf860d0f832b5aa548a29c1ae01f9aca502409"
+    }
+  },
+  "selected_files": 82087,
+  "excluded_files": 587
+}

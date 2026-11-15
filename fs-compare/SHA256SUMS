@@ -17,3 +17,5 @@ adcc69586fb255cf42da8102956aaa23ec10a8dfe62676b34e0bba1e2e848fbb  ./phase2-t4.ta
 6944e7c8e9a8544d391c0b9a87ecaec3af8642d8d9bec3cb6e89e9af4e55ac8a  ./stackfix-smoke.tar.zst
 8562cc86cdd3c37d2b425f49a963eeb29cd42a3c503f83ae1ddfed1689faf569  ./t2fix-check.tar.zst
 3369f24a65454966d6ea2ad59360221740d39d4f74d82e02ecfcd588790b4530  ./e34-matrix.tar.zst
+6fecadac0185a7de9126cc8ea8f2bee4136b962338ce377a8b312233906cec74  b3-dm-verity-fec.tar.zst
+22c8b2b490a70cf098627c3be751b17094d24488fc367791b338a76fbf561ac8  b3-dm-verity-fec.files.sha256

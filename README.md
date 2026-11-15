@@ -39,6 +39,7 @@
 | `build-logs` | 各runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（4,350 file）。`build/` を削除する前に保存した |
 | `phase2-build-logs` | 第2段runの `build/` にあった `mksquashfs.log` と `unsquashfs.log`（2,386 file） |
 | `e34-matrix` | 第3段の反復測定 `e34-2026-11-15`（174行・178 attempt。T5でずれの出た24 variant×5回とT4-syncでidle書き込みの出た18 variant×3回）。各run directoryのtext file（`summary.csv`、`qemu.log`、`run-meta.txt`、`inputs.sha256`、`qemu.log.sha256`、`*.host.log`）とdriver log、plan |
+| `b3-dm-verity-fec` | B3 破損注入試験 `results-b3`（7 case x 5 boot。各boot directoryの `serial-dm-0.log`、`test-qemu.log`、`parse.log`、`result.txt` と case 別 `.csv`。image は除外） |
 | `misc` | build結果をhard linkでまとめた時の `hardlink -v` のlog（`dedup-build-hardlink-20261111.log.zst`）、削除前の全imageの一覧（`images-inventory-20261111.tsv`：path、見かけのsize、disk上のsize、mtime）、VM上に残すimageのrun directoryの一覧（`images-kept-20261111.txt`） |
 
 ## 置いていないもの
