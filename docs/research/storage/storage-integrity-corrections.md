@@ -47,6 +47,8 @@ RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤�
 
 **製品設計への示唆：veritysetupの終了0やrepairable表示をintegrityの証明にしてはいけません。** FECで得た候補をhashで再検査するkernel側の防御が重要です。今回の検証範囲はhostで、kernelのFEC後hash再検査を今回のQEMUや実機で検証したわけではありません。製品適合・安全性の結論へ拡張せず、研究限定と出荷禁止を維持します。
 
+承認後の[host再検査](../../experiments/2026-11-15-dm-verity-fec-host-dry-resume.md)でD18入力を完了し、全43入力を照合しました。独立decoder出力と参照imageの全bytes一致は12件、別codeword2件、拒否4件です。新runの中間値を即時保存し、前runの欠損と区別しました。CLIは観測値のままで、boot期待・研究限定・実機未確認は不変です。
+
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
 
 B2は既存caseの黙示再利用を廃止し、l22を含む8 caseを一括生成します。旧計測値の補完や過去の再現済みという主張はしません。今回QEMU suiteを再実行せず、host fixtureで計測器の正常・空・誤検知・上書き拒否を検査します。
