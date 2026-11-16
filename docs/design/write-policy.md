@@ -69,6 +69,10 @@ tmpfs自体は圧縮していません。2026-11-13にzram swapを実装し、me
 | pstore / ramoops | kernel設定は有効。予約RAMを使い、SDへ回収するdaemonはありません | RAMの保持とSD永続化を区別します。panic・再起動後の回収は今回未測定です |
 | atime / periodic metadata | `/data` は `noatime`、rootはSquashFS ro。tmpfsのrelatimeはRAMだけ。ext4 journal、resize、修復、`sync` は上表の経路です | atime・commit・flush・SD内部FTLを同じ量と扱いません。mount optionは変更していません |
 
+## 任意のrootfs検査（設計のみ、2026-11-16）
+
+[任意検査command設計](rootfs-integrity-check.md)は未実装です。利用者が開始した時だけ全mapped dataを読み、SDの全partitionへの書込みを禁止します。log・lock・中間値はRAMのみで、FECは読取り結果を訂正するだけです。slot修復・切替・再起動・boot flag変更を検査から自動実行せず、書込みの例外は追加しません。2秒以上かかり得るためbytes/割合/経過と中断可否を英日表示します。panic/restart modeの危険とPhase C判断待ち、EIO・中断・観測欠損を成功にしない扱いもリンク先で定義します。commandの間接writeと既存writerの区別、QEMUでの時刻付き計測、実機SD/LCD・電断は未確認で、この行は§10適合確認済みを意味しません。
+
 ## 決定済み項目と残る測定・判断
 
 | 判断 | 選択肢と推奨 | 今回の扱い |

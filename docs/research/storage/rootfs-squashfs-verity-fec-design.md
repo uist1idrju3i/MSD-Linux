@@ -70,6 +70,19 @@ dm table 引数（`dm-mod.create` / `dmsetup` / `veritysetup open` の裏側）:
 
 veritysetup 側の format/open option: `--hash`、`--no-superblock`、`--format 0|1`、`--data-block-size`、`--hash-block-size`、`--data-blocks`、`--hash-offset`、`--salt`、`--uuid`、`--root-hash-file`、`--fec-device`、`--fec-offset`、`--fec-roots`、`--error-as-corruption`、`--ignore-zero-blocks`、`--check-at-most-once`、`--root-hash-signature`、`--use-tasklets`、`--shared`、`--deferred`。
 
+### 2.5 完全性の証拠にするもの（2026-11-16の設計方針）
+
+**veritysetupの終了値0、repairable表示、RSのsyndromeゼロは、単独でも組み合わせても完全性の証拠にしません。** [B3 host観測](../../experiments/2026-11-15-dm-verity-fec-host-dry.md)では2.7.5のverifyが`Verification failed`と`repairable`を表示して終了0となり、独立decoderはclean参照と異なるcodewordを返しました。[再検査](../../experiments/2026-11-15-dm-verity-fec-host-dry-resume.md)はCLI応答・誤訂正・完全回復を分離しています。[PR #260の上流研究](dm-verity-fec-upstream-2026-11.md)にもuserspace verifyがFEC後のhashを検証しない制約を記録しました。
+
+許容する証拠は次のどちらかです。どちらも対象slot・全data範囲・hash方式・salt等を固定し、破損したslotのheaderから拾っただけではない、信頼するroot hashと照合します。root hashの配布・認証は§6の未決定事項で、未確立なら完全性未確認です。
+
+1. **kernel dm-verity経由の全mapped device読取り**：FEC後もhash検証される経路で、全範囲を読み切り、EIO・破損eventがないこと。単なるfile一覧の読取り、read processの終了0、検査を省くoptionやcacheからの読取りだけでは代用しません。
+2. **独立したhash tree再計算**：全dataから正しい配置・方式でtreeを再計算し、信頼するroot hashとの一致を確認すること。既存treeやRSとの自己整合だけでは不足です。
+
+FEC候補はhash検証を通った場合だけ回復と数えます。host実験では独立decoder出力とclean参照の全bytes一致を要求します。[D](../../experiments/2026-11-16-dm-verity-fec-stage-d.md)・[E](../../experiments/2026-11-16-dm-verity-fec-stage-e.md)の特定QEMU条件ではRS正値後のhash不一致による拒否を観測しましたが、全誤訂正の拒否や実機の保証ではありません。crc32cの偶発破損検出を暗号学的な改ざん耐性へ広げません。
+
+任意検査の操作・観測条件は[読取り専用command設計](../../design/rootfs-integrity-check.md)に分けます。結果は検査時点のmapped dataについての証拠で、未使用parity、非保護領域、SD全体の健全性は保証しません。
+
 ## 3. 主要な制約: veritysetup は crc32c を拒否する
 
 `veritysetup format --hash=crc32c` → `Hash algorithm crc32c not supported`（2.7.5 で実測）。crc32/crc32c/xxhash64/wp512 も同様に拒否。cryptsetup の crypto backend（openssl 等）が持つ crypto hash（sha1/sha256/sha512/ripemd160）しか通らない。
@@ -95,7 +108,7 @@ veritysetup 側の format/open option: `--hash`、`--no-superblock`、`--format 
 
 現行 A/B は tryboot + msd-update で update 失敗時に戻す設計（[ab-design-history](ab-design-history.md)、[recovery-and-watchdog](recovery-and-watchdog.md)）。verity の破損検出を「このスロットは壊れている」として A/B に接続する案:
 
-- **FEC が有効な間**: 読み出し時に訂正して継続（dm-verity が自動）。訂正が発生したことの観測は status 取得のみ。
+- **FEC が有効な間**: kernelが訂正候補をhash検証してから利用します。ただし[B3のhash tree破損](../../experiments/2026-11-16-dm-verity-fec-stage-c.md)のように、訂正の途中で再入guardからpanicする条件もあります。訂正block数のstatusは6.18.59になく、v6.19以降の`fec_corrected_blocks`を実装時に確認します。取得不能を0件とはしません。
 - **訂正不能な破損**: `panic_on_corruption` はpanicを起こしますが、再起動するかはpanic timeoutまたはwatchdog次第です。別slotの選択までは実装しません。
 - **restart_on_corruption**: kernelのrestartを要求しますが、次にどのslotを選ぶかはfirmware設定と更新状態によります。trybootの一回限りの復帰と、既定slotの破損回復は別です。
 - **ignore_corruption** は方針外（検出して無視はしない）。
@@ -136,6 +149,6 @@ rootfs 系:
 
 1. **crc32c の自前 formatter を作るか**: 現行ツールチェーンで唯一のギャップ。tree+FEC 生成を自前で持つ見積もりは小さくない。sha256 に逃げる選択肢は利用者の方針と異なるので前提で持たない。
 2. **FEC の収容**: 256MB partition 内に squashfs+tree+FEC が入るか。rootfs 実 size 次第。
-3. **error mode の確定**: restart vs panic、boot counter 連携。QEMU 実測後に案を提示。
+3. **error mode の確定**: panic/restart/EIOとFEC、boot counter連携、任意検査の実行可否をPhase Cで比較し、利用者が決めます。B3追試の段階Cとは別の製品設計の判断です。本変更では既定modeを変更しません。
 4. **verity 破損時の永続化ポイント**: bootsel への flag 書き込みは write-policy 台帳に追加が必要。
 5. **update 時の再署名**: msd-update が新 image ごとに root hash をどう配布するか（image 埋め込み / 署名付き manifest）。R36（信頼起点）と接続。
