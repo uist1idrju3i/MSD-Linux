@@ -361,6 +361,30 @@ def run(*args: str, cwd: Path = ROOT) -> str:
     )
 
 
+def pinned_bootlin_version(
+    local_config: Path, option: str, buildroot_sha: str, fetcher=None
+) -> str:
+    if not option:
+        return ""
+    try:
+        if local_config.is_file():
+            return parse_bootlin_option_version(local_config.read_text(), option)
+    except OSError:
+        pass
+    if not re.fullmatch(r"[0-9a-f]{40}", buildroot_sha):
+        return ""
+    url = (
+        "https://raw.githubusercontent.com/buildroot/buildroot/"
+        f"{buildroot_sha}/toolchain/toolchain-external/"
+        "toolchain-external-bootlin/Config.in.options"
+    )
+    try:
+        return parse_bootlin_option_version((fetcher or fetch)(url), option)
+    except (OSError, URLError, ValueError) as exc:
+        print(f"Bootlin toolchain: pinned option unavailable: {exc}", file=sys.stderr)
+        return ""
+
+
 def buildroot_gitlink_sha(root: Path) -> str:
     try:
         fields = run("git", "ls-tree", "HEAD", "vendor/buildroot", cwd=root).split()
@@ -635,14 +659,9 @@ def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
         / "vendor/buildroot/toolchain/toolchain-external/"
         "toolchain-external-bootlin/Config.in.options"
     )
-    try:
-        bootlin_pinned = (
-            parse_bootlin_option_version(bootlin_config.read_text(), bootlin_option)
-            if bootlin_option and bootlin_config.is_file()
-            else ""
-        )
-    except OSError:
-        bootlin_pinned = ""
+    bootlin_pinned = pinned_bootlin_version(
+        bootlin_config, bootlin_option, buildroot_gitlink_sha(root)
+    )
     bootlin_url = (
         "https://toolchains.bootlin.com/downloads/releases/toolchains/"
         "aarch64/tarballs/"
