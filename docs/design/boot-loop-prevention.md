@@ -122,7 +122,7 @@ QEMUのpanic条件は[run-qemu.sh:97-99](../../board/cardputerzero/qemu/run-qemu
 [WP]: write-policy.md
 [RC]: https://github.com/buildroot/buildroot/blob/75f325ad84251ee9d903467f84d3683e3bcf3fd5/package/initscripts/init.d/rcS#L3-L6
 [AUTO]: https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/config_txt/autoboot.adoc#L9-L40
-[TRY]: https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/raspberry-pi/bootflow.adoc#L80-L98
+[TRY]: https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/raspberry-pi/bootflow-eeprom.adoc#L80-L98
 [WD]: https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/watchdog/bcm2835_wdt.c#L95-L140
 [FW]: https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/firmware/raspberrypi.c#L186-L222
 [BOOT]: https://github.com/raspberrypi/documentation/blob/c6a64966af136da21a1e55551c5a395cb6987fce/documentation/asciidoc/computers/config_txt/boot.adoc#L242-L271
