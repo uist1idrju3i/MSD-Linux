@@ -52,7 +52,8 @@ LCDとconsoleの両方へ英日併記する案です。CLIの終了code番号は
 | clean（検査範囲の照合完了、訂正counter差分0を取得） | `Verified; no FEC correction recorded in this check.` / `照合完了。この検査でFEC訂正の記録はありません。` |
 | FEC訂正あり、全範囲hash検証成功 | `Verified after FEC; corrected-block counter increased by {n}. SD was not repaired.` / `FEC後の照合完了。訂正block counterは{n}増加しました。SDは修復していません。` |
 | 照合完了、訂正数は取得不能 | `Verified; FEC correction count unavailable.` / `照合完了。FEC訂正数は取得できません。` |
-| 訂正不能（最終EIO、または独立hash検証不一致） | `Verification failed; data could not be verified. Try the other A/B slot or rewrite this slot from a trusted update bundle.` / `検証失敗。dataを検証できません。別のA/B slotからの起動、または信頼する更新bundleでの当該slot書直しを検討してください。` |
+| 訂正不能（kernel経路で最終EIO） | `Verification failed; data could not be verified. Try the other A/B slot or rewrite this slot from a trusted update bundle.` / `検証失敗。dataを検証できません。別のA/B slotからの起動、または信頼する更新bundleでの当該slot書直しを検討してください。` |
+| 独立再計算でhash不一致（FEC適用前のdataの不一致。FECで回復できる場合があり、訂正不能とは判定しない） | `Verification failed; stored data does not match the trusted root hash. FEC may still recover it; this check cannot tell.` / `検証失敗。保存dataが信頼するroot hashと一致しません。FECで回復できる場合がありますが、この検査では判定できません。` |
 | 破損eventあり、read成功だけでは合格にできない | `Corruption event observed; integrity not established.` / `破損eventを観測しました。完全性は確認できません。` |
 | 中断・観測欠損・準備失敗 | `Check incomplete: {reason}. Integrity not established.` / `検査未完了：{reason}。完全性は確認できません。` |
 | 中断待ち | `Cancelling; waiting for read I/O. Do not power off.` / `中断処理中。read I/Oの完了を待っています。電源は切らないでください。` |
