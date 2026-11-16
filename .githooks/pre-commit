@@ -32,7 +32,9 @@ fi
 docs=$(printf '%s\n' "$staged" | grep -E '^(docs|\.agents)/.*\.md$' || true)
 if [ -n "$docs" ] && [ -f .agents/skills/yomiyasu/scripts/yomiyasu_lint.py ]; then
 	printf '%s\n' "$docs" | while IFS= read -r f; do
-		python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py "$f" || true
+		# yomiyasu 3.0.0 以降は点で始まるパスを引数では読まないため、標準入力で渡す
+		printf '== %s\n' "$f"
+		python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py - < "$f" || true
 	done
 fi
 
