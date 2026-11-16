@@ -47,6 +47,10 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 ## 次回harness
 
+### Cの位置境界追試（2026-11-16）
+
+2026-11-16の[stage C](../../experiments/2026-11-16-dm-verity-fec-stage-c.md)は正式50件中40期待一致でした。lower hash先頭・末尾は各5/5で再入guard後panicとなり、単一byteなら正常読取りという期待に反しました。data両端とparity＋対応dataは各5/5正常読取り。parity単独・superblock・範囲外の正常読取りは、FEC修復や範囲外integrityの証明ではありません。既存期待は変えず、QEMUと実機を区別します。
+
 ### 容量超過の誤訂正と製品設計への示唆（2026-11-15承認、host限定）
 
 RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤訂正されることは想定される挙動です。syndromeゼロは元bytesへの回復を保証しません。上のhost観測をRSの保証範囲内の不具合やkernelの回復成功とは扱いません。利用者承認により、hostの回復判定は独立decoder出力とclean参照bytesの一致に限定し、誤訂正・拒否を分け、CLI応答は観測値として記録します。

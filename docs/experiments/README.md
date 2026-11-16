@@ -8,6 +8,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-16-dm-verity-fec-stage-c](2026-11-16-dm-verity-fec-stage-c.md) | [CSV](2026-11-16-dm-verity-fec-stage-c.csv) | 2026-11-16 | 10 smoke＋50正式boot | 正式40一致、lower hash両端10 panicは正常読取り期待への反証。parity単独で修復を主張せず、実機未確認 |
 | [2026-11-15-dm-verity-fec-stage-b](2026-11-15-dm-verity-fec-stage-b.md) | [CSV](2026-11-15-dm-verity-fec-stage-b.csv) | 2026-11-15 | 10 smoke＋50正式boot | clean成功、正式40一致・EIO10反証。再入guard→fatal方針を支持、EIOでは訂正後全read成功。実機未確認 |
 | [2026-11-15-dm-verity-fec-host-dry-resume](2026-11-15-dm-verity-fec-host-dry-resume.md) | [CSV](2026-11-15-dm-verity-fec-host-dry-resume.csv) | 2026-11-15 | D18入力完了・全43入力照合 | CLIと回復判定を分離。完全一致12・別codeword2・拒否4、中間値を即時保存。boot結果は別記 |
 | [2026-11-15-dm-verity-fec-host-dry](2026-11-15-dm-verity-fec-host-dry.md) | [CSV](2026-11-15-dm-verity-fec-host-dry.csv) | 2026-11-15 | 37/43入力生成・boot前停止 | alias閉包とB/C/E/Fはhost成功。Dの容量超過対照がCLI終了0・hash失敗表示となり停止。B clean再試行・正式B以降は未実行 |
