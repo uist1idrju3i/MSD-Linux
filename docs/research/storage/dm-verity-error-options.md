@@ -32,7 +32,7 @@ T:36-43、F header:26-29、S header:12とparser T:1136-1238を照合した**全1
 | `panic_on_corruption`（T:210-211） | panic | 候補 | timeout/WDT次第 |
 | `restart_on_error`（T:535-568） | I/O失敗時にworkqueueからkernel_restart | 候補 | Cとは独立、発火例外あり |
 | `panic_on_error`（同上） | 同条件でpanic | 候補 | slot切替なし |
-| `ignore_zero_blocks`（T:1060-1092,1180-1188、D） | 期待digestがzeroなら実dataを検証せずzeroを返す | なし | loop制限なし |
+| `ignore_zero_blocks`（T:1060-1092,1180-1188、D） | 期待digestがzero埋めblockのhashなら実dataを検証せずzeroを返す | なし | loop制限なし |
 | `check_at_most_once`（T:468-475,1190-1196、D） | dataは初回のみ検証。hash blockは従来通り | なし | 稼働後の検出を弱める |
 | `use_fec_from_device <dev>`（F:577-586,644-679） | 訂正元。同一device可、data/hash block size一致が必要 | FEC採用 | 訂正成功ならfatal回避 |
 | `fec_roots <n>`（F:606-613、header:16-17） | 2〜24 parity symbol。kernelは2を自動補完しない | 未決定、2候補 | 訂正能力の選択 |
