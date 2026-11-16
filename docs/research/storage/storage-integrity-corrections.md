@@ -1,5 +1,11 @@
 # storage実験B1〜B3・E34の訂正とformatter監査
 
+## B3知見の設計への反映（2026-11-16）
+
+[rootfs設計](rootfs-squashfs-verity-fec-design.md#25-完全性の証拠にするもの2026-11-16の設計方針)と[任意検査command案](../../design/rootfs-integrity-check.md)に、veritysetup終了0・repairable・syndromeゼロを完全性の証拠にしない方針を反映しました。全mapped deviceをkernelのFEC後hash検証経路でEIO・破損eventなく読み切るか、独立再計算のroot hashを信頼する値と比較します。FEC候補はhash検証後だけ回復と数え、hostでは独立候補とclean参照の全bytes一致を要求します。根拠は以下のhost/B〜F記録と[PR #260の上流研究](dm-verity-fec-upstream-2026-11.md)です。
+
+利用者起動・SDへ書き込まない検査、RAMだけの一時保存、英日progress/結果/中断表示を設計しました。6.18.59でFEC訂正数を0と推定せず、panic/restart/EIOの選択はPhase Cの利用者判断待ちです。製品codeや既定modeは変更せず、新しいboot・実機検証もありません。
+
 ## E34の反復・因果・規則適合
 
 [E34](../../experiments/2026-11-15-fs-compare-matrix.md)のT5は18 variant中17で差を反復し、P136の増加は非再現でした。idleはf2fs F3/P044に遅いwrite、I2/L3に最大88 sectorの追い書きを観測。B2/P097の各3回0も、新LUKS+btrfs設計の§10適合ではありません。174成功runを42群へ集計し、4中断attempt・harness差分・集計器をdata枝へ追補保存しました。
