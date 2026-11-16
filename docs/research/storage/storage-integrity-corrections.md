@@ -33,7 +33,39 @@ RS部分はPhil Karn由来libfecのportとのcommentがあります。正確な�
 
 [amendment後のstage A](../../experiments/2026-11-15-dm-verity-fec-stage-a.md)は7条件各5回でv3期待35/35一致でした。F3のFEC内hash検査からのpanicと、F6のdriver有効時の自然終了0をそれぞれ5/5観測しました。反復性とguard自体の因果は別で、後者は未計装です。通常起動のreadall独立marker/loginとmodule署名は残件のため、原計画の全検証や製品boot成功とは扱いません。
 
+[Bの最初のclean smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-smoke.md)はready/loginまで進みましたがreadall完了markerがなく、厳密なclean判定で停止しました。実inittabと実BusyBox binaryの逆assemblyから、initが加えるexecによりdd後のechoが実行されない説明を強く支持します。旧A/v3の結果は当時のmarker判定として保持し、期待や判定を後付けで緩めていません。B正式反復・C〜Fは未実行、研究用helperと再packの承認待ちです。
+
+利用者承認後の[再開smoke](../../experiments/2026-11-15-dm-verity-fec-stage-b-resume-smoke.md)では、明示的shell経由の新helper・新packで通常経路のreadall→ready→loginを観測しました。一方RAM cleanはlibresolv探索失敗でinitが終了し、再停止しました。実CPIOにはlibrary本体がありますが、元treeのlib64 aliasがなく、実loaderの既定探索先と合いません。alias欠落を強く支持し、動的traceと修正後bootは未確認です。RAM読取り・F3 mode比較・正式B・C〜Fは未実行で、次の修正承認を待ちます。
+
+利用者承認後の[host一括検査](../../experiments/2026-11-15-dm-verity-fec-host-dry.md)では、alias保存と実DT_NEEDED閉包を実装し、旧CPIOを同じcheckerで拒否しました。新CPIOはhost検査成功ですが、修正後RAM bootはまだ未確認です。37/43入力の生成時点で、DのSHA-256/roots2・同column 3 block破損にveritysetupがhash失敗を表示しながら終了0を返し、host gateで停止しました。独立RS復号はsyndromeゼロでも元bytesと異なるcodewordとなり、CLI終了0を完全回復の根拠にできません。残りD6入力・B clean再試行・正式B〜Fは未実行で、boot期待は変えていません。共通pack・D新規suffix・initramfs・metadata・rawを上記archiveに保存しました。次はhost回復判定の修正と中間値の即時保存の承認が必要です。
+
+## 正式Bの結果（2026-11-15 UTC）
+
+上の停止・未確認の記述は各記録作成時点の状態です。[正式B](../../experiments/2026-11-15-dm-verity-fec-stage-b.md)はalias修正・host全43入力照合後、両cleanを含む10 smokeと正式50 bootを完了しました。正式は40期待一致、EIO通常/RAMの10件は訂正後read成功で既存のEIO期待に対する反証です。clean失敗・timeoutはなく、旧期待は変更していません。
+
+同じbio IDでFEC内hash lookupの再入、level1 guardの-EIO、その後のpanic/restartを全反復で観測しました。EIOは各243 guard後にRSが1 symbol訂正してread成功となり、容量超過だけの説明を反証します。RAMの明示read後も同じ経路なのでroot mount前だけの説明にも反します。本条件での経路は高確度ですが、guard無効化対照や全hash/rootsの一般化、RS誤訂正のkernel拒否、実機適合は未検証です。C〜Fはまだ未実行です。
+
 ## 次回harness
+
+### Cの位置境界追試（2026-11-16）
+
+2026-11-16の[stage C](../../experiments/2026-11-16-dm-verity-fec-stage-c.md)は正式50件中40期待一致でした。lower hash先頭・末尾は各5/5で再入guard後panicとなり、単一byteなら正常読取りという期待に反しました。data両端とparity＋対応dataは各5/5正常読取り。parity単独・superblock・範囲外の正常読取りは、FEC修復や範囲外integrityの証明ではありません。既存期待は変えず、QEMUと実機を区別します。
+
+### 容量超過の誤訂正と製品設計への示唆（2026-11-15承認、host限定）
+
+RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤訂正されることは想定される挙動です。syndromeゼロは元bytesへの回復を保証しません。上のhost観測をRSの保証範囲内の不具合やkernelの回復成功とは扱いません。利用者承認により、hostの回復判定は独立decoder出力とclean参照bytesの一致に限定し、誤訂正・拒否を分け、CLI応答は観測値として記録します。
+
+**製品設計への示唆：veritysetupの終了0やrepairable表示をintegrityの証明にしてはいけません。** FECで得た候補をhashで再検査するkernel側の防御が重要です。今回の検証範囲はhostで、kernelのFEC後hash再検査を今回のQEMUや実機で検証したわけではありません。製品適合・安全性の結論へ拡張せず、研究限定と出荷禁止を維持します。
+
+承認後の[host再検査](../../experiments/2026-11-15-dm-verity-fec-host-dry-resume.md)でD18入力を完了し、全43入力を照合しました。独立decoder出力と参照imageの全bytes一致は12件、別codeword2件、拒否4件です。新runの中間値を即時保存し、前runの欠損と区別しました。CLIは観測値のままで、boot期待・研究限定・実機未確認は不変です。
+
+2026-11-16の[stage D](../../experiments/2026-11-16-dm-verity-fec-stage-d.md)は18 smoke・90正式bootで全期待一致でした。追加QEMU観測として、crc32c/SHA-256のroots2超過は各5/5でRS正値の後に復号blockのhash不一致を表示し、位置あり再試行も拒否してpanicへ進みました。guardは0回で、B/Cの再入guard経路とは異なります。上のhost限定という記述は当時の範囲であり、今回その特定入力のkernel再検査経路を追加確認しました。kernel候補bytes自体は未保存で、全誤訂正の拒否や製品・実機のintegrity保証には広げません。
+
+2026-11-16の[stage E](../../experiments/2026-11-16-dm-verity-fec-stage-e.md)は4 smoke・20正式bootで全期待一致でした。9/24 blockとも同column集中は各5/5 panic、異column分散は各5/5でFEC訂正とreadall完了→ready→loginを観測しました。集中はguardではなくRS再試行後のhash不一致で拒否され、破損block総数だけで容量を語れないことを支持します。候補全bytesのkernel内dump・実機検証・全patternの保証はありません。
+
+2026-11-16の[stage F](../../experiments/2026-11-16-dm-verity-fec-stage-f.md)は1 smoke・5正式trialで全期待一致でした。全6件で破損→restart→guest由来のQMP RESET→2回目Linux bannerをhost停止前に観測し、SIGTERMや最終exit 0を成功根拠にしていません。初回launchのrootless UID指定違いは0 bootの環境設定失敗としてrawを保存しました。2回目の完全起動・別slot復旧・実機watchdog/trybootの成功ではありません。
+
+[B〜F総括](../../experiments/2026-11-16-dm-verity-fec-followup-summary.md)に正式195/215期待一致、B/Cの反証、失敗・欠損・wall・archiveの参照をまとめました。上の未実行・承認待ち・host限定という記述は各記録の作成時点の状態で、現在の終了状態は総括を参照します。期待の事後変更、RS製品出荷の解禁、03914台帳同期保留の解除はしていません。
 
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
 

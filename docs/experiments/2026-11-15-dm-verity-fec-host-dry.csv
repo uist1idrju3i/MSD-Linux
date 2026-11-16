@@ -1,0 +1,6 @@
+run_id,stage,planned_cases,generated_cases,passed,wall_seconds,error
+host-dry-1,B,10,10,True,158.0244755029853,
+host-dry-1,C,10,10,True,103.2050619799993,
+host-dry-1,D,18,12,False,95.44485510300728,ValueError: veritysetup independent check failed: D-sha256-r2-over-fec
+host-dry-1,E,4,4,True,42.88704147702083,
+host-dry-1,F,1,1,True,12.837630046007689,

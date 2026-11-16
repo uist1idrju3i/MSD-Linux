@@ -72,3 +72,12 @@ event IDは元sessionのIDです。原文と当時の履行評価はS0 archive�
 | `event-01a1de581ba07f20a181f845512622ff` | AutomationはB3保存・review/CI・B4以降を要求し、NVD失敗の無視も指示。B3保存済み、B4未着手。host SIGTERMをrestart成功にしない。利用者の終了判断を優先し、required checkの失敗を隠さない |
 
 既決定をuser-actionsの再承認依頼で未決定へ戻さず、実機未着をQEMUで代替完了にしません。実装の順序・承認待ち・測定の完了条件は[引継ぎ残件](session-followup-2026-11-15.md)を参照します。
+
+## release rulesetとWeb Analyticsの利用者確認（2026-11-16追記）
+
+2026-11-16 09:24 JST、利用者は`event-01a1e1be03977cfeabeb82d0a59e81b6`で次を回答しました。
+
+- release rulesetの`~ALL`（全tag対象）は意図した設定で、利用者自身はbypass listに入っています。
+- Cloudflare Web Analyticsは有効で、利用者がdashboardで確認しました。
+
+これは利用者による確認の記録であり、agentがruleset・bypass list・Cloudflare設定を変更したという意味ではありません。

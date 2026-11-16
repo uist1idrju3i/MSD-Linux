@@ -1,0 +1,7 @@
+phase,case,repeat,expected,functional_pass,wall_seconds,guard_hits,readall_complete,ram_read_success,ready,login,panic,restart,qmp_reset,boot_banners,stop_reason,exit_status,host_terminated_after_observation,final_process_status,serial_sha256
+smoke,F-reset,0,restart-reset,True,228.500546071009,0,False,False,False,False,False,True,True,2,observed,,True,0,d8e478998c03415a53e35de3e1b9a6286f59606112d8d636dfdcd5ebaff4bdbe
+formal,F-reset,0,restart-reset,True,219.40266694201273,0,False,False,False,False,False,True,True,2,observed,,True,0,5619101ca568e9cc2ff436f282d912bf213688a71904f4fffecc6168a4a5515c
+formal,F-reset,1,restart-reset,True,246.8467764989764,0,False,False,False,False,False,True,True,2,observed,,True,0,71adb26cf48d557ac1e19b32e1b212ed83e32c8456b0cfb6f8d3914b9bf0f296
+formal,F-reset,2,restart-reset,True,240.9416865320236,0,False,False,False,False,False,True,True,2,observed,,True,0,da5444c37b4c5a861a09246ca0088971589994efed875dff19308347460b72e4
+formal,F-reset,3,restart-reset,True,218.42716351899435,0,False,False,False,False,False,True,True,2,observed,,True,0,eb4f15305f79b320c0fe5b9e9b04ba42bdd425dcdcf3952e016c245d1af8d99b
+formal,F-reset,4,restart-reset,True,229.23647752398392,0,False,False,False,False,False,True,True,2,observed,,True,0,861d5a1a8abca8ff7911d2700ac0e165c219ac15d4bb8140cfb90480b7c26af3

@@ -1,0 +1,3 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+stage-b-resume-smoke-20261115,B-clean-normal,0,wall,233.07458338499418,s,1,expected=normal-read;stop=observed;formal_runs=0;host_stop=True
+stage-b-resume-smoke-20261115,B-clean-ram,0,wall,213.33907512100996,s,0,expected=ram-read;stop=unexpected-terminal;formal_runs=0;host_stop=True
