@@ -64,7 +64,7 @@ timestamp・共通prefixを省略しました。再入guardは0回なので、C�
 
 ## 保存・検査・予算
 
-[archive](2026-11-16-dm-verity-fec-stage-e/evidence.tar.gz)は118 member、1,119,573 byte、SHA-256 `fe5e85f7327fd34b9fc1497c59d1614a7e19c474cf51cc1f828c337af52bc8d6`です。全memberを再読込みしてhash照合しました。全24件のserial/QMP/判定、case設定・入力manifest・注入位置、固定source、driver log・wall、collectorとsummaryを保存しています。入力本体の再構成に用いる共通packはhost記録のarchiveを参照します。
+[archive](2026-11-16-dm-verity-fec-stage-e/evidence.tar.gz)はhash対象118 memberと`MANIFEST.json`、1,119,573 byte、SHA-256 `fe5e85f7327fd34b9fc1497c59d1614a7e19c474cf51cc1f828c337af52bc8d6`です。manifestに列挙された118 memberを再読込みしてhash照合しました。全24件のserial/QMP/判定、case設定・入力manifest・注入位置、固定source、driver log・wall、collectorとsummaryを保存しています。入力本体の再構成に用いる共通packはhost記録のarchiveを参照します。
 
 ```text
 ok - stage E: 24 trials, 20 formal, 20 formal matches; 118 members hash-verified

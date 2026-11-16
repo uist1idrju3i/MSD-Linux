@@ -63,6 +63,10 @@ RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤�
 
 2026-11-16の[stage E](../../experiments/2026-11-16-dm-verity-fec-stage-e.md)は4 smoke・20正式bootで全期待一致でした。9/24 blockとも同column集中は各5/5 panic、異column分散は各5/5でFEC訂正とreadall完了→ready→loginを観測しました。集中はguardではなくRS再試行後のhash不一致で拒否され、破損block総数だけで容量を語れないことを支持します。候補全bytesのkernel内dump・実機検証・全patternの保証はありません。
 
+2026-11-16の[stage F](../../experiments/2026-11-16-dm-verity-fec-stage-f.md)は1 smoke・5正式trialで全期待一致でした。全6件で破損→restart→guest由来のQMP RESET→2回目Linux bannerをhost停止前に観測し、SIGTERMや最終exit 0を成功根拠にしていません。初回launchのrootless UID指定違いは0 bootの環境設定失敗としてrawを保存しました。2回目の完全起動・別slot復旧・実機watchdog/trybootの成功ではありません。
+
+[B〜F総括](../../experiments/2026-11-16-dm-verity-fec-followup-summary.md)に正式195/215期待一致、B/Cの反証、失敗・欠損・wall・archiveの参照をまとめました。上の未実行・承認待ち・host限定という記述は各記録の作成時点の状態で、現在の終了状態は総括を参照します。期待の事後変更、RS製品出荷の解禁、03914台帳同期保留の解除はしていません。
+
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
 
 B2は既存caseの黙示再利用を廃止し、l22を含む8 caseを一括生成します。旧計測値の補完や過去の再現済みという主張はしません。今回QEMU suiteを再実行せず、host fixtureで計測器の正常・空・誤検知・上書き拒否を検査します。
