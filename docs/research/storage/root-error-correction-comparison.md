@@ -12,10 +12,10 @@ rootパーティションの破損を、どの方式で検出し、どこまで�
 
 ## 1. 結論
 
-1. **検出の強さはdm-verityが上です**。dm-verityは、すべてのblockを暗号学的hash（例：SHA-256）のMerkle treeで確かめます。root hashを署名などで認証すれば、偶発的な破損に加えて、意図的な改ざんも検出できます。btrfsのchecksum（crc32c、xxhash、sha256、blake2）は鍵を使わないので、書き換えた者がchecksumも計算し直せます。そのため、btrfs単独では改ざんを検出できません。
+1. **検出の強さは、hashの選び方で決まります**。dm-verityは、すべてのblockをMerkle treeで確かめ、root hashまで連鎖させます。hashにSHA-256などの暗号学的hashを使い、root hashを署名などで認証すれば、意図的な改ざんも検出できます。ただし、[rootfsの設計](rootfs-squashfs-verity-fec-design.md)の現在の方針はcrc32cです（利用者の判断）。crc32cは暗号学的でないので、偶発的な破損は検出できますが、改ざんは検出できません。btrfsのchecksumも鍵を使わないので、btrfs単独では改ざんを検出できません。現在の方針どうしで比べると、検出はどちらも誤り検出で、強さの差はalgorithmで決まります。
 2. **訂正の性質は違います**。btrfs DUPは、もう一方のcopyが健全であれば、壊れたblockがいくつあっても直せます。その代わり、容量と書き込みは2倍になります。dm-verityのFECは、RS符号をdevice全体にinterleaveして、少ない容量（roots=2で約0.8%）で長い連続した破損を直します。ただし、1つのinterleaveの組で `roots` 個を超えるblockが壊れると直せません。
 3. **どちらも、同じSDカードの中での冗長性です**。カードの全損、controllerやFTLの故障には効きません。btrfsの上流の文書は、DUPの2つのcopyが、FTLによって同じphysical unitに置かれたり、同じ内容として統合されたりし得ると注意しています。FECのparityはdataと内容が違うので、統合される心配はありません。ただし、同じphysical unitに置かれ得ることは同じです。
-4. **rootの推奨（案）**：今の設計どおり、SquashFS＋dm-verity（SHA-256、root hashの認証）＋FEC（roots=2から検討）とし、A/Bのもう一方のslotと、更新bundleからのslotの書き直しを、FECで直せない場合の回復手段にします。rootにbtrfs DUPを使う案は勧めません。理由は、改ざんを検出できないこと、256MBのslotで容量が2倍になること、rootが書き込めるfilesystemになり、RO rootの方針と合わないことです。
+4. **rootの推奨（案）**：今の設計どおり、SquashFS＋dm-verity＋FEC（roots=2から検討）とし、A/Bのもう一方のslotと、更新bundleからのslotの書き直しを、FECで直せない場合の回復手段にします。hashは現在の方針（crc32c）のままです。改ざんの検出が必要になったら、SHA-256とroot hashの認証へ移ることを、別の判断として扱います。rootにbtrfs DUPを使う案は勧めません。理由は、256MBのslotで容量が2倍になること、btrfsもROでmountできますが、そのときは壊れた側を書き直す自動修復が働かないと見込まれること（未確認）、SquashFS＋dm-verityなら将来SHA-256に移れば改ざんも検出できるのに対し、btrfsのchecksumは鍵を使わないので改ざんを検出できないことです。
 5. **注意点**：現行kernelでは、panicモードのとき、hash treeの破損をFECで直せないことが多いと推論しています（[FECの上流動向](dm-verity-fec-upstream-2026-11.md)）。FECが救えるのは、主にdata blockの破損です。
 
 ## 2. dm-verity+FECとbtrfs DUPの比較
@@ -23,8 +23,8 @@ rootパーティションの破損を、どの方式で検出し、どこまで�
 | 観点 | dm-verity+FEC | btrfs DUP（data・metadata） |
 |---|---|---|
 | 検出の単位 | data block（4 KiB）ごと。hash treeでroot hashまで連鎖する | data：sector（4 KiB）ごとのchecksum（checksum tree）。metadata：tree nodeごとのchecksum |
-| 検出のalgorithm | sha256など暗号学的hash（MSDの研究用formatterはcrc32cも試験） | crc32c（既定）、xxhash（64 bit）、sha256、blake2 |
-| 改ざんの検出 | root hashを認証すれば可能（`root_hash_sig_key_desc` など） | できない（鍵がなく、checksumを計算し直せる） |
+| 検出のalgorithm | 現在の方針はcrc32c（研究用formatterで生成）。veritysetupではsha256などの暗号学的hash | crc32c（既定）、xxhash（64 bit）、sha256、blake2 |
+| 改ざんの検出 | 暗号学的hashでroot hashを認証すれば可能（`root_hash_sig_key_desc` など）。crc32cでは不可 | できない（鍵がなく、checksumを計算し直せる） |
 | 検出の時機 | readのたび（`check_at_most_once` を付けると初回だけ） | readのたびと、利用者が始めるscrub |
 | 訂正の仕組み | RS(255, 255−roots)をdevice全体にinterleave。hashで壊れたblockの位置が分かるので、消失として扱い、訂正できる量が2倍になる | もう一方のcopyを読み、checksumが合えばそれを返す。書き込めるmountなら、壊れた側も書き直す |
 | 訂正できる範囲 | 1つのinterleaveの組（roots=2なら253 block）で、壊れたblockがroots個以下 | 同じ論理blockの2つのcopyのうち、片方が健全なら直せる |
@@ -50,7 +50,7 @@ btrfs DUPでは、2つのcopyは別のchunkにあります。片方のcopyで連
 | 連続数MiBの破損 | roots=2で約2 MiBまで（計算例）。それを超えると直せない | もう一方のcopyが健全なら訂正 |
 | hash tree・metadataの破損 | 検出はする。panicモードでは訂正できないことが多い（推論） | metadataのcopyで訂正 |
 | 広い範囲に散らばった破損 | 組ごとにroots個を超えると直せない | 同じblockの両方のcopyが壊れなければ訂正 |
-| 意図的な改ざん | 検出（root hashを認証した場合） | 検出できない |
+| 意図的な改ざん | 暗号学的hashでroot hashを認証した場合だけ検出。crc32cでは検出できない | 検出できない |
 | カードの全損・FTLの故障 | どちらも直せない（A/Bの別slotも同じカード） | 同左 |
 
 ## 3. rootに使えるほかの方式
