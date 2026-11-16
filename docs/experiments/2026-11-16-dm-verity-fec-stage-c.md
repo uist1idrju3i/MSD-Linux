@@ -74,6 +74,6 @@ formal_boot_wall_sum=11511.65046835682
 wall_seconds=11540.900
 ```
 
-smokeのdriver wallは2375.707秒、正式は**11540.900秒（3時間12分20.900秒）**です。終了時の保守的累積時計は約14時間20分。残りD〜Fは23 smoke＋115正式bootを240秒/boot、準備2時間として、累積約25時間半を見込みます。deadlineは2026-11-17 00:17:52 UTC、36時間上限の延長は不要です。wall値はhost資源の消費記録で、実機の性能比較に転用しません。
+smokeのdriver wallは2375.707秒、正式は **11540.900秒（3時間12分20.900秒）** です。終了時の保守的累積時計は約14時間20分。残りD〜Fは23 smoke＋115正式bootを240秒/boot、準備2時間として、累積約25時間半を見込みます。deadlineは2026-11-17 00:17:52 UTC、36時間上限の延長は不要です。wall値はhost資源の消費記録で、実機の性能比較に転用しません。
 
 文書検査・yomiyasuの結果は本段階のcommit・報告に添付します。host fixture後からbench sourceは不変で、追加ShellCheckは不要です。既知のmodule署名拒否はrawに保持し、全module loadや製品bootの合格にはしません。実機SD/LCD/firmware tryboot/電断/A-B復旧は未確認。RS研究限定・製品出荷禁止、03914台帳同期保留を維持します。
