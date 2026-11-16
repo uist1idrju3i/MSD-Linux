@@ -41,7 +41,7 @@ T:36-43、F header:26-29、S header:12とparser T:1136-1238を照合した**全1
 | `root_hash_sig_key_desc <desc>`（S:25-146） | user keyのPKCS#7でroot hash認証、失敗なら作成拒否 | なし | slot切替なし |
 | `try_verify_in_tasklet`（T:1198-1203,241-297） | cache/size条件内はBH検証。I/O/FEC等は通常workqueueへ | なし | mode不変 |
 
-C群3 tokenは排他、E群2 tokenも排他。同一token重複もEINVAL。両群間は独立、E単独・混合fatalも可（T:1095-1133）。既定を含めC4×E3＝12組。FEC deviceなしでは他のFEC値だけ指定しても訂正は有効になりません（F:649-650）。
+C群3 tokenは排他、E群2 tokenも排他。C/E内は同一token重複もEINVAL。両群は独立、E単独・混合fatalも可（T:1095-1133）。try_verify_in_taskletの重複は許容（T:1198-1200）。既定込みC4×E3＝12組。FEC deviceなしでは他のFEC値だけ指定しても訂正は無効（F:649-650）。
 
 ## 2. 何をcorruption／I/O errorと扱うか
 
