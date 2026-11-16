@@ -29,6 +29,7 @@
 | writeback、block queue、MMC/SD host、mount flag、file属性、kernel command line | [filesystem option調査](filesystem-options.md)から、[mount](filesystem-options-write-path-mount.md)、[VM/BDI](filesystem-options-write-path-vm.md)、[block](filesystem-options-write-path-block.md)、[MMC/SD](filesystem-options-write-path-mmc.md)、[file属性](filesystem-options-write-path-attributes.md)、[command line](filesystem-options-write-path-cmdline.md)へ |
 | K/P/S17系列のURL・逐語抜粋・適用範囲 | [共通の出典表](filesystem-sources.md) |
 | dm-verity FECの上流動向（再帰FECの無効化、veritysetup verifyの限界）とB3への含意 | [FECの上流動向](dm-verity-fec-upstream-2026-11.md) |
+| rootの破損検出と訂正の方式比較（dm-verity+FEC、btrfs DUP、dm-integrityほか） | [方式比較](root-error-correction-comparison.md) |
 | 故障注入で何を模擬し、何を確認できないか | [S17の当初計画](fault-injection-s17.md)と[試験台帳](../verification/experiment-catalog.md) |
 | FTL、電源遮断、FS耐性、powerfailの資料 | [電源断耐性の調査](power-loss.md) |
 | RAUC等の過去の比較とS10の経緯 | [A/B設計の履歴](ab-design-history.md)。現在の比較は[更新framework](../alternatives/updates.md)と[TUF/Uptane](../alternatives/update-metadata.md) |
