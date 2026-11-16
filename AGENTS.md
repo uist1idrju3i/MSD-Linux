@@ -59,6 +59,7 @@ Devin / Codex / Claude Code など、このリポジトリで作業するすべ�
 - 検査ツールは Python の標準ライブラリだけで動き、外部へ通信しません。
   - `python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py <file>`: AI の文章に多い表現の候補を出します。
   - `python3 .agents/skills/yomiyasu/scripts/yomiyasu_check.py run --source <原文> --final <最終稿>`: 推敲の前後を比べ、数値・否定・主述が変わっていないかを確かめます。記録は git 最上位の `.yomiyasu/` に残ります（gitignore 済み）。
+  - 3.0.0 から、名前が点で始まるパス（`.agents/`、`.github/` など）のファイルと、作業フォルダの外のファイルは引数で渡すと読まずに終了コード2で止まります。これらは標準入力から渡します（例: `python3 .agents/skills/yomiyasu/scripts/yomiyasu_lint.py - < .agents/skills/<name>/SKILL.md`）。
 - 自動フックの `yomiyasu_hook.py` は各開発者の個人設定でだけ有効化し、リポジトリにはコミットしません。
 
 ## 7. 作業の進め方
