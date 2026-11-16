@@ -4,7 +4,7 @@
 
 ## 条件と実行
 
-2026-11-16 UTC、F-resetの1 smoke後、正式5反復を実行しました。既登録の`restart-reset`期待は変更していません。同columnのdata 9 block（0,24,...,192）のbyte 0をXOR `0xff`で反転したcrc32c/roots8入力です。root hashは`3711f47a`、dataは5832 block、4 KiB/block。全offset・注入前後byte・column/symbolはarchiveのcase設定にあります。
+2026-11-16 UTC、F-resetの1 smoke後、正式5反復を実行しました。既登録の`restart-reset`期待は変更していません。同columnのdata 24 block（0,24,...,552）のbyte 0をXOR `0xff`で反転したcrc32c/roots8入力です。root hashは`3711f47a`、dataは5832 block、4 KiB/block。全offset・注入前後byte・column/symbolはarchiveのcase設定にあります。
 
 standalone Docker cloneのbench sourceは`400ff62`から不変で、branchの実行前HEADはE結果の`4125a0e`です。QEMU 11.1.2、研究kernel 6.18.59-v8-b3trace、Buildroot/GCC・host OSは[正式B](2026-11-15-dm-verity-fec-stage-b.md)と同じです。kernel/rootfsはwarm artifactを再利用し、reconfigure・再build・ccache測定はしていません。
 
