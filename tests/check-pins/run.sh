@@ -376,6 +376,47 @@ assert module.parse_bootlin_latest(
     '<a href="aarch64--glibc--stable-2027.02-1-rc1.tar.xz">release candidate</a>'
 ) == "2026.08-1"
 assert module.parse_bootlin_latest("<html>no toolchain archives</html>") == ""
+missing_local = pathlib.Path(tempfile.mkdtemp()) / "Config.in.options"
+pinned_sha = "75f325ad84251ee9d903467f84d3683e3bcf3fd5"
+fetched_urls = []
+
+
+def fetch_pinned_bootlin(url):
+    fetched_urls.append(url)
+    return bootlin_config
+
+
+assert module.pinned_bootlin_version(
+    missing_local, bootlin_option, pinned_sha, fetch_pinned_bootlin
+) == "2025.08-1"
+assert fetched_urls == [
+    "https://raw.githubusercontent.com/buildroot/buildroot/"
+    f"{pinned_sha}/toolchain/toolchain-external/"
+    "toolchain-external-bootlin/Config.in.options"
+]
+assert module.pinned_bootlin_version(
+    missing_local, bootlin_option, "", fetch_pinned_bootlin
+) == ""
+assert module.pinned_bootlin_version(
+    missing_local, "", pinned_sha, fetch_pinned_bootlin
+) == ""
+assert len(fetched_urls) == 1
+
+
+def fail_pinned_bootlin(url):
+    raise module.URLError("offline")
+
+
+with contextlib.redirect_stderr(io.StringIO()):
+    assert module.pinned_bootlin_version(
+        missing_local, bootlin_option, pinned_sha, fail_pinned_bootlin
+    ) == ""
+local_bootlin = pathlib.Path(tempfile.mkdtemp()) / "Config.in.options"
+local_bootlin.write_text(bootlin_config)
+assert module.pinned_bootlin_version(
+    local_bootlin, bootlin_option, pinned_sha, fail_pinned_bootlin
+) == "2025.08-1"
+print("ok - reads the pinned Bootlin option without the Buildroot submodule")
 assert module.bootlin_status(
     "2025.08-1", "2025.08-1", "2025.08-1", "2026.08.x"
 ) == ("2025.08-1", "最新")
