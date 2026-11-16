@@ -8,6 +8,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [2026-11-16-dm-verity-fec-stage-d](2026-11-16-dm-verity-fec-stage-d.md) | [CSV](2026-11-16-dm-verity-fec-stage-d.csv) | 2026-11-16 | 18 smoke＋90正式boot | 全期待一致。roots2超過はRS正値後のhash不一致で拒否。全誤訂正・実機への保証ではない |
 | [2026-11-16-dm-verity-fec-stage-c](2026-11-16-dm-verity-fec-stage-c.md) | [CSV](2026-11-16-dm-verity-fec-stage-c.csv) | 2026-11-16 | 10 smoke＋50正式boot | 正式40一致、lower hash両端10 panicは正常読取り期待への反証。parity単独で修復を主張せず、実機未確認 |
 | [2026-11-15-dm-verity-fec-stage-b](2026-11-15-dm-verity-fec-stage-b.md) | [CSV](2026-11-15-dm-verity-fec-stage-b.csv) | 2026-11-15 | 10 smoke＋50正式boot | clean成功、正式40一致・EIO10反証。再入guard→fatal方針を支持、EIOでは訂正後全read成功。実機未確認 |
 | [2026-11-15-dm-verity-fec-host-dry-resume](2026-11-15-dm-verity-fec-host-dry-resume.md) | [CSV](2026-11-15-dm-verity-fec-host-dry-resume.csv) | 2026-11-15 | D18入力完了・全43入力照合 | CLIと回復判定を分離。完全一致12・別codeword2・拒否4、中間値を即時保存。boot結果は別記 |
