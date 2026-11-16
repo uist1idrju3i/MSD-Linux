@@ -61,6 +61,8 @@ RS訂正能力を超えた入力が、元とは異なる正しいcodewordへ誤�
 
 2026-11-16の[stage D](../../experiments/2026-11-16-dm-verity-fec-stage-d.md)は18 smoke・90正式bootで全期待一致でした。追加QEMU観測として、crc32c/SHA-256のroots2超過は各5/5でRS正値の後に復号blockのhash不一致を表示し、位置あり再試行も拒否してpanicへ進みました。guardは0回で、B/Cの再入guard経路とは異なります。上のhost限定という記述は当時の範囲であり、今回その特定入力のkernel再検査経路を追加確認しました。kernel候補bytes自体は未保存で、全誤訂正の拒否や製品・実機のintegrity保証には広げません。
 
+2026-11-16の[stage E](../../experiments/2026-11-16-dm-verity-fec-stage-e.md)は4 smoke・20正式bootで全期待一致でした。9/24 blockとも同column集中は各5/5 panic、異column分散は各5/5でFEC訂正とreadall完了→ready→loginを観測しました。集中はguardではなくRS再試行後のhash不一致で拒否され、破損block総数だけで容量を語れないことを支持します。候補全bytesのkernel内dump・実機検証・全patternの保証はありません。
+
 B3の旧 `run-all.sh` とF3のready期待は歴史的事前登録として保持します。次回は [v2](../../../board/cardputerzero/tools/bench/dm-verity-fec/run-all-v2.sh) と別の期待表を使います。機能合否はboottimeのvalidと分離し、verity固有のcause・期待mode・終了状態・矛盾markerを照合します。generic panicやhost SIGTERMだけでは成功にしません。F6にはrestart markerまたは新boot bannerが必要です。
 
 B2は既存caseの黙示再利用を廃止し、l22を含む8 caseを一括生成します。旧計測値の補完や過去の再現済みという主張はしません。今回QEMU suiteを再実行せず、host fixtureで計測器の正常・空・誤検知・上書き拒否を検査します。
