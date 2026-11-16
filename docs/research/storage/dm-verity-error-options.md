@@ -121,7 +121,7 @@ CM0のLinux失敗回数counterは公開資料で未確認。非公開firmware内
 | firmware WDT partitionでrescue | 早期bootを覆う可能性 | 固定版/CM0対応とrescue健全性を確認 |
 | 試行数・失敗slotを記憶 | 有限回で停止 | reset/電断保持を設計。SD書込みは規則上の判断が必要 |
 
-再起動系optionだけではanti-loopになりません。ignore/check省略も完全性を弱めます。handler登録・WDT開始/reset原因・固定版tryboot・電断・両slot破損・LCDは実機未確認。QEMU RESET≠firmware復帰です。
+再起動系optionだけではanti-loopになりません。`ignore_corruption`の使用や`check_at_most_once`による再検証省略は完全性を弱めます。handler登録・WDT開始/reset原因・固定版tryboot・電断・両slot破損・LCDは実機未確認。QEMU RESET≠firmware復帰です。
 
 [T]: https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/md/dm-verity-target.c
 [D]: https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/device-mapper/verity.rst
