@@ -40,7 +40,7 @@
 | NEON・crypto extensionとverity/LUKS/btrfsのhash・cipher選択 | [ARM64 NEON・crypto](arm64-neon-crypto.md) |
 | 全optionのtoken分類、固定版との差、未測定と設計訂正 | [storage option網羅表](storage-option-coverage.md) |
 | B1〜B3の解釈訂正、formatterとRS移植元の未解決監査 | [storage実験訂正](storage-integrity-corrections.md) |
-| RS encoderの固定上流比較、研究限定承認と出荷前の未解決監査 | [RS由来の初期監査](rs-formatter-provenance-2026-11-15.md) |
+| RS encoderの由来推定、41 tag・原配布比較、改変と出荷選択肢（出荷承認なし） | [RS由来監査](rs-formatter-provenance-2026-11-15.md) |
 | 端末がReleaseを確認する将来の方式 | [自己更新の設計](../release-client/README.md)と[Release・署名鍵](../release-client/release-security.md) |
 
 ## 記録を残す単位
