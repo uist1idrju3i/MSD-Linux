@@ -81,6 +81,7 @@ jobs:
           docker/msd-dev python3 .github/scripts/fetch-nvd.py \
             --nvd-path dl/buildroot-nvd/current \
             --github-output output/images/nvd-output.txt
+          docker/msd-dev cp dl/buildroot-nvd/current/manifest.json output/images/nvd-manifest.json
           cat output/images/nvd-output.txt >> "$GITHUB_OUTPUT"
 
       - name: Save verified NVD snapshot
@@ -203,7 +204,7 @@ jobs:
             output/images/sbom.cdx.json
             output/images/vex.cdx.json
             output/images/buildroot-show-info.json
-            dl/buildroot-nvd/current/manifest.json
+            output/images/nvd-manifest.json
           retention-days: 30
           if-no-files-found: error
 
