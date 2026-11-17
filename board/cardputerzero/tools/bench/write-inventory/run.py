@@ -58,15 +58,20 @@ def main():
     parser.add_argument("--variant", required=True)
     parser.add_argument("--seconds", type=positive, default=120)
     parser.add_argument("--windows", type=positive, default=5)
+    parser.add_argument("--guest-script", type=Path, default=Path(__file__).with_name("guest.sh"))
+    parser.add_argument("--trace-writes", action="store_true")
     args = parser.parse_args()
     output = args.output.resolve()
     run_dir = args.run_dir.resolve()
+    trace_path = run_dir / "writes.trace"
+    if args.trace_writes and any(char.isspace() or char == "," for char in str(trace_path)):
+        parser.error("--trace-writes requires a trace file path without whitespace or commas")
     run_dir.mkdir(parents=True, exist_ok=False)
     images = output / "images"
     inputs = [images / name for name in [
         "sdcard.img", "rootfs.squashfs", "Image", "bcm2710-rpi-cm0.dtb"
     ]] + [
-        output / ".config", Path(__file__), Path(__file__).with_name("guest.sh"),
+        output / ".config", Path(__file__), args.guest_script.resolve(),
         ROOT / "board/cardputerzero/qemu/run-qemu.sh",
         ROOT / "board/cardputerzero/qemu/check-serial-log.sh",
         ROOT / "board/cardputerzero/qemu/serial-allowlist.txt",
@@ -89,6 +94,8 @@ def main():
                ROOT_DEVICE="/dev/mmcblk0p5", ROOT_FSTYPE="squashfs",
                QEMU_DRIVE_FILE=str(image), QEMU_DRIVE_FORMAT="raw",
                QEMU_WATCHDOG="0", QEMU_DTB_BLUETOOTH="0")
+    if args.trace_writes:
+        env["QEMU_EXTRA_ARGS"] = f"-trace enable=blk_co_pwritev,file={trace_path}"
     command = [str(ROOT / "board/cardputerzero/qemu/run-qemu.sh"), str(image)]
     with (run_dir / "serial.log").open("wb") as log:
         process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -127,7 +134,7 @@ def main():
             receive(b"\n# ", 30)
             send("cat > /run/msd-write-probe.sh <<'MSDPROBE_EOF'\n")
             receive(b"> ", 30)
-            for line in Path(__file__).with_name("guest.sh").read_text().splitlines():
+            for line in args.guest_script.read_text().splitlines():
                 send(line + "\n")
                 receive(b"> ", 30)
             send("MSDPROBE_EOF\n")
