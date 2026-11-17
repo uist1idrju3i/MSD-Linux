@@ -77,3 +77,11 @@ tag対象commitには同じSHAでのscan成功が必要です。main HEADのsche
 閾値・判定・workflow・rulesetは変更しません。比較した改善案は、(1) 更新間隔を踏まえた警告/失敗閾値の明文化、(2) 鮮度不足とCVE差分を別状態・別checkで表示、(3) freshなmirrorまたはNVD本体へ対応する取得器の検討です。それぞれ猶予拡大による見逃し期間、requiredの運用判断、schema/信頼/完全性/履歴の検証費用があります。今回の約55時間停止を通常の2時間間隔の揺れとして扱わず、いずれも未採用・未実装とします。
 
 監視不能時は件数・解消を報告せず、既存Issueの最後の成功結果と失敗を区別する[現行方針](../../ci-monitoring.md)を維持します。Release作成、保護の迂回、実機・製品の安全性は検証していません。
+
+## 2026-11-17追記：公式feedへの移行
+
+上記は11/15の観測記録です。後続調査ではNVD本体の更新と公式JSON 2.0 feedを確認し、利用者承認によりfkie非依存の取得器を実装しました。[取得元比較](nvd-source-options.md)に候補と採否、[CI手順](../../CI.md#nvd公式feedとsnapshot)に現在の運用を記します。
+
+年別bootstrap＋modified upsertで公式metaのサイズ・SHA-256を照合し、検査完了後にsnapshotをatomicに切り替えます。Git SHA/commit時刻ではなく、内容hashのsnapshot IDと検証済み同期・modified metaの両方の鮮度を使います。24時間の失敗閾値と、監視不能時に前回成功本文を保持する方針は維持します。API key・API fallback・別sourceへの自動切替はありません。
+
+[local bootstrapとconsumerの確認](../../experiments/2026-11-17-nvd-official-feed.md)は成功しました。GitHub上の新workflow実行・cache・Release運用・rulesetは未確認で、この変更で保護設定を変えてはいません。

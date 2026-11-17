@@ -8,6 +8,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [NVD公式feedの取得](2026-11-17-nvd-official-feed.md) | [CSV](2026-11-17-nvd-official-feed.csv) | 2026-11-17 | 単回local構築・consumer確認 | 26 feed、426,444 CVEを検証・公開。SBOM/VEX/state生成成功。CI cache・Release運用は未確認 |
 | [B3追試B〜F総括](2026-11-16-dm-verity-fec-followup-summary.md) | 各段階のCSV | 2026-11-16 | 43条件・215正式trial | 正式195一致。BのEIO10件とCのlower hash10件は反証。QEMU限定 |
 | [2026-11-16-dm-verity-fec-stage-f](2026-11-16-dm-verity-fec-stage-f.md) | [CSV](2026-11-16-dm-verity-fec-stage-f.csv) | 2026-11-16 | 1 smoke＋5正式trial | 全期待一致。guest-resetと2回目bannerを観測。初回launch失敗0 bootも保存。実機A/B復帰ではない |
 | [2026-11-16-dm-verity-fec-stage-e](2026-11-16-dm-verity-fec-stage-e.md) | [CSV](2026-11-16-dm-verity-fec-stage-e.csv) | 2026-11-16 | 4 smoke＋20正式boot | 全期待一致。9/24 blockとも同column集中はpanic、異column分散は訂正read成功。総block数だけの保証・実機検証ではない |

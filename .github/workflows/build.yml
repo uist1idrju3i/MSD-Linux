@@ -135,6 +135,7 @@ jobs:
           docker/msd-dev python3 tests/check-build-scope/run.py
           docker/msd-dev python3 tests/check-dev-image-scope/run.py
           docker/msd-dev python3 tests/check-cve-monitor/run.py
+          docker/msd-dev python3 tests/fetch-nvd/run.py
           docker/msd-dev python3 tests/release-signing-key/run.py --output-dir "/tmp/msd-release-signing-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 
       - name: Save parallel host test results
