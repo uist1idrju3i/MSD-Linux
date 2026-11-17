@@ -35,6 +35,7 @@
 | RAUC等の過去の比較とS10の経緯 | [A/B設計の履歴](ab-design-history.md)。現在の比較は[更新framework](../alternatives/updates.md)と[TUF/Uptane](../alternatives/update-metadata.md) |
 | 回復案の未実装部分、watchdog、S11の成功・失敗条件 | [復旧案とwatchdog](recovery-and-watchdog.md) |
 | 既定／両slot破損時の有限試行・停止、root前chooserと状態保存の案 | [boot loop防止（未決定）](../../design/boot-loop-prevention.md) |
+| 小型initramfsの負担・内容、既存測定とFAT書込みを避ける代替（未決定） | [loop防止用initramfsの調査](../boot/initramfs-for-loop-prevention.md) |
 | rootfs完全性（SquashFS+zstd+dm-verity(crc32c)+FEC+A/B切り戻し） | [rootfs完全性設計](rootfs-squashfs-verity-fec-design.md) |
 | 固定rpi 6.18.59のcorruption/I/O error全option、panic・watchdog・firmwareとloop対策 | [dm-verityのエラー設定](dm-verity-error-options.md) |
 | /dataのLUKS+btrfs(dup)+xxhash64+zstd圧縮 | [data LUKS+btrfs設計](data-luks-btrfs-design.md) |

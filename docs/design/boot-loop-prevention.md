@@ -4,6 +4,8 @@
 
 Phase CはC={restart_on_corruption, panic_on_corruption}×E={restart_on_error, panic_on_error}の4組。既定EIO、ignore、検査専用EIO mapperは除外。本案は次回root前の選択を制御します。
 
+利用者はFAT書込みを避けたい意向で検討中です。[initramfsの負担・最小内容・代替案の調査](../research/boot/initramfs-for-loop-prevention.md)を分離し、採否と状態保存方式は未決定のままとします。
+
 ## 1. 現行の事実と実行できる場所
 
 fresh origin/main **2ece5cc86f4c84d59ff628999a484424d8828ad3**を静的確認。U=[msd-update][U]、F=[kernel fragment][F]。行番号はこの版です。
