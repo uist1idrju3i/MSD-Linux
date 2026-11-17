@@ -77,6 +77,31 @@ class Samples(unittest.TestCase):
                 MODULE.main()
         self.assertEqual(error.exception.code, 2)
 
+    def test_trace_rejects_whitespace_and_commas_before_creating_run(self):
+        for separator in [" ", "\t", "\n", "\u2003", ","]:
+            arguments = [
+                "run.py", "--output", "unused", "--variant", "trace",
+                "--run-dir", f"unused{separator}run", "--trace-writes",
+            ]
+            with self.subTest(separator=separator), mock.patch("sys.argv", arguments):
+                with mock.patch("sys.stderr", new_callable=io.StringIO) as stderr:
+                    with mock.patch.object(Path, "mkdir") as mkdir:
+                        with self.assertRaises(SystemExit) as error:
+                            MODULE.main()
+                        mkdir.assert_not_called()
+                self.assertEqual(error.exception.code, 2)
+                self.assertIn("without whitespace or commas", stderr.getvalue())
+
+    def test_non_trace_run_does_not_apply_trace_path_restriction(self):
+        arguments = [
+            "run.py", "--output", "unused", "--variant", "plain",
+            "--run-dir", "unused run,plain",
+        ]
+        with mock.patch("sys.argv", arguments), mock.patch.object(
+            Path, "mkdir", side_effect=RuntimeError("arguments accepted")
+        ), self.assertRaisesRegex(RuntimeError, "arguments accepted"):
+            MODULE.main()
+
     def test_guest_script_requires_a_value(self):
         with mock.patch("sys.argv", ["run.py", "--guest-script"]), mock.patch(
             "sys.stderr", io.StringIO()

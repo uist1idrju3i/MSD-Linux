@@ -63,6 +63,9 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     run_dir = args.run_dir.resolve()
+    trace_path = run_dir / "writes.trace"
+    if args.trace_writes and any(char.isspace() or char == "," for char in str(trace_path)):
+        parser.error("--trace-writes requires a trace file path without whitespace or commas")
     run_dir.mkdir(parents=True, exist_ok=False)
     images = output / "images"
     inputs = [images / name for name in [
@@ -92,7 +95,7 @@ def main():
                QEMU_DRIVE_FILE=str(image), QEMU_DRIVE_FORMAT="raw",
                QEMU_WATCHDOG="0", QEMU_DTB_BLUETOOTH="0")
     if args.trace_writes:
-        env["QEMU_EXTRA_ARGS"] = f"-trace enable=blk_co_pwritev,file={run_dir / 'writes.trace'}"
+        env["QEMU_EXTRA_ARGS"] = f"-trace enable=blk_co_pwritev,file={trace_path}"
     command = [str(ROOT / "board/cardputerzero/qemu/run-qemu.sh"), str(image)]
     with (run_dir / "serial.log").open("wb") as log:
         process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
