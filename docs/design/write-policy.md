@@ -20,16 +20,16 @@
 
 | 箇所 | 書き込み先と時機 | progress | 状態 | 扱いの案 |
 |---|---|---|---|---|
-| [S02msd-data](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) の `mkfs.ext4` | 空の `/data`（p7）を、初回起動の時にformatします | なし | 未対応 | `/data` の初期暗号化を実装する時に、progressを表示する処理へ置き換えます |
+| [S02msd-data](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) の `mkfs.ext4` | 空の `/data`（p7）を初回起動でformatします。`lazy_itable_init=0,lazy_journal_init=0` でinode tableとjournalの初期化をformat中に行います | なし（未対応） | 未対応 | 同期化しても表示は未実装です。初期暗号化とともにprogressを表示する処理へ置き換えます |
 | S02msd-data の `fsck.ext4 -p` | `/data` に問題があれば、起動のたびに修復を書き込みます | なし | 未対応 | 電源断の後の回復は必要なので、例外にする案です。修復した時は、そのことを表示します |
 | S02msd-data の `mkdir -p` | `/data/etc`、`/data/msd-update` を、起動のたびに作ります（既にあれば書き込まない見込み、推測）。seed用directoryの作成は削除しました | なし | 未確認 | 残るdirectory作成の寄与は未分離です |
-| [msd-data-grow](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | 初回起動の時に、partition tableを書き換え、`resize2fs` で `/data` を広げます | なし | 未対応 | 初期暗号化と同じ処理の中で、progressを表示します |
+| [msd-data-grow](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | 初回起動でpartition tableを書き換え、`resize2fs` で `/data` を広げます。S02の `noinit_itable` mountにより新規inode tableをgrow中に同期初期化します | なし（未対応） | 未対応 | 待ち時間と書き込みをgrow内へ移しましたが、利用者の操作やprogressはまだありません。初期暗号化と同じ処理で表示します |
 | seedrngの自動保存（旧`S05seedrng`） | post-buildでS01・S05のseed initと既定設定を除去し、S02の`/data/seedrng`作成も削除しました。起動・停止・reloadからseedrngを呼びません | なし | 対応済み | [QEMU記録](../experiments/2026-11-13-seedrng-zram.md)で新規imageのdirectory・init・設定の不在を確認しました。内蔵hwrngは維持しますが品質は未確認です。既存SDの古いseedは自動消去しません |
 | [msd-update](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) の `install` | 利用者が実行した時に、待機中のslot（p2/p3、p5/p6）へ `dd ... conv=fsync` で書き、`/data/msd-update` に状態を書きます | なし | 未対応 | RAUCかSWUpdateへ移る時に、progressを表示します。利用者の操作で始まる点は規則に合います |
 | [S99msd-health](../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health) からの `msd-update commit` | 試し起動（tryboot）の時だけ、`/data/msd-update` とFATの `autoboot.txt` を書きます | なし | 未対応 | 利用者が始めた更新の続きです。例外にする案で、起動の画面に更新中であることを表示します |
 | ext4のjournal commit | 書き込みがある時に、既定で5秒ごとにcommitします。書き込みがなければ動かない見込みです（推測） | 対象外 | 未確認 | QEMUの記録で確かめます |
-| ext4の `lazy_itable_init` | 通常imageはgenimageが `lazy_itable_init=0,lazy_journal_init=0` を付けて構築します。S02msd-dataの空partitionへのfallback formatは別経路で、これらを指定していません | なし | 未確認 | 従来の「全て既定でlazy」という推測を訂正します。fallback formatの量とresize単独の寄与は未測定です |
-| online resize後の書き込み | 新規imageを1 GiBのQEMU SDへ広げた初回bootではp7へ計16,952 sector（boot中8,648＋idle 120秒に8,304）。[帰属測定](../experiments/2026-11-15-data-first-boot-writes.md)はext4lazyinitが主因という仮説を支持します。16,384 sector（約97%）は新規inode tableの寸法からの推定で、nolazy側は別mkfsのため独立した寄与量ではありません。sfdiskはdisk側に16 sectorを観測。拡張済み再bootでも少量残ります | なし | 未対応 | このQEMU条件での推定。実機と、初期設定のprogress・完了条件、初回formatでの回避設計は未確認です |
+| ext4の `lazy_itable_init` | 通常imageはgenimage、fallback formatはS02が `lazy_itable_init=0,lazy_journal_init=0` を指定します。S02とfstabの `noinit_itable` はbackground初期化を抑止します | なし（未対応） | 未対応 | [固定版sourceの調査](../research/storage/data-inode-initialization.md)を参照。既存SDの `INODE_UNINIT` を伴う未zero tableは未zeroのまま残ります。zero完了の判定は別flagの `ITABLE_ZEROED` です。既存tableの完了処理は未対応で、後日init_itable付きmountをすると書き込みが再開し得ます |
+| online resize後の書き込み | 変更前の[帰属測定](../experiments/2026-11-15-data-first-boot-writes.md)はp7計16,952 sector。新table寸法の16,384 sectorは寄与量の推定です。現在は新規tableをgrow中に同期初期化し、[追試](../experiments/2026-11-17-data-sync-itable.md)は全3回boot 16,848＋idle1 88 sector、idle2・3は0。全groupのITABLE_ZEROEDと観測時点のext4lazyinit不在を確認しました | なし（未対応） | 未対応 | 総量をなくす変更ではありません。残る88 sectorの内訳、progress、実機、既存SDの残存tableは未解決です。mount・journal・directory等のwriterを、未測定で残量の原因とは断定しません |
 | [powerfail-notify](../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/powerfail-notify) | power-failのmdev eventでbackgroundの `sync` を呼び、既存のdirty dataをflushし得ます | なし | 未対応 | 従来の台帳の欠落です。緊急退避の例外候補ですが、許容時間・実機event・表示は未確認のままです |
 | `/data` の常時rw | アプリや利用者が `/data` に作ったfileの更新に加え、ext4のmetadata・journalも永続書き込みになります | なし | 未対応 | 書き込み窓、roへの切替、`commit=`、discard等を、この調査だけで変更しません |
 

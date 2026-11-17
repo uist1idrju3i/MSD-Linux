@@ -24,6 +24,7 @@
 | ext4 formatter、割当単位、小さいファイルの測定 | [割当単位と小さいファイル](allocation-and-small-files.md) |
 | discard、SDバス、実カードで測る条件 | [媒体と測定計画](media-measurements.md) |
 | mountとwriter、未実装の書き込み窓、S3の条件と結果 | [書き込みpolicyとS3](write-policy-and-s3.md) |
+| /dataのformat・online growの同期初期化、noinit_itableと既存SDの残課題 | [inode table初期化](data-inode-initialization.md) |
 | Linux 6.18のFS候補と他OSの設計例 | [filesystem候補](filesystem-candidates.md)。最新の採否比較は[代替技術](../alternatives/filesystems.md) |
 | format、feature、mount、checksumなどの個別option | [filesystem option調査](filesystem-options.md)。ext4の[mount option](filesystem-options-ext4-mount.md)と[formatter・保守tool](filesystem-options-ext4-tools.md)、F2FSの[sysfs option](filesystem-options-f2fs-sysfs.md)、Btrfsの[progs追加option](filesystem-options-btrfs-progs.md)も参照 |
 | writeback、block queue、MMC/SD host、mount flag、file属性、kernel command line | [filesystem option調査](filesystem-options.md)から、[mount](filesystem-options-write-path-mount.md)、[VM/BDI](filesystem-options-write-path-vm.md)、[block](filesystem-options-write-path-block.md)、[MMC/SD](filesystem-options-write-path-mmc.md)、[file属性](filesystem-options-write-path-attributes.md)、[command line](filesystem-options-write-path-cmdline.md)へ |

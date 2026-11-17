@@ -28,7 +28,11 @@ printf '%s\n' \
 	'for arg do printf " <%s>" "$arg" >> "$INIT_SCRIPT_STUB_LOG"; done' \
 	'printf "\n" >> "$INIT_SCRIPT_STUB_LOG"' \
 	'case "$name" in' \
-	'	cmp) exit 1 ;;' \
+	'	cmp) exit "${INIT_SCRIPT_CMP_STATUS:-1}" ;;' \
+	'	tr) printf "%s" "${INIT_SCRIPT_MAGIC:-}" ;;' \
+	'	mkfs.ext4) exit "${INIT_SCRIPT_MKFS_STATUS:-0}" ;;' \
+	'	fsck.ext4) exit "${INIT_SCRIPT_FSCK_STATUS:-0}" ;;' \
+	'	mount) exit "${INIT_SCRIPT_MOUNT_STATUS:-0}" ;;' \
 	'	mkdir) [ "$*" != "-p /run/msd" ] || exit 1 ;;' \
 	'	msd-update) exit 1 ;;' \
 	'esac' \
@@ -84,5 +88,53 @@ do
 	done
 	printf 'ok - %s ignores stop and restart\n' "$script"
 done
+
+data_init="${TEST_DIR}/S02msd-data"
+mount_options=noatime,nodev,nosuid,data=ordered,errors=remount-ro,noinit_itable
+run_data_init() {
+	: > "$STUB_LOG"
+	PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" \
+		/bin/sh "$data_init" start >"${TEST_DIR}/data.log" 2>&1
+}
+
+INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'existing ext4 startup failed'
+grep -Fq "mount <-t> <ext4> <-o> <$mount_options>" "$STUB_LOG" ||
+	fail 'existing ext4 mount does not suppress background inode initialization'
+if grep -Fq 'mkfs.ext4' "$STUB_LOG"; then
+	fail 'existing ext4 was reformatted'
+fi
+
+INIT_SCRIPT_CMP_STATUS=0 run_data_init || fail 'empty partition startup failed'
+grep -Fq 'mkfs.ext4 <-F> <-b> <4096> <-L> <data> <-E> <lazy_itable_init=0,lazy_journal_init=0>' "$STUB_LOG" ||
+	fail 'fallback format does not initialize inode tables and journal synchronously'
+grep -Fq "mount <-t> <ext4> <-o> <$mount_options>" "$STUB_LOG" ||
+	fail 'fallback mount does not suppress background inode initialization'
+
+if run_data_init; then
+	fail 'unrecognized non-empty partition was accepted'
+fi
+if grep -Eq '^(mkfs.ext4|mount) ' "$STUB_LOG"; then
+	fail 'unrecognized non-empty partition was formatted or mounted'
+fi
+if INIT_SCRIPT_CMP_STATUS=0 INIT_SCRIPT_MKFS_STATUS=1 run_data_init; then
+	fail 'failed format was accepted'
+fi
+if grep -Eq '^(fsck.ext4|mount) ' "$STUB_LOG"; then
+	fail 'failed format continued to fsck or mount'
+fi
+if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_FSCK_STATUS=2 run_data_init; then
+	fail 'failed fsck was accepted'
+fi
+if grep -Eq '^mount ' "$STUB_LOG"; then
+	fail 'failed fsck continued to mount'
+fi
+INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_MOUNT_STATUS=1 run_data_init
+if grep -Fq 'msd-data-grow' "$STUB_LOG"; then
+	fail 'failed mount continued to grow'
+fi
+grep -Fq "ext4 $mount_options" "$REPO_ROOT/board/cardputerzero/rootfs-overlay/etc/fstab" ||
+	grep -Fq "ext4 noauto,$mount_options" "$REPO_ROOT/board/cardputerzero/rootfs-overlay/etc/fstab" ||
+	fail 'fstab does not preserve the data mount options'
+printf 'ok - data startup initializes synchronously and rejects unsafe paths\n'
 
 printf 'All init-script host tests passed.\n'
