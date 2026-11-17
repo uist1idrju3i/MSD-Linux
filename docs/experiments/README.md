@@ -4,10 +4,11 @@
 
 [文書案内](../README.md) / [調査の索引](../../RESEARCH.md)。ここでの「完了」は記載した条件で実験を終えたことを表し、製品への採用や実機動作の確認とは別です。Yocto 検討は移行見送りで、[Buildroot への還元](../research/yocto-migration/buildroot-lessons.md)に再点検した範囲を記載しています。
 
-実験・測定・比較の記録を 1 件 1 ファイルで置きます。書き方は `.agents/skills/experiment-record/SKILL.md` に従います。ファイル名は `YYYY-MM-DD-sNN-<short>.md` とし、生の値は同じ名前の `.csv` にします。S1〜S17 のどれにも属さない実験の記録名は `YYYY-MM-DD-<short>.md`（sNN なし）です。これらもこの一覧に載せます。覆った結論も消さず、状態を「置換」にして新しい記録へリンクします。
+記録は1件1ファイルとし、`.agents/skills/experiment-record/SKILL.md`に従います。名前は`YYYY-MM-DD-sNN-<short>.md`、生の値は同名の`.csv`です。S1〜S17以外は`sNN-`を省き、すべてこの一覧に載せます。覆った結論は消さず、「置換」として新記録へリンクします。
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [NVD公式feed](2026-11-17-nvd-official-feed.md) | [CSV](2026-11-17-nvd-official-feed.csv) | 2026-11-17 | local単回 | 426,444 CVE。CI cache・Release未確認 |
 | [2026-11-17-data-sync-itable](2026-11-17-data-sync-itable.md) | [CSV](2026-11-17-data-sync-itable.csv) | 2026-11-17 | QEMU各3回。idle 0基準は未達 | 全groupのITABLE_ZEROEDとthread不在を確認。boot 16,848、idle1に88 sector残存。progress・既存SDは未対応 |
 | [B3追試B〜F総括](2026-11-16-dm-verity-fec-followup-summary.md) | 各段階のCSV | 2026-11-16 | 43条件・215正式trial | 正式195一致。BのEIO10件とCのlower hash10件は反証。QEMU限定 |
 | [2026-11-16-dm-verity-fec-stage-f](2026-11-16-dm-verity-fec-stage-f.md) | [CSV](2026-11-16-dm-verity-fec-stage-f.csv) | 2026-11-16 | 1 smoke＋5正式trial | 全期待一致。guest-resetと2回目bannerを観測。初回launch失敗0 bootも保存。実機A/B復帰ではない |

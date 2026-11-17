@@ -68,20 +68,33 @@ jobs:
             --show-info output/images/buildroot-show-info.json \
             --project-version "$GITHUB_SHA"
 
-      - name: Clone current NVD feed
+      - name: Restore verified NVD snapshot
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: dl/buildroot-nvd
+          key: nvd-official-v1-restore-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: nvd-official-v1-
+
+      - name: Refresh official NVD feeds
+        id: nvd
         run: |
-          docker/msd-dev mkdir -p dl/buildroot-nvd
-          docker/msd-dev git clone --depth 1 \
-            https://github.com/fkie-cad/nvd-json-data-feeds dl/buildroot-nvd/git
-          docker/msd-dev git -C dl/buildroot-nvd/git rev-parse HEAD \
-            > output/images/nvd-feed-sha.txt
-          docker/msd-dev git -C dl/buildroot-nvd/git log -1 --format=%ct \
-            > output/images/nvd-feed-commit-time.txt
+          docker/msd-dev python3 .github/scripts/fetch-nvd.py \
+            --nvd-path dl/buildroot-nvd/current \
+            --github-output output/images/nvd-output.txt
+          docker/msd-dev cp dl/buildroot-nvd/current/manifest.json output/images/nvd-manifest.json
+          cat output/images/nvd-output.txt >> "$GITHUB_OUTPUT"
+
+      - name: Save verified NVD snapshot
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: dl/buildroot-nvd
+          key: nvd-official-v1-${{ steps.nvd.outputs.snapshot }}-${{ steps.nvd.outputs.synced-at }}
 
       - name: Run Buildroot CVE analysis
         run: |
           docker/msd-dev python3 .github/scripts/cve-monitor.py cve-check \
-            --nvd-path /work/dl/buildroot-nvd \
+            --nvd-path /work/dl/buildroot-nvd/current \
             --no-nvd-update --include-resolved \
             --in-file /work/output/images/sbom.cdx.json \
             --out-file /work/output/images/vex.cdx.json
@@ -92,8 +105,7 @@ jobs:
             --sbom output/images/sbom.cdx.json \
             --vex output/images/vex.cdx.json \
             --exceptions .github/cve-exceptions.tsv \
-            --feed-commit-time "$(docker/msd-dev cat output/images/nvd-feed-commit-time.txt)" \
-            --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
+            --feed-manifest dl/buildroot-nvd/current/manifest.json \
             --now "$(docker/msd-dev date -u +%s)" \
             --output output/images/state.json
 
@@ -143,7 +155,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           docker/msd-dev python3 .github/scripts/cve-monitor.py cve-check \
-            --nvd-path /work/dl/buildroot-nvd \
+            --nvd-path /work/dl/buildroot-nvd/current \
             --no-nvd-update --include-resolved \
             --in-file /work/base/output/images/sbom.cdx.json \
             --out-file /work/base/output/images/vex.cdx.json
@@ -156,8 +168,7 @@ jobs:
             --vex base/output/images/vex.cdx.json \
             --exceptions .github/cve-exceptions.tsv \
             --allow-unused-exceptions \
-            --feed-commit-time "$(docker/msd-dev cat output/images/nvd-feed-commit-time.txt)" \
-            --feed-sha "$(docker/msd-dev cat output/images/nvd-feed-sha.txt)" \
+            --feed-manifest dl/buildroot-nvd/current/manifest.json \
             --now "$(docker/msd-dev date -u +%s)" \
             --output base/output/images/state.json
 
@@ -169,7 +180,7 @@ jobs:
             --base-state base/output/images/state.json \
             --head-state output/images/state.json \
             --head-sbom output/images/sbom.cdx.json \
-            --nvd-path /work/dl/buildroot-nvd \
+            --nvd-path /work/dl/buildroot-nvd/current \
             | tee output/images/pr-gate-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -193,6 +204,7 @@ jobs:
             output/images/sbom.cdx.json
             output/images/vex.cdx.json
             output/images/buildroot-show-info.json
+            output/images/nvd-manifest.json
           retention-days: 30
           if-no-files-found: error
 

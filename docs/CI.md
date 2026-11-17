@@ -105,6 +105,38 @@ quote	<exact-path>	<characters>	<reason>
 
 `lint.yml` の actionlint と ShellCheck は開発用イメージの Dockerfile ARG で版を固定します。zizmor は `.github/zizmor-requirements.txt` でハッシュ固定し、イメージ内で `--offline` によりワークフローを検査します。ネットワーク監査は実行しません。例外を認める場合は `.github/zizmor.yml` に対象と理由を記録します。
 
+## NVD公式feedとsnapshot
+
+`security.yml`はfkie mirrorではなく[NVD公式JSON 2.0 feed](https://nvd.nist.gov/vuln/data-feeds)を使います。API key、API fallback、OSVやcvelistへの自動切替はありません。取得器は標準ライブラリだけで動く`.github/scripts/fetch-nvd.py`です。
+
+- cacheがなければ2002年から現在年までの年別feedを全取得し、最後に`modified`を重ねます。2002年feedには1999〜2002年のIDがあるため、出力先の年はfeed名ではなくCVE IDから決めます。
+- 通常は`modified`の全entryをupsertします。最後の検証済み同期から7日以上なら再bootstrapします。公式の差分窓8日より短い限度です。cacheの内容hashが合わなければ失敗し、改変を隠して成功とは扱いません。
+- 各`.meta`の`gzSize`、展開後の`size`、展開後JSONのSHA-256を検査し、件数・形式・CVE IDも確認します。年別metaの古さだけでは失敗させませんが、`modified` metaは24時間以内でなければ使いません。
+- 同期は別directoryで完了させ、最後に`current` symlinkをatomicに置き換えます。途中取得・gzip破損・hash不一致で公開先は変わりません。停電後の永続化を保証する方式ではありません。
+
+格納先は`dl/buildroot-nvd/current/git/CVE-YYYY/CVE-YYYY-NNxx/CVE-….json`です。`current/manifest.json`にsource URL、meta原文と解析値、取得開始時刻、同期完了時刻、feedごとの件数、全体件数を残します。snapshot IDは、相対path順に並べた各JSONのpathとSHA-256から求める内容hashです。JSONはkeyを整列して保存し、manifestや時刻を内容hashに含めません。空の差分で内容が同じならIDも同じです。
+
+Actions cacheは`nvd-official-v1-<snapshot ID>-<同期時刻>`という不変keyで保存します。同期時刻も加えることで、内容不変でも新しい検証結果を別cacheに残します。restoreは同prefixの最新cacheを候補にし、取得器が内容を再検証します。saveはdefault branchのPR以外の実行だけで、CVE判定の前に行います。PRはsaveせず、base/headの両方が一度取得した同じ`current`を読みます。state schema 3にsnapshot IDを記録し、異なるsnapshotでの比較を拒否します。
+
+24時間の閾値はGit commitの年齢ではなく、**最後の完全な検証済み同期と、その`modified` metaの両方の鮮度**に適用します。時刻不正・鮮度不足・取得失敗は「監視不能」で非ゼロ終了し、0件成功に変換しません。`tracking-issue.py`による前回成功本文の保持と失敗コメントは変えません。
+
+`product-cve-state` artifactには通常のstate/SBOM/VEX/show-infoに加えてmanifestを30日保存します。全CVE JSONはcacheだけにあり、cacheは削除・追い出しを受けます。同じsnapshotでの完全な再実行には、そのdirectory全体の保存が必要です。manifestだけから過去の変更可能な上流feedを復元することはできません。
+
+再現用の例です。初回は数百MBを取得し、多数のfileを生成します。保存済みsnapshotで分析だけを再現するときは、取得器を再実行せず`--no-nvd-update`を付けます。
+
+```sh
+python3 .github/scripts/fetch-nvd.py --nvd-path output/nvd/current
+docker/msd-dev python3 .github/scripts/cve-monitor.py cve-check \
+  --nvd-path /work/output/nvd/current --no-nvd-update --include-resolved \
+  --in-file /work/output/images/sbom.cdx.json --out-file /work/output/images/vex.cdx.json
+python3 .github/scripts/cve-monitor.py state \
+  --sbom output/images/sbom.cdx.json --vex output/images/vex.cdx.json \
+  --exceptions .github/cve-exceptions.tsv --feed-manifest output/nvd/current/manifest.json \
+  --now "$(date -u +%s)" --output output/images/state.json
+```
+
+採否の根拠は[取得元比較](research/operations/nvd-source-options.md)、実取得の量・時刻・件数は[local試験](experiments/2026-11-17-nvd-official-feed.md)を参照してください。
+
 ## 固定版の整合性と更新確認
 
 `lint.yml` の `check-pins.py consistency` は、複数箇所に現れる固定値の不一致を PR 時に検査します。対象は、defconfig のカーネル SHA と `linux.hash`、M5 ドライバーのバージョン（`.mk` に SHA を書かず submodule から読むこと）、全 workflow の runner と `.github/actionlint.yaml`、README と `.gitmodules` の Buildroot のバージョン、チェックアウト済み Buildroot における defconfig 選択中の Bootlin ツールチェーンです。毎週の `固定版の更新確認` は upstream の最新版を表にまとめます。Bootlin の新しい安定版は、最新の安定版 Buildroot ブランチが提供しているかも確認します。Buildroot のポイントリリースは、`.gitmodules` の系列に属する最新タグの commit と submodule の gitlink の比較です。「更新あり」か「確認できず」の行があれば、同じ題名の Issue を作るか本文を更新します。「Buildroot 安定版待ち」は情報表示のみで Issue の対象にせず、ほかに対応が必要な行がなければ Issue を閉じます。
