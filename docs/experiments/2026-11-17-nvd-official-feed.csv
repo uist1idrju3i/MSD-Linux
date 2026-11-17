@@ -1,0 +1,2 @@
+run_id,mode,start_utc,verified_sync_utc,seconds,feeds,gzip_bytes,json_bytes,feed_entries,cves,snapshot_id,exit_code
+bootstrap-1,bootstrap,2026-11-17T17:25:34Z,2026-11-17T17:29:34Z,239.622,26,255549328,3023313539,437357,426444,04dc4f3ccce1e0ed72fea7203efb8b87711e5e55e821e25d0d2541b1a3b6af4d,0
