@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import importlib.util
+import io
 from pathlib import Path
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -12,6 +14,12 @@ SPEC = importlib.util.spec_from_file_location(
 )
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+REPORT_SPEC = importlib.util.spec_from_file_location(
+    "residual_report",
+    ROOT / "board/cardputerzero/tools/bench/write-inventory/residual-report.py",
+)
+REPORT = importlib.util.module_from_spec(REPORT_SPEC)
+REPORT_SPEC.loader.exec_module(REPORT)
 
 
 def transcript(windows=2):
@@ -31,6 +39,52 @@ def transcript(windows=2):
 
 
 class Samples(unittest.TestCase):
+    def test_trace_blocks_reconcile_with_guest_counters(self):
+        text = (
+            "blk_co_pwritev blk 0x1 bs 0x2 offset 0 bytes 512 flags 0x0\n"
+            "blk_co_pwritev blk 0x1 bs 0x2 offset 4096 bytes 4096 flags 0x0\n"
+            "blk_co_pwritev blk 0x1 bs 0x2 offset 8192 bytes 4096 flags 0x0\n"
+        )
+        self.assertEqual(REPORT.select_blocks(text, 8, 16, 16, 8, 16), {1: 8})
+        self.assertEqual(REPORT.select_blocks(text, 8, 8, 16, 8, 16), {})
+
+    def test_empty_or_truncated_trace_is_not_zero_writes(self):
+        for text in ["", "blk_co_pwritev blk 0x1"]:
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                REPORT.select_blocks(text, 0, 8, 8, 8, 16)
+
+    def test_trace_mismatch_and_unaligned_or_cross_partition_writes_fail(self):
+        for offset, length, total in [(4096, 4096, 7), (4097, 4096, 8),
+                                      (4096, 0, 0), (4096, 12288, 24)]:
+            text = f"blk_co_pwritev blk 0x1 bs 0x2 offset {offset} bytes {length} flags 0x0"
+            with self.subTest(offset=offset, length=length, total=total):
+                with self.assertRaises(ValueError):
+                    REPORT.select_blocks(text, 0, total, total, 8, 16)
+
+    def test_residual_cli_accepts_guest_script_and_trace(self):
+        arguments = [
+            "run.py", "--output", "unused", "--run-dir", "unused-run",
+            "--variant", "trace", "--guest-script", "probe.sh", "--trace-writes",
+        ]
+        with mock.patch("sys.argv", arguments), mock.patch.object(
+            Path, "mkdir", side_effect=RuntimeError("arguments accepted")
+        ), self.assertRaisesRegex(RuntimeError, "arguments accepted"):
+            MODULE.main()
+
+    def test_empty_cli_is_not_a_successful_probe(self):
+        with mock.patch("sys.argv", ["run.py"]), mock.patch("sys.stderr", io.StringIO()):
+            with self.assertRaises(SystemExit) as error:
+                MODULE.main()
+        self.assertEqual(error.exception.code, 2)
+
+    def test_guest_script_requires_a_value(self):
+        with mock.patch("sys.argv", ["run.py", "--guest-script"]), mock.patch(
+            "sys.stderr", io.StringIO()
+        ):
+            with self.assertRaises(SystemExit) as error:
+                MODULE.main()
+        self.assertEqual(error.exception.code, 2)
+
     def test_complete_raw_counters_preserve_sector_field(self):
         samples = MODULE.parse_samples(transcript(), 2)
         self.assertEqual(len(samples), 72)
