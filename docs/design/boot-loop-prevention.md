@@ -6,6 +6,8 @@ Phase CはC={restart_on_corruption, panic_on_corruption}×E={restart_on_error, p
 
 利用者はFAT書込みを避けたい意向で検討中です。[initramfsの負担・最小内容・代替案の調査](../research/boot/initramfs-for-loop-prevention.md)を分離し、採否と状態保存方式は未決定のままとします。
 
+commit後の既定slot破損を中心に、短時間reset中はFAT無書込み、書くなら起動・破損確認・数秒待機後だけという条件で、[root前の非SD counter](../research/boot/warm-reset-counter.md)と[稼働後の遅延切替](../research/boot/verity-delayed-failover.md)を調査しました。本案の状態write方式を採用・変更する決定ではありません。
+
 ## 1. 現行の事実と実行できる場所
 
 fresh origin/main **2ece5cc86f4c84d59ff628999a484424d8828ad3**を静的確認。U=[msd-update][U]、F=[kernel fragment][F]。行番号はこの版です。
