@@ -2,7 +2,9 @@
 
 import importlib.util
 import io
+import json
 from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
@@ -14,6 +16,12 @@ SPEC = importlib.util.spec_from_file_location(
 )
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+TIMED_SPEC = importlib.util.spec_from_file_location(
+    "write_inventory_timed",
+    ROOT / "board/cardputerzero/tools/bench/write-inventory/run-timed.py",
+)
+TIMED = importlib.util.module_from_spec(TIMED_SPEC)
+TIMED_SPEC.loader.exec_module(TIMED)
 REPORT_SPEC = importlib.util.spec_from_file_location(
     "residual_report",
     ROOT / "board/cardputerzero/tools/bench/write-inventory/residual-report.py",
@@ -39,6 +47,26 @@ def transcript(windows=2):
 
 
 class Samples(unittest.TestCase):
+    def test_boot_timer_records_elapsed_time(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            with mock.patch.object(TIMED.time, "monotonic", return_value=42.5):
+                TIMED.record_boot_time(directory, 40)
+            result = json.loads((directory / "boot-time.json").read_text())
+            self.assertEqual(result["launch_to_login_seconds"], 2.5)
+            self.assertIn("provenance hashing", result["includes"])
+
+    def test_timed_empty_cli_fails(self):
+        with mock.patch("sys.argv", ["run-timed.py"]), mock.patch("sys.stderr", io.StringIO()):
+            with self.assertRaises(SystemExit) as error:
+                TIMED.main()
+        self.assertEqual(error.exception.code, 2)
+
+    def test_boot_timer_does_not_hide_missing_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(FileNotFoundError):
+                TIMED.record_boot_time(Path(temporary) / "missing", 0)
+
     def test_trace_blocks_reconcile_with_guest_counters(self):
         text = (
             "blk_co_pwritev blk 0x1 bs 0x2 offset 0 bytes 512 flags 0x0\n"
