@@ -264,6 +264,7 @@ def run_probe(directory, config, path, env, output):
 
 def _run_probe(directory, config, path, env, output):
     started = time.monotonic()
+    space_before = storage.filesystem(directory)
     storage.check_capacity()
     run_id = f"probe-{config}-{path['path']}"
     command = [str(HERE / "fs-compare.sh"), config, path["test"], run_id]
@@ -289,12 +290,21 @@ def _run_probe(directory, config, path, env, output):
     ok = ok and profile_evidence(path["test"], run, phases, text)
     return dict(config=config, path=path["path"], test=path["test"], phases=phases,
                 elapsed_seconds=time.monotonic() - started,
+                space=probe_space(directory, space_before),
                 ok=ok, child_status=child.returncode, run=str(run),
                 command=command, option=registry()[2].get(config), archive=archive,
                 evidence={str(file): digest(file) for file in
                           [run / "result.json", run / "summary.csv", run / "errors.jsonl",
                            run / storage.STATE, *logs] if file.is_file()},
                 unsupported=unsupported(config, records, text, child.returncode))
+
+
+def probe_space(directory, before):
+    device, free = storage.filesystem(directory)
+    if device != before[0]:
+        raise ValueError("probe filesystem changed during execution")
+    return dict(filesystem=device, free_before_bytes=before[1], free_after_bytes=free,
+                used_delta_bytes=before[1] - free)
 
 
 def profile_evidence(test, run, phases, text):
@@ -411,7 +421,8 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
             write_json(certificate_path, certificate)
             print(f"smoke {len(certificate['probes'])}/{len(required)} {config}/{path['path']} "
                   f"ok={result['ok']} excluded={bool(result['unsupported'])} "
-                  f"seconds={result.get('elapsed_seconds', 0):.3f}", flush=True)
+                  f"seconds={result.get('elapsed_seconds', 0):.3f} "
+                  f"space_delta_bytes={result.get('space', {}).get('used_delta_bytes', 0)}", flush=True)
             if not result["ok"] and not result["unsupported"]:
                 raise ValueError(f"smoke failed: {config}/{path['path']}; main run not started")
         if not covered(certificate, fingerprint, required):

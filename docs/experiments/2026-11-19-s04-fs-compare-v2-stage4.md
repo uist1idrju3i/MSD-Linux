@@ -72,7 +72,13 @@ GPIO・UART・rdinit・partition table等も含み、24行全てを無害と確�
 
 build後の空きは247,146,934,272 byte。最終確認は`df -h`で231Gだった。成功probeを10件得られていないため、全件の更新所要時間は推定しない。A/A、負対照、残りの代表診断と全経路の結果を成功へ振り替えない。QEMUのblock統計や短いidle窓から実SDの耐久性・無書込みを断定しない。
 
-### 証拠
+### 判定器修正後の再診断条件
+
+初回24行の[分類と固定source](../../board/cardputerzero/tools/bench/fs-compare-v2/boot-diagnostics.md)を追加した。19行は固定machine・版・boot区間・phase・文面を限定して既知診断として記録する。camera regulatorの3行と、内部分岐の未確定な補助UARTの2行はfatalのまま残す。v2のDTB写しだけで測定に使わないcamera regulatorと補助UARTを無効にし、製品DTB・共通launcher・kernel configは変更しない。元の失敗はそのまま保持する。
+
+初回logそのもの、文面の近似、誤ったphase・版・machine、boot後の再出現、EIO・ENOSPC等でhost回帰を行う。再診断には既存出力を上書きしない新しいrun directoryを使い、同じbuild生成物を再利用する。probeの開始前とcleanup後の空きbyte差も収集する。共有filesystemの差分なので、他processの消費を分離した値ではない。
+
+### 初回の保存済み証拠
 
 [証拠archive](2026-11-19-s04-fs-compare-v2-stage4-evidence.tar.gz)は207,033 byte、SHA-256は`2e58c75e8656242d02cd3f2020ab69f4168d327ee3dd6e63125782162a88159a`。37 memberのsize・hashを`SHA256.json`で読戻し照合した。build条件・生成済みconfig・版と入力hash、probeのserial・host log・phase・最終判定・画像省略manifestを収録した。archive内の絶対pathは実行時のraw値である。
 

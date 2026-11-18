@@ -534,6 +534,15 @@ VM_PID=
 start_vm()
 {
 	local phase=$1
+	local phase_dtb="$DTB"
+	if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
+		phase_dtb="${RUN_DIR}/qemu-${phase}.dtb"
+		cp "$DTB" "$phase_dtb"
+		"${OUTPUT_DIR}/host/bin/fdtput" -t s "$phase_dtb" /cam1_regulator status disabled
+		"${OUTPUT_DIR}/host/bin/fdtput" -t s "$phase_dtb" /soc/serial@7e215040 status disabled
+		printf 'qemu_dtb_disabled_nodes=/cam1_regulator,/soc/serial@7e215040 phase=%s sha256=%s\n' \
+			"$phase" "$(sha256sum "$phase_dtb" | cut -d' ' -f1)" >>"${RUN_DIR}/run-meta.txt"
+	fi
 	VM_PHASE=$phase
 	CURRENT_LOG="${RUN_DIR}/qemu-${phase}.log"
 	local append="msd.fscmp=${CONFIG}:${TEST}:${RUN_ID}"
@@ -548,7 +557,7 @@ start_vm()
 	if [[ "$phase" == verify ]]; then
 		append+=" msd.fscmp.phase=verify"
 	fi
-	QEMU_COPY_IMAGE=0 QEMU_MACHINE=raspi3b OUTPUT_DIR="$OUTPUT_DIR" \
+	DTB_IMAGE="$phase_dtb" QEMU_COPY_IMAGE=0 QEMU_MACHINE=raspi3b OUTPUT_DIR="$OUTPUT_DIR" \
 		QEMU_EXTRA_APPEND="$append" python3 "${SCRIPT_DIR}/supervisor.py" \
 		run "$RUN_DIR" "$phase" "$TEST" "$RUN_QEMU" "$IMAGE" \
 		>"${RUN_DIR}/supervisor-${phase}.log" 2>&1 &

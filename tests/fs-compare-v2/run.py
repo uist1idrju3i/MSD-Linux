@@ -4,6 +4,7 @@
 import csv
 import errno
 import fcntl
+import gzip
 import io
 import importlib.util
 import json
@@ -223,6 +224,57 @@ class Judge(unittest.TestCase):
 
 
 class Errors(unittest.TestCase):
+    def boot_scan(self, text, phase="run"):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / f"qemu-{phase}.log"
+            path.write_text(text)
+            return M.aggregate_errors([(phase, path)], "smoke")
+
+    def test_actual_boot_diagnostics_keep_camera_eio_and_unresolved_uart_fatal(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        for phase in ("run", "verify"):
+            records = self.boot_scan(text, phase)
+            self.assertEqual(len(records), 24)
+            expected = [r for r in records if r["expected"]]
+            self.assertEqual(len(expected), 19)
+            self.assertTrue(all(r.get("source") and r.get("reason") for r in expected))
+            fatal = [r for r in records if not r["expected"]]
+            self.assertEqual(len(fatal), 5)
+            self.assertTrue(all("cam1_regulator" in r["text"] or "bcm2835-aux-uart" in r["text"]
+                                for r in fatal))
+
+    def test_known_boot_entries_reject_near_misses_and_wrong_scope(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        records = self.boot_scan(text)
+        expected = [r for r in records if r["expected"]]
+        for row in expected:
+            with self.subTest(line=row["text"]):
+                changed = text.replace(row["text"], row["text"] + " unexpected", 1)
+                self.assertTrue(any(not r["expected"] and r["text"].endswith(" unexpected")
+                                    for r in self.boot_scan(changed)))
+                self.assertFalse(self.boot_scan(row["text"])[0]["expected"])
+                self.assertFalse(self.boot_scan(row["text"], "host")[0]["expected"])
+        for prefix in ("run-qemu: machine=raspi3b", "run-qemu: version=QEMU emulator version 11.1.2",
+                       "Linux version 6.18.59-v8", "Machine model: Raspberry Pi 3 Model B",
+                       "msd.fscmp: SMOKE_PROFILE"):
+            self.assertFalse(any(r["expected"] for r in self.boot_scan(text.replace(prefix, "unknown"))))
+        line = next(r["text"] for r in expected if r["known_boot"] == "no-uefi")
+        self.assertFalse(self.boot_scan(text + "\n" + line)[-1]["expected"])
+        for suffix in (" EIO", " ENOSPC", " BUG: fatal", " Kernel panic", " Oops:"):
+            self.assertFalse(self.boot_scan(text.replace(line, line + suffix, 1))[0]["expected"])
+
+    def test_reread_busy_requires_known_grow_step_and_success(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        for modified in (
+                text.replace("msd-data-grow: extending partition ", "unrelated: extending partition "),
+                text.replace("msd-data: setup synchronized / 初期設定の同期が完了しました。", "setup incomplete"),
+                text.replace("Device or resource busy", "Input/output error")):
+            records = self.boot_scan(modified)
+            self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"] for r in records))
+        records = self.boot_scan(text.replace("mmc1: Failed", "mmc0: Failed"))
+        self.assertTrue(any(not r["expected"] and "mmc0: Failed" in r["text"] for r in records))
+        self.assertEqual(self.boot_scan(""), [])
+
     def test_real_launcher_provenance_is_not_a_qemu_error(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
@@ -1069,6 +1121,17 @@ class Preflight(unittest.TestCase):
 
 
 class LightSmoke(unittest.TestCase):
+    def test_probe_space_normal_zero_negative_and_error(self):
+        with mock.patch.object(S, "filesystem", return_value=("device", 90)):
+            self.assertEqual(P.probe_space(Path("."), ("device", 100))["used_delta_bytes"], 10)
+            self.assertEqual(P.probe_space(Path("."), ("device", 90))["used_delta_bytes"], 0)
+            self.assertEqual(P.probe_space(Path("."), ("device", 80))["used_delta_bytes"], -10)
+            with self.assertRaisesRegex(ValueError, "filesystem changed"):
+                P.probe_space(Path("."), ("other", 100))
+        with mock.patch.object(S, "filesystem", side_effect=OSError("unavailable")):
+            with self.assertRaises(OSError):
+                P.probe_space(Path("."), ("device", 100))
+
     def test_profile_normal_empty_invalid_and_environment_isolation(self):
         profile = P.smoke_profile
         data = profile.load()

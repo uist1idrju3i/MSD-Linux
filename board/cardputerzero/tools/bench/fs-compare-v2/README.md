@@ -50,6 +50,10 @@ smokeも同じguest dispatchと最終判定器を使い、反復は1回です。
 
 ## 第4段Aの軽量smoke
 
+[既知boot診断の分類](boot-diagnostics.md)は固定QEMU・kernel・machineの起動区間だけに適用します。camera regulatorのEIOと未解明の補助UART errorはfatalのまま残し、測定で使わない両nodeはv2のDTB写しだけで無効にします。製品DTBは変えません。
+
+各probeは所要秒数と、開始前・archive検証とcleanup後のfilesystem空きbyteを記録します。差分はhost上の共有filesystem全体の変化であり、他processの消費も含みます。実SDの物理write量やprobe単独のI/O量とは扱いません。
+
 `smoke-profile.json`をbuild時のC headerとguest設定へ変換します。profile・保存方式・sourceを環境hashへ含め、guestの両phaseでprofile hashを照合します。入口への`FSCMP_SMOKE`指定は拒否し、内部probeの後は通常設定へ戻します。通常測定の値と画像archiveは維持します。
 
 | 経路 | smoke専用の値・確認 |
