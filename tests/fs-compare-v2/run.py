@@ -1068,5 +1068,161 @@ class Preflight(unittest.TestCase):
                 self.assertIn("environment_error_filesystem=", result.stdout)
 
 
+class LightSmoke(unittest.TestCase):
+    def test_profile_normal_empty_invalid_and_environment_isolation(self):
+        profile = P.smoke_profile
+        data = profile.load()
+        self.assertEqual(profile.logical_bytes(data), 84352)
+        self.assertIn("SMOKE_W3_RECORDS=51", profile.render("shell"))
+        self.assertIn("#define SMOKE_W4_BYTES 65536U", profile.render("header"))
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "profile.json"
+            for content in ("", "{}", json.dumps(dict(data, w3_records=50)),
+                            json.dumps(dict(data, w1_files=True)),
+                            json.dumps(dict(data, unknown=1)),
+                            json.dumps(dict(data, archive_mode="full"))):
+                path.write_text(content)
+                with self.assertRaises(ValueError):
+                    profile.load(path)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(RuntimeError):
+                with profile.context():
+                    self.assertEqual(S.log_limit(), 8388608)
+                    raise RuntimeError("failed probe")
+            self.assertNotIn("FSCMP_SMOKE", os.environ)
+            self.assertEqual(S.log_limit(), 268435456)
+
+    def test_private_workload_preserves_sync_rename_tail_and_exact_small_w4(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "smoke-profile.h").write_text(P.smoke_profile.render("header"))
+            binary = root / "workload"
+            subprocess.run(["cc", "-O2", "-Wall", "-Wextra", "-Werror", "-std=c11",
+                            f"-I{root}", str(V2 / "fs-compare-workload.c"), "-lcrypto", "-o", str(binary)],
+                           capture_output=True, text=True, check=True)
+            for size, files, updates, records, large in (("smoke", 2, 2, 51, 65536),
+                                                        ("t1-reduced", 50, 25, 250, 8388608),
+                                                        ("full", 200, 100, 1000, 33554432)):
+                work = root / size
+                work.mkdir()
+                manifest = root / f"{size}.tsv"
+                result = subprocess.run([str(binary), "workload", str(work), str(manifest), "-",
+                                         "--workload-size", size], capture_output=True, text=True,
+                                        timeout=30, check=True)
+                self.assertIn(f"W3_records={records}", result.stdout)
+                self.assertEqual(len(list((work / "W1").iterdir())), files)
+                self.assertEqual((work / "W2/target.dat").stat().st_size, 2048)
+                self.assertEqual((work / "W3/append.log").stat().st_size, records * 128)
+                self.assertEqual((work / "W4/large.bin").stat().st_size, large)
+                with manifest.open() as stream:
+                    rows = list(csv.DictReader(stream, delimiter="\t"))
+                self.assertEqual(sum(row["event"] == "atomic_update" for row in rows), updates)
+                self.assertEqual(sum(row["event"] == "batch_fsync" for row in rows), records // 50)
+            for arguments in ([], ["workload", str(root / "bad"), str(root / "bad.tsv"), "-",
+                                    "--workload-size", "unknown"]):
+                self.assertNotEqual(subprocess.run([str(binary), *arguments], capture_output=True).returncode, 0)
+
+    def test_shared_evidence_images_hash_only_metadata_dedup_and_corruption(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = Storage().archive_fixture(root)
+            image = P.digest(source / "sdcard.img")
+            with P.smoke_profile.context():
+                state = S.archive_attempt(source, root / "archives")
+            manifest = S.verify_archive(state["archive"], state["manifest_sha256"])
+            entries = {row["path"]: row for row in manifest["entries"]}
+            self.assertEqual(entries["sdcard.img"]["sha256"], image)
+            self.assertEqual(entries["host.log"]["type"], "hardlink")
+            self.assertEqual(entries["link"]["link"], "host.log")
+            self.assertEqual(entries["fifo"]["type"], "fifo")
+            self.assertFalse((root / "archives/objects" / image).exists())
+            with tarfile.open(state["archive"]) as archive:
+                self.assertEqual(archive.getnames(), [S.MANIFEST])
+            S.verify_source(source, manifest, cleaned=True)
+            self.assertFalse((source / "sdcard.img").exists())
+            self.assertTrue((source / "host.log").exists())
+            count = len(list((root / "archives/objects").iterdir()))
+            second = Storage().archive_fixture(root / "second")
+            with P.smoke_profile.context():
+                S.archive_attempt(second, root / "archives")
+            self.assertEqual(len(list((root / "archives/objects").iterdir())), count)
+            payload = root / "archives/objects" / entries["build/rootfs/payload"]["sha256"]
+            original = payload.read_bytes()
+            payload.write_bytes(b"tampered")
+            with self.assertRaises(ValueError):
+                S.verify_archive(state["archive"], state["manifest_sha256"])
+            payload.write_bytes(original)
+            payload.unlink()
+            with self.assertRaises(ValueError):
+                S.archive_attempt(source, root / "archives")
+
+    def test_shared_archive_failure_and_cleanup_resume_fail_closed(self):
+        import smoke_storage
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = Storage().archive_fixture(root)
+            with P.smoke_profile.context(), mock.patch.object(smoke_storage, "store", side_effect=OSError(errno.ENOSPC, "full")):
+                with self.assertRaises(OSError):
+                    S.archive_attempt(source, root / "archives")
+            self.assertTrue((source / "sdcard.img").exists())
+            self.assertFalse(S.load_json(source / S.STATE)["complete"])
+            with mock.patch.object(S, "cleanup_payload", side_effect=OSError("cleanup interrupted")):
+                with self.assertRaises(OSError):
+                    S.archive_attempt(source, root / "archives")
+            self.assertTrue(S.load_json(source / S.STATE)["complete"])
+            self.assertTrue((source / "sdcard.img").exists())
+            S.archive_attempt(source, root / "archives")
+            self.assertTrue(S.load_json(source / S.STATE)["cleaned"])
+
+    def test_capacity_light_mixed_and_credit_preserves_normal_reservations(self):
+        paths = dict(output="/out", temp="/temp", archive="/archive")
+        probe = lambda _: ("same", 100000 * S.GIB)
+        normal = S.estimate(paths, 1, 851, S.GIB, 268435456, probe)["same"]["required"]
+        light = S.estimate(paths, 1, 851, S.GIB, 268435456, probe, smoke=851)["same"]["required"]
+        mixed = S.estimate(paths, 1, 852, S.GIB, 268435456, probe, smoke=851)["same"]["required"]
+        self.assertLess(light, 100 * S.GIB)
+        self.assertGreater(normal, 8000 * S.GIB)
+        self.assertGreater(mixed, light + 8 * S.GIB)
+        with self.assertRaises(ValueError):
+            S.estimate(paths, 1, 1, 1, 1, probe, smoke=2)
+
+    def test_profile_missing_wrong_phase_and_stale_logical_count_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            marker = f"msd.fscmp: SMOKE_PROFILE sha256={P.smoke_profile.fingerprint()}\n"
+            for phase in ("run", "verify"):
+                (root / f"qemu-{phase}.log").write_text(marker)
+            self.assertTrue(P.profile_evidence("smoke", root, ["run", "verify"], marker))
+            self.assertFalse(P.profile_evidence("T5", root, ["run"], marker))
+            self.assertFalse(P.profile_evidence("T7", root, ["run"], marker + "T7_FINISHED filesystem=ext4 bytes=4294967296"))
+            (root / "qemu-verify.log").write_text("")
+            self.assertFalse(P.profile_evidence("smoke", root, ["run", "verify"], marker))
+
+    def test_partial_coverage_resume_and_smoke_only_does_not_reserve_main(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            path = dict(path="smoke", test="smoke", phases="run", points="none")
+            calls = []
+            fail = True
+
+            def probe(attempt, config, selected, _env, _output):
+                calls.append(config)
+                evidence = attempt / config
+                evidence.write_text(config)
+                return dict(config=config, path=selected["path"], phases=["run"],
+                            ok=not (fail and config == "E2"), unsupported=None,
+                            evidence={str(evidence): P.digest(evidence)})
+
+            with mock.patch.object(P, "requirements", return_value=[("E1", path), ("E2", path)]), \
+                    mock.patch.object(P, "run_probe", probe), mock.patch.object(S, "prepare") as prepare:
+                rows = [("E1", "smoke", "1")]
+                with self.assertRaisesRegex(ValueError, "smoke failed"):
+                    P.gate(rows, root, root, probe, lambda _: {}, parameters={"smoke_only": True})
+                self.assertEqual(prepare.call_args.kwargs["counts"]["remaining_main_attempts"], 0)
+                fail = False
+                P.gate(rows, root, root, probe, lambda _: {}, parameters={"smoke_only": True})
+                self.assertEqual(calls, ["E1", "E2", "E2"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

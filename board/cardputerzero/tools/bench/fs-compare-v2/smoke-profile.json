@@ -1,0 +1,12 @@
+{
+  "schema": "fs-compare-v2-light/1",
+  "w1_files": 2,
+  "w2_updates": 2,
+  "w3_records": 51,
+  "w4_bytes": 65536,
+  "idle_seconds": 3,
+  "quiesce_polls": 3,
+  "t7_bytes": 268435456,
+  "log_limit": 8388608,
+  "archive_mode": "shared-nonimage-sha256/1"
+}

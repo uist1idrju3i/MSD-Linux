@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [v2第4段A](2026-11-19-fs-compare-v2-stage4.md) | [CSV](2026-11-19-fs-compare-v2-stage4.csv) | 2026-11-19 | 実行前 | 851 probeを維持した短縮smoke。build・代表診断・全経路を順に確認 |
 | [cnf](2026-11-18-openssl-cnf.md) | [CSV](2026-11-18-openssl-cnf.csv) | 2026-11-18 | QEMU各3回 | C1/C2成功・未適用 |
 | [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |
 | [idle残量](2026-11-17-data-idle-residual.md) | なし | 2026-11-17 | QEMU 5回 | 88 sectorはmetadataの遅延writeback |

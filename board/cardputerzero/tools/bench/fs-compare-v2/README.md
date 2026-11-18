@@ -1,10 +1,10 @@
 # fs-compare v2の監視と判定
 
-旧版の正式実験に使ったscriptを残し、driver・matrix・guest・build入口・設定定義をこのdirectoryへ分離しました。workloadのC sourceだけは一つ上の旧版と共有し、入力hashへ含めます。dm-verity/FECと共通QEMU起動検査器は変更しません。
+旧版の正式実験に使ったscriptを残し、driver・matrix・guest・build入口・設定定義をこのdirectoryへ分離しました。workloadのC sourceもv2へ分離し、通常profileを維持したままsmoke専用profileを追加しました。dm-verity/FECと共通QEMU起動検査器は変更しません。
 
 ## 現在の範囲
 
-step 1の監視・判定、step 2の経路定義・環境検査・全経路smoke・自動除外・plan生成に加え、step 3の容量見積りと検証付きarchiveを実装しています。**正式測定にはまだ使いません。** QEMU・実機での試行は行っておらず、この変更の実験記録はありません。
+step 1の監視・判定、step 2の全経路smoke、step 3の容量検査とarchiveに加え、承認済みのstep 4Aとしてsmokeの負荷と画像保存を軽量化しました。**正式測定にはまだ使いません。** build・QEMUの実施状況は[第4段の記録](../../../../../docs/experiments/2026-11-19-fs-compare-v2-stage4.md)へ追記します。実機は未確認です。
 
 - build: `fs-compare-build.sh`。既定出力は`output-fscmp-v2`です。旧版のBuildroot fragmentを使うtreeは拒否します。
 - 単発: `QEMU_LOG_DIR=/永続的な絶対path fs-compare.sh E1 smoke run-id`。既存のrun directoryは上書きしません。
@@ -24,7 +24,7 @@ step 1の監視・判定、step 2の経路定義・環境検査・全経路smoke
 
 ## archiveとcleanup
 
-単発・matrix・smoke・除外probeとも、子とQEMUを回収し、外側のlauncher logをrun内へcopyしてから最終scanを行います。source・launcher・workloadの写し、生成済みconfig、環境、command、plan、判定、raw logを保存します。archiveはlogだけでなく、使い捨てimageと展開rootfsも含むattempt全体です。このため全経路smokeの保守的な容量見積りは非常に大きくなります。
+単発・matrix・smoke・除外probeとも、子とQEMUを回収し、外側のlauncher logをrun内へcopyしてから最終scanを行います。source・launcher・workloadの写し、生成済みconfig、環境、command、plan、判定、raw logを保存します。通常測定は使い捨てimageと展開rootfsを含むattempt全体をarchiveします。smokeだけは後述の共有保存方式を使います。
 
 archive先は既定でruns rootの`archives/`です。`FSCMP_ARCHIVE_DIR`で別の永続filesystemの絶対pathを指定できます。既知の揮発pathである`/tmp`、`/var/tmp`、`/run`、`/dev/shm`は拒否します。それ以外のpathが実際に永続することは利用者が確認してください。一時領域だけは`TMPDIR`を使います。
 
@@ -46,7 +46,36 @@ guestの情報は起動しないと確認できません。診断用imageを作�
 
 `paths.tsv`は引数検査・新plan生成・smoke生成に共通の経路定義です。全20 baseについて全経路を通します。T1の各replay方式・negative方式・sampleの自動選択と明示選択、T2/T3のcutとverify、T4のcontrol、T5/T6/T7を含みます。明示sampleはそのrunで生成した最初の有効なentryを選びます。全variantではTSVに指定された標準のT3・T4-sync・T5と、対象ならT6に加えてmount-only smokeを通します。それ以外の組合せが入力planにあれば、その組合せも追加します。
 
-smokeも同じguest dispatchと最終判定器を使い、反復は1回です。現段階ではworkloadを短縮せず、T1の全point再生やT7の4 GiB処理も残しています。このため全経路の確認には多くの時間と領域が必要です。mountできただけではcoverage済みにせず、未実行・途中失敗・verify未完了なら本測定を開始しません。smokeの結果は測定用matrix-summaryに混ぜません。
+smokeも同じguest dispatchと最終判定器を使い、反復は1回です。T1のall・final・sampleを統合せず、allは短縮workloadが生成した候補を全て再生します。mountできただけではcoverage済みにせず、未実行・途中失敗・verify未完了なら本測定を開始しません。smokeの結果は測定用matrix-summaryに混ぜません。
+
+## 第4段Aの軽量smoke
+
+`smoke-profile.json`をbuild時のC headerとguest設定へ変換します。profile・保存方式・sourceを環境hashへ含め、guestの両phaseでprofile hashを照合します。入口への`FSCMP_SMOKE`指定は拒否し、内部probeの後は通常設定へ戻します。通常測定の値と画像archiveは維持します。
+
+| 経路 | smoke専用の値・確認 |
+|---|---|
+| W1–W4 | 2 file、2更新、51 record、64 KiB。50 recordのfsync境界と未同期tail、renameとdirectory fsyncを維持 |
+| T1 | all・final・negative・sample自動／明示を区別。生成された全候補をallで再生 |
+| T2/T3 | W4の書込み・fsync完了、またはT3のfsync ACKを待ってからcut。同じ画像を別QEMUでreopenしてverify |
+| T4 | 各3秒、1秒間隔。quiesceは3回連続安定。O_DIRECT controlは変更なし |
+| T5 | 実効logical bytesをprofileから算出。既定84352 byte |
+| T6 | 既知data、破損注入、stack reopen、readcheck・scrub・fsckを省略しない |
+| T7 | 256 MiB。timed setup、mount、umount、fsck、暗号stack closeを維持 |
+
+20 baseの16経路と130 variantの標準経路は削らず、要求数は851 probe／1021 phaseです。限定除外が成立した構成だけ後続probeを省略します。短縮smokeは経路確認であり、durability、性能、idle writeの測定結果には使いません。
+
+smokeの`sdcard.img`と再pack済みrootfsはSHA-256と論理byte数だけをmanifestへ残します。失敗時も画像本体を残さないため、後日の画像解析はできません。展開rootfsを含む非画像証拠は`archives/objects/<SHA-256>`へ共有保存し、attemptごとのarchiveに全entryの種類・mode・mtime・link関係・size・hashを記録します。archiveと同階層の`objects/`も保全対象です。
+
+QEMU回収、最終scan、画像hash、非画像保存、全参照読戻し、fsync、完了記録の順を守り、完了後だけcleanupします。欠損・改変・ENOSPC・未回収なら成功にせずsourceを残します。中断後は同一の環境・plan・profileと証拠hashが一致する完了probeだけを再利用し、失敗attemptは残します。
+
+容量検査は通常attemptとsmokeを分けて合算します。smokeのlog上限は8 MiB、各attemptの非共有metadata等に16 MiB、共有証拠に展開rootfsの2倍と1 GiBを予約します。outputとarchiveの両側にlog・metadataを積み、同時image・一時領域と20%余裕も維持します。各投入前に空き容量を再検査し、archiveとcleanupの完了分だけ予約を返します。上記の通常測定の全画像予約をsmokeへは適用しません。
+
+```sh
+python3 board/cardputerzero/tools/bench/fs-compare-v2/preflight.py generate --repetitions 1 > plan.tsv
+OUTPUT_DIR="$PWD/output-fscmp-v2" python3 board/cardputerzero/tools/bench/fs-compare-v2/preflight.py gate plan.tsv /永続path/preflight --smoke-only
+```
+
+`gate --smoke-only`は本測定を起動しません。`diagnose CONFIG PATH DIRECTORY`は代表経路だけを調べ、coverage証明を作りません。`stage4.py`はfresh build、代表経路とA/A・負対照、全smokeの順に実行する記録用入口です。詳細なコマンドは第4段の記録を参照してください。
 
 単発の記録はruns rootの`.preflight/`、matrixは`<matrix-id>.preflight/`へ保存します。
 

@@ -1,0 +1,2 @@
+stage,run_id,config,path,status,seconds,notes
+host,initial-workload-fixture,,,failed,,fixture_root_directory_missing
