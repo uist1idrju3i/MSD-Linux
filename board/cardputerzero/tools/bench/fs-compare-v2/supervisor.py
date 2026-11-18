@@ -134,7 +134,9 @@ def supervise(directory, phase, test, command, timeout=86400, grace=5):
                     result["cut_intent"] = True
                     result["cut_sent"] = signal_group(process, signal.SIGKILL)
                     reap(process, grace)
-                elif result["mode"] != "abort":
+                elif result["mode"] == "abort":
+                    result["stop_pid"] = os.getpid()
+                else:
                     raise ValueError("unknown stop request")
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
         result["error"] = str(error)

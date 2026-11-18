@@ -611,6 +611,25 @@ class Preflight(unittest.TestCase):
             self.assertEqual(len(records), 1)
             self.assertEqual(records[0]["category"], "kernel-fatal")
 
+    def test_known_unsupported_allows_only_evidenced_abort_sigterm(self):
+        line = "mkfs.btrfs: unrecognized option '--enable-simple-quota'"
+        phase = dict(reaped=True, mode="abort", error=None, returncode=0,
+                     fallback=["SIGTERM"], stop_pid=123)
+        diagnostic = "qemu-system-aarch64: terminating on signal 15 from pid 123 (python3)"
+
+        def records(state, message=diagnostic):
+            return [{"category": "diagnostic", "phase": "run", "text": line},
+                    {"category": "process", "phase": "run",
+                     "text": "phase status: " + json.dumps(state)},
+                    {"category": "qemu", "phase": "run", "text": message}]
+
+        self.assertEqual(P.unsupported("P085", records(phase), line + "\n" + diagnostic, 1), [line])
+        for changes in ({"error": "timeout"}, {"fallback": ["SIGTERM", "SIGKILL"]},
+                        {"stop_pid": 999}, {"reaped": False}, {"mode": "normal"},
+                        {"returncode": -9}):
+            self.assertIsNone(P.unsupported("P085", records(dict(phase, **changes)), line, 1))
+        self.assertIsNone(P.unsupported("P085", records(phase, diagnostic.replace("15", "9")), line, 1))
+
     def test_guest_environment_probe_normal_missing_module_kernel_tool_and_empty_cases(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -205,18 +205,33 @@ def unsupported(config, records, text, child_status):
     pattern = KNOWN_UNSUPPORTED.get(config)
     if not pattern or child_status != 1 or NEVER_EXCLUDE.search(text):
         return None
+    aborts = {}
+    for record in records:
+        if record.get("category") == "process" and record["text"].startswith("phase status: "):
+            phase = json.loads(record["text"].removeprefix("phase status: "))
+            if (phase.get("reaped") is True and phase.get("mode") == "abort"
+                    and phase.get("error") is None and phase.get("returncode") in (0, -15)
+                    and phase.get("fallback") == ["SIGTERM"]
+                    and isinstance(phase.get("stop_pid"), int) and phase["stop_pid"] > 0):
+                aborts[record.get("phase")] = phase
     lines = []
     for record in records:
         if record.get("expected"):
             continue
         text_line = record["text"]
+        abort = aborts.get(record.get("phase"))
+        if (record.get("category") == "qemu" and abort
+                and re.fullmatch(r"(?:\S*/)?qemu-system-[\w-]+: terminating on signal 15 from pid "
+                                 + str(abort["stop_pid"]) + r" \([^\r\n()]+\)\s*", text_line)):
+            continue
         if record.get("category") == "process":
             if text_line == "driver exit status=1":
                 continue
             if text_line.startswith("phase status: "):
                 phase = json.loads(text_line.removeprefix("phase status: "))
                 if (phase.get("reaped") is True and phase.get("mode") == "abort"
-                        and phase.get("error") is None and phase.get("returncode") == 0):
+                        and phase.get("error") is None and
+                        (phase.get("returncode") == 0 or record.get("phase") in aborts)):
                     continue
         lines.append(text_line)
     expected = {record["text"] for record in records if record.get("expected")}
