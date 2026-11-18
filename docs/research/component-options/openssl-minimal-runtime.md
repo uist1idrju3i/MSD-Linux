@@ -34,13 +34,21 @@ Ciphersuites = TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_256_G
 Groups = DEFAULT
 ```
 
-TLS 1.2のCBC／static RSA key exchange等を除く案であり、互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。以前の草案の`Groups = X25519:P-256:P-384`は、DEFAULT維持の決定に合わないため採用しない。草案をDEFAULTへ揃えたことは、製品のopenssl.cnfを変更した意味ではない。
+TLS 1.2のCBC／static RSA key exchange等を除く案であり、実機での互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。以前の草案の`Groups = X25519:P-256:P-384`は、DEFAULT維持の決定に合わないため採用しない。草案をDEFAULTへ揃えたことは、製品のopenssl.cnfを変更した意味ではない。
 
 SignatureAlgorithmsとClientSignatureAlgorithmsは初期案では固定しない。ClientSignatureAlgorithmsはTLS 1.2/1.3のclient証明書認証用で、serverのCertificateRequestとclientの証明書署名選択に関わる。固定する場合はEd25519、ECDSA、RSA-PSSとchain署名の要件を試験し、古い相手へのSHA-1緩和をdefaultへ混ぜない。SECLEVELの閾値を下げて試験を通す変更は別の利用者判断とする。
 
 default providerは明示activateし、legacyを記載しない。ただしapplicationやCLIの明示loadまで阻止する設定ではない。legacy機能自体をなくすにはbuild時の`no-legacy`を使う。FIPS認証は要件にないためFIPS providerを追加せず、検証済みmoduleを用意しない`default_properties=fips=yes`も設定しない。FIPS有効化だけで製品全体の適合を主張しない。
 
 SSL_CONFの`system_default`はSSL_CTX作成時の既定で、applicationが設定を無視・変更する場合がある。`OPENSSL_CONF`、`OPENSSL_MODULES`、provider property等の影響も別に調べる。rootfsのconfigはroot所有の読取専用fileとし、秘密鍵や永続的な乱数seedを書かない。sampleのCA/database/serial関連sectionを削る案は、機器がCA発行をしない条件で試す。TLS設定は`pkeyutl`のraw署名検証方針を直接指定するものではないが、configの構文誤りは初期化を失敗させ得る。
+
+## 設定だけのQEMU実験結果
+
+2026-11-18の[C0/C1/C2比較記録](../../experiments/2026-11-18-openssl-cnf.md)に条件・CSV・生logを保存した。各条件3回とC0のA/A反復によるQEMU限定の機能確認で、製品には適用していない。
+
+C0もTLS 1.0/1.1を既に拒否しており、C1による新たな拒否効果は観測していない。TLS 1.2/1.3は全条件で成功し、TLS 1.2 CBCの対照はC0/C1が受理、C2だけが拒否した。Ed25519更新署名の正常受理・不正拒否、Argon2id/PBKDF2のLUKS2 format/open、署名付きmodule loadは全条件で成功した。module署名の検証主体はkernelである。
+
+cryptsetupはdefault/legacyを自らloadし、CLIのprovider一覧はdefaultだけだった。CA/CSR節は維持した。実機・外部接続先での互換性、速度、boot時間は未確認であり、製品への採用は別判断とする。
 
 ## ARM専用最適化の判断
 
