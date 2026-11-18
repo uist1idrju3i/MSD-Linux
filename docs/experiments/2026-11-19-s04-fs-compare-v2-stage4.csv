@@ -1,0 +1,6 @@
+stage,run_id,config,path,status,seconds,notes
+host,initial-workload-fixture,,,failed,,fixture_root_directory_missing
+host,final-v2,,,passed,9.325,56_tests
+build,fresh-output-fscmp-v2,,,passed,3491.5209386829956,commit=9fd57cb3d489065e5bd8e25a3ef422c0182dc828
+representative,01-E1-smoke,E1,smoke,failed,308.42291109300277,probe_seconds=305.52808007600834;fatal_boot_diagnostics=24;archive_allocated_bytes=48922624;source_allocated_bytes=966656
+smoke,all-851,,,not_started,,representative_failed;AA_and_negative_controls_pending

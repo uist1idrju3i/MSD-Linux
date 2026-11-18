@@ -4,7 +4,7 @@
 
 ## 現在の範囲
 
-step 1の監視・判定、step 2の全経路smoke、step 3の容量検査とarchiveに加え、承認済みのstep 4Aとしてsmokeの負荷と画像保存を軽量化しました。**正式測定にはまだ使いません。** build・QEMUの実施状況は[第4段の記録](../../../../../docs/experiments/2026-11-19-fs-compare-v2-stage4.md)へ追記します。実機は未確認です。
+step 1の監視・判定、step 2の全経路smoke、step 3の容量検査とarchiveに加え、承認済みのstep 4Aとしてsmokeの負荷と画像保存を軽量化しました。**正式測定にはまだ使いません。** build・QEMUの実施状況は[第4段の記録](../../../../../docs/experiments/2026-11-19-s04-fs-compare-v2-stage4.md)へ追記します。実機は未確認です。
 
 - build: `fs-compare-build.sh`。既定出力は`output-fscmp-v2`です。旧版のBuildroot fragmentを使うtreeは拒否します。
 - 単発: `QEMU_LOG_DIR=/永続的な絶対path fs-compare.sh E1 smoke run-id`。既存のrun directoryは上書きしません。
