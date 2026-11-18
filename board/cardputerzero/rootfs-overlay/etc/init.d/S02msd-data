@@ -6,12 +6,14 @@ case "${1:-start}" in
 esac
 
 DATA_DEVICE="${MSD_DATA_DEVICE:-/dev/mmcblk0p7}"
+data_changed=0
 
 mkdir -p /data
 magic="$(dd if="$DATA_DEVICE" bs=1 skip=1080 count=2 2>/dev/null | od -An -v -tx1 | tr -d '[:space:]' || true)"
 if [ "$magic" != "53ef" ]; then
 	if cmp -n 67108864 "$DATA_DEVICE" /dev/zero >/dev/null 2>&1; then
 		mkfs.ext4 -F -b 4096 -L data -E lazy_itable_init=0,lazy_journal_init=0 "$DATA_DEVICE" || exit 1
+		data_changed=1
 	else
 		printf '%s\n' 'Unrecognized non-empty data partition; refusing to format it.' >&2
 		exit 1
@@ -24,14 +26,42 @@ case "$fsck_status" in
 	0|1) ;;
 	*) exit "$fsck_status" ;;
 esac
+[ "$fsck_status" -ne 1 ] || data_changed=1
 
 if mount -t ext4 -o noatime,nodev,nosuid,data=ordered,errors=remount-ro,noinit_itable "$DATA_DEVICE" /data; then
 	mount_options="$(awk '$2 == "/data" { print $4; exit }' /proc/mounts)"
 	printf 'msd-data: /data %s\n' "$mount_options" >/dev/console
+	if [ ! -d /data/etc ] || [ ! -d /data/msd-update ]; then
+		data_changed=1
+	fi
+	data_blocks_before=
+	if [ "$data_changed" -eq 0 ]; then
+		data_info="$(LC_ALL=C dumpe2fs -h "$DATA_DEVICE" 2>/dev/null)" || data_changed=1
+		data_blocks_before="$(printf '%s\n' "$data_info" | awk '/^Block count:/ { print $3; exit }')"
+	fi
 	if ! /usr/sbin/msd-data-grow; then
 		printf '%s\n' 'msd-data-grow failed; keeping /data mounted.' >&2
+		data_changed=1
+	fi
+	if [ "$data_changed" -eq 0 ]; then
+		data_info="$(LC_ALL=C dumpe2fs -h "$DATA_DEVICE" 2>/dev/null)" || data_changed=1
+		data_blocks_after="$(printf '%s\n' "$data_info" | awk '/^Block count:/ { print $3; exit }')"
+		case "$data_blocks_before:$data_blocks_after" in
+			*[!0123456789:]*|:*|*:) data_changed=1 ;;
+			*) [ "$data_blocks_before" = "$data_blocks_after" ] || data_changed=1 ;;
+		esac
 	fi
 	mkdir -p /data/etc /data/msd-update
+	setup_status=$?
+	[ "$setup_status" -eq 0 ] || data_changed=1
+	if [ "$data_changed" -eq 1 ]; then
+		if ! /usr/sbin/msd-syncfs /data; then
+			printf '%s\n' 'msd-data: setup syncfs failed; keeping /data mounted.' >&2
+			exit 1
+		fi
+		printf 'msd-data: setup synchronized\n' >/dev/console
+	fi
+	exit "$setup_status"
 else
 	printf '%s\n' "Unable to mount $DATA_DEVICE on /data." >&2
 fi

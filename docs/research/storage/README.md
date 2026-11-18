@@ -20,6 +20,7 @@
 
 | 確かめたいこと | 本文 |
 |---|---|
+| 初期設定末尾のfilesystem限定同期 | [syncfs方式の比較](data-syncfs.md) |
 | partitionとFATの位置、FTLとの境界 | [配置とフラッシュ境界](layout-and-flash.md) |
 | ext4 formatter、割当単位、小さいファイルの測定 | [割当単位と小さいファイル](allocation-and-small-files.md) |
 | discard、SDバス、実カードで測る条件 | [媒体と測定計画](media-measurements.md) |

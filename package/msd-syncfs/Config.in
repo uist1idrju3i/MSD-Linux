@@ -1,0 +1,4 @@
+config BR2_PACKAGE_MSD_SYNCFS
+	bool "msd-syncfs"
+	help
+	  Synchronize one filesystem and report writeback errors.
