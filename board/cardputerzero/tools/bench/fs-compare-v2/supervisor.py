@@ -304,7 +304,7 @@ def matrix_ok(summary, child_status):
         return False
     child = Path(summary).parent / "matrix-child.json"
     try:
-        if child.exists() and load_json(child).get("status") != 0:
+        if load_json(child).get("status") != 0:
             return False
     except (OSError, ValueError, AttributeError):
         return False

@@ -99,6 +99,7 @@ class Judge(unittest.TestCase):
             result = M.finalize(directory, "smoke", 0)
             self.assertEqual(result["status"], "ok")
             self.assertEqual((directory / "errors.jsonl").read_text(), "")
+            M.write_json(directory / "matrix-child.json", {"status": 0})
             self.assertTrue(M.matrix_ok(directory / "summary.csv", 0))
             for status in [1, 137, -9, None]:
                 self.assertFalse(M.matrix_ok(directory / "summary.csv", status))
@@ -350,6 +351,48 @@ class Processes(unittest.TestCase):
 
 
 class Matrix(unittest.TestCase):
+    def test_result_without_saved_child_exit_is_incomplete(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "run"
+            fixture(directory)
+            M.finalize(directory, "smoke", 0)
+            self.assertFalse(M.matrix_ok(directory / "summary.csv", 0))
+            for payload in ("", "{", "{}", '{"status": null}', '{"status": 7}'):
+                (directory / "matrix-child.json").write_text(payload)
+                self.assertFalse(M.matrix_ok(directory / "summary.csv", 0))
+            M.write_json(directory / "matrix-child.json", {"status": 0})
+            self.assertTrue(M.matrix_ok(directory / "summary.csv", 0))
+
+    def test_resume_reruns_published_result_without_saved_child_exit(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            runs = root / "runs"
+            runs.mkdir()
+            matrix = runs / "host-test"
+            matrix.mkdir()
+            (matrix / ".v2").write_text(M.SCHEMA + "\n")
+            incomplete = runs / "host-test-smoke-E1-r1-123456"
+            fixture(incomplete)
+            M.finalize(incomplete, "smoke", 0)
+            fake = root / "driver"
+            fake.write_text(f"#!{sys.executable}\nimport os,runpy,sys\nfrom pathlib import Path\n"
+                            f"suite=runpy.run_path({str(Path(__file__).resolve())!r})\n"
+                            "d=Path(os.environ['QEMU_LOG_DIR'])/sys.argv[3]\n"
+                            "suite['fixture'](d);suite['M'].finalize(d,sys.argv[2],0)\n")
+            fake.chmod(0o755)
+            plan = root / "plan.tsv"
+            plan.write_text("E1\tsmoke\t1\n")
+            result = subprocess.run([str(V2 / "fs-compare-matrix.sh"), "--matrix-id", "host-test",
+                                     "--runs-dir", str(runs), "-j", "1", str(plan)],
+                                    env=dict(os.environ, FS_COMPARE_V2_DRIVER=str(fake)),
+                                    capture_output=True, text=True, timeout=15)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            with (matrix / "matrix-summary.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 1)
+            self.assertNotEqual(rows[0]["run_id"], incomplete.name)
+            self.assertTrue((incomplete / "result.json").exists())
+
     def test_child_nonzero_beats_ok_summary_and_cannot_pass_on_resume(self):
         for child_status in (0, 7):
             with self.subTest(child_status=child_status), tempfile.TemporaryDirectory() as temporary:
