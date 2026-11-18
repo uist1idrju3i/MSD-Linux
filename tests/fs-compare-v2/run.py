@@ -2,7 +2,9 @@
 """Host tests for the v2 judge, supervisor and matrix; no QEMU or network."""
 
 import csv
+import errno
 import fcntl
+import io
 import importlib.util
 import json
 import os
@@ -11,6 +13,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import tarfile
 import time
 import unittest
 from unittest import mock
@@ -25,6 +28,7 @@ sys.path.insert(0, str(V2))
 PREFLIGHT_SPEC = importlib.util.spec_from_file_location("preflight", V2 / "preflight.py")
 P = importlib.util.module_from_spec(PREFLIGHT_SPEC)
 PREFLIGHT_SPEC.loader.exec_module(P)
+S = P.storage
 
 
 def phase_result(test="smoke", phase="run", **overrides):
@@ -423,6 +427,340 @@ class Matrix(unittest.TestCase):
                     rows = list(csv.DictReader(stream))
                 self.assertEqual(len(rows), 1 if child_status == 0 else 2)
                 self.assertTrue(all(row["status"] == ("ok" if child_status == 0 else "fail:child_exit_7") for row in rows))
+
+
+class Storage(unittest.TestCase):
+    def test_resume_reserves_only_unfinished_verified_matrix_rows(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            matrix = root / "matrix"
+            matrix.mkdir()
+            source = root / "matrix-smoke-E1-r1-123"
+            fixture(source)
+            M.write_json(source / "matrix-child.json", dict(status=0))
+            M.finalize(source, "smoke", 0)
+            with mock.patch.object(S, "archive_root", return_value=root / "archives"):
+                S.finish(source, "smoke", 0)
+            rows = [("E1", "smoke", "1"), ("E1", "smoke", "2")]
+            with mock.patch.object(P, "requirements", return_value=[]), \
+                    mock.patch.object(S, "unpacked_size", return_value=1), \
+                    mock.patch.object(S, "archive_root", return_value=root / "archives"), \
+                    mock.patch.object(S, "filesystem", return_value=("same", 50 * S.GIB)), \
+                    mock.patch.dict(os.environ, {"FSCMP_MATRIX_DIR": str(matrix),
+                                                "FSCMP_MAX_ATTEMPTS": "2"}):
+                P.gate(rows, root / "gate", root, inspect=lambda _: {})
+            model = S.load_json(root / "gate/capacity.json")
+            self.assertEqual(model["remaining_attempts"], 2)
+            self.assertEqual(S.remaining_attempts(rows[:1], matrix, 2), 0)
+            (source / S.STATE).write_text('{"complete": false}')
+            self.assertEqual(S.remaining_attempts(rows, matrix, 2), 4)
+            (matrix / "matrix-summary.csv").write_text(
+                "repetition,run_id,config,test,status\n2,failed,E1,smoke,fail:final_judge\n")
+            self.assertEqual(S.remaining_attempts(rows, matrix, 2), 3)
+            groups = S.estimate(dict(output=root, temp=root, archive=root), 1, 0, 1, 1,
+                                lambda _path: ("same", 5 * S.GIB))
+            self.assertEqual(groups["same"]["estimate"], 0)
+            self.assertEqual(groups["same"]["required"], 5 * S.GIB)
+
+    def test_smoke_reuse_repetitions_and_maximum_attempts_feed_capacity(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            path = dict(path="smoke", test="smoke", phases="run", points="none")
+            rows = [("E1", "smoke", "1"), ("E1", "smoke", "2")]
+
+            def probe(attempt, config, selected, _env, _output):
+                evidence = attempt / "raw"
+                evidence.write_text("fixture")
+                return dict(config=config, path=selected["path"], phases=["run"], ok=True,
+                            unsupported=None, evidence={str(evidence): P.digest(evidence)})
+
+            with mock.patch.object(P, "run_probe", probe), \
+                    mock.patch.object(P, "requirements", return_value=[("E1", path)]), \
+                    mock.patch.object(S, "prepare") as prepare, \
+                    mock.patch.dict(os.environ, {"FSCMP_MAX_ATTEMPTS": "3"}):
+                P.gate(rows, root, root, probe, lambda _: {})
+                self.assertEqual(prepare.call_args.args[2], 7)
+                self.assertEqual(prepare.call_args.kwargs["counts"]["smoke_probes"], 1)
+                P.gate(rows, root, root, probe, lambda _: {})
+                self.assertEqual(prepare.call_args.args[2], 6)
+                self.assertEqual(prepare.call_args.kwargs["counts"]["smoke_probes"], 0)
+
+    def test_context_archives_sources_generated_configs_command_and_environment(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            output = root / "output"
+            Preflight().environment_fixture(output)
+            runner = mock.Mock(return_value=subprocess.CompletedProcess([], 0, "version\n", ""))
+            with mock.patch.object(P.shutil, "which", return_value=str(output / "fake-tool")):
+                environment = P.environment(output, runner)
+            env_file = root / "environment.json"
+            S.write_json(env_file, environment)
+            source = root / "run"
+            source.mkdir()
+            with mock.patch.dict(os.environ, {"FSCMP_ENVIRONMENT_FILE": str(env_file)}), \
+                    mock.patch.object(S, "archive_root", return_value=root / "archives"):
+                S.context(source, "E1", "T1-sample", "run", "7")
+            self.assertTrue((source / "evidence/harness/run-qemu.sh").is_file())
+            self.assertTrue((source / "evidence/harness/fs-compare-workload.c").is_file())
+            self.assertEqual(len(list((source / "evidence/configs").iterdir())), 4)
+            self.assertEqual(S.load_json(source / "evidence/command.json")["command"][-2:],
+                             ["--points", "7"])
+            self.assertEqual(S.load_json(source / "evidence/environment.json"), environment)
+
+    def test_capacity_same_and_separate_filesystems_parallel_repetitions_retry_and_smoke(self):
+        paths = dict(output="/out", temp="/temp", archive="/archive")
+        separate = S.estimate(paths, 4, 2 * 3 * 2 + 5, 100, 200,
+                              lambda path: (path, 1000 * S.GIB))
+        shared = S.estimate(paths, 4, 17, 100, 200, lambda _path: ("same", 1000 * S.GIB))
+        self.assertEqual(shared["same"]["estimate"], sum(row["estimate"] for row in separate.values()))
+        self.assertEqual(shared["same"]["required"],
+                         max((shared["same"]["estimate"] * 6 + 4) // 5, 5 * S.GIB))
+        one = S.estimate(paths, 1, 17, 100, 200, lambda path: (path, 1000 * S.GIB))
+        self.assertGreater(separate["/out"]["estimate"], one["/out"]["estimate"])
+        self.assertEqual(separate["/archive"]["estimate"], one["/archive"]["estimate"])
+        self.assertGreater(S.estimate(paths, 4, 18, 100, 200,
+                           lambda path: (path, 1000 * S.GIB))["/archive"]["estimate"],
+                           separate["/archive"]["estimate"])
+        for key, value in (("jobs", 0), ("attempts", -1), ("rootfs", 0), ("limit", 0)):
+            options = dict(jobs=1, attempts=1, rootfs=1, limit=1)
+            options[key] = value
+            with self.assertRaises(ValueError):
+                S.estimate(paths, **options)
+
+    def test_capacity_records_deficits_rechecks_and_credits_idempotently(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "capacity.json"
+            model = dict(paths=dict(output=temporary, temp=temporary, archive=temporary),
+                         jobs=2, attempts=10, rootfs=100, log_limit=200, completed=[])
+            free = 1000 * S.GIB
+            with mock.patch.object(S, "filesystem", side_effect=lambda _path: ("same", free)):
+                S.capacity(path, model)
+                free = 1
+                with self.assertRaises(OSError) as raised:
+                    S.capacity(path)
+                self.assertEqual(raised.exception.errno, errno.ENOSPC)
+                self.assertEqual(S.load_json(path)["filesystems"]["same"]["free"], 1)
+                self.assertFalse((Path(temporary) / "deleted.log").exists())
+                with mock.patch.dict(os.environ, {"FSCMP_CAPACITY_FILE": str(path)}):
+                    S.credit(Path(temporary) / "run")
+                    S.credit(Path(temporary) / "run")
+                free = 1000 * S.GIB
+                self.assertEqual(S.capacity(path)["remaining_attempts"], 9)
+            for value in ("relative", "/tmp/archive", "/dev/shm/archive"):
+                with self.assertRaises(ValueError):
+                    S.persistent(value)
+
+    def test_rootfs_listing_size_includes_metadata_and_rejects_empty_listing(self):
+        runner = mock.Mock(return_value=subprocess.CompletedProcess([], 0,
+            "drwxr-xr-x 0/0 0 2026-01-01 root\n-rwxr-xr-x 0/0 123 2026-01-01 root/tool\n", ""))
+        self.assertEqual(S.unpacked_size(Path("/output"), runner), 123 + 2 * 65536)
+        runner.return_value.stdout = ""
+        with self.assertRaises(ValueError):
+            S.unpacked_size(Path("/output"), runner)
+
+    def archive_fixture(self, root):
+        source = root / "run"
+        (source / "build/rootfs").mkdir(parents=True)
+        for name, data in {"host.log": b"raw\n", "empty.log": b"",
+                           "build/tool.log": b"build raw\n", "build/events.jsonl": b"{}\n",
+                           "build/rootfs/payload": b"unpacked",
+                           "sdcard.img": b"image"}.items():
+            (source / name).write_bytes(data)
+            os.utime(source / name, ns=(1320000000123456789, 1320000000123456789))
+        (source / "link").symlink_to("host.log")
+        os.link(source / "host.log", source / "hardlink")
+        os.mkfifo(source / "fifo")
+        return source
+
+    def test_archive_roundtrip_all_members_hash_size_mtime_type_and_cleanup(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            original = S.inventory(source)
+            receipt = S.archive_attempt(source, root / "archives")
+            self.assertEqual(S.verify_archive(receipt["archive"], receipt["manifest_sha256"]), original)
+            self.assertEqual((source / "host.log").read_bytes(), b"raw\n")
+            self.assertEqual((source / "empty.log").stat().st_size, 0)
+            self.assertEqual((source / "host.log").stat().st_mtime_ns, 1320000000123456789)
+            self.assertEqual((source / "build/tool.log").read_bytes(), b"build raw\n")
+            self.assertEqual((source / "build/events.jsonl").read_bytes(), b"{}\n")
+            self.assertFalse((source / "sdcard.img").exists())
+            self.assertFalse((source / "build/rootfs/payload").exists())
+            S.archive_attempt(source, root / "archives")
+            self.assertTrue(S.load_json(source / S.STATE)["cleaned"])
+
+    def test_archive_preserves_and_verifies_hardlink_relations(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            os.link(source / "empty.log", source / "empty-twin")
+            receipt = S.archive_attempt(source, root / "archives")
+            manifest = S.verify_archive(receipt["archive"], receipt["manifest_sha256"])
+            rows = {row["path"]: row for row in manifest["entries"]}
+            self.assertEqual(rows["host.log"]["type"], "hardlink")
+            self.assertEqual(rows["host.log"]["link"], "hardlink")
+            with tarfile.open(receipt["archive"]) as archive:
+                self.assertTrue(archive.getmember("host.log").islnk())
+                self.assertEqual(archive.extractfile("host.log").read(), b"raw\n")
+                self.assertTrue(archive.getmember("empty.log").islnk())
+                self.assertEqual(archive.extractfile("empty.log").read(), b"")
+                archive.extractall(root / "restored", members=[
+                    archive.getmember("hardlink"), archive.getmember("host.log")], filter="data")
+            self.assertEqual((root / "restored/host.log").stat().st_ino,
+                             (root / "restored/hardlink").stat().st_ino)
+            (source / "host.log").unlink()
+            (source / "host.log").write_bytes(b"raw\n")
+            os.utime(source / "host.log", ns=(1320000000123456789, 1320000000123456789))
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                S.archive_attempt(source, root / "archives")
+
+    def test_hardlink_cleanup_can_remove_canonical_payload_but_preserves_log(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            os.link(source / "build/rootfs/payload", source / "build/rootfs/z.log")
+            S.archive_attempt(source, root / "archives")
+            self.assertEqual((source / "build/rootfs/z.log").read_bytes(), b"unpacked")
+            S.archive_attempt(source, root / "archives")
+
+    def test_hardlink_canonical_order_is_shared_for_nested_and_sibling_paths(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            (source / "build/a").mkdir()
+            (source / "build/a/item.log").write_bytes(b"linked log\n")
+            os.link(source / "build/a/item.log", source / "build/a.log")
+            manifest = S.inventory(source)
+            S.verify_source(source, manifest, cleaned=True)
+            receipt = S.archive_attempt(source, root / "archives")
+            S.verify_source(source, S.verify_archive(receipt["archive"]), cleaned=True)
+            S.archive_attempt(source, root / "archives")
+            self.assertEqual((source / "build/a.log").stat().st_ino,
+                             (source / "build/a/item.log").stat().st_ino)
+
+    def test_archive_verification_failure_enospc_and_resume_preserve_sources_and_partials(self):
+        for error in (ValueError("corrupt"), OSError(errno.ENOSPC, "full"), KeyboardInterrupt()):
+            with self.subTest(error=error), tempfile.TemporaryDirectory() as temporary, \
+                    mock.patch.dict(os.environ, {}, clear=True):
+                root = Path(temporary)
+                source = self.archive_fixture(root)
+                original = S.inventory(source)
+                with mock.patch.object(S, "verify_archive", side_effect=error):
+                    with self.assertRaises(type(error)):
+                        S.archive_attempt(source, root / "archives")
+                self.assertEqual(S.inventory(source), original)
+                self.assertFalse(S.load_json(source / S.STATE)["complete"])
+                partials = list((root / "archives").glob("*.partial"))
+                self.assertEqual(len(partials), 1)
+                S.archive_attempt(source, root / "archives")
+                self.assertTrue(partials[0].exists())
+
+    def test_archive_creation_enospc_and_changed_source_never_cleanup(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            with mock.patch.object(S.tarfile, "open", side_effect=OSError(errno.ENOSPC, "full")):
+                with self.assertRaises(OSError):
+                    S.archive_attempt(source, root / "archives")
+            self.assertTrue((source / "sdcard.img").exists())
+            original_verify = S.verify_archive
+
+            def change(*args):
+                result = original_verify(*args)
+                (source / "host.log").write_text("changed")
+                return result
+
+            with mock.patch.object(S, "verify_archive", side_effect=change):
+                with self.assertRaisesRegex(ValueError, "source changed"):
+                    S.archive_attempt(source, root / "archives")
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                S.archive_attempt(source, root / "archives")
+            self.assertTrue((source / "build/rootfs/payload").exists())
+            with self.assertRaises(ValueError):
+                S.archive_attempt(source, source / "nested")
+
+    def test_corrupted_payload_and_member_set_are_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            receipt = S.archive_attempt(source, root / "archives")
+            path = receipt["archive"]
+            with tarfile.open(path, "r:gz") as archive:
+                members = [(member, archive.extractfile(member).read() if member.isfile() else None)
+                           for member in archive.getmembers()]
+            with tarfile.open(path, "w:gz") as archive:
+                for member, data in members:
+                    if member.name == "hardlink":
+                        data = b"bad\n"
+                    archive.addfile(member, io.BytesIO(data) if data is not None else None)
+            with self.assertRaisesRegex(ValueError, "payload mismatch"):
+                S.verify_archive(path, receipt["manifest_sha256"])
+            with self.assertRaises(ValueError):
+                S.archive_attempt(source, root / "archives")
+            self.assertEqual((source / "host.log").read_bytes(), b"raw\n")
+
+    def test_log_limit_watcher_fails_without_truncation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            self.assertIsNone(S.logs_over_limit(source, 4))
+            (source / "host.log").write_bytes(b"0123456789")
+            parent = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(20)"])
+            try:
+                result = subprocess.run([sys.executable, str(V2 / "storage.py"), "watch",
+                                         str(source), str(parent.pid)],
+                                        env=dict(os.environ, FSCMP_LOG_LIMIT_BYTES="4"),
+                                        capture_output=True, text=True, timeout=5)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(parent.wait(timeout=5), -signal.SIGTERM)
+            finally:
+                if parent.poll() is None:
+                    parent.terminate()
+                    parent.wait()
+            self.assertEqual((source / "host.log").read_bytes(), b"0123456789")
+            self.assertEqual(S.load_json(source / "log-limit.json")["total"], 10)
+
+    def test_every_attempt_is_archived_and_late_scan_and_unreaped_guards(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            for label, status, test in (("success", 0, "smoke"), ("failed", 1, "T1"),
+                                        ("abort", 143, "smoke"), ("smoke", 0, "smoke"),
+                                        ("excluded", 1, "smoke"), ("cut", 0, "T3")):
+                source = root / label
+                fixture(source, test)
+                M.finalize(source, test, status)
+                with mock.patch.object(S, "archive_root", return_value=root / "archives"):
+                    self.assertTrue(S.finish(source, test, status)["complete"])
+            source = root / "late"
+            fixture(source)
+            M.finalize(source, "smoke", 0)
+            launcher = root / "launcher"
+            launcher.write_text("qemu-system-aarch64: fatal after marker\n")
+            with mock.patch.object(S, "archive_root", return_value=root / "archives"):
+                S.finish(source, "smoke", 0, launcher)
+            self.assertNotEqual(M.published(source / "summary.csv")["status"], "ok")
+            self.assertIn("fatal after marker", (source / "errors.txt").read_text())
+            source = root / "unreaped"
+            fixture(source, reaped=False)
+            with self.assertRaisesRegex(ValueError, "not proven reaped"):
+                S.finish(source, "smoke", 1)
+            self.assertFalse((source / S.STATE).exists())
+
+    def test_cap_exceeded_and_incomplete_archive_cannot_publish_success(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = root / "limit"
+            fixture(source)
+            M.finalize(source, "smoke", 0)
+            original = (source / "qemu-run.log").read_bytes()
+            with mock.patch.object(S, "archive_root", return_value=root / "archives"), \
+                    mock.patch.dict(os.environ, {"FSCMP_LOG_LIMIT_BYTES": "1"}):
+                S.finish(source, "smoke", 0)
+            self.assertNotEqual(M.published(source / "summary.csv")["status"], "ok")
+            self.assertEqual((source / "qemu-run.log").read_bytes(), original)
+            self.assertIn("log size cap", (source / "errors.txt").read_text())
+            S.write_json(source / S.STATE, dict(complete=False))
+            self.assertIsNone(M.published(source / "summary.csv"))
+            self.assertTrue((source / "qemu-run.log").exists())
 
 
 class Preflight(unittest.TestCase):

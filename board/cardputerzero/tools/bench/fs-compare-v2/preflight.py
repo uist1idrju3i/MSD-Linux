@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 
+import storage
 from supervisor import load_json, published, write_json, atomic_write
 
 
@@ -181,6 +182,8 @@ def environment(output, runner=subprocess.run):
                               sha256=digest(executable))
     return dict(schema=SCHEMA, files={str(path): digest(path) for path in inputs},
                 tools=versions, kernel_release=release.read_text().strip(),
+                storage=dict(log_limit=storage.log_limit(),
+                             max_attempts=storage.positive(os.environ.get("FSCMP_MAX_ATTEMPTS", "1"))),
                 overrides={key: value for key, value in os.environ.items()
                            if key.startswith(("QEMU_", "LD_", "LC_", "PYTHON"))
                            or key in ("PATH", "ROOT_DEVICE", "ROOT_FSTYPE", "TMPDIR", "BASH_ENV",
@@ -254,6 +257,7 @@ def unsupported(config, records, text, child_status):
 
 
 def run_probe(directory, config, path, env, output):
+    storage.check_capacity()
     run_id = f"probe-{config}-{path['path']}"
     command = [str(HERE / "fs-compare.sh"), config, path["test"], run_id]
     if path["points"] == "first":
@@ -261,9 +265,12 @@ def run_probe(directory, config, path, env, output):
     child_env = dict(os.environ, OUTPUT_DIR=str(output), QEMU_LOG_DIR=str(directory),
                      FSCMP_PREFLIGHT_WORKER="1", FSCMP_SMOKE="1",
                      FSCMP_EXPECT_KERNEL=env["kernel_release"])
-    with (directory / f"{run_id}.launcher.log").open("w") as log:
-        child = subprocess.run(command, env=child_env, stdout=log, stderr=subprocess.STDOUT)
+    launcher = directory / f"{run_id}.launcher.log"
+    child_env["FSCMP_LAUNCH_LOG"] = str(launcher)
+    with launcher.open("x") as log:
+        child = storage.run_child(command, child_env, log)
     run = directory / run_id
+    archive = storage.finish(run, path["test"], child.returncode, launcher)
     result = published(run / "summary.csv")
     logs = list(run.glob("qemu-*.log")) + [run / "host.log"]
     text = "\n".join(path.read_text(errors="replace") for path in logs if path.is_file())
@@ -274,10 +281,10 @@ def run_probe(directory, config, path, env, output):
                     (run / f"qemu-{phase}.log").read_text(errors="replace") for phase in phases)
     return dict(config=config, path=path["path"], test=path["test"], phases=phases,
                 ok=ok, child_status=child.returncode, run=str(run),
-                command=command, option=registry()[2].get(config),
+                command=command, option=registry()[2].get(config), archive=archive,
                 evidence={str(file): digest(file) for file in
                           [run / "result.json", run / "summary.csv", run / "errors.jsonl",
-                           *logs] if file.is_file()},
+                           run / storage.STATE, *logs] if file.is_file()},
                 unsupported=unsupported(config, records, text, child.returncode))
 
 
@@ -298,9 +305,13 @@ def covered(certificate, fingerprint, required):
         if not row or row.get("ok") is not True or row.get("phases") != path["phases"].split(","):
             return False
     try:
+        for row in records.values():
+            if "archive" in row:
+                archive = row["archive"]
+                storage.verify_archive(archive["archive"], archive["manifest_sha256"])
         return all(digest(file) == value for row in records.values()
                    for file, value in row["evidence"].items())
-    except (OSError, KeyError, TypeError):
+    except (OSError, KeyError, TypeError, ValueError, storage.tarfile.TarError):
         return False
 
 
@@ -312,6 +323,11 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
     if expected_environment is not None and env != load_json(expected_environment):
         raise ValueError("environment differs from the approved manifest")
     write_json(directory / "environment.json", env)
+    if probe is run_probe:
+        write_plan = directory / "requested-plan.tsv"
+        atomic_write(write_plan, plan_bytes(rows))
+        os.environ["FSCMP_ENVIRONMENT_FILE"] = str(directory / "environment.json")
+        os.environ["FSCMP_PLAN_FILE"] = str(write_plan)
     fingerprint = identity(env, dict(rows=rows, parameters=parameters))
     required = requirements(rows)
     certificate_path = directory / "smoke-coverage.json"
@@ -320,6 +336,14 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
         reuse = covered(certificate, fingerprint, required)
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         reuse = False
+    if probe is run_probe:
+        maximum = storage.positive(os.environ.get("FSCMP_MAX_ATTEMPTS", "1"))
+        smoke_count = 0 if reuse else len(required)
+        main_count = (storage.remaining_attempts(rows, os.environ["FSCMP_MATRIX_DIR"], maximum)
+                      if os.environ.get("FSCMP_MATRIX_DIR") else len(rows) * maximum)
+        storage.prepare(directory, output, smoke_count + main_count,
+                        counts=dict(planned_rows=len(rows), max_attempts=maximum,
+                                    smoke_probes=smoke_count, remaining_main_attempts=main_count))
     if not reuse:
         attempt = directory / f"attempt-{time.time_ns()}"
         attempt.mkdir()
@@ -388,6 +412,8 @@ def main():
             root = Path(os.environ.get("QEMU_LOG_DIR", ""))
             if not root.is_absolute() or not re.fullmatch(r"[A-Za-z0-9._-]+", args.run_id):
                 raise ValueError("absolute QEMU_LOG_DIR and valid run ID required")
+            if (root / args.run_id).exists() or (root / f"{args.run_id}.launcher.log").exists():
+                raise ValueError("refusing to overwrite an existing attempt")
             if args.points and (args.test != "T1-sample" or
                                 not re.fullmatch(r"[0-9]+(?:,[0-9]+)*", args.points)):
                 raise ValueError("invalid T1 points")
@@ -397,8 +423,14 @@ def main():
             command = [str(HERE / "fs-compare.sh"), args.config, args.test, args.run_id]
             if args.points:
                 command += ["--points", args.points]
-            os.execve(command[0], command, dict(os.environ, FSCMP_PREFLIGHT_WORKER="1",
-                                              FSCMP_EXPECT_KERNEL=env["kernel_release"]))
+            storage.check_capacity()
+            launcher = root / f"{args.run_id}.launcher.log"
+            child_env = dict(os.environ, FSCMP_PREFLIGHT_WORKER="1",
+                             FSCMP_EXPECT_KERNEL=env["kernel_release"], FSCMP_LAUNCH_LOG=str(launcher))
+            with launcher.open("x") as log:
+                child = storage.run_child(command, child_env, log)
+            storage.finish(root / args.run_id, args.test, child.returncode, launcher)
+            return child.returncode or int(published(root / args.run_id / "summary.csv")["status"] != "ok")
     return 0
 
 

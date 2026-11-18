@@ -213,15 +213,20 @@ def aggregate_errors(logs, test):
     return records
 
 
-def finalize(directory, test, driver_status):
+def finalize(directory, test, driver_status, rescan=False):
     directory = Path(directory)
-    if (directory / "result.json").exists():
+    if (directory / "result.json").exists() and not rescan:
         raise FileExistsError("final result already exists")
-    logs = [("host", path) for path in [directory / "host.log"] if path.exists()]
+    if rescan and (directory / "result.json").exists() and not (directory / "result-before-archive.json").exists():
+        atomic_write(directory / "result-before-archive.json", (directory / "result.json").read_bytes())
+    logs = [("host", path) for path in [directory / "host.log", directory / "launcher.log"] if path.exists()]
     logs += [(phase, directory / f"qemu-{phase}.log") for phase in ("run", "verify")
              if (directory / f"qemu-{phase}.log").exists()]
     logs += [("host", path) for path in sorted(directory.glob("supervisor-*.log"))]
     errors = aggregate_errors(logs, test)
+    if (directory / "log-limit.json").exists():
+        errors.append(dict(file="log-limit.json", line=0, phase="host", category="capacity",
+                           expected=False, text="log size cap exceeded; raw logs preserved"))
     phases = {}
     valid = driver_status == 0
     if not valid:
@@ -288,6 +293,11 @@ def finalize(directory, test, driver_status):
 
 def published(summary):
     try:
+        storage = Path(summary).parent / ".storage.json"
+        if storage.exists():
+            state = load_json(storage)
+            if state.get("complete") is not True or state.get("cleaned") is not True:
+                return None
         result = load_json(Path(summary).parent / "result.json")
         with Path(summary).open(newline="") as stream:
             rows = list(csv.DictReader(stream))

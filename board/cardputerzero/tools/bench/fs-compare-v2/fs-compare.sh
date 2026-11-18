@@ -57,6 +57,7 @@ RUN_START_SECONDS=$SECONDS
 VM_PID=
 VM_PHASE=
 CURRENT_LOG=
+LOG_WATCH_PID=
 case "$TEST" in
 	T1|T1-negative|T1-final|T1-negative-final|T1-sample)
 		WORKLOAD_SIZE=t1-reduced
@@ -274,6 +275,11 @@ finalize_run()
 		stop_vm abort
 		((exit_code != 0)) || exit_code=1
 	fi
+	if [[ -n "$LOG_WATCH_PID" ]]; then
+		kill -TERM "$LOG_WATCH_PID" 2>/dev/null || true
+		wait "$LOG_WATCH_PID" 2>/dev/null || true
+	fi
+	[[ ! -f "${RUN_DIR}/log-limit.json" ]] || exit_code=1
 	if [[ -f "$QEMU_LOG" && -f "${RUN_DIR}/run-meta.txt" ]]; then
 		setup_done_wait_seconds="$(sed -n \
 			's/.*setup_done_wait_seconds=\([0-9][0-9]*\).*/\1/p' "$QEMU_LOG" |
@@ -300,6 +306,11 @@ finalize_run()
 trap 'exit 130' INT
 trap 'exit 143' TERM
 trap finalize_run EXIT
+
+python3 "${SCRIPT_DIR}/storage.py" check
+python3 "${SCRIPT_DIR}/storage.py" context "$RUN_DIR" "$CONFIG" "$TEST" "$RUN_ID" "$T1_POINTS"
+python3 "${SCRIPT_DIR}/storage.py" watch "$RUN_DIR" "$$" &
+LOG_WATCH_PID=$!
 
 for required in "$TEST_ROOTFS" "$BASE_IMAGE" "$KERNEL" "$DTB" \
 	"${OUTPUT_DIR}/host/bin/unsquashfs" "${OUTPUT_DIR}/host/bin/mksquashfs" \
