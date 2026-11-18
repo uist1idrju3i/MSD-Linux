@@ -4,11 +4,35 @@
 
 ## 現在の範囲
 
-step 1の監視・判定に加え、step 2の経路定義、環境検査、全経路smoke、自動除外、新しいplan生成を実装しています。容量見積りとcleanup前の自動archiveはまだありません。**正式測定にはまだ使いません。** QEMU・実機での試行は行っておらず、この変更の実験記録はありません。
+step 1の監視・判定、step 2の経路定義・環境検査・全経路smoke・自動除外・plan生成に加え、step 3の容量見積りと検証付きarchiveを実装しています。**正式測定にはまだ使いません。** QEMU・実機での試行は行っておらず、この変更の実験記録はありません。
 
 - build: `fs-compare-build.sh`。既定出力は`output-fscmp-v2`です。旧版のBuildroot fragmentを使うtreeは拒否します。
 - 単発: `QEMU_LOG_DIR=/永続的な絶対path fs-compare.sh E1 smoke run-id`。既存のrun directoryは上書きしません。
 - matrix: `fs-compare-matrix.sh --runs-dir /永続的な絶対path plan.tsv`。旧版と混ぜず、v2で作ったmatrix directoryだけ再開します。
+
+## 容量とlog上限
+
+`storage.py`はimage作成前にoutput・一時領域・archive先をfilesystemごとに調べ、同じdeviceの見積りを合算します。`capacity.json`に内訳、空き容量、必要量、並列数、plan行数、最大attempt数、未実行smoke数を保存します。展開rootfsは`unsquashfs -lln`のfile size合計とentryごとの64 KiBから見積もります。
+
+- output: 同時実行数に対する8 GiB image、展開・再pack用のrootfs 2個分、中間file 1 GiBに、全attemptのlogと保持するtextの上限を加えます。
+- 一時領域: 同時実行数に対する8 GiBと展開rootfsを確保します。launcherがimageをcopyしない場合も差し引きません。
+- archive: 全attemptのimage・rootfs・中間file・logの合計に10%と16 MiBを加えます。sparse、reflink、gzipによる節約は前提にしません。
+
+各filesystemの必要量は`max(見積り × 1.2, 5 GiB)`です。planの各反復行に最大attempt数を掛け、新規smokeを足します。証明を再利用できるsmokeは新規分に数えません。matrixの`--max-attempts N`は既定2で、retryは最大N−1回です。実行前と各job・probeの投入前に再検査し、検証済みarchiveとcleanupが終わったattemptだけを予約から引きます。同時に進行中のjobは予約を保持します。ほかのprocessによる消費も空き容量へ反映され、不足時には新しいjobを開始しません。logを削除して空きを作ることはありません。
+
+`FSCMP_LOG_LIMIT_BYTES`はattempt内の`.log`・`.jsonl`・`errors.txt`と外側のlauncher logの合計上限で、既定256 MiBです。入力rootfs内の既存logは監視対象から外します。実行中は0.2秒ごと、回収後は再走査の前後に確認します。上限を超えた場合は失敗にしてraw logを保存し、truncateしません。poll間の超過分も保存します。空き領域の消費をOSのquotaのように禁止する機構ではありません。
+
+## archiveとcleanup
+
+単発・matrix・smoke・除外probeとも、子とQEMUを回収し、外側のlauncher logをrun内へcopyしてから最終scanを行います。source・launcher・workloadの写し、生成済みconfig、環境、command、plan、判定、raw logを保存します。archiveはlogだけでなく、使い捨てimageと展開rootfsも含むattempt全体です。このため全経路smokeの保守的な容量見積りは非常に大きくなります。
+
+archive先は既定でruns rootの`archives/`です。`FSCMP_ARCHIVE_DIR`で別の永続filesystemの絶対pathを指定できます。既知の揮発pathである`/tmp`、`/var/tmp`、`/run`、`/dev/shm`は拒否します。それ以外のpathが実際に永続することは利用者が確認してください。一時領域だけは`TMPDIR`を使います。
+
+処理順は回収、最終scan、manifest、`.tar.gz.partial`作成、全memberとmanifestの読み戻し検証、確定名へのrename、directoryのfsync、完了記録、cleanupです。manifestには相対path・種類・SHA-256・byte数・mtime_nsを記録し、symlink・hardlink・空fileも保存します。mtime_nsはPAX headerにも保持します。manifest自身のhashはrunの`.storage.json`へ保存し、その完了記録自身はarchiveへ入れません。
+
+成功・失敗・中断・除外のいずれもarchive対象です。cleanupするのは使い捨てimageとbuild内の非log payloadだけで、`.log`・`.jsonl`・`.txt`は元pathにも残します。失敗・破損・ENOSPC・sourceの変化があればcleanupしません。失敗した`.partial`も自動削除しません。QEMUの回収を確認できない時は、archiveとcleanupを止めてsourceを残します。SIGKILLやhost障害で回収処理まで失われた場合に、自動で完了できるとは保証しません。
+
+再開時はarchiveとmanifestを検証し、未完了の記録を成功にしません。元のpayloadを未検証のまま消すこともありません。障害を直した後は`python3 storage.py finish /runの絶対path TEST 子の終了値`で同じattemptのarchiveを再試行できます。既存の完了archiveも読み戻してからcleanupを再開し、失敗したsourceが変わっていれば停止します。
 
 これらの入口は本書と同じdirectoryにあります。`run-qemu.sh`は既存のものを使い、exec後のQEMUをPython supervisorが直接waitします。`FS_COMPARE_V2_DRIVER`はhost試験で偽driverを渡す入口で、環境検査とsmokeを迂回します。通常は指定しません。`FSCMP_PREFLIGHT_WORKER`、`FSCMP_SMOKE`、`FSCMP_EXPECT_KERNEL`は内部呼出し専用です。利用者が設定してはいけません。
 
@@ -48,7 +72,7 @@ smokeも同じguest dispatchと最終判定器を使い、反復は1回です。
 
 T2/T3の最初のphaseだけは例外です。開始markerを確認し、cut意図を保存した後のSIGKILLを予定cutとして扱います。verify phaseのrecovery markerとQMP正常終了は別に必要です。予定外signalやrecovery marker後の異常終了は失敗です。
 
-`summary.pending.csv`は中間値です。回収後に全logを再走査し、`summary.csv`をatomic置換してから、最後に`result.json`をatomic置換します。後者が最終判定の確定印です。matrixはschema・run識別・summary hash・phase結果も検査し、子processが非zeroならsummaryがokでも失敗です。子の終了値も保存し、再開で成功に変わることを防ぎます。これはhostの突然の電源断まで保証するものではありません。
+`summary.pending.csv`は中間値です。回収後に全logを再走査し、`summary.csv`と`result.json`をatomic置換します。archive直前にもscanし、最初の判定は`result-before-archive.json`へ残します。通常実行の成功には`.storage.json`のarchive・cleanup完了も必要です。matrixはschema・run識別・summary hash・phase結果も検査し、子processが非zeroならsummaryがokでも失敗です。子の終了値も保存し、再開で成功に変わることを防ぎます。これはhostの突然の電源断まで保証するものではありません。
 
 ## errorの保存
 

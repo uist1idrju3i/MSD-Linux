@@ -16,6 +16,7 @@ PLAN_FILE=
 GENERATE_PLAN=0
 REPETITIONS=3
 EXPECTED_ENVIRONMENT=
+MAX_ATTEMPTS=${FSCMP_MAX_ATTEMPTS:-2}
 
 usage()
 {
@@ -46,6 +47,11 @@ while (($#)); do
 		--expect-environment)
 			(($# >= 2)) || usage
 			EXPECTED_ENVIRONMENT=$2
+			shift 2
+			;;
+		--max-attempts)
+			(($# >= 2)) || usage
+			MAX_ATTEMPTS=$2
 			shift 2
 			;;
 		--generate-plan)
@@ -124,6 +130,8 @@ fi
 [[ "$MATRIX_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] ||
 	die "invalid matrix ID"
 command -v flock >/dev/null 2>&1 || die "flock is required"
+[[ "$MAX_ATTEMPTS" =~ ^[1-9][0-9]*$ ]] || die "--max-attempts must be positive"
+export FSCMP_MAX_ATTEMPTS="$MAX_ATTEMPTS" FSCMP_JOBS="$JOBS"
 
 mkdir -p "$RUNS_DIR"
 RUNS_DIR="$(cd -- "$RUNS_DIR" && pwd -P)"
@@ -141,6 +149,9 @@ printf 'fs-compare-v2/1\n' >"${MATRIX_DIR}/.v2"
 python3 "${SCRIPT_DIR}/preflight.py" validate-plan "$PLAN_FILE"
 if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
 	preflight_dir="${RUNS_DIR}/${MATRIX_ID}.preflight"
+	export FSCMP_CAPACITY_FILE="${preflight_dir}/capacity.json"
+	export FSCMP_ENVIRONMENT_FILE="${preflight_dir}/environment.json"
+	export FSCMP_PLAN_FILE="${preflight_dir}/requested-plan.tsv"
 	preflight_options=()
 	if [[ -n "$EXPECTED_ENVIRONMENT" ]]; then
 		preflight_options+=(--expect-environment "$EXPECTED_ENVIRONMENT")
@@ -256,6 +267,9 @@ read_summary()
 	local summary_file=$1 header field_count
 	[[ -f "$summary_file" ]] || return 1
 	python3 "${SCRIPT_DIR}/supervisor.py" published "$summary_file" || return 1
+	if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
+		python3 "${SCRIPT_DIR}/storage.py" verify "${summary_file%/*}" || return 1
+	fi
 	IFS= read -r header <"$summary_file" || return 1
 	[[ "$header" == "$SUMMARY_HEADER" ]] || return 1
 	SUMMARY_ROW="$(tail -n 1 "$summary_file")"
@@ -312,7 +326,7 @@ declare -a QUEUE_CONFIGS=() QUEUE_TESTS=() QUEUE_REPETITIONS=() QUEUE_ATTEMPTS=(
 			END { print count + 0 }' "$MATRIX_SUMMARY")"
 	if ((success_found)); then
 		((DONE += 1))
-	elif ((failure_count >= 2)); then
+	elif ((failure_count >= MAX_ATTEMPTS)); then
 		((DONE += 1))
 		((FAILED += 1))
 	else
@@ -447,13 +461,21 @@ stop_host_sampler()
 # shellcheck disable=SC2329
 cleanup()
 {
-	local exit_status=$?
+	local exit_status=$? child_status run_dir
 	trap - EXIT
 	for pid in "${ACTIVE_PIDS[@]}"; do
 		kill -TERM "$pid" 2>/dev/null || true
 	done
 	for pid in "${ACTIVE_PIDS[@]}"; do
-		wait "$pid" 2>/dev/null || true
+		child_status=0
+		wait "$pid" 2>/dev/null || child_status=$?
+		run_dir="${RUNS_DIR}/${PID_RUN_ID[$pid]}"
+		if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
+			mkdir -p "$run_dir"
+			python3 "${SCRIPT_DIR}/supervisor.py" record-child "$run_dir" "$child_status" || exit_status=1
+			python3 "${SCRIPT_DIR}/storage.py" finish "$run_dir" "${PID_TEST[$pid]}" "$child_status" \
+				--launcher "${run_dir}.host.log" || exit_status=1
+		fi
 	done
 	stop_host_sampler
 	exit "$exit_status"
@@ -477,6 +499,12 @@ start_job()
 {
 	local config=$1 test=$2 repetition=$3 attempt=$4 run_id pid
 	((INTERRUPTED)) && return 1
+	if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]] &&
+		! python3 "${SCRIPT_DIR}/storage.py" check; then
+		INTERRUPTED=1
+		INTERRUPT_STATUS=1
+		return 1
+	fi
 	run_id="$(unique_run_id "$test" "$config" "$repetition")"
 	((RUNNING += 1))
 	write_state "$DONE" "$FAILED" "$RUNNING" "$WALL_SUM" "$WALL_COUNT"
@@ -485,6 +513,7 @@ start_job()
 		write_state "$DONE" "$FAILED" "$RUNNING" "$WALL_SUM" "$WALL_COUNT"
 		return 1
 	fi
+	export FSCMP_LAUNCH_LOG="${RUNS_DIR}/${run_id}.host.log"
 	QEMU_LOG_DIR="$RUNS_DIR" "$FS_COMPARE" "$config" "$test" "$run_id" \
 		>"${RUNS_DIR}/${run_id}.host.log" 2>&1 &
 	pid=$!
@@ -521,9 +550,23 @@ complete_job()
 	local wall status row
 	local -a remaining_pids=()
 	local active_pid
+	for active_pid in "${ACTIVE_PIDS[@]}"; do
+		[[ "$active_pid" == "$pid" ]] || remaining_pids+=("$active_pid")
+	done
+	ACTIVE_PIDS=("${remaining_pids[@]}")
 
+	if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
+		mkdir -p "${RUNS_DIR}/${run_id}"
+	fi
 	if [[ -d "${RUNS_DIR}/${run_id}" ]]; then
 		python3 "${SCRIPT_DIR}/supervisor.py" record-child "${RUNS_DIR}/${run_id}" "$child_status"
+		if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]] &&
+			! python3 "${SCRIPT_DIR}/storage.py" finish "${RUNS_DIR}/${run_id}" "$test" "$child_status" \
+				--launcher "${RUNS_DIR}/${run_id}.host.log"; then
+			child_status=1
+			INTERRUPTED=1
+			INTERRUPT_STATUS=1
+		fi
 	fi
 	if read_summary "$summary_file" &&
 		[[ "$SUMMARY_RUN_ID" == "$run_id" && "$SUMMARY_CONFIG" == "$config" &&
@@ -546,16 +589,12 @@ complete_job()
 		((WALL_COUNT += 1))
 	fi
 	RUNNING=$((RUNNING - 1))
-	for active_pid in "${ACTIVE_PIDS[@]}"; do
-		[[ "$active_pid" == "$pid" ]] || remaining_pids+=("$active_pid")
-	done
-	ACTIVE_PIDS=("${remaining_pids[@]}")
 	unset "PID_CONFIG[$pid]" "PID_TEST[$pid]" "PID_REPETITION[$pid]"
 	unset "PID_ATTEMPT[$pid]" "PID_RUN_ID[$pid]" "PID_START_SECONDS[$pid]"
 
 	if [[ "$status" == ok ]]; then
 		((DONE += 1))
-	elif ((attempt < 2 && !INTERRUPTED)); then
+	elif ((attempt < MAX_ATTEMPTS && !INTERRUPTED)); then
 		QUEUE_CONFIGS+=("$config")
 		QUEUE_TESTS+=("$test")
 		QUEUE_REPETITIONS+=("$repetition")
