@@ -20,6 +20,10 @@
 
 partition再読込みの例外は、既知の拡張メッセージに続く**次のuserspace行**で、同じlog内にsetup同期完了がある場合だけ認める。間にkernel行が割り込むことは許すが、そのkernel診断の判定は変えない。errno違い、番号違い、setup未完了はfatalとする。panic、Oops、BUG、guest error、EIO、ENOSPCは既知診断へ分類しない。T1/T6の明示的な破損区間に関する既存規則も変更しない。
 
+同じboot判定期間に限り、行の途中のkernel timestampから始まる断片を分け、続くuserspace行を保留中の断片へ連結する。kernel断片と連結したuserspace行はそれぞれ既存の規則で判定する。guest markerで保留を打ち切り、host log・通常測定・boot判定期間外では分離しない。log本体は変更せず、診断の行番号は断片が始まった物理行を指す。混在した行全体を許可するpatternは追加しない。
+
+再診断03の316–317行にあった`mmc1: Timeout waiting for hardware interrupt.`は、分離後は既存のfatal patternに一致しない。このためcontrollerを追加で無効化していない。この判定はtimeoutの原因や実機での安全性を確認したことを意味しない。
+
 camera regulatorのEIOと原因未確定の補助UART errorを隠さないため、v2 smokeの使い捨てDTB写しだけで`/cam1_regulator`と`/soc/serial@7e215040`をdisabledにする。QEMUにはcameraもGPIO expanderもなく、このharnessでは補助UARTも使わない。PL011 console・mmc0・filesystem経路は維持する。各phaseのDTB・hashを保存し、共通launcherは従来どおりBluetoothだけを別の写しで無効にする。製品DTB・共通launcher・kernel configは変更しない。EIOや補助UART errorが再び出れば失敗する。
 
 ## 固定source

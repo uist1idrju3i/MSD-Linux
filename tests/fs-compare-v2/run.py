@@ -224,6 +224,50 @@ class Judge(unittest.TestCase):
 
 
 class Errors(unittest.TestCase):
+    def test_boot_serial_fragments(self):
+        first = "Re-reading the partition table failed."
+        kernel = "[   16.000491] mmc1: Timeout waiting for hardware interrupt."
+        continuation = ": Device or resource busy"
+        self.assertEqual(list(M.boot_serial_lines([], lambda: True)), [])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel, continuation], lambda: True)),
+                         [(1, kernel), (1, first + continuation)])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel, continuation], lambda: False)),
+                         [(1, first + kernel), (2, continuation)])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel], lambda: True)),
+                         [(1, kernel), (1, first)])
+        self.assertEqual(list(M.boot_serial_lines(
+            [first + kernel, "msd.fscmp: finished"], lambda: True)),
+            [(1, kernel), (1, first), (2, "msd.fscmp: finished")])
+
+    def test_real_inline_boot_fragments_are_judged_independently(self):
+        text = "\n".join(gzip.decompress(
+            (ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()
+        ).decode().splitlines())
+        grow = "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0\n"
+        warning = "Re-reading the partition table failed.: Device or resource busy"
+        kernel = "[   16.000491] mmc1: Timeout waiting for hardware interrupt."
+        split = "Re-reading the partition table failed." + kernel + "\n: Device or resource busy"
+        self.assertIn(grow + warning, text)
+        modified = text.replace(grow + warning, grow + split)
+        records = self.boot_scan(modified)
+        self.assertEqual(sum(r["expected"] for r in records), 19)
+        self.assertEqual(sum(not r["expected"] for r in records), 5)
+        self.assertEqual(self.boot_scan(kernel), [])
+        for fragment in ("unknown driver: failed", "Kernel panic", "Oops:", "BUG:", "EIO", "ENOSPC"):
+            changed = modified.replace(kernel, "[   16.000491] " + fragment)
+            self.assertTrue(any(not r["expected"] and fragment in r["text"]
+                                for r in self.boot_scan(changed)))
+        for changed in (modified.replace(": Device or resource busy", ": Input/output error"),
+                        modified.replace(grow, "unrelated userspace operation\n"),
+                        modified.replace("msd-data: setup synchronized / 初期設定の同期が完了しました。",
+                                         "setup incomplete")):
+            self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                                for r in self.boot_scan(changed)))
+        self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                            for r in self.boot_scan(modified, "host")))
+        self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                            for r in self.boot_scan(text + "\n" + split)))
+
     def boot_scan(self, text, phase="run"):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / f"qemu-{phase}.log"

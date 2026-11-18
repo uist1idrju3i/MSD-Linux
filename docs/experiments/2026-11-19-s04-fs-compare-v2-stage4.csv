@@ -18,3 +18,5 @@ representative,bootfix-03-04-E1-T1-final,E1,T1-final,passed,369.9134132129984,co
 representative,bootfix-03-05-E1-T1-sample,E1,T1-sample,passed,398.12064521999855,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=395.2346729560086;filesystem_used_delta_bytes=1597440
 representative,bootfix-03-06-E1-T1-sample-selected,E1,T1-sample-selected,failed,329.6439274690056,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=326.75667612098914;filesystem_used_delta_bytes=1511424;inline_kernel_userspace_serial_fragments;guest_finished;fatal_before_archive=1
 smoke,bootfix-03-all-851,,,not_started,,representative_selected_sample_failed;AA_and_T1_all_final_sample_passed;negative_controls_pending
+host,serial-fragments,,,passed,10.406,64_tests;aggregate_11_suites_passed;boot_only;existing_fatal_rules
+host,serial-fragments-real-03,,,passed,,raw_serial_sha256_unchanged;fatal_records=0;historical_failed_result_unchanged

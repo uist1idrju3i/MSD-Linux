@@ -141,3 +141,11 @@ Re-reading the partition table failed.[   16.000491] mmc1: Timeout waiting for h
 kernel/userspaceが1行内で混ざる場合の判定は未解決であり、両者をまとめて無害と扱う変更はしていない。代表診断は21件中5成功・1失敗・残り15件未実施で終了した。負対照2件にも達していない。全smokeの開始条件を満たさないため、851件のbackground run、最初の10件の実測、実測に基づく所要時間の更新は未実施である。
 
 [再診断03の証拠archive](2026-11-19-s04-fs-compare-v2-bootfix03-evidence.tar.gz)は210,107 byte、SHA-256は`9b5e52fd2475636dcfa238505da69e2f5f69dcc9d26e5ace1a64a520f9dcc4fc`。137 fileのsize・hashを読戻し照合した。6件の結果、serial log、`errors.jsonl`、phase・環境・保存状態、生成DTB、runnerの終了を収録した。画像と共有object本体は含めていない。
+
+### boot期間だけのserial断片分離
+
+承認後、kernel timestampで断片を分け、保留したuserspaceの断片へ次のuserspace行を連結する処理を追加した。両方の断片を既存の判定規則へ別々に通す。boot期間外・host logは従来どおりで、raw logは変更しない。combined lineのallowlistは追加していない。
+
+再診断03の実logを新しい判定器へ通すとfatalは0件となり、log本体のSHA-256が不変であることを照合した。これは過去の失敗を成功へ書き換える再実行ではなく、判定器のhost検査である。過去の結果JSONとCSVは失敗のまま保持した。単独の`mmc1: Timeout waiting for hardware interrupt.`は既存規則のfatalに一致しないため、smoke DTBの無効化対象を増やしていない。
+
+host aggregateは全11 suite成功、v2は64 test成功。実際の316–317行、空入力、未完の断片、boot終了、scope違い、errno違い、未同期setup、独立した未知error・panic・Oops・BUG・EIO・ENOSPCを検査した。新しい代表診断の結果は次の試行として残す。
