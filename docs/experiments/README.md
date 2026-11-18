@@ -1,16 +1,17 @@
 # 実験記録
 
-- [2026-11-13 調査と生データの収録監査](2026-11-13-research-audit.md)：12主題、outputのraw保全、fs-compareのhash照合、未保存imageの一覧。
+- [収録監査](2026-11-13-research-audit.md)：12主題、raw保全・fs-compareのhash照合・未保存image一覧。
 
-[文書案内](../README.md) / [調査の索引](../../RESEARCH.md)。「完了」は記載条件での実験終了を指し、製品採用・実機確認とは別です。Yocto移行は見送り。[Buildrootへの還元](../research/yocto-migration/buildroot-lessons.md)に再点検範囲を記載。
+[文書案内](../README.md) / [調査索引](../../RESEARCH.md)。「完了」は記載条件下の実験終了で、製品採用・実機確認とは別です。Yoctoは見送り。[Buildroot還元](../research/yocto-migration/buildroot-lessons.md)に再点検範囲を記載。
 
-記録は1件1ファイルとし、`.agents/skills/experiment-record/SKILL.md`に従います。名前は`YYYY-MM-DD-sNN-<short>.md`、生の値は同名の`.csv`です。S1〜S17以外は`sNN-`を省き、すべてこの一覧に載せます。覆った結論は消さず、「置換」として新記録へリンクします。
+手順は`.agents/skills/experiment-record/SKILL.md`。1件1ファイル、名前は`YYYY-MM-DD-sNN-<short>.md`、生の値は同名CSVです。S1〜S17以外は`sNN-`を省き、全件を載せます。覆った結論は消さず「置換」で新記録へリンクします。
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |
 | [idle残量](2026-11-17-data-idle-residual.md) | なし | 2026-11-17 | QEMU 5回 | 88 sectorはmetadataの遅延writeback |
 | [NVD公式feed](2026-11-17-nvd-official-feed.md) | [CSV](2026-11-17-nvd-official-feed.csv) | 2026-11-17 | local単回 | 426,444 CVE。CI cache・Release未確認 |
-| [2026-11-17-data-sync-itable](2026-11-17-data-sync-itable.md) | [CSV](2026-11-17-data-sync-itable.csv) | 2026-11-17 | QEMU各3回。idle 0基準は未達 | 全groupのITABLE_ZEROEDとthread不在を確認。boot 16,848、idle1に88 sector残存。progress・既存SDは未対応 |
+| [同期初期化](2026-11-17-data-sync-itable.md) | [CSV](2026-11-17-data-sync-itable.csv) | 2026-11-17 | QEMU各3回・idle基準未達 | table同期化。boot 16,848、idle1 88。progress・既存SD未対応 |
 | [B3追試B〜F総括](2026-11-16-dm-verity-fec-followup-summary.md) | 各段階のCSV | 2026-11-16 | 43条件・215正式trial | 正式195一致。BのEIO10件とCのlower hash10件は反証。QEMU限定 |
 | [2026-11-16-dm-verity-fec-stage-f](2026-11-16-dm-verity-fec-stage-f.md) | [CSV](2026-11-16-dm-verity-fec-stage-f.csv) | 2026-11-16 | 1 smoke＋5正式trial | 全期待一致。guest-resetと2回目bannerを観測。初回launch失敗0 bootも保存。実機A/B復帰ではない |
 | [2026-11-16-dm-verity-fec-stage-e](2026-11-16-dm-verity-fec-stage-e.md) | [CSV](2026-11-16-dm-verity-fec-stage-e.csv) | 2026-11-16 | 4 smoke＋20正式boot | 全期待一致。9/24 blockとも同column集中はpanic、異column分散は訂正read成功。総block数だけの保証・実機検証ではない |

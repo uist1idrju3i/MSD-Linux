@@ -25,6 +25,8 @@ mkswap
 mount
 msd-data-grow
 msd-hwinfo
+msd-syncfs
+dumpe2fs
 msd-update
 mktemp
 mv
