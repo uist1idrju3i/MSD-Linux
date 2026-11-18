@@ -21,6 +21,7 @@
 | [filesystem option調査](../storage/filesystem-options.md) | ext4、F2FS、Btrfs、LUKS2、dm-integrityのformat・mount・checksum optionと版比較 |
 | [A/B更新framework](updates.md) | 現行処理とRAUC・SWUpdate・Mender・Rugix・OSTree・bootc・sysupdateの責務、署名形式、CM0の未確認範囲 |
 | [更新経路と差分配信](update-delivery.md) | online/local/clean-installの経路、配信先の制約とrange確認、差分方式 |
+| [RAUC adaptiveと差分更新の比較](update-delta.md) | RAUCを進める利用者決定、casync・zchunk・rdiff、検証と中断、依存、第2段の測定案 |
 | [TUF・Uptane metadata](update-metadata.md) | role、threshold、expiry、freeze、rotationと、A/B health・SemVer・内部番号を分けた配信設計 |
 | [Wi-Fi・接続管理・通信防御](network.md) | 認証・IP・DNS・時刻・HTTPSとfirewallを分け、wpa_supplicant・iwd・各managerの条件と未実装機能の計画を比べる |
 | [周辺機能・BSP・device API](peripherals.md) | LCD・入力・音声・camera・IMU・RTC・電池・GPIO等を、driverとlibraryの層を分けて比べる |

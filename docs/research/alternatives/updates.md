@@ -4,13 +4,13 @@
 
 ## 比較の前提
 
-2026-11-13に[標準frameworkへの移行方針](../../design/product-decisions.md)を再確認しました。RAUC対SWUpdateの比較完了後に移行先を決め、移行後は公開`msd-update`を廃止します。現時点ではframeworkを採用・実装していません。比較・移行までCMSを残し、`msd-update`存続中はOpenSSL CLIを維持します。移行後に`no-apps`を再検討します。
+2026-11-13に再確認した[標準frameworkへの移行方針](../../design/product-decisions.md)に基づき、利用者はRAUCで進めると決定しました。imageの配布先はGitHub Releases、差分更新はRAUC adaptiveの`block-hash-index`を想定します。実装計画は利用者review待ちで、製品への導入は未実施です。移行後は公開`msd-update`を廃止します。移行までCMSを残し、`msd-update`存続中はOpenSSL CLIを維持します。移行後に`no-apps`を再検討します。
 
 現行の`msd-update`を、RAUC、SWUpdate、Mender等で置換・補完できるか比較します。更新framework、bootloaderのslot選択、配信server、署名metadataは役割が違います。frameworkを入れても、CM0のfirmware・SD・電源断・healthの検証は残ります。
 
 2026-11-02にMSD/Linuxの`c0214b380c046100592cd427ab3013347dff1758`と固定Buildrootの`8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。代替frameworkのbuild・実行、CM0でのslot切替、署名方式の相互運用、性能測定は本リポジトリでは試していません。製品設定と更新形式は変更しません。
 
-固定Buildrootのoptionは[更新frameworkと暗号libraryのbuild option](update-build-options.md)、更新経路・配信制約・差分方式は[更新経路と差分配信](update-delivery.md)を参照してください。
+固定Buildrootのoptionは[更新frameworkと暗号libraryのbuild option](update-build-options.md)、更新経路・配信制約は[更新経路と差分配信](update-delivery.md)、差分方式の根拠・検証順序・第2段の測定案は[RAUC adaptiveと差分更新の比較](update-delta.md)を参照してください。
 
 ## 現行処理を比較の基準にする
 
@@ -26,7 +26,7 @@
 
 | 候補 | 利用できる仕組み | 本機で残る統合と背反 | 提案 |
 |---|---|---|---|
-| RAUC | signed bundle、slot group、health後のmark-good、custom bootloader backend。network/D-Bus等を選べる | GLib・OpenSSL等とbundle形式が増える。現行Ed25519 manifestをそのまま読めるものではない。CM0向けbackendと復旧試験が必要 | A/B image中心の有力な実験候補 |
+| RAUC | signed bundle、slot group、health後のmark-good、custom bootloader backend。network/D-Bus等を選べる | GLib・OpenSSL等とbundle形式が増える。現行Ed25519 manifestをそのまま読めるものではない。CM0向けbackendと復旧試験が必要 | 利用者が移行先の方針として選択。実装計画はreview待ち |
 | SWUpdate | `sw-description`、handler、複数payload、選択可能な暗号・download・server連携 | handler・scriptの自由度だけ管理対象と特権処理が増える。不要なwebserver、Lua、MTD等を落とした構成とboot連携が必要 | rootfs以外の周辺firmwareも統合するなら実験候補 |
 | Mender | A/B rootfs、standalone更新、server連携、Update Modules | serverは必須ではない。現行Buildroot recipeと上流clientは世代が違う。artifact、bootloader、依存、署名方式を移す費用 | 端末群の管理が必要なら再検討 |
 | Rugix Ctrl | READMEはA/B・復旧構成、差分更新、署名の事前検証、永続state管理を説明する | Bakeryは別のimage build system、Adminは別のUI。Ctrlだけを組み込む範囲、boot flow、署名と鍵、最終依存を調べる必要がある | Buildroot維持のまま比較する追加候補 |
@@ -94,12 +94,18 @@ Buildroot submoduleの更新通知は、未採用候補を含む各framework・�
 
 ## 実験の優先順
 
-第一候補はRAUCの最小構成です。ただし採用決定ではありません。署名・CMS・依存とcustom backendの費用が、現行更新処理を安全に拡張する費用より低いか比較します。周辺firmwareも一括で扱う必要が強ければSWUpdate、端末群管理ならMender、OCI中心への転換ならbootc等の優先度を上げます。
+利用者が選択したRAUCの最小構成とadaptiveを優先します。署名・CMS・依存とcustom backendの費用を測り、実装計画を利用者へ示してから製品へ導入します。SWUpdate等は比較資料として残し、利用者の再判断なしに移行先を変更しません。
 
 1. 現行の正常系・異常系host testと、署名・board・版・長さ・inactive slotの不変条件を候補へ移します。公開SemVerと内部番号は未決定で、比較だけで変更しません。
 2. signed manifestとpayloadの結合、download中断、署名後の書換え、設定migration、disk-full、active slot拒否を試します。streaming時は書込み開始と認証完了の順序を別に記録します。
 3. network/parser/verifierと特権writerの実process・uid・capability・IPCを確認します。rootで動くserviceが一つ増えただけなら、特権分離の達成とはしません。
 4. QEMUの全slot・health失敗・状態破損、実機のfirmware・watchdog・SD flush・各書込み段階の電源断を分けます。共通boot領域の復旧と、失敗した設定変更からの回復も試します。
 5. host/targetのサイズ、RAM、起動、転送・書込み量、再現性、保守手順を同じ基準で比較し、5回以上の測定と失敗を[実験記録](../../experiments/README.md)へ保存します。
+
+## 採用前のoption調査
+
+RAUCを進める方針の決定だけでは、[component-options手順](../../../.agents/skills/component-options/SKILL.md)の完了にはなりません。[既存表](update-build-options.md)は主なbuild optionとBuildrootの公開設定を扱っていますが、全上流build option・実行時設定・CLIのtokenを抽出した`missing=0`の照合、既定値・最新版との差分・各optionの採否理由は揃っていません。製品導入の根拠としては不足しています。
+
+実装計画では、この網羅表と、採用するnetwork／streaming／service、shared data-directory、署名・鍵、boot backend、依存・license・監視を具体化します。今回のresearch保存ではpackageや製品設定を追加していません。
 
 原文の固定HEAD・Release応答・取得時刻・hashは[sources.json](sources.json)にあります。開発HEADをstable releaseへ読み替えず、GitHubのlatest応答だけで全系列の保守状態を確定しません。
