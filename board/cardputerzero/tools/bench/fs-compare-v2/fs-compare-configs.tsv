@@ -1,0 +1,23 @@
+# LUKS setup uses a per-run keyfile, --batch-mode, --pbkdf pbkdf2, and --pbkdf-force-iterations 1000. These are test-only, not product settings.
+# Setup steps are separated by semicolons. A post-mount step is run after mounting.
+id	mkfs/setup commands	mount options
+E1	mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+E2	mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=journal,errors=remount-ro
+E3	mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro,nodelalloc,commit=1
+E4	mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro,sync,dirsync
+E5	mkfs.ext4 -F -b 4096 -O encrypt -L data %DEVICE%; post-mount fscryptctl set_policy %FSCRYPT_KEY_ID% %MOUNTPOINT%/encrypted	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+F1	mkfs.f2fs -f -l data -O extra_attr,inode_checksum,sb_checksum %DEVICE%	noatime,nodev,nosuid,fsync_mode=posix
+F2	mkfs.f2fs -f -l data -O extra_attr,inode_checksum,sb_checksum %DEVICE%	noatime,nodev,nosuid,fsync_mode=strict
+F3	mkfs.f2fs -f -l data -O extra_attr,inode_checksum,sb_checksum,compression %DEVICE%	noatime,nodev,nosuid,fsync_mode=posix,compress_algorithm=zstd,compress_chksum,compress_extension=*
+F4	mkfs.f2fs -f -l data -O extra_attr,inode_checksum,sb_checksum %DEVICE%	noatime,nodev,nosuid,fsync_mode=posix,sync,dirsync
+F5	mkfs.f2fs -f -l data -O extra_attr,inode_checksum,sb_checksum,encrypt %DEVICE%; post-mount fscryptctl set_policy %FSCRYPT_KEY_ID% %MOUNTPOINT%/encrypted	noatime,nodev,nosuid,fsync_mode=posix
+B1	mkfs.btrfs -f -L data -m dup -d single --csum crc32c %DEVICE%	noatime,nodev,nosuid
+B2	mkfs.btrfs -f -L data -m dup -d dup --csum crc32c %DEVICE%	noatime,nodev,nosuid
+B3	mkfs.btrfs -f -L data -m dup -d dup --csum crc32c %DEVICE%	noatime,nodev,nosuid,flushoncommit,commit=5
+B4	mkfs.btrfs -f -L data -m dup -d dup --csum crc32c %DEVICE%	noatime,nodev,nosuid,sync,dirsync
+B5	cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --key-size 512 --key-file %KEYFILE% --batch-mode --pbkdf pbkdf2 --pbkdf-force-iterations 1000 %BASE_DEVICE%; cryptsetup open --key-file %KEYFILE% %BASE_DEVICE% fscompare_crypt; mkfs.btrfs -f -L data -m dup -d dup --csum crc32c %DEVICE%	noatime,nodev,nosuid
+L1	cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --key-size 512 --key-file %KEYFILE% --batch-mode --pbkdf pbkdf2 --pbkdf-force-iterations 1000 %BASE_DEVICE%; cryptsetup open --key-file %KEYFILE% %BASE_DEVICE% fscompare_crypt; mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+L2	cryptsetup luksFormat --type luks2 --cipher xchacha12,aes-adiantum-plain64 --key-size 256 --key-file %KEYFILE% --batch-mode --pbkdf pbkdf2 --pbkdf-force-iterations 1000 %BASE_DEVICE%; cryptsetup open --key-file %KEYFILE% %BASE_DEVICE% fscompare_crypt; mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+L3	cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --integrity hmac-sha256 --key-file %KEYFILE% --batch-mode --pbkdf pbkdf2 --pbkdf-force-iterations 1000 %BASE_DEVICE%; cryptsetup open --key-file %KEYFILE% %BASE_DEVICE% fscompare_crypt; mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+I1	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE% fscompare_integrity; mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro
+I2	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open --integrity-bitmap-mode %BASE_DEVICE% fscompare_integrity; mkfs.ext4 -F -b 4096 -L data %DEVICE%	noatime,nodev,nosuid,data=ordered,errors=remount-ro

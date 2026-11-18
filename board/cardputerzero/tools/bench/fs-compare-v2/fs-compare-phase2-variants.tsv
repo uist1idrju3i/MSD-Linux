@@ -1,0 +1,135 @@
+# Phase 2 variants: one option added to a phase-1 base configuration.
+# kind: setup_replace (old=>new, must match exactly once in the base setup), mount_add, mount_replace (old=>new), mount_remove,
+# post_mount (command with tokens), f2fs_sysfs (attr=value under /sys/fs/f2fs/<dev>/), queue (attr=value under the test disk's queue/), sysctl (key=value).
+# tests: std = T3 x5, T4-sync x1, T5 x1; std+T6 adds T6 x1.
+id	base	kind	value	tests	source rows
+P001	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -m 0	std	ext4:-m, tune2fs -m
+P002	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -J size=4	std	ext4:-J size=
+P003	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -E nodiscard	std	ext4:-E nodiscard
+P004	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -O bigalloc -C 16384	std	ext4:bigalloc
+P005	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -O inline_data	std	ext4:inline_data
+P006	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -O fast_commit	std	ext4:fast_commit
+P007	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -O mmp -E mmp_update_interval=5	std	ext4-tools:mmp_update_interval
+P008	E1	setup_replace	mkfs.ext4 -F -b 4096=>mkfs.ext4 -F -b 4096 -O orphan_file	std	ext4-tools:orphan_file_size（featureの有無）
+P009	E1	mount_add	discard	std	ext4-mount:discard
+P010	E1	mount_add	commit=1	std	ext4-mount:commit
+P011	E1	mount_add	commit=60	std	ext4-mount:commit
+P012	E1	mount_add	journal_checksum,journal_async_commit	std	ext4-mount:journal_async_commit
+P013	E1	mount_add	max_batch_time=0	std	ext4-mount:max_batch_time
+P014	E1	mount_add	min_batch_time=5000	std	ext4-mount:min_batch_time
+P015	E1	mount_add	noinit_itable	std	ext4-mount:init_itable/noinit_itable
+P016	E1	mount_add	dioread_lock	std	ext4-mount:dioread_lock
+P017	E1	mount_add	nombcache	std	ext4-mount:nombcache
+P018	E1	mount_add	nodelalloc	std	ext4-mount:delalloc/nodelalloc
+P019	E1	mount_add	lazytime	std	ext4-mount:lazytime, write-path-mount:lazytime
+P020	E1	mount_add	dirsync	std	write-path-mount:dirsync
+P021	E1	mount_replace	noatime=>relatime	std	write-path-mount:atime系
+P022	E1	mount_replace	noatime=>strictatime	std	write-path-mount:atime系
+P023	E1	post_mount	chattr +S %MOUNTPOINT%	std	write-path-attributes:chattr S
+P024	E1	post_mount	chattr +D %MOUNTPOINT%	std	write-path-attributes:chattr D
+P025	E1	post_mount	chattr +j %MOUNTPOINT%	std	write-path-attributes:chattr j
+P030	F1	setup_replace	mkfs.f2fs -f=>mkfs.f2fs -f -o 20	std	f2fs:-o
+P031	F1	setup_replace	mkfs.f2fs -f=>mkfs.f2fs -f -t 0	std	f2fs:-t
+P032	F1	setup_replace	-O extra_attr,inode_checksum,sb_checksum=>-O extra_attr	std+T6	f2fs:inode_checksum, sb_checksum（外した場合）
+P033	F1	setup_replace	-O extra_attr,inode_checksum,sb_checksum=>-O extra_attr,inode_checksum,sb_checksum,flexible_inline_xattr	std	f2fs:inline_xattr_size=（前提feature）
+P034	F1	mount_add	background_gc=off	std	f2fs:background_gc=
+P035	F1	mount_add	background_gc=sync	std	f2fs:background_gc=
+P036	F1	mount_add	nodiscard	std	f2fs:discard/nodiscard
+P037	F1	mount_add	noinline_data	std	f2fs:inline_data
+P038	F1	mount_add	noinline_dentry	std	f2fs:inline_dentry
+P039	F1	mount_add	data_flush	std	f2fs:data_flush
+P040	F1	mount_replace	fsync_mode=posix=>fsync_mode=nobarrier	std	f2fs:fsync_mode=（危険側の対照）
+P041	F1	mount_add	checkpoint_merge	std	f2fs:checkpoint_merge
+P042	F1	mount_add	atgc	std	f2fs:atgc, f2fs-sysfs:atgc_*
+P043	F1	mount_add	gc_merge	std	f2fs:gc_merge
+P044	F1	mount_add	active_logs=2	std	f2fs:active_logs=
+P045	F1	mount_add	active_logs=4	std	f2fs:active_logs=
+P046	F1	mount_add	disable_ext_identify	std	f2fs:disable_ext_identify
+P047	F1	mount_add	checkpoint=disable:10%	std	f2fs:checkpoint
+P048	F1	mount_add	alloc_mode=reuse	std	f2fs:alloc_mode=
+P049	F1	mount_add	discard_unit=section	std	f2fs:discard_unit=
+P050	F1	mount_add	memory=low	std	f2fs:memory=
+P051	F1	mount_add	age_extent_cache	std	f2fs:age_extent_cache
+P052	F1	mount_add	errors=remount-ro	std	f2fs:errors=
+P053	F1	f2fs_sysfs	gc_idle=2	std	f2fs-sysfs:gc_idle/gc_mode
+P054	F1	f2fs_sysfs	gc_no_gc_sleep_time=600000	std	f2fs-sysfs:gc_*_sleep_time, f2fs:gc_*_sleep_time
+P055	F1	f2fs_sysfs	discard_idle_interval=600	std	f2fs-sysfs:discard_granularity/discard_idle_interval
+P056	F1	f2fs_sysfs	discard_granularity=512	std	f2fs-sysfs:discard_granularity
+P057	F1	f2fs_sysfs	discard_io_aware=0	std	f2fs-sysfs:discard_io_aware
+P058	F1	f2fs_sysfs	discard_urgent_util=100	std	f2fs-sysfs:discard_urgent_util
+P059	F1	f2fs_sysfs	max_discard_issue_time=600000	std	f2fs-sysfs:*_discard_issue_time
+P060	F1	f2fs_sysfs	max_small_discards=0	std	f2fs-sysfs:max_discard_request等
+P061	F1	f2fs_sysfs	ipu_policy=1	std	f2fs-sysfs:ipu_policy/min_ipu_util
+P062	F1	f2fs_sysfs	min_fsync_blocks=0	std	f2fs-sysfs:min_fsync_blocks
+P063	F1	f2fs_sysfs	cp_interval=5	std	f2fs-sysfs:cp_interval
+P064	F1	f2fs_sysfs	cp_interval=600	std	f2fs-sysfs:cp_interval
+P065	F1	mount_add	lazytime	std	write-path-mount:lazytime（F2FS）
+P070	F3	mount_replace	compress_algorithm=zstd=>compress_algorithm=lz4	std	f2fs:compress_algorithm=
+P071	F3	mount_replace	compress_algorithm=zstd=>compress_algorithm=lzo-rle	std	f2fs:compress_algorithm=
+P072	F3	mount_add	compress_log_size=4	std	f2fs:compress_log_size=
+P073	F3	mount_remove	compress_chksum	std+T6	f2fs:compress_chksum（外した場合）
+P074	F3	mount_add	compress_mode=user	std	f2fs:compress_mode=
+P080	B2	setup_replace	-m dup -d dup=>-m single -d dup	std+T6	btrfs:-m, btrfs-progs:-m
+P081	B2	setup_replace	mkfs.btrfs -f=>mkfs.btrfs -f --nodiscard	std	btrfs:--nodiscard, btrfs-progs:-K
+P082	B2	setup_replace	--csum crc32c=>--csum xxhash	std+T6	btrfs:--csum xxhash, btrfs-progs:--checksum
+P083	B2	setup_replace	--csum crc32c=>--csum sha256	std+T6	btrfs:--csum sha256
+P084	B2	setup_replace	--csum crc32c=>--csum blake2	std+T6	btrfs:--csum blake2
+P085	B2	setup_replace	mkfs.btrfs -f=>mkfs.btrfs -f --enable-simple-quota	std	btrfs:--enable-simple-quota
+P086	B2	setup_replace	mkfs.btrfs -f=>mkfs.btrfs -f -n 4096	std	btrfs-progs:--nodesize
+P087	B2	setup_replace	-m dup -d dup=>--mixed -m dup -d dup	std+T6	btrfs-progs:--mixed
+P088	B2	setup_replace	mkfs.btrfs -f=>mkfs.btrfs -f -O block-group-tree	std	btrfs-progs:block-group-tree
+P089	B2	mount_add	compress=zstd	std	btrfs:compress=
+P090	B2	mount_add	compress=lzo	std	btrfs:compress=
+P091	B2	mount_add	compress-force=zstd	std	btrfs:compress-force=
+P092	B2	mount_add	nodiscard	std	btrfs:discard系
+P093	B2	mount_add	discard=sync	std	btrfs:discard系
+P094	B2	mount_add	autodefrag	std	btrfs:autodefrag
+P095	B2	mount_add	flushoncommit	std	btrfs:flushoncommit
+P096	B2	mount_add	commit=5	std	btrfs:commit=
+P097	B2	mount_add	commit=60	std	btrfs:commit=
+P098	B2	mount_add	nossd	std	btrfs:ssd系
+P099	B2	mount_add	ssd_spread	std	btrfs:ssd系
+P100	B2	mount_add	max_inline=0	std	btrfs-progs:max_inline
+P101	B2	mount_add	nospace_cache	std	btrfs-progs:nospace_cache
+P102	B2	mount_add	lazytime	std	write-path-mount:lazytime（Btrfs）
+P103	B2	post_mount	chattr +C %MOUNTPOINT%	std+T6	write-path-attributes:chattr C
+P104	B2	post_mount	chattr +c %MOUNTPOINT%	std	write-path-attributes:chattr c, btrfs:compression property
+P110	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --integrity sha256 %BASE_DEVICE%; integritysetup open --integrity sha256 %BASE_DEVICE%	std+T6	dm-integrity:--integrity, internal_hash
+P111	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --tag-size 8	std+T6	dm-integrity:--tag-size
+P112	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --sector-size 4096	std	dm-integrity:--sector-size, block_size
+P113	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --integrity-no-journal %BASE_DEVICE%	std	dm-integrity:--integrity-no-journal, D
+P114	I1	setup_replace	integritysetup format --batch-mode=>integritysetup format --batch-mode --journal-size 1048576	std	dm-integrity:--journal-size, journal_sectors
+P115	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-watermark 10 %BASE_DEVICE%	std	dm-integrity:--journal-watermark
+P116	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 1000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time, commit_time
+P117	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --journal-commit-time 60000 %BASE_DEVICE%	std	dm-integrity:--journal-commit-time
+P118	I1	setup_replace	integritysetup format --batch-mode %BASE_DEVICE%; integritysetup open %BASE_DEVICE%=>integritysetup format --batch-mode --journal-integrity crc32c %BASE_DEVICE%; integritysetup open --journal-integrity crc32c %BASE_DEVICE%	std	dm-integrity:--journal-integrity
+P119	I1	setup_replace	integritysetup open %BASE_DEVICE%=>integritysetup open --allow-discards %BASE_DEVICE%	std	dm-integrity:--allow-discards
+P120	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 1000	std	dm-integrity:--bitmap-flush-time
+P121	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-flush-time 60000	std	dm-integrity:--bitmap-flush-time
+P122	I2	setup_replace	--integrity-bitmap-mode=>--integrity-bitmap-mode --bitmap-sectors-per-bit 65536	std	dm-integrity:--bitmap-sectors-per-bit
+P130	L1	setup_replace	--cipher aes-xts-plain64 --key-size 512=>--cipher aes-cbc-essiv:sha256 --key-size 256	std	luks:--cipher
+P131	L1	setup_replace	--key-size 512=>--key-size 256	std	luks:--key-size
+P132	L1	setup_replace	--key-size 512=>--key-size 512 --sector-size 4096	std	luks:--sector-size
+P133	L1	setup_replace	--key-size 512=>--key-size 512 --sector-size 4096 --iv-large-sectors	std	luks:--iv-large-sectors
+P134	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --allow-discards --key-file	std	luks:--allow-discards
+P135	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --perf-same_cpu_crypt --key-file	std	luks:--perf-same_cpu_crypt
+P136	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --perf-submit_from_crypt_cpus --key-file	std	luks:--perf-submit_from_crypt_cpus
+P137	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --perf-no_read_workqueue --key-file	std	luks:--perf-no_read_workqueue
+P138	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --perf-no_write_workqueue --key-file	std	luks:--perf-no_write_workqueue
+P139	L1	setup_replace	cryptsetup open --key-file=>cryptsetup open --perf-high_priority --key-file	std	luks:--perf-high_priority
+P140	L3	setup_replace	--cipher aes-xts-plain64 --integrity hmac-sha256=>--cipher aes-gcm-random --integrity aead	std+T6	luks:--integrity, integrity
+P141	L3	setup_replace	--integrity hmac-sha256=>--integrity hmac-sha256 --integrity-no-journal	std	luks:--integrity-no-journal
+P150	E1	queue	scheduler=none	std	write-path-block:scheduler
+P151	E1	queue	scheduler=kyber	std	write-path-block:scheduler
+P152	E1	queue	scheduler=bfq	std	write-path-block:scheduler, bfq tunables
+P153	E1	queue	iosched/write_expire=1000	std	write-path-block:deadline tunables（mq-deadline時）
+P154	E1	queue	wbt_lat_usec=0	std	write-path-block:BLK_WBT/wbt_lat_usec
+P155	E1	queue	write_cache=write through	std	write-path-block:write_cache
+P160	E1	sysctl	vm.dirty_background_bytes=65536	std	write-path-vm:dirty_background_*
+P161	E1	sysctl	vm.dirty_bytes=262144	std	write-path-vm:dirty_bytes/ratio
+P162	E1	sysctl	vm.dirty_expire_centisecs=100	std	write-path-vm:dirty_expire_centisecs
+P163	E1	sysctl	vm.dirty_expire_centisecs=6000	std	write-path-vm:dirty_expire_centisecs
+P164	E1	sysctl	vm.dirty_writeback_centisecs=0	std	write-path-vm:dirty_writeback_centisecs
+P165	E1	sysctl	vm.dirty_writeback_centisecs=100	std	write-path-vm:dirty_writeback_centisecs
+P166	E1	sysctl	vm.laptop_mode=5	std	write-path-vm:laptop_mode
+P167	E1	sysctl	vm.dirtytime_expire_seconds=60	std	write-path-vm:dirtytime_expire_seconds（lazytimeなしの基準と比べる）
