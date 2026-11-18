@@ -12,6 +12,10 @@ BASE_IMAGE="${IMAGES_DIR}/sdcard.img"
 KERNEL="${IMAGES_DIR}/Image"
 DTB="${IMAGES_DIR}/bcm2710-rpi-3-b.dtb"
 
+if [[ "${FSCMP_PREFLIGHT_WORKER:-0}" != 1 ]]; then
+	exec python3 "${SCRIPT_DIR}/preflight.py" single "$@"
+fi
+
 usage()
 {
 	printf 'Usage: %s <config> <test> <run_id> [--points <entry,...>]\n' \
@@ -27,10 +31,10 @@ T1_POINTS=
 if [[ $# -eq 5 ]]; then
 	[[ "$4" == --points && "$TEST" == T1-sample ]] || usage
 	T1_POINTS=$5
-	[[ "$T1_POINTS" =~ ^[0-9]+(,[0-9]+)*$ ]] || usage
+	[[ "$T1_POINTS" =~ ^[0-9]+(,[0-9]+)*$ ||
+		( "$T1_POINTS" == first && "${FSCMP_SMOKE:-0}" == 1 ) ]] || usage
 fi
-[[ "$CONFIG" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2]|P[0-9]{3})$ ]] || usage
-[[ "$TEST" =~ ^(smoke|T1|T1-negative|T1-final|T1-negative-final|T1-sample|T2|T3|T4-sync|T4-nosync|T4-idle-control|T4-odirect-control|T5|T6|T7)$ ]] || usage
+python3 "${SCRIPT_DIR}/preflight.py" validate "$CONFIG" "$TEST" || usage
 [[ "$RUN_ID" =~ ^[A-Za-z0-9._-]+$ ]] || usage
 [[ "$RUNS_ROOT" = /* ]] || {
 	printf 'QEMU_LOG_DIR must be an absolute persistent path\n' >&2
@@ -429,6 +433,8 @@ install -m 0755 "${SCRIPT_DIR}/S97zz-fs-compare" \
 	"${ROOTFS_DIR}/etc/init.d/S97zz-fs-compare"
 install -m 0755 "${SCRIPT_DIR}/fs-compare-guest" \
 	"${ROOTFS_DIR}/usr/libexec/fs-compare-guest"
+install -m 0755 "${SCRIPT_DIR}/fs-compare-probe" \
+	"${ROOTFS_DIR}/usr/libexec/fs-compare-probe"
 install -m 0755 "${OUTPUT_DIR}/fs-compare/replay-log" \
 	"${ROOTFS_DIR}/usr/libexec/replay-log"
 install -m 0755 "${OUTPUT_DIR}/fs-compare/fs-compare-workload" \
@@ -513,6 +519,10 @@ start_vm()
 	VM_PHASE=$phase
 	CURRENT_LOG="${RUN_DIR}/qemu-${phase}.log"
 	local append="msd.fscmp=${CONFIG}:${TEST}:${RUN_ID}"
+	append+=" msd.fscmp.kernel=${FSCMP_EXPECT_KERNEL:?}"
+	if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
+		append+=" msd.fscmp.smoke=1"
+	fi
 	if [[ -n "$T1_POINTS" ]]; then
 		append+=" msd.fscmp.points=${T1_POINTS}"
 	fi

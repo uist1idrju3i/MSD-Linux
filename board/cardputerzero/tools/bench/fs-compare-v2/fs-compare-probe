@@ -1,0 +1,55 @@
+#!/bin/sh
+set -eu
+
+console()
+{
+	printf 'msd.fscmp: %s\n' "$*"
+}
+
+fail()
+{
+	console "error=environment_error_$*"
+	exit 1
+}
+
+report_version()
+{
+	name=$1
+	shift
+	if version="$("$@" 2>&1)"; then
+		[ -n "$version" ] || fail "version=$name"
+		console "tool_version name=$name output=$version"
+	else
+		console "tool_version_error name=$name output=$version"
+		fail "version=$name"
+	fi
+}
+
+[ "$#" -ge 1 ] && [ "$#" -le 2 ] || fail arguments
+expected=$1
+proc=${2:-/proc}
+kernel="$(uname -r)"
+[ "$kernel" = "$expected" ] || fail "kernel=$kernel"
+for fs in ext4 f2fs btrfs; do
+	grep -qw "$fs" "$proc/filesystems" || fail "filesystem=$fs"
+done
+while IFS= read -r line; do console "environment_filesystem=$line"; done <"$proc/filesystems"
+targets="$(dmsetup targets)" || fail dm_targets
+for target in log-writes snapshot crypt integrity; do
+	printf '%s\n' "$targets" |
+		awk -v target="$target" '$1 == target { found=1 } END { exit !found }' ||
+		fail "dm_target=$target"
+done
+printf '%s\n' "$targets" |
+	while IFS= read -r line; do console "environment_dm_target=$line"; done
+report_version ext4-mkfs mkfs.ext4 -V
+report_version f2fs-mkfs mkfs.f2fs -V
+report_version btrfs-mkfs mkfs.btrfs --version
+report_version btrfs-progs btrfs --version
+report_version cryptsetup cryptsetup --version
+report_version integritysetup integritysetup --version
+report_version dmsetup dmsetup version
+report_version ext4-fsck e2fsck -V
+report_version f2fs-fsck fsck.f2fs -V
+report_version fscryptctl fscryptctl --version
+console "environment_ok kernel=$kernel"

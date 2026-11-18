@@ -20,6 +20,10 @@ V2 = ROOT / "board/cardputerzero/tools/bench/fs-compare-v2"
 SPEC = importlib.util.spec_from_file_location("supervisor", V2 / "supervisor.py")
 M = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(M)
+sys.path.insert(0, str(V2))
+PREFLIGHT_SPEC = importlib.util.spec_from_file_location("preflight", V2 / "preflight.py")
+P = importlib.util.module_from_spec(PREFLIGHT_SPEC)
+PREFLIGHT_SPEC.loader.exec_module(P)
 
 
 def phase_result(test="smoke", phase="run", **overrides):
@@ -418,6 +422,240 @@ class Matrix(unittest.TestCase):
                     rows = list(csv.DictReader(stream))
                 self.assertEqual(len(rows), 1 if child_status == 0 else 2)
                 self.assertTrue(all(row["status"] == ("ok" if child_status == 0 else "fail:child_exit_7") for row in rows))
+
+
+class Preflight(unittest.TestCase):
+    def test_registry_covers_dispatch_recovery_selection_and_planned_pairs(self):
+        paths, configs, variants = P.registry()
+        self.assertEqual(len(configs), 20)
+        for config, test, _ in P.generated("all", 1):
+            P.validate(config, test)
+        for invalid in (("E99", "T1"), ("P999", "T3"), ("E1", "not-a-path")):
+            with self.assertRaises(ValueError):
+                P.validate(*invalid)
+        required = P.requirements([("P001", "T1", "7")])
+        keys = {(config, row["path"]) for config, row in required}
+        self.assertTrue(all((config, row["path"]) in keys for config in configs for row in paths))
+        self.assertIn(("P001", "T1"), keys)
+        self.assertIn(("E1", "T1-sample-selected"), keys)
+        self.assertTrue(all(row["phases"] == "run,verify" for _, row in required
+                            if row["test"] in ("T2", "T3")))
+        for config, variant in variants.items():
+            self.assertEqual((config, "T6") in keys, variant["tests"] == "std+T6")
+        self.assertTrue(all((config, "smoke") in keys for config in variants))
+
+    def test_repetitions_and_legacy_plan_are_distinct_from_attempts(self):
+        rows = P.generated("phase2", 3)
+        self.assertNotIn("smoke", {row[1] for row in P.generated("all", 3)})
+        self.assertEqual([row for row in rows if row[:2] == ("P001", "T3")],
+                         [("P001", "T3", str(number)) for number in (1, 2, 3)])
+        for count in (0, -1):
+            with self.assertRaises(ValueError):
+                P.generated("all", count)
+        with tempfile.TemporaryDirectory() as temporary:
+            plan = Path(temporary) / "plan"
+            original = "# fixed repetitions\nE1\tT1-sample\t7\nE1\tT1-sample\t42\n"
+            plan.write_text(original)
+            self.assertEqual(P.read_plan(plan), [("E1", "T1-sample", "7"), ("E1", "T1-sample", "42")])
+            self.assertEqual(plan.read_text(), original)
+            for bad in ("", "E1\tT1\n", "E1\tT1\t0\n", "E1\tT1\t1\nE1\tT1\t1\n"):
+                plan.write_text(bad)
+                with self.assertRaises(ValueError):
+                    P.read_plan(plan)
+        result = subprocess.run([str(V2 / "fs-compare-matrix.sh"), "--generate-plan"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual({line.split("\t")[2] for line in result.stdout.splitlines()}, {"1", "2", "3"})
+
+    def environment_fixture(self, directory):
+        files = {
+            ".config": (V2 / "fs-compare.buildroot.fragment").read_text(),
+            "build/linux-custom/.config": (V2 / "fs-compare.fragment").read_text(),
+            "build/linux-custom/include/config/kernel.release": "6.12-fixture\n",
+            "build/busybox-1/.config": "CONFIG_CHATTR=y\nCONFIG_BB_SYSCTL=y\n",
+            **{f"images/{name}": "fixture" for name in
+               ("Image", "bcm2710-rpi-3-b.dtb", "rootfs.squashfs", "sdcard.img")},
+            **{f"fs-compare/{name}": "fixture" for name in
+               ("replay-log", "replay-log.provenance", "fs-compare-workload")},
+            **{name: "#!/bin/sh\nexit 0\n" for name in
+               ("host/bin/unsquashfs", "host/bin/mksquashfs", "host/sbin/sfdisk", "fake-tool")},
+        }
+        for name, content in files.items():
+            target = directory / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content)
+            target.chmod(0o755)
+
+    def test_environment_uses_real_configs_hashes_versions_and_fails_before_image(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            self.environment_fixture(directory)
+            runner = mock.Mock(return_value=subprocess.CompletedProcess([], 0, "fixture version\n", ""))
+            with mock.patch.object(P.shutil, "which", return_value=str(directory / "fake-tool")), \
+                    mock.patch.dict(os.environ, {}, clear=True):
+                env = P.environment(directory, runner)
+                self.assertEqual(env["kernel_release"], "6.12-fixture")
+                self.assertIn(str(directory / "build/linux-custom/.config"), env["files"])
+                self.assertIn("version", env["tools"]["qemu"])
+                with mock.patch.object(P.shutil, "which", return_value=None):
+                    with self.assertRaisesRegex(ValueError, "host tool missing"):
+                        P.environment(directory, runner)
+                runner.return_value = subprocess.CompletedProcess([], 1, "", "bad version")
+                with self.assertRaisesRegex(ValueError, "version probe failed"):
+                    P.environment(directory, runner)
+                runner.side_effect = subprocess.TimeoutExpired("tool", 15)
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    P.environment(directory, runner)
+                for relative in ("build/linux-custom/.config", "build/busybox-1/.config", ".config"):
+                    original = (directory / relative).read_text()
+                    (directory / relative).write_text("CONFIG_BLK_DEV_LOOP=m\n")
+                    with self.assertRaisesRegex(ValueError, "built-in config missing"):
+                        P.environment(directory, runner)
+                    (directory / relative).write_text(original)
+                (directory / "images/Image").unlink()
+                runner.side_effect = None
+                runner.return_value = subprocess.CompletedProcess([], 0, "version\n", "")
+                with self.assertRaises(FileNotFoundError):
+                    P.environment(directory, runner)
+            self.assertFalse((directory / "run").exists())
+
+    def test_exact_unsupported_only_and_negative_controls(self):
+        signatures = {
+            "P012": "EXT4-fs (loop0): can't mount with journal_async_commit in data=ordered mode",
+            "P085": "mkfs.btrfs: unrecognized option '--enable-simple-quota'",
+            "P101": "BTRFS error (device loop0): cannot disable free-space-tree",
+            "P133": "cryptsetup: Option --iv-large-sectors is not allowed with luksFormat action.",
+        }
+        for config, line in signatures.items():
+            records = [{"text": line, "expected": False}]
+            self.assertEqual(P.unsupported(config, records, line, 1), [line])
+            self.assertIsNone(P.unsupported("P001", records, line, 1))
+            self.assertIsNone(P.unsupported(config, records, line, 137))
+            for error in ("timeout", "ENOSPC", "No space left on device", "EIO", "I/O error",
+                          "Kernel panic", "environment_error", "tool_version_error"):
+                self.assertIsNone(P.unsupported(config, records, line + "\n" + error, 1))
+            self.assertIsNone(P.unsupported(config, records + [{"text": "unrelated failure"}], line, 1))
+            self.assertIsNone(P.unsupported(config, [{"text": line, "expected": True}], line, 1))
+            self.assertIsNone(P.unsupported(config, [], "", 1))
+
+    def test_gate_coverage_reuse_hash_changes_errors_and_all_excluded(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            path = {"path": "T3", "test": "T3", "phases": "run,verify", "points": "none"}
+            required = [("E1", path)]
+            env = {"kernel_release": "fixture", "files": {"kernel": "first"}}
+            calls = []
+
+            def probe(attempt, config, selected, _env, _output):
+                calls.append(config)
+                evidence = attempt / "evidence"
+                evidence.write_text("raw fixture")
+                return dict(config=config, path=selected["path"], test=selected["test"],
+                            phases=["run", "verify"], ok=True, child_status=0, run=str(attempt),
+                            evidence={str(evidence): P.digest(evidence)}, unsupported=None)
+
+            inspect = lambda _output: env
+            rows = [("E1", "T3", "7")]
+            with mock.patch.object(P, "requirements", return_value=required):
+                P.gate(rows, directory, directory, probe, inspect)
+                P.gate(rows, directory, directory, probe, inspect)
+                self.assertEqual(len(calls), 1)
+                approved = directory / "approved.json"
+                P.write_json(approved, env)
+                P.gate(rows, directory, directory, probe, inspect, expected_environment=approved)
+                with self.assertRaisesRegex(ValueError, "approved manifest"):
+                    P.gate(rows, directory, directory, probe,
+                           lambda _output: dict(env, tools={"qemu": {"version": "changed"}}),
+                           expected_environment=approved)
+                self.assertEqual(len(calls), 1)
+                self.assertEqual((directory / "effective-plan.tsv").read_bytes(), P.plan_bytes(rows))
+                cert = P.load_json(directory / "smoke-coverage.json")
+                fingerprint = cert["identity"]
+                self.assertFalse(P.covered({**cert, "probes": []}, fingerprint, required))
+                cert["probes"][0]["phases"] = ["run"]
+                self.assertFalse(P.covered(cert, fingerprint, required))
+                env["files"]["kernel"] = "changed"
+                P.gate(rows, directory, directory, probe, inspect)
+                self.assertEqual(len(calls), 2)
+                cert = P.load_json(directory / "smoke-coverage.json")
+                Path(next(iter(cert["probes"][0]["evidence"]))).write_text("changed raw log")
+                P.gate(rows, directory, directory, probe, inspect)
+                self.assertEqual(len(calls), 3)
+                P.gate([("E1", "T3", "8")], directory, directory, probe, inspect)
+                self.assertEqual(len(calls), 4)
+
+                def fail_probe(*args):
+                    return dict(probe(*args), ok=False)
+
+                with self.assertRaisesRegex(ValueError, "main run not started"):
+                    P.gate(rows, directory / "failed", directory, fail_probe, inspect)
+                with self.assertRaisesRegex(ValueError, "environment missing"):
+                    P.gate(rows, directory / "missing", directory, probe,
+                           mock.Mock(side_effect=ValueError("environment missing")))
+
+                def exclude(*args):
+                    return dict(probe(*args), ok=False, unsupported=["known unsupported"])
+
+                with self.assertRaisesRegex(ValueError, "nothing to run"):
+                    P.gate(rows, directory / "excluded", directory, exclude, inspect)
+                self.assertEqual((directory / "excluded/effective-plan.tsv").read_bytes(), b"")
+                self.assertEqual(len(P.load_json(directory / "excluded/excluded-options.json")["options"]), 1)
+
+    def test_probe_provenance_and_late_error_are_not_confused(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            log = Path(temporary) / "qemu-run.log"
+            log.write_text("msd.fscmp: environment_dm_target=error v1.5.0\n"
+                           "msd.fscmp: environment_ok kernel=fixture\n"
+                           "msd.fscmp: finished\nKernel panic: fixture\n")
+            records = M.aggregate_errors([("run", log)], "smoke")
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["category"], "kernel-fatal")
+
+    def test_guest_environment_probe_normal_missing_module_kernel_tool_and_empty_cases(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binaries = root / "bin"
+            binaries.mkdir()
+            proc = root / "proc"
+            proc.mkdir()
+            filesystems = "ext4\nf2fs\nbtrfs\n"
+            (proc / "filesystems").write_text(filesystems)
+            tools = ("uname", "dmsetup", "mkfs.ext4", "mkfs.f2fs", "mkfs.btrfs", "btrfs",
+                     "cryptsetup", "integritysetup", "e2fsck", "fsck.f2fs", "fscryptctl")
+            for name in tools:
+                script = binaries / name
+                script.write_text(
+                    f"#!{sys.executable}\nimport os,sys\n"
+                    f"name={name!r}\n"
+                    "if os.environ.get('FAIL_TOOL') == name: sys.exit(1)\n"
+                    "if os.environ.get('EMPTY_TOOL') == name: sys.exit(0)\n"
+                    "if name == 'uname': print(os.environ.get('KERNEL','fixture'))\n"
+                    "elif name == 'dmsetup' and sys.argv[1] == 'targets':\n"
+                    " print(os.environ.get('TARGETS','log-writes v1.0.0\\nsnapshot v1.0.0\\n"
+                    "crypt v1.0.0\\nintegrity v1.0.0\\nerror v1.5.0'))\n"
+                    "else: print('fixture version 1')\n")
+                script.chmod(0o755)
+            environment = dict(os.environ, PATH=str(binaries) + os.pathsep + os.environ["PATH"])
+            command = ["sh", str(V2 / "fs-compare-probe"), "fixture", str(proc)]
+            result = subprocess.run(command, env=environment, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("environment_ok kernel=fixture", result.stdout)
+            for changes, reason in (({"KERNEL": "wrong"}, "kernel="),
+                                    ({"TARGETS": "log-writes v1.0.0"}, "dm_target=snapshot"),
+                                    ({"TARGETS": ""}, "dm_target="),
+                                    ({"FAIL_TOOL": "mkfs.f2fs"}, "version=f2fs-mkfs"),
+                                    ({"EMPTY_TOOL": "mkfs.f2fs"}, "version=f2fs-mkfs"),
+                                    ({"FAIL_TOOL": "dmsetup"}, "dm_targets")):
+                result = subprocess.run(command, env=dict(environment, **changes),
+                                        capture_output=True, text=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("environment_error_" + reason, result.stdout)
+                self.assertNotIn("environment_ok", result.stdout)
+            for content in ("ext4\nbtrfs\n", ""):
+                (proc / "filesystems").write_text(content)
+                result = subprocess.run(command, env=environment, capture_output=True, text=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("environment_error_filesystem=", result.stdout)
 
 
 if __name__ == "__main__":
