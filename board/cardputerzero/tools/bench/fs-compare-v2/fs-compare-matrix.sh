@@ -125,6 +125,19 @@ fi
 	die "invalid matrix ID"
 command -v flock >/dev/null 2>&1 || die "flock is required"
 
+mkdir -p "$RUNS_DIR"
+RUNS_DIR="$(cd -- "$RUNS_DIR" && pwd -P)"
+MATRIX_DIR="${RUNS_DIR}/${MATRIX_ID}"
+if [[ -d "$MATRIX_DIR" && ! -f "${MATRIX_DIR}/.v2" ]]; then
+	die "refusing to reuse an unversioned matrix directory"
+fi
+mkdir -p "$MATRIX_DIR"
+DRIVER_LOCK="${MATRIX_DIR}/.driver.lock"
+exec {driver_lock_fd}>"$DRIVER_LOCK"
+flock -n "$driver_lock_fd" ||
+	die "matrix ID is already running: $MATRIX_ID"
+printf 'fs-compare-v2/1\n' >"${MATRIX_DIR}/.v2"
+
 python3 "${SCRIPT_DIR}/preflight.py" validate-plan "$PLAN_FILE"
 if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
 	preflight_dir="${RUNS_DIR}/${MATRIX_ID}.preflight"
@@ -164,26 +177,13 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done <"$PLAN_FILE"
 ((${#PLAN_CONFIGS[@]} > 0)) || die "plan contains no rows"
 
-mkdir -p "$RUNS_DIR"
-RUNS_DIR="$(cd -- "$RUNS_DIR" && pwd -P)"
-MATRIX_DIR="${RUNS_DIR}/${MATRIX_ID}"
-if [[ -d "$MATRIX_DIR" && ! -f "${MATRIX_DIR}/.v2" ]]; then
-	die "refusing to reuse an unversioned matrix directory"
-fi
-mkdir -p "$MATRIX_DIR"
-printf 'fs-compare-v2/1\n' >"${MATRIX_DIR}/.v2"
 MATRIX_PLAN="${MATRIX_DIR}/plan.tsv"
 MATRIX_SUMMARY="${MATRIX_DIR}/matrix-summary.csv"
 PROGRESS_LOG="${MATRIX_DIR}/progress.log"
 HOST_LOAD="${MATRIX_DIR}/host-load.txt"
 STATE_FILE="${MATRIX_DIR}/.state"
 WRITE_LOCK="${MATRIX_DIR}/.write.lock"
-DRIVER_LOCK="${MATRIX_DIR}/.driver.lock"
 MATRIX_HEADER="repetition,attempt,${SUMMARY_HEADER}"
-
-exec {driver_lock_fd}>"$DRIVER_LOCK"
-flock -n "$driver_lock_fd" ||
-	die "matrix ID is already running: $MATRIX_ID"
 
 plan_tmp="${MATRIX_DIR}/.plan.$$"
 : >"$plan_tmp"

@@ -2,6 +2,7 @@
 """Host tests for the v2 judge, supervisor and matrix; no QEMU or network."""
 
 import csv
+import fcntl
 import importlib.util
 import json
 import os
@@ -425,6 +426,33 @@ class Matrix(unittest.TestCase):
 
 
 class Preflight(unittest.TestCase):
+    def test_matrix_locks_before_shared_preflight_or_plan_read(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            matrix = root / "runs/same"
+            matrix.mkdir(parents=True)
+            (matrix / ".v2").write_text("fs-compare-v2/1\n")
+            plan = root / "plan.tsv"
+            plan.write_text("E1\tsmoke\t1\n")
+            binary = root / "python3"
+            marker = root / "gate-called"
+            binary.write_text(
+                f"#!{sys.executable}\nimport os,sys\nfrom pathlib import Path\n"
+                f"if sys.argv[2] == 'gate': Path({str(marker)!r}).touch(); sys.exit(1)\n"
+                f"os.execv({sys.executable!r}, [{sys.executable!r}, *sys.argv[1:]])\n")
+            binary.chmod(0o755)
+            environment = dict(os.environ, PATH=str(root) + os.pathsep + os.environ["PATH"])
+            environment.pop("FS_COMPARE_V2_DRIVER", None)
+            with (matrix / ".driver.lock").open("w") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                result = subprocess.run(
+                    [str(V2 / "fs-compare-matrix.sh"), "--matrix-id", "same",
+                     "--runs-dir", str(root / "runs"), str(plan)],
+                    env=environment, capture_output=True, text=True, timeout=15)
+            self.assertFalse(marker.exists(), "competing run reached the shared preflight")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("already running", result.stderr)
+
     def test_registry_covers_dispatch_recovery_selection_and_planned_pairs(self):
         paths, configs, variants = P.registry()
         self.assertEqual(len(configs), 20)
