@@ -191,7 +191,7 @@ def aggregate_errors(logs, test):
                 category = "guest"
             elif re.search(r"Kernel panic|\bOops:|\bBUG:|I/O error.*dev (?:mmcblk|sd[a-z]|nvme)", text):
                 category = "kernel-fatal"
-            elif re.search(r"qemu(?:-system-[\w-]+)?: (?!warning:)", text, re.I):
+            elif re.search(r"^(?:\S*/)?qemu(?:-system-[\w-]+)?: (?!warning:)", text, re.I):
                 category = "qemu"
             elif re.search(r"\b(error|failed|failure|fatal)\b|not found|No such file|Permission denied|No space left|Refusing |Could not |Timed out |did not finish|T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)|T6_READCHECK exit=[234]", text, re.I):
                 category = "diagnostic"

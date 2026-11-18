@@ -213,6 +213,32 @@ class Judge(unittest.TestCase):
 
 
 class Errors(unittest.TestCase):
+    def test_real_launcher_provenance_is_not_a_qemu_error(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            fake = directory / "qemu-system-aarch64"
+            fake.write_text(f"#!{sys.executable}\nimport sys\n"
+                            "if '--version' in sys.argv: print('QEMU emulator version fixture')\n"
+                            "elif 'fatal' in __import__('os').environ.get('FIXTURE_MODE', ''):\n"
+                            " print('qemu-system-aarch64: fatal: fixture', file=sys.stderr)\n"
+                            " sys.exit(1)\n")
+            fake.chmod(0o755)
+            image, kernel, dtb = [directory / name for name in ("sd.img", "Image", "board.dtb")]
+            for path in (image, kernel, dtb):
+                path.write_bytes(b"fixture")
+            environment = dict(os.environ, QEMU_SYSTEM_AARCH64=str(fake), QEMU_COPY_IMAGE="0",
+                               QEMU_DTB_BLUETOOTH="1", KERNEL_IMAGE=str(kernel), DTB_IMAGE=str(dtb))
+            log = directory / "qemu-run.log"
+            for mode in ("normal", "fatal"):
+                result = subprocess.run([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh"), str(image)],
+                                        env=dict(environment, FIXTURE_MODE=mode), capture_output=True)
+                log.write_bytes(result.stdout + result.stderr)
+                self.assertIn(b"run-qemu: version=", log.read_bytes())
+                self.assertIn(b"run-qemu: sha256 ", log.read_bytes())
+                errors = M.aggregate_errors([("run", log)], "smoke")
+                self.assertEqual(len(errors), 0 if mode == "normal" else 1)
+                self.assertEqual(result.returncode, 0 if mode == "normal" else 1)
+
     def scan(self, text, test="smoke", phase="run"):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "test.log"
