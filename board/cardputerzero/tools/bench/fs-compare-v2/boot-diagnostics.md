@@ -18,7 +18,7 @@
 | 330 | 1 | firmware GPIOに依存するactivity LEDのdeferred probe。測定対象のblock deviceではない |
 | 331 | 1 | alias `mmc1`はWi-Fi SDIOでcardは未実装。imageのSD hostは`mmc0`。`mmc0`へ対象を広げない |
 
-partition再読込みの例外は、既知の拡張メッセージの**次の行**で、同じlog内にsetup同期完了がある場合だけ認める。errno違い、番号違い、setup未完了はfatalとする。panic、Oops、BUG、guest error、EIO、ENOSPCは既知診断へ分類しない。T1/T6の明示的な破損区間に関する既存規則も変更しない。
+partition再読込みの例外は、既知の拡張メッセージに続く**次のuserspace行**で、同じlog内にsetup同期完了がある場合だけ認める。間にkernel行が割り込むことは許すが、そのkernel診断の判定は変えない。errno違い、番号違い、setup未完了はfatalとする。panic、Oops、BUG、guest error、EIO、ENOSPCは既知診断へ分類しない。T1/T6の明示的な破損区間に関する既存規則も変更しない。
 
 camera regulatorのEIOと原因未確定の補助UART errorを隠さないため、v2 smokeの使い捨てDTB写しだけで`/cam1_regulator`と`/soc/serial@7e215040`をdisabledにする。QEMUにはcameraもGPIO expanderもなく、このharnessでは補助UARTも使わない。PL011 console・mmc0・filesystem経路は維持する。各phaseのDTB・hashを保存し、共通launcherは従来どおりBluetoothだけを別の写しで無効にする。製品DTB・共通launcher・kernel configは変更しない。EIOや補助UART errorが再び出れば失敗する。
 
@@ -29,5 +29,6 @@ kernelはraspberrypi/linux commit `b3495ea401d709af0701a85babcba5e3d788a602`。
 - [EFI](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/firmware/efi/fdtparams.c#L131)、[initramfs fallback](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/init/main.c#L1567)。
 - [仮想GPIO](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-bcm-virt.c#L119)、[GPIO configとEIO](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-raspberrypi-exp.c#L55)。
 - [補助UART](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/tty/serial/8250/8250_bcm2835aux.c#L168)、[probe結果](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/base/dd.c#L656)。
+- [camera regulatorのGPIO取得](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/regulator/fixed.c#L320)、[gpiolibの設定失敗](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpiolib.c#L4746)。
 - [LED](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/leds/leds-gpio.c#L189)、[SDIO](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/mmc/core/core.c#L2337)。
 - [QEMU property tagのdefault処理](https://github.com/qemu/qemu/blob/v11.1.2/hw/misc/bcm2835_property.c#L420)、[libfdiskの再読込み](https://github.com/util-linux/util-linux/blob/v2.41.5/libfdisk/src/context.c#L863)。

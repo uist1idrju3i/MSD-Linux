@@ -4,3 +4,10 @@ host,final-v2,,,passed,9.325,56_tests
 build,fresh-output-fscmp-v2,,,passed,3491.5209386829956,commit=9fd57cb3d489065e5bd8e25a3ef422c0182dc828
 representative,01-E1-smoke,E1,smoke,failed,308.42291109300277,probe_seconds=305.52808007600834;fatal_boot_diagnostics=24;archive_allocated_bytes=48922624;source_allocated_bytes=966656
 smoke,all-851,,,not_started,,representative_failed;AA_and_negative_controls_pending
+host,boot-diagnostics,,,passed,9.926,60_tests;actual_24_diagnostics;19_expected_5_fatal
+launch,bootfix-01,,,failed,,relative_runs_dir_rejected_before_QEMU
+representative,bootfix-02-01-E1-smoke,E1,smoke,passed,276.84786771399376,commit=74bc9e3b40260632bb602c7fd35d1f39bba3e163;probe_seconds=273.9513031630049;filesystem_used_delta_bytes=50216960
+representative,bootfix-02-02-E1-smoke,E1,smoke,passed,270.1614557080029,commit=74bc9e3b40260632bb602c7fd35d1f39bba3e163;probe_seconds=267.2806370199978;filesystem_used_delta_bytes=1454080
+representative,bootfix-02-03-E1-T1,E1,T1,failed,506.01140718499664,commit=74bc9e3b40260632bb602c7fd35d1f39bba3e163;probe_seconds=503.1206269719987;filesystem_used_delta_bytes=1748992;w3_tail_bound_50_instead_of_51;kernel_line_interleaved_before_reread_busy
+host,w3-tail-and-interleaving,,,passed,10.146,62_tests;valid_and_invalid_tail;normal_1000_records_preserved
+smoke,bootfix-02-all-851,,,not_started,,representative_T1_failed;AA_passed;negative_controls_pending

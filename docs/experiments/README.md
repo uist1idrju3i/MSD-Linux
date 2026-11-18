@@ -10,7 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
-| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | build成功・診断停止 | E1/smokeのboot診断24行がfatal判定。全851 probeは未開始 |
+| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | A/A成功・T1診断停止 | 初回boot診断停止を保持。後続A/Aは2回成功、T1のtail上限と行の割込みを修正。全851 probeは未開始 |
 | [cnf](2026-11-18-openssl-cnf.md) | [CSV](2026-11-18-openssl-cnf.csv) | 2026-11-18 | QEMU各3回 | C1/C2成功・未適用 |
 | [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |
 | [idle残量](2026-11-17-data-idle-residual.md) | なし | 2026-11-17 | QEMU 5回 | 88 sectorはmetadataの遅延writeback |

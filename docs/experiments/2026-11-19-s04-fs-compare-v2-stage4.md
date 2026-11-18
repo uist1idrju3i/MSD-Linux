@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-初回のcode保存後にfresh buildは成功した。最初のE1/smoke診断は既存判定器のboot診断scanで停止した。A/A・負対照と全851 probeは未完了であり、background runは開始していない。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+初回のcode保存後にfresh buildは成功した。最初のE1/smoke診断は既存判定器のboot診断scanで停止した。後続のA/Aは2回成功したが、次のT1は短縮workloadのtail上限とboot診断の行の割込みで停止した。負対照と全851 probeは未完了であり、background runは開始していない。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -83,3 +83,27 @@ build後の空きは247,146,934,272 byte。最終確認は`df -h`で231Gだっ�
 [証拠archive](2026-11-19-s04-fs-compare-v2-stage4-evidence.tar.gz)は207,033 byte、SHA-256は`2e58c75e8656242d02cd3f2020ab69f4168d327ee3dd6e63125782162a88159a`。37 memberのsize・hashを`SHA256.json`で読戻し照合した。build条件・生成済みconfig・版と入力hash、probeのserial・host log・phase・最終判定・画像省略manifestを収録した。archive内の絶対pathは実行時のraw値である。
 
 7,469,895 byteの全build logと共有object本体はコミットしていない。build logのSHA-256は`1585bef2c665b952e4062b455ffb997b26d8d362adf297cdb345c0c8ad297d1d`。再生成には上記のcode commitとfresh出力先でbuild・代表診断を実行する。失敗試行を成功として再利用しない。
+
+### A/A成功とT1の再停止
+
+harness commit `74bc9e3b40260632bb602c7fd35d1f39bba3e163`で、同じbuild生成物を再利用した。kernel・DTB本体・rootfs・workloadの再buildはなく、各probeでguest hookを写しへ入れる。最初の起動依頼は相対run directoryを拒否され、QEMU開始前に終了した。この失敗も保存した。次は次のcommandで実行した。
+
+```sh
+docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py representative +  --runs-dir /work/fscmp-v2-stage4-bootfix-02
+```
+
+| 診断 | command全体、秒 | probe本体、秒 | filesystem使用量差、byte | 結果 |
+|---|---:|---:|---:|---|
+| E1/smoke A | 276.84786771399376 | 273.9513031630049 | 50,216,960 | 成功 |
+| E1/smoke A再試行 | 270.1614557080029 | 267.2806370199978 | 1,454,080 | 成功 |
+| E1/T1 | 506.01140718499664 | 503.1206269719987 | 1,748,992 | 失敗 |
+
+空き容量の差は共有filesystem全体の値で、各probe単独の割当量ではない。A/Aは機能確認2回であり、性能の同等性を示さない。
+
+T1のlogは`W3 records=51`に対し`T1_W3_EXPECTED cycle=0 max_record=50 bytes=6400`だった。最後のfsync markerが50なので、T1だけが51番目のtailを全体の上限超過として拒否した。prefix hashは一致していたが、この時点ではtail内容の検査に達していない。後続修正では`W3_FULL_RECORDS`を渡し、smokeは51、通常は従来と同じ1000を上限とする。同期済みprefixとtailの各recordの内容検査は維持する。
+
+同じbootでpartition 7拡張と再読込み診断の間に、timestamp付きのLED診断が割り込んでいた。後続修正では、間にkernel行があっても「次のuserspace行」である場合に限り照合する。kernel行自身の判定は変更せず、他のuserspace行を挟んだ場合も拒否する。
+
+host試験は、初回logの全24診断で19 expected・5 fatalを照合して60件成功した。tail修正後は、50または51の正常record、空file、部分record、改変tail、52 recordの上限超過、通常1000 record、行の割込みを加えて62件成功した。host aggregateも全11 suiteが成功した。次の代表診断は既存出力を上書きせず、別run directoryで行う。
+
+[追加証拠archive](2026-11-19-s04-fs-compare-v2-boot-evidence.tar.gz)は111,058 byte、SHA-256は`6a0cd4227294af2f4de17c1eaa88703c153fc8a982c17f28de4c35dd9428c458`。77 fileのsize・hashを読戻し照合した。起動依頼の失敗、A/A、T1失敗のserial・host log、各phaseのDTB、環境・保存状態、host検査を収録した。画像と共有object本体は含めず、元の非画像archiveと共有objectは測定出力に保持している。raw log・metadata内の絶対pathは実行時の値である。

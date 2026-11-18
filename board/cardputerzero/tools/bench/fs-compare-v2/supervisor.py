@@ -197,8 +197,10 @@ def aggregate_errors(logs, test):
                             and (entry["id"] != "grow-reread-busy" or (grow_pending and grow_complete))):
                         benign = entry
                         break
-            grow_pending = bool(re.fullmatch(
-                r"msd-data-grow: extending partition [47] to the end of /dev/mmcblk0", text))
+            if re.fullmatch(r"msd-data-grow: extending partition [47] to the end of /dev/mmcblk0", text):
+                grow_pending = True
+            elif not re.match(r"^\[\s*[0-9]+\.[0-9]+\] ", text):
+                grow_pending = False
             if re.search(r"msd\.fscmp: environment_dm_target=[\w-]+\s+v[0-9.]+\s*$", text):
                 continue
             begin = re.search(r"msd\.fscmp: expected_errors_begin kind=(\S+)", text)

@@ -275,6 +275,18 @@ class Errors(unittest.TestCase):
         self.assertTrue(any(not r["expected"] and "mmc0: Failed" in r["text"] for r in records))
         self.assertEqual(self.boot_scan(""), [])
 
+    def test_grow_reread_allows_kernel_interleaving_not_unknown_errors_or_userspace(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        grow = "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0"
+        led = "[   16.238832] platform leds: deferred probe pending: leds-gpio: Failed to get GPIO '/leds/led-act'"
+        records = self.boot_scan(text.replace(grow, grow + "\n" + led))
+        self.assertTrue(all(r["expected"] for r in records if "Re-reading" in r["text"]))
+        for message in ("unrelated userspace operation", "[   16.238832] unknown driver: failed"):
+            records = self.boot_scan(text.replace(grow, grow + "\n" + message))
+            self.assertTrue(any(not r["expected"] and (
+                "Re-reading" in r["text"] if "userspace" in message else r["text"] == message)
+                                for r in records))
+
     def test_real_launcher_provenance_is_not_a_qemu_error(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
@@ -1121,6 +1133,46 @@ class Preflight(unittest.TestCase):
 
 
 class LightSmoke(unittest.TestCase):
+    def test_t1_replay_checks_full_profile_tail_not_last_fsync_marker(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+
+        def function(name):
+            return name + "()\n{\n" + guest.split("\n" + name + "()\n{\n", 1)[1].split("\n}\n", 1)[0] + "\n}\n"
+
+        replay = function("replay_t1").split("\n\texpected_ack_count=", 1)[0] + "\n}\n"
+        script = (function("prepare_w3_expected_file") + function("validate_w3_file") + replay
+                  + '\nconsole() { :; }\ncreate_mark_map() { :; }\nwait_for_t1_log_end() { :; }\n'
+                  + 'RUN_PATH=$1\nW3_FULL_RECORDS=$3\nW3_RECORD_SIZE=128\nW3_SYNC_INTERVAL=50\nTEST=T1\n'
+                  + 'replay_t1\n'
+                  + 'prefix=$(printf "%s\\n" "$2" | awk -F - \'{ print ($4 + 0) * 128 }\')\n'
+                  + 'hash=$(head -c "$prefix" "$W3_EXPECTED_FILE" | sha256sum | awk \'{ print $1 }\')\n'
+                  + 'if validate_w3_file "$RUN_PATH/data.bin" "$hash" "$2"; then echo ok; '
+                  + 'else echo "$w3_validation_detail"; fi\n')
+
+        def records(count):
+            return b"".join(f"{0:010d} {n:010d}\n".encode() + b"\0" + b" " * 105
+                            for n in range(1, count + 1))
+
+        cases = [
+            (51, 50, records(51), "ok"),
+            (51, 50, records(50), "ok"),
+            (51, 50, b"", "file_shorter_than_prefix"),
+            (51, 50, records(51)[:-1], "partial_record_tail"),
+            (51, 50, records(51)[:-1] + b"x", "invalid_deterministic_tail"),
+            (51, 50, records(52), "tail_exceeds_final_record"),
+            (1000, 1000, records(1000), "ok"),
+        ]
+        for count, synced, data, expected in cases:
+            with self.subTest(count=count, expected=expected), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                marker = f"w3-record-000-{synced:04d}"
+                (directory / "T1-markers.tsv").write_text(f"1\tW3/append.log\thash\t1\t1\t{marker}\n")
+                (directory / "data.bin").write_bytes(data)
+                result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary,
+                                         marker, str(count)], text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), expected)
+
     def test_probe_space_normal_zero_negative_and_error(self):
         with mock.patch.object(S, "filesystem", return_value=("device", 90)):
             self.assertEqual(P.probe_space(Path("."), ("device", 100))["used_delta_bytes"], 10)

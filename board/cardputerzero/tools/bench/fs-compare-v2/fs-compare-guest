@@ -1217,7 +1217,7 @@ replay_t1()
 				"${RUN_PATH}/T1-markers.tsv")"
 			[ -n "$w3_latest_marker" ] ||
 				fail "t1_w3_latest_marker_missing"
-			prepare_w3_expected_file "$w3_latest_marker" "" T1 ||
+			prepare_w3_expected_file "$w3_latest_marker" "$W3_FULL_RECORDS" T1 ||
 				fail "t1_w3_latest_marker_invalid=$w3_latest_marker"
 			;;
 	esac

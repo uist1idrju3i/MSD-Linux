@@ -37,7 +37,7 @@
       "phases": ["run", "verify"],
       "pattern": "raspberrypi-exp-gpio soc:firmware:expgpio: Failed to get GPIO ([0-7]) config \\(0 8\\1\\)",
       "reason": "The unimplemented GPIO configuration tag leaves the requested GPIO value unchanged.",
-      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-raspberrypi-exp.c:55; qemu-v11.1.2/hw/misc/bcm2835_property.c:420"
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-raspberrypi-exp.c:55,135; qemu-v11.1.2/hw/misc/bcm2835_property.c:420"
     },
     {
       "id": "aux-uart",
@@ -64,7 +64,7 @@
       "id": "grow-reread-busy",
       "phases": ["run", "verify"],
       "pattern": "Re-reading the partition table failed\\.: Device or resource busy",
-      "reason": "Only immediately after the known partition 4/7 growth step, with subsequent setup synchronization.",
+      "reason": "Only the next userspace line after the known partition 4/7 growth step, allowing kernel-line interleaving, with subsequent setup synchronization.",
       "source": "board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow:116-139; util-linux-2.41.5/libfdisk/src/context.c:863"
     },
     {
