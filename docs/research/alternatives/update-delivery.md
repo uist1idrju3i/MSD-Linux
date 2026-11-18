@@ -6,11 +6,13 @@
 
 2026-11-03に、MSD/Linuxの`origin/main` `94915bfef27f0d50ae0f4c6e24ffa98daf68a12e`と、固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。暗号libraryはOpenSSLを採用する方針（2026-11-03 利用者決定）、差分更新は必須でnetwork依存可。記載したframework構成のbuild、QEMU、実機での更新は本リポジトリでは試していません。
 
+利用者はRAUCで進め、imageをGitHub Releasesへ配置し、差分更新にはRAUC adaptive（`block-hash-index`）を想定すると決定しました。実装計画は利用者review待ちです。[差分方式の比較と測定案](update-delta.md)に根拠、失敗時の状態、2026-11-19に共有されたRange観測を保存しました。
+
 ## 更新fileを渡す4つの経路
 
 | 経路 | 内容 | RAUC | SWUpdate |
 |---|---|---|---|
-| P1 | 本体によるonlineの差分更新 | adaptive（`block-hash-index`）とHTTP streaming、またはcasync | delta handler（zchunkとHTTP range要求）、または直前の版からのrdiff |
+| P1 | 本体によるonlineの差分更新 | adaptive（`block-hash-index`）とHTTP streaming、またはcasync | delta handler（zchunkとHTTP range要求）、または指定base版からのrdiff |
 | P2 | 本体によるonlineのfull更新 | verity bundleのstreaming | `.swu`のdownload handler |
 | P3 | 別端末で更新fileをSDに置き、本体が読む | local bundleをinstall | local `.swu`をinstall |
 | P4 | 別端末でimageを書き直すclean install | frameworkは使わず`sdcard.img.xz`とSHA-256で検証 | 同左 |
@@ -35,12 +37,14 @@ RAUCのadaptiveは4 KiB blockごとのSHA-256 index（imageの約0.8%）をbundl
 | 方式 | 元にする版 | 配信側 | 条件と制約 |
 |---|---|---|---|
 | RAUC adaptive | 任意の版。端末の両slotから一致blockを探す | range要求に対応する静的配信 | block deviceに限る。SquashFSではblock sizeと圧縮率で効果が変わる |
-| RAUC casync | 任意の版 | chunk store | bundleの変換が必要。RAUCのBuildroot recipeにcasyncがないという点は未確認 |
+| RAUC casync | 任意の版 | chunk store | bundleの変換が必要。固定Buildrootには独立したcasync recipeがあるが、RAUC recipeは自動追加しない |
 | SWUpdate zchunk | 任意の版 | range要求に対応する配信 | zchunk packageが必要 |
-| SWUpdate rdiff | 直前の版 | 静的配信 | 2つ以上前の版からはfull更新か連続適用が必要 |
+| SWUpdate rdiff | patch生成時に指定したbase版 | 静的配信 | 直前版に限定されない。別baseには対応するpatchかfull imageが必要 |
 | 現行`msd-update` | - | full image | 差分更新なし |
 
 SWUpdateのdelta handlerはzchunkとcurlを使い、chunk headerを比較して不足分をHTTP rangeで取得します。rdiff（librsync）は既知の版からの差分を適用します。microSDやUSBから更新する場合、差分化で減るnetwork取得量の利点はありません。
+
+以前のcasync recipe未確認・rdiff直前版限定の記述は上表へ訂正しました。固定版の実装・recipeへの出典と、chunk検証より先に書き込まれ得るSWUpdateの注意点は[詳細比較](update-delta.md)を参照してください。
 
 ## 現行コードの検証範囲
 

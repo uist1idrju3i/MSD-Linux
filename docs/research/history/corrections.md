@@ -1,5 +1,7 @@
 # 訂正済み事項
 
+[2026-11-19 差分訂正](../alternatives/update-delivery.md)
+
 ## 2026-11-15 storage設計・E34
 
 訂正: [設計](../storage/storage-option-coverage.md)・[実験・E34](../storage/storage-integrity-corrections.md)。
