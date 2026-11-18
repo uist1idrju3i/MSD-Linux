@@ -150,6 +150,7 @@ python3 "${SCRIPT_DIR}/preflight.py" validate-plan "$PLAN_FILE"
 if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
 	preflight_dir="${RUNS_DIR}/${MATRIX_ID}.preflight"
 	export FSCMP_CAPACITY_FILE="${preflight_dir}/capacity.json"
+	export FSCMP_MATRIX_DIR="$MATRIX_DIR"
 	export FSCMP_ENVIRONMENT_FILE="${preflight_dir}/environment.json"
 	export FSCMP_PLAN_FILE="${preflight_dir}/requested-plan.tsv"
 	preflight_options=()

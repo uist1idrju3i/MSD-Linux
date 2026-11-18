@@ -430,6 +430,38 @@ class Matrix(unittest.TestCase):
 
 
 class Storage(unittest.TestCase):
+    def test_resume_reserves_only_unfinished_verified_matrix_rows(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            matrix = root / "matrix"
+            matrix.mkdir()
+            source = root / "matrix-smoke-E1-r1-123"
+            fixture(source)
+            M.write_json(source / "matrix-child.json", dict(status=0))
+            M.finalize(source, "smoke", 0)
+            with mock.patch.object(S, "archive_root", return_value=root / "archives"):
+                S.finish(source, "smoke", 0)
+            rows = [("E1", "smoke", "1"), ("E1", "smoke", "2")]
+            with mock.patch.object(P, "requirements", return_value=[]), \
+                    mock.patch.object(S, "unpacked_size", return_value=1), \
+                    mock.patch.object(S, "archive_root", return_value=root / "archives"), \
+                    mock.patch.object(S, "filesystem", return_value=("same", 50 * S.GIB)), \
+                    mock.patch.dict(os.environ, {"FSCMP_MATRIX_DIR": str(matrix),
+                                                "FSCMP_MAX_ATTEMPTS": "2"}):
+                P.gate(rows, root / "gate", root, inspect=lambda _: {})
+            model = S.load_json(root / "gate/capacity.json")
+            self.assertEqual(model["remaining_attempts"], 2)
+            self.assertEqual(S.remaining_attempts(rows[:1], matrix, 2), 0)
+            (source / S.STATE).write_text('{"complete": false}')
+            self.assertEqual(S.remaining_attempts(rows, matrix, 2), 4)
+            (matrix / "matrix-summary.csv").write_text(
+                "repetition,run_id,config,test,status\n2,failed,E1,smoke,fail:final_judge\n")
+            self.assertEqual(S.remaining_attempts(rows, matrix, 2), 3)
+            groups = S.estimate(dict(output=root, temp=root, archive=root), 1, 0, 1, 1,
+                                lambda _path: ("same", 5 * S.GIB))
+            self.assertEqual(groups["same"]["estimate"], 0)
+            self.assertEqual(groups["same"]["required"], 5 * S.GIB)
+
     def test_smoke_reuse_repetitions_and_maximum_attempts_feed_capacity(self):
         with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
             root = Path(temporary)

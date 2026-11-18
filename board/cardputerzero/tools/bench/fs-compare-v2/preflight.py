@@ -339,9 +339,11 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
     if probe is run_probe:
         maximum = storage.positive(os.environ.get("FSCMP_MAX_ATTEMPTS", "1"))
         smoke_count = 0 if reuse else len(required)
-        storage.prepare(directory, output, smoke_count + len(rows) * maximum,
+        main_count = (storage.remaining_attempts(rows, os.environ["FSCMP_MATRIX_DIR"], maximum)
+                      if os.environ.get("FSCMP_MATRIX_DIR") else len(rows) * maximum)
+        storage.prepare(directory, output, smoke_count + main_count,
                         counts=dict(planned_rows=len(rows), max_attempts=maximum,
-                                    smoke_probes=smoke_count))
+                                    smoke_probes=smoke_count, remaining_main_attempts=main_count))
     if not reuse:
         attempt = directory / f"attempt-{time.time_ns()}"
         attempt.mkdir()

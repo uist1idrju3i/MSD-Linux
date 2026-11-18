@@ -2,6 +2,7 @@
 """Capacity reservations, bounded logs, and verified attempt archives."""
 
 import argparse
+import csv
 import errno
 import fcntl
 import hashlib
@@ -18,7 +19,7 @@ import tarfile
 import time
 import uuid
 
-from supervisor import finalize, load_json, write_json
+from supervisor import finalize, load_json, matrix_ok, published, write_json
 
 
 GIB = 1024 ** 3
@@ -31,6 +32,13 @@ def positive(value):
     number = int(value)
     if number < 1:
         raise ValueError("storage limits must be positive")
+    return number
+
+
+def nonnegative(value):
+    number = int(value)
+    if number < 0:
+        raise ValueError("negative attempt count")
     return number
 
 
@@ -94,7 +102,8 @@ def filesystem(path):
 
 def estimate(paths, jobs, attempts, rootfs, limit, probe=None):
     probe = probe or filesystem
-    jobs, attempts, rootfs, limit = map(positive, (jobs, attempts, rootfs, limit))
+    jobs, rootfs, limit = map(positive, (jobs, rootfs, limit))
+    attempts = nonnegative(attempts)
     active = min(jobs, attempts)
     payload = 8 * GIB + 2 * rootfs + GIB + limit
     amounts = {
@@ -121,7 +130,7 @@ def capacity(path, initialize=None):
     with path.with_suffix(".lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         model = initialize if initialize is not None else load_json(path)
-        remaining = max(1, model["attempts"] - len(model["completed"]))
+        remaining = max(0, model["attempts"] - len(model["completed"]))
         model["remaining_attempts"] = remaining
         model["filesystems"] = estimate(model["paths"], model["jobs"], remaining,
                                         model["rootfs"], model["log_limit"])
@@ -139,11 +148,44 @@ def prepare(directory, output, attempts, counts=None):
     jobs = positive(os.environ.get("FSCMP_JOBS", "1"))
     model = dict(schema=SCHEMA, paths=dict(output=str(directory.parent),
                  temp=str(Path(os.environ.get("TMPDIR", "/tmp")).resolve()),
-                 archive=str(destination)), jobs=jobs, attempts=positive(attempts),
+                 archive=str(destination)), jobs=jobs, attempts=nonnegative(attempts),
                  rootfs=unpacked_size(output), log_limit=log_limit(), completed=[], counts=counts)
     capacity(path, model)
     os.environ["FSCMP_CAPACITY_FILE"] = str(path)
     return path
+
+
+def remaining_attempts(rows, matrix, maximum):
+    matrix = Path(matrix)
+    summary = matrix / "matrix-summary.csv"
+    with summary.open() if summary.exists() else io.StringIO("") as stream:
+        recorded = list(csv.DictReader(stream))
+    remaining = 0
+    for config, test, repetition in rows:
+        failures = {row["run_id"] for row in recorded
+                    if (row.get("config"), row.get("test"), row.get("repetition")) ==
+                    (config, test, repetition) and row.get("status") != "ok"}
+        success = False
+        prefix = f"{matrix.name}-{test}-{config}-r{repetition}-"
+        for source in matrix.parent.glob(prefix + "*"):
+            if not source.is_dir():
+                continue
+            try:
+                state = load_json(source / STATE)
+                if not state.get("complete") or not state.get("cleaned"):
+                    continue
+                manifest = verify_archive(state["archive"], state["manifest_sha256"])
+                verify_source(source, manifest, cleaned=True)
+                result = published(source / "summary.csv")
+                if result and matrix_ok(source / "summary.csv", 0):
+                    success = True
+                elif result and result["status"] != "ok":
+                    failures.add(source.name)
+            except (OSError, ValueError, KeyError, tarfile.TarError):
+                continue
+        if not success:
+            remaining += max(0, maximum - len(failures))
+    return remaining
 
 
 def check_capacity():
