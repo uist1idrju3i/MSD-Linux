@@ -76,7 +76,9 @@ print(f'Configure 3.5.9 tokens={len(expected)} missing=0 extra=0')
 PY
 ```
 
-## 比較実験の計画（未実施）
+## 比較実験の当初計画
+
+以下は2026-11-12時点の計画である。2026-11-18にはCの設定だけを[QEMUで比較した](2026-11-18-openssl-cnf.md)。保存済みbinaryの独立overlayコピーを用いた機能確認で、以下のfull buildや実機性能比較を実施した意味ではない。製品への適用とbuild feature削減は未実施である。
 
 ### 固定する条件
 
@@ -122,4 +124,4 @@ Raspberry Pi文書の直接fetchは403、推測したGitHub文書path／branch�
 
 4.1.0 Configureはdisablable配列を3分割しており、3.5用parserをそのまま使う初回照合は失敗した。配列名を区別して再抽出し、3.5.9の148／4.1.0の154 tokenを数えた。token差は意味・既定policyの完全比較ではない。
 
-実build用の削減flag注入、cnf適用、容量のA/B差、RAM・起動・署名速度、Wi-Fi／TLS、QEMU、実機は全て今後の試験である。新規build logは存在しない。採取値はhash付きJSON/CSVに保存し、過去のログを今回の実行ログとして流用しない。
+2026-11-12時点では、実build用の削減flag注入、cnf適用、容量のA/B差、RAM・起動・署名速度、Wi-Fi／TLS、QEMU、実機は全て今後の試験だった。本採取の新規build logは存在しない。採取値はhash付きJSON/CSVに保存し、過去のログを今回の実行ログとして流用しない。後日のC実験の範囲と結果は上記のQEMU比較記録を参照する。

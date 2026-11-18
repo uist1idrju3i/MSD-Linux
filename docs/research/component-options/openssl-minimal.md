@@ -105,11 +105,11 @@ INSTALLのmacro表記はprotocol／algorithm tokenへ展開した。内部`crmf`
 
 ## 実行時設定とARM最適化
 
-[openssl.cnfとARMの検討](openssl-minimal-runtime.md)に設定案、providerの制限、BCM2837の一次資料と実機での確認を分ける。いずれも未適用・未測定である。
+[openssl.cnfとARMの検討](openssl-minimal-runtime.md)に設定案、providerの制限、BCM2837の一次資料と実機での確認を分ける。設定だけの[QEMU比較](../../experiments/2026-11-18-openssl-cnf.md)は完了したが、製品には未適用。ARM最適化と実機の測定は未実施である。
 
 ## 実験と残る判断
 
-[実験計画と採取記録](../../experiments/2026-11-12-openssl-minimal-plan.md)へ段階、固定条件、数値基準、負の対照をまとめた。その当時の承認待ちのうち、legacy EAP／TLS-PSK互換を維持しないこと、CMSと移行までのCLI維持、速度優先は2026-11-13に決定済みである。実装・比較試験はまだ行っていない。
+[実験計画と採取記録](../../experiments/2026-11-12-openssl-minimal-plan.md)へ段階、固定条件、数値基準、負の対照をまとめた。その当時の承認待ちのうち、legacy EAP／TLS-PSK互換を維持しないこと、CMSと移行までのCLI維持、速度優先は2026-11-13に決定済みである。build feature削減の実装・比較試験はまだ行っていない。設定だけのC実験は上記のQEMU比較記録を参照する。
 
 OpenSSL削減実験では、asmを維持した同一条件でrootfs容量、実機の署名検証・TLS速度とRAM、QEMUと実機のboot時間を比較する。bootへの影響は小さい見込みだが未測定であり、影響なしを合格済みの前提にしない。QEMUの`openssl speed`は実機速度の根拠にしない。機能削減と3.5.10への更新を同時に比較しない。
 
