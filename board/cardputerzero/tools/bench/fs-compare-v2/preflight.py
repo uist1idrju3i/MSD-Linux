@@ -14,12 +14,13 @@ import sys
 import time
 
 import storage
+import smoke_profile
 from supervisor import load_json, published, write_json, atomic_write
 
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[4]
-SCHEMA = "fs-compare-v2-smoke/1"
+SCHEMA = "fs-compare-v2-smoke/2"
 KNOWN_UNSUPPORTED = {
     "P012": r"EXT4-fs \(loop[0-9]+\): can't mount with journal_async_commit in data=ordered mode",
     "P085": r"mkfs\.btrfs: unrecognized option '--enable-simple-quota'",
@@ -148,8 +149,8 @@ def environment(output, runner=subprocess.run):
     inputs += [output / "fs-compare" / name for name in
                ("replay-log", "replay-log.provenance", "fs-compare-workload")]
     inputs += [path for path in HERE.iterdir() if path.is_file()]
-    inputs += [HERE.parent / "fs-compare-workload.c",
-               ROOT / "board/cardputerzero/qemu/run-qemu.sh"]
+    smoke_profile.load()
+    inputs += [ROOT / "board/cardputerzero/qemu/run-qemu.sh"]
     for name, expected in (("KERNEL_IMAGE", inputs[4]), ("DTB_IMAGE", inputs[5])):
         if os.environ.get(name) and Path(os.environ[name]).resolve() != expected.resolve():
             raise ValueError(f"{name} override does not match the checked build")
@@ -257,6 +258,13 @@ def unsupported(config, records, text, child_status):
 
 
 def run_probe(directory, config, path, env, output):
+    with smoke_profile.context():
+        return _run_probe(directory, config, path, env, output)
+
+
+def _run_probe(directory, config, path, env, output):
+    started = time.monotonic()
+    space_before = storage.filesystem(directory)
     storage.check_capacity()
     run_id = f"probe-{config}-{path['path']}"
     command = [str(HERE / "fs-compare.sh"), config, path["test"], run_id]
@@ -279,7 +287,10 @@ def run_probe(directory, config, path, env, output):
     phases = path["phases"].split(",")
     ok = ok and all(f"msd.fscmp: environment_ok kernel={env['kernel_release']}" in
                     (run / f"qemu-{phase}.log").read_text(errors="replace") for phase in phases)
+    ok = ok and profile_evidence(path["test"], run, phases, text)
     return dict(config=config, path=path["path"], test=path["test"], phases=phases,
+                elapsed_seconds=time.monotonic() - started,
+                space=probe_space(directory, space_before),
                 ok=ok, child_status=child.returncode, run=str(run),
                 command=command, option=registry()[2].get(config), archive=archive,
                 evidence={str(file): digest(file) for file in
@@ -288,10 +299,39 @@ def run_probe(directory, config, path, env, output):
                 unsupported=unsupported(config, records, text, child.returncode))
 
 
+def probe_space(directory, before):
+    device, free = storage.filesystem(directory)
+    if device != before[0]:
+        raise ValueError("probe filesystem changed during execution")
+    return dict(filesystem=device, free_before_bytes=before[1], free_after_bytes=free,
+                used_delta_bytes=before[1] - free)
+
+
+def profile_evidence(test, run, phases, text):
+    profile = smoke_profile.load()
+    marker = f"msd.fscmp: SMOKE_PROFILE sha256={smoke_profile.fingerprint()}"
+    if not all(marker in (run / f"qemu-{phase}.log").read_text(errors="replace") for phase in phases):
+        return False
+    if test in {"T1", "T1-negative", "T1-final", "T1-negative-final", "T1-sample",
+                "T2", "T4-sync", "T4-nosync", "T5"}:
+        marker = (f"workload_profile name=smoke W1_files={profile['w1_files']} "
+                  f"W2_updates={profile['w2_updates']} W3_records={profile['w3_records']} "
+                  f"W3_fsync_every=50 W4_bytes={profile['w4_bytes']}")
+        if marker not in text:
+            return False
+    if test == "T5" and f"T5_LOGICAL_BYTES={smoke_profile.logical_bytes(profile)}" not in text:
+        return False
+    if test == "T7" and not re.search(r"T7_FINISHED filesystem=\S+ bytes=" + str(profile["t7_bytes"]), text):
+        return False
+    return True
+
+
 def covered(certificate, fingerprint, required):
     if certificate.get("schema") != SCHEMA or certificate.get("identity") != fingerprint:
         return False
     records = {(row["config"], row["path"]): row for row in certificate.get("probes", [])}
+    if len(records) != len(certificate.get("probes", [])):
+        return False
     if any(not row.get("evidence") for row in records.values()):
         return False
     excluded = set(certificate.get("excluded", []))
@@ -328,19 +368,24 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
         atomic_write(write_plan, plan_bytes(rows))
         os.environ["FSCMP_ENVIRONMENT_FILE"] = str(directory / "environment.json")
         os.environ["FSCMP_PLAN_FILE"] = str(write_plan)
-    fingerprint = identity(env, dict(rows=rows, parameters=parameters))
+    identity_parameters = ({key: value for key, value in parameters.items() if key != "smoke_only"}
+                           if parameters is not None else None)
+    fingerprint = identity(env, dict(rows=rows, parameters=identity_parameters))
     required = requirements(rows)
     certificate_path = directory / "smoke-coverage.json"
     try:
         certificate = load_json(certificate_path)
         reuse = covered(certificate, fingerprint, required)
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        certificate = {}
         reuse = False
     if probe is run_probe:
         maximum = storage.positive(os.environ.get("FSCMP_MAX_ATTEMPTS", "1"))
         smoke_count = 0 if reuse else len(required)
         main_count = (storage.remaining_attempts(rows, os.environ["FSCMP_MATRIX_DIR"], maximum)
                       if os.environ.get("FSCMP_MATRIX_DIR") else len(rows) * maximum)
+        if parameters and parameters.get("smoke_only"):
+            main_count = 0
         storage.prepare(directory, output, smoke_count + main_count,
                         counts=dict(planned_rows=len(rows), max_attempts=maximum,
                                     smoke_probes=smoke_count, remaining_main_attempts=main_count))
@@ -348,15 +393,36 @@ def gate(rows, directory, output, probe=run_probe, inspect=environment, paramete
         attempt = directory / f"attempt-{time.time_ns()}"
         attempt.mkdir()
         write_json(attempt / "environment.json", env)
+        previous = certificate
+        if previous:
+            write_json(attempt / "previous-coverage.json", previous)
         certificate = dict(schema=SCHEMA, identity=fingerprint, probes=[], excluded=[])
+        if previous.get("schema") == SCHEMA and previous.get("identity") == fingerprint:
+            for config, path in required:
+                matches = [row for row in previous.get("probes", [])
+                           if (row["config"], row["path"]) == (config, path["path"])]
+                if len(matches) != 1:
+                    continue
+                row = matches[0]
+                candidate = dict(schema=SCHEMA, identity=fingerprint, probes=[row],
+                                 excluded=[config] if row.get("unsupported") else [])
+                if covered(candidate, fingerprint, [(config, path)]):
+                    certificate["probes"].append(row)
+                    if row.get("unsupported") and config not in certificate["excluded"]:
+                        certificate["excluded"].append(config)
+        reused = {(row["config"], row["path"]) for row in certificate["probes"]}
         for config, path in required:
-            if config in certificate["excluded"]:
+            if config in certificate["excluded"] or (config, path["path"]) in reused:
                 continue
             result = probe(attempt, config, path, env, output)
             certificate["probes"].append(result)
             if result["unsupported"]:
                 certificate["excluded"].append(config)
             write_json(certificate_path, certificate)
+            print(f"smoke {len(certificate['probes'])}/{len(required)} {config}/{path['path']} "
+                  f"ok={result['ok']} excluded={bool(result['unsupported'])} "
+                  f"seconds={result.get('elapsed_seconds', 0):.3f} "
+                  f"space_delta_bytes={result.get('space', {}).get('used_delta_bytes', 0)}", flush=True)
             if not result["ok"] and not result["unsupported"]:
                 raise ValueError(f"smoke failed: {config}/{path['path']}; main run not started")
         if not covered(certificate, fingerprint, required):
@@ -388,6 +454,11 @@ def main():
     prepare.add_argument("plan", type=Path)
     prepare.add_argument("directory", type=Path)
     prepare.add_argument("--expect-environment", type=Path)
+    prepare.add_argument("--smoke-only", action="store_true")
+    diagnose = sub.add_parser("diagnose")
+    diagnose.add_argument("config")
+    diagnose.add_argument("path")
+    diagnose.add_argument("directory", type=Path)
     single = sub.add_parser("single")
     single.add_argument("config")
     single.add_argument("test")
@@ -395,6 +466,8 @@ def main():
     single.add_argument("--points")
     single.add_argument("--expect-environment", type=Path)
     args = parser.parse_args()
+    if args.action in ("gate", "single", "diagnose") and os.environ.get("FSCMP_SMOKE") is not None:
+        raise ValueError("FSCMP_SMOKE is internal; use gate --smoke-only or diagnose")
     if args.action == "validate":
         validate(args.config, args.test)
     elif args.action == "validate-plan":
@@ -405,8 +478,28 @@ def main():
         output = Path(os.environ.get("OUTPUT_DIR", ROOT / "output-fscmp-v2")).resolve()
         if args.action == "gate":
             gate(read_plan(args.plan), args.directory, output,
-                 parameters={"plan_sha256": digest(args.plan)},
+                 parameters={"plan_sha256": digest(args.plan), "smoke_only": args.smoke_only},
                  expected_environment=args.expect_environment)
+        elif args.action == "diagnose":
+            paths, configs, variants = registry()
+            if args.config not in {*configs, *variants}:
+                raise ValueError("unknown diagnostic config")
+            path = next((row for row in paths if row["path"] == args.path), None)
+            if path is None:
+                raise ValueError("unknown diagnostic path")
+            args.directory = storage.persistent(args.directory)
+            args.directory.mkdir(parents=True, exist_ok=False)
+            env = environment(output)
+            write_json(args.directory / "environment.json", env)
+            plan = args.directory / "requested-plan.tsv"
+            atomic_write(plan, plan_bytes([(args.config, path["test"], "1")]))
+            os.environ["FSCMP_ENVIRONMENT_FILE"] = str(args.directory / "environment.json")
+            os.environ["FSCMP_PLAN_FILE"] = str(plan)
+            storage.prepare(args.directory, output, 1, counts=dict(smoke_probes=1))
+            result = run_probe(args.directory, args.config, path, env, output)
+            write_json(args.directory / "diagnostic.json", result)
+            if not result["ok"] and not result["unsupported"]:
+                raise ValueError("diagnostic failed; no coverage certificate issued")
         else:
             validate(args.config, args.test)
             root = Path(os.environ.get("QEMU_LOG_DIR", ""))

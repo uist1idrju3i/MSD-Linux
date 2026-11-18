@@ -68,6 +68,9 @@ case "$TEST" in
 		LOG_BYTES=0
 		;;
 esac
+if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
+	WORKLOAD_SIZE=smoke
+fi
 
 field_from_line()
 {
@@ -450,6 +453,7 @@ install -m 0755 "${OUTPUT_DIR}/fs-compare/replay-log" \
 	"${ROOTFS_DIR}/usr/libexec/replay-log"
 install -m 0755 "${OUTPUT_DIR}/fs-compare/fs-compare-workload" \
 	"${ROOTFS_DIR}/usr/libexec/fs-compare-workload"
+python3 "${SCRIPT_DIR}/smoke_profile.py" shell >"${ROOTFS_DIR}/etc/fs-compare-smoke.conf"
 install -m 0644 "${SCRIPT_DIR}/fs-compare-configs.tsv" \
 	"${ROOTFS_DIR}/usr/share/fs-compare-configs.tsv"
 if [[ "$CONFIG" == P* ]]; then
@@ -490,7 +494,9 @@ truncate -s 8G "$IMAGE"
 	fi
 	printf 'workload_size=%s\n' "$WORKLOAD_SIZE"
 	printf 'log_bytes=%s\n' "$LOG_BYTES"
-	if [[ "$WORKLOAD_SIZE" == t1-reduced ]]; then
+	if [[ "$WORKLOAD_SIZE" == smoke ]]; then
+		python3 "${SCRIPT_DIR}/smoke_profile.py" shell
+	elif [[ "$WORKLOAD_SIZE" == t1-reduced ]]; then
 		printf 'workload_W1_files=50\nworkload_W2_updates=25\nworkload_W3_records=250\nworkload_W3_fsync_every=50\nworkload_W4_bytes=8388608\n'
 	else
 		printf 'workload_W1_files=200\nworkload_W2_updates=100\nworkload_W3_records=1000\nworkload_W3_fsync_every=50\nworkload_W4_bytes=33554432\n'
@@ -511,7 +517,8 @@ truncate -s 8G "$IMAGE"
 sha256sum "$TEST_ROOTFS" "$BASE_IMAGE" "$KERNEL" "$DTB" "$RUN_QEMU" \
 	"${BUILD_DIR}/rootfs-fs-compare.squashfs" \
 	"${SCRIPT_DIR}/S97zz-fs-compare" "${SCRIPT_DIR}/fs-compare-guest" \
-	"${SCRIPT_DIR}/../fs-compare-workload.c" "${SCRIPT_DIR}/fs-compare-configs.tsv" \
+	"${SCRIPT_DIR}/fs-compare-workload.c" "${SCRIPT_DIR}/fs-compare-configs.tsv" \
+	"${SCRIPT_DIR}/smoke-profile.json" "${SCRIPT_DIR}/smoke_profile.py" \
 	"${SCRIPT_DIR}/fs-compare-phase2-variants.tsv" \
 	"${SCRIPT_DIR}/fs-compare.sh" "${SCRIPT_DIR}/fs-compare-build.sh" \
 	"${SCRIPT_DIR}/fs-compare.fragment" \
@@ -527,12 +534,22 @@ VM_PID=
 start_vm()
 {
 	local phase=$1
+	local phase_dtb="$DTB"
+	if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
+		phase_dtb="${RUN_DIR}/qemu-${phase}.dtb"
+		cp "$DTB" "$phase_dtb"
+		"${OUTPUT_DIR}/host/bin/fdtput" -t s "$phase_dtb" /cam1_regulator status disabled
+		"${OUTPUT_DIR}/host/bin/fdtput" -t s "$phase_dtb" /soc/serial@7e215040 status disabled
+		printf 'qemu_dtb_disabled_nodes=/cam1_regulator,/soc/serial@7e215040 phase=%s sha256=%s\n' \
+			"$phase" "$(sha256sum "$phase_dtb" | cut -d' ' -f1)" >>"${RUN_DIR}/run-meta.txt"
+	fi
 	VM_PHASE=$phase
 	CURRENT_LOG="${RUN_DIR}/qemu-${phase}.log"
 	local append="msd.fscmp=${CONFIG}:${TEST}:${RUN_ID}"
 	append+=" msd.fscmp.kernel=${FSCMP_EXPECT_KERNEL:?}"
 	if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
 		append+=" msd.fscmp.smoke=1"
+		append+=" msd.fscmp.profile=$(python3 "${SCRIPT_DIR}/smoke_profile.py" shell | sed -n 's/^SMOKE_PROFILE_SHA256=//p')"
 	fi
 	if [[ -n "$T1_POINTS" ]]; then
 		append+=" msd.fscmp.points=${T1_POINTS}"
@@ -540,7 +557,7 @@ start_vm()
 	if [[ "$phase" == verify ]]; then
 		append+=" msd.fscmp.phase=verify"
 	fi
-	QEMU_COPY_IMAGE=0 QEMU_MACHINE=raspi3b OUTPUT_DIR="$OUTPUT_DIR" \
+	DTB_IMAGE="$phase_dtb" QEMU_COPY_IMAGE=0 QEMU_MACHINE=raspi3b OUTPUT_DIR="$OUTPUT_DIR" \
 		QEMU_EXTRA_APPEND="$append" python3 "${SCRIPT_DIR}/supervisor.py" \
 		run "$RUN_DIR" "$phase" "$TEST" "$RUN_QEMU" "$IMAGE" \
 		>"${RUN_DIR}/supervisor-${phase}.log" 2>&1 &
@@ -599,6 +616,19 @@ case "$TEST" in
 			printf 'Timed out waiting for %s; see %s\n' "$start_marker" "$QEMU_LOG" >&2
 			stop_vm abort
 			exit 1
+		fi
+		if [[ "${FSCMP_SMOKE:-0}" == 1 ]]; then
+			if [[ "$TEST" == T2 ]]; then
+				written_marker='msd.fscmp: W4 bytes='
+			else
+				written_marker='msd.fscmp: T3_FSYNC_ACK seq='
+			fi
+			if ! wait_for_marker "$written_marker" "$start_marker_timeout"; then
+				printf 'Smoke cut requires completed writes and fsync\n' >&2
+				stop_vm abort
+				exit 1
+			fi
+			delay=1
 		fi
 		printf 'power_cut_after_seconds=%s\n' "$delay" | tee -a "${RUN_DIR}/run-meta.txt"
 		sleep "$delay"

@@ -4,6 +4,7 @@
 import csv
 import errno
 import fcntl
+import gzip
 import io
 import importlib.util
 import json
@@ -223,6 +224,113 @@ class Judge(unittest.TestCase):
 
 
 class Errors(unittest.TestCase):
+    def test_boot_serial_fragments(self):
+        first = "Re-reading the partition table failed."
+        kernel = "[   16.000491] mmc1: Timeout waiting for hardware interrupt."
+        continuation = ": Device or resource busy"
+        self.assertEqual(list(M.boot_serial_lines([], lambda: True)), [])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel, continuation], lambda: True)),
+                         [(1, kernel), (1, first + continuation)])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel, continuation], lambda: False)),
+                         [(1, first + kernel), (2, continuation)])
+        self.assertEqual(list(M.boot_serial_lines([first + kernel], lambda: True)),
+                         [(1, kernel), (1, first)])
+        self.assertEqual(list(M.boot_serial_lines(
+            [first + kernel, "msd.fscmp: finished"], lambda: True)),
+            [(1, kernel), (1, first), (2, "msd.fscmp: finished")])
+
+    def test_real_inline_boot_fragments_are_judged_independently(self):
+        text = "\n".join(gzip.decompress(
+            (ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()
+        ).decode().splitlines())
+        grow = "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0\n"
+        warning = "Re-reading the partition table failed.: Device or resource busy"
+        kernel = "[   16.000491] mmc1: Timeout waiting for hardware interrupt."
+        split = "Re-reading the partition table failed." + kernel + "\n: Device or resource busy"
+        self.assertIn(grow + warning, text)
+        modified = text.replace(grow + warning, grow + split)
+        records = self.boot_scan(modified)
+        self.assertEqual(sum(r["expected"] for r in records), 19)
+        self.assertEqual(sum(not r["expected"] for r in records), 5)
+        self.assertEqual(self.boot_scan(kernel), [])
+        for fragment in ("unknown driver: failed", "Kernel panic", "Oops:", "BUG:", "EIO", "ENOSPC"):
+            changed = modified.replace(kernel, "[   16.000491] " + fragment)
+            self.assertTrue(any(not r["expected"] and fragment in r["text"]
+                                for r in self.boot_scan(changed)))
+        for changed in (modified.replace(": Device or resource busy", ": Input/output error"),
+                        modified.replace(grow, "unrelated userspace operation\n"),
+                        modified.replace("msd-data: setup synchronized / 初期設定の同期が完了しました。",
+                                         "setup incomplete")):
+            self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                                for r in self.boot_scan(changed)))
+        self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                            for r in self.boot_scan(modified, "host")))
+        self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"]
+                            for r in self.boot_scan(text + "\n" + split)))
+
+    def boot_scan(self, text, phase="run"):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / f"qemu-{phase}.log"
+            path.write_text(text)
+            return M.aggregate_errors([(phase, path)], "smoke")
+
+    def test_actual_boot_diagnostics_keep_camera_eio_and_unresolved_uart_fatal(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        for phase in ("run", "verify"):
+            records = self.boot_scan(text, phase)
+            self.assertEqual(len(records), 24)
+            expected = [r for r in records if r["expected"]]
+            self.assertEqual(len(expected), 19)
+            self.assertTrue(all(r.get("source") and r.get("reason") for r in expected))
+            fatal = [r for r in records if not r["expected"]]
+            self.assertEqual(len(fatal), 5)
+            self.assertTrue(all("cam1_regulator" in r["text"] or "bcm2835-aux-uart" in r["text"]
+                                for r in fatal))
+
+    def test_known_boot_entries_reject_near_misses_and_wrong_scope(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        records = self.boot_scan(text)
+        expected = [r for r in records if r["expected"]]
+        for row in expected:
+            with self.subTest(line=row["text"]):
+                changed = text.replace(row["text"], row["text"] + " unexpected", 1)
+                self.assertTrue(any(not r["expected"] and r["text"].endswith(" unexpected")
+                                    for r in self.boot_scan(changed)))
+                self.assertFalse(self.boot_scan(row["text"])[0]["expected"])
+                self.assertFalse(self.boot_scan(row["text"], "host")[0]["expected"])
+        for prefix in ("run-qemu: machine=raspi3b", "run-qemu: version=QEMU emulator version 11.1.2",
+                       "Linux version 6.18.59-v8", "Machine model: Raspberry Pi 3 Model B",
+                       "msd.fscmp: SMOKE_PROFILE"):
+            self.assertFalse(any(r["expected"] for r in self.boot_scan(text.replace(prefix, "unknown"))))
+        line = next(r["text"] for r in expected if r["known_boot"] == "no-uefi")
+        self.assertFalse(self.boot_scan(text + "\n" + line)[-1]["expected"])
+        for suffix in (" EIO", " ENOSPC", " BUG: fatal", " Kernel panic", " Oops:"):
+            self.assertFalse(self.boot_scan(text.replace(line, line + suffix, 1))[0]["expected"])
+
+    def test_reread_busy_requires_known_grow_step_and_success(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        for modified in (
+                text.replace("msd-data-grow: extending partition ", "unrelated: extending partition "),
+                text.replace("msd-data: setup synchronized / 初期設定の同期が完了しました。", "setup incomplete"),
+                text.replace("Device or resource busy", "Input/output error")):
+            records = self.boot_scan(modified)
+            self.assertTrue(any(not r["expected"] and "Re-reading" in r["text"] for r in records))
+        records = self.boot_scan(text.replace("mmc1: Failed", "mmc0: Failed"))
+        self.assertTrue(any(not r["expected"] and "mmc0: Failed" in r["text"] for r in records))
+        self.assertEqual(self.boot_scan(""), [])
+
+    def test_grow_reread_allows_kernel_interleaving_not_unknown_errors_or_userspace(self):
+        text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
+        grow = "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0"
+        led = "[   16.238832] platform leds: deferred probe pending: leds-gpio: Failed to get GPIO '/leds/led-act'"
+        records = self.boot_scan(text.replace(grow, grow + "\n" + led))
+        self.assertTrue(all(r["expected"] for r in records if "Re-reading" in r["text"]))
+        for message in ("unrelated userspace operation", "[   16.238832] unknown driver: failed"):
+            records = self.boot_scan(text.replace(grow, grow + "\n" + message))
+            self.assertTrue(any(not r["expected"] and (
+                "Re-reading" in r["text"] if "userspace" in message else r["text"] == message)
+                                for r in records))
+
     def test_real_launcher_provenance_is_not_a_qemu_error(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
@@ -1066,6 +1174,219 @@ class Preflight(unittest.TestCase):
                 result = subprocess.run(command, env=environment, capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("environment_error_filesystem=", result.stdout)
+
+
+class LightSmoke(unittest.TestCase):
+    def test_t1_replay_checks_full_profile_tail_not_last_fsync_marker(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+
+        def function(name):
+            return name + "()\n{\n" + guest.split("\n" + name + "()\n{\n", 1)[1].split("\n}\n", 1)[0] + "\n}\n"
+
+        replay = function("replay_t1").split("\n\texpected_ack_count=", 1)[0] + "\n}\n"
+        script = (function("prepare_w3_expected_file") + function("validate_w3_file") + replay
+                  + '\nconsole() { :; }\ncreate_mark_map() { :; }\nwait_for_t1_log_end() { :; }\n'
+                  + 'WORKLOAD=profile_query\nprofile_query() { echo "$COUNT"; }\nworkload_profile() { echo fixture; }\n'
+                  + 'RUN_PATH=$1\nCOUNT=$3\nW3_RECORD_SIZE=128\nW3_SYNC_INTERVAL=50\nTEST=T1\n'
+                  + 'replay_t1\n'
+                  + 'prefix=$(printf "%s\\n" "$2" | awk -F - \'{ print ($4 + 0) * 128 }\')\n'
+                  + 'hash=$(head -c "$prefix" "$W3_EXPECTED_FILE" | sha256sum | awk \'{ print $1 }\')\n'
+                  + 'if validate_w3_file "$RUN_PATH/data.bin" "$hash" "$2"; then echo ok; '
+                  + 'else echo "$w3_validation_detail"; fi\n')
+
+        def records(count):
+            return b"".join(f"{0:010d} {n:010d}\n".encode() + b"\0" + b" " * 105
+                            for n in range(1, count + 1))
+
+        cases = [
+            (51, 50, records(51), "ok"),
+            (51, 50, records(50), "ok"),
+            (51, 50, b"", "file_shorter_than_prefix"),
+            (51, 50, records(51)[:-1], "partial_record_tail"),
+            (51, 50, records(51)[:-1] + b"x", "invalid_deterministic_tail"),
+            (51, 50, records(52), "tail_exceeds_final_record"),
+            (1000, 1000, records(1000), "ok"),
+            (250, 250, records(250), "ok"),
+            (250, 250, records(251), "tail_exceeds_final_record"),
+        ]
+        for count, synced, data, expected in cases:
+            with self.subTest(count=count, expected=expected), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                marker = f"w3-record-000-{synced:04d}"
+                (directory / "T1-markers.tsv").write_text(f"1\tW3/append.log\thash\t1\t1\t{marker}\n")
+                (directory / "data.bin").write_bytes(data)
+                result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary,
+                                         marker, str(count)], text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), expected)
+
+    def test_probe_space_normal_zero_negative_and_error(self):
+        with mock.patch.object(S, "filesystem", return_value=("device", 90)):
+            self.assertEqual(P.probe_space(Path("."), ("device", 100))["used_delta_bytes"], 10)
+            self.assertEqual(P.probe_space(Path("."), ("device", 90))["used_delta_bytes"], 0)
+            self.assertEqual(P.probe_space(Path("."), ("device", 80))["used_delta_bytes"], -10)
+            with self.assertRaisesRegex(ValueError, "filesystem changed"):
+                P.probe_space(Path("."), ("other", 100))
+        with mock.patch.object(S, "filesystem", side_effect=OSError("unavailable")):
+            with self.assertRaises(OSError):
+                P.probe_space(Path("."), ("device", 100))
+
+    def test_profile_normal_empty_invalid_and_environment_isolation(self):
+        profile = P.smoke_profile
+        data = profile.load()
+        self.assertEqual(profile.logical_bytes(data), 84352)
+        self.assertIn("SMOKE_W3_RECORDS=51", profile.render("shell"))
+        self.assertIn("#define SMOKE_W4_BYTES 65536U", profile.render("header"))
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "profile.json"
+            for content in ("", "{}", json.dumps(dict(data, w3_records=50)),
+                            json.dumps(dict(data, w1_files=True)),
+                            json.dumps(dict(data, unknown=1)),
+                            json.dumps(dict(data, archive_mode="full"))):
+                path.write_text(content)
+                with self.assertRaises(ValueError):
+                    profile.load(path)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(RuntimeError):
+                with profile.context():
+                    self.assertEqual(S.log_limit(), 8388608)
+                    raise RuntimeError("failed probe")
+            self.assertNotIn("FSCMP_SMOKE", os.environ)
+            self.assertEqual(S.log_limit(), 268435456)
+
+    def test_private_workload_preserves_sync_rename_tail_and_exact_small_w4(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "smoke-profile.h").write_text(P.smoke_profile.render("header"))
+            binary = root / "workload"
+            subprocess.run(["cc", "-O2", "-Wall", "-Wextra", "-Werror", "-std=c11",
+                            f"-I{root}", str(V2 / "fs-compare-workload.c"), "-lcrypto", "-o", str(binary)],
+                           capture_output=True, text=True, check=True)
+            for size, files, updates, records, large in (("smoke", 2, 2, 51, 65536),
+                                                        ("t1-reduced", 50, 25, 250, 8388608),
+                                                        ("full", 200, 100, 1000, 33554432)):
+                work = root / size
+                work.mkdir()
+                manifest = root / f"{size}.tsv"
+                result = subprocess.run([str(binary), "workload", str(work), str(manifest), "-",
+                                         "--workload-size", size], capture_output=True, text=True,
+                                        timeout=30, check=True)
+                self.assertIn(f"W3_records={records}", result.stdout)
+                query = subprocess.run([str(binary), "w3-records", size],
+                                       capture_output=True, text=True, check=True)
+                self.assertEqual(query.stdout.strip(), str(records))
+                self.assertEqual(len(list((work / "W1").iterdir())), files)
+                self.assertEqual((work / "W2/target.dat").stat().st_size, 2048)
+                self.assertEqual((work / "W3/append.log").stat().st_size, records * 128)
+                self.assertEqual((work / "W4/large.bin").stat().st_size, large)
+                with manifest.open() as stream:
+                    rows = list(csv.DictReader(stream, delimiter="\t"))
+                self.assertEqual(sum(row["event"] == "atomic_update" for row in rows), updates)
+                self.assertEqual(sum(row["event"] == "batch_fsync" for row in rows), records // 50)
+            for arguments in ([], ["workload", str(root / "bad"), str(root / "bad.tsv"), "-",
+                                    "--workload-size", "unknown"]):
+                self.assertNotEqual(subprocess.run([str(binary), *arguments], capture_output=True).returncode, 0)
+
+    def test_shared_evidence_images_hash_only_metadata_dedup_and_corruption(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = Storage().archive_fixture(root)
+            image = P.digest(source / "sdcard.img")
+            with P.smoke_profile.context():
+                state = S.archive_attempt(source, root / "archives")
+            manifest = S.verify_archive(state["archive"], state["manifest_sha256"])
+            entries = {row["path"]: row for row in manifest["entries"]}
+            self.assertEqual(entries["sdcard.img"]["sha256"], image)
+            self.assertEqual(entries["host.log"]["type"], "hardlink")
+            self.assertEqual(entries["link"]["link"], "host.log")
+            self.assertEqual(entries["fifo"]["type"], "fifo")
+            self.assertFalse((root / "archives/objects" / image).exists())
+            with tarfile.open(state["archive"]) as archive:
+                self.assertEqual(archive.getnames(), [S.MANIFEST])
+            S.verify_source(source, manifest, cleaned=True)
+            self.assertFalse((source / "sdcard.img").exists())
+            self.assertTrue((source / "host.log").exists())
+            count = len(list((root / "archives/objects").iterdir()))
+            second = Storage().archive_fixture(root / "second")
+            with P.smoke_profile.context():
+                S.archive_attempt(second, root / "archives")
+            self.assertEqual(len(list((root / "archives/objects").iterdir())), count)
+            payload = root / "archives/objects" / entries["build/rootfs/payload"]["sha256"]
+            original = payload.read_bytes()
+            payload.write_bytes(b"tampered")
+            with self.assertRaises(ValueError):
+                S.verify_archive(state["archive"], state["manifest_sha256"])
+            payload.write_bytes(original)
+            payload.unlink()
+            with self.assertRaises(ValueError):
+                S.archive_attempt(source, root / "archives")
+
+    def test_shared_archive_failure_and_cleanup_resume_fail_closed(self):
+        import smoke_storage
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = Storage().archive_fixture(root)
+            with P.smoke_profile.context(), mock.patch.object(smoke_storage, "store", side_effect=OSError(errno.ENOSPC, "full")):
+                with self.assertRaises(OSError):
+                    S.archive_attempt(source, root / "archives")
+            self.assertTrue((source / "sdcard.img").exists())
+            self.assertFalse(S.load_json(source / S.STATE)["complete"])
+            with mock.patch.object(S, "cleanup_payload", side_effect=OSError("cleanup interrupted")):
+                with self.assertRaises(OSError):
+                    S.archive_attempt(source, root / "archives")
+            self.assertTrue(S.load_json(source / S.STATE)["complete"])
+            self.assertTrue((source / "sdcard.img").exists())
+            S.archive_attempt(source, root / "archives")
+            self.assertTrue(S.load_json(source / S.STATE)["cleaned"])
+
+    def test_capacity_light_mixed_and_credit_preserves_normal_reservations(self):
+        paths = dict(output="/out", temp="/temp", archive="/archive")
+        probe = lambda _: ("same", 100000 * S.GIB)
+        normal = S.estimate(paths, 1, 851, S.GIB, 268435456, probe)["same"]["required"]
+        light = S.estimate(paths, 1, 851, S.GIB, 268435456, probe, smoke=851)["same"]["required"]
+        mixed = S.estimate(paths, 1, 852, S.GIB, 268435456, probe, smoke=851)["same"]["required"]
+        self.assertLess(light, 100 * S.GIB)
+        self.assertGreater(normal, 8000 * S.GIB)
+        self.assertGreater(mixed, light + 8 * S.GIB)
+        with self.assertRaises(ValueError):
+            S.estimate(paths, 1, 1, 1, 1, probe, smoke=2)
+
+    def test_profile_missing_wrong_phase_and_stale_logical_count_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            marker = f"msd.fscmp: SMOKE_PROFILE sha256={P.smoke_profile.fingerprint()}\n"
+            for phase in ("run", "verify"):
+                (root / f"qemu-{phase}.log").write_text(marker)
+            self.assertTrue(P.profile_evidence("smoke", root, ["run", "verify"], marker))
+            self.assertFalse(P.profile_evidence("T5", root, ["run"], marker))
+            self.assertFalse(P.profile_evidence("T7", root, ["run"], marker + "T7_FINISHED filesystem=ext4 bytes=4294967296"))
+            (root / "qemu-verify.log").write_text("")
+            self.assertFalse(P.profile_evidence("smoke", root, ["run", "verify"], marker))
+
+    def test_partial_coverage_resume_and_smoke_only_does_not_reserve_main(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            path = dict(path="smoke", test="smoke", phases="run", points="none")
+            calls = []
+            fail = True
+
+            def probe(attempt, config, selected, _env, _output):
+                calls.append(config)
+                evidence = attempt / config
+                evidence.write_text(config)
+                return dict(config=config, path=selected["path"], phases=["run"],
+                            ok=not (fail and config == "E2"), unsupported=None,
+                            evidence={str(evidence): P.digest(evidence)})
+
+            with mock.patch.object(P, "requirements", return_value=[("E1", path), ("E2", path)]), \
+                    mock.patch.object(P, "run_probe", probe), mock.patch.object(S, "prepare") as prepare:
+                rows = [("E1", "smoke", "1")]
+                with self.assertRaisesRegex(ValueError, "smoke failed"):
+                    P.gate(rows, root, root, probe, lambda _: {}, parameters={"smoke_only": True})
+                self.assertEqual(prepare.call_args.kwargs["counts"]["remaining_main_attempts"], 0)
+                fail = False
+                P.gate(rows, root, root, probe, lambda _: {}, parameters={"smoke_only": True})
+                self.assertEqual(calls, ["E1", "E2", "E2"])
 
 
 if __name__ == "__main__":

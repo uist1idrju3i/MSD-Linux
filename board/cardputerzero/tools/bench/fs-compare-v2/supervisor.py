@@ -171,11 +171,69 @@ def phase_ok(result, test, phase):
             and result.get("returncode") == 0 and result.get("marker") is True)
 
 
+def boot_serial_lines(lines, enabled):
+    pending = ""
+    origin = 0
+    for number, text in enumerate(lines, 1):
+        if not enabled() or text.startswith("msd.fscmp:"):
+            if pending:
+                yield origin, pending
+                pending = ""
+            yield number, text
+            continue
+        stamps = list(re.finditer(r"\[\s*[0-9]+\.[0-9]+\] ", text))
+        if stamps:
+            prefix = text[:stamps[0].start()]
+            if prefix:
+                if not pending:
+                    origin = number
+                pending += prefix
+            for index, stamp in enumerate(stamps):
+                end = stamps[index + 1].start() if index + 1 < len(stamps) else len(text)
+                yield number, text[stamp.start():end]
+        elif pending:
+            yield origin, pending + text
+            pending = ""
+        else:
+            yield number, text
+    if pending:
+        yield origin, pending
+
+
 def aggregate_errors(logs, test):
     records = []
+    boot_rules = load_json(Path(__file__).with_name("boot-diagnostics.json"))
     for phase, path in logs:
         context = None
-        for line_number, text in enumerate(Path(path).read_text(errors="replace").splitlines(), 1):
+        lines = Path(path).read_text(errors="replace").splitlines()
+        qemu = machine = kernel = model = closed = False
+        grow_pending = False
+        grow_complete = "msd-data: setup synchronized / 初期設定の同期が完了しました。" in lines
+        smoke = any(re.fullmatch(r"msd\.fscmp: SMOKE_PROFILE sha256=[a-f0-9]{64}", line) for line in lines)
+        def boot_period():
+            return (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
+                    and qemu and machine and kernel and model and not closed)
+
+        for line_number, text in boot_serial_lines(lines, boot_period):
+            normalized = re.sub(r"^\[\s*[0-9]+\.[0-9]+\] ", "", text)
+            qemu |= text == "run-qemu: version=" + boot_rules["qemu"]
+            machine |= text == boot_rules["machine"]
+            kernel |= normalized.startswith("Linux version " + boot_rules["kernel"] + " ")
+            model |= normalized == "Machine model: Raspberry Pi 3 Model B"
+            closed |= text.startswith("msd.fscmp:")
+            boot = (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
+                    and qemu and machine and kernel and model and not closed)
+            benign = None
+            if boot:
+                for entry in boot_rules["entries"]:
+                    if (phase in entry["phases"] and re.fullmatch(entry["pattern"], normalized)
+                            and (entry["id"] != "grow-reread-busy" or (grow_pending and grow_complete))):
+                        benign = entry
+                        break
+            if re.fullmatch(r"msd-data-grow: extending partition [47] to the end of /dev/mmcblk0", text):
+                grow_pending = True
+            elif not re.match(r"^\[\s*[0-9]+\.[0-9]+\] ", text):
+                grow_pending = False
             if re.search(r"msd\.fscmp: environment_dm_target=[\w-]+\s+v[0-9.]+\s*$", text):
                 continue
             begin = re.search(r"msd\.fscmp: expected_errors_begin kind=(\S+)", text)
@@ -193,20 +251,22 @@ def aggregate_errors(logs, test):
             category = None
             if re.search(r"msd\.fscmp: error=|tool_version_error", text):
                 category = "guest"
-            elif re.search(r"Kernel panic|\bOops:|\bBUG:|I/O error.*dev (?:mmcblk|sd[a-z]|nvme)", text):
+            elif re.search(r"Kernel panic|\bOops:|\bBUG:|\b(?:EIO|ENOSPC)\b|No space left|I/O error.*dev (?:mmcblk|sd[a-z]|nvme)", text):
                 category = "kernel-fatal"
             elif re.search(r"^(?:\S*/)?qemu(?:-system-[\w-]+)?: (?!warning:)", text, re.I):
                 category = "qemu"
             elif re.search(r"\b(error|failed|failure|fatal)\b|not found|No such file|Permission denied|No space left|Refusing |Could not |Timed out |did not finish|T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)|T6_READCHECK exit=[234]", text, re.I):
                 category = "diagnostic"
             if category:
-                expected = bool(context and category == "diagnostic" and (
+                expected = bool(category == "diagnostic" and (benign or (context and (
                     re.search(r"T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)", text)
                     or re.search(r"EXT4-fs error|F2FS-fs.*error|BTRFS (?:error|warning)|checksum error|csum failed|device-mapper: integrity:", text, re.I)
                     or re.search(r"I/O error.*dev (?:dm-\d+|loop\d+)", text)
-                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)))
+                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)))))
                 records.append(dict(file=Path(path).name, line=line_number, phase=phase,
-                                    category=category, expected=expected, text=text))
+                                    category=category, expected=expected, text=text,
+                                    **({"known_boot": benign["id"], "reason": benign["reason"],
+                                        "source": benign["source"]} if expected and benign else {})))
         if context is not None:
             records.append(dict(file=Path(path).name, line=0, phase=phase, category="context",
                                 expected=False, text="expected error context not closed"))

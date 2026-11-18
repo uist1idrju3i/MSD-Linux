@@ -219,9 +219,10 @@ if [[ ! -f "${staging_dir}/usr/include/openssl/evp.h" ]]; then
 		"${staging_dir}/usr/include/openssl/evp.h" >&2
 	exit 1
 fi
-"$target_cc" -O2 -Wall -Wextra -std=c11 \
+python3 "${SCRIPT_DIR}/smoke_profile.py" header >"${ARTIFACT_DIR}/smoke-profile.h"
+"$target_cc" -O2 -Wall -Wextra -std=c11 -I"$ARTIFACT_DIR" \
 	-I"${staging_dir}/usr/include" \
-	"${SCRIPT_DIR}/../fs-compare-workload.c" \
+	"${SCRIPT_DIR}/fs-compare-workload.c" \
 	-L"${staging_dir}/usr/lib" -Wl,-rpath-link,"${staging_dir}/usr/lib" \
 	-lcrypto -o "${ARTIFACT_DIR}/fs-compare-workload"
 printf 'fs-compare-workload: sha256=%s compiler=%s\n' \

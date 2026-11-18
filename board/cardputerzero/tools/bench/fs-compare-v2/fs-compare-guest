@@ -40,6 +40,24 @@ phase=$2
 T1_POINTS=${3:-}
 SMOKE="$(sed -n 's/.*msd\.fscmp\.smoke=\([^ ]*\).*/\1/p' /proc/cmdline)"
 EXPECTED_KERNEL="$(sed -n 's/.*msd\.fscmp\.kernel=\([^ ]*\).*/\1/p' /proc/cmdline)"
+IDLE_SECONDS=600
+CONTROL_SECONDS=60
+QUIESCE_POLLS=30
+T7_BYTES=4294967296
+LOGICAL_BYTES=34706432
+if [ "$SMOKE" = 1 ]; then
+	# shellcheck source=/dev/null
+	. /etc/fs-compare-smoke.conf
+	expected_profile="$(sed -n 's/.*msd\.fscmp\.profile=\([^ ]*\).*/\1/p' /proc/cmdline)"
+	[ "$expected_profile" = "$SMOKE_PROFILE_SHA256" ] || fail smoke_profile_mismatch
+	IDLE_SECONDS=$SMOKE_IDLE_SECONDS
+	CONTROL_SECONDS=$SMOKE_IDLE_SECONDS
+	QUIESCE_POLLS=$SMOKE_QUIESCE_POLLS
+	T7_BYTES=$SMOKE_T7_BYTES
+	LOGICAL_BYTES=$SMOKE_LOGICAL_BYTES
+	W3_FULL_RECORDS=$SMOKE_W3_RECORDS
+	console "SMOKE_PROFILE sha256=$SMOKE_PROFILE_SHA256"
+fi
 if [ "$T1_POINTS" = first ] && [ "$SMOKE" = 1 ]; then
 	T1_POINTS_FIRST=1
 	T1_POINTS=
@@ -1199,7 +1217,8 @@ replay_t1()
 				"${RUN_PATH}/T1-markers.tsv")"
 			[ -n "$w3_latest_marker" ] ||
 				fail "t1_w3_latest_marker_missing"
-			prepare_w3_expected_file "$w3_latest_marker" "" T1 ||
+			prepare_w3_expected_file "$w3_latest_marker" \
+				"$("$WORKLOAD" w3-records "$(workload_profile)")" T1 ||
 				fail "t1_w3_latest_marker_invalid=$w3_latest_marker"
 			;;
 	esac
@@ -1525,17 +1544,26 @@ EOF
 	done
 }
 
-run_workload_once()
+workload_profile()
 {
+	if [ "$SMOKE" = 1 ]; then
+		echo smoke
+		return
+	fi
 	case "$TEST" in
 		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
-			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
-				--workload-size t1-reduced "$@"
+			echo t1-reduced
 			;;
 		*)
-			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" "$@"
+			echo full
 			;;
 	esac
+}
+
+run_workload_once()
+{
+	"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
+		--workload-size "$(workload_profile)" "$@"
 }
 
 run_t4_idle()
@@ -1651,7 +1679,7 @@ run_t5()
 	sync
 	after_stats="$(snapshot_stats)"
 	printf '%s\n---\n%s\n' "$before_stats" "$after_stats" |
-		awk -F '\t' -v logical=34706432 '
+		awk -F '\t' -v logical="$LOGICAL_BYTES" '
 			$1 == "---" { after = 1; next }
 			!after {
 				before_writes[$1] = $2
@@ -1665,7 +1693,7 @@ run_t5()
 					$3 - before_sectors[$1], logical
 			}
 		' >/dev/console
-	console "T5_LOGICAL_BYTES=34706432"
+	console "T5_LOGICAL_BYTES=$LOGICAL_BYTES"
 }
 
 quiesce_device()
@@ -1706,11 +1734,11 @@ EOF
 			stable_seconds=0
 		fi
 		previous_ios=$current_ios
-		if [ "$stable_seconds" -ge 30 ]; then
+		if [ "$stable_seconds" -ge "$QUIESCE_POLLS" ]; then
 			break
 		fi
 	done
-	[ "$stable_seconds" -ge 30 ] ||
+	[ "$stable_seconds" -ge "$QUIESCE_POLLS" ] ||
 		fail "quiesce_timeout_seconds=900 device=$device"
 	console "QUIESCE_RESULT device=$device quiesce_seconds=$elapsed quiesce_write_ios=$((current_ios - initial_ios)) quiesce_write_sectors=$((current_sectors - initial_sectors))"
 }
@@ -2134,7 +2162,7 @@ run_t7()
 {
 	image="${RUN_PATH}/t7-4g.img"
 	[ ! -e "$image" ] || fail "T7_image_already_exists"
-	fallocate -l 4G "$image"
+	fallocate -l "$T7_BYTES" "$image"
 	device="$(losetup --find --show --direct-io=on "$image")" ||
 		fail "T7_loop_direct_io_failed"
 	LOOP_DATA=$device
@@ -2165,7 +2193,7 @@ run_t7()
 	esac
 	run_timed_step losetup -d "$LOOP_DATA"
 	LOOP_DATA=
-	console "T7_FINISHED filesystem=$FS_TYPE bytes=4294967296"
+	console "T7_FINISHED filesystem=$FS_TYPE bytes=$T7_BYTES"
 }
 
 run_t6_before()
@@ -2231,7 +2259,7 @@ dispatch()
 			esac
 			;;
 		T2)
-			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" --repeat
+			run_workload_once --repeat
 			;;
 		T3)
 			"$WORKLOAD" t3 "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME"
@@ -2239,14 +2267,14 @@ dispatch()
 		T4-sync)
 			run_workload_once
 			sync
-			run_t4_idle 600
+			run_t4_idle "$IDLE_SECONDS"
 			;;
 		T4-nosync)
 			run_workload_once
-			run_t4_idle 600
+			run_t4_idle "$IDLE_SECONDS"
 			;;
 		T4-idle-control)
-			run_t4_idle 60
+			run_t4_idle "$CONTROL_SECONDS"
 			;;
 		T5)
 			run_t5

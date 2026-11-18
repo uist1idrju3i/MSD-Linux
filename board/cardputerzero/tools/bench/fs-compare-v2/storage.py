@@ -43,6 +43,9 @@ def nonnegative(value):
 
 
 def log_limit():
+    if os.environ.get("FSCMP_SMOKE") == "1":
+        import smoke_profile
+        return smoke_profile.load()["log_limit"]
     return positive(os.environ.get("FSCMP_LOG_LIMIT_BYTES", 256 * 1024 ** 2))
 
 
@@ -100,7 +103,7 @@ def filesystem(path):
     return str(info.st_dev), space.f_bavail * space.f_frsize
 
 
-def estimate(paths, jobs, attempts, rootfs, limit, probe=None):
+def estimate(paths, jobs, attempts, rootfs, limit, probe=None, smoke=0):
     probe = probe or filesystem
     jobs, rootfs, limit = map(positive, (jobs, rootfs, limit))
     attempts = nonnegative(attempts)
@@ -112,6 +115,16 @@ def estimate(paths, jobs, attempts, rootfs, limit, probe=None):
         # No sparse, compression, or reflink savings are assumed.
         "archive": attempts * (payload * 11 // 10 + 16 * 1024 ** 2),
     }
+    if smoke:
+        import smoke_profile
+        smoke = nonnegative(smoke)
+        if smoke > attempts:
+            raise ValueError("smoke count exceeds attempts")
+        main = attempts - smoke
+        metadata = 16 * 1024 ** 2
+        light = smoke_profile.load()["log_limit"] + metadata
+        amounts["output"] = active * (8 * GIB + 2 * rootfs + GIB) + main * (limit + rootfs) + smoke * light
+        amounts["archive"] = main * (payload * 11 // 10 + 16 * 1024 ** 2) + smoke * light + 2 * rootfs + GIB
     groups = {}
     for role, path in paths.items():
         device, free = probe(path)
@@ -133,7 +146,9 @@ def capacity(path, initialize=None):
         remaining = max(0, model["attempts"] - len(model["completed"]))
         model["remaining_attempts"] = remaining
         model["filesystems"] = estimate(model["paths"], model["jobs"], remaining,
-                                        model["rootfs"], model["log_limit"])
+                                        model["rootfs"], model["log_limit"],
+                                        smoke=max(0, model.get("counts", {}).get("smoke_probes", 0)
+                                                  - len(model.get("completed_smoke", []))))
         write_json(path, model)
         if any(group["free"] < group["required"] for group in model["filesystems"].values()):
             raise OSError(errno.ENOSPC, f"capacity estimate exceeds free space; see {path}")
@@ -149,7 +164,7 @@ def prepare(directory, output, attempts, counts=None):
     model = dict(schema=SCHEMA, paths=dict(output=str(directory.parent),
                  temp=str(Path(os.environ.get("TMPDIR", "/tmp")).resolve()),
                  archive=str(destination)), jobs=jobs, attempts=nonnegative(attempts),
-                 rootfs=unpacked_size(output), log_limit=log_limit(), completed=[], counts=counts)
+                 rootfs=unpacked_size(output), log_limit=log_limit(), completed=[], counts=counts or {})
     capacity(path, model)
     os.environ["FSCMP_CAPACITY_FILE"] = str(path)
     return path
@@ -203,6 +218,8 @@ def credit(source):
         name = str(Path(source).resolve())
         if name not in model["completed"]:
             model["completed"].append(name)
+            if os.environ.get("FSCMP_SMOKE") == "1":
+                model.setdefault("completed_smoke", []).append(name)
             write_json(path, model)
 
 
@@ -300,6 +317,9 @@ def verify_archive(path, expected=None):
         if expected and hashlib.sha256(content).hexdigest() != expected:
             raise ValueError("archive manifest hash mismatch")
         manifest = json.loads(content)
+        if manifest.get("mode"):
+            import smoke_storage
+            return smoke_storage.verify(path, archive, manifest)
         if manifest["schema"] != SCHEMA or set(names) != {MANIFEST, *(row["path"] for row in manifest["entries"])}:
             raise ValueError("archive member set mismatch")
         types = {"file": tarfile.REGTYPE, "hardlink": tarfile.LNKTYPE,
@@ -381,6 +401,11 @@ def sync_directory(path):
 
 
 def archive_attempt(source, destination):
+    state_path = Path(source) / STATE
+    state = load_json(state_path) if state_path.exists() else {}
+    if os.environ.get("FSCMP_SMOKE") == "1" or state.get("mode"):
+        import smoke_storage
+        return smoke_storage.archive_attempt(source, destination)
     source, destination = Path(source).resolve(), Path(destination).resolve()
     if source == destination or source in destination.parents:
         raise ValueError("archive destination must be outside the source")
@@ -475,7 +500,7 @@ def context(source, config, test, run_id, points):
     harness.mkdir()
     here = Path(__file__).parent
     env = load_json(os.environ["FSCMP_ENVIRONMENT_FILE"])
-    for path in [*here.iterdir(), here.parent / "fs-compare-workload.c",
+    for path in [*here.iterdir(),
                  here.parents[4] / "board/cardputerzero/qemu/run-qemu.sh"]:
         if path.is_file():
             shutil.copy2(path, harness / path.name)

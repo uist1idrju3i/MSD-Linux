@@ -12,6 +12,8 @@ formatter、filesystem feature、mount、checksum、LUKS2、dm-integrityの個�
 
 ## Linux 6.18 系 microSD 候補の比較
 
+fs-compare-v2の[第4段A](../../experiments/2026-11-19-s04-fs-compare-v2-stage4.md)は851 probeの経路確認用です。fresh build後、serial断片分離を修正し、A/A・負対照を含む代表21件の経路確認に成功しました。全smokeは初期10/851件が成功し、継続中です。全coverageは未完了です。短縮workloadを性能・durability・idle writeの新たな測定値として下表へ転用しません。
+
 2026-11-15追記: [E34反復測定](../../experiments/2026-11-15-fs-compare-matrix.md)のQEMU条件では、F2FS F3系/P044のidle writeを反復し、btrfs B2/P097は各3回0でした。下表の機能比較へこの限定的な観測を補います。実機の耐久性・全構成の採否は確定しません。
 
 以下の性能・RAM・tool size の定性的比較は、kernel documentation の機能記述と形式上の特徴からの【推測】である。比較用 image、同じ SD card、同じ workload で測っていない値を既知の数値として扱わない。fsck の時間、tool size、kernel size は候補間で共通の測定条件がなく、すべて未測定とする。Linux 6.18 系の基準で、bcachefs は上流 kernel 本体から外れたため、別途導入しない限り対象 kernel に含まれない【一次: K12】。

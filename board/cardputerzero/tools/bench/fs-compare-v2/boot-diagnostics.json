@@ -1,0 +1,85 @@
+{
+  "schema": "fs-compare-v2-boot-diagnostics/1",
+  "kernel": "6.18.59-v8",
+  "qemu": "QEMU emulator version 11.1.2",
+  "machine": "run-qemu: machine=raspi3b memory=1G icount=off",
+  "entries": [
+    {
+      "id": "no-uefi",
+      "phases": ["run", "verify"],
+      "pattern": "efi: UEFI not found\\.",
+      "reason": "Direct DT boot without UEFI; the kernel continues with the FDT root.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/firmware/efi/fdtparams.c:131"
+    },
+    {
+      "id": "virtgpio-set",
+      "phases": ["run", "verify"],
+      "pattern": "brcmvirt-gpio soc:firmware:virtgpio: Failed to set gpiovirtbuf, trying to get err:0",
+      "reason": "QEMU property mailbox does not implement the firmware GPIO buffer tags.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-bcm-virt.c:119; qemu-v11.1.2/hw/misc/bcm2835_property.c:420"
+    },
+    {
+      "id": "virtgpio-map",
+      "phases": ["run", "verify"],
+      "pattern": "brcmvirt-gpio soc:firmware:virtgpio: Failed to map physical address",
+      "reason": "The unsupported firmware buffer cannot be mapped; it is not the block device.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-bcm-virt.c:144"
+    },
+    {
+      "id": "virtgpio-probe",
+      "phases": ["run", "verify"],
+      "pattern": "brcmvirt-gpio soc:firmware:virtgpio: probe with driver brcmvirt-gpio failed with error -2",
+      "reason": "The preceding buffer-map failure returns ENOENT to the driver core.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-bcm-virt.c:145; drivers/base/dd.c:656"
+    },
+    {
+      "id": "firmware-expander",
+      "phases": ["run", "verify"],
+      "pattern": "raspberrypi-exp-gpio soc:firmware:expgpio: Failed to get GPIO ([0-7]) config \\(0 8\\1\\)",
+      "reason": "The unimplemented GPIO configuration tag leaves the requested GPIO value unchanged.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/gpio/gpio-raspberrypi-exp.c:55,135; qemu-v11.1.2/hw/misc/bcm2835_property.c:420"
+    },
+    {
+      "id": "aux-uart",
+      "phases": [],
+      "pattern": "bcm2835-aux-uart 3f215040\\.serial: error -EINVAL: unable to register 8250 port",
+      "reason": "Registration returns EINVAL; the precise inner branch remains unverified, so this stays fatal.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/tty/serial/8250/8250_bcm2835aux.c:168; board/cardputerzero/qemu/run-qemu.sh"
+    },
+    {
+      "id": "aux-uart-probe",
+      "phases": [],
+      "pattern": "bcm2835-aux-uart 3f215040\\.serial: probe with driver bcm2835-aux-uart failed with error -22",
+      "reason": "Driver-core report of the unresolved auxiliary UART registration failure; stays fatal.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/base/dd.c:656"
+    },
+    {
+      "id": "no-initramfs",
+      "phases": ["run", "verify"],
+      "pattern": "check access for rdinit=/init failed: -2, ignoring",
+      "reason": "No initramfs /init; prepare_namespace mounts SquashFS and runs /sbin/init.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/init/main.c:1567"
+    },
+    {
+      "id": "grow-reread-busy",
+      "phases": ["run", "verify"],
+      "pattern": "Re-reading the partition table failed\\.: Device or resource busy",
+      "reason": "Only the next userspace line after the known partition 4/7 growth step, allowing kernel-line interleaving, with subsequent setup synchronization.",
+      "source": "board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow:116-139; util-linux-2.41.5/libfdisk/src/context.c:863"
+    },
+    {
+      "id": "activity-led",
+      "phases": ["run", "verify"],
+      "pattern": "platform leds: deferred probe pending: leds-gpio: Failed to get GPIO '/leds/led-act'",
+      "reason": "The activity LED depends on the unsupported virtual firmware GPIO; storage does not.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/drivers/leds/leds-gpio.c:189; drivers/base/dd.c:317"
+    },
+    {
+      "id": "wifi-sdio",
+      "phases": ["run", "verify"],
+      "pattern": "mmc1: Failed to initialize a non-removable card",
+      "reason": "mmc1 is the unpopulated Wi-Fi SDIO host, not the mmc0 SD image.",
+      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/arch/arm/boot/dts/broadcom/bcm2710-rpi-3-b.dts:18; drivers/mmc/core/core.c:2337"
+    }
+  ]
+}
