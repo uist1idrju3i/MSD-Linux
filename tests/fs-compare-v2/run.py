@@ -623,6 +623,21 @@ class Storage(unittest.TestCase):
             self.assertEqual((source / "build/rootfs/z.log").read_bytes(), b"unpacked")
             S.archive_attempt(source, root / "archives")
 
+    def test_hardlink_canonical_order_is_shared_for_nested_and_sibling_paths(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            (source / "build/a").mkdir()
+            (source / "build/a/item.log").write_bytes(b"linked log\n")
+            os.link(source / "build/a/item.log", source / "build/a.log")
+            manifest = S.inventory(source)
+            S.verify_source(source, manifest, cleaned=True)
+            receipt = S.archive_attempt(source, root / "archives")
+            S.verify_source(source, S.verify_archive(receipt["archive"]), cleaned=True)
+            S.archive_attempt(source, root / "archives")
+            self.assertEqual((source / "build/a.log").stat().st_ino,
+                             (source / "build/a/item.log").stat().st_ino)
+
     def test_archive_verification_failure_enospc_and_resume_preserve_sources_and_partials(self):
         for error in (ValueError("corrupt"), OSError(errno.ENOSPC, "full"), KeyboardInterrupt()):
             with self.subTest(error=error), tempfile.TemporaryDirectory() as temporary, \

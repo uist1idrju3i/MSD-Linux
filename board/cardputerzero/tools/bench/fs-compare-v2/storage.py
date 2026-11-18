@@ -246,11 +246,15 @@ def run_child(command, environment, log):
             process.wait()
 
 
+def canonical_paths(paths):
+    return sorted(paths, key=lambda path: Path(path).parts)
+
+
 def inventory(source):
     source = Path(source)
     entries = []
     inodes = {}
-    for path in sorted(source.rglob("*")):
+    for path in canonical_paths(source.rglob("*")):
         relative = path.relative_to(source).as_posix()
         if relative == STATE:
             continue
@@ -330,7 +334,7 @@ def verify_source(source, manifest, cleaned=False):
     actual = {row["path"]: row for row in current["entries"]}
     if cleaned:
         surviving = {}
-        for name in sorted(actual):
+        for name in canonical_paths(actual):
             row = expected.get(name)
             if row and row["type"] in ("file", "hardlink"):
                 original = row["link"] if row["type"] == "hardlink" else name
