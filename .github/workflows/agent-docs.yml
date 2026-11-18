@@ -38,18 +38,10 @@ jobs:
         run: tests/check-skills/run.sh
 
       - name: 実験記録が一覧から参照されている
-        run: |
-          status=0
-          for record in docs/experiments/*.md; do
-            [ -e "$record" ] || continue
-            name="${record##*/}"
-            [ "$name" = README.md ] && continue
-            if ! grep -Fq "($name)" docs/experiments/README.md; then
-              echo "::error file=$record::$name が docs/experiments/README.md の一覧にありません。"
-              status=1
-            fi
-          done
-          exit "$status"
+        run: bash .github/scripts/check-experiment-index.sh
+
+      - name: 実験索引検査のテスト
+        run: bash tests/check-experiment-index/run.sh
 
       - name: 文書に個人環境のパスがない
         run: |
