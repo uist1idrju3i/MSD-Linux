@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-初回のcode保存後にfresh buildは成功した。判定器とtail上限の修正後はA/AとT1 all・final・自動sampleが成功したが、明示sampleはboot logの1行内へのkernel行の割込みで停止した。負対照と全851 probeは未完了であり、background runは開始していない。初回のboot診断停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは初期10/851件が成功し、backgroundで継続中。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -149,3 +149,38 @@ kernel/userspaceが1行内で混ざる場合の判定は未解決であり、両
 再診断03の実logを新しい判定器へ通すとfatalは0件となり、log本体のSHA-256が不変であることを照合した。これは過去の失敗を成功へ書き換える再実行ではなく、判定器のhost検査である。過去の結果JSONとCSVは失敗のまま保持した。単独の`mmc1: Timeout waiting for hardware interrupt.`は既存規則のfatalに一致しないため、smoke DTBの無効化対象を増やしていない。
 
 host aggregateは全11 suite成功、v2は64 test成功。実際の316–317行、空入力、未完の断片、boot終了、scope違い、errno違い、未同期setup、独立した未知error・panic・Oops・BUG・EIO・ENOSPCを検査した。新しい代表診断の結果は次の試行として残す。
+
+### 再診断04と全smokeの開始
+
+codeは`b77348dbe37af68b1e5dafdab383b5ab70cb5859`、run directoryは`fscmp-v2-stage4-bootfix-04`。既存のbuild生成物を再利用し、過去のrunを上書きしていない。代表21件はdriverと判定器が全て成功し、全体は7309.030秒だった。A/Aは301.253秒と280.175秒、T1-negativeはloss 10件、negative-finalはloss 1件を検出した。
+
+T2/T3はcut後に別QEMUでreopenし、両方で`recovery_fsck=0`、`recovery_mount=ok`、`recovery_finished`を確認した。T2はW3のprefix hash不一致で`manifest_ok=no`、T3は`T3_FSYNC_LOST count=0`だった。経路の成功を、回復データの全件一致やdurabilityの成功と読み替えない。I2/T6は破損注入、stack reopen、readcheckとfsckまで到達し、`raw_changed=yes`、`T6_READCHECK exit=3`、`T6_FSCK result=0`だった。dm-integrityなのでscrub metricsは`not_applicable`。Btrfsのscrub経路を成功した扱いにはしない。
+
+代表全件の成功を確認してから、同じcodeとbuildで次を直列実行した。PIDはhost上の`1145717`。実行中のスクリプトは変更していない。
+
+```sh
+docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py smoke --runs-dir /work/fscmp-v2-stage4-bootfix-04
+```
+
+初期checkpointは10/851 probe成功、除外0件。851 probe／1021 phaseの要求は不変で、通常測定の残り試行数は0。以下は全smokeそのものの初期値で、代表診断とは別である。
+
+| 順序 | E1の経路 | probe秒 | filesystem使用量差byte |
+|---:|---|---:|---:|
+| 1 | smoke | 280.859 | 50,397,184 |
+| 2 | T1 | 504.190 | 1,740,800 |
+| 3 | T1-negative | 408.372 | 1,671,168 |
+| 4 | T1-final | 381.137 | 9,924,608 |
+| 5 | T1-negative-final | 377.060 | 1,548,288 |
+| 6 | T1-sample | 402.323 | 1,585,152 |
+| 7 | T1-sample-selected | 343.802 | 1,519,616 |
+| 8 | T2 | 350.106 | 1,822,720 |
+| 9 | T3 | 353.258 | 1,798,144 |
+| 10 | T4-sync | 303.488 | 9,883,648 |
+
+平均370.460秒、中央値365.159秒。単純に851倍すると計87.57時間、10件完了後の残りは86.54時間となり、当初の24〜72時間という仮見積りを更新する。先頭10件はE1だけで、構成や経路の比率、再試行、後続の停止を反映していない粗い見積りである。
+
+使用量差の合計は81,891,328 byte。一律外挿は6.97 GB、初回を別扱いにして残り9件の平均を850倍すると3.02 GB。ただし共有filesystemの空き差であり、保存証拠だけの量や実SDの物理write量ではなく、容量保証にも使わない。開始時の容量gateはoutput/archiveで65,184,499,272 byte、tempで10,533,151,122 byteを必要空きの計画値とした。確認時の`df -h /home`は466G中212G使用、230G空き、48%だった。
+
+[再診断04と初期10件の証拠](2026-11-19-s04-fs-compare-v2-run04-evidence.tar.gz)は4,051,114 byte、SHA-256は`ee5e0b19d775895ae0c7914cbfd5006481db7bf133465d38d1cbb85883285f59`。768 member中767 fileのsize・hashを読戻し照合した。環境・入力hash、全21件と初期10件のserial・phase・保存状態・画像省略manifest、coverageの写し、PID・起動条件・外挿式の値を収録した。画像と共有object本体は含めていない。
+
+全851件の完了は未確認。追加の診断例外は足していない。全smoke完了後に、RAID6 benchmarkを含む見落とした最適化候補の棚卸しへ進む。
