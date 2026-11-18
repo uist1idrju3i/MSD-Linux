@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import hashlib
 import importlib.util
+import base64
+import io
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import tarfile
 import unittest
 
 
@@ -17,6 +20,10 @@ qspec = importlib.util.spec_from_file_location(
     "pqc_qemu", ROOT / "board/cardputerzero/tools/bench/pqc-groups/qemu.py")
 qemu = importlib.util.module_from_spec(qspec)
 qspec.loader.exec_module(qemu)
+cnspec = importlib.util.spec_from_file_location(
+    "cnf_probe", ROOT / "board/cardputerzero/tools/bench/openssl-cnf/run.py")
+cnf = importlib.util.module_from_spec(cnspec)
+cnspec.loader.exec_module(cnf)
 
 
 class ProbeTests(unittest.TestCase):
@@ -77,6 +84,61 @@ class SerialTests(unittest.TestCase):
             raw = self.fixture().replace(":100:200:300", f":{value}:200:300")
             with self.subTest(value=value), self.assertRaises(ValueError):
                 qemu.parse_serial(raw)
+
+
+class CnfTests(unittest.TestCase):
+    def fixture(self):
+        logs = {"module-config": "CONFIG_MODULE_SIG_FORCE=y",
+                "providers": "Providers:\n  default\n"}
+        for pbkdf in ("argon2id", "pbkdf2"):
+            logs[f"{pbkdf}-dump"] = pbkdf
+            for action in ("format", "open"):
+                logs[f"{pbkdf}-{action}"] = "[default][legacy]"
+        for direction in ("server", "client"):
+            for protocol, version in (("tls1_2", "TLSv1.2"), ("tls1_3", "TLSv1.3")):
+                logs[f"tls-{direction}-{protocol}-aead"] = f"Protocol version: {version}"
+        buffer = io.BytesIO()
+        with tarfile.open(fileobj=buffer, mode="w:") as archive:
+            for name, text in logs.items():
+                data = text.encode()
+                member = tarfile.TarInfo(f"logs/{name}.log")
+                member.size = len(data)
+                archive.addfile(member, io.BytesIO(data))
+        return "\n".join([
+            *[f"CNF_RESULT case={name} rc=0 pass=1 writes=0 sectors=0" for name in cnf.CASES],
+            "CNF_LOGS_BEGIN", base64.b64encode(buffer.getvalue()).decode(), "CNF_LOGS_END",
+            "CNF_DONE", "PROBE_EXIT=0"])
+
+    def test_cnf_only_and_preserved_ca_csr(self):
+        original = ("config_diagnostics = 1\n[openssl_init]\nproviders = provider_sect\n"
+                    "[default_sect]\n# activate = 1\n[ca]\n[req]\n")
+        self.assertEqual(cnf.configuration(original, "C0"), original)
+        for variant in ("C1", "C2"):
+            result = cnf.configuration(original, variant)
+            for text in ("[ca]", "[req]", "MinProtocol = TLSv1.2", "activate = 1"):
+                self.assertIn(text, result)
+        self.assertIn("DEFAULT:@SECLEVEL=2", cnf.configuration(original, "C1"))
+        self.assertIn("Groups = DEFAULT", cnf.configuration(original, "C2"))
+        for original, variant in (("", "C1"), ("[openssl_init]", "C2"), ("x", "unknown")):
+            with self.assertRaises(ValueError):
+                cnf.configuration(original, variant)
+
+    def test_complete_cnf_probe(self):
+        rows, data = cnf.parse_serial(self.fixture())
+        self.assertEqual(len(rows), 25)
+        self.assertTrue(data)
+
+    def test_empty_missing_failed_duplicate_or_corrupt(self):
+        raw = self.fixture()
+        for text in ("", raw.replace("CNF_DONE", ""),
+                     raw.replace("PROBE_EXIT=0", "PROBE_EXIT=1"),
+                     raw.replace("pass=1", "pass=0", 1),
+                     raw.replace("sectors=0", "sectors=-1", 1),
+                     raw.replace("case=providers", "case=ciphers"),
+                     raw.replace("CNF_LOGS_BEGIN", "missing"),
+                     raw.replace("CNF_LOGS_END", "invalid!\nCNF_LOGS_END")):
+            with self.subTest(text=text[:50]), self.assertRaises((ValueError, tarfile.TarError)):
+                cnf.parse_serial(text)
 
 
 if __name__ == "__main__":
