@@ -1186,7 +1186,8 @@ class LightSmoke(unittest.TestCase):
         replay = function("replay_t1").split("\n\texpected_ack_count=", 1)[0] + "\n}\n"
         script = (function("prepare_w3_expected_file") + function("validate_w3_file") + replay
                   + '\nconsole() { :; }\ncreate_mark_map() { :; }\nwait_for_t1_log_end() { :; }\n'
-                  + 'RUN_PATH=$1\nW3_FULL_RECORDS=$3\nW3_RECORD_SIZE=128\nW3_SYNC_INTERVAL=50\nTEST=T1\n'
+                  + 'WORKLOAD=profile_query\nprofile_query() { echo "$COUNT"; }\nworkload_profile() { echo fixture; }\n'
+                  + 'RUN_PATH=$1\nCOUNT=$3\nW3_RECORD_SIZE=128\nW3_SYNC_INTERVAL=50\nTEST=T1\n'
                   + 'replay_t1\n'
                   + 'prefix=$(printf "%s\\n" "$2" | awk -F - \'{ print ($4 + 0) * 128 }\')\n'
                   + 'hash=$(head -c "$prefix" "$W3_EXPECTED_FILE" | sha256sum | awk \'{ print $1 }\')\n'
@@ -1205,6 +1206,8 @@ class LightSmoke(unittest.TestCase):
             (51, 50, records(51)[:-1] + b"x", "invalid_deterministic_tail"),
             (51, 50, records(52), "tail_exceeds_final_record"),
             (1000, 1000, records(1000), "ok"),
+            (250, 250, records(250), "ok"),
+            (250, 250, records(251), "tail_exceeds_final_record"),
         ]
         for count, synced, data, expected in cases:
             with self.subTest(count=count, expected=expected), tempfile.TemporaryDirectory() as temporary:
@@ -1269,6 +1272,9 @@ class LightSmoke(unittest.TestCase):
                                          "--workload-size", size], capture_output=True, text=True,
                                         timeout=30, check=True)
                 self.assertIn(f"W3_records={records}", result.stdout)
+                query = subprocess.run([str(binary), "w3-records", size],
+                                       capture_output=True, text=True, check=True)
+                self.assertEqual(query.stdout.strip(), str(records))
                 self.assertEqual(len(list((work / "W1").iterdir())), files)
                 self.assertEqual((work / "W2/target.dat").stat().st_size, 2048)
                 self.assertEqual((work / "W3/append.log").stat().st_size, records * 128)

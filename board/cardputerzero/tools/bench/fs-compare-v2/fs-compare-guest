@@ -1217,7 +1217,8 @@ replay_t1()
 				"${RUN_PATH}/T1-markers.tsv")"
 			[ -n "$w3_latest_marker" ] ||
 				fail "t1_w3_latest_marker_missing"
-			prepare_w3_expected_file "$w3_latest_marker" "$W3_FULL_RECORDS" T1 ||
+			prepare_w3_expected_file "$w3_latest_marker" \
+				"$("$WORKLOAD" w3-records "$(workload_profile)")" T1 ||
 				fail "t1_w3_latest_marker_invalid=$w3_latest_marker"
 			;;
 	esac
@@ -1543,22 +1544,26 @@ EOF
 	done
 }
 
-run_workload_once()
+workload_profile()
 {
 	if [ "$SMOKE" = 1 ]; then
-		"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
-			--workload-size smoke "$@"
+		echo smoke
 		return
 	fi
 	case "$TEST" in
 		T1|T1-negative|T1-final|T1-negative-final|T1-sample)
-			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
-				--workload-size t1-reduced "$@"
+			echo t1-reduced
 			;;
 		*)
-			"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" "$@"
+			echo full
 			;;
 	esac
+}
+
+run_workload_once()
+{
+	"$WORKLOAD" workload "$WORKLOAD_ROOT" "$MANIFEST" "$DM_NAME" \
+		--workload-size "$(workload_profile)" "$@"
 }
 
 run_t4_idle()

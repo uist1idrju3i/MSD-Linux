@@ -438,14 +438,8 @@ static void run_w4(const char *root, const char *manifest, const char *device,
 	report("W4 bytes=%zu cycle=%u", w4_size, cycle);
 }
 
-static void run_workload(const char *root, const char *manifest,
-			 const char *device, int no_fsync, int repeat,
-			 const char *workload_size)
+static void select_workload_profile(const char *workload_size)
 {
-	unsigned int sequence = 0;
-	unsigned int cycle = 0;
-	int manifest_fd;
-
 	if (!strcmp(workload_size, "smoke")) {
 		w1_file_count = SMOKE_W1_FILES;
 		w2_update_count = SMOKE_W2_UPDATES;
@@ -460,6 +454,17 @@ static void run_workload(const char *root, const char *manifest,
 		errno = EINVAL;
 		fail("unknown_workload_size");
 	}
+}
+
+static void run_workload(const char *root, const char *manifest,
+			 const char *device, int no_fsync, int repeat,
+			 const char *workload_size)
+{
+	unsigned int sequence = 0;
+	unsigned int cycle = 0;
+	int manifest_fd;
+
+	select_workload_profile(workload_size);
 	report("workload_profile name=%s W1_files=%u W2_updates=%u W3_records=%u W3_fsync_every=%d W4_bytes=%zu",
 	       workload_size, w1_file_count, w2_update_count, w3_record_count,
 	       W3_SYNC_INTERVAL, w4_size);
@@ -830,6 +835,11 @@ int main(int argc, char **argv)
 	}
 	if (!strcmp(argv[1], "timer"))
 		return command_timer(argc, argv);
+	if (!strcmp(argv[1], "w3-records") && argc == 3) {
+		select_workload_profile(argv[2]);
+		printf("%u\n", w3_record_count);
+		return 0;
+	}
 	if (!strcmp(argv[1], "odirect") && argc == 3) {
 		run_odirect(argv[2]);
 		return 0;

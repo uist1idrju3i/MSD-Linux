@@ -184,3 +184,9 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py s
 [再診断04と初期10件の証拠](2026-11-19-s04-fs-compare-v2-run04-evidence.tar.gz)は4,051,114 byte、SHA-256は`ee5e0b19d775895ae0c7914cbfd5006481db7bf133465d38d1cbb85883285f59`。768 member中767 fileのsize・hashを読戻し照合した。環境・入力hash、全21件と初期10件のserial・phase・保存状態・画像省略manifest、coverageの写し、PID・起動条件・外挿式の値を収録した。画像と共有object本体は含めていない。
 
 全851件の完了は未確認。追加の診断例外は足していない。全smoke完了後に、RAID6 benchmarkを含む見落とした最適化候補の棚卸しへ進む。
+
+### PR review後の通常T1上限修正
+
+通常T1は`full`ではなく`t1-reduced`を使うため、W3の上限は1000ではなく250件である。writerと同じprofile選択関数から実効record数を取得し、replayのtail上限へ渡すよう修正した。250件は受理し251件は拒否、smokeは51件を受理し52件を拒否する。fullの1000件も維持する。
+
+修正は別worktreeで行った。実行中の全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、実行中のprobeと後続probeへこの修正を適用していない。
