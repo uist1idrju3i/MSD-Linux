@@ -604,7 +604,7 @@ class Preflight(unittest.TestCase):
     def test_probe_provenance_and_late_error_are_not_confused(self):
         with tempfile.TemporaryDirectory() as temporary:
             log = Path(temporary) / "qemu-run.log"
-            log.write_text("msd.fscmp: environment_dm_target=error v1.5.0\n"
+            log.write_text("msd.fscmp: environment_dm_target=error            v1.5.0\n"
                            "msd.fscmp: environment_ok kernel=fixture\n"
                            "msd.fscmp: finished\nKernel panic: fixture\n")
             records = M.aggregate_errors([("run", log)], "smoke")

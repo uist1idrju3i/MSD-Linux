@@ -174,7 +174,7 @@ def aggregate_errors(logs, test):
     for phase, path in logs:
         context = None
         for line_number, text in enumerate(Path(path).read_text(errors="replace").splitlines(), 1):
-            if re.search(r"msd\.fscmp: environment_dm_target=[\w-]+ v[0-9.]+\s*$", text):
+            if re.search(r"msd\.fscmp: environment_dm_target=[\w-]+\s+v[0-9.]+\s*$", text):
                 continue
             begin = re.search(r"msd\.fscmp: expected_errors_begin kind=(\S+)", text)
             end = re.search(r"msd\.fscmp: expected_errors_end kind=(\S+)", text)
