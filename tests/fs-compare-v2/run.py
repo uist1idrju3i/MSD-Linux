@@ -547,6 +547,31 @@ class Preflight(unittest.TestCase):
                     P.environment(directory, runner)
             self.assertFalse((directory / "run").exists())
 
+    def test_launcher_tools_and_boot_environment_invalidate_identity(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            self.environment_fixture(directory)
+            fdtput = directory / "host/bin/fdtput"
+            fdtput.write_text("first")
+            fdtput.chmod(0o755)
+            runner = mock.Mock(return_value=subprocess.CompletedProcess([], 0, "version\n", ""))
+            with mock.patch.object(P.shutil, "which", return_value=str(directory / "fake-tool")), \
+                    mock.patch.dict(os.environ, {}, clear=True):
+                baseline = P.identity(P.environment(directory, runner), [])
+                for key in ("ROOT_DEVICE", "ROOT_FSTYPE", "TMPDIR", "BASH_ENV", "LD_PRELOAD"):
+                    with mock.patch.dict(os.environ, {key: "changed"}):
+                        self.assertNotEqual(P.identity(P.environment(directory, runner), []),
+                                            baseline, key)
+                fdtput.write_text("changed")
+                self.assertNotEqual(P.identity(P.environment(directory, runner), []), baseline)
+                self.assertIn("fdtput", P.environment(directory, runner)["tools"])
+                fdtput.unlink()
+                self.assertEqual(P.environment(directory, runner)["tools"]["fdtput"]["path"],
+                                 str(directory / "fake-tool"))
+                with mock.patch.object(P.shutil, "which", return_value=None):
+                    with self.assertRaisesRegex(ValueError, "host tool missing"):
+                        P.environment(directory, runner)
+
     def test_exact_unsupported_only_and_negative_controls(self):
         signatures = {
             "P012": "EXT4-fs (loop0): can't mount with journal_async_commit in data=ordered mode",

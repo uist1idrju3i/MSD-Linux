@@ -156,10 +156,14 @@ def environment(output, runner=subprocess.run):
              ("bash", "python3", "cp", "dd", "truncate", "stat", "sha256sum", "shuf",
               "install", "awk", "grep", "sed", "git", "flock", "mkdir", "dirname", "basename",
               "head", "tail", "cut", "tr", "date", "tee", "sleep", "cat", "mv", "rm",
-              "cmp", "find", "sort", "wc", "readlink")}
+              "cmp", "find", "sort", "wc", "readlink", "mktemp")}
     tools["qemu"] = (shutil.which(os.environ.get("QEMU_SYSTEM_AARCH64", "qemu-system-aarch64")),
                      ["--version"], {0})
     tools["awk"] = (shutil.which("awk"), ["-W", "version"], {0})
+    if os.environ.get("QEMU_DTB_BLUETOOTH", "0") != "1":
+        fdtput = output / "host/bin/fdtput"
+        tools["fdtput"] = (str(fdtput) if os.access(fdtput, os.X_OK) else shutil.which("fdtput"),
+                           ["--version"], {0})
     for name, relative, option, statuses in (
             ("unsquashfs", "host/bin/unsquashfs", "-version", {0, 1}),
             ("mksquashfs", "host/bin/mksquashfs", "-version", {0}),
@@ -178,7 +182,9 @@ def environment(output, runner=subprocess.run):
     return dict(schema=SCHEMA, files={str(path): digest(path) for path in inputs},
                 tools=versions, kernel_release=release.read_text().strip(),
                 overrides={key: value for key, value in os.environ.items()
-                           if key.startswith("QEMU_") or key in ("PATH", "LD_LIBRARY_PATH")})
+                           if key.startswith(("QEMU_", "LD_", "LC_", "PYTHON"))
+                           or key in ("PATH", "ROOT_DEVICE", "ROOT_FSTYPE", "TMPDIR", "BASH_ENV",
+                                      "ENV", "BASHOPTS", "SHELLOPTS", "CDPATH", "LANG", "TZ")})
 
 
 def identity(env, rows):
