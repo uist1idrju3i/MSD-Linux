@@ -1,0 +1,17 @@
+path	test	phases	points	phase1	phase2	legacy_repetitions
+smoke	smoke	run	none	0	0	1
+T1	T1	run	none	1	0	1
+T1-negative	T1-negative	run	none	0	0	1
+T1-final	T1-final	run	none	0	0	1
+T1-negative-final	T1-negative-final	run	none	0	0	1
+T1-sample	T1-sample	run	none	0	0	1
+T1-sample-selected	T1-sample	run	first	0	0	1
+T2	T2	run,verify	none	6	0	20
+T3	T3	run,verify	none	5	1	5
+T4-sync	T4-sync	run	none	2	2	1
+T4-nosync	T4-nosync	run	none	3	0	1
+T4-idle-control	T4-idle-control	run	none	0	0	1
+T4-odirect-control	T4-odirect-control	run	none	0	0	1
+T5	T5	run	none	4	3	1
+T6	T6	run	none	7	4	1
+T7	T7	run	none	8	0	1

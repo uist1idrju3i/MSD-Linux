@@ -3,8 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../../../../.." && pwd -P)"
-CONFIGS_FILE="${SCRIPT_DIR}/fs-compare-configs.tsv"
-VARIANTS_FILE="${SCRIPT_DIR}/fs-compare-phase2-variants.tsv"
 FS_COMPARE="${FS_COMPARE_V2_DRIVER:-${SCRIPT_DIR}/fs-compare.sh}"
 SUMMARY_HEADER='run_id,config,test,status,wall_seconds,workload_size,points,loss_points,mount_fail,fsck_fail,recovered,manifest_ok,quiesce_seconds,quiesce_write_ios,quiesce_write_sectors,write_ios,write_sectors,last_write_s,logical_bytes,lost_records,lost_seconds,fsync_lost,read_result,scrub_corrected,scrub_uncorrectable,fsck_detection,repaired,mkfs_seconds,mount_seconds,fsck_seconds,mem_available_kb,setup_points,setup_mount_fail,setup_fsck_fail,setup_seconds,base_config,variant_id'
 
@@ -15,6 +13,9 @@ JOBS=4
 GENERATE_PHASE1=0
 GENERATE_PHASE2=0
 PLAN_FILE=
+GENERATE_PLAN=0
+REPETITIONS=3
+EXPECTED_ENVIRONMENT=
 
 usage()
 {
@@ -22,7 +23,9 @@ usage()
 Usage:
   ${BASH_SOURCE[0]} --generate-phase1
   ${BASH_SOURCE[0]} --generate-phase2
+  ${BASH_SOURCE[0]} --generate-plan [--repetitions N]
   ${BASH_SOURCE[0]} [-j N] [--matrix-id ID] [--runs-dir DIR] PLAN.tsv
+      [--expect-environment FILE]
 
 PLAN.tsv contains config<TAB>test<TAB>repetition rows. The generated plan
 is written to stdout and can be saved, for example, with:
@@ -40,6 +43,20 @@ die()
 
 while (($#)); do
 	case "$1" in
+		--expect-environment)
+			(($# >= 2)) || usage
+			EXPECTED_ENVIRONMENT=$2
+			shift 2
+			;;
+		--generate-plan)
+			GENERATE_PLAN=1
+			shift
+			;;
+		--repetitions)
+			(($# >= 2)) || usage
+			REPETITIONS=$2
+			shift 2
+			;;
 		--generate-phase1)
 			GENERATE_PHASE1=1
 			shift
@@ -84,76 +101,18 @@ if (($#)); then
 	[[ -z "$PLAN_FILE" && $# -eq 1 ]] || usage
 	PLAN_FILE=$1
 fi
-((GENERATE_PHASE1 + GENERATE_PHASE2 <= 1)) || usage
-
-if ((GENERATE_PHASE1)); then
+((GENERATE_PHASE1 + GENERATE_PHASE2 + GENERATE_PLAN <= 1)) || usage
+if ((GENERATE_PLAN)); then
 	[[ -z "$PLAN_FILE" ]] || usage
-	[[ -f "$CONFIGS_FILE" ]] || die "configuration list not found"
-	mapfile -t config_ids < <(
-		awk -F '\t' '$1 != "id" && $1 !~ /^#/ && $1 != "" { print $1 }' \
-			"$CONFIGS_FILE"
-	)
-	((${#config_ids[@]} == 20)) ||
-		die "expected 20 configurations, found ${#config_ids[@]}"
-
-	t1_order=(L3 I1 I2)
-	for config in "${config_ids[@]}"; do
-		case " ${t1_order[*]} " in
-			*" ${config} "*) ;;
-			*) t1_order+=("$config") ;;
-		esac
-	done
-	for test in T1 T4-sync T4-nosync T5 T3 T2 T6 T7; do
-		case "$test" in
-			T1)
-				config_order=("${t1_order[@]}")
-				repetitions=1
-				;;
-			T2)
-				config_order=("${config_ids[@]}")
-				repetitions=20
-				;;
-			T3)
-				config_order=("${config_ids[@]}")
-				repetitions=5
-				;;
-			*)
-				config_order=("${config_ids[@]}")
-				repetitions=1
-				;;
-		esac
-		for config in "${config_order[@]}"; do
-			for ((repetition = 1; repetition <= repetitions; repetition++)); do
-				printf '%s\t%s\t%s\n' "$config" "$test" "$repetition"
-			done
-		done
-	done
-	exit 0
+	exec python3 "${SCRIPT_DIR}/preflight.py" generate --repetitions "$REPETITIONS"
 fi
+[[ "$REPETITIONS" == 3 ]] || die "--repetitions requires --generate-plan"
 
-if ((GENERATE_PHASE2)); then
+if ((GENERATE_PHASE1 || GENERATE_PHASE2)); then
 	[[ -z "$PLAN_FILE" ]] || usage
-	[[ -r "$VARIANTS_FILE" ]] || die "phase-2 variants list not found"
-	mapfile -t variant_rows < <(
-		awk -F '\t' '$1 ~ /^P[0-9]{3}$/ { print $1 "\t" $5 }' \
-			"$VARIANTS_FILE"
-	)
-	((${#variant_rows[@]} == 130)) ||
-		die "expected 130 phase-2 variants, found ${#variant_rows[@]}"
-	for row in "${variant_rows[@]}"; do
-		IFS=$'\t' read -r config tests <<<"$row"
-		for repetition in 1 2 3 4 5; do
-			printf '%s\tT3\t%s\n' "$config" "$repetition"
-		done
-		printf '%s\tT4-sync\t1\n' "$config"
-		printf '%s\tT5\t1\n' "$config"
-		case "$tests" in
-			std) ;;
-			std+T6) printf '%s\tT6\t1\n' "$config" ;;
-			*) die "unsupported tests value for $config: $tests" ;;
-		esac
-	done
-	exit 0
+	profile=phase2
+	((GENERATE_PHASE1 == 0)) || profile=phase1
+	exec python3 "${SCRIPT_DIR}/preflight.py" generate --profile "$profile" --legacy
 fi
 
 [[ "$JOBS" =~ ^[1-9][0-9]*$ ]] || die "-j must be a positive integer"
@@ -166,29 +125,33 @@ fi
 	die "invalid matrix ID"
 command -v flock >/dev/null 2>&1 || die "flock is required"
 
-mapfile -t CONFIG_IDS < <(
-	awk -F '\t' '$1 != "id" && $1 !~ /^#/ && $1 != "" { print $1 }' \
-		"$CONFIGS_FILE"
-)
-[[ -r "$VARIANTS_FILE" ]] || die "phase-2 variants list not found"
-mapfile -t VARIANT_IDS < <(
-	awk -F '\t' '$1 ~ /^P[0-9]{3}$/ { print $1 }' "$VARIANTS_FILE"
-)
-declare -A VALID_CONFIG=()
-for config in "${CONFIG_IDS[@]}"; do
-	VALID_CONFIG["$config"]=1
-done
-for config in "${VARIANT_IDS[@]}"; do
-	VALID_CONFIG["$config"]=1
-done
+mkdir -p "$RUNS_DIR"
+RUNS_DIR="$(cd -- "$RUNS_DIR" && pwd -P)"
+MATRIX_DIR="${RUNS_DIR}/${MATRIX_ID}"
+if [[ -d "$MATRIX_DIR" && ! -f "${MATRIX_DIR}/.v2" ]]; then
+	die "refusing to reuse an unversioned matrix directory"
+fi
+mkdir -p "$MATRIX_DIR"
+DRIVER_LOCK="${MATRIX_DIR}/.driver.lock"
+exec {driver_lock_fd}>"$DRIVER_LOCK"
+flock -n "$driver_lock_fd" ||
+	die "matrix ID is already running: $MATRIX_ID"
+printf 'fs-compare-v2/1\n' >"${MATRIX_DIR}/.v2"
 
-is_valid_test()
-{
-	case "$1" in
-		smoke|T1|T2|T3|T4-sync|T4-nosync|T5|T6|T7) return 0 ;;
-		*) return 1 ;;
-	esac
-}
+python3 "${SCRIPT_DIR}/preflight.py" validate-plan "$PLAN_FILE"
+if [[ -z "${FS_COMPARE_V2_DRIVER:-}" ]]; then
+	preflight_dir="${RUNS_DIR}/${MATRIX_ID}.preflight"
+	preflight_options=()
+	if [[ -n "$EXPECTED_ENVIRONMENT" ]]; then
+		preflight_options+=(--expect-environment "$EXPECTED_ENVIRONMENT")
+	fi
+	python3 "${SCRIPT_DIR}/preflight.py" gate "$PLAN_FILE" "$preflight_dir" "${preflight_options[@]}"
+	PLAN_FILE="${preflight_dir}/effective-plan.tsv"
+	export FSCMP_PREFLIGHT_WORKER=1
+	FSCMP_EXPECT_KERNEL="$(python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); print(p["kernel_release"])' \
+		"${preflight_dir}/environment.json")"
+	export FSCMP_EXPECT_KERNEL
+fi
 
 declare -a PLAN_CONFIGS=() PLAN_TESTS=() PLAN_REPETITIONS=()
 declare -A PLAN_SEEN=()
@@ -201,11 +164,8 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 	IFS=$'\t' read -r config test repetition extra <<<"$line"
 	[[ -z "${extra:-}" && -n "$config" && -n "$test" && -n "$repetition" ]] ||
 		die "plan row must have exactly three non-empty columns: $line"
-	[[ "$config" =~ ^(E[1-5]|F[1-5]|B[1-5]|L[1-3]|I[1-2]|P[0-9]{3})$ ]] ||
-		die "invalid configuration in plan: $config"
-	[[ -n "${VALID_CONFIG[$config]+yes}" ]] ||
-		die "unknown configuration in plan: $config"
-	is_valid_test "$test" || die "unsupported test in plan: $test"
+	python3 "${SCRIPT_DIR}/preflight.py" validate "$config" "$test" ||
+		die "unsupported path in plan: $config/$test"
 	[[ "$repetition" =~ ^[1-9][0-9]*$ ]] ||
 		die "repetition must be a positive integer: $repetition"
 	key="${config}|${test}|${repetition}"
@@ -217,26 +177,13 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done <"$PLAN_FILE"
 ((${#PLAN_CONFIGS[@]} > 0)) || die "plan contains no rows"
 
-mkdir -p "$RUNS_DIR"
-RUNS_DIR="$(cd -- "$RUNS_DIR" && pwd -P)"
-MATRIX_DIR="${RUNS_DIR}/${MATRIX_ID}"
-if [[ -d "$MATRIX_DIR" && ! -f "${MATRIX_DIR}/.v2" ]]; then
-	die "refusing to reuse an unversioned matrix directory"
-fi
-mkdir -p "$MATRIX_DIR"
-printf 'fs-compare-v2/1\n' >"${MATRIX_DIR}/.v2"
 MATRIX_PLAN="${MATRIX_DIR}/plan.tsv"
 MATRIX_SUMMARY="${MATRIX_DIR}/matrix-summary.csv"
 PROGRESS_LOG="${MATRIX_DIR}/progress.log"
 HOST_LOAD="${MATRIX_DIR}/host-load.txt"
 STATE_FILE="${MATRIX_DIR}/.state"
 WRITE_LOCK="${MATRIX_DIR}/.write.lock"
-DRIVER_LOCK="${MATRIX_DIR}/.driver.lock"
 MATRIX_HEADER="repetition,attempt,${SUMMARY_HEADER}"
-
-exec {driver_lock_fd}>"$DRIVER_LOCK"
-flock -n "$driver_lock_fd" ||
-	die "matrix ID is already running: $MATRIX_ID"
 
 plan_tmp="${MATRIX_DIR}/.plan.$$"
 : >"$plan_tmp"

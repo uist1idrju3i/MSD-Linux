@@ -134,7 +134,9 @@ def supervise(directory, phase, test, command, timeout=86400, grace=5):
                     result["cut_intent"] = True
                     result["cut_sent"] = signal_group(process, signal.SIGKILL)
                     reap(process, grace)
-                elif result["mode"] != "abort":
+                elif result["mode"] == "abort":
+                    result["stop_pid"] = os.getpid()
+                else:
                     raise ValueError("unknown stop request")
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
         result["error"] = str(error)
@@ -174,6 +176,8 @@ def aggregate_errors(logs, test):
     for phase, path in logs:
         context = None
         for line_number, text in enumerate(Path(path).read_text(errors="replace").splitlines(), 1):
+            if re.search(r"msd\.fscmp: environment_dm_target=[\w-]+\s+v[0-9.]+\s*$", text):
+                continue
             begin = re.search(r"msd\.fscmp: expected_errors_begin kind=(\S+)", text)
             end = re.search(r"msd\.fscmp: expected_errors_end kind=(\S+)", text)
             if begin or end:

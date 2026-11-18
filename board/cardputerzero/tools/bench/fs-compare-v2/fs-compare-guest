@@ -28,17 +28,6 @@ console()
 	printf 'msd.fscmp: %s\n' "$*" >/dev/console
 }
 
-report_version()
-{
-	version_name=$1
-	shift
-	if version_output="$("$@" 2>&1)"; then
-		console "tool_version name=$version_name output=$version_output"
-	else
-		console "tool_version_error name=$version_name output=$version_output"
-	fi
-}
-
 fail()
 {
 	console "error=$*"
@@ -49,6 +38,14 @@ fail()
 selection=$1
 phase=$2
 T1_POINTS=${3:-}
+SMOKE="$(sed -n 's/.*msd\.fscmp\.smoke=\([^ ]*\).*/\1/p' /proc/cmdline)"
+EXPECTED_KERNEL="$(sed -n 's/.*msd\.fscmp\.kernel=\([^ ]*\).*/\1/p' /proc/cmdline)"
+if [ "$T1_POINTS" = first ] && [ "$SMOKE" = 1 ]; then
+	T1_POINTS_FIRST=1
+	T1_POINTS=
+else
+	T1_POINTS_FIRST=0
+fi
 case "$selection" in
 	*:*:*) ;;
 	*) fail "invalid_selection" ;;
@@ -137,13 +134,8 @@ else
 	[ -d "$RUN_PATH" ] || fail "guest_run_directory_missing"
 fi
 mkdir -p "$MOUNTPOINT" "$REPLAY_MOUNT"
-report_version ext4-mkfs mkfs.ext4 -V
-report_version f2fs-mkfs mkfs.f2fs -V
-report_version btrfs-mkfs mkfs.btrfs --version
-report_version btrfs-progs btrfs --version
-report_version cryptsetup cryptsetup --version
-report_version integritysetup integritysetup --version
-report_version dmsetup dmsetup version
+"${SCRIPT_DIR}/fs-compare-probe" "$EXPECTED_KERNEL" >/dev/console 2>&1 ||
+	fail environment_error_probe
 
 make_keyfiles()
 {
@@ -1228,6 +1220,10 @@ replay_t1()
 		all) cp "$all_points" "$selected_points" ;;
 		final) tail -n 1 "$all_points" >"$selected_points" ;;
 		sample)
+			if [ "$T1_POINTS_FIRST" = 1 ]; then
+				T1_POINTS="$(head -n 1 "$all_points" | cut -f 1)"
+				[ -n "$T1_POINTS" ] || fail smoke_sample_points_missing
+			fi
 			if [ -n "$T1_POINTS" ]; then
 				selected_entries="${RUN_PATH}/T1-selected-entry-list.txt"
 				printf '%s\n' "$T1_POINTS" | tr ',' '\n' >"$selected_entries"
