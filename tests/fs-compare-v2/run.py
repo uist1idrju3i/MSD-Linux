@@ -589,6 +589,40 @@ class Storage(unittest.TestCase):
             S.archive_attempt(source, root / "archives")
             self.assertTrue(S.load_json(source / S.STATE)["cleaned"])
 
+    def test_archive_preserves_and_verifies_hardlink_relations(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            os.link(source / "empty.log", source / "empty-twin")
+            receipt = S.archive_attempt(source, root / "archives")
+            manifest = S.verify_archive(receipt["archive"], receipt["manifest_sha256"])
+            rows = {row["path"]: row for row in manifest["entries"]}
+            self.assertEqual(rows["host.log"]["type"], "hardlink")
+            self.assertEqual(rows["host.log"]["link"], "hardlink")
+            with tarfile.open(receipt["archive"]) as archive:
+                self.assertTrue(archive.getmember("host.log").islnk())
+                self.assertEqual(archive.extractfile("host.log").read(), b"raw\n")
+                self.assertTrue(archive.getmember("empty.log").islnk())
+                self.assertEqual(archive.extractfile("empty.log").read(), b"")
+                archive.extractall(root / "restored", members=[
+                    archive.getmember("hardlink"), archive.getmember("host.log")], filter="data")
+            self.assertEqual((root / "restored/host.log").stat().st_ino,
+                             (root / "restored/hardlink").stat().st_ino)
+            (source / "host.log").unlink()
+            (source / "host.log").write_bytes(b"raw\n")
+            os.utime(source / "host.log", ns=(1320000000123456789, 1320000000123456789))
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                S.archive_attempt(source, root / "archives")
+
+    def test_hardlink_cleanup_can_remove_canonical_payload_but_preserves_log(self):
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(temporary)
+            source = self.archive_fixture(root)
+            os.link(source / "build/rootfs/payload", source / "build/rootfs/z.log")
+            S.archive_attempt(source, root / "archives")
+            self.assertEqual((source / "build/rootfs/z.log").read_bytes(), b"unpacked")
+            S.archive_attempt(source, root / "archives")
+
     def test_archive_verification_failure_enospc_and_resume_preserve_sources_and_partials(self):
         for error in (ValueError("corrupt"), OSError(errno.ENOSPC, "full"), KeyboardInterrupt()):
             with self.subTest(error=error), tempfile.TemporaryDirectory() as temporary, \
@@ -641,7 +675,7 @@ class Storage(unittest.TestCase):
                            for member in archive.getmembers()]
             with tarfile.open(path, "w:gz") as archive:
                 for member, data in members:
-                    if member.name == "host.log":
+                    if member.name == "hardlink":
                         data = b"bad\n"
                     archive.addfile(member, io.BytesIO(data) if data is not None else None)
             with self.assertRaisesRegex(ValueError, "payload mismatch"):

@@ -249,6 +249,7 @@ def run_child(command, environment, log):
 def inventory(source):
     source = Path(source)
     entries = []
+    inodes = {}
     for path in sorted(source.rglob("*")):
         relative = path.relative_to(source).as_posix()
         if relative == STATE:
@@ -267,10 +268,15 @@ def inventory(source):
         if kind == "file":
             with path.open("rb") as stream:
                 value = digest(stream)
+            inode = (info.st_dev, info.st_ino)
+            if inode in inodes:
+                kind, target = "hardlink", inodes[inode]
+            else:
+                inodes[inode] = relative
         else:
             value = hashlib.sha256(os.fsencode(target)).hexdigest()
         entries.append(dict(path=relative, type=kind, sha256=value,
-                            size=info.st_size if kind in ("file", "symlink") else 0,
+                            size=info.st_size if kind in ("file", "hardlink", "symlink") else 0,
                             mtime_ns=info.st_mtime_ns, link=target,
                             mode=stat.S_IMODE(mode), device=info.st_rdev))
     return dict(schema=SCHEMA, entries=entries)
@@ -292,18 +298,26 @@ def verify_archive(path, expected=None):
         manifest = json.loads(content)
         if manifest["schema"] != SCHEMA or set(names) != {MANIFEST, *(row["path"] for row in manifest["entries"])}:
             raise ValueError("archive member set mismatch")
-        types = {"file": tarfile.REGTYPE, "directory": tarfile.DIRTYPE, "symlink": tarfile.SYMTYPE,
+        types = {"file": tarfile.REGTYPE, "hardlink": tarfile.LNKTYPE,
+                 "directory": tarfile.DIRTYPE, "symlink": tarfile.SYMTYPE,
                  "character": tarfile.CHRTYPE, "block": tarfile.BLKTYPE, "fifo": tarfile.FIFOTYPE}
         for row in manifest["entries"]:
             member = archive.getmember(row["path"])
+            if member.islnk():
+                target = archive.getmember(row["link"])
+                if not target.isfile():
+                    raise ValueError("hardlink target must be a regular member")
+                size = target.size
+            else:
+                size = member.size if member.isfile() else len(os.fsencode(member.linkname))
             if (member.type != types[row["type"]]
                     or member.pax_headers.get("FSCMP.mtime_ns") != str(row["mtime_ns"])
                     or member.mode != row["mode"] or member.linkname != row["link"]
                     or (row["type"] in ("character", "block")
                         and os.makedev(member.devmajor, member.devminor) != row["device"])
-                    or (member.size if member.isfile() else len(os.fsencode(member.linkname))) != row["size"]):
+                    or size != row["size"]):
                 raise ValueError(f"archive metadata mismatch: {row['path']}")
-            value = (digest(archive.extractfile(member)) if member.isfile()
+            value = (digest(archive.extractfile(member)) if member.isfile() or member.islnk()
                      else hashlib.sha256(os.fsencode(member.linkname)).hexdigest())
             if value != row["sha256"]:
                 raise ValueError(f"archive payload mismatch: {row['path']}")
@@ -314,6 +328,15 @@ def verify_source(source, manifest, cleaned=False):
     current = inventory(source)
     expected = {row["path"]: row for row in manifest["entries"]}
     actual = {row["path"]: row for row in current["entries"]}
+    if cleaned:
+        surviving = {}
+        for name in sorted(actual):
+            row = expected.get(name)
+            if row and row["type"] in ("file", "hardlink"):
+                original = row["link"] if row["type"] == "hardlink" else name
+                target = surviving.setdefault(original, name)
+                expected[name] = dict(row, type="file" if name == target else "hardlink",
+                                      link="" if name == target else target)
     for name, row in actual.items():
         original = expected.get(name)
         if cleaned and row["type"] == "directory" and (name == "build" or name.startswith("build/")):
@@ -384,6 +407,10 @@ def archive_attempt(source, destination):
                         member.type = tarfile.REGTYPE
                         member.linkname = ""
                         member.size = row["size"]
+                    elif row["type"] == "hardlink":
+                        member.type = tarfile.LNKTYPE
+                        member.linkname = row["link"]
+                        member.size = 0
                     member.pax_headers["FSCMP.mtime_ns"] = str(row["mtime_ns"])
                     if member.isfile():
                         with path.open("rb") as stream:
