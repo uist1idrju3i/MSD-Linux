@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-初回のcode保存後にfresh buildは成功した。最初のE1/smoke診断は既存判定器のboot診断scanで停止した。後続のA/Aは2回成功したが、次のT1は短縮workloadのtail上限とboot診断の行の割込みで停止した。負対照と全851 probeは未完了であり、background runは開始していない。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+初回のcode保存後にfresh buildは成功した。判定器とtail上限の修正後はA/AとT1 all・final・自動sampleが成功したが、明示sampleはboot logの1行内へのkernel行の割込みで停止した。負対照と全851 probeは未完了であり、background runは開始していない。初回のboot診断停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -107,3 +107,37 @@ T1のlogは`W3 records=51`に対し`T1_W3_EXPECTED cycle=0 max_record=50 bytes=6
 host試験は、初回logの全24診断で19 expected・5 fatalを照合して60件成功した。tail修正後は、50または51の正常record、空file、部分record、改変tail、52 recordの上限超過、通常1000 record、行の割込みを加えて62件成功した。host aggregateも全11 suiteが成功した。次の代表診断は既存出力を上書きせず、別run directoryで行う。
 
 [追加証拠archive](2026-11-19-s04-fs-compare-v2-boot-evidence.tar.gz)は111,058 byte、SHA-256は`6a0cd4227294af2f4de17c1eaa88703c153fc8a982c17f28de4c35dd9428c458`。77 fileのsize・hashを読戻し照合した。起動依頼の失敗、A/A、T1失敗のserial・host log、各phaseのDTB、環境・保存状態、host検査を収録した。画像と共有object本体は含めず、元の非画像archiveと共有objectは測定出力に保持している。raw log・metadata内の絶対pathは実行時の値である。
+
+### 再診断03: tail成功と1行内の割込み
+
+code commit `a3c3a5a9561f5303052dfdf6afedf164a21404ca`を保存・pushした後、同じbuild生成物で実行した。前の出力は上書きしていない。
+
+```sh
+docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py representative +  --runs-dir /work/fscmp-v2-stage4-bootfix-03
+```
+
+| 診断 | command全体、秒 | 結果 |
+|---|---:|---|
+| E1/smoke A | 294.15094499599945 | 成功 |
+| E1/smoke A再試行 | 277.21236964999116 | 成功 |
+| E1/T1 | 485.8173672630073 | 成功 |
+| E1/T1-final | 369.9134132129984 | 成功 |
+| E1/T1-sample | 398.12064521999855 | 成功 |
+| E1/T1-sample-selected | 329.6439274690056 | 失敗 |
+
+T1 allでは`T1_W3_EXPECTED cycle=0 max_record=51 bytes=6528`となり、最終dm-snapshotの`expected_files=5 actual_files=5 mount=yes fsck=0 manifest=yes`を確認した。tail上限の修正はこの経路で機能した。probe本体の時間とfilesystem使用量差はCSVに残した。
+
+明示sampleではguestが`finished`まで進み、phaseは`returncode=0 qmp_quit=true reaped=true fallback=[] error=null marker=true`、`summary.pending.csv`も`status=ok`だった。しかしboot logの316–317行は次の形だった。
+
+```text
+Re-reading the partition table failed.[   16.000491] mmc1: Timeout waiting for hardware interrupt.
+: Device or resource busy
+```
+
+直前はpartition 7の拡張で、userspace診断の途中へkernelの断片が入った。kernel行は固定sourceの[SDHCI timeout log](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/drivers/mmc/host/sdhci.c#L3287)に一致するが、QEMU側のtimeoutの原因は今回未切分けである。
+
+`aggregate_errors()`は物理行の先頭timestampだけを除いて完全一致を調べるため、316行を既知の再読込み診断と認めなかった。archive前のfatalはこの1件で、driver終了状態は0だった。最終rescanではdriver終了状態1が加わりfatalは2件となった。guest側のreplay失敗やQEMU回収失敗を原因とする候補は、これらの結果と一致しない。
+
+kernel/userspaceが1行内で混ざる場合の判定は未解決であり、両者をまとめて無害と扱う変更はしていない。代表診断は21件中5成功・1失敗・残り15件未実施で終了した。負対照2件にも達していない。全smokeの開始条件を満たさないため、851件のbackground run、最初の10件の実測、実測に基づく所要時間の更新は未実施である。
+
+[再診断03の証拠archive](2026-11-19-s04-fs-compare-v2-bootfix03-evidence.tar.gz)は210,107 byte、SHA-256は`9b5e52fd2475636dcfa238505da69e2f5f69dcc9d26e5ace1a64a520f9dcc4fc`。137 fileのsize・hashを読戻し照合した。6件の結果、serial log、`errors.jsonl`、phase・環境・保存状態、生成DTB、runnerの終了を収録した。画像と共有object本体は含めていない。

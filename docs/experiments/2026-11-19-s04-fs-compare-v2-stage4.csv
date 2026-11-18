@@ -11,3 +11,10 @@ representative,bootfix-02-02-E1-smoke,E1,smoke,passed,270.1614557080029,commit=7
 representative,bootfix-02-03-E1-T1,E1,T1,failed,506.01140718499664,commit=74bc9e3b40260632bb602c7fd35d1f39bba3e163;probe_seconds=503.1206269719987;filesystem_used_delta_bytes=1748992;w3_tail_bound_50_instead_of_51;kernel_line_interleaved_before_reread_busy
 host,w3-tail-and-interleaving,,,passed,10.146,62_tests;valid_and_invalid_tail;normal_1000_records_preserved
 smoke,bootfix-02-all-851,,,not_started,,representative_T1_failed;AA_passed;negative_controls_pending
+representative,bootfix-03-01-E1-smoke,E1,smoke,passed,294.15094499599945,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=291.25260856699606;filesystem_used_delta_bytes=50233344
+representative,bootfix-03-02-E1-smoke,E1,smoke,passed,277.21236964999116,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=274.35418363299686;filesystem_used_delta_bytes=1441792
+representative,bootfix-03-03-E1-T1,E1,T1,passed,485.8173672630073,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=482.9295378980023;filesystem_used_delta_bytes=1695744
+representative,bootfix-03-04-E1-T1-final,E1,T1-final,passed,369.9134132129984,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=367.0229065260064;filesystem_used_delta_bytes=1527808
+representative,bootfix-03-05-E1-T1-sample,E1,T1-sample,passed,398.12064521999855,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=395.2346729560086;filesystem_used_delta_bytes=1597440
+representative,bootfix-03-06-E1-T1-sample-selected,E1,T1-sample-selected,failed,329.6439274690056,commit=a3c3a5a9561f5303052dfdf6afedf164a21404ca;probe_seconds=326.75667612098914;filesystem_used_delta_bytes=1511424;inline_kernel_userspace_serial_fragments;guest_finished;fatal_before_archive=1
+smoke,bootfix-03-all-851,,,not_started,,representative_selected_sample_failed;AA_and_T1_all_final_sample_passed;negative_controls_pending
