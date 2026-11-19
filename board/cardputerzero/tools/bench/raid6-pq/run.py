@@ -63,7 +63,7 @@ def command(args, log):
 
 def prepare(output, runs):
     destination = runs / "prepared"
-    destination.mkdir()
+    destination.mkdir(parents=True)
     with (destination / "prepare.log").open("x") as log:
         tree = destination / "root"
         command([output / "host/bin/unsquashfs", "-no-progress", "-no-xattrs",
