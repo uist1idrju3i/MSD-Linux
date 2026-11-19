@@ -121,7 +121,7 @@ def boot(output, runs, variant, run_id):
                DTB_IMAGE=str(runs / "prepared/qemu.dtb"),
                QEMU_QMP_SOCKET=str(qmp), QEMU_COPY_IMAGE="1",
                QEMU_EXTRA_APPEND="initcall_debug printk.time=1")
-    for key in ("QEMU_ICOUNT", "QEMU_EXTRA_ARGS", "ROOT_DEVICE", "ROOT_FSTYPE"):
+    for key in ("QEMU_DRIVE_FILE", "QEMU_ICOUNT", "QEMU_EXTRA_ARGS", "ROOT_DEVICE", "ROOT_FSTYPE"):
         env.pop(key, None)
     start = time.monotonic()
     process = subprocess.Popen(
