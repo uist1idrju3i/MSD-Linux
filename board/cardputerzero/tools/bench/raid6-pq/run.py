@@ -61,8 +61,19 @@ def command(args, log):
     subprocess.run(list(map(str, args)), stdout=log, stderr=subprocess.STDOUT, check=True)
 
 
+def record_path(path):
+    absolute = path.resolve()
+    try:
+        return str(absolute.relative_to(ROOT))
+    except ValueError:
+        return str(absolute)
+
+
 def prepare(output, runs):
     destination = runs / "prepared"
+    inputs = [destination / "sdcard.img", destination / "rootfs.squashfs",
+              destination / "qemu.dtb", HERE / "guest.sh", HERE / "run.py"]
+    labels = {path: record_path(path) for path in inputs}
     destination.mkdir(parents=True)
     with (destination / "prepare.log").open("x") as log:
         tree = destination / "root"
@@ -87,9 +98,8 @@ def prepare(output, runs):
             command(["dd", f"if={squash}", f"of={image}", "bs=512",
                      f"seek={partition['start']}", "conv=notrunc", "status=none"], log)
         command(["cp", output / "images/bcm2710-rpi-3-b.dtb", destination / "qemu.dtb"], log)
-    inputs = [image, squash, destination / "qemu.dtb", HERE / "guest.sh", HERE / "run.py"]
     (destination / "inputs.json").write_text(json.dumps(
-        {str(p.relative_to(ROOT)): sha(p) for p in inputs}, indent=2) + "\n")
+        {labels[p]: sha(p) for p in inputs}, indent=2) + "\n")
 
 
 def quit_qemu(path):
