@@ -13,6 +13,7 @@
 | PQCとhybrid TLS groupsの判断資料（維持を決定） | [DEFAULT・consumer・HNDL・選択肢と決定](openssl-pqc-groups.md)、[5構成の容量とVM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md) |
 | Buildroot、GCC、binutils、外部SDK、共通flags、PIE・RELRO・LTOの適用範囲 | [Buildroot・toolchain](buildroot-toolchain.md) |
 | kernel Kconfig、compile、cmdline、module、sysctl、DeviceTree、firmware | [kernel・firmware](kernel-firmware.md) |
+| RAID6 PQの起動時benchmark、Btrfsとの依存、固定版とmainlineの差 | [PQ選択のoption](raid6-pq.md) |
 | target 18件、BusyBox、glibc、OpenSSL、util-linux、network・保守command | [ユーザー空間](userspace.md)、[OpenSSL系列差](openssl-series.md) |
 | timezoneの既定値、tzdataの収録範囲、host-zicの引数 | [timezone](timezone.md)。2026-11-12に追加した採用記録で、下の固定時点の18件の採取結果とは別です |
 | host 49件、configure、Meson/Make等、圧縮、FS・disk image生成 | [host・image生成](host-image.md) |
