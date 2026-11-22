@@ -372,3 +372,89 @@ guestの`console()`は既に末尾改行付きの`printf`を使っている。
 storageへの`sync`もserialの排他にはならないため、guestは変更しない。
 この修正はhost判定器の検査であり、失敗した試行03を成功へ変更せず、
 QEMUや実機の電源断の再実行とも扱わない。
+
+## 1dc14a3での再試行04: 負対照の未設定変数で停止
+
+sourceを`1dc14a323f4387503a04691838431b741bf97e9f`に固定した新しい
+standalone cloneで再試行した。Docker関連fileは`b242681`と同一だったため、
+試行03と同じimage IDを再利用した。実binaryのQEMU 11.1.3とhashも一致した。
+fresh出力は`output-fscmp-v2-04`、runs directoryは`rerun-1dc14a3-04`である。
+
+buildは3499.8475962750017秒で成功した。代表21件は7成功・1失敗・13未実施で停止した。
+成功した経路はE1/smokeのA/A、T1、T1-final、T1-sample、
+T1-sample-selected、T1-negativeである。試行03が停止したE1/T1は成功したが、
+8件目のE1/T1-negative-finalが次のguestエラーで終了した。
+
+```text
+/usr/libexec/fs-compare-guest: line 1117: point_entry: parameter not set
+msd.fscmp: error=guest_exit status=2
+```
+
+今回は開始markerとkernel printkは別行だった。
+`T1_NEGATIVE_FINAL_CHECK`の成功行と`finished`は出ていない。
+単独E2診断と全851件smokeは開始しなかった。失敗した試行を成功へ変更せず、
+凍結sourceと原logは変更していない。元の保存物2153 fileは
+`rerun-04-copy-manifest.json`でsize・hashを照合した。
+各probeの秒数と終了状態は[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)へ追記した。
+
+### 原因と負対照経路の監査
+
+#287で追加した負対照は`check_t1_manifest()`を使うが、その診断に必要な
+`point_entry`を渡していなかった。回復経路は
+`result="$(check_manifest_at_point ...)"`で実行するため、
+その関数内で設定した`point_entry`は親shellへ残らない。
+後続の負対照がhash不一致を記録しようとすると、`set -u`により停止する。
+修正では負対照関数の第2引数へ最終点の`entry`を渡し、
+そのsubshell内で`point_entry`に設定する。回復経路と同じentryを診断へ記録する。
+
+負対照の他の変数も確認した。`RUN_PATH`、`REPLAY_WORKLOAD_ROOT`、`tab`は
+guestの共通初期化、`mount_ok`は呼出し元が設定する。
+`expected_file`、`manifest_strict_hash`、`manifest_context`は負対照内で設定し、
+marker関連の各値はmanifestの各行を`read`して取得する。
+`ack_count`、`manifest_ok`、`manifest_hash_mismatch`、`actual`もchecker内で設定する。
+strict hashを指定する負対照では、回復時だけ使うW2の先行更新照合と
+W3のtail検査へ入らない。これらに回復経路だけの代入への依存は見つからなかった。
+負対照はsubshellなのでcontextとstrict指定は回復経路へ残らない。
+
+旧hostテストも`sh -eu`だったが、`check_manifest_at_point`を
+command substitutionにせず直接実行し、`point_entry`を親shellへ残していた。
+回帰テストをguestと同じ呼出し方に直し、負対照直前で同変数が未設定であること、
+回復・負対照の診断がともに最終点のentryを記録することを検査した。
+修正前は1テスト内の5ケースが`point_entry: parameter not set`で失敗し、
+修正後は全67テストが成功した。正常・欠損・空集合・各workload・
+checkerの検出失敗の既存ケースもこの呼出し方で検査している。
+
+### 試行04の証拠と取得
+
+orphan branch `data/fs-compare-experiments`のcommit
+`f2062dd2d978911704c9b49a41e70ed6abc0be2a`に、
+`fs-compare/stage4-rerun-1dc14a3-04.tar.zst`を保存した。
+928個のtext証拠を原本のまま収録し、image・binaryなど1380 fileは除外した。
+memberのhashは同名の`.files.sha256`、除外したpath・size・hashは
+同名の`.selection.json`にある。push後にremoteから取得し、
+archiveと全928 memberのhashを照合した。
+
+取得には前節と同じく`zstd`、`tar`、`sha256sum`を使う。
+新しい保存先で次を実行する。data branchをmergeする必要はない。
+
+```sh
+git fetch origin data/fs-compare-experiments
+data_sha=f2062dd2d978911704c9b49a41e70ed6abc0be2a
+mkdir evidence-1dc14a3-04
+git archive "$data_sha" fs-compare/stage4-rerun-1dc14a3-04.tar.zst \
+  fs-compare/stage4-rerun-1dc14a3-04.files.sha256 \
+  fs-compare/stage4-rerun-1dc14a3-04.selection.json fs-compare/SHA256SUMS |
+  tar -xf - -C evidence-1dc14a3-04
+cd evidence-1dc14a3-04
+grep '  stage4-rerun-1dc14a3-04\.' fs-compare/SHA256SUMS |
+  (cd fs-compare && sha256sum -c -)
+zstd -dc fs-compare/stage4-rerun-1dc14a3-04.tar.zst | tar -xf -
+sha256sum -c fs-compare/stage4-rerun-1dc14a3-04.files.sha256
+```
+
+主な一次資料は`build-04-host-result.json`、`representative-04.log`、
+`attempt-04-diagnosis.json`と、`rerun-1dc14a3-04/representative/results.csv`、
+その下の`08-E1-T1-negative-final/probe-E1-T1-negative-final/qemu-run.log`である。
+再試行05は修正後の新しいheadに固定し、fresh build後に単独の
+E1・E2/T1-negative-finalを先に診断する計画とする。
+両方と既定の代表21件が成功した場合だけ、新しい全851件smokeを開始する。
