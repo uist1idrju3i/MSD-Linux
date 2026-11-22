@@ -1194,29 +1194,38 @@ class LightSmoke(unittest.TestCase):
                   + function("check_t1_negative_manifest", "(", ")")
                   + function("validate_t1_negative_final")
                   + '\nconsole() { echo "$*" >&2; }\n'
+                  + 'fail() { console "error=$*"; exit 1; }\n'
                   + 'RUN_PATH=$1\nREPLAY_WORKLOAD_ROOT=$1\nTEST=T1-negative-final\n'
                   + 'tab=$(printf "\\t")\n'
                   + 'check_manifest_at_point 1 1 yes\n'
                   + 'mount_ok=yes\nfsck_status=0\nnegative_control=no\n'
                   + 'if [ "$2" = broken ]; then check_t1_manifest() { '
                   + 'ack_count=1; manifest_ok=yes; manifest_hash_mismatch=no; }; fi\n'
-                  + 'if check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv"; then '
-                  + 'negative_control=yes; fi\n'
+                  + 'negative_control=$(check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv")\n'
                   + 'echo "control=$negative_control"\n'
                   + 'validate_t1_negative_final\n')
         digest = M.hashlib.sha256(b"data").hexdigest()
-        for case, markers, data, manifest, control in [
-            ("normal", f"1\tW1/file\t{digest}\t0\t1\tw1\n", b"data", "yes", "yes"),
-            ("missing", f"1\tW1/file\t{digest}\t0\t1\tw1\n", None, "no", "no"),
-            ("empty", "", b"data", "yes", "no"),
-            ("altered", f"1\tW1/file\t{'f' * 64}\t0\t1\tw1\n", b"data", "no", "yes"),
-            ("broken", f"1\tW1/file\t{digest}\t0\t1\tw1\n", b"data", "yes", "no"),
+        w1 = f"1\tW1/file\t{digest}\t0\t1\tw1\n"
+        no_present = "t1_negative_control_no_present_file"
+        for case, markers, files, manifest, control in [
+            ("normal", w1, {"W1/file": b"data"}, "yes", "yes"),
+            ("missing", w1, {}, "no", no_present),
+            ("empty", "", {}, "yes", no_present),
+            ("w1_lost_w2_present", w1 + f"2\tW2/target.dat\t{digest}\t1\t1\tw2\n",
+             {"W2/target.dat": b"data"}, "no", "yes"),
+            ("w1_lost_w3_present", w1 + f"2\tW3/append.log\t{digest}\t1\t1\tw3\n",
+             {"W3/append.log": b"data"}, "no", "yes"),
+            ("w1_lost_w4_present", w1 + f"2\tW4/file\t{digest}\t1\t1\tw4\n",
+             {"W4/file": b"data"}, "no", "yes"),
+            ("altered", f"1\tW1/file\t{'f' * 64}\t0\t1\tw1\n",
+             {"W1/file": b"data"}, "no", "yes"),
+            ("broken", w1, {"W1/file": b"data"}, "yes", "no"),
         ]:
             with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
                 directory = Path(temporary)
-                (directory / "W1").mkdir()
-                if data is not None:
-                    (directory / "W1/file").write_bytes(data)
+                for path, data in files.items():
+                    (directory / path).parent.mkdir(parents=True, exist_ok=True)
+                    (directory / path).write_bytes(data)
                 (directory / "T1-markers.tsv").write_text(markers)
                 result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary, case],
                                         text=True, capture_output=True)
@@ -1224,8 +1233,14 @@ class LightSmoke(unittest.TestCase):
                 self.assertIn(f"\t{manifest}\t", result.stdout)
                 self.assertIn(f"control={control}", result.stdout)
                 self.assertEqual((directory / "T1-markers.tsv").read_text(), markers)
-                if data is not None:
-                    self.assertEqual((directory / "W1/file").read_bytes(), data)
+                for path, data in files.items():
+                    self.assertEqual((directory / path).read_bytes(), data)
+                control_rows = (directory / "T1-negative-expected.tsv").read_text()
+                for row in control_rows.splitlines():
+                    self.assertIn(row.split("\t")[0], files)
+                if control == no_present:
+                    self.assertIn("error=" + no_present, result.stderr)
+                    self.assertEqual(control_rows, "")
                 if case == "normal":
                     self.assertIn("reason=hash_mismatch", result.stderr)
                     self.assertIn(digest, (directory / "T1-expected.tsv").read_text())
@@ -1237,10 +1252,12 @@ class LightSmoke(unittest.TestCase):
         for mount, fsck, control, expected in [
             ("yes", "0", "yes", 0), ("no", "0", "yes", 1),
             ("yes", "4", "yes", 1), ("yes", "0", "no", 1),
+            ("yes", "0", "t1_negative_control_no_present_file", 1),
         ]:
             with self.subTest(mount=mount, fsck=fsck, control=control):
                 result = subprocess.run(["sh", "-eu", "-c",
-                                         'mount_ok=$1; fsck_status=$2; negative_control=$3\n' + body,
+                                         'fail() { echo "error=$*"; exit 1; }\n'
+                                         + 'mount_ok=$1; fsck_status=$2; negative_control=$3\n' + body,
                                          "fixture", mount, fsck, control], capture_output=True)
                 self.assertEqual(result.returncode, expected)
         self.assertNotIn('t1_negative_control_loss_not_detected', guest)

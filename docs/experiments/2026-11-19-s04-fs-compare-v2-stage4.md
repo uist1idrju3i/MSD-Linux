@@ -207,10 +207,14 @@ stage4とpreflightはguestの失敗を受けて停止しており、自然な欠
 この2つのguardはともにguest内にあった。
 
 修正後も`manifest=yes/no`と`loss_points`は観測値のまま記録する。
-負の対照は期待manifestのW1行を別fileへコピーし、期待hashの先頭1桁を
+負の対照は期待manifestのうち回復filesystemにfileが存在する行を
+workloadを問わず別fileへコピーし、期待hashの先頭1桁を
 意図的に変更して同じcheckerへ渡す。回復filesystemと元manifestは変更しない。
 空の期待集合や全file欠損だけではhash不一致の検出を証明できないため、
 少なくとも1件のhash不一致を検出した場合だけ負の対照を成功とする。
+負の対照ではW2の先行更新やW3の追記を許容する判定を使わず、
+改変hashとの不一致を検出する。期待fileが1件も存在しない場合は
+`t1_negative_control_no_present_file`をconsoleへ記録して失敗する。
 negative-finalの合格条件はmount成功、fsck成功、この負の対照の成功の3つとする。
 自然な欠損の有無は合否に使わない。
 
@@ -221,3 +225,9 @@ checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を�
 完了済み20 probeと失敗した21件目の記録は履歴として残す。
 修正で環境identityが変わるため、旧20件を引き継がず、新しい出力先で
 851 probeを最初から再実行する。今回の修正作業ではbuildもsmokeも開始しない。
+
+初回の修正では負の対照をW1だけから作っていたため、W1が全て失われた場合も
+誤って失敗していた。reviewでこの前提を指摘され、上記の存在するfileだけを
+使う方式へ修正した。W1欠損時にW2・W3・W4の各fileを使えること、
+W1が存在する場合、期待fileが全て欠損した場合の専用理由、
+checkerの検出失敗をhost回帰テストへ追加した。
