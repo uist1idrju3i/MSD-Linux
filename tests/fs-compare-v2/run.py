@@ -269,10 +269,16 @@ class Errors(unittest.TestCase):
                             for r in self.boot_scan(text + "\n" + split)))
 
     def boot_scan(self, text, phase="run"):
+        # fixtureの起動logはQEMU 11.1.2・kernel 6.18.59-v8で記録した実測値。
+        # 版条件は記録時の版を注入して照合する（生の記録を新版に書き換えない）。
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / f"qemu-{phase}.log"
             path.write_text(text)
-            return M.aggregate_errors([(phase, path)], "smoke")
+            rules = M.load_json(V2 / "boot-diagnostics.json")
+            rules["qemu"] = "QEMU emulator version 11.1.2"
+            rules["kernel"] = "6.18.59-v8"
+            with mock.patch.object(M, "load_json", return_value=rules):
+                return M.aggregate_errors([(phase, path)], "smoke")
 
     def test_actual_boot_diagnostics_keep_camera_eio_and_unresolved_uart_fatal(self):
         text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
@@ -298,8 +304,8 @@ class Errors(unittest.TestCase):
                                     for r in self.boot_scan(changed)))
                 self.assertFalse(self.boot_scan(row["text"])[0]["expected"])
                 self.assertFalse(self.boot_scan(row["text"], "host")[0]["expected"])
-        for prefix in ("run-qemu: machine=raspi3b", "run-qemu: version=QEMU emulator version 11.1.3",
-                       "Linux version 6.18.64-v8", "Machine model: Raspberry Pi 3 Model B",
+        for prefix in ("run-qemu: machine=raspi3b", "run-qemu: version=QEMU emulator version 11.1.2",
+                       "Linux version 6.18.59-v8", "Machine model: Raspberry Pi 3 Model B",
                        "msd.fscmp: SMOKE_PROFILE"):
             self.assertFalse(any(r["expected"] for r in self.boot_scan(text.replace(prefix, "unknown"))))
         line = next(r["text"] for r in expected if r["known_boot"] == "no-uefi")
