@@ -1066,8 +1066,15 @@ check_manifest_at_point()
 	awk -F '\t' -v limit="$manifest_limit" -v negative="$negative" \
 		'($4 == 1 && $5 <= limit) || (negative && $1 > 0) { latest[$2] = $3; latest_marker[$2] = $6; latest_entry[$2] = $5; latest_sequence[$2] = $1 } END { for (path in latest) print path "\t" latest[path] "\t" latest_marker[path] "\t" latest_entry[path] "\t" latest_sequence[path] }' \
 		"${RUN_PATH}/T1-markers.tsv" >"$expected_file"
+	check_t1_manifest
+	printf '%s\t%s\t%s\n' "$ack_count" "$manifest_ok" "$expected_file"
+}
+
+check_t1_manifest()
+{
 	ack_count="$(wc -l <"$expected_file" | tr -d ' ')"
 	manifest_ok=not_mounted
+	manifest_hash_mismatch=no
 	if [ "$mount_ok" = yes ]; then
 		manifest_ok=yes
 		while IFS="$tab" read -r relative expected marker marker_entry marker_sequence; do
@@ -1079,6 +1086,7 @@ check_manifest_at_point()
 			fi
 			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
 			if [ "$actual" != "$expected" ]; then
+				manifest_hash_mismatch=yes
 				case "$relative" in
 					W2/target.dat)
 						matched_update="$(awk -F '\t' \
@@ -1112,7 +1120,24 @@ EOF
 			fi
 		done <"$expected_file"
 	fi
-	printf '%s\t%s\t%s\n' "$ack_count" "$manifest_ok" "$expected_file"
+}
+
+check_t1_negative_manifest()
+(
+	control_source=$1
+	expected_file="${RUN_PATH}/T1-negative-expected.tsv"
+	awk -F '\t' 'BEGIN { OFS = "\t" } /^W1\// {
+		$2 = (substr($2, 1, 1) == "0" ? "1" : "0") substr($2, 2); print
+	}' "$control_source" >"$expected_file" || exit 1
+	check_t1_manifest
+	[ "$ack_count" -gt 0 ] && [ "$manifest_ok" = no ] &&
+		[ "$manifest_hash_mismatch" = yes ]
+)
+
+validate_t1_negative_final()
+{
+	[ "$mount_ok" = yes ] && [ "$fsck_status" = 0 ] &&
+		[ "$negative_control" = yes ]
 }
 
 mounted_at()
@@ -1356,6 +1381,11 @@ replay_t1()
 		IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF
 $result
 EOF
+		negative_control=no
+		if [ "$TEST" = T1-negative-final ] &&
+		   check_t1_negative_manifest "$expected_file"; then
+			negative_control=yes
+		fi
 		if [ "$mount_ok" = yes ]; then
 			if [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
 				fscryptctl remove_key "$FSCRYPT_REPLAY_KEY_ID" "$REPLAY_MOUNT" \
@@ -1425,9 +1455,8 @@ EOF
 		esac
 		if [ "$final_point_validation" = yes ]; then
 			if [ "$TEST" = T1-negative-final ]; then
-				console "T1_NEGATIVE_FINAL_CHECK stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points"
-				if [ "$mount_ok" != yes ] || [ "$fsck_status" != 0 ] ||
-				   [ "$manifest_ok" != no ]; then
+				console "T1_NEGATIVE_FINAL_CHECK stack_open=$stack_open mount=$mount_ok fsck=$fsck_status manifest=$manifest_ok loss_points=$loss_points negative_control=$negative_control"
+				if ! validate_t1_negative_final; then
 					fail "t1_negative_final_checker_validation_failed"
 				fi
 			else
@@ -1462,9 +1491,6 @@ EOF
 			console "T1_NEGATIVE_CONTROL loss_detected=yes"
 		else
 			console "T1_NEGATIVE_CONTROL loss_detected=no"
-		fi
-		if [ "$TEST" = T1-negative-final ] && [ "$loss_points" -eq 0 ]; then
-			fail "t1_negative_control_loss_not_detected"
 		fi
 		;;
 	esac

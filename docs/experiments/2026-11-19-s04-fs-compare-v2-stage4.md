@@ -190,3 +190,34 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py s
 通常T1は`full`ではなく`t1-reduced`を使うため、W3の上限は1000ではなく250件である。writerと同じprofile選択関数から実効record数を取得し、replayのtail上限へ渡すよう修正した。250件は受理し251件は拒否、smokeは51件を受理し52件を拒否する。fullの1000件も維持する。
 
 修正は別worktreeで行った。実行中の全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、実行中のprobeと後続probeへこの修正を適用していない。
+
+### 全smokeのnegative-final停止と判定修正
+
+再診断04後の全smokeは20件を完了し、21件目の`E2/T1-negative-final`で
+`t1_negative_final_checker_validation_failed`となって停止した。
+driverの末尾も`smoke failed: E2/T1-negative-final; main run not started`である。
+E2はext4の`data=journal`で、最終replayではmountとfsckが成功し、
+W1の2 fileがともに残って`manifest=yes`だった。中間13点のうち9点では欠損した。
+この停止と値は旧判定器の履歴として保持し、成功へ書き換えない。
+
+原因はguestの最終点のguardが`manifest=no`を要求し、末尾のguardも
+`loss_points > 0`を要求していたことにある。fsyncなしの書き込みが残ることは
+正当な結果であり、必ず失われるという前提ではcheckerを検証できない。
+stage4とpreflightはguestの失敗を受けて停止しており、自然な欠損を要求する
+この2つのguardはともにguest内にあった。
+
+修正後も`manifest=yes/no`と`loss_points`は観測値のまま記録する。
+負の対照は期待manifestのW1行を別fileへコピーし、期待hashの先頭1桁を
+意図的に変更して同じcheckerへ渡す。回復filesystemと元manifestは変更しない。
+空の期待集合や全file欠損だけではhash不一致の検出を証明できないため、
+少なくとも1件のhash不一致を検出した場合だけ負の対照を成功とする。
+negative-finalの合格条件はmount成功、fsck成功、この負の対照の成功の3つとする。
+自然な欠損の有無は合否に使わない。
+
+host回帰テストでは正常なmanifest、file欠損、空の期待集合、改変hashの検出、
+checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を検査する。
+これはcheckerの検査であり、QEMUや実機の電源断の再検証ではない。
+
+完了済み20 probeと失敗した21件目の記録は履歴として残す。
+修正で環境identityが変わるため、旧20件を引き継がず、新しい出力先で
+851 probeを最初から再実行する。今回の修正作業ではbuildもsmokeも開始しない。

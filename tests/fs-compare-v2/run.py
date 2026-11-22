@@ -1183,6 +1183,68 @@ class Preflight(unittest.TestCase):
 
 
 class LightSmoke(unittest.TestCase):
+    def test_t1_negative_final_manifest_control(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+
+        def function(name, opening="{", closing="}"):
+            body = guest.split(f"\n{name}()\n{opening}\n", 1)[1].split(f"\n{closing}\n", 1)[0]
+            return f"{name}()\n{opening}\n{body}\n{closing}\n"
+
+        script = (function("check_manifest_at_point") + function("check_t1_manifest")
+                  + function("check_t1_negative_manifest", "(", ")")
+                  + function("validate_t1_negative_final")
+                  + '\nconsole() { echo "$*" >&2; }\n'
+                  + 'RUN_PATH=$1\nREPLAY_WORKLOAD_ROOT=$1\nTEST=T1-negative-final\n'
+                  + 'tab=$(printf "\\t")\n'
+                  + 'check_manifest_at_point 1 1 yes\n'
+                  + 'mount_ok=yes\nfsck_status=0\nnegative_control=no\n'
+                  + 'if [ "$2" = broken ]; then check_t1_manifest() { '
+                  + 'ack_count=1; manifest_ok=yes; manifest_hash_mismatch=no; }; fi\n'
+                  + 'if check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv"; then '
+                  + 'negative_control=yes; fi\n'
+                  + 'echo "control=$negative_control"\n'
+                  + 'validate_t1_negative_final\n')
+        digest = M.hashlib.sha256(b"data").hexdigest()
+        for case, markers, data, manifest, control in [
+            ("normal", f"1\tW1/file\t{digest}\t0\t1\tw1\n", b"data", "yes", "yes"),
+            ("missing", f"1\tW1/file\t{digest}\t0\t1\tw1\n", None, "no", "no"),
+            ("empty", "", b"data", "yes", "no"),
+            ("altered", f"1\tW1/file\t{'f' * 64}\t0\t1\tw1\n", b"data", "no", "yes"),
+            ("broken", f"1\tW1/file\t{digest}\t0\t1\tw1\n", b"data", "yes", "no"),
+        ]:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                (directory / "W1").mkdir()
+                if data is not None:
+                    (directory / "W1/file").write_bytes(data)
+                (directory / "T1-markers.tsv").write_text(markers)
+                result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary, case],
+                                        text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0 if control == "yes" else 1, result.stderr)
+                self.assertIn(f"\t{manifest}\t", result.stdout)
+                self.assertIn(f"control={control}", result.stdout)
+                self.assertEqual((directory / "T1-markers.tsv").read_text(), markers)
+                if data is not None:
+                    self.assertEqual((directory / "W1/file").read_bytes(), data)
+                if case == "normal":
+                    self.assertIn("reason=hash_mismatch", result.stderr)
+                    self.assertIn(digest, (directory / "T1-expected.tsv").read_text())
+                    self.assertNotIn(digest, (directory / "T1-negative-expected.tsv").read_text())
+
+    def test_t1_negative_final_guard(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+        body = guest.split("\nvalidate_t1_negative_final()\n{\n", 1)[1].split("\n}\n", 1)[0]
+        for mount, fsck, control, expected in [
+            ("yes", "0", "yes", 0), ("no", "0", "yes", 1),
+            ("yes", "4", "yes", 1), ("yes", "0", "no", 1),
+        ]:
+            with self.subTest(mount=mount, fsck=fsck, control=control):
+                result = subprocess.run(["sh", "-eu", "-c",
+                                         'mount_ok=$1; fsck_status=$2; negative_control=$3\n' + body,
+                                         "fixture", mount, fsck, control], capture_output=True)
+                self.assertEqual(result.returncode, expected)
+        self.assertNotIn('t1_negative_control_loss_not_detected', guest)
+
     def test_t1_replay_checks_full_profile_tail_not_last_fsync_marker(self):
         guest = (V2 / "fs-compare-guest").read_text()
 
