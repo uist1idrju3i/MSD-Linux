@@ -106,7 +106,7 @@ assert patch_inputs, "no QEMU source patches found"
 covered_inputs = {*inputs, *patch_inputs}
 
 dockerfile = (root / "docker/msd-dev.Dockerfile").read_text()
-assert "ARG QEMU_VERSION=11.1.2" in dockerfile
+assert "ARG QEMU_VERSION=11.1.3" in dockerfile
 assert "/opt/qemu/bin/qemu-system-aarch64 -machine help" in dockerfile
 assert "raspi3ap" in dockerfile and "raspi3b" in dockerfile
 assert "libinsn.so" in dockerfile or "libhotblocks.so" in dockerfile
@@ -373,7 +373,7 @@ if [[ -n "${MSD_DEV_QEMU_IMAGE:-}" ]]; then
         docker run --rm --entrypoint qemu-system-aarch64 \
             "${MSD_DEV_QEMU_IMAGE}" --version
     )"
-    [[ "${version_output}" == *"QEMU emulator version 11.1.2"* ]]
+    [[ "${version_output}" == *"QEMU emulator version 11.1.3"* ]]
     machine_output="$(
         docker run --rm --entrypoint qemu-system-aarch64 \
             "${MSD_DEV_QEMU_IMAGE}" -machine help
@@ -384,6 +384,6 @@ if [[ -n "${MSD_DEV_QEMU_IMAGE:-}" ]]; then
         'test -s /opt/qemu/lib/qemu-plugins/libinsn.so || test -s /opt/qemu/lib/qemu-plugins/libhotblocks.so'
     docker run --rm --entrypoint /bin/bash "${MSD_DEV_QEMU_IMAGE}" -euc \
         'qemu-img create -f raw /tmp/msd-dev-smoke.img 1M && qemu-img info /tmp/msd-dev-smoke.img >/dev/null'
-    printf 'ok - QEMU 11.1.2, machines, plugins, and qemu-img work in %s\n' \
+    printf 'ok - QEMU 11.1.3, machines, plugins, and qemu-img work in %s\n' \
         "${MSD_DEV_QEMU_IMAGE}"
 fi

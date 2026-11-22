@@ -17,6 +17,7 @@
 
 ### 変更
 
+- 依存を最新へ更新しました。Buildrootは2026.08系の最新、m5stackのdevice tree overlayはbattery gaugeの補正、推敲toolのyomiyasuはv3.2.3、kernelはrpi-6.18.y系列の最新（linux-stable 6.18.64相当を含む）へ更新します。kernelのlicense hashに変更はありません。開発用imageはGo 1.27.4・Trivy 0.76.2・QEMU 11.1.3・Debian snapshot 20261121T225354Zに更新します。
 - 製品の既定timezoneをAsia/Tokyoにし、tzdataのasiaを収録します。log・cache・一時fileのRAM配置を棚卸しし、QEMUの起動直後に残る永続書き込みと判断待ちを台帳に記録しました。
 - Buildrootを現行のbuild基盤とし、Yoctoへの移行を見送りました。
 - CIの文書検査と開発用imageの構築・検査を改善しました。
