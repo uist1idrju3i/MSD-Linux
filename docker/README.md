@@ -10,7 +10,7 @@ actionlintは、配布binaryに含まれるGo標準ライブラリーの版も�
 
 Debian trixie-slim を使います。Buildroot 自身の CI が Debian を使うこと、slim 版で不要なパッケージを減らせることが理由です。apt の参照先は snapshot 日時で固定します。Alpine は Bootlin toolchain が glibc バイナリーのため使わず、Arch Linux は arm64 イメージがないため対象外です。
 
-QEMU 11.1.2 は署名付きソースからビルドします。`docker/qemu-signing-key.asc` の鍵指紋と tarball の署名をビルド時に検証し、`docker/qemu-patches/` のパッチを適用します。ASB 領域へのパッチにより、512 MiB の `raspi3ap` でも起動可能です。パッチの理由と上流への提出状況は `docker/qemu-patches/README.md` を参照してください。
+QEMU 11.1.3 は署名付きソースからビルドします。`docker/qemu-signing-key.asc` の鍵指紋と tarball の署名をビルド時に検証し、`docker/qemu-patches/` のパッチを適用します。ASB 領域へのパッチにより、512 MiB の `raspi3ap` でも起動可能です。パッチの理由と上流への提出状況は `docker/qemu-patches/README.md` を参照してください。
 
 ## ビルドと実行
 
@@ -97,6 +97,8 @@ commit `e9b3b3f` のツリーを変更せずに、Docker Buildx plugin がない
 `docker/msd-dev.Dockerfile` の `DEBIAN_SNAPSHOT` を更新するときは、snapshot.debian.org に存在する日時を選びます。固定版の更新確認では、snapshot の日時が 30 日を超えると更新ありとして通知します。
 
 2026-11-12の更新では、apt 3.0.4とzlibの`+deb13u1`を両CPUで初めて収録した`20261107T075304Z`を選びました。QEMU builderと最終stageの両方を更新し、固定baseに残るaptもsnapshotから更新するためinstall対象に明示します。全packageのupgradeは行いません。[実験記録](../docs/experiments/2026-11-12-dev-image-snapshot.md)に全APT差分、変更履歴、署名付きindex、旧新のgate結果と未確認範囲を残します。監視はDockerfileから日付を読む既存方式を維持し、30日以内でも脆弱性がないとは扱いません。
+
+2026-11-22の更新では、base imageの`libssl3t64 3.5.9-1~deb13u1`に対応する`libssl-dev`を収録するため、debian側の最新snapshot `20261121T225354Z`を選びました。debian-security側は同日時以前の最新へリダイレクトされるため、この日時で両archiveが解決します。base imageの更新で既存packageの版が上がったとき、pinのsnapshotのdev packageがbaseより古くて依存が不成立になることがあるため、snapshotはbase内のpackage版に追従させます。
 
 QEMU を更新するときは、`QEMU_VERSION`、`QEMU_SHA256` と署名鍵の指紋を合わせて変更し、`docker/qemu-patches/README.md` の一覧と上流への提出状況も併せて更新してください。上流の最新安定版との差は固定版の更新確認で調べます。
 ベースイメージの digest を変えるときは、`docker buildx imagetools inspect debian:trixie-slim` の結果と照合してください。

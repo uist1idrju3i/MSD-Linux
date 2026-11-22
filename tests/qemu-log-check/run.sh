@@ -89,7 +89,7 @@ if ! printf '%s\n' "$output" | grep -Fq 'Internal error: Oops'; then
 fi
 
 printf '%s\n' \
-	'run-qemu: version=QEMU emulator version 11.1.2' \
+	'run-qemu: version=QEMU emulator version 11.1.3' \
 	'run-qemu: machine=raspi3ap memory=512M icount=off' \
 	'run-qemu: sha256 7509e4fb7f5b6145c903909d82fb0d45e6e65e95303821c326eba5bf4b408a14  /work/output/qemu-powerfail/powerfail-raspi3ap.dtb' >"$LOG_FILE"
 if ! output="$("$CHECKER" "$LOG_FILE" 2>&1)"; then
