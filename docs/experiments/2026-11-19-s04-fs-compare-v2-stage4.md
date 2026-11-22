@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは初期10/851件が成功し、backgroundで継続中。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは20/851件成功後、21件目の`E2/T1-negative-final`で停止した。判定修正後は新しい出力先で851件を最初から再実行する方針で、再実行は未実施。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -189,4 +189,51 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py s
 
 通常T1は`full`ではなく`t1-reduced`を使うため、W3の上限は1000ではなく250件である。writerと同じprofile選択関数から実効record数を取得し、replayのtail上限へ渡すよう修正した。250件は受理し251件は拒否、smokeは51件を受理し52件を拒否する。fullの1000件も維持する。
 
-修正は別worktreeで行った。実行中の全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、実行中のprobeと後続probeへこの修正を適用していない。
+修正は別worktreeで行った。当時実行中だった全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、この全smokeのprobeへ修正を適用しなかった。その後の停止は次節に記録する。
+
+### 全smokeのnegative-final停止と判定修正
+
+再診断04後の全smokeは20件を完了し、21件目の`E2/T1-negative-final`で
+`t1_negative_final_checker_validation_failed`となって停止した。
+driverの末尾も`smoke failed: E2/T1-negative-final; main run not started`である。
+E2はext4の`data=journal`で、最終replayではmountとfsckが成功し、
+W1の2 fileがともに残って`manifest=yes`だった。
+従来の「中間13点のうち9点では欠損した」という値は、対応する試行とlogを
+特定できていないため未確認とする。`T1-negative-final`のreplayは最終点だけを
+検査するので、この値を21件目の観測値として扱わない。
+この停止と値は旧判定器の履歴として保持し、成功へ書き換えない。
+
+原因はguestの最終点のguardが`manifest=no`を要求し、末尾のguardも
+`loss_points > 0`を要求していたことにある。fsyncなしの書き込みが残ることは
+正当な結果であり、必ず失われるという前提ではcheckerを検証できない。
+stage4とpreflightはguestの失敗を受けて停止しており、自然な欠損を要求する
+この2つのguardはともにguest内にあった。
+
+修正後も`manifest=yes/no`と`loss_points`は観測値のまま記録する。
+負の対照は期待manifestのうち回復filesystemにfileが存在する行を
+workloadを問わず別fileへコピーし、期待hashの先頭1桁を
+意図的に変更して同じcheckerへ渡す。回復filesystemと元manifestは変更しない。
+空の期待集合や全file欠損だけではhash不一致の検出を証明できないため、
+少なくとも1件のhash不一致を検出した場合だけ負の対照を成功とする。
+負の対照ではW2の先行更新やW3の追記を許容する判定を使わず、
+改変hashとの不一致を検出する。期待fileが1件も存在しない場合は
+`t1_negative_control_no_present_file`をconsoleへ記録して失敗する。
+negative-finalの合格条件はmount成功、fsck成功、この負の対照の成功の3つとする。
+自然な欠損の有無は合否に使わない。
+`T1_MANIFEST_FAIL`の診断には`context=recovery`または
+`context=negative_control`を付け、自然な不一致と意図的なhash改変を区別する。
+どちらもreplay区間内ではhostの想定内診断として保存する。
+
+host回帰テストでは正常なmanifest、file欠損、空の期待集合、改変hashの検出、
+checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を検査する。
+これはcheckerの検査であり、QEMUや実機の電源断の再検証ではない。
+
+完了済み20 probeと失敗した21件目の記録は履歴として残す。
+修正で環境identityが変わるため、旧20件を引き継がず、新しい出力先で
+851 probeを最初から再実行する。今回の修正作業ではbuildもsmokeも開始しない。
+
+初回の修正では負の対照をW1だけから作っていたため、W1が全て失われた場合も
+誤って失敗していた。reviewでこの前提を指摘され、上記の存在するfileだけを
+使う方式へ修正した。W1欠損時にW2・W3・W4の各fileを使えること、
+W1が存在する場合、期待fileが全て欠損した場合の専用理由、
+checkerの検出失敗をhost回帰テストへ追加した。

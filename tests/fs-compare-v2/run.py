@@ -1183,6 +1183,102 @@ class Preflight(unittest.TestCase):
 
 
 class LightSmoke(unittest.TestCase):
+    def test_t1_negative_final_manifest_control(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+
+        def function(name, opening="{", closing="}"):
+            body = guest.split(f"\n{name}()\n{opening}\n", 1)[1].split(f"\n{closing}\n", 1)[0]
+            return f"{name}()\n{opening}\n{body}\n{closing}\n"
+
+        script = (function("check_manifest_at_point") + function("check_t1_manifest")
+                  + function("check_t1_negative_manifest", "(", ")")
+                  + function("validate_t1_negative_final")
+                  + '\nconsole() { echo "$*" >&2; }\n'
+                  + 'fail() { console "error=$*"; exit 1; }\n'
+                  + 'RUN_PATH=$1\nREPLAY_WORKLOAD_ROOT=$1\nTEST=T1-negative-final\n'
+                  + 'tab=$(printf "\\t")\n'
+                  + 'check_manifest_at_point 1 1 yes\n'
+                  + 'mount_ok=yes\nfsck_status=0\nnegative_control=no\n'
+                  + 'if [ "$2" = broken ]; then check_t1_manifest() { '
+                  + 'ack_count=1; manifest_ok=yes; manifest_hash_mismatch=no; }; fi\n'
+                  + 'negative_control=$(check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv")\n'
+                  + 'echo "control=$negative_control"\n'
+                  + 'validate_t1_negative_final\n')
+        digest = M.hashlib.sha256(b"data").hexdigest()
+        w1 = f"1\tW1/file\t{digest}\t0\t1\tw1\n"
+        no_present = "t1_negative_control_no_present_file"
+        for case, markers, files, manifest, control in [
+            ("normal", w1, {"W1/file": b"data"}, "yes", "yes"),
+            ("missing", w1, {}, "no", no_present),
+            ("empty", "", {}, "yes", no_present),
+            ("w1_lost_w2_present", w1 + f"2\tW2/target.dat\t{digest}\t1\t1\tw2\n",
+             {"W2/target.dat": b"data"}, "no", "yes"),
+            ("w1_lost_w3_present", w1 + f"2\tW3/append.log\t{digest}\t1\t1\tw3\n",
+             {"W3/append.log": b"data"}, "no", "yes"),
+            ("w1_lost_w4_present", w1 + f"2\tW4/file\t{digest}\t1\t1\tw4\n",
+             {"W4/file": b"data"}, "no", "yes"),
+            ("altered", f"1\tW1/file\t{'f' * 64}\t0\t1\tw1\n",
+             {"W1/file": b"data"}, "no", "yes"),
+            ("broken", w1, {"W1/file": b"data"}, "yes", "no"),
+        ]:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                for path, data in files.items():
+                    (directory / path).parent.mkdir(parents=True, exist_ok=True)
+                    (directory / path).write_bytes(data)
+                (directory / "T1-markers.tsv").write_text(markers)
+                result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary, case],
+                                        text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0 if control == "yes" else 1, result.stderr)
+                self.assertIn(f"\t{manifest}\t", result.stdout)
+                self.assertIn(f"control={control}", result.stdout)
+                self.assertEqual((directory / "T1-markers.tsv").read_text(), markers)
+                for path, data in files.items():
+                    self.assertEqual((directory / path).read_bytes(), data)
+                control_rows = (directory / "T1-negative-expected.tsv").read_text()
+                for row in control_rows.splitlines():
+                    self.assertIn(row.split("\t")[0], files)
+                if control == no_present:
+                    self.assertIn("error=" + no_present, result.stderr)
+                    self.assertEqual(control_rows, "")
+                if case == "normal":
+                    self.assertIn("reason=hash_mismatch", result.stderr)
+                    self.assertNotIn("context=recovery", result.stderr)
+                    self.assertIn(digest, (directory / "T1-expected.tsv").read_text())
+                    self.assertNotIn(digest, (directory / "T1-negative-expected.tsv").read_text())
+                diagnostics = [line for line in result.stderr.splitlines()
+                               if line.startswith("T1_MANIFEST_FAIL")]
+                recovery = [line for line in diagnostics if "context=recovery " in line]
+                controls = [line for line in diagnostics if "context=negative_control " in line]
+                self.assertEqual(len(diagnostics), len(recovery) + len(controls))
+                self.assertEqual(bool(recovery), manifest == "no")
+                self.assertEqual(bool(controls), control == "yes")
+                log = directory / "qemu-run.log"
+                log.write_text("msd.fscmp: expected_errors_begin kind=T1_replay\n"
+                               + "".join(f"msd.fscmp: {line}\n" for line in diagnostics)
+                               + "msd.fscmp: expected_errors_end kind=T1_replay\n")
+                records = M.aggregate_errors([("run", log)], "T1-negative-final")
+                self.assertEqual(len(records), len(diagnostics))
+                self.assertTrue(all(row["expected"] for row in records))
+                self.assertEqual([row["text"] for row in records],
+                                 [f"msd.fscmp: {line}" for line in diagnostics])
+
+    def test_t1_negative_final_guard(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+        body = guest.split("\nvalidate_t1_negative_final()\n{\n", 1)[1].split("\n}\n", 1)[0]
+        for mount, fsck, control, expected in [
+            ("yes", "0", "yes", 0), ("no", "0", "yes", 1),
+            ("yes", "4", "yes", 1), ("yes", "0", "no", 1),
+            ("yes", "0", "t1_negative_control_no_present_file", 1),
+        ]:
+            with self.subTest(mount=mount, fsck=fsck, control=control):
+                result = subprocess.run(["sh", "-eu", "-c",
+                                         'fail() { echo "error=$*"; exit 1; }\n'
+                                         + 'mount_ok=$1; fsck_status=$2; negative_control=$3\n' + body,
+                                         "fixture", mount, fsck, control], capture_output=True)
+                self.assertEqual(result.returncode, expected)
+        self.assertNotIn('t1_negative_control_loss_not_detected', guest)
+
     def test_t1_replay_checks_full_profile_tail_not_last_fsync_marker(self):
         guest = (V2 / "fs-compare-guest").read_text()
 
