@@ -1,0 +1,114 @@
+{
+  "selected_file_count": 487,
+  "redactions": [
+    {
+      "path": "build-01/step-1.log",
+      "original_sha256": "6e5808da6d56d244068ea128a98ce6b6ec2dd9de7e083745c3435ed7ea9d3adb",
+      "archived_sha256": "5d40baf0e2534e70b1be8361bf35cf3e6239c1eb86c0eb531cd673261b3a9e34"
+    }
+  ],
+  "excluded_public_binary_files": [
+    {
+      "path": "http-01/ca.srl",
+      "size": 41,
+      "sha256": "75b02e02493cf64a07152d67f309da476b8c014058d59f7de33154f9da5b41cd"
+    },
+    {
+      "path": "http-01/content/boot.img",
+      "size": 262144,
+      "sha256": "712968578e191c026d48f1bb077b103ee1f7f361c88f84dc358a44e9cc775c8a"
+    },
+    {
+      "path": "http-01/content/rootfs.img",
+      "size": 524288,
+      "sha256": "bcdb3267f73de6dd30b7325fa48da6b9b47da468ca1631fd8c56c31883334cf7"
+    },
+    {
+      "path": "http-01/slots/autoboot.txt",
+      "size": 14,
+      "sha256": "78f7cfec028ef74aa048a80e4499bbc8c6ca66b2fab19e984f75eea5a8c31a03"
+    },
+    {
+      "path": "http-01/slots/boot-a",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-01/slots/boot-b",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-01/slots/bootstate",
+      "size": 14,
+      "sha256": "78f7cfec028ef74aa048a80e4499bbc8c6ca66b2fab19e984f75eea5a8c31a03"
+    },
+    {
+      "path": "http-01/slots/root-a",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-01/slots/root-b",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-01/test.raucb",
+      "size": 808843,
+      "sha256": "45392fa48b47cd21858e58b0631593dd25c39bb07a6174e4b420ba448c1572cd"
+    },
+    {
+      "path": "http-02/ca.srl",
+      "size": 41,
+      "sha256": "f8866aa24519a1931c54722a46cd99fa9fa254e6c9d5996aab5b920a1457b8ff"
+    },
+    {
+      "path": "http-02/content/boot.img",
+      "size": 262144,
+      "sha256": "712968578e191c026d48f1bb077b103ee1f7f361c88f84dc358a44e9cc775c8a"
+    },
+    {
+      "path": "http-02/content/rootfs.img",
+      "size": 524288,
+      "sha256": "bcdb3267f73de6dd30b7325fa48da6b9b47da468ca1631fd8c56c31883334cf7"
+    },
+    {
+      "path": "http-02/slots/autoboot.txt",
+      "size": 14,
+      "sha256": "78f7cfec028ef74aa048a80e4499bbc8c6ca66b2fab19e984f75eea5a8c31a03"
+    },
+    {
+      "path": "http-02/slots/boot-a",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-02/slots/boot-b",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-02/slots/bootstate",
+      "size": 14,
+      "sha256": "78f7cfec028ef74aa048a80e4499bbc8c6ca66b2fab19e984f75eea5a8c31a03"
+    },
+    {
+      "path": "http-02/slots/root-a",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-02/slots/root-b",
+      "size": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+    },
+    {
+      "path": "http-02/test.raucb",
+      "size": 808843,
+      "sha256": "36d734458716681c3603838e34fe8f155703ccc78c3bab3915ff8079124bfb4b"
+    }
+  ],
+  "private_keys": "private directories entirely excluded, no key bytes or hashes recorded",
+  "archive_sha256": "3cd96166937b313499f1b2882c6f8f10a8f5967aecb3ae1320ef3bc93e898a42"
+}

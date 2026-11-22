@@ -1,5 +1,8 @@
 # /data file system比較実験の生データ
 
+2026-11-23のRAUC streaming Phase Aのtext証拠は、
+[RAUCの証拠](rauc/README.md)にあります。失敗した初回runも保持しています。
+
 二セッション監査で見つかった未保全textと監査・復元資料は、[追加保全](sessions-2026-11-15/README.md)にあります。raw event dumpと画像本体は含めていません。
 
 2026-11-15の/data初回書き込み帰属とzram =y/=m起動時間の保全は、[セッションの証拠](session-2026-11-15/evidence/README.md)にあります。fs-compare matrix `e34-2026-11-15`は `fs-compare/e34-matrix` に追加済みです。[実行入力と再集計の追補](fs-compare/e34-provenance/README.md)にはdirty差分、4中断attempt、元集計commandと可搬な監査用集計器を保存しています。
