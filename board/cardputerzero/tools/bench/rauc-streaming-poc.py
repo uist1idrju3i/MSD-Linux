@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 
 
 SCENARIOS = ("range", "redirect", "ignore-range", "expire-bytes", "expire-time",
-             "rate-once", "rate-always", "drop-once", "drop-always", "bad-ca")
+             "rate-once", "rate-always", "drop-once", "drop-always", "bad-ca", "range-aa")
 
 
 def digest(path):
@@ -186,14 +186,14 @@ def prepare(host, run, env):
     return bundle, conf, slots
 
 
-def execute(host, run, repeats):
+def execute(host, run, repeats, scenarios):
     env = dict(os.environ, PATH=f"{host}/bin:{host}/sbin:" + os.environ["PATH"],
                RAUC_CURL_VERBOSE="1")
     bundle, conf, slots = prepare(host, run, env)
     before = {p.name: digest(p) for p in slots.iterdir()}
     records = []
     payload = bundle.read_bytes()
-    for scenario in SCENARIOS + ("range-aa",):
+    for scenario in scenarios:
         for repetition in range(1, repeats + 1):
             case = "range" if scenario == "range-aa" else scenario
             directory = run / f"{scenario}-{repetition:02}"
@@ -255,21 +255,25 @@ def execute(host, run, repeats):
         "rauc_version": subprocess.check_output([str(host / "bin/rauc"), "--version"], text=True).strip(),
         "rauc_sha256": digest(host / "bin/rauc"), "bundle_sha256": digest(bundle),
         "script_sha256": digest(Path(__file__)), "file_slot_limits": "info only, no install",
-        "private_keys_excluded_from_evidence": True, "repetitions": repeats}
+        "private_keys_excluded_from_evidence": True, "repetitions": repeats,
+        "scenarios": scenarios}
     (run / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     return records
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", type=Path, required=True)
     parser.add_argument("--run", type=Path, required=True)
     parser.add_argument("--repetitions", type=int, default=5)
-    args = parser.parse_args()
+    parser.add_argument("--scenarios", nargs="+", choices=SCENARIOS, default=SCENARIOS,
+                        help="conditions to run (default: all)")
+    args = parser.parse_args(argv)
     if args.repetitions < 1:
         parser.error("--repetitions must be positive")
     args.run.mkdir(parents=True, exist_ok=False)
-    execute(args.host.resolve(), args.run.resolve(), args.repetitions)
+    execute(args.host.resolve(), args.run.resolve(), args.repetitions,
+            tuple(dict.fromkeys(args.scenarios)))
 
 
 if __name__ == "__main__":

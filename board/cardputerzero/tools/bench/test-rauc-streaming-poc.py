@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Check the fault server and signed-URL redaction without building RAUC."""
 
+from contextlib import redirect_stderr
 import http.client
 import importlib.util
+import io
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import threading
 import unittest
+from unittest.mock import patch
 
 
 def module(name, filename):
@@ -57,6 +61,36 @@ class ServerTest(unittest.TestCase):
         self.assertIn("se=2026-11-23", result)
         self.assertNotIn("secret", result)
         self.assertNotIn("token", result)
+
+
+class CliTest(unittest.TestCase):
+    def test_selected_scenarios_and_repetitions_reach_execute(self):
+        cases = (
+            ([], 5, POC.SCENARIOS),
+            (["--scenarios", "redirect", "--repetitions", "1"], 1, ("redirect",)),
+            (["--scenarios", "range", "drop-once", "range", "--repetitions", "2"],
+             2, ("range", "drop-once")),
+        )
+        for options, repetitions, scenarios in cases:
+            with self.subTest(options=options), TemporaryDirectory() as temporary:
+                host = Path(temporary) / "host"
+                run = Path(temporary) / "run"
+                with patch.object(POC, "execute") as execute:
+                    POC.main(["--host", str(host), "--run", str(run)] + options)
+                execute.assert_called_once_with(host.resolve(), run.resolve(),
+                                                repetitions, scenarios)
+
+    def test_invalid_selection_fails_before_creating_run(self):
+        for options in (["--scenarios"], ["--scenarios", "unknown"],
+                        ["--repetitions", "0"]):
+            with self.subTest(options=options), TemporaryDirectory() as temporary:
+                run = Path(temporary) / "run"
+                with patch.object(POC, "execute") as execute, redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as error:
+                        POC.main(["--host", temporary, "--run", str(run)] + options)
+                self.assertEqual(error.exception.code, 2)
+                execute.assert_not_called()
+                self.assertFalse(run.exists())
 
 
 if __name__ == "__main__":

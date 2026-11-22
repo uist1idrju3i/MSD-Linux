@@ -78,6 +78,22 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/rauc-github-observe.py \
   --tag v0.0.0 --output output-rauc-poc-evidence/github-new.json
 ```
 
+条件選択のCLIはreview後に追加した。`--scenarios`に1個以上の条件名を渡す。
+省略時はA/Aを含む全11条件、`--repetitions`省略時は各5回を実行する。
+未知の条件名、値のない`--scenarios`、1未満の反復数は実行前に拒否する。
+同じ条件を重複指定した場合は最初の指定だけを残す。
+たとえばredirectとRange拒否だけを各5回調べる場合は次のとおり。
+
+```sh
+MSD_DEV_ROOTLESS=0 docker/msd-dev python3 board/cardputerzero/tools/bench/rauc-streaming-poc.py \
+  --host output-rauc-poc/host --run output-rauc-poc-evidence/http-selected \
+  --scenarios redirect ignore-range --repetitions 5
+```
+
+条件名の一覧は`--help`で確認でき、選択した条件を`metadata.json`にも記録する。
+保存済みの`http-01`・`http-02`はCLI追加前の全条件runであり、
+その結果・runner hash・生logは変更していない。このCLI追加後の測定は未実施。
+
 今回のDockerはrootlessだった。既定のcontainer内uid 0からは、
 RAUCのsandbox用setgroups・setuidに必要なcapabilityがない。
 そこでHTTP試験はwrapperの`MSD_DEV_ROOTLESS=0`でuid/gid 1001を使った。
