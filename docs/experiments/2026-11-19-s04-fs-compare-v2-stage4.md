@@ -263,10 +263,15 @@ stage4のQEMUの版とhashは再構築imageと一致している。
 
 ### 証拠の保存状況
 
-この3試行の生logとJSONはリポジトリにもdata branchにも未収録である。
-既存の証拠archiveには含まれず、取得可能なリポジトリ内の参照先はない。
-外部保管した証拠の識別名は次のとおり。ここでは要約と
-[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)に生の秒数を残す。
+この3試行のtext証拠はorphan branch `data/fs-compare-experiments`の
+commit `e3d073d42822535330ec08d3dc112e5abd859d67`に保存した。
+配置は`fs-compare/stage4-rerun-b242681-01-03.tar.zst`、
+memberごとのhashは同名の`.files.sha256`、選別・除外・加工の記録は
+同名の`.selection.json`である。
+[保管branchの案内](https://github.com/uist1idrju3i/MSD-Linux/blob/e3d073d42822535330ec08d3dc112e5abd859d67/README.md)にも対象を記した。
+既存の古い証拠archiveには追加していない。
+保管した証拠の識別名は次のとおり。要約と
+[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)には生の秒数を残す。
 
 - 01: `attempt-01-failure.md`、`build.log`、`build-host-result.json`、
   `failed-rerun-b242681-01`。旧worktreeは証拠を保存した後に削除した。
@@ -277,6 +282,66 @@ stage4のQEMUの版とhashは再構築imageと一致している。
   `qemu-verify-03.json`、`build-03-host-result.json`、
   `representative-03.log`、`rerun-b242681-03`。
   `rerun-03-copy-manifest.json`で1795 fileのsize・hashを照合した。
+
+archiveはlog、結果JSON、manifest、診断JSON、実行scriptなどの
+text 682 fileを含む。image・binaryなど2736 fileは含めず、
+除外したpath・size・hashを`.selection.json`に残した。
+試行02のbuild log 1 fileは署名付きdownload URLのqueryだけを保管用の写しで伏せた。
+その変更前後のhashも同JSONに残し、元logと他のmemberは変更していない。
+旧copy manifestは元の保存物全体のhash、`.files.sha256`は今回公開した
+memberのhashであり、対象が異なる。push後にremoteからcommitを取得し、
+archiveと全682 memberのhashを照合した。
+
+### data branchからの取得と読取り専用の再分類
+
+リポジトリの最上位で次を実行する。`zstd`、`tar`、`sha256sum`が必要である。
+`evidence-b242681-01-03`は新しい保存先とし、既存の証拠を上書きしない。
+data branchをmergeしたり、実行中のcloneを変更したりする必要はない。
+
+```sh
+git fetch origin data/fs-compare-experiments
+data_sha=e3d073d42822535330ec08d3dc112e5abd859d67
+mkdir evidence-b242681-01-03
+git archive "$data_sha" fs-compare/stage4-rerun-b242681-01-03.tar.zst \
+  fs-compare/stage4-rerun-b242681-01-03.files.sha256 \
+  fs-compare/stage4-rerun-b242681-01-03.selection.json fs-compare/SHA256SUMS |
+  tar -xf - -C evidence-b242681-01-03
+cd evidence-b242681-01-03
+grep '  stage4-rerun-b242681-01-03\.' fs-compare/SHA256SUMS |
+  (cd fs-compare && sha256sum -c -)
+zstd -dc fs-compare/stage4-rerun-b242681-01-03.tar.zst | tar -xf -
+sha256sum -c fs-compare/stage4-rerun-b242681-01-03.files.sha256
+cd ..
+```
+
+次の再分類では、修正commitの判定器と規則を新しい証拠directoryへ取り出す。
+原log・結果JSONへ書き込まずに実行し、fatal 0件と前後のhash一致を要求する。
+失敗した試行を成功へ書き換える操作ではない。
+
+```sh
+judge_sha=1dc14a323f4387503a04691838431b741bf97e9f
+bench=board/cardputerzero/tools/bench/fs-compare-v2
+git show "$judge_sha:$bench/supervisor.py" > evidence-b242681-01-03/supervisor.py
+git show "$judge_sha:$bench/boot-diagnostics.json" > evidence-b242681-01-03/boot-diagnostics.json
+python3 - <<'PY'
+import hashlib
+import importlib.util
+from pathlib import Path
+
+root = Path("evidence-b242681-01-03")
+spec = importlib.util.spec_from_file_location("supervisor", root / "supervisor.py")
+judge = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(judge)
+log = root / "rerun-b242681-03/representative/03-E1-T1/probe-E1-T1/qemu-run.log"
+before = hashlib.sha256(log.read_bytes()).hexdigest()
+records = judge.aggregate_errors([("run", log)], "T1")
+fatal = sum(not row["expected"] for row in records)
+assert before == hashlib.sha256(log.read_bytes()).hexdigest()
+assert before == "1ae02dbeda610a19d3dcd56a30f20cd746ca9d0dfa2a1724bfcd9b20340a2430"
+print(f"records={len(records)} fatal={fatal} SHA-256 unchanged")
+assert fatal == 0
+PY
+```
 
 試行03の`representative/03-E1-T1/probe-E1-T1/qemu-run.log`の
 SHA-256は`1ae02dbeda610a19d3dcd56a30f20cd746ca9d0dfa2a1724bfcd9b20340a2430`。
