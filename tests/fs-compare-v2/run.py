@@ -1243,8 +1243,25 @@ class LightSmoke(unittest.TestCase):
                     self.assertEqual(control_rows, "")
                 if case == "normal":
                     self.assertIn("reason=hash_mismatch", result.stderr)
+                    self.assertNotIn("context=recovery", result.stderr)
                     self.assertIn(digest, (directory / "T1-expected.tsv").read_text())
                     self.assertNotIn(digest, (directory / "T1-negative-expected.tsv").read_text())
+                diagnostics = [line for line in result.stderr.splitlines()
+                               if line.startswith("T1_MANIFEST_FAIL")]
+                recovery = [line for line in diagnostics if "context=recovery " in line]
+                controls = [line for line in diagnostics if "context=negative_control " in line]
+                self.assertEqual(len(diagnostics), len(recovery) + len(controls))
+                self.assertEqual(bool(recovery), manifest == "no")
+                self.assertEqual(bool(controls), control == "yes")
+                log = directory / "qemu-run.log"
+                log.write_text("msd.fscmp: expected_errors_begin kind=T1_replay\n"
+                               + "".join(f"msd.fscmp: {line}\n" for line in diagnostics)
+                               + "msd.fscmp: expected_errors_end kind=T1_replay\n")
+                records = M.aggregate_errors([("run", log)], "T1-negative-final")
+                self.assertEqual(len(records), len(diagnostics))
+                self.assertTrue(all(row["expected"] for row in records))
+                self.assertEqual([row["text"] for row in records],
+                                 [f"msd.fscmp: {line}" for line in diagnostics])
 
     def test_t1_negative_final_guard(self):
         guest = (V2 / "fs-compare-guest").read_text()

@@ -1081,7 +1081,7 @@ check_t1_manifest()
 			[ -n "$relative" ] || continue
 			if [ ! -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ]; then
 				manifest_ok=no
-				console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=missing marker=$marker marker_entry=$marker_entry"
+				console "T1_MANIFEST_FAIL context=${manifest_context:-recovery} entry=$point_entry path=$relative reason=missing marker=$marker marker_entry=$marker_entry"
 				continue
 			fi
 			actual="$(sha256sum "${REPLAY_WORKLOAD_ROOT}/${relative}" | awk '{ print $1 }')"
@@ -1100,13 +1100,13 @@ EOF
 							console "T1_MANIFEST_ADVANCE entry=$point_entry path=$relative expected_marker=$marker expected_marker_entry=$marker_entry matched_marker=$matched_marker matched_marker_entry=$matched_entry"
 						else
 							manifest_ok=no
-							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+							console "T1_MANIFEST_FAIL context=${manifest_context:-recovery} entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
 						fi
 					;;
 					W3/append.log:no)
 						if ! validate_w3_file "${REPLAY_WORKLOAD_ROOT}/${relative}" \
 							"$expected" "$marker"; then
-							console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry detail=$w3_validation_detail expected_prefix_sha256=$expected actual_prefix_sha256=${w3_actual_prefix_hash:-none}"
+							console "T1_MANIFEST_FAIL context=${manifest_context:-recovery} entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry detail=$w3_validation_detail expected_prefix_sha256=$expected actual_prefix_sha256=${w3_actual_prefix_hash:-none}"
 							manifest_ok=no
 						elif [ "$w3_tail_records" -gt 0 ]; then
 							console "T1_MANIFEST_TAIL entry=$point_entry path=$relative marker=$marker marker_entry=$marker_entry prefix_bytes=$w3_prefix_bytes tail_bytes=$w3_tail_bytes records=$w3_tail_records deterministic=yes"
@@ -1114,7 +1114,7 @@ EOF
 						;;
 					*)
 						manifest_ok=no
-						console "T1_MANIFEST_FAIL entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
+						console "T1_MANIFEST_FAIL context=${manifest_context:-recovery} entry=$point_entry path=$relative reason=hash_mismatch marker=$marker marker_entry=$marker_entry expected_sha256=$expected actual_sha256=$actual"
 						;;
 				esac
 			fi
@@ -1141,6 +1141,7 @@ check_t1_negative_manifest()
 		exit 0
 	fi
 	manifest_strict_hash=yes
+	manifest_context=negative_control
 	check_t1_manifest
 	if [ "$manifest_ok" = no ] && [ "$manifest_hash_mismatch" = yes ]; then
 		printf '%s\n' yes

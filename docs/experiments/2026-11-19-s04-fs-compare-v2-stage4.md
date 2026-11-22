@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは初期10/851件が成功し、backgroundで継続中。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは20/851件成功後、21件目の`E2/T1-negative-final`で停止した。判定修正後は新しい出力先で851件を最初から再実行する方針で、再実行は未実施。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -197,7 +197,10 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py s
 `t1_negative_final_checker_validation_failed`となって停止した。
 driverの末尾も`smoke failed: E2/T1-negative-final; main run not started`である。
 E2はext4の`data=journal`で、最終replayではmountとfsckが成功し、
-W1の2 fileがともに残って`manifest=yes`だった。中間13点のうち9点では欠損した。
+W1の2 fileがともに残って`manifest=yes`だった。
+従来の「中間13点のうち9点では欠損した」という値は、対応する試行とlogを
+特定できていないため未確認とする。`T1-negative-final`のreplayは最終点だけを
+検査するので、この値を21件目の観測値として扱わない。
 この停止と値は旧判定器の履歴として保持し、成功へ書き換えない。
 
 原因はguestの最終点のguardが`manifest=no`を要求し、末尾のguardも
@@ -217,6 +220,9 @@ workloadを問わず別fileへコピーし、期待hashの先頭1桁を
 `t1_negative_control_no_present_file`をconsoleへ記録して失敗する。
 negative-finalの合格条件はmount成功、fsck成功、この負の対照の成功の3つとする。
 自然な欠損の有無は合否に使わない。
+`T1_MANIFEST_FAIL`の診断には`context=recovery`または
+`context=negative_control`を付け、自然な不一致と意図的なhash改変を区別する。
+どちらもreplay区間内ではhostの想定内診断として保存する。
 
 host回帰テストでは正常なmanifest、file欠損、空の期待集合、改変hashの検出、
 checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を検査する。
