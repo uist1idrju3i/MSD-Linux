@@ -1227,6 +1227,8 @@ class LightSmoke(unittest.TestCase):
             body = guest.split(f"\n{name}()\n{opening}\n", 1)[1].split(f"\n{closing}\n", 1)[0]
             return f"{name}()\n{opening}\n{body}\n{closing}\n"
 
+        negative_dispatch = guest.split('\n\t\tnegative_control=no\n', 1)[1].split(
+            '\n\t\tif [ "$mount_ok" = yes ]; then', 1)[0]
         script = (function("check_manifest_at_point") + function("check_t1_manifest")
                   + function("check_t1_negative_manifest", "(", ")")
                   + function("validate_t1_negative_final")
@@ -1234,11 +1236,14 @@ class LightSmoke(unittest.TestCase):
                   + 'fail() { console "error=$*"; exit 1; }\n'
                   + 'RUN_PATH=$1\nREPLAY_WORKLOAD_ROOT=$1\nTEST=T1-negative-final\n'
                   + 'tab=$(printf "\\t")\n'
-                  + 'check_manifest_at_point 1 1 yes\n'
-                  + 'mount_ok=yes\nfsck_status=0\nnegative_control=no\n'
+                  + 'entry=147\nmanifest_limit=1\nmount_ok=yes\nfsck_status=0\n'
+                  + 'result="$(check_manifest_at_point "$entry" "$manifest_limit" "$mount_ok")"\n'
+                  + 'IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF\n$result\nEOF\n'
+                  + '[ "${point_entry+x}" != x ]\n'
+                  + 'printf "%s\\n" "$result"\n'
                   + 'if [ "$2" = broken ]; then check_t1_manifest() { '
                   + 'ack_count=1; manifest_ok=yes; manifest_hash_mismatch=no; }; fi\n'
-                  + 'negative_control=$(check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv")\n'
+                  + 'negative_control=no\n' + negative_dispatch + '\n'
                   + 'echo "control=$negative_control"\n'
                   + 'validate_t1_negative_final\n')
         digest = M.hashlib.sha256(b"data").hexdigest()
@@ -1290,6 +1295,7 @@ class LightSmoke(unittest.TestCase):
                 self.assertEqual(len(diagnostics), len(recovery) + len(controls))
                 self.assertEqual(bool(recovery), manifest == "no")
                 self.assertEqual(bool(controls), control == "yes")
+                self.assertTrue(all(" entry=147 " in line for line in diagnostics))
                 log = directory / "qemu-run.log"
                 log.write_text("msd.fscmp: expected_errors_begin kind=T1_replay\n"
                                + "".join(f"msd.fscmp: {line}\n" for line in diagnostics)
