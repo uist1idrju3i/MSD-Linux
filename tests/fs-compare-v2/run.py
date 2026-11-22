@@ -299,7 +299,7 @@ class Errors(unittest.TestCase):
                 self.assertFalse(self.boot_scan(row["text"])[0]["expected"])
                 self.assertFalse(self.boot_scan(row["text"], "host")[0]["expected"])
         for prefix in ("run-qemu: machine=raspi3b", "run-qemu: version=QEMU emulator version 11.1.3",
-                       "Linux version 6.18.59-v8", "Machine model: Raspberry Pi 3 Model B",
+                       "Linux version 6.18.64-v8", "Machine model: Raspberry Pi 3 Model B",
                        "msd.fscmp: SMOKE_PROFILE"):
             self.assertFalse(any(r["expected"] for r in self.boot_scan(text.replace(prefix, "unknown"))))
         line = next(r["text"] for r in expected if r["known_boot"] == "no-uefi")
