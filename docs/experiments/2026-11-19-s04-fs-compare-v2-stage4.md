@@ -189,7 +189,7 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/fs-compare-v2/stage4.py s
 
 通常T1は`full`ではなく`t1-reduced`を使うため、W3の上限は1000ではなく250件である。writerと同じprofile選択関数から実効record数を取得し、replayのtail上限へ渡すよう修正した。250件は受理し251件は拒否、smokeは51件を受理し52件を拒否する。fullの1000件も維持する。
 
-修正は別worktreeで行った。実行中の全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、実行中のprobeと後続probeへこの修正を適用していない。
+修正は別worktreeで行った。当時実行中だった全smokeは`098c7f5dda8c7e884fa94deec5bbb0f1eb76af24`のsourceを使い続け、元のworktreeに差分がないことを確認した。smokeの51件という上限は変わらず、この全smokeのprobeへ修正を適用しなかった。その後の停止は次節に記録する。
 
 ### 全smokeのnegative-final停止と判定修正
 
