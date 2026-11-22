@@ -22,19 +22,42 @@
 
 ## QEMU icount gate
 
-`board/cardputerzero/tools/compare-icount.sh` で `output/images/sdcard.img` の icount 起動（`shift=0,sleep=off`）の ready 実時間を比較。各 binary は `board/cardputerzero/tools/qemu-bisect/build-qemu.sh` で product パッチ込みで build したもの（11.1.2 は `msd-dev` image 同梱のもの）。
+`board/cardputerzero/tools/compare-icount.sh` で `output/images/sdcard.img` の icount 起動（`shift=0,sleep=off`）の ready 実時間を比較。各 binary は `board/cardputerzero/tools/qemu-bisect/build-qemu.sh` で product パッチ込みで build したもの（11.1.2 は `msd-dev` image 同梱のもの）。生の値は同名 CSV に記録。
 
 | 比較 | A | B | ready 実時間（A→B） | ratio | 判定 |
 |---|---|---|---|---|---|
 | 11.0.2 vs 11.1.3 | 11.0.2 | 11.1.3 | 19 s → 91 s | 4.79x | gate 不成立（1.5x 超過） |
 | 11.1.2 vs 11.1.3 | 11.1.2 | 11.1.3 | 90 s → 98 s | 1.09x | gate 成立 |
 
+入力 binary の SHA-256（`output/qemu-bisect/` 配下、`output/images/sdcard.img` は本 build の成果物）:
+
+- `qemu-11.0.2`: `bcb6d010f12fef5915d598f6b1339719ffe4d4bbe41c53e40ba0fb8d0854824e`
+- `qemu-11.1.2`: `20588f2f822018cda20745b72d9b060cc0f8febcc3df777ef7b91554a54f20b5`
+- `qemu-11.1.3`: `d120091d78c153427a0158a2664fee45a91d0dddcad7902c3c16d5288f9529a9`
+- `sdcard.img`: `b9a85c8e0ffaf3136c5a8b22985b465058cbcd0665fb67ec3c967828a27564bb`
+
 - 11.1.x 系が 11.0.2 比で遅いのは 2026-10-31 の bisect で判明済みの regression（01b223f895、A-profile WFE sleeping）。現行 image の 11.1.2 も同程度（90 s）で、この退行は 11.1.2 採用時点で受け入れ済み。
 - したがって patch 更新としての比較基準は現行 11.1.2 とし、1.09x で閾値内。QEMU は 11.1.3 に更新する。
 - QEMU 11.1.2..11.1.3 は 99 commits、icount 関連の修正は含まれない（changelog 確認）。
+
+## kernel .config の新旧差分
+
+旧版 `b3495ea` と新版 `a40f7353` の source をそれぞれ取得し、同一手順（`bcm2711_defconfig` → `linux.fragment` を merge_config で merge → `olddefconfig`）で `.config` を生成して比較した。差分は以下のみ。
+
+新規に `=m` となった上流の新 option（いずれも対応 hardware が CardputerZero に存在しないため module は load されない）:
+
+- `CONFIG_ADIN1110`（10BASE-T1L ethernet MAC-PHY）
+- `CONFIG_BMC150_MAGN` + `_I2C`（磁気 sensor）
+- `CONFIG_IIO_ST_LSM6DSX` + `_I2C` + `_SPI`（IMU）
+- `CONFIG_NFT_BRIDGE_META`、`CONFIG_NF_CONNTRACK_BRIDGE`（netfilter bridge）
+- `CONFIG_VIDEO_CCS_PLL`（camera sensor PLL）
+- `CONFIG_HAVE_EXIT_THREAD=y`（上流で追加された arch feature flag）
+
+上流で symbol が削除され消えた option: `CONFIG_SATA_INIC162X`、`CONFIG_TCG_ATMEL`。
+
+無効化・既定値変更で product に影響する差分はなく、追加は全て module で起動時に load されない。
 
 ## 未確認
 
 - 実機（LCD、keyboard、M5 I2C、firmware tryboot、電源断）は QEMU で確認できない。
 - m5stack dtoverlays の bq27220 gauge 変更（FCC 1350 mAh、raw FCC sysfs 停止など）は product の `bq27220_v5` overlay に影響するが、実機での確認は未実施。
-- kernel の `.config` の新旧完全 diff は未実施（fragment 検査で要求 490 項目のうち `NODES_SHIFT` のみ不一致であることは確認済み）。
