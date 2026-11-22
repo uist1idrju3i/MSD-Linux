@@ -23,6 +23,7 @@
 | group | 対象 |
 |---|---|
 | `phase0` | 第0段（計測器の検証、1回あたりの時間の測定） |
+| `stage4-rerun-b242681-01-03` | 第4段の再試行01〜03。固定commit `b242681202aa74ecaa04abb7874c904bc55b2b16`の失敗したbuild・代表診断のtext証拠682 file。image・binaryは除外し、対象外2736 fileのpath・size・hashを`.selection.json`に保存。build log 1 fileの署名付きdownload URLのqueryだけを保管用の写しで伏せ、変更前後のhashを同JSONに記録。元logと元の失敗判定は変更していない |
 | `phase1-pilot-and-fixes` | 第1段のpilot、最初の本番（`phase1-main`、T1判定器の修正前に中止）、T1判定器の修正と再確認、matrix driverの確認 |
 | `phase1-r2` | 第1段の本番（620行、622 attempt） |
 | `t2fix-check` | T2判定器（W2、W3、鍵fileの永続化）を直した後の確認 |
