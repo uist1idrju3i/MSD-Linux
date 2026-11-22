@@ -237,3 +237,73 @@ checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を�
 使う方式へ修正した。W1欠損時にW2・W3・W4の各fileを使えること、
 W1が存在する場合、期待fileが全て欠損した場合の専用理由、
 checkerの検出失敗をhost回帰テストへ追加した。
+
+## b242681での再試行01〜03: いずれも停止
+
+判定修正後の`b242681202aa74ecaa04abb7874c904bc55b2b16`にsourceを固定し、
+fresh build、既定の代表21件、単独の`E2/T1-negative-final`診断、
+全851件の順で実行する計画で再試行した。各試行は別の出力先を使った。
+3試行とも途中で失敗し、単独E2診断と全851件は未実施である。
+下表の成功件数は代表21件のうち実行できた件数だけを示す。
+旧20件や異なる試行の成功を引き継いでいない。
+
+| 試行 | build | 代表診断 | 停止理由 |
+|---|---|---|---|
+| 01 | 0.813036秒で失敗 | 0成功、21未実施 | worktreeのsubmoduleの相対Git参照がDocker内で解決できず、Buildrootのcommit取得で停止。compileと容量gateより前 |
+| 02 | 3567.344184秒で成功 | 0成功、1失敗、20未実施 | standalone cloneへ変更したが、既存の開発imageはQEMU 11.1.2。規則が要求する11.1.3と不一致で、既知boot診断17件をfatalと判定 |
+| 03 | 1442.812923秒で成功 | 2成功、1失敗、18未実施 | imageを再構築し11.1.3へ一致。E1/smokeのA/Aは成功したが、E1/T1の区間markerとkernel printkが連結して停止 |
+
+試行03のimage IDは
+`sha256:1aea11386e31cc82eff0807de3e372a0b4443c881f3bc3765a56810b32e2ca65`。
+QEMU binaryのSHA-256は
+`8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73`で、
+実binaryの版出力と`boot-diagnostics.json`はともに11.1.3だった。
+stage4はDocker image IDを記録しないため、外側の実行記録に保存した。
+stage4のQEMUの版とhashは再構築imageと一致している。
+
+### 証拠の保存状況
+
+この3試行の生logとJSONはリポジトリにもdata branchにも未収録である。
+既存の証拠archiveには含まれず、取得可能なリポジトリ内の参照先はない。
+外部保管した証拠の識別名は次のとおり。ここでは要約と
+[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)に生の秒数を残す。
+
+- 01: `attempt-01-failure.md`、`build.log`、`build-host-result.json`、
+  `failed-rerun-b242681-01`。旧worktreeは証拠を保存した後に削除した。
+- 02: `attempt-02-diagnosis.json`、`build-02-host-result.json`、
+  `representative-02.log`、`rerun-b242681-02`。
+  `rerun-02-copy-manifest.json`で1595 fileのsize・hashを照合した。
+- 03: `attempt-03-diagnosis.json`、`image-inspect-03.json`、
+  `qemu-verify-03.json`、`build-03-host-result.json`、
+  `representative-03.log`、`rerun-b242681-03`。
+  `rerun-03-copy-manifest.json`で1795 fileのsize・hashを照合した。
+
+試行03の`representative/03-E1-T1/probe-E1-T1/qemu-run.log`の
+SHA-256は`1ae02dbeda610a19d3dcd56a30f20cd746ca9d0dfa2a1724bfcd9b20340a2430`。
+500行目と505行目は次のとおり。
+
+```text
+msd.fscmp: expected_errors_begin kind=T1_replay[  276.732017] EXT4-fs (dm-1): recovery complete
+msd.fscmp: expected_errors_end kind=T1_replay
+```
+
+旧host判定器は開始kindを`T1_replay[`と読み、開始・終了をともに
+不正な区間として記録した。QEMU logのfatalは2件で、
+driver終了状態によるhost側のfatalを含めると3件だった。
+
+修正では[既存のserial断片分離](../../board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py)を
+この開始・終了markerにも適用する。markerを先に処理し、同じ行のtimestamp付き
+kernel断片を独立に判定する。未知のkind、区間外の診断、kernel panicは
+引き続き拒否する。[host回帰テスト](../../tests/fs-compare-v2/run.py)に
+上記の実測行と、連結した終了marker、T6、未知kind、誤ったphase、
+閉じていない区間、kernel fatalの検査を加えた。
+
+修正した判定器で試行03の元QEMU logを読み取り専用で再集計すると、
+診断は61件、fatalは0件だった。読取り前後のSHA-256は上記と一致し、
+原log、元の判定結果、凍結した実験sourceは変更していない。
+
+guestの`console()`は既に末尾改行付きの`printf`を使っている。
+先頭改行を加えてもmarkerの後ろへのprintk割り込みは防げない。
+storageへの`sync`もserialの排他にはならないため、guestは変更しない。
+この修正はhost判定器の検査であり、失敗した試行03を成功へ変更せず、
+QEMUや実機の電源断の再実行とも扱わない。
