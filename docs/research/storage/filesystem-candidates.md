@@ -12,7 +12,9 @@ formatter、filesystem feature、mount、checksum、LUKS2、dm-integrityの個�
 
 ## Linux 6.18 系 microSD 候補の比較
 
-fs-compare-v2の[第4段A](../../experiments/2026-11-19-s04-fs-compare-v2-stage4.md)は851 probeの経路確認用です。fresh build後、serial断片分離を修正し、A/A・負対照を含む代表21件の経路確認に成功しました。全smokeは20/851件が成功した後、21件目の`E2/T1-negative-final`で停止しました。判定修正後は旧20件を引き継がず、新しい出力先で851件を最初から再実行する方針です。全coverageは未完了です。短縮workloadを性能・durability・idle writeの新たな測定値として下表へ転用しません。
+fs-compare-v2の[第4段A](../../experiments/2026-11-19-s04-fs-compare-v2-stage4.md)は851 probeの経路確認用です。初回系列ではfresh buildとserial断片分離の修正後、A/A・負対照を含む代表21件の経路確認に成功しました。その後の試行04は、代表7件が成功した後、8件目の`E1/T1-negative-final`が`point_entry`未設定で停止し、単独E2診断と全smokeには進みませんでした。
+
+試行05は全smokeの1〜84件目が成功し、85件目の`F1/T1-negative-final`で停止しました。fsyncしていない通常fileが復旧時にすべて消え、改変した期待hashを照合する負対照の対象が無くなったためです。[PR #301](https://github.com/uist1idrju3i/MSD-Linux/pull/301)で負対照を同期済みsentinelへ固定し、sentinel自体の検証後に、改変した期待値の写しを判定器が拒否する形へ修正しました。[修正後の単独診断](../../experiments/2026-11-23-s04-fs-compare-v2-negative-sentinel.md)はF1・E1・E2で成功しました。修正後の全851件とmain runは未実施で、全coverageは未完了です。短縮workloadを性能・durability・idle writeの新たな測定値として下表へ転用しません。
 
 2026-11-15追記: [E34反復測定](../../experiments/2026-11-15-fs-compare-matrix.md)のQEMU条件では、F2FS F3系/P044のidle writeを反復し、btrfs B2/P097は各3回0でした。下表の機能比較へこの限定的な観測を補います。実機の耐久性・全構成の採否は確定しません。
 
