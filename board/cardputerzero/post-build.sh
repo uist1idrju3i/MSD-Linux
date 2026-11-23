@@ -93,6 +93,7 @@ for mountpoint in /proc /sys /run /tmp; do
 done
 
 python3 "$(dirname "$0")/tools/openssl-c1.py" "$target_dir/etc/ssl/openssl.cnf"
+python3 "$(dirname "$0")/tools/prune-libgomp.py" "$target_dir"
 
 keymap="$target_dir/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map"
 test -f "$keymap"

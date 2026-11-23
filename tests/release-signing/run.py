@@ -1,5 +1,6 @@
 """Exercise release signing with throwaway keys and adversarial archives."""
 
+import csv
 import hashlib
 import importlib.util
 import io
@@ -14,6 +15,7 @@ import tarfile
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -197,6 +199,129 @@ class ReleaseSigning(unittest.TestCase):
         for name in ("modules.dep", "modules.alias", "modules.symbols", "modules.builtin", "other.bin"):
             self.assertEqual((module_dir / name).read_text(), name)
         self.post_build()
+
+    def test_unused_libgomp_removed_and_unrelated_library_retained(self):
+        empty = self.work / "empty-target"
+        empty.mkdir()
+        command("python3", BOARD / "tools/prune-libgomp.py", empty)
+        command("python3", BOARD / "tools/prune-libgomp.py", self.work / "missing", ok=False)
+        self.fixture()
+        library = self.target / "usr/lib/libgomp.so.1.0.0"
+        put(library, b"\x7fELF libgomp.so.1\x00GOMP_parallel\x00")
+        (library.parent / "libgomp.so.1").symlink_to(library.name)
+        put(library.parent / "libstdc++.so.6", "preserve")
+        self.post_build()
+        self.assertFalse(list(library.parent.glob("libgomp.so*")))
+        self.assertEqual((library.parent / "libstdc++.so.6").read_text(), "preserve")
+        self.post_build()
+
+    def test_libgomp_consumers_refuse_removal(self):
+        self.fixture()
+        library = self.target / "usr/lib/libgomp.so.1.0.0"
+        put(library, b"\x7fELF libgomp.so.1")
+        consumer = self.target / "usr/bin/openmp-client"
+        for data in (b"\x7fELF DT_NEEDED libgomp.so.1", b'dlopen("libgomp.so.1")',
+                     b"\x7fELF\x00GOMP_parallel\x00"):
+            with self.subTest(data=data):
+                put(consumer, data)
+                command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)
+                self.assertTrue(library.exists())
+        consumer.unlink()
+        consumer.symlink_to("../lib/libgomp.so.1.0.0")
+        command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)
+        self.assertTrue(library.exists())
+
+    def test_libgomp_audit_requires_configured_tools(self):
+        spec = importlib.util.spec_from_file_location("libgomp_bench", BOARD / "tools/bench/libgomp.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        root = self.work / "audit-root"
+        root.mkdir()
+        config = self.work / "normalized.config"
+        config.write_text("")
+        self.assertEqual(bench.audit_configured(root, config)["elf"], {})
+        config.write_text("BR2_PACKAGE_BTRFS_PROGS=y\nBR2_PACKAGE_CRYPTSETUP=y\n")
+        with self.assertRaisesRegex(ValueError, "configured product ELF missing"):
+            bench.audit_configured(root, config)
+        legacy = bench.audit_configured(root, config, legacy_reference=True)
+        self.assertEqual(legacy["scope"], "legacy-reference")
+        self.assertEqual(legacy["missing_configured_tools"], ["usr/bin/btrfs", "usr/sbin/cryptsetup"])
+        for name in ("usr/bin/btrfs", "usr/sbin/cryptsetup"):
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(shutil.which("true"), path)
+        self.assertEqual(set(bench.audit_configured(root, config)["configured_tools"]),
+                         {"usr/bin/btrfs", "usr/sbin/cryptsetup"})
+        put(root / "usr/bin/consumer", "GOMP_parallel")
+        with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
+            bench.audit_configured(root, config)
+        with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
+            bench.audit_configured(root, config, legacy_reference=True)
+
+    def test_bench_hash_without_file_digest(self):
+        spec = importlib.util.spec_from_file_location("module_index", BOARD / "tools/bench/module-index.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        path = self.work / "hash-input"
+        with mock.patch.object(bench.hashlib, "file_digest", None, create=True):
+            for data in (b"", b"x" * (1024 * 1024 + 37)):
+                path.write_bytes(data)
+                self.assertEqual(bench.sha(path), hashlib.sha256(data).hexdigest())
+            with self.assertRaises(FileNotFoundError):
+                bench.sha(self.work / "missing")
+
+    def test_libgomp_csv_derivation_preserves_trials(self):
+        tool = BOARD / "tools/bench/libgomp-csv.py"
+        source, followup, output = (self.work / name for name in ("source.csv", "followup.csv", "out.csv"))
+        header = "kind,variant,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail\n"
+        original = (header + "pack,before,,10,4,,0,hash\npack,before-aa,,10,4,,0,hash\n"
+                    "negative,openmp,,,,,1,refused\nnot_run,product,,,,,,not executed\n")
+        template = (ROOT / ".agents/skills/experiment-record/assets/results-template.csv").read_text()
+        source.write_text(original)
+        followup.write_text(template + "followup,current,1,elf_count,2,count,true,scanned\n")
+        plan = self.work / "plan.json"
+        plan.write_text(json.dumps({"followup": 1}))
+        args = ("python3", tool, "--input", source, "--followup", followup,
+                "--followup-plan", plan,
+                "--out", output, "--run-prefix", "trial")
+        command(*args)
+        rows = list(csv.DictReader(io.StringIO(output.read_text())))
+        self.assertEqual(list(rows[0])[:8], template.strip().split(","))
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(len({r["run_id"] for r in rows}), 5)
+        self.assertEqual(rows[1]["repeat"], "2")
+        self.assertEqual((rows[2]["valid"], rows[2]["exit_code"]), ("true", "1"))
+        self.assertEqual((rows[3]["valid"], rows[3]["value"]), ("false", ""))
+        for old, new in zip(csv.DictReader(io.StringIO(original)), rows):
+            self.assertEqual(old, {key: new[key] for key in old})
+        previous = output.read_bytes()
+        command(*args, ok=False)
+        self.assertEqual(output.read_bytes(), previous)
+        output.unlink()
+        for bad in (header, "bad,columns\n"):
+            source.write_text(bad)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
+        source.write_text(original)
+        for bad in ("trial-pack-before-none,current,1,elf_count,2,count,true,duplicate\n",
+                    "followup,current,1,elf_count,nan,count,true,nonfinite\n"):
+            followup.write_text(template + bad)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
+
+        observed = template + "followup,current,1,elf_count,2,count,true,scanned\n"
+        for expected, data in (({"followup": 1}, template),
+                               ({"followup": 1, "followup-r2": 2}, observed),
+                               ({"followup": 2}, observed),
+                               ({"followup": 1}, template + "followup,current,1,exit_code,,status,false,missing\n")):
+            plan.write_text(json.dumps(expected))
+            followup.write_text(data)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
+        plan.write_text(json.dumps({"followup": 1}))
+        followup.write_text(template + "followup,current,1,exit_code,,status,false,not run: unavailable\n")
+        command(*args)
+        self.assertEqual(list(csv.DictReader(io.StringIO(output.read_text())))[-1]["valid"], "false")
 
     def test_binary_index_removal_refuses_non_busybox(self):
         self.fixture()

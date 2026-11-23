@@ -66,6 +66,32 @@ GCC実行ファイルの`-v`と、`-Q -Os -mcpu=cortex-a53 --help=common`、`war
 
 `-fhardened`のGCC 14.3の集合にはFortify、C++ assertions、自動変数のzero初期化、PIE、RELRO、SSP、stack clash対策が含まれる。`-fcf-protection=full`の追加はx86 GNU/Linuxに限られ、AArch64へ同じ効果を期待しない。既存のBuildroot hardeningを消して置き換える案ではない。
 
+## 未使用libgompの配送（2026-11-23）
+
+この節の基準は`f4e1f65`とBuildroot `bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`。
+SDKは同じBootlin 2025.08-1 / GCC 14.3.0を使い、更新していない。上流最新版の再調査やcompilerの全optionの再棚卸しではなく、targetへlibgompを配送する設定とcopy経路を対象とする。
+[容量とQEMUの実験記録](../../experiments/2026-11-23-libgomp-prune.md)に監査方法、数値、生証拠、未確認範囲をまとめた。
+
+| option・方法 | 意味・既定と固定版での動作 | 採否・理由 |
+|---|---|---|
+| `BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_AARCH64_GLIBC_STABLE` | 製品が明示選択。外部Bootlin SDKを使う | 維持。runtime削減のためにSDKとABIを交換しない |
+| `BR2_TOOLCHAIN_HAS_OPENMP` | 選択したSDKからselectされる能力。外部toolchain recipeは有効なら`libgomp.so.*`をtargetへcopy | 能力の記述は維持。Kconfigで無効を要求してもselectで戻り、SDKの機能を偽る手段にはしない |
+| `BR2_GCC_ENABLE_OPENMP` | 内部GCCのOpenMP buildとlibgomp配送を制御 | 今回は対象外。製品は内部GCCをbuildしないため、この値を変えても配送を止められない |
+| `BR2_TOOLCHAIN_EXTERNAL_OPENMP` | custom外部toolchainの能力申告 | 不採用。Bootlin presetからcustomへ変えて能力を偽る案は、今後のpackage判定と矛盾する |
+| `BR2_TOOLCHAIN_EXTRA_LIBS` | 既定は空。外部toolchainが追加でcopyするlibraryの指定 | 維持。追加用であり、libgompをcopy対象から除く設定ではない |
+| external post-build | 全通常fileの`libgomp`・`GOMP_`文字列と別名symlinkを調べ、参照があれば削除前に拒否 | 採用。利用者不在の製品だけから本体・配送用symlinkを削除し、SDKとstagingには触れない |
+| libgomp維持・LLVM libompへの置換・自作runtime | 維持は互換性を保つが未使用の容量を残す。置換は別のOpenMP実装を追加する | 今回は不採用。OpenMP機能を要求する製品packageがないため、別runtimeの導入や自作は不要 |
+
+関連する5つのKconfig tokenを表へ収録した。`TOOLCHAIN_EXTERNAL_LIBS`、`TOOLCHAIN_EXTERNAL_INSTALL_TARGET_LIBS`、`copy_toolchain_lib_root`はrecipe内部のcopy経路であり、製品向けの除外optionではない。
+`OMP_*`や`GOMP_*`環境変数はload済みruntimeの動作を変えるもので、未使用libraryの配送を抑止しないため、今回のoption照合の対象外とした。
+新しい設定を追加する案は採っておらず、compilerがOpenMPを扱えることと製品がruntimeを使うことを区別する。
+Buildroot recipeの広い文字列検索にはOpenMPTなど似た名前も含めたが、該当16 packageは現在の正規化設定ですべて無効だった。
+初回の旧構成imageの146 ELFにlibgompのDT_NEEDEDはなく、他fileのliteral参照と`GOMP_`もなかった。
+追試では現行構成のCI成果物184 ELFを調べ、btrfs・cryptsetupを含めて同じ参照がないことを確認した。現行構成の削除前imageとの比較は未実施である。
+実行時に名前を組み立てる未知のloaderや将来追加するpluginまで、不使用を証明したものではない。
+
+固定版の一次資料: [Bootlinのselect](https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/toolchain/toolchain-external/toolchain-external-bootlin/Config.in.options)、[外部toolchainのcopy](https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/toolchain/toolchain-external/pkg-toolchain-external.mk)、[内部GCCの配送](https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/gcc/gcc-final/gcc-final.mk)、[custom SDKの能力申告](https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/toolchain/toolchain-external/toolchain-external-custom/Config.in.options)。
+
 ## 一次資料
 
 - [固定Buildrootの設定定義](https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/Config.in)、[Makeの変数照会](https://github.com/buildroot/buildroot/blob/8b238854d909c9cce32ef9671d968b03e323b55d/Makefile)

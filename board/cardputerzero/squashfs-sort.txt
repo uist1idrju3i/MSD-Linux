@@ -137,7 +137,6 @@ sbin/dumpe2fs 1420
 sbin/e2freefrag 1430
 usr/lib/libcrypto.so.3 1440
 usr/lib/libext2fs.so.2.4 1450
-usr/lib/libgomp.so.1.0.0 1460
 usr/lib/gconv/EN300-468-TAB00.so 1470
 usr/lib/gconv/gconv-modules 1480
 usr/lib/libcom_err.so.2.1 1490
