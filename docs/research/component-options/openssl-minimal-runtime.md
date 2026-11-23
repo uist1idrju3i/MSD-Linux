@@ -1,40 +1,38 @@
-# openssl.cnfとARM最適化（未適用の草案）
+# openssl.cnfのC1採用とARM最適化
 
 [OpenSSL最小化の調査](openssl-minimal.md) / [component option索引](README.md)。一次資料の一覧は親文書を参照する。
 
-2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。同日DEFAULT groupsとML-KEMの維持を決定したため、下記の草案でもclassical groupsへ固定しない。[PQCの決定](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を参照する。この設定案は未適用であり、実機の互換性・速度・boot時間は未測定である。
+2026-11-13の[製品方針](../../design/product-decisions.md)ではlegacy EAP／TLS-PSK互換を維持せず、速度優先でasmを残す。CMSは標準更新frameworkの比較・移行まで維持し、CLIは`msd-update`存続中だけ維持する。移行後に`no-apps`を再検討する。同日DEFAULT groupsとML-KEMの維持を決定したため、C1でもclassical groupsへ固定しない。[PQCの決定](openssl-pqc-groups.md)と[容量・VM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md)を参照する。C1の適用処理は実装したが、ARM最適化と実機の互換性・速度・boot時間は未測定である。
 
-## openssl.cnf案
+## openssl.cnfの採用設定
 
-現在は上流example configで、`openssl_conf`、`config_diagnostics=1`、provider sectionはあるが、defaultの`activate`はcomment。TLSの`system_default`やMinProtocolは設定していない。legacy.soがrootfsに存在することは、自動load済みという証拠ではない。
+変更前の上流example configは`openssl_conf`、`config_diagnostics=1`、provider sectionがあり、defaultの`activate`はcommentだった。TLSの`system_default`やMinProtocolは未設定。既存の初期化・診断・CA/CSR節を保持し、post-buildでC1だけを追加する。legacy.soがrootfsに存在することは、自動load済みという証拠ではない。
 
-下記は**modern TLS／EAP-TLSに限定する場合の候補**。まだrootfs-overlayへ置かない。MinProtocolはTLS 1.2、最大版は固定しない。CipherStringはTLS 1.2以下、CiphersuitesはTLS 1.3で別に効く。SECLEVEL=2は対称暗号bit数の指定ではなく、鍵長・署名・DH等のsecurity callback方針である。
+2026-11-23に利用者がC1を選び、C2のAEAD限定を不採用とした。下記は採用設定の抜粋で、上流file全体をoverlayで置換しない。MinProtocolはTLS 1.2、最大版は固定しない。CipherStringはTLS 1.2以下、CiphersuitesはTLS 1.3で別に効く。SECLEVEL=2は対称暗号bit数の指定ではなく、鍵長・署名・DH等のsecurity callback方針である。
 
 ```ini
 openssl_conf = openssl_init
 config_diagnostics = 1
 
 [openssl_init]
-providers = providers
-ssl_conf = ssl_settings
+providers = provider_sect
+ssl_conf = msd_tls
 
-[providers]
-default = default_provider
+[provider_sect]
+default = default_sect
 
-[default_provider]
+[default_sect]
 activate = 1
 
-[ssl_settings]
-system_default = tls_policy
+[msd_tls]
+system_default = msd_tls_defaults
 
-[tls_policy]
+[msd_tls_defaults]
 MinProtocol = TLSv1.2
-CipherString = ECDHE+AESGCM:ECDHE+CHACHA20:!aNULL:!eNULL:!PSK:@SECLEVEL=2
-Ciphersuites = TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384
-Groups = DEFAULT
+CipherString = DEFAULT:@SECLEVEL=2
 ```
 
-TLS 1.2のCBC／static RSA key exchange等を除く案であり、実機での互換性は未確認。TLS-PSKを使うEAP methodは維持しない方針だが、TLS 1.3のPSKやresumptionまでCipherStringの`!PSK`で一括禁止できるとは扱わない。以前の草案の`Groups = X25519:P-256:P-384`は、DEFAULT維持の決定に合わないため採用しない。草案をDEFAULTへ揃えたことは、製品のopenssl.cnfを変更した意味ではない。
+TLS 1.2のCBCを一括排除しないC1であり、AEADだけにするC2とは区別する。TLS-PSKを使うEAP methodを維持しない方針は別で、C1による機能削除とは扱わない。Groupsは指定せずDEFAULTとML-KEMを維持し、TLS 1.3のCiphersuitesも固定しない。実機の互換性は未確認である。
 
 SignatureAlgorithmsとClientSignatureAlgorithmsは初期案では固定しない。ClientSignatureAlgorithmsはTLS 1.2/1.3のclient証明書認証用で、serverのCertificateRequestとclientの証明書署名選択に関わる。固定する場合はEd25519、ECDSA、RSA-PSSとchain署名の要件を試験し、古い相手へのSHA-1緩和をdefaultへ混ぜない。SECLEVELの閾値を下げて試験を通す変更は別の利用者判断とする。
 
@@ -44,11 +42,11 @@ SSL_CONFの`system_default`はSSL_CTX作成時の既定で、applicationが設�
 
 ## 設定だけのQEMU実験結果
 
-2026-11-18の[C0/C1/C2比較記録](../../experiments/2026-11-18-openssl-cnf.md)に条件・CSV・生logを保存した。各条件3回とC0のA/A反復によるQEMU限定の機能確認で、製品には適用していない。
+2026-11-18の[C0/C1/C2比較記録](../../experiments/2026-11-18-openssl-cnf.md)に条件・CSV・生logを保存した。各条件3回とC0のA/A反復によるQEMU限定の機能確認で、その時点では製品へ適用しなかった。
 
 C0もTLS 1.0/1.1を既に拒否しており、C1による新たな拒否効果は観測していない。TLS 1.2/1.3は全条件で成功し、TLS 1.2 CBCの対照はC0/C1が受理、C2だけが拒否した。Ed25519更新署名の正常受理・不正拒否、Argon2id/PBKDF2のLUKS2 format/open、署名付きmodule loadは全条件で成功した。module署名の検証主体はkernelである。
 
-cryptsetupはdefault/legacyを自らloadし、CLIのprovider一覧はdefaultだけだった。CA/CSR節は維持した。実機・外部接続先での互換性、速度、boot時間は未確認であり、製品への採用は別判断とする。
+cryptsetupはdefault/legacyを自らloadし、CLIのprovider一覧はdefaultだけだった。CA/CSR節は維持した。その後C1を採用し、[hostでの外部接続](../../experiments/2026-11-23-openssl-c1.md)も確認した。製品のCA配布と初期時刻、実機の互換性・速度・boot時間は未確認。製品build・A/B起動はCIへ残す。
 
 ## ARM専用最適化の判断
 

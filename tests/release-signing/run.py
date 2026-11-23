@@ -1,12 +1,15 @@
 """Exercise release signing with throwaway keys and adversarial archives."""
 
 import hashlib
+import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import textwrap
@@ -16,6 +19,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 SIGN = ROOT / ".github/scripts/sign-update-bundle.sh"
 BOARD = ROOT / "board/cardputerzero"
+CNF = ("openssl_conf = openssl_init\nconfig_diagnostics = 1\n"
+       "[openssl_init]\nproviders = provider_sect\n"
+       "[provider_sect]\ndefault = default_sect\n"
+       "[default_sect]\n# activate = 1\n[ca]\n[req]\n")
 
 
 def command(*args, env=None, ok=True):
@@ -158,6 +165,7 @@ class ReleaseSigning(unittest.TestCase):
         put(target / "etc/fstab", "".join(f"none {p} tmpfs defaults 0 0\n"
                                          for p in ("/proc", "/sys", "/run", "/tmp")))
         put(target / "etc/mdev.conf", "$MODALIAS=.* 0:0 660 @modprobe\n")
+        put(target / "etc/ssl/openssl.cnf", CNF)
         put(target / "usr/share/keymaps/tca8418_keypad_m5stack_keymap.map", "")
         put(base / "build/busybox-fixture/.config",
             "CONFIG_DESKTOP=y\nCONFIG_FEATURE_DD_IBS_OBS=y\nCONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y\n"
@@ -177,6 +185,7 @@ class ReleaseSigning(unittest.TestCase):
     def test_post_build_public_and_both_keys(self):
         self.fixture()
         self.post_build()
+        self.assertIn("MinProtocol = TLSv1.2", (self.target / "etc/ssl/openssl.cnf").read_text())
         trust = self.target / "usr/share/msd-update"
         self.assertEqual((trust / "update-key.pem").read_bytes(), self.public.read_bytes())
         self.assertEqual((trust / "key-origin").read_text(), "release\n")
@@ -323,6 +332,111 @@ class ReleaseSigning(unittest.TestCase):
         command("bash", "-euo", "pipefail", "-c", signing, env=missing, ok=False)
         command("bash", "-euo", "pipefail", "-c", cleanup, env=missing)
         self.assertFalse((self.work / "msd-release-private.pem").exists())
+
+
+class OpenSSLPolicy(unittest.TestCase):
+    def test_host_default_context_effective_policy(self):
+        """Inspect host libssl SSL_CTX defaults, not the product binary or Python's overrides."""
+        inspect = textwrap.dedent("""\
+            import ctypes
+            import ctypes.util
+            import json
+
+            lib = ctypes.CDLL(ctypes.util.find_library("ssl"))
+            lib.TLS_client_method.argtypes = []
+            lib.TLS_client_method.restype = ctypes.c_void_p
+            lib.SSL_CTX_new.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_new.restype = ctypes.c_void_p
+            lib.SSL_CTX_ctrl.argtypes = [ctypes.c_void_p, ctypes.c_int,
+                                         ctypes.c_long, ctypes.c_void_p]
+            lib.SSL_CTX_ctrl.restype = ctypes.c_long
+            lib.SSL_CTX_get_security_level.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_get_security_level.restype = ctypes.c_int
+            lib.SSL_CTX_free.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_free.restype = None
+            context = lib.SSL_CTX_new(lib.TLS_client_method())
+            if not context:
+                raise RuntimeError("SSL_CTX_new failed")
+            try:
+                print(json.dumps({
+                    "minimum_version": lib.SSL_CTX_ctrl(context, 130, 0, None),
+                    "security_level": lib.SSL_CTX_get_security_level(context),
+                }))
+            finally:
+                lib.SSL_CTX_free(context)
+            """)
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "openssl.cnf"
+            config.write_text(CNF)
+            command(sys.executable, BOARD / "tools/openssl-c1.py", config)
+            applied = config.read_text()
+
+            def effective(text):
+                config.write_text(text)
+                env = dict(os.environ, OPENSSL_CONF=str(config))
+                return json.loads(command(sys.executable, "-c", inspect, env=env))
+
+            self.assertEqual(effective(applied), {"minimum_version": 0x0303, "security_level": 2})
+            disconnected = effective(applied.replace("ssl_conf = msd_tls", "# ssl_conf = msd_tls"))
+            self.assertNotEqual(disconnected["minimum_version"], 0x0303)
+            changed = applied.replace("MinProtocol = TLSv1.2", "MinProtocol = TLSv1.3")
+            changed = changed.replace("DEFAULT:@SECLEVEL=2", "DEFAULT:@SECLEVEL=1")
+            self.assertEqual(effective(changed), {"minimum_version": 0x0304, "security_level": 1})
+
+    def test_endpoint_verdict_rejects_missing_failed_and_wrong_protocol(self):
+        spec = importlib.util.spec_from_file_location(
+            "c1_probe", BOARD / "tools/bench/openssl-c1/probe.py")
+        probe = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(probe)
+        good = "Protocol version: TLSv1.3\nVerification: OK\n"
+        self.assertTrue(probe.outcome(0, good, "1.3", False))
+        for code, output in ((0, ""), (1, good), ("timeout", good),
+                             (0, good.replace("1.3", "1.2"))):
+            self.assertFalse(probe.outcome(code, output, "1.3", False))
+        self.assertTrue(probe.outcome(1, "hostname mismatch", "1.3", True))
+        for code in (0, "timeout"):
+            self.assertFalse(probe.outcome(code, "hostname mismatch", "1.3", True))
+        self.assertFalse(probe.outcome(1, "connection refused", "1.3", True))
+
+    def test_policy_and_idempotence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "openssl.cnf"
+            config.write_text(CNF + "csr-option = preserved\n")
+            tool = BOARD / "tools/openssl-c1.py"
+            command(sys.executable, tool, config)
+            first = config.read_bytes()
+            self.assertIn(b"MinProtocol = TLSv1.2", first)
+            self.assertIn(b"CipherString = DEFAULT:@SECLEVEL=2", first)
+            self.assertIn(b"[default_sect]\nactivate = 1\n", first)
+            self.assertIn(b"ssl_conf = msd_tls\n", first)
+            self.assertIn(b"[ca]\n[req]\ncsr-option = preserved", first)
+            self.assertNotIn(b"Groups =", first)
+            self.assertNotIn(b"Ciphersuites =", first)
+            stamp = config.stat().st_mtime_ns
+            command(sys.executable, tool, config)
+            self.assertEqual(config.read_bytes(), first)
+            self.assertEqual(config.stat().st_mtime_ns, stamp)
+            env = dict(os.environ, OPENSSL_CONF=str(config))
+            ciphers = command("openssl", "ciphers", "-s", "-tls1_2", env=env)
+            self.assertIn(b"ECDHE-RSA-AES128-SHA256", ciphers)
+            providers = command("openssl", "list", "-providers", env=env)
+            self.assertIn(b"default", providers)
+            self.assertNotIn(b"legacy", providers)
+
+    def test_empty_missing_and_conflicting_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "openssl.cnf"
+            tool = BOARD / "tools/openssl-c1.py"
+            command(sys.executable, tool, config, ok=False)
+            self.assertFalse(config.exists())
+            for text in ("", CNF.replace("config_diagnostics = 1", "config_diagnostics = 0"),
+                         CNF.replace("[default_sect]", "[other]"),
+                         CNF + "\n[openssl_init]\n", CNF + "\n[msd_tls_defaults]\nMinProtocol = TLSv1.1\n",
+                         CNF.replace("providers = provider_sect", "providers = custom")):
+                with self.subTest(text=text):
+                    config.write_text(text)
+                    command(sys.executable, tool, config, ok=False)
+                    self.assertEqual(config.read_text(), text)
 
 
 if __name__ == "__main__":

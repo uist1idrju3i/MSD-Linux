@@ -92,6 +92,8 @@ for mountpoint in /proc /sys /run /tmp; do
 	fi
 done
 
+python3 "$(dirname "$0")/tools/openssl-c1.py" "$target_dir/etc/ssl/openssl.cnf"
+
 keymap="$target_dir/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map"
 test -f "$keymap"
 for keymaps in "$target_dir/usr/share/keymaps" "$target_dir/usr/share/kbd/keymaps"; do
