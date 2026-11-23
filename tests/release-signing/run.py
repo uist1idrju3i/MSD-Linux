@@ -967,6 +967,53 @@ class OpenSSLFeatures(unittest.TestCase):
                 build.build(out)
             self.assertEqual((out / "plan.json").read_bytes(), plan)
 
+    def test_build_records_failed_command_exit_code(self):
+        build = self.load("feature_build_exit", "openssl-features-build.py")
+        for failure in ("baseline", "candidate", "configure"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as temporary:
+                repo = Path(temporary)
+                out = repo / "pair"
+                work = out / "work"
+                completed = []
+
+                def run(args, **_kwargs):
+                    if args[-1] == "msd_cardputerzero_defconfig":
+                        if failure == "configure":
+                            raise subprocess.CalledProcessError(7, args)
+                        work.mkdir()
+                        (work / ".config").write_text("".join(
+                            "BR2_PACKAGE_LIBOPENSSL_ENABLE_" + name + "=y\n" for name in build.OPTIONS))
+                    elif "--disable" in args and args[-1].startswith("BR2_PACKAGE_LIBOPENSSL_ENABLE_"):
+                        config = work / ".config"
+                        config.write_text(config.read_text().replace(args[-1] + "=y", "# " + args[-1] + " is not set"))
+                    elif args == ["make", "-C", str(work)]:
+                        variant = "baseline" if not completed else "candidate"
+                        if variant == failure:
+                            raise subprocess.CalledProcessError(7, args)
+                        completed.append(variant)
+                        (work / "target").mkdir()
+                        (work / "target/payload").write_text("fixture")
+                        (work / "images").mkdir()
+                        for name in ("Image", "rootfs.squashfs", "sdcard.img"):
+                            (work / "images" / name).write_text("image")
+
+                with mock.patch.object(build, "ROOT", repo), \
+                        mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                        mock.patch.object(build.subprocess, "check_output", side_effect=["commit", b"", "buildroot"]), \
+                        mock.patch.object(build.subprocess, "run", side_effect=run):
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        build.build(out)
+                with (out / "results.csv").open() as stream:
+                    rows = list(csv.DictReader(stream))
+                variant = "candidate" if failure == "candidate" else "baseline"
+                failed = next(row for row in rows if row["variant"] == variant and row["metric"] == "build_exit_code")
+                self.assertEqual(failed["value"], "7")
+                self.assertEqual(failed["valid"], "false")
+                self.assertIn("make", failed["note"])
+                self.assertEqual(len(rows), 6)
+                self.assertTrue(all(row["value"] == "" and row["valid"] == "false" for row in rows
+                                    if row["variant"] == variant and row["metric"] != "build_exit_code"))
+
     def test_export_refuses_empty_incomplete_and_duplicate_rows(self):
         export = self.load("feature_export", "openssl-features/export.py")
         with tempfile.TemporaryDirectory() as temporary:

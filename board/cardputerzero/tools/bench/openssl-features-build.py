@@ -37,6 +37,7 @@ def build(out):
     report = dict(run_prefix=prefix, host=platform.platform(), variants={})
     work = out / "work"
     env = dict(os.environ, LC_ALL="C", TZ="UTC")
+    variant = None
 
     def run(command, log):
         subprocess.run(list(map(str, command)), cwd=ROOT, env=env, stdout=log,
@@ -94,6 +95,9 @@ def build(out):
                 print(f"{variant}: full build complete", flush=True)
     except Exception as error:
         report["error"] = repr(error)
+        if isinstance(error, subprocess.CalledProcessError) and variant is not None:
+            row = next(row for row in rows if row["variant"] == variant and row["metric"] == "build_exit_code")
+            row.update(value=error.returncode, valid="false", note="build command failed: " + repr(error.cmd))
         raise
     finally:
         (out / "results.json").write_text(json.dumps(report, indent=2) + "\n")
