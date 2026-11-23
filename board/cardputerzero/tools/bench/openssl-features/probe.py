@@ -141,6 +141,12 @@ def supervise_boot(reference, slot, out, temporary, defer_signals):
     pending = bytearray()
     state = dict(qmp_quit=False, reaped=False, returncode=None, fallback=[], error=None)
     try:
+        kernel_source = Path(environment.get("KERNEL_IMAGE") or reference / "images/Image").resolve()
+        kernel = temporary / "Image"
+        state.update(kernel_source=str(kernel_source), kernel_image=str(kernel))
+        shutil.copyfile(kernel_source, kernel)
+        state["kernel_sha256"] = KBD.COMMON.sha(kernel)
+        environment["KERNEL_IMAGE"] = str(kernel)
         with defer_signals():
             process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

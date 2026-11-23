@@ -33,6 +33,13 @@ def read_attempt(directory, expected):
     return rows
 
 
+def verify_kernel(probe, variant, expected):
+    for slot in ("A", "B"):
+        state = json.loads((probe / f"{variant}-{slot}/process.json").read_text())
+        if state.get("kernel_sha256") != expected:
+            raise ValueError(f"executed kernel/build hash mismatch: {variant}-{slot}")
+
+
 def verify_images(pair, probe, analysis):
     build = json.loads((pair / "results.json").read_text())
     regression = json.loads((probe / "metadata.json").read_text())["inputs_sha256"]
@@ -49,6 +56,7 @@ def verify_images(pair, probe, analysis):
                 raise ValueError(f"probe/build hash mismatch: {variant}/{name}")
         if measured.get(variant) != images["rootfs.squashfs"]:
             raise ValueError(f"analysis/build hash mismatch: {variant}/images/rootfs.squashfs")
+        verify_kernel(probe, variant, images["Image"])
 
 
 def export(pair, probe, host, analysis, out):

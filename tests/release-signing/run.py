@@ -831,6 +831,7 @@ class OpenSSLFeatures(unittest.TestCase):
         fake.write_text(textwrap.dedent('''\
             #!/usr/bin/env python3
             import json
+            import hashlib
             import os
             from pathlib import Path
             import socket
@@ -841,13 +842,16 @@ class OpenSSLFeatures(unittest.TestCase):
                 sys.exit(0)
             image = sys.argv[sys.argv.index("-drive") + 1].split(",")[0].removeprefix("file=")
             dtb = sys.argv[sys.argv.index("-dtb") + 1]
+            kernel = sys.argv[sys.argv.index("-kernel") + 1]
+            kernel_sha256 = hashlib.sha256(Path(kernel).read_bytes()).hexdigest()
             Path(image).write_bytes(b"guest writes")
             Path(dtb).write_bytes(b"dtb writes")
             with socket.socket(socket.AF_UNIX) as server:
                 server.bind(os.environ["QEMU_QMP_SOCKET"])
                 server.listen(1)
                 Path(os.environ["FEATURE_FAKE_RECORD"]).write_text(json.dumps(
-                    dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid())))
+                    dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid(),
+                         kernel=kernel, kernel_sha256=kernel_sha256)))
                 if os.environ.get("FEATURE_FAKE_MODE") == "hang":
                     time.sleep(60)
                 if os.environ.get("FEATURE_FAKE_MODE") == "normal":
@@ -875,7 +879,7 @@ class OpenSSLFeatures(unittest.TestCase):
         fake.chmod(0o755)
         environment = dict(QEMU_SYSTEM_AARCH64=str(fake), FEATURE_FAKE_RECORD=str(record),
                            QEMU_COPY_IMAGE="0", QEMU_DRIVE_FILE=str(images / "sdcard.img"),
-                           QEMU_DTB_BLUETOOTH="0")
+                           QEMU_DTB_BLUETOOTH="0", KERNEL_IMAGE=str(images / "Image"))
         return reference, environment, record
 
     def test_probe_forces_image_copy_over_environment(self):
@@ -988,6 +992,8 @@ class OpenSSLFeatures(unittest.TestCase):
             with self.subTest(signal=number), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 out = root / "out"
+                (root / "images").mkdir()
+                (root / "images/Image").write_bytes(b"kernel")
                 children = []
                 events = []
 
@@ -1002,7 +1008,8 @@ class OpenSSLFeatures(unittest.TestCase):
 
                 handlers = {item: signal.getsignal(item) for item in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)}
                 try:
-                    with mock.patch.object(probe.subprocess, "Popen", side_effect=spawn):
+                    with mock.patch.object(probe.subprocess, "Popen", side_effect=spawn), \
+                            mock.patch.dict(os.environ, KERNEL_IMAGE=""):
                         with self.assertRaisesRegex(RuntimeError, signal.Signals(number).name):
                             probe.boot(root, "A", out)
                     self.assertEqual(events, ["child created", "constructor returned"])
@@ -1022,6 +1029,57 @@ class OpenSSLFeatures(unittest.TestCase):
                         child.wait(timeout=5)
                         child.stdin.close()
                         child.stdout.close()
+
+    def test_probe_records_actual_selected_kernel_and_export_rejects_mismatch(self):
+        probe = self.load("feature_probe_kernel", "openssl-features/probe.py")
+        export = self.load("feature_export_kernel", "openssl-features/export.py")
+        expected = hashlib.sha256(b"original").hexdigest()
+        for mode in ("default", "same", "different", "missing"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                source = reference / "images/Image"
+                environment.update(FEATURE_FAKE_MODE="normal", KERNEL_IMAGE="")
+                if mode != "default":
+                    source = root / "selected-kernel.img"
+                    if mode != "missing":
+                        source.write_bytes(b"different kernel" if mode == "different" else b"original")
+                    environment["KERNEL_IMAGE"] = str(source)
+                logs = root / "probe"
+                logs.mkdir()
+                (logs / "baseline-A").mkdir()
+                (logs / "baseline-A/process.json").write_text(json.dumps(dict(kernel_sha256=expected)))
+                out = logs / "baseline-B"
+                with mock.patch.dict(os.environ, environment), \
+                        mock.patch.object(probe.BOOT, "check_boot_log", return_value=True), \
+                        mock.patch.object(probe, "parse", return_value=([], [], b"")):
+                    if mode == "missing":
+                        with self.assertRaises(FileNotFoundError):
+                            probe.boot(reference, "B", out)
+                    else:
+                        probe.boot(reference, "B", out)
+                state = json.loads((out / "process.json").read_text())
+                self.assertEqual(state["kernel_source"], str(source))
+                if mode == "missing":
+                    self.assertNotIn("kernel_sha256", state)
+                    self.assertNotIn("pid", state)
+                    self.assertFalse(record.exists())
+                    with self.assertRaises(ValueError):
+                        export.verify_kernel(logs, "baseline", expected)
+                    continue
+                actual = hashlib.sha256(source.read_bytes()).hexdigest()
+                observed = json.loads(record.read_text())
+                self.assertEqual(state["kernel_sha256"], actual)
+                self.assertEqual(state["kernel_sha256"], observed["kernel_sha256"])
+                self.assertEqual(state["kernel_image"], observed["kernel"])
+                self.assertNotEqual(Path(observed["kernel"]), source)
+                self.assertFalse(Path(observed["kernel"]).parent.exists())
+                self.assertEqual((reference / "images/Image").read_bytes(), b"original")
+                if mode == "different":
+                    with self.assertRaisesRegex(ValueError, "executed kernel/build hash mismatch"):
+                        export.verify_kernel(logs, "baseline", expected)
+                else:
+                    export.verify_kernel(logs, "baseline", expected)
 
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")
@@ -1274,6 +1332,11 @@ class OpenSSLFeatures(unittest.TestCase):
                 measured["inputs_sha256"][variant] = images["rootfs.squashfs"]
             originals = {pair / "results.json": build, probe / "metadata.json": regression,
                          analysis / "metadata.json": measured}
+            for variant in ("baseline", "candidate"):
+                for slot in ("A", "B"):
+                    boot = probe / f"{variant}-{slot}"
+                    boot.mkdir()
+                    originals[boot / "process.json"] = dict(kernel_sha256=build["variants"][variant]["images_sha256"]["Image"])
             for path, data in originals.items():
                 path.write_text(json.dumps(data))
             host.mkdir()
@@ -1296,6 +1359,9 @@ class OpenSSLFeatures(unittest.TestCase):
                           for value in (None, "invalid", "")]
             mutations += [(probe / "metadata.json", ("inputs_sha256", "baseline/images/sdcard.img"),
                            build["variants"]["candidate"]["images_sha256"]["sdcard.img"])]
+            mutations += [(probe / f"{variant}-{slot}/process.json", ("kernel_sha256",), value)
+                          for variant in ("baseline", "candidate") for slot in ("A", "B")
+                          for value in (None, "0" * 64)]
             for number, (path, keys, value) in enumerate(mutations):
                 with self.subTest(path=path.name, keys=keys, value=value):
                     changed = json.loads(json.dumps(originals[path]))
