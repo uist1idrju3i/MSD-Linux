@@ -1,0 +1,45 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+kbd-setup-version,setup,1,setup_exit_code,1,status,false,unsquashfs version query returned 1; no measurement executed
+kbd-preflight-before-rootfs_regular_bytes,before,1,rootfs_regular_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-before-squashfs_bytes,before,1,squashfs_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-before-aa-rootfs_regular_bytes,before-aa,2,rootfs_regular_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-before-aa-squashfs_bytes,before-aa,2,squashfs_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-after-rootfs_regular_bytes,after,1,rootfs_regular_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-after-squashfs_bytes,after,1,squashfs_bytes,,bytes,false,not run: earlier stage incomplete
+kbd-preflight-before-A-boot_exit_code,before-A,1,boot_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-before-A-loadkeys_exit_code,before-A,1,loadkeys_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-before-A-module_count,before-A,1,module_count,,count,false,not run: earlier stage incomplete
+kbd-preflight-before-B-boot_exit_code,before-B,1,boot_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-before-B-loadkeys_exit_code,before-B,1,loadkeys_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-before-B-module_count,before-B,1,module_count,,count,false,not run: earlier stage incomplete
+kbd-preflight-after-A-boot_exit_code,after-A,1,boot_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-after-A-loadkeys_exit_code,after-A,1,loadkeys_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-after-A-module_count,after-A,1,module_count,,count,false,not run: earlier stage incomplete
+kbd-preflight-after-B-boot_exit_code,after-B,1,boot_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-after-B-loadkeys_exit_code,after-B,1,loadkeys_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-after-B-module_count,after-B,1,module_count,,count,false,not run: earlier stage incomplete
+kbd-preflight-aa-image_equal,aa,1,image_equal,,boolean,false,not run: earlier stage incomplete
+kbd-preflight-negative-boot_exit_code,negative,1,boot_exit_code,,status,false,not run: earlier stage incomplete
+kbd-preflight-modules-inventory_equal,modules,1,inventory_equal,,boolean,false,not run: earlier stage incomplete
+kbd-setup-owner,setup,1,setup_exit_code,2,status,false,extraction stopped on var/www ownership warning; no pack or boot executed
+kbd-r1-before-rootfs_regular_bytes,before,1,rootfs_regular_bytes,47892350,bytes,true,observed result
+kbd-r1-before-squashfs_bytes,before,1,squashfs_bytes,25235456,bytes,true,observed result
+kbd-r1-before-aa-rootfs_regular_bytes,before-aa,2,rootfs_regular_bytes,47892350,bytes,true,observed result
+kbd-r1-before-aa-squashfs_bytes,before-aa,2,squashfs_bytes,25235456,bytes,true,observed result
+kbd-r1-after-rootfs_regular_bytes,after,1,rootfs_regular_bytes,47359442,bytes,true,observed result
+kbd-r1-after-squashfs_bytes,after,1,squashfs_bytes,25088000,bytes,true,observed result
+kbd-r1-before-A-boot_exit_code,before-A,1,boot_exit_code,0,status,true,observed result
+kbd-r1-before-A-loadkeys_exit_code,before-A,1,loadkeys_exit_code,0,status,true,observed result
+kbd-r1-before-A-module_count,before-A,1,module_count,19,count,true,observed result
+kbd-r1-before-B-boot_exit_code,before-B,1,boot_exit_code,0,status,true,observed result
+kbd-r1-before-B-loadkeys_exit_code,before-B,1,loadkeys_exit_code,0,status,true,observed result
+kbd-r1-before-B-module_count,before-B,1,module_count,19,count,true,observed result
+kbd-r1-after-A-boot_exit_code,after-A,1,boot_exit_code,0,status,true,observed result
+kbd-r1-after-A-loadkeys_exit_code,after-A,1,loadkeys_exit_code,0,status,true,observed result
+kbd-r1-after-A-module_count,after-A,1,module_count,19,count,true,observed result
+kbd-r1-after-B-boot_exit_code,after-B,1,boot_exit_code,0,status,true,observed result
+kbd-r1-after-B-loadkeys_exit_code,after-B,1,loadkeys_exit_code,0,status,true,observed result
+kbd-r1-after-B-module_count,after-B,1,module_count,19,count,true,observed result
+kbd-r1-aa-image_equal,aa,1,image_equal,1,boolean,true,observed result
+kbd-r1-negative-boot_exit_code,negative,1,boot_exit_code,1,status,true,expected keymap failure
+kbd-r1-modules-inventory_equal,modules,1,inventory_equal,1,boolean,true,observed result
