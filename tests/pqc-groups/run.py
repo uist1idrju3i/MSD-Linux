@@ -32,6 +32,13 @@ index_spec.loader.exec_module(module_index)
 
 
 class ModuleIndexTests(unittest.TestCase):
+    def test_reference_requires_pre_pruning_binary_indexes(self):
+        module_index.require_unpruned_reference({"lib/modules/test/modules.dep.bin": (1, "hash")})
+        for files in ({}, {"lib/modules/test/modules.dep": (1, "hash")},
+                      {"usr/share/modules.dep.bin": (1, "hash")}):
+            with self.subTest(files=files), self.assertRaisesRegex(ValueError, "--reference.*pre-pruning"):
+                module_index.require_unpruned_reference(files)
+
     def test_probe_exit_status_gates_readiness(self):
         with tempfile.TemporaryDirectory() as directory:
             probe = Path(directory) / "test probe"

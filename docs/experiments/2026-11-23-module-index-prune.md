@@ -88,6 +88,10 @@ OpenSSLのTLS全matrixは再実行しておらず、ここで確認したのはi
 ## 再実行と証拠
 
 出力先は未使用の名前を選び、repository rootで実行する。
+`--reference`にはbinary index削除前のbuild出力を指定する。
+その`images/rootfs.squashfs`には`lib/modules/<version>/modules.*.bin`が必要で、現在のpost-buildでindexを削除済みの製品imageは比較元に使えない。
+該当fileがない場合は、展開直後に`--reference must be a pre-pruning image containing modules.*.bin`というerrorで停止する。
+以下の`output-integrity`は今回使った削除前の既存出力であり、削除済みの新しい出力へそのまま置き換える手順ではない。
 
 ```sh
 docker/msd-dev python3 board/cardputerzero/tools/bench/module-index.py \

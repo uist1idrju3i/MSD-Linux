@@ -33,6 +33,12 @@ def fixture_probe_check(probe="/usr/libexec/module-index-kmod-probe", console="/
             "[ \"$module_probe_rc\" -eq 0 ] || exit \"$module_probe_rc\"\n")
 
 
+def require_unpruned_reference(files):
+    if not any(Path(name).match("lib/modules/*/modules.*.bin") for name in files):
+        raise ValueError("--reference must be a pre-pruning image containing modules.*.bin; "
+                         "the current product image already has these indexes removed")
+
+
 def build(reference, out):
     out.mkdir()
     with (out / "build.log").open("x") as log:
@@ -49,6 +55,7 @@ def build(reference, out):
                 line.endswith(", because Operation not permitted") for line in result.stderr.splitlines())):
             raise RuntimeError("unsquashfs failed")
         before = inventory(original)
+        require_unpruned_reference(before)
         private = out / "private-fixture"
         shutil.copytree(original, private, symlinks=True)
         run(["sh", BOARD / "tools/prune-module-indexes.sh", private])
