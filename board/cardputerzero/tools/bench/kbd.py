@@ -119,8 +119,16 @@ def build(artifact, host, config, out):
             if len(partitions) != 7:
                 raise ValueError("expected seven source partitions")
             original = out / "original"
-            run([host / "bin/unsquashfs", "-no-xattrs", "-no-progress", "-offset", partitions[4]["start"] * 512,
-                 "-d", original, disk])
+            extracted = subprocess.run(list(map(str, [host / "bin/unsquashfs", "-no-xattrs", "-no-progress", "-offset",
+                                       partitions[4]["start"] * 512, "-d", original, disk])), capture_output=True, text=True)
+            log.write(extracted.stdout + extracted.stderr)
+            warning = f"set_attributes: failed to change uid and gids on {original}/var/www, because Operation not permitted"
+            output = extracted.stdout + extracted.stderr
+            if extracted.returncode == 2 and output.count(warning) == 1 and not re.search(
+                    r"error|failed|cannot|fatal", output.replace(warning, ""), re.I):
+                report["extraction_warning"] = warning
+            else:
+                extracted.check_returncode()
             configured = load("libgomp", Path(__file__).with_name("libgomp.py"))
             report["reference_audit"] = configured.audit_configured(original, config)
             before = COMMON.inventory(original)
