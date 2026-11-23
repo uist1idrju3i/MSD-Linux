@@ -205,7 +205,7 @@ class ReleaseSigning(unittest.TestCase):
         command("python3", BOARD / "tools/prune-libgomp.py", self.work / "missing", ok=False)
         self.fixture()
         library = self.target / "usr/lib/libgomp.so.1.0.0"
-        put(library, b"\x7fELF libgomp.so.1")
+        put(library, b"\x7fELF libgomp.so.1\x00GOMP_parallel\x00")
         (library.parent / "libgomp.so.1").symlink_to(library.name)
         put(library.parent / "libstdc++.so.6", "preserve")
         self.post_build()
@@ -218,7 +218,8 @@ class ReleaseSigning(unittest.TestCase):
         library = self.target / "usr/lib/libgomp.so.1.0.0"
         put(library, b"\x7fELF libgomp.so.1")
         consumer = self.target / "usr/bin/openmp-client"
-        for data in (b"\x7fELF DT_NEEDED libgomp.so.1", b'dlopen("libgomp.so.1")'):
+        for data in (b"\x7fELF DT_NEEDED libgomp.so.1", b'dlopen("libgomp.so.1")',
+                     b"\x7fELF\x00GOMP_parallel\x00"):
             with self.subTest(data=data):
                 put(consumer, data)
                 command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)

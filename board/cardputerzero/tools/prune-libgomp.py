@@ -17,7 +17,8 @@ def prune(target):
         if path.is_symlink():
             used = "libgomp" in str(path.readlink())
         else:
-            used = path.is_file() and b"libgomp" in path.read_bytes()
+            data = path.read_bytes() if path.is_file() else b""
+            used = b"libgomp" in data or b"GOMP_" in data
         if used:
             consumers.append(str(path.relative_to(target)))
     if consumers:
