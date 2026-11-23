@@ -56,7 +56,33 @@ docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 docker/msd-dev board/cardputerzero/qemu/test-ab.sh
 ```
 
-`test-boot.sh` は A スロット（p5）、`test-ab.sh` は B スロット（p6）を rootfs として起動し、`MSD/Linux ready` marker と login prompt を検出した時点で QEMU を停止します。`QEMU_BOOT_TIMEOUT` は検出を待つ上限時間です。両スクリプトはイメージをコピーし、サイズを次の 2 の累乗にそろえます。対話的な起動には `board/cardputerzero/qemu/run-qemu.sh` を使ってください。
+`test-boot.sh` は A スロット（p5）、`test-ab.sh` は B スロット（p6）を rootfs として起動します。
+`boot-test.py` が `MSD/Linux ready` marker と login prompt を検出し、
+QMP の `quit` 応答を確認してから終了を待ちます。
+合格には終了コード0、processの回収、TERM/KILL fallbackなしが必要です。
+markerの有無によらず、harnessがquitを要求する前に終了したQEMUは不合格です。
+終了後もserialのpanic・error、`/data`のmount option、module-load行を検査します。
+
+`QEMU_BOOT_TIMEOUT` はmarker検出の上限で、既定300秒です。
+QMPの各応答と終了の待ち時間は既定5秒です。
+直接起動時は `QEMU_STOP_TIMEOUT` で0より大きく10秒以下に設定できます。
+QMPへの接続失敗・応答拒否・応答なし・終了待ちの超過は不合格とし、
+必要ならprocess groupへTERM、次にKILLを送ります。それぞれの待ちにも同じ上限があります。
+boot timeoutは終了124、割込みやその他の失敗は非0で終わります。
+割込み時のcleanupも期限付きで停止・回収します。
+
+`QEMU_LOG_DIR` 指定時は `serial-mmcblk0p5.log` または `serial-mmcblk0p6.log` と、
+同名の `.process.json` を残します。JSONにはQMP応答、終了コード、
+回収の成否、fallbackの順序、失敗理由を記録します。
+指定しない場合は一時directoryを使い、終了時に削除します。
+processの結果はどちらの場合も標準出力へ表示します。
+QMP・wait・process group停止にはfs-compare-v2のhelperを再利用しますが、
+同機能の判定・実装は変更していません。
+
+両スクリプトはイメージをコピーし、サイズを次の2の累乗にそろえます。
+対話的な起動には `board/cardputerzero/qemu/run-qemu.sh` を使ってください。
+test harnessだけが専用のQMP socketを渡すため、対話起動の既定値は変わりません。
+host回帰試験は `tests/qemu-boot/run.sh` で、CIのhost suiteにも登録しています。
 
 既定では `raspi3ap`（512 MiB）と `bcm2710-rpi-cm0.dtb` を使います。1 GiB の `raspi3b` と `bcm2710-rpi-3-b.dtb` に切り替えるには、`QEMU_MACHINE=raspi3b` を設定します。`raspi3ap` の起動には、ASB パッチを含む開発用イメージ内の QEMU が必要です。
 
