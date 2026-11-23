@@ -270,6 +270,22 @@ class ReleaseSigning(unittest.TestCase):
         output = "QEMU reached ready after 1 seconds.\nQEMU serial log contains boot error patterns.\n"
         process = dict(qmp_quit=True, reaped=True, returncode=0, fallback=[], error=None)
         self.assertTrue(bench.negative_rejected(1, negative, output, process))
+        prefixes = set()
+        for name in ("first", "retry"):
+            out = self.work / name
+            missing = self.work / "missing-input"
+            with mock.patch.object(bench, "source_inputs", return_value={}), \
+                    mock.patch.object(bench.COMMON, "sha", return_value="hash"), \
+                    mock.patch.object(bench, "tool_version", return_value="version"):
+                with self.assertRaises(FileNotFoundError):
+                    bench.build(missing, missing, missing, out)
+            report = json.loads((out / "results.json").read_text())
+            plan = json.loads((out / "plan.json").read_text())
+            self.assertEqual(len(plan), 21)
+            self.assertTrue(all(row["run_id"].startswith(report["run_prefix"] + "-") for row in plan))
+            self.assertTrue(all(row["value"] == "" and row["valid"] == "false" for row in plan))
+            prefixes.add(report["run_prefix"])
+        self.assertEqual(len(prefixes), 2)
         for rc, text, log, state in ((124, negative, output, process),
                                      (1, negative.replace("login:", ""), output, process),
                                      (1, negative, "QEMU did not show the boot marker", process),

@@ -12,6 +12,7 @@ import platform
 import re
 import shutil
 import subprocess
+import uuid
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -92,6 +93,7 @@ def negative_rejected(returncode, text, output, process):
 
 def build(artifact, host, config, out):
     out.mkdir()
+    run_prefix = "kbd-" + uuid.uuid4().hex
     source = source_inputs()
     report = dict(execution_head=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
                   source_sha256=source, host=platform.platform(), config_sha256=COMMON.sha(config),
@@ -102,11 +104,11 @@ def build(artifact, host, config, out):
                   host_tools_versions={p: tool_version(host / p, flag)
                                        for p, flag in (("bin/unsquashfs", "-version"),
                                                        ("bin/mksquashfs.orig", "-version"), ("sbin/sfdisk", "--version"))},
-                  variants={}, modules={})
+                  run_prefix=run_prefix, variants={}, modules={})
     rows = {}
 
     def plan(variant, metric, repeat=1):
-        rows[variant, metric] = dict(run_id=f"kbd-r1-{variant}-{metric}", variant=variant, repeat=repeat,
+        rows[variant, metric] = dict(run_id=f"{run_prefix}-{variant}-{metric}", variant=variant, repeat=repeat,
                                     metric=metric, value="", unit="bytes" if "bytes" in metric else
                                     "status" if metric.endswith("exit_code") else "boolean" if metric.endswith("equal") else "count",
                                     valid="false", note="not run: earlier stage incomplete")
