@@ -161,17 +161,22 @@ host C1 16行を含む。全行validで、正式測定の失敗・欠損は0行�
 公開値は`export.py`で全列、ID、計画行数を照合して生成した。
 公開する2つのCSVは行終端だけLFへ統一した。証拠archive内の生CSVは変更していない。
 
+初回の出力directoryや測定imageは不要である。公開archiveの測定記録と当時のrunnerを、
+未使用の出力先へまとめて展開する。再実行時は出力先名を変え、以下の全pathへ反映する。
+
 ```sh
-mkdir -p output-openssl-features-r1/historical-export
+mkdir output-openssl-features-replay-01
 tar -xzf docs/experiments/2026-11-23-openssl-features.tar.gz \
-  -C output-openssl-features-r1/historical-export runners/export.py
-docker/msd-dev python3 output-openssl-features-r1/historical-export/runners/export.py \
-  --pair output-openssl-features-r1/cold-pair-01 \
-  --probe output-openssl-features-r1/probe-01 \
-  --host output-openssl-features-r1/c1-host-probe-01 \
-  --analysis output-openssl-features-r1/analysis-01 \
-  --out output-openssl-features-r1/reexport.csv
-python3 -c 'from pathlib import Path; p = Path("output-openssl-features-r1/reexport.csv"); p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n"))'
+  -C output-openssl-features-replay-01
+docker/msd-dev python3 output-openssl-features-replay-01/runners/export.py \
+  --pair output-openssl-features-replay-01/cold-pair-01 \
+  --probe output-openssl-features-replay-01/probe-01 \
+  --host output-openssl-features-replay-01/c1-host-probe-01 \
+  --analysis output-openssl-features-replay-01/analysis-01 \
+  --out output-openssl-features-replay-01/reexport.csv
+python3 -c 'from pathlib import Path; p = Path("output-openssl-features-replay-01/reexport.csv"); p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n"))'
+cmp docs/experiments/2026-11-23-openssl-features.csv output-openssl-features-replay-01/reexport.csv
+sha256sum docs/experiments/2026-11-23-openssl-features.csv output-openssl-features-replay-01/reexport.csv
 ```
 
 この再集計にはarchiveの当時のexporterを使う。保守版は実際に起動したkernelのhashも要求するため、
