@@ -3,6 +3,7 @@
 import hashlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import re
@@ -334,6 +335,54 @@ class ReleaseSigning(unittest.TestCase):
 
 
 class OpenSSLPolicy(unittest.TestCase):
+    def test_host_default_context_effective_policy(self):
+        """Inspect host libssl SSL_CTX defaults, not the product binary or Python's overrides."""
+        inspect = textwrap.dedent("""\
+            import ctypes
+            import ctypes.util
+            import json
+
+            lib = ctypes.CDLL(ctypes.util.find_library("ssl"))
+            lib.TLS_client_method.argtypes = []
+            lib.TLS_client_method.restype = ctypes.c_void_p
+            lib.SSL_CTX_new.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_new.restype = ctypes.c_void_p
+            lib.SSL_CTX_ctrl.argtypes = [ctypes.c_void_p, ctypes.c_int,
+                                         ctypes.c_long, ctypes.c_void_p]
+            lib.SSL_CTX_ctrl.restype = ctypes.c_long
+            lib.SSL_CTX_get_security_level.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_get_security_level.restype = ctypes.c_int
+            lib.SSL_CTX_free.argtypes = [ctypes.c_void_p]
+            lib.SSL_CTX_free.restype = None
+            context = lib.SSL_CTX_new(lib.TLS_client_method())
+            if not context:
+                raise RuntimeError("SSL_CTX_new failed")
+            try:
+                print(json.dumps({
+                    "minimum_version": lib.SSL_CTX_ctrl(context, 130, 0, None),
+                    "security_level": lib.SSL_CTX_get_security_level(context),
+                }))
+            finally:
+                lib.SSL_CTX_free(context)
+            """)
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "openssl.cnf"
+            config.write_text(CNF)
+            command(sys.executable, BOARD / "tools/openssl-c1.py", config)
+            applied = config.read_text()
+
+            def effective(text):
+                config.write_text(text)
+                env = dict(os.environ, OPENSSL_CONF=str(config))
+                return json.loads(command(sys.executable, "-c", inspect, env=env))
+
+            self.assertEqual(effective(applied), {"minimum_version": 0x0303, "security_level": 2})
+            disconnected = effective(applied.replace("ssl_conf = msd_tls", "# ssl_conf = msd_tls"))
+            self.assertNotEqual(disconnected["minimum_version"], 0x0303)
+            changed = applied.replace("MinProtocol = TLSv1.2", "MinProtocol = TLSv1.3")
+            changed = changed.replace("DEFAULT:@SECLEVEL=2", "DEFAULT:@SECLEVEL=1")
+            self.assertEqual(effective(changed), {"minimum_version": 0x0304, "security_level": 1})
+
     def test_endpoint_verdict_rejects_missing_failed_and_wrong_protocol(self):
         spec = importlib.util.spec_from_file_location(
             "c1_probe", BOARD / "tools/bench/openssl-c1/probe.py")
