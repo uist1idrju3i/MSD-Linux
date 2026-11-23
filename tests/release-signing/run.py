@@ -10,11 +10,13 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tarfile
 import tempfile
 import textwrap
+import time
 import unittest
 from unittest import mock
 
@@ -812,6 +814,273 @@ class OpenSSLFeatures(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
+    @staticmethod
+    def probe_fixture(root):
+        reference = root / "reference"
+        images = reference / "images"
+        images.mkdir(parents=True)
+        for name in ("Image", "sdcard.img", "bcm2710-rpi-cm0.dtb"):
+            (images / name).write_bytes(b"original")
+        tools = reference / "host/bin"
+        tools.mkdir(parents=True)
+        fdtput = tools / "fdtput"
+        fdtput.write_text("#!/bin/sh\nexit 0\n")
+        fdtput.chmod(0o755)
+        record = root / "record.json"
+        fake = root / "fake-qemu.py"
+        fake.write_text(textwrap.dedent('''\
+            #!/usr/bin/env python3
+            import json
+            import hashlib
+            import os
+            from pathlib import Path
+            import socket
+            import sys
+            import time
+            if "--version" in sys.argv:
+                print("QEMU emulator version fixture")
+                sys.exit(0)
+            image = sys.argv[sys.argv.index("-drive") + 1].split(",")[0].removeprefix("file=")
+            dtb = sys.argv[sys.argv.index("-dtb") + 1]
+            kernel = sys.argv[sys.argv.index("-kernel") + 1]
+            kernel_sha256 = hashlib.sha256(Path(kernel).read_bytes()).hexdigest()
+            Path(image).write_bytes(b"guest writes")
+            Path(dtb).write_bytes(b"dtb writes")
+            with socket.socket(socket.AF_UNIX) as server:
+                server.bind(os.environ["QEMU_QMP_SOCKET"])
+                server.listen(1)
+                Path(os.environ["FEATURE_FAKE_RECORD"]).write_text(json.dumps(
+                    dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid(),
+                         kernel=kernel, kernel_sha256=kernel_sha256)))
+                if os.environ.get("FEATURE_FAKE_MODE") == "hang":
+                    time.sleep(60)
+                if os.environ.get("FEATURE_FAKE_MODE") == "normal":
+                    print("MSD/Linux ready\\nlogin:", flush=True)
+                    heredoc = False
+                    for line in sys.stdin:
+                        if line.startswith("sh /run/features.sh"):
+                            print("FEATURE_EXIT=0\\n# ", flush=True)
+                            break
+                        if line.startswith("base64 -d"):
+                            heredoc = True
+                        elif line.strip() == "FEATURE_SCRIPT":
+                            heredoc = False
+                        print("> " if heredoc else "# ", flush=True)
+                    with server.accept()[0] as connection, connection.makefile("rwb") as stream:
+                        stream.write(b'{"QMP":{}}\\n')
+                        stream.flush()
+                        for line in stream:
+                            request = json.loads(line)
+                            stream.write(json.dumps({"return": {}, "id": request["id"]}).encode() + b"\\n")
+                            stream.flush()
+                            if request["execute"] == "quit":
+                                break
+            '''))
+        fake.chmod(0o755)
+        environment = dict(QEMU_SYSTEM_AARCH64=str(fake), FEATURE_FAKE_RECORD=str(record),
+                           QEMU_COPY_IMAGE="0", QEMU_DRIVE_FILE=str(images / "sdcard.img"),
+                           QEMU_DTB_BLUETOOTH="0", KERNEL_IMAGE=str(images / "Image"))
+        return reference, environment, record
+
+    def test_probe_forces_image_copy_over_environment(self):
+        probe = self.load("feature_probe_copy", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            reference, environment, record = self.probe_fixture(root)
+            try:
+                with mock.patch.dict(os.environ, environment):
+                    with self.assertRaisesRegex(ValueError, "QEMU exited before probe completed"):
+                        probe.boot(reference, "A", root / "out")
+                observed = json.loads(record.read_text())
+                self.assertNotEqual(Path(observed["image"]), reference / "images/sdcard.img")
+                self.assertEqual((reference / "images/sdcard.img").read_bytes(), b"original")
+                self.assertEqual((reference / "images/bcm2710-rpi-cm0.dtb").read_bytes(), b"original")
+                self.assertTrue(json.loads((root / "out/process.json").read_text())["reaped"])
+            finally:
+                if record.exists():
+                    observed = json.loads(record.read_text())
+                    for name in ("image", "dtb"):
+                        path = Path(observed[name])
+                        if path.parent != reference / "images":
+                            shutil.rmtree(path.parent, ignore_errors=True)
+
+    def test_probe_short_socket_and_owned_temporary_files_are_cleaned(self):
+        probe = self.load("feature_probe_temporary", "openssl-features/probe.py")
+        for mode in ("early", "normal", "spawn"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                parent = root / ("deep" * 35)
+                parent.mkdir()
+                environment.update(TMPDIR=str(parent), FEATURE_FAKE_MODE=mode)
+                out = parent / "out"
+                created = []
+
+                def fail_spawn(*_args, **kwargs):
+                    created.append(Path(kwargs["env"]["TMPDIR"]))
+                    raise OSError("spawn failed")
+
+                with mock.patch.dict(os.environ, environment), \
+                        mock.patch.object(probe.BOOT, "check_boot_log", return_value=True), \
+                        mock.patch.object(probe, "parse", return_value=([], [], b"")):
+                    if mode == "normal":
+                        probe.boot(reference, "B", out)
+                    elif mode == "spawn":
+                        with mock.patch.object(probe.subprocess, "Popen", side_effect=fail_spawn):
+                            with self.assertRaisesRegex(OSError, "spawn failed"):
+                                probe.boot(reference, "B", out)
+                        self.assertEqual(len(created), 1)
+                        self.assertFalse(created[0].exists())
+                        continue
+                    else:
+                        with self.assertRaisesRegex(ValueError, "QEMU exited before probe completed"):
+                            probe.boot(reference, "B", out)
+                observed = json.loads(record.read_text())
+                self.assertLess(len(os.fsencode(observed["qmp"])), 108)
+                for name in ("image", "dtb", "qmp"):
+                    self.assertFalse(Path(observed[name]).parent.exists(), observed[name])
+                state = json.loads((out / "process.json").read_text())
+                self.assertTrue(state["reaped"])
+                self.assertEqual(state["qmp_quit"], mode == "normal")
+
+    def test_probe_signals_reap_separate_session_and_clean_copies(self):
+        probe = self.load("feature_probe_signals", "openssl-features/probe.py")
+        for number in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            with self.subTest(signal=number), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                environment["FEATURE_FAKE_MODE"] = "hang"
+                out = root / "out"
+                script = ("from pathlib import Path; import runpy; "
+                          f"runpy.run_path({probe.__file__!r})['boot']("
+                          f"Path({str(reference)!r}), 'A', Path({str(out)!r}))")
+                process = subprocess.Popen([sys.executable, "-c", script], env=dict(os.environ, **environment),
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                try:
+                    deadline = time.monotonic() + 10
+                    while not record.exists() and process.poll() is None and time.monotonic() < deadline:
+                        time.sleep(0.01)
+                    self.assertTrue(record.exists(), "fake QEMU did not start")
+                    observed = json.loads(record.read_text())
+                    self.assertEqual(os.getpgid(observed["pid"]), observed["pid"])
+                    process.send_signal(number)
+                    process.communicate(timeout=15)
+                    self.assertEqual(process.returncode, 1)
+                    state = json.loads((out / "process.json").read_text())
+                    self.assertIn(signal.Signals(number).name, state["error"])
+                    self.assertEqual(state["fallback"], ["SIGTERM"])
+                    self.assertTrue(state["reaped"])
+                    self.assertEqual(state["returncode"], -signal.SIGTERM)
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(observed["pid"], 0)
+                    for name in ("image", "dtb", "qmp"):
+                        self.assertFalse(Path(observed[name]).parent.exists())
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                    process.communicate()
+                    if record.exists():
+                        try:
+                            os.kill(json.loads(record.read_text())["pid"], signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+
+    def test_probe_defers_signals_until_spawn_reference_is_stored(self):
+        probe = self.load("feature_probe_spawn_signals", "openssl-features/probe.py")
+        popen = subprocess.Popen
+        for number in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            with self.subTest(signal=number), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                out = root / "out"
+                (root / "images").mkdir()
+                (root / "images/Image").write_bytes(b"kernel")
+                children = []
+                events = []
+
+                def spawn(_command, **kwargs):
+                    child = popen([sys.executable, "-c", "import time; time.sleep(60)"], **kwargs)
+                    children.append(child)
+                    self.assertEqual(os.getpgid(child.pid), child.pid)
+                    events.append("child created")
+                    signal.raise_signal(number)
+                    events.append("constructor returned")
+                    return child
+
+                handlers = {item: signal.getsignal(item) for item in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)}
+                try:
+                    with mock.patch.object(probe.subprocess, "Popen", side_effect=spawn), \
+                            mock.patch.dict(os.environ, KERNEL_IMAGE=""):
+                        with self.assertRaisesRegex(RuntimeError, signal.Signals(number).name):
+                            probe.boot(root, "A", out)
+                    self.assertEqual(events, ["child created", "constructor returned"])
+                    state = json.loads((out / "process.json").read_text())
+                    self.assertEqual(state["pid"], children[0].pid)
+                    self.assertTrue(state["reaped"])
+                    self.assertEqual(state["returncode"], -signal.SIGTERM)
+                    self.assertEqual(state["fallback"], ["SIGTERM"])
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(children[0].pid, 0)
+                    self.assertIsNotNone(children[0].poll())
+                    self.assertEqual(handlers, {item: signal.getsignal(item) for item in handlers})
+                finally:
+                    for child in children:
+                        if child.poll() is None:
+                            os.killpg(child.pid, signal.SIGKILL)
+                        child.wait(timeout=5)
+                        child.stdin.close()
+                        child.stdout.close()
+
+    def test_probe_records_actual_selected_kernel_and_export_rejects_mismatch(self):
+        probe = self.load("feature_probe_kernel", "openssl-features/probe.py")
+        export = self.load("feature_export_kernel", "openssl-features/export.py")
+        expected = hashlib.sha256(b"original").hexdigest()
+        for mode in ("default", "same", "different", "missing"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                source = reference / "images/Image"
+                environment.update(FEATURE_FAKE_MODE="normal", KERNEL_IMAGE="")
+                if mode != "default":
+                    source = root / "selected-kernel.img"
+                    if mode != "missing":
+                        source.write_bytes(b"different kernel" if mode == "different" else b"original")
+                    environment["KERNEL_IMAGE"] = str(source)
+                logs = root / "probe"
+                logs.mkdir()
+                (logs / "baseline-A").mkdir()
+                (logs / "baseline-A/process.json").write_text(json.dumps(dict(kernel_sha256=expected)))
+                out = logs / "baseline-B"
+                with mock.patch.dict(os.environ, environment), \
+                        mock.patch.object(probe.BOOT, "check_boot_log", return_value=True), \
+                        mock.patch.object(probe, "parse", return_value=([], [], b"")):
+                    if mode == "missing":
+                        with self.assertRaises(FileNotFoundError):
+                            probe.boot(reference, "B", out)
+                    else:
+                        probe.boot(reference, "B", out)
+                state = json.loads((out / "process.json").read_text())
+                self.assertEqual(state["kernel_source"], str(source))
+                if mode == "missing":
+                    self.assertNotIn("kernel_sha256", state)
+                    self.assertNotIn("pid", state)
+                    self.assertFalse(record.exists())
+                    with self.assertRaises(ValueError):
+                        export.verify_kernel(logs, "baseline", expected)
+                    continue
+                actual = hashlib.sha256(source.read_bytes()).hexdigest()
+                observed = json.loads(record.read_text())
+                self.assertEqual(state["kernel_sha256"], actual)
+                self.assertEqual(state["kernel_sha256"], observed["kernel_sha256"])
+                self.assertEqual(state["kernel_image"], observed["kernel"])
+                self.assertNotEqual(Path(observed["kernel"]), source)
+                self.assertFalse(Path(observed["kernel"]).parent.exists())
+                self.assertEqual((reference / "images/Image").read_bytes(), b"original")
+                if mode == "different":
+                    with self.assertRaisesRegex(ValueError, "executed kernel/build hash mismatch"):
+                        export.verify_kernel(logs, "baseline", expected)
+                else:
+                    export.verify_kernel(logs, "baseline", expected)
+
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")
         data = io.BytesIO()
@@ -952,6 +1221,68 @@ class OpenSSLFeatures(unittest.TestCase):
                 prefixes.append(report["run_prefix"])
             self.assertNotEqual(*prefixes)
 
+    def test_build_creates_missing_parents_without_reusing_output(self):
+        build = self.load("feature_build_parents", "openssl-features-build.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary) / "new-parent" / "pair"
+            with mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                    mock.patch.object(build.subprocess, "check_output", side_effect=OSError("missing git")):
+                with self.assertRaises(OSError):
+                    build.build(out)
+            plan = (out / "plan.json").read_bytes()
+            self.assertEqual(len(json.loads(plan)), 6)
+            self.assertTrue((out / "results.csv").exists())
+            with self.assertRaises(FileExistsError):
+                build.build(out)
+            self.assertEqual((out / "plan.json").read_bytes(), plan)
+
+    def test_build_records_failed_command_exit_code(self):
+        build = self.load("feature_build_exit", "openssl-features-build.py")
+        for failure in ("baseline", "candidate", "configure"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as temporary:
+                repo = Path(temporary)
+                out = repo / "pair"
+                work = out / "work"
+                completed = []
+
+                def run(args, **_kwargs):
+                    if args[-1] == "msd_cardputerzero_defconfig":
+                        if failure == "configure":
+                            raise subprocess.CalledProcessError(7, args)
+                        work.mkdir()
+                        (work / ".config").write_text("".join(
+                            "BR2_PACKAGE_LIBOPENSSL_ENABLE_" + name + "=y\n" for name in build.OPTIONS))
+                    elif "--disable" in args and args[-1].startswith("BR2_PACKAGE_LIBOPENSSL_ENABLE_"):
+                        config = work / ".config"
+                        config.write_text(config.read_text().replace(args[-1] + "=y", "# " + args[-1] + " is not set"))
+                    elif args == ["make", "-C", str(work)]:
+                        variant = "baseline" if not completed else "candidate"
+                        if variant == failure:
+                            raise subprocess.CalledProcessError(7, args)
+                        completed.append(variant)
+                        (work / "target").mkdir()
+                        (work / "target/payload").write_text("fixture")
+                        (work / "images").mkdir()
+                        for name in ("Image", "rootfs.squashfs", "sdcard.img"):
+                            (work / "images" / name).write_text("image")
+
+                with mock.patch.object(build, "ROOT", repo), \
+                        mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                        mock.patch.object(build.subprocess, "check_output", side_effect=["commit", b"", "buildroot"]), \
+                        mock.patch.object(build.subprocess, "run", side_effect=run):
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        build.build(out)
+                with (out / "results.csv").open() as stream:
+                    rows = list(csv.DictReader(stream))
+                variant = "candidate" if failure == "candidate" else "baseline"
+                failed = next(row for row in rows if row["variant"] == variant and row["metric"] == "build_exit_code")
+                self.assertEqual(failed["value"], "7")
+                self.assertEqual(failed["valid"], "false")
+                self.assertIn("make", failed["note"])
+                self.assertEqual(len(rows), 6)
+                self.assertTrue(all(row["value"] == "" and row["valid"] == "false" for row in rows
+                                    if row["variant"] == variant and row["metric"] != "build_exit_code"))
+
     def test_export_refuses_empty_incomplete_and_duplicate_rows(self):
         export = self.load("feature_export", "openssl-features/export.py")
         with tempfile.TemporaryDirectory() as temporary:
@@ -972,6 +1303,85 @@ class OpenSSLFeatures(unittest.TestCase):
                 write(rows)
                 with self.assertRaises(ValueError):
                     export.read_attempt(directory, 1)
+
+    def test_export_requires_matching_build_probe_and_analysis_hashes(self):
+        export = self.load("feature_export_hashes", "openssl-features/export.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            pair, probe, analysis, host = (root / name for name in ("pair", "probe", "analysis", "host"))
+            for directory, count in ((pair, 6), (probe, 50), (analysis, 17)):
+                directory.mkdir()
+                rows = [dict(run_id=f"{directory.name}-{number}", variant="baseline", repeat=1,
+                             metric="bytes", value=1, unit="bytes", valid="true", note="fixture")
+                        for number in range(count)]
+                (directory / "plan.json").write_text(json.dumps(rows))
+                with (directory / "results.csv").open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=export.FIELDS)
+                    writer.writeheader()
+                    writer.writerows(rows)
+            build = dict(variants={})
+            regression = dict(inputs_sha256={})
+            measured = dict(inputs_sha256={})
+            for variant in ("baseline", "candidate"):
+                images = {name: hashlib.sha256(f"{variant}/{name}".encode()).hexdigest()
+                          for name in ("Image", "rootfs.squashfs", "sdcard.img")}
+                config = hashlib.sha256(variant.encode()).hexdigest()
+                build["variants"][variant] = dict(config_sha256=config, images_sha256=images)
+                regression["inputs_sha256"][f"{variant}/.config"] = config
+                regression["inputs_sha256"].update({f"{variant}/images/{name}": digest for name, digest in images.items()})
+                measured["inputs_sha256"][variant] = images["rootfs.squashfs"]
+            originals = {pair / "results.json": build, probe / "metadata.json": regression,
+                         analysis / "metadata.json": measured}
+            for variant in ("baseline", "candidate"):
+                for slot in ("A", "B"):
+                    boot = probe / f"{variant}-{slot}"
+                    boot.mkdir()
+                    originals[boot / "process.json"] = dict(kernel_sha256=build["variants"][variant]["images_sha256"]["Image"])
+            for path, data in originals.items():
+                path.write_text(json.dumps(data))
+            host.mkdir()
+            (host / "metadata.json").write_text('{"fixture":1}')
+            with (host / "results.csv").open("w", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=("case", "variant", "protocol", "negative", "exit_code", "pass", "host", "port"))
+                writer.writeheader()
+                writer.writerows(dict(case=number, variant="C1", protocol="1.3", negative=0, exit_code=0,
+                                      **{"pass": 1, "host": "localhost", "port": 443}) for number in range(1, 17))
+            out = root / "valid.csv"
+            export.export(pair, probe, host, analysis, out)
+            with out.open() as stream:
+                self.assertEqual(len(list(csv.DictReader(stream))), 89)
+            mutations = [(probe / "metadata.json", ("inputs_sha256", f"{variant}/{name}"), "0" * 64)
+                         for variant in ("baseline", "candidate")
+                         for name in (".config", "images/Image", "images/rootfs.squashfs", "images/sdcard.img")]
+            mutations += [(analysis / "metadata.json", ("inputs_sha256", variant), "0" * 64)
+                          for variant in ("baseline", "candidate")]
+            mutations += [(pair / "results.json", ("variants", "baseline", "images_sha256", "Image"), value)
+                          for value in (None, "invalid", "")]
+            mutations += [(probe / "metadata.json", ("inputs_sha256", "baseline/images/sdcard.img"),
+                           build["variants"]["candidate"]["images_sha256"]["sdcard.img"])]
+            mutations += [(probe / f"{variant}-{slot}/process.json", ("kernel_sha256",), value)
+                          for variant in ("baseline", "candidate") for slot in ("A", "B")
+                          for value in (None, "0" * 64)]
+            for number, (path, keys, value) in enumerate(mutations):
+                with self.subTest(path=path.name, keys=keys, value=value):
+                    changed = json.loads(json.dumps(originals[path]))
+                    current = changed
+                    for key in keys[:-1]:
+                        current = current[key]
+                    if value is None:
+                        del current[keys[-1]]
+                    else:
+                        current[keys[-1]] = value
+                    path.write_text(json.dumps(changed))
+                    rejected = root / f"rejected-{number}.csv"
+                    with self.assertRaises(ValueError):
+                        export.export(pair, probe, host, analysis, rejected)
+                    self.assertFalse(rejected.exists())
+                    path.write_text(json.dumps(originals[path]))
+            (probe / "metadata.json").unlink()
+            with self.assertRaises(FileNotFoundError):
+                export.export(pair, probe, host, analysis, root / "missing.csv")
+            self.assertFalse((root / "missing.csv").exists())
 
     def test_cold_pair_uses_same_path_and_only_four_feature_changes(self):
         build = self.load("feature_build", "openssl-features-build.py")
@@ -1011,6 +1421,29 @@ class OpenSSLFeatures(unittest.TestCase):
             self.assertTrue(all(row["value"] == "7" for row in rows if row["metric"] == "rootfs_regular_bytes"))
             self.assertTrue(all(row["value"] == "5" for row in rows if row["metric"] == "squashfs_bytes"))
             self.assertTrue(all(" is not set" in line for line in (out / "candidate/.config").read_text().splitlines()))
+
+    def test_probe_creates_missing_parent_directories_and_preserves_attempt(self):
+        probe = self.load("feature_probe_parents", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            out = root / "new-parent" / "probe"
+            args = [sys.executable, probe.__file__, "--pair", str(root / "missing-pair"), "--out", str(out)]
+            result = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertTrue(out.is_dir())
+            plan = (out / "plan.json").read_bytes()
+            results = (out / "results.csv").read_bytes()
+            self.assertEqual(len(json.loads(plan)), 50)
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 50)
+            self.assertTrue(all(row["valid"] == "false" and row["value"] == "" for row in rows))
+            self.assertTrue((out / "failure.json").is_file())
+            again = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(again.returncode, 0)
+            self.assertIn("FileExistsError", again.stderr)
+            self.assertEqual((out / "plan.json").read_bytes(), plan)
+            self.assertEqual((out / "results.csv").read_bytes(), results)
 
     def test_probe_collection_failure_preserves_invalid_rows(self):
         probe = self.load("feature_probe_failures", "openssl-features/probe.py")

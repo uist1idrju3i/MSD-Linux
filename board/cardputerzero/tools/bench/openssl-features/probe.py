@@ -4,6 +4,7 @@
 import argparse
 import base64
 import csv
+from contextlib import contextmanager
 import gzip
 import hashlib
 import importlib.util
@@ -17,6 +18,7 @@ import shutil
 import signal
 import subprocess
 import tarfile
+import tempfile
 import time
 import uuid
 
@@ -92,19 +94,65 @@ def parse(text, slot):
 
 
 def boot(reference, slot, out):
+    launching = False
+    pending_signal = None
+
+    def interrupt(number, _frame):
+        nonlocal pending_signal
+        if launching:
+            if pending_signal is None:
+                pending_signal = number
+            return
+        raise RuntimeError(f"signal {signal.Signals(number).name}")
+
+    @contextmanager
+    def defer_signals():
+        nonlocal launching, pending_signal
+        launching = True
+        try:
+            yield
+        finally:
+            launching = False
+            number, pending_signal = pending_signal, None
+            if number is not None:
+                interrupt(number, None)
+
+    signals = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
+    handlers = {number: signal.signal(number, interrupt) for number in signals}
+    try:
+        with tempfile.TemporaryDirectory(prefix="ossl-probe-", dir="/tmp") as temporary:
+            return supervise_boot(reference, slot, out, Path(temporary), defer_signals)
+    finally:
+        for number, handler in handlers.items():
+            signal.signal(number, handler)
+
+
+def supervise_boot(reference, slot, out, temporary, defer_signals):
     out.mkdir()
     log_path = out / "serial.log"
-    socket = out / "qmp.sock"
+    socket = temporary / "qmp.sock"
     environment = dict(os.environ, OUTPUT_DIR=str(reference), ROOT_DEVICE="/dev/mmcblk0p" + ("5" if slot == "A" else "6"),
-                       QEMU_EXTRA_APPEND="msd.module-test=usbnet,bcm2835-unicam,imx219", QEMU_QMP_SOCKET=str(socket))
-    process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
-                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               start_new_session=True, env=environment)
+                       QEMU_EXTRA_APPEND="msd.module-test=usbnet,bcm2835-unicam,imx219", QEMU_QMP_SOCKET=str(socket),
+                       QEMU_COPY_IMAGE="1", TMPDIR=str(temporary))
+    for name in ("QEMU_DRIVE_FILE", "QEMU_DRIVE_FORMAT"):
+        environment.pop(name, None)
+    process = None
     selector = selectors.DefaultSelector()
-    selector.register(process.stdout, selectors.EVENT_READ)
     pending = bytearray()
     state = dict(qmp_quit=False, reaped=False, returncode=None, fallback=[], error=None)
     try:
+        kernel_source = Path(environment.get("KERNEL_IMAGE") or reference / "images/Image").resolve()
+        kernel = temporary / "Image"
+        state.update(kernel_source=str(kernel_source), kernel_image=str(kernel))
+        shutil.copyfile(kernel_source, kernel)
+        state["kernel_sha256"] = KBD.COMMON.sha(kernel)
+        environment["KERNEL_IMAGE"] = str(kernel)
+        with defer_signals():
+            process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
+                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       start_new_session=True, env=environment)
+            state["pid"] = process.pid
+        selector.register(process.stdout, selectors.EVENT_READ)
         with log_path.open("xb") as log:
             def receive(marker, timeout=300):
                 deadline = time.monotonic() + timeout
@@ -150,16 +198,20 @@ def boot(reference, slot, out):
         state["error"] = repr(error)
         raise
     finally:
-        for number in (signal.SIGTERM, signal.SIGKILL):
-            if process.poll() is None:
-                state["fallback"].append(signal.Signals(number).name)
-                SUPERVISOR.signal_group(process, number)
-                SUPERVISOR.reap(process, 5)
-        state.update(reaped=process.poll() is not None, returncode=process.returncode)
+        for number in (signal.SIGHUP, signal.SIGINT, signal.SIGTERM):
+            signal.signal(number, signal.SIG_IGN)
+        if process is not None:
+            for number in (signal.SIGTERM, signal.SIGKILL):
+                if process.poll() is None:
+                    state["fallback"].append(signal.Signals(number).name)
+                    SUPERVISOR.signal_group(process, number)
+                    SUPERVISOR.reap(process, 5)
+            state.update(reaped=process.poll() is not None, returncode=process.returncode)
         (out / "process.json").write_text(json.dumps(state, indent=2) + "\n")
         selector.close()
-        process.stdin.close()
-        process.stdout.close()
+        if process is not None:
+            process.stdin.close()
+            process.stdout.close()
     text = log_path.read_text(errors="replace")
     if state["fallback"] or not state["qmp_quit"] or state["returncode"] != 0:
         raise ValueError("unclean QEMU supervision")
@@ -176,7 +228,7 @@ def main():
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
     out = args.out.resolve()
-    out.mkdir()
+    out.mkdir(parents=True)
     prefix = "openssl-probe-" + uuid.uuid4().hex
     rows = [dict(run_id=f"{prefix}-{variant}-{slot}-{case}", variant=f"{variant}-{slot}", repeat=1,
                  metric=case, value="", unit="status", valid="false", note="not run")

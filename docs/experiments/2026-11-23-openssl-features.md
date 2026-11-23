@@ -161,15 +161,26 @@ host C1 16行を含む。全行validで、正式測定の失敗・欠損は0行�
 公開値は`export.py`で全列、ID、計画行数を照合して生成した。
 公開する2つのCSVは行終端だけLFへ統一した。証拠archive内の生CSVは変更していない。
 
+初回の出力directoryや測定imageは不要である。公開archiveの測定記録と当時のrunnerを、
+未使用の出力先へまとめて展開する。再実行時は出力先名を変え、以下の全pathへ反映する。
+
 ```sh
-docker/msd-dev python3 board/cardputerzero/tools/bench/openssl-features/export.py \
-  --pair output-openssl-features-r1/cold-pair-01 \
-  --probe output-openssl-features-r1/probe-01 \
-  --host output-openssl-features-r1/c1-host-probe-01 \
-  --analysis output-openssl-features-r1/analysis-01 \
-  --out output-openssl-features-r1/reexport.csv
-python3 -c 'from pathlib import Path; p = Path("output-openssl-features-r1/reexport.csv"); p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n"))'
+mkdir output-openssl-features-replay-01
+tar -xzf docs/experiments/2026-11-23-openssl-features.tar.gz \
+  -C output-openssl-features-replay-01
+docker/msd-dev python3 output-openssl-features-replay-01/runners/export.py \
+  --pair output-openssl-features-replay-01/cold-pair-01 \
+  --probe output-openssl-features-replay-01/probe-01 \
+  --host output-openssl-features-replay-01/c1-host-probe-01 \
+  --analysis output-openssl-features-replay-01/analysis-01 \
+  --out output-openssl-features-replay-01/reexport.csv
+python3 -c 'from pathlib import Path; p = Path("output-openssl-features-replay-01/reexport.csv"); p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n"))'
+cmp docs/experiments/2026-11-23-openssl-features.csv output-openssl-features-replay-01/reexport.csv
+sha256sum docs/experiments/2026-11-23-openssl-features.csv output-openssl-features-replay-01/reexport.csv
 ```
+
+この再集計にはarchiveの当時のexporterを使う。保守版は実際に起動したkernelのhashも要求するため、
+そのfieldがない過去のrecordを受理しない。欠けたfieldを生のmetadataへ後付けしない。
 
 full buildの実行IDは`openssl-features-f40c3733458d44df99deb13b180973ab`、
 QEMUは`openssl-probe-f389737e241940f2b6d3b05e924bd281`。
@@ -182,8 +193,9 @@ QEMUは`openssl-probe-f389737e241940f2b6d3b05e924bd281`。
 | guest.sh | `cf5f3af98a586857c26f34a3a6ba075c8b35129e05b8955d8e723f65fc66a904` |
 | analyze.py | `e8ba6f496f04648dfe59ca8e58c6ea2a005dc65b9e29902b8e536a8c595b5715` |
 
-再試行は全て別の出力先を使う。測定commit上の製品sourceと、上表のrunnerを組み合わせる。
-測定commitには新規runnerが未収録なので、archiveの`runners/`から戻して実行する。
+再試行は全て別の出力先を使う。上表は初回の実行版で、現在の保守版とはhashが異なる。
+初回コードの照合にはarchiveの`runners/`を使い、新規の追試には下記の保守修正を含むrunnerを使う。
+測定commitには新規runnerが未収録なので、初回コードを復元するときだけarchiveから戻す。
 `openssl-features-build.py`は`board/cardputerzero/tools/bench/`直下へ、
 残りは同directoryの`openssl-features/`へ置く。
 build treeとimageは`output-openssl-features-r1/`に残し、commitしない。
@@ -201,6 +213,64 @@ full build logは計約16 MiBのため収録せず、末尾160行ずつと完全
 補助集計ではTLS log名の仮定違いとcontainerへの標準入力未転送で一度止まり、
 実際のlog名・`python3 -c`で読み直した。生の測定結果は書き換えていない。
 展開時の所有者変更warningは非root実行によるもので、内容の読取り後に`-all-root`で再packした。
+
+## 計測器の保守追試
+
+PR #299のReviewを受け、初回の生CSV・証拠archive・容量の結論は変えず、計測器を修正した。
+build・probe・exportの変更であり、製品設定やvendorの変更ではない。
+mainへの取り込みcommit `0ca3cef99dbdf92288245ed1b9fac0fa2eeffaf1`のtreeはPRの`e84d5fb`と一致した。
+以下の7指摘の修正は含まれていなかったため、最新のmainから別branchへ移植した。表は移植後のcommitを示す。
+
+| 指摘 | 修正と試験 | commit |
+|---|---|---|
+| 1 出力先の親がない | 親directoryも作る。計画・結果の保存と既存出力先の拒否を試験 | `711a639b` |
+| 2 環境から直接起動を継承 | `QEMU_COPY_IMAGE=1`を強制し、driveの上書き環境変数も除く。書き込むfake QEMUで元のSD image・DTBが不変と確認 | `e30c20dd` |
+| 3 exec後の複製が残る | probe所有の一時領域を`TMPDIR`へ渡す。正常・早期終了・spawn失敗で回収を確認 | `f7d8b4b0` |
+| 4 makeの失敗終了値が欠ける | 失敗したcommandの終了値をinvalid行へ保存。baseline・candidate・設定段階の終了7を試験 | `d682bdab` |
+| 5 深い出力先でQMP pathが長い | 3と共通の短い一時領域にsocketを置く。深い出力先と継承`TMPDIR`でも108 bytes未満 | `f7d8b4b0` |
+| 6 別buildの測定が混ざる | buildのkernel・SD・rootfs・configのhashをprobeと、rootfsのhashを容量解析と照合。不一致・欠損・不正hash・variantの取違えはCSV作成前に拒否 | `2ee9406f` |
+| 7 signal後にQEMUが残る | TERM・INT・HUPをcleanupへつなぐ。別sessionの子processへ必要ならTERM/KILLを送り、reapと一時領域の回収後にhandlerを戻す | `3495ca76` |
+
+3と5は一時領域の所有を共通原因として同じcommitにまとめた。
+signalの最初の試験では、`InterruptedError`が`selectors.select()`内部で吸収され、3 signalともtimeoutした。
+handlerの例外を`RuntimeError`へ変え、実processを使う3 signalの試験で停止・reap・複製回収を確認した。
+release-signingは追加6試験を含む45試験が成功した。初回89行もhash照合後に再exportし、全列の一致を確認した。
+この照合は記録されたhash同士を比べるもので、metadataの真正性を保証するものではない。
+hashの欠損でexportを拒否しても、元の失敗・未実施行を含む生CSVは残す。
+
+保守版の実QEMU追試は移植前のlocal commit `5c2ca4beb20c6e8b851d001b9153f52f6d9aef22`で実行した。
+そのtreeは移植後の`2ee9406f794d1bc4e569030c38e78771c2898289`と一致する。
+archive内の実行commitや生logは移植先のSHAへ書き換えず、当時の記録を保つ。
+full buildは再実施せず、初回cold pairのimageを再利用した。
+`QEMU_COPY_IMAGE=0`を明示しても複製だけを起動する負の対照を兼ね、次のコマンドで新規の50行を記録した。
+
+```sh
+docker/msd-dev env QEMU_COPY_IMAGE=0 python3 board/cardputerzero/tools/bench/openssl-features/probe.py \
+  --pair output-openssl-features-r1/cold-pair-01 \
+  --out output-openssl-features-review-01/probe-01
+```
+
+実行IDは`openssl-probe-b6656f8e11dd459481b74e75f3c04026`。
+前後A/Bの4 boot、A-slot各21 case、各19 moduleと9種類のalgorithm一覧が成功・一致した。
+全4回がQMP quit・reap終了0で、fallback・errorはなかった。
+実行後にも両者のSD・kernel・rootfs・configの8入力をhash計算し、初回buildとprobe開始時の記録との一致を確認した。
+初回の公開89行にこの新規50行を混ぜず、追試の計画・結果・metadata・log・runnerを
+[保守追試archive](2026-11-23-openssl-features-review.tar.gz)へ分けた。
+26 file、146,561 bytes、SHA-256は
+`5588898ecf3d3ed1609c950cd08df8b0324eb6f09cfc9c892c21d1327c276809`。
+全fileを保存元と照合し、秘密鍵・TLS session keyを含まないことも検査した。
+
+### PR #300の追加修正
+
+- 子processの生成から`Popen`の戻り値とPIDの保存まで、TERM・INT・HUPをhandler内で保留する。
+  参照の保存後に中断例外へ変え、通常の停止・reapへ進む。子へsignal maskを継承させない。
+  実processを生成した直後、constructorが戻る前に3 signalを送る試験で回収を確認する。
+- `KERNEL_IMAGE`を指定した場合はそのfile、空または未指定なら比較元の`images/Image`を一時領域へ複製する。
+  そのcopyを`KERNEL_IMAGE`へ明示し、SHA-256・元path・起動pathを各bootの`process.json`へ保存する。
+  比較元imageのhashとは別の記録である。exportでは前後A/Bの4記録をbuildの`Image`のhashと照合し、
+  不一致・field欠損を拒否する。同じ内容の別pathは許可し、別内容のkernelでは回帰が成功しても集計を拒否する。
+- probeの出力先は親directoryも作る。上の追試commandをfresh checkoutで使えるようにし、
+  入力欠損時も計画と未実施50行を保存する。既存の出力先は上書きせず拒否する。
 
 ## 未確認
 
