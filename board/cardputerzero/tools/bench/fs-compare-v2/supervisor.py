@@ -175,19 +175,25 @@ def boot_serial_lines(lines, enabled):
     pending = ""
     origin = 0
     for number, text in enumerate(lines, 1):
+        marker = text.startswith(("msd.fscmp: expected_errors_begin kind=",
+                                  "msd.fscmp: expected_errors_end kind="))
         if not enabled() or text.startswith("msd.fscmp:"):
             if pending:
                 yield origin, pending
                 pending = ""
-            yield number, text
-            continue
+            if not marker:
+                yield number, text
+                continue
         stamps = list(re.finditer(r"\[\s*[0-9]+\.[0-9]+\] ", text))
         if stamps:
             prefix = text[:stamps[0].start()]
             if prefix:
-                if not pending:
-                    origin = number
-                pending += prefix
+                if marker:
+                    yield number, prefix
+                else:
+                    if not pending:
+                        origin = number
+                    pending += prefix
             for index, stamp in enumerate(stamps):
                 end = stamps[index + 1].start() if index + 1 < len(stamps) else len(text)
                 yield number, text[stamp.start():end]

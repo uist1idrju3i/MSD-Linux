@@ -398,6 +398,43 @@ class Errors(unittest.TestCase):
         self.assertTrue(any(not item["expected"] for item in self.scan(text + "I/O error, dev dm-1", "T6")))
         self.assertTrue(any(not item["expected"] for item in self.scan(text.split("msd.fscmp: expected_errors_end")[0], "T6")))
 
+    def test_replay_markers_split_concatenated_kernel_fragments(self):
+        begin = "msd.fscmp: expected_errors_begin kind=T1_replay"
+        end = "msd.fscmp: expected_errors_end kind=T1_replay"
+        kernel = "[  276.732017] EXT4-fs (dm-1): recovery complete"
+        observed = begin + kernel
+        self.assertEqual(list(M.boot_serial_lines([observed, end], lambda: False)),
+                         [(1, begin), (1, kernel), (2, end)])
+        self.assertEqual(self.scan(observed + "\n" + end + "\n", "T1"), [])
+        for kind, test in [("T1_replay", "T1"), ("T6_corruption", "T6")]:
+            begin = f"msd.fscmp: expected_errors_begin kind={kind}"
+            end = f"msd.fscmp: expected_errors_end kind={kind}"
+            inside = "[  276.732017] EXT4-fs error (device dm-1): fixture"
+            outside = "[  277.120499] EXT4-fs error (device dm-1): after"
+            text = begin + inside + "\n" + end + outside + "\n"
+            errors = self.scan(text, test)
+            self.assertEqual([(row["line"], row["expected"], row["text"]) for row in errors],
+                             [(1, True, inside), (2, False, outside)])
+            fatal = "[  276.732017] Kernel panic - not syncing"
+            errors = self.scan(begin + fatal + "\n" + end + "\n", test)
+            self.assertEqual(len(errors), 1)
+            self.assertEqual(errors[0]["category"], "kernel-fatal")
+            self.assertFalse(errors[0]["expected"])
+            for unknown in ("unknown", kind + "_unknown", kind + "[bad]"):
+                with self.subTest(kind=unknown):
+                    errors = self.scan(text.replace(kind, unknown), test)
+                    self.assertEqual(sum(row["category"] == "context" for row in errors), 2)
+                    self.assertFalse(any(row["expected"] for row in errors))
+            for wrong_test, phase in [("smoke", "run"), (test, "verify")]:
+                errors = self.scan(text, wrong_test, phase)
+                self.assertEqual(sum(row["category"] == "context" for row in errors), 2)
+                self.assertFalse(any(row["expected"] for row in errors))
+            errors = self.scan(begin + inside + "\n", test)
+            self.assertTrue(any(row["category"] == "context" and not row["expected"]
+                                for row in errors))
+            errors = self.scan(end + outside + "\n", test)
+            self.assertFalse(any(row["expected"] for row in errors))
+
     def test_t1_negative_manifest_is_an_expected_measurement(self):
         errors = self.scan("msd.fscmp: expected_errors_begin kind=T1_replay\n"
                            "msd.fscmp: T1_MANIFEST_FAIL entry=1\n"
@@ -1190,6 +1227,8 @@ class LightSmoke(unittest.TestCase):
             body = guest.split(f"\n{name}()\n{opening}\n", 1)[1].split(f"\n{closing}\n", 1)[0]
             return f"{name}()\n{opening}\n{body}\n{closing}\n"
 
+        negative_dispatch = guest.split('\n\t\tnegative_control=no\n', 1)[1].split(
+            '\n\t\tif [ "$mount_ok" = yes ]; then', 1)[0]
         script = (function("check_manifest_at_point") + function("check_t1_manifest")
                   + function("check_t1_negative_manifest", "(", ")")
                   + function("validate_t1_negative_final")
@@ -1197,11 +1236,14 @@ class LightSmoke(unittest.TestCase):
                   + 'fail() { console "error=$*"; exit 1; }\n'
                   + 'RUN_PATH=$1\nREPLAY_WORKLOAD_ROOT=$1\nTEST=T1-negative-final\n'
                   + 'tab=$(printf "\\t")\n'
-                  + 'check_manifest_at_point 1 1 yes\n'
-                  + 'mount_ok=yes\nfsck_status=0\nnegative_control=no\n'
+                  + 'entry=147\nmanifest_limit=1\nmount_ok=yes\nfsck_status=0\n'
+                  + 'result="$(check_manifest_at_point "$entry" "$manifest_limit" "$mount_ok")"\n'
+                  + 'IFS="$tab" read -r ack_count manifest_ok expected_file <<EOF\n$result\nEOF\n'
+                  + '[ "${point_entry+x}" != x ]\n'
+                  + 'printf "%s\\n" "$result"\n'
                   + 'if [ "$2" = broken ]; then check_t1_manifest() { '
                   + 'ack_count=1; manifest_ok=yes; manifest_hash_mismatch=no; }; fi\n'
-                  + 'negative_control=$(check_t1_negative_manifest "$RUN_PATH/T1-expected.tsv")\n'
+                  + 'negative_control=no\n' + negative_dispatch + '\n'
                   + 'echo "control=$negative_control"\n'
                   + 'validate_t1_negative_final\n')
         digest = M.hashlib.sha256(b"data").hexdigest()
@@ -1253,6 +1295,7 @@ class LightSmoke(unittest.TestCase):
                 self.assertEqual(len(diagnostics), len(recovery) + len(controls))
                 self.assertEqual(bool(recovery), manifest == "no")
                 self.assertEqual(bool(controls), control == "yes")
+                self.assertTrue(all(" entry=147 " in line for line in diagnostics))
                 log = directory / "qemu-run.log"
                 log.write_text("msd.fscmp: expected_errors_begin kind=T1_replay\n"
                                + "".join(f"msd.fscmp: {line}\n" for line in diagnostics)
