@@ -12,6 +12,10 @@ import subprocess
 from build import ROOT, VARIANTS, sha
 
 
+def configure_tokens(text):
+    return re.findall(r"(?<!\S)(--[A-Za-z][A-Za-z0-9_-]*)", text)
+
+
 def collect(build, serial):
     rows, sources = {}, {}
     defaults = {}
@@ -62,7 +66,7 @@ def collect(build, serial):
             configure = source / "configure"
             help_text = subprocess.check_output(["/bin/sh", configure, "--help"], text=True)
             for line in help_text.splitlines():
-                for token in re.findall(r"(?<!\S)(--[a-z][a-z0-9-]+)", line):
+                for token in configure_tokens(line):
                     add(variant, "configure", token, configure, evidence=line)
         else:
             cache = dict(re.findall(r"(?m)^([^/#\n:=]+):[^=]+=(.*)$", (source / "CMakeCache.txt").read_text()))

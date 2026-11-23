@@ -12,13 +12,21 @@ from unittest import mock
 import build
 
 from build import VARIANTS, overrides
-from inventory import encode_multiline
+from inventory import configure_tokens, encode_multiline
 from runtime import initramfs, parse_serial
 from summarize import putty_protocol_ids
 from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_configure_tokens_preserve_case_and_complete_names(self):
+        self.assertEqual(configure_tokens("  --with-Werror  --enable-FEATURE[=ARG]  --without-X"),
+                         ["--with-Werror", "--enable-FEATURE", "--without-X"])
+        self.assertEqual(configure_tokens(""), [])
+        self.assertEqual(configure_tokens("text--not-an-option -h --"), [])
+        with self.assertRaises(TypeError):
+            configure_tokens(None)
+
     def summary_fixture(self, root, traced=True):
         build, measure, final = (root / name for name in ("build", "measure", "final"))
         for path in (build, measure, final):

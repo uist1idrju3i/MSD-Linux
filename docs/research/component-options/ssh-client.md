@@ -73,4 +73,4 @@ python3 board/cardputerzero/tools/bench/ssh-client-compare/inventory.py \
 
 母集団はsourceから毎回抽出し、CSVの`variant/category/option`と比較します。CSVは原文のdefault式とhelpを残すため、数値の実効値がない項目を推測で補完しません。製品導入時の設定契約には追加確認が必要です。
 
-複数行のCSV cellだけは`json:`に続くJSON文字列で表します。`json.loads(cell[5:])`で元の改行・空白を復元でき、原文の空白行をgit diff検査に合わせて削除しません。通常のcellと896件のtokenはそのままです。
+複数行のCSV cellだけは`json:`に続くJSON文字列で表します。`json.loads(cell[5:])`で元の改行・空白を復元でき、原文の空白行をgit diff検査に合わせて削除しません。通常のcellは文字列のままです。configureの大文字も保持し、`--with-Werror`などの完全なtokenを列挙します。
