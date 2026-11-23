@@ -101,6 +101,29 @@ full-download fallbackは、全量と一時領域の容量検査、保存先の�
 利用者の明示同意、異常時の非activateを満たす別経路としてだけ許す。
 現時点でfallbackを実装済みとは扱わない。
 
+### Phase Aの観測済み事項と残件
+
+[2026-11-23のstreaming PoC](../experiments/2026-11-23-rauc-streaming-poc.md)では、
+host上の実RAUC 1.15.2の`info`とlocalhostの模擬HTTP serverを使い、各条件を5回試した。
+`install`は実行していないため、製品のinstall経路全体の合格とは扱わない。
+
+| 条件 | 観測した事実 | Phase Aの状態 |
+|---|---|---|
+| Range拒否・200 | RAUCは非0で失敗し、full-downloadで成功するfallbackは行わなかった | 既定失敗の契約に適合。ただし拒否までの受信量は0ではない |
+| redirect・206 | 302後に206を取得し、CMS検証済みで終了0 | 模擬serverで確認済み。実GitHub assetの観測とは分ける |
+| 切断・再接続 | 一度の切断後に再接続し、同じ8-byte Rangeを再要求して検証成功。毎回切断では上限後に失敗 | 確認済み。残り4 bytesからのresumeや再起動後の再開は未確認 |
+| 429・Retry-After | 指定3秒に対し次要求は約1.0秒後。一度だけなら回復、継続時は5回retry後に失敗 | OPEN。Retry-Afterを遵守していない |
+| 期限切れsigned URL・403 | 同じobject URLを5回retryして失敗。元URLの再解決や新しい署名queryの取得は観測せず | OPEN。再解決による回復は未実装 |
+| activation | 全試行でbackendのset-primary/set-state呼出し0、架空slot・状態fileのhash不変 | `info`試験で確認。実slotや実/dataへのwrite量の証明ではない |
+
+429への対応は、wrapperによるbackoff、RAUCへのpatch、現挙動を制約として受容する案から選ぶ。
+403への対応は、wrapperがURLを再解決して処理を再開する案と、RAUCへのpatchを比較する。
+いずれも未決定であり、wrapperの停止・再実行やpatchの安全性を確認済みとはしない。
+
+Phase Aには`install`、adaptiveのblock再利用、端末側index生成・再生成のwrite量、
+実GitHub Release assetのredirect・206・期限切れ挙動の観測が残る。
+bundle作成時のindex生成を、端末での再利用やwrite量の測定に読み替えない。
+
 hash indexは4 KiB blockごとのSHA-256を持ち、RAUCの
 `data-directory`配下、すなわち`/data/rauc`内へ置く。
 index生成・再利用・破損時の再生成に伴うread/write量を別々に測る。
