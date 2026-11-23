@@ -135,7 +135,7 @@ python3 board/cardputerzero/tools/bench/ssh-client-compare/test_runner.py
 PR #292のreviewを受け、保存済みの入力から派生CSV・JSONとoption表を再生成しました。QEMU・client build・容量測定は再実行せず、生の証拠archiveは書き換えていません。変更前の抽出表・要約もarchive内に履歴として保持します。
 
 - Buildrootを`8b238854`とした本文は誤記でした。archive内の3つの`.config`、source基準commitのsubmodule参照、保存したrecipe 6 fileのhashを照合し、上記の`bbbdab36565`へ訂正しました。vendorは変更していません。
-- `--measure-from`で基準を変えると旧root全体が混入する不具合を修正しました。今回の正式容量では、3候補の基準file内容が共通targetと一致し、この条件は発生していません。追加bytes・圧縮差・hashは元のままです。
+- `--measure-from`で基準を変えると旧root全体が混入する不具合を修正しました。第2回reviewでは集計側にも旧`build/files.json`を読む箇所が残っていたため、追加file・依存・ELFの参照を容量測定先へ統一しました。新基準に既存のlibraryは追加bytesへ含めません。今回の正式容量では、3候補の基準file内容が共通targetと一致し、この条件は発生していません。追加bytes・圧縮差・hashは元のままです。
 - 正式集計はQMP quit・終了0・fallbackなし・errorなしを満たす最終runだけを許可します。準備段階の`failure.json`も失敗として保持します。今回の正式run06は元からこの条件を満たしており、正常15・負対照15の判定は変わりません。
 - straceがないrunの書込みopenは`null`（未観測）とし、空のtraceとは区別します。正式runの`trace_available`は各候補10/10です。
 - configureの大文字を保持し、`--with-Werror`等を完全名で再抽出しました。option表は896件から897件へ変わりました。`ssh -G`の`identityfile`は最後の1件だけでなく、出力順の6候補をJSON配列とCSVの複数行cellに保持します。

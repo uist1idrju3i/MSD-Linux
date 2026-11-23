@@ -5,6 +5,7 @@ import gzip
 import csv
 import json
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 from unittest import mock
@@ -83,11 +84,11 @@ class Runner(unittest.TestCase):
         for variant in VARIANTS:
             work = build / variant
             (work / "root/usr/bin").mkdir(parents=True)
-            (work / "root/usr/bin/client").write_bytes(b"client")
-            if variant == "putty":
-                (work / "root/usr/bin/plink").write_bytes(b"plink")
-            (work / "files.json").write_text('[{"path":"usr/bin/client","bytes":6}]')
+            name = {"openssh": "ssh", "dropbear": "dbclient", "putty": "plink"}[variant]
+            (work / "root/usr/bin" / name).write_bytes(b"client")
+            (work / "files.json").write_text(json.dumps([dict(path=f"usr/bin/{name}", bytes=6)]))
             (work / "dependencies.json").write_text('{}')
+            shutil.copytree(work, measure / variant)
             for condition in ("good", "wrong"):
                 for repeat in range(1, 6):
                     serial.extend((f"SSH_BEGIN {variant} {condition} {repeat}", "SSH_HOME_BEFORE",
@@ -103,6 +104,36 @@ class Runner(unittest.TestCase):
         (final / "inputs.json").write_text('{}')
         (final / "process.json").write_text(json.dumps(dict(qmp_quit=True, returncode=0, fallback=[], error=None)))
         return build, measure, final
+
+    def test_summary_uses_measured_payload_even_when_new_baseline_contains_files(self):
+        for already_installed in (False, True):
+            with self.subTest(already_installed=already_installed), tempfile.TemporaryDirectory() as directory:
+                built, measure, final = self.summary_fixture(Path(directory))
+                path = built / "dropbear/files.json"
+                original = json.loads(path.read_text())
+                path.write_text(json.dumps([*original, dict(path="usr/lib/libcrypt.so.2", bytes=7)]))
+                for tree in (built / "dropbear/root", measure / "dropbear/root"):
+                    (tree / "usr/lib").mkdir()
+                    (tree / "usr/lib/libcrypt.so.2").write_bytes(b"library")
+                if already_installed:
+                    (measure / "dropbear/files.json").write_text('[]')
+                (measure / "dropbear/dependencies.json").write_text('{"libcrypt.so.2":"usr/lib/libcrypt.so.2"}')
+                with (measure / "results.csv").open(newline="") as stream:
+                    rows = list(csv.DictReader(stream))
+                for row in rows:
+                    if row["variant"] == "dropbear":
+                        row["value"] = 104
+                with (measure / "results.csv").open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+                    writer.writeheader()
+                    writer.writerows(rows)
+                with mock.patch("summarize.needed", return_value=[]) as needed:
+                    _, report = summarize(built, measure, [final], final)
+                result = report["candidates"]["dropbear"]
+                self.assertEqual(result["installed_added"], 0 if already_installed else 6)
+                self.assertEqual(result["squashfs_delta"], 4)
+                self.assertEqual(result["dependency_closure"], {"libcrypt.so.2": "usr/lib/libcrypt.so.2"})
+                self.assertTrue(all(call.args[0].is_relative_to(measure) for call in needed.call_args_list))
 
     def test_summary_rejects_failed_final_process_despite_complete_serial(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -82,17 +82,18 @@ def summarize(build, measure, attempts, final):
     report = dict(sizes=sizes, candidates={}, algorithms={}, putty_binary_protocol_ids={},
                   final_process=final_process)
     for variant in VARIANTS:
-        files = json.loads((build / variant / "files.json").read_text())
-        binary = build / variant / "root" / files[0]["path"]
+        files = json.loads((measure / variant / "files.json").read_text())
+        name = {"openssh": "ssh", "dropbear": "dbclient", "putty": "plink"}[variant]
+        binary = measure / variant / "root/usr/bin" / name
         report["candidates"][variant] = dict(files=files, direct_needed=needed(binary),
-            dependency_closure=json.loads((build / variant / "dependencies.json").read_text()),
+            dependency_closure=json.loads((measure / variant / "dependencies.json").read_text()),
             installed_added=sum(row["bytes"] for row in files),
             squashfs_delta=sizes[variant]["median"] - sizes["baseline"]["median"],
             good=[code for (name, condition, _), code in trials.items() if name == variant and condition == "good"],
             wrong=[code for (name, condition, _), code in trials.items() if name == variant and condition == "wrong"])
     for variant, kind, body in re.findall(r"SSH_ALGORITHMS (\S+) (\S+)\n(.*?)SSH_ALGORITHMS_END", serial, re.S):
         report["algorithms"].setdefault(variant, {})[kind] = body.strip().splitlines()
-    binary = build / "putty/root/usr/bin/plink"
+    binary = measure / "putty/root/usr/bin/plink"
     report["putty_binary_protocol_ids"] = putty_protocol_ids(binary.read_bytes())
     report["putty_binary_protocol_ids"]["limitation"] = "ELF文字列とsource登録表の照合候補。runtime queryではなく全algorithmの交渉試験でもない"
     report["home_changes"] = {}
