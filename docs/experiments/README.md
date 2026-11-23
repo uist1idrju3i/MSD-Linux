@@ -21,7 +21,8 @@
 | [RAUC streaming](2026-11-23-rauc-streaming-poc.md) | [CSV](2026-11-23-rauc-streaming-poc.csv) | 2026-11-23 | host metadata各5回・Phase A未完 | 206・302成功、200拒否、403/429/切断のretry観測。Retry-Afterは待たない。実Releaseはassetなし。install・QEMU・adaptive再利用は未実施 |
 | [deps一括更新](2026-11-22-deps-update.md) | [CSV](2026-11-22-deps-update.csv) | 2026-11-22 | build・icount gate・kernel .config差分確認 | snapshot不整合をsnapshot更新で解消。QEMU 11.1.3は現行11.1.2比1.09xでgate成立。kernel差分は新規moduleのみ。実機・bq27220未確認 |
 | [RAID6 PQ](2026-11-19-raid6-pq.md) | [CSV](2026-11-19-raid6-pq.csv) | 2026-11-19 | QEMU各5回とA/A完了 | PQ benchmarkだけを省略。Btrfs mount・scrub成功。実機時間・algorithm未確認 |
-| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 全smokeは20/851成功後、21件目E2/T1-negative-finalで停止 | 代表21件はA/A・負対照を含め経路確認成功。判定修正後に新しい出力先で851件を最初から再実行予定・未実施。全coverageは未完了 |
+| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 試行05は84/851成功後、85件目F1/T1-negative-finalで停止 | main未開始。生coverageは85件を収録。失敗とtext証拠を保全、全coverage未完了 |
+| [v2負対照のsentinel](2026-11-23-s04-fs-compare-v2-negative-sentinel.md) | [CSV](2026-11-23-s04-fs-compare-v2-negative-sentinel.csv) | 2026-11-23 | 同期済みsentinelでF1・E1・E2の単独診断成功 | host 68試験成功。全smokeとmainは未実施。事前確認失敗3件も保全 |
 | [cnf](2026-11-18-openssl-cnf.md) | [CSV](2026-11-18-openssl-cnf.csv) | 2026-11-18 | QEMU各3回 | C1/C2成功・未適用 |
 | [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |
 | [idle残量](2026-11-17-data-idle-residual.md) | なし | 2026-11-17 | QEMU 5回 | 88 sectorはmetadataの遅延writeback |

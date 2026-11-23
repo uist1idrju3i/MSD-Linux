@@ -69,3 +69,4 @@ representative,rerun-1dc14a3-04-05-E1-T1-sample,E1,T1-sample,passed,404.26653852
 representative,rerun-1dc14a3-04-06-E1-T1-sample-selected,E1,T1-sample-selected,passed,330.6098415260021,
 representative,rerun-1dc14a3-04-07-E1-T1-negative,E1,T1-negative,passed,403.0708015989985,
 representative,rerun-1dc14a3-04-08-E1-T1-negative-final,E1,T1-negative-final,failed,366.8501467819988,guest_point_entry_unset;guest_exit=2;remaining=13
+smoke,rerun-12b5c74-05,F1,T1-negative-final,failed,30110.169325197003,raw_probes=85;passed=84;guest_exit=1;host_exit=1;main_not_started
