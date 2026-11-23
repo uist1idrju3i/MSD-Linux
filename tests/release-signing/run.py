@@ -1,5 +1,6 @@
 """Exercise release signing with throwaway keys and adversarial archives."""
 
+import csv
 import hashlib
 import importlib.util
 import io
@@ -250,6 +251,42 @@ class ReleaseSigning(unittest.TestCase):
         put(root / "usr/bin/consumer", "GOMP_parallel")
         with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
             bench.audit_configured(root, config)
+
+    def test_libgomp_csv_derivation_preserves_trials(self):
+        tool = BOARD / "tools/bench/libgomp-csv.py"
+        source, followup, output = (self.work / name for name in ("source.csv", "followup.csv", "out.csv"))
+        header = "kind,variant,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail\n"
+        original = (header + "pack,before,,10,4,,0,hash\npack,before-aa,,10,4,,0,hash\n"
+                    "negative,openmp,,,,,1,refused\nnot_run,product,,,,,,not executed\n")
+        template = (ROOT / ".agents/skills/experiment-record/assets/results-template.csv").read_text()
+        source.write_text(original)
+        followup.write_text(template + "followup,current,1,elf_count,2,count,true,scanned\n")
+        args = ("python3", tool, "--input", source, "--followup", followup,
+                "--out", output, "--run-prefix", "trial")
+        command(*args)
+        rows = list(csv.DictReader(io.StringIO(output.read_text())))
+        self.assertEqual(list(rows[0])[:8], template.strip().split(","))
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(len({r["run_id"] for r in rows}), 5)
+        self.assertEqual(rows[1]["repeat"], "2")
+        self.assertEqual((rows[2]["valid"], rows[2]["exit_code"]), ("true", "1"))
+        self.assertEqual((rows[3]["valid"], rows[3]["value"]), ("false", ""))
+        for old, new in zip(csv.DictReader(io.StringIO(original)), rows):
+            self.assertEqual(old, {key: new[key] for key in old})
+        previous = output.read_bytes()
+        command(*args, ok=False)
+        self.assertEqual(output.read_bytes(), previous)
+        output.unlink()
+        for bad in (header, "bad,columns\n"):
+            source.write_text(bad)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
+        source.write_text(original)
+        for bad in ("trial-pack-before-none,current,1,elf_count,2,count,true,duplicate\n",
+                    "followup,current,1,elf_count,nan,count,true,nonfinite\n"):
+            followup.write_text(template + bad)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
 
     def test_binary_index_removal_refuses_non_busybox(self):
         self.fixture()

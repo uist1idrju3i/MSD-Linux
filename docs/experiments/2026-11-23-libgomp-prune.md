@@ -162,3 +162,38 @@ CIのserialとprocess結果はartifact `14797469336`から取得した。
 初回146 ELFの結果と同じ標本ではないため、初回の容量値やQEMU module数を現行構成の値に置き換えない。
 現行CI成果物はlibgomp削除後であり、対応する削除前製品imageは未取得である。
 現行構成の前後4 boot比較・容量比較、修正後HEADのCI結果は、この追試では未確認。取得後のQEMUも再実行していない。
+
+## 公開CSVの派生方法
+
+公開CSVはtemplateの`run_id,variant,repeat,metric,value,unit,valid,note`を先頭にし、初回の8列の値も保持した。
+初回11行の全値・終了値・順序は変更せず、追試archiveの`current.csv`の8行を加えた19行である。
+初回の原表はcommit `126cc57fe5324f710f6ec75024b34d94284ffe12`の同名CSVに固定する。
+そのSHA-256は`3ac79100a4d65210924003a87f590769525aed8b508578514f154e97e1d5a508`。
+両archiveと追試の原表は変換時に変更しない。
+
+変換器`libgomp-csv.py`はkind・variant・slotから初回の実行IDを作る。before A/Aは反復2、他は反復1である。
+初回分の主指標はpackのSquashFS bytes、bootのmodule数、対照の終了値とし、rootfs bytesなど他の値は補助列に残す。
+`valid=true`は試行が予定した成否を記録したという意味であり、終了1の負の対照を成功した通常試行へ書き換えたものではない。
+初回のnot_runと追試の削除前bootは`valid=false`・value空欄にし、未実施を0に置き換えない。
+初回のfull build未実施もその時点の状態として保持する。
+変換器は上書き、空の原表、不正列、重複ID、追試の非有限値を拒否する。
+
+初回commitを含むcheckoutで、未使用の出力名へ次のように再生成する。
+
+```sh
+set -euo pipefail
+mkdir output-libgomp-csv-replay
+git show 126cc57fe5324f710f6ec75024b34d94284ffe12:docs/experiments/2026-11-23-libgomp-prune.csv \
+  > output-libgomp-csv-replay/source.csv
+printf '%s  %s\n' 3ac79100a4d65210924003a87f590769525aed8b508578514f154e97e1d5a508 \
+  output-libgomp-csv-replay/source.csv | sha256sum -c -
+printf '%s  %s\n' 7fc6b11e95b6326e8e81ea5436a35732647d2f6b8ed447f4fa021024ee76b465 \
+  docs/experiments/2026-11-23-libgomp-current-audit-evidence.tar.gz | sha256sum -c -
+tar -xzf docs/experiments/2026-11-23-libgomp-current-audit-evidence.tar.gz \
+  -C output-libgomp-csv-replay current.csv
+python3 board/cardputerzero/tools/bench/libgomp-csv.py \
+  --input output-libgomp-csv-replay/source.csv \
+  --followup output-libgomp-csv-replay/current.csv \
+  --out output-libgomp-csv-replay/derived.csv --run-prefix libgomp-r1
+cmp output-libgomp-csv-replay/derived.csv docs/experiments/2026-11-23-libgomp-prune.csv
+```

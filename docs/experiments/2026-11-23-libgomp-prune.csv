@@ -1,12 +1,20 @@
-kind,variant,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail
-pack,before,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
-pack,before-aa,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
-pack,after,,35807803,20197376,,0,720e723724e233e9a65339b2f90a59cad7b3635c0f157b529270c1751bb8229b
-qemu,before,A,,,19,0,ready/login; QMP quit; no fallback
-qemu,before,B,,,19,0,ready/login; QMP quit; no fallback
-qemu,after,A,,,19,0,ready/login; QMP quit; no fallback
-qemu,after,B,,,19,0,ready/login; QMP quit; no fallback
-negative,openmp,,,,,1,consumer refused; library retained
-negative,dlopen,,,,,1,consumer refused; library retained
-negative,existing-output,,,,,1,FileExistsError; no overwrite
-not_run,latest-product-build,,,,,,repack only; full build deferred to CI
+run_id,variant,repeat,metric,value,unit,valid,note,kind,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail
+libgomp-r1-pack-before-none,before,1,squashfs_bytes,20332544,bytes,true,source row 1; observed result,pack,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
+libgomp-r1-pack-before-aa-none,before-aa,2,squashfs_bytes,20332544,bytes,true,source row 2; observed result,pack,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
+libgomp-r1-pack-after-none,after,1,squashfs_bytes,20197376,bytes,true,source row 3; observed result,pack,,35807803,20197376,,0,720e723724e233e9a65339b2f90a59cad7b3635c0f157b529270c1751bb8229b
+libgomp-r1-qemu-before-A,before,1,module_count,19,count,true,source row 4; observed result,qemu,A,,,19,0,ready/login; QMP quit; no fallback
+libgomp-r1-qemu-before-B,before,1,module_count,19,count,true,source row 5; observed result,qemu,B,,,19,0,ready/login; QMP quit; no fallback
+libgomp-r1-qemu-after-A,after,1,module_count,19,count,true,source row 6; observed result,qemu,A,,,19,0,ready/login; QMP quit; no fallback
+libgomp-r1-qemu-after-B,after,1,module_count,19,count,true,source row 7; observed result,qemu,B,,,19,0,ready/login; QMP quit; no fallback
+libgomp-r1-negative-openmp-none,openmp,1,exit_code,1,status,true,source row 8; expected failure,negative,,,,,1,consumer refused; library retained
+libgomp-r1-negative-dlopen-none,dlopen,1,exit_code,1,status,true,source row 9; expected failure,negative,,,,,1,consumer refused; library retained
+libgomp-r1-negative-existing-output-none,existing-output,1,exit_code,1,status,true,source row 10; expected failure,negative,,,,,1,FileExistsError; no overwrite
+libgomp-r1-not_run-latest-product-build-none,latest-product-build,1,exit_code,,status,false,source row 11; not executed,not_run,,,,,,repack only; full build deferred to CI
+libgomp-current-r2-ci-build,ci-126cc57,1,exit_code,0,status,true,CI build job 137539472527 success,,,,,,,
+libgomp-current-r2-audit,ci-126cc57,1,elf_count,184,count,true,DT_NEEDED/libgomp/GOMP_ consumers=0; all current ELF scanned,,,,,,,
+libgomp-current-r2-btrfs,ci-126cc57,1,needed_libgomp,0,count,true,usr/bin/btrfs present; literal/GOMP_ references=0,,,,,,,
+libgomp-current-r2-cryptsetup,ci-126cc57,1,needed_libgomp,0,count,true,usr/sbin/cryptsetup present; literal/GOMP_ references=0,,,,,,,
+libgomp-current-r2-old-image-negative,old-image-current-config,1,exit_code,1,status,true,expected failure: configured product tools absent,,,,,,,
+libgomp-current-r2-ci-slot-A,ci-126cc57-A,1,exit_code,0,status,true,ready/login; QMP quit; reaped; no fallback,,,,,,,
+libgomp-current-r2-ci-slot-B,ci-126cc57-B,1,exit_code,0,status,true,ready/login; QMP quit; reaped; no fallback,,,,,,,
+libgomp-current-r2-before-boot,ci-126cc57-before,1,exit_code,,status,false,not run: matching unpruned product image unavailable,,,,,,,
