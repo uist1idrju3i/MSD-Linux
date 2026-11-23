@@ -197,3 +197,10 @@ python3 board/cardputerzero/tools/bench/libgomp-csv.py \
   --out output-libgomp-csv-replay/derived.csv --run-prefix libgomp-r1
 cmp output-libgomp-csv-replay/derived.csv docs/experiments/2026-11-23-libgomp-prune.csv
 ```
+
+## Python 3.10互換性の検査
+
+共有hash関数は1 MiBずつ読み、SHA-256へ渡す実装に変えた。3.11以降の`hashlib.file_digest`に依存しない。
+このhostにはPython 3.10がないため、3.10での実行成功とは扱わない。
+代わりに3.10の構文としてparseし、file_digestを使えない状態で空file・複数chunk・欠損fileを試験した。
+同APIを削った別processでも`--audit-root`が現行184 ELFを調べ、audit.jsonを残すことを確認する。

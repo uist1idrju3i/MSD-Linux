@@ -15,6 +15,7 @@ import tarfile
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -251,6 +252,18 @@ class ReleaseSigning(unittest.TestCase):
         put(root / "usr/bin/consumer", "GOMP_parallel")
         with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
             bench.audit_configured(root, config)
+
+    def test_bench_hash_without_file_digest(self):
+        spec = importlib.util.spec_from_file_location("module_index", BOARD / "tools/bench/module-index.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        path = self.work / "hash-input"
+        with mock.patch.object(bench.hashlib, "file_digest", None, create=True):
+            for data in (b"", b"x" * (1024 * 1024 + 37)):
+                path.write_bytes(data)
+                self.assertEqual(bench.sha(path), hashlib.sha256(data).hexdigest())
+            with self.assertRaises(FileNotFoundError):
+                bench.sha(self.work / "missing")
 
     def test_libgomp_csv_derivation_preserves_trials(self):
         tool = BOARD / "tools/bench/libgomp-csv.py"
