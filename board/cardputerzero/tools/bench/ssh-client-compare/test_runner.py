@@ -21,6 +21,16 @@ from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_sha_without_python311_file_digest_handles_empty_large_and_missing_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "payload"
+            for data in (b"", b"abc", b"x" * (1024 * 1024 + 1)):
+                path.write_bytes(data)
+                with mock.patch.object(build.hashlib, "file_digest", None, create=True):
+                    self.assertEqual(build.sha(path), build.hashlib.sha256(data).hexdigest())
+            with self.assertRaises(FileNotFoundError):
+                build.sha(Path(directory) / "missing")
+
     def test_dropbear_small_is_an_unchanged_default_not_an_explicit_override(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
