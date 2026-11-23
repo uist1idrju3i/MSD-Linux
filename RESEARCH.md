@@ -152,7 +152,7 @@ FS・FTL・powerfail_suo・zramなどの公開資料と当時の案は[電源遮
 
 承認済みの後続PRの条件は[RAUC導入契約](docs/design/rauc-update-contract.md)、
 固定1.15.2の全optionと採否・機械照合は[RAUC棚卸し](docs/research/component-options/rauc.md)を正本とします。
-製品統合は未実施であり、PKI責任者と時計・証明書期限の扱いはOPENです。
+製品統合は未実施です。時計は署名時刻の評価と単調な内部版（案3）、root CAはofflineだけに置く運用に決めました。鍵保管・発行・失効の担当者と手順は未確定です。
 
 現在の操作は[更新手順](docs/UPDATE.md)、最新の採否比較は[更新framework](docs/research/alternatives/updates.md)と[更新metadata](docs/research/alternatives/update-metadata.md)、当時のtryboot・framework・S10の経緯は[A/Bの設計履歴](docs/research/storage/ab-design-history.md)に分けました。失敗検知の未実装の案とS11の確認範囲は[復旧とwatchdog](docs/research/storage/recovery-and-watchdog.md)、frameworkと暗号libraryの設定は[build option](docs/research/alternatives/update-build-options.md)、更新経路と差分方式は[配信の比較](docs/research/alternatives/update-delivery.md)を参照します。
 

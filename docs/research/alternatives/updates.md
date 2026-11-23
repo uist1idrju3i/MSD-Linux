@@ -96,7 +96,7 @@ Buildroot submoduleの更新通知は、未採用候補を含む各framework・�
 
 利用者が承認した[RAUCの導入契約](../../design/rauc-update-contract.md)に従い、最小構成とadaptiveを優先します。署名・CMS・依存とcustom backendの費用は後続PRで測ります。SWUpdate等は比較資料として残し、利用者の再判断なしに移行先を変更しません。
 
-1. 現行の正常系・異常系host testと、署名・board・版・長さ・inactive slotの不変条件を候補へ移します。公開SemVerと内部番号は未決定で、比較だけで変更しません。
+1. 現行の正常系・異常系host testと、署名・board・版・長さ・inactive slotの不変条件を候補へ移します。内部番号はtag commitの`%ct`とし、署名済みmanifestで単調増加を検査する方針に決めました（[契約](../../design/rauc-update-contract.md)）。比較だけでは変更しません。
 2. signed manifestとpayloadの結合、download中断、署名後の書換え、設定migration、disk-full、active slot拒否を試します。streaming時は書込み開始と認証完了の順序を別に記録します。
 3. network/parser/verifierと特権writerの実process・uid・capability・IPCを確認します。rootで動くserviceが一つ増えただけなら、特権分離の達成とはしません。
 4. QEMUの全slot・health失敗・状態破損、実機のfirmware・watchdog・SD flush・各書込み段階の電源断を分けます。共通boot領域の復旧と、失敗した設定変更からの回復も試します。

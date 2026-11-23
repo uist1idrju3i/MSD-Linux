@@ -110,7 +110,7 @@ host上の実RAUC 1.15.2の`info`とlocalhostの模擬HTTP serverを使い、各
 
 | 条件 | 観測した事実 | Phase Aの状態 |
 |---|---|---|
-| Range拒否・200 | RAUCは非0で失敗し、full-downloadで成功するfallbackは行わなかった | 既定失敗の契約に適合。ただし拒否までの受信量は0ではない |
+| Range拒否・200 | RAUCは非0で失敗し、full-downloadで成功するfallbackは行わなかった | 既定失敗の契約に適合。server側の送信量は0ではない。RAUC側の受信量は集計が得られず未計測 |
 | redirect・206 | 302後に206を取得し、CMS検証済みで終了0 | 模擬serverで確認済み。実GitHub assetの観測とは分ける |
 | 切断・再接続 | 一度の切断後に再接続し、同じ8-byte Rangeを再要求して検証成功。毎回切断では上限後に失敗 | 確認済み。残り4 bytesからのresumeや再起動後の再開は未確認 |
 | 429・Retry-After | 指定3秒に対し次要求は約1.0秒後。一度だけなら回復、継続時は5回retry後に失敗 | OPEN。Retry-Afterを遵守していない |
@@ -168,6 +168,9 @@ RAUCを唯一の更新writerへ切り替える。
 時計は案3を採用する。`use-bundle-signing-time=true`でbundleの署名時刻を基準に証明書を評価する。
 証明書期限を完全に無効化する案は採用せず、`--no-check-time`を製品経路で使わない。
 RAUC 1.15.2の`install`には同option自体が存在しない。
+`use-bundle-signing-time`が変えるのはCMS検証の時刻だけであり、HTTPSのTLS証明書は端末の時計で検証される。
+端末の時計がTLS証明書の有効期間外なら、取得はCMS検証の前に失敗する。
+時計がずれた状態でのHTTPS取得と、時刻の補正（NTP、手動設定）の要否は⑤の試験対象とする。
 
 replayとrollbackは、署名対象manifestに含めた内部版と`/data/rauc`の永続下限で拒否する。
 内部版は[版の規則](../../.agents/skills/release-versioning/SKILL.md)どおりtag commitの`%ct`とし、

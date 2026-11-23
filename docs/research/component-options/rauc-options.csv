@@ -105,7 +105,7 @@ manifest,image.*,hooks,slotの前後・install hook,なし,あり,最新stable�
 manifest,image.*,adaptive,block再利用方式,なし,あり,最新stableも1.15.2・差なし,両imageでblock-hash-index,採用,4 KiB単位で照合し転送とwriteの実測を分ける,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L971
 manifest,image.*,convert,artifact変換,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,tar-extract/composefs/keepによるartifact変換を使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L990
 manifest,image.*,converted,変換後file一覧,変換時RAUC生成,あり,最新stableも1.15.2・差なし,未設定,不採用,slot imageをそのまま含める,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1016
-manifest,meta.<label>,<key>,自由metadata,なし,あり,最新stableも1.15.2・差なし,内部単調版等を④で定義,保留,署名済みでもRAUCが比較しない。期限・rollback方針の承認後に契約化する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1043
+manifest,meta.<label>,<key>,自由metadata,なし,あり,最新stableも1.15.2・差なし,内部単調版等を④で定義,保留,署名済みでもRAUCが比較しない。方針（署名時刻と単調内部版）は承認済み。keyと形式を④で定義する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1043
 system.conf,slot.<slot-class>.<idx>,force-install-same,install-sameの旧名,install-same未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L974
 system.conf,slot.<slot-class>.<idx>,ignore-checksum,install-sameの旧名,他の二名未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L978
 manifest,rollout,<key>,予約された自由設定,なし・RAUCは解釈しない,あり,最新stableも1.15.2・差なし,未設定,不採用,未実装の段階配布policyを安全機構と見なさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1026
