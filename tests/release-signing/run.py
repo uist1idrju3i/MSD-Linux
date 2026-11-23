@@ -263,6 +263,12 @@ class ReleaseSigning(unittest.TestCase):
                      valid.replace("usbnet 42 0 - Live 0x123\n", ""), valid.replace("42 0", "invalid 0")):
             with self.assertRaises(ValueError):
                 bench.check_serial(text)
+        with mock.patch.object(bench.subprocess, "run") as run:
+            run.return_value = subprocess.CompletedProcess([], 1, "unsquashfs version 4.7.5\n", "")
+            self.assertEqual(bench.tool_version(Path("unsquashfs"), "-version"), "unsquashfs version 4.7.5")
+            run.return_value = subprocess.CompletedProcess([], 1, "failed\n", "")
+            with self.assertRaises(ValueError):
+                bench.tool_version(Path("unsquashfs"), "-version")
 
     def test_libgomp_consumers_refuse_removal(self):
         self.fixture()

@@ -36,6 +36,17 @@ def keymap_hook(negative=False):
             "return \"$_kbd_rc\"\n}\n")
 
 
+def tool_version(path, flag):
+    result = subprocess.run([str(path), flag], capture_output=True, text=True)
+    text = result.stdout
+    if result.returncode and not (path.name == "unsquashfs" and result.returncode == 1
+                                  and text.startswith("unsquashfs version ")):
+        raise ValueError("version probe failed: " + str(path))
+    if not text.strip():
+        raise ValueError("version probe returned no version: " + str(path))
+    return text.splitlines()[0]
+
+
 def check_serial(text):
     if re.findall(r"^KBD_LOADKEYS_RESULT=(\d+)\r?$", text, re.M) != ["0"]:
         raise ValueError("missing, repeated or failed real S04 loadkeys result")
@@ -72,7 +83,7 @@ def build(artifact, host, config, out):
                                 ("sdcard.img.xz", "Image", "bcm2710-rpi-cm0.dtb", "bcm2710-rpi-3-b.dtb")},
                   host_tools_sha256={p: COMMON.sha(host / p) for p in
                                      ("bin/unsquashfs", "bin/mksquashfs.orig", "sbin/sfdisk")},
-                  host_tools_versions={p: subprocess.check_output([str(host / p), flag], text=True).splitlines()[0]
+                  host_tools_versions={p: tool_version(host / p, flag)
                                        for p, flag in (("bin/unsquashfs", "-version"),
                                                        ("bin/mksquashfs.orig", "-version"), ("sbin/sfdisk", "--version"))},
                   variants={}, modules={})
