@@ -106,6 +106,6 @@ Buildroot submoduleの更新通知は、未採用候補を含む各framework・�
 
 [component-options手順](../../../.agents/skills/component-options/SKILL.md)に従う全tokenの採否・既定値・最新stableとの差は、2026-11-23の[RAUC棚卸し](../component-options/rauc.md)へ追加しました。[従来表](update-build-options.md)は当時の主要build optionと暗号library比較として残します。scopeを明示した機械照合の`missing=0`と、製品のbuild・設定反映・測定は別の検証です。
 
-network／streaming／非常駐構成、shared data-directory、署名・鍵、boot backendは[導入契約](../../design/rauc-update-contract.md)と後続PRへ分けました。PKI責任者と時計・期限の扱いはOPENです。今回の文書化でpackageや製品設定は追加していません。
+network／streaming／非常駐構成、shared data-directory、署名・鍵、boot backendは[導入契約](../../design/rauc-update-contract.md)と後続PRへ分けました。署名時刻での証明書評価と単調版・永続下限、offline CA・release鍵のSecret運用を採用し、担当者と失効・復旧手順は④の残件です。製品設定はまだ追加していません。
 
 原文の固定HEAD・Release応答・取得時刻・hashは[sources.json](sources.json)にあります。開発HEADをstable releaseへ読み替えず、GitHubのlatest応答だけで全系列の保守状態を確定しません。

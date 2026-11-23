@@ -45,6 +45,7 @@ RAUCの自動mark-goodは利用者が始めた更新をhealth成功後に完結�
 | status・adaptive index | `/data/rauc`。更新操作の間だけstatusと4 KiB block hash indexを生成・再利用・必要時再生成。indexは概算32 byte/4 KiB、metadataとjournalの量は別途測定 | index処理も更新のprogress区間に含める | 計画。background再生成・起動ごとの再生成なし。cold/warm/corruptを測る |
 | custom backendのtrying | 両imageの同期・全長read-back後、`/data/rauc/bootstate`へ候補を保存。小さい状態fileだがfsync・rename・directory同期とFSのwrite量は未測定 | 次回が試し起動であることと、中断可否を英日表示 | 計画。`set-primary`ではp1の確定primaryを書かない。get-primary/get-stateはwrite 0 |
 | health後の自動mark-good | 試し起動の`S99msd-health`成功後だけ、p1の`autoboot.txt`とp7のbootstate/statusを書いて確定。通常起動では同じ状態を書き直さない。FAT cluster・FS metadataを含む量は未測定 | 起動画面とconsoleで確定中・電源断不可を英日表示。2秒以上は進捗又は経過時間も表示 | 計画・自動writeの登録。更新の完結に必要。p1と/dataの原子性は仮定せず、各境界で電断後の整合を試す |
+| 内部版の永続下限 | health・mark-good成功後、完了表示前に`/data/rauc`の下限を署名済みtag commitの`%ct`へ引き上げる。小さい状態fileだがFS metadata・journalを含むwrite量は未測定 | 更新確定中の英日progressと電源断不可表示に含める | 計画・未実装。replay/rollback拒否に必要。一時file・fsync・rename・directory同期を使い、失敗時は完了としない。通常起動の同値再書込みなし。中断後の回復writeも表示し、③④⑥で境界を検証 |
 | 起動時reconcile | 前回の更新・確定が途切れた時だけp1・p7・実bootを照合。読取りは無書込み。回復writeが必要な場合の量は未測定 | 不整合と回復内容を英日表示し、progress付き回復処理とする | 計画。get操作内の修復は禁止。③で冪等性を試験し、実SD電断は実機で確認 |
 
 RAUCのevent log・download buffer・lock・一時fileはRAMへ置く。

@@ -33,7 +33,7 @@ Buildroot gitlinkと実checkoutはともに`bbbdab36565d4941b6b0449a0eedb5aac8a1
 
 全295行の[採否表CSV](rauc-options.csv)に、面・scope・option token・意味・既定値・
 固定版での利用可否・最新stableとの差・計画値・採否・理由・一次資料の行を記載した。
-採用108、不採用178、保留9である。
+採用109、不採用181、保留5である。署名時刻と内部版の採用決定を反映した計画であり、製品への適用は未実施。
 「採用」は計画上の使用又は明示的な制限値の維持であり、製品設定への反映済みを意味しない。
 targetで使わず署名hostだけで使う項目も、理由欄で区別した。
 
@@ -92,7 +92,11 @@ OpenSSL 4.0互換性・ENGINE削減は[既存調査](../alternatives/update-buil
   `install`のhandler-args/keyring/override-boot-slotと`status`のoverride-boot-slotは非service側。
   非表示のglobal cert/key/keyring/intermediateも互換引数として採取したが、端末の任意鍵指定を許可しない。
 - `--no-check-time`はinfo/resignだけであり、install用ではない。
-  期限無効化案と`use-bundle-signing-time`案は[OPEN契約](../../design/rauc-update-contract.md#open-利用者の決定待ち)に分けた。
+  製品では使わず、[署名時刻と単調版](../../design/rauc-update-contract.md#採用決定-署名時刻と単調版)を採用する。
+  `use-bundle-signing-time=true`と、署名済みtag commitの`%ct`・永続下限の比較を組み合わせる。
+  `min-bundle-version`のSemVer比較で内部版の保存を代用しない。
+- PKIはoffline root CAで手動発行し、GitHub Secretにはrelease鍵と証明書だけを置く。
+  1年案・1か月前更新、公開証明書の週次期限検査とIssue通知、失効・鍵交換は④で具体化する。
 - `bundle-formats`の既定はplain/verity/cryptだが、製品は`verity`を明記する。
   manifestのformat既定は別にplain。両方を明記しないと採用契約を満たさない。
 - `install-same=true`を維持する。statusのhash一致だけで更新を省かず、
@@ -115,7 +119,8 @@ RAUC上流licenseはLGPL-2.1-or-later、recipe表記はLGPL-2.1。
 移行先を無断で変更せず、RAUCでtryboot・PKI・配信PoCが不成立なら利用者へ報告する。
 
 容量、RAM、起動時間、取得量は実測する。indexがimageの約0.8%という上流の説明を実SD write量と混同しない。
-今回のbuild・数値測定は未実施。
+製品build・QEMUの数値測定は未実施。別の[host PoC](../../experiments/2026-11-23-rauc-streaming-poc.md)では
+`info`によるHTTP取得とretryだけを観測しており、installやadaptiveの合格とは扱わない。
 [QEMU測定の行列](../../design/rauc-update-contract.md#qemu測定の試験行列)でfull/adaptive各5回とA/A、
 cold/warm/corruptを比較し、生値と失敗を保存して採否を再確認する。
 
