@@ -78,6 +78,18 @@ def source_inputs():
     return {str(p): COMMON.sha(ROOT / p) for p in scripts}
 
 
+def negative_rejected(returncode, text, output, process):
+    return (returncode == 1
+            and re.findall(r"^KBD_LOADKEYS_RESULT=(\d+)\r?$", text, re.M) == ["1"]
+            and "MSD/Linux ready" in text and re.search(r"login:", text, re.I) is not None
+            and "msd-keymap: failed to load " in text
+            and "QEMU reached ready after " in output
+            and "QEMU serial log contains boot error patterns." in output
+            and process.get("qmp_quit") is True and process.get("reaped") is True
+            and process.get("returncode") == 0 and process.get("fallback") == []
+            and process.get("error") is None)
+
+
 def build(artifact, host, config, out):
     out.mkdir()
     source = source_inputs()
@@ -198,12 +210,8 @@ def build(artifact, host, config, out):
                                             env=env, stdout=f, stderr=subprocess.STDOUT)
                 text = (logs / f"serial-mmcblk0p{5 if slot == 'A' else 6}.log").read_text()
                 if variant == "negative":
-                    try:
-                        check_serial(text)
-                    except ValueError:
-                        rejected = result.returncode != 0 and "KBD_LOADKEYS_RESULT=1" in text
-                    else:
-                        rejected = False
+                    process = json.loads((logs / "serial-mmcblk0p5.process.json").read_text())
+                    rejected = negative_rejected(result.returncode, text, (out / f"{variant}-{slot}.log").read_text(), process)
                     record("negative", "boot_exit_code", result.returncode, rejected, "expected keymap failure")
                     if not rejected:
                         raise ValueError("negative keymap control was not rejected")

@@ -266,6 +266,17 @@ class ReleaseSigning(unittest.TestCase):
             with self.assertRaises(subprocess.CalledProcessError):
                 bench.source_inputs()
         valid = "KBD_LOADKEYS_RESULT=0\nMODULE_INVENTORY_BEGIN\nusbnet 42 0 - Live 0x123\nMODULE_INVENTORY_END\n"
+        negative = "KBD_LOADKEYS_RESULT=1\nmsd-keymap: failed to load map\nMSD/Linux ready\nlogin:\n"
+        output = "QEMU reached ready after 1 seconds.\nQEMU serial log contains boot error patterns.\n"
+        process = dict(qmp_quit=True, reaped=True, returncode=0, fallback=[], error=None)
+        self.assertTrue(bench.negative_rejected(1, negative, output, process))
+        for rc, text, log, state in ((124, negative, output, process),
+                                     (1, negative.replace("login:", ""), output, process),
+                                     (1, negative, "QEMU did not show the boot marker", process),
+                                     (1, negative, output, dict(process, qmp_quit=False)),
+                                     (0, negative, output, process),
+                                     (1, "", output, process)):
+            self.assertFalse(bench.negative_rejected(rc, text, log, state))
         self.assertEqual(bench.check_serial(valid), [("usbnet", 42, "-", "Live")])
         for text in ("", valid.replace("RESULT=0", "RESULT=1"), "KBD_LOADKEYS_RESULT=0\n" + valid,
                      valid.replace("usbnet 42 0 - Live 0x123\n", ""), valid.replace("42 0", "invalid 0")):
