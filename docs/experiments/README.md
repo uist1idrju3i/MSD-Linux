@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [OpenSSL C1採用](2026-11-23-openssl-c1.md) | [CSV](2026-11-23-openssl-c1.csv) | 2026-11-23 | host接続確認完了 | TLS最低版1.2・SECLEVEL=2をpost-buildで適用。外部TLS13接続、A/A、hostname不一致の計16 caseが期待どおり。製品build・A/B・実機は未確認 |
 | [SSH client比較（#9）](2026-11-23-ssh-client-compare.md) | [CSV](2026-11-23-ssh-client-compare.csv) | 2026-11-23 | QEMU比較完了・製品未導入 | 3候補でEd25519認証・別host key拒否を各5回。OpenSSHの追加797,448 bytes・圧縮差327,680 bytes。失敗試行・暗号・RAM内writeは本文 |
 | [RAUC streaming](2026-11-23-rauc-streaming-poc.md) | [CSV](2026-11-23-rauc-streaming-poc.csv) | 2026-11-23 | host metadata各5回・Phase A未完 | 206・302成功、200拒否、403/429/切断のretry観測。Retry-Afterは待たない。実Releaseはassetなし。install・QEMU・adaptive再利用は未実施 |
 | [deps一括更新](2026-11-22-deps-update.md) | [CSV](2026-11-22-deps-update.csv) | 2026-11-22 | build・icount gate・kernel .config差分確認 | snapshot不整合をsnapshot更新で解消。QEMU 11.1.3は現行11.1.2比1.09xでgate成立。kernel差分は新規moduleのみ。実機・bq27220未確認 |

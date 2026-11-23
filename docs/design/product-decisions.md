@@ -4,6 +4,7 @@
 
 | 決めた日 | 方針 | 状態 | 関連 |
 |---|---|---|---|
+| 2026-11-23 | OpenSSL設定はC1（TLS最低版1.2・SECLEVEL=2）を採用し、C2のAEAD限定は採用しない。既存CA/CSR節、DEFAULT groups、ML-KEMを保持する。 | post-build処理とhostの外部接続確認を実装。製品build・A/B起動はCI、実機とCA配布・初期時刻は別途確認 | [採用設定](../research/component-options/openssl-minimal-runtime.md)、[接続記録](../experiments/2026-11-23-openssl-c1.md) |
 | 2026-11-23 | RAUC 1.15.2、GitHub Releasesのfull verity bundleとstreaming/adaptive、tryboot custom backendへの導入計画を承認。slot・health確定・橋渡し・後続PR②〜⑦の受入条件を固定する。 | 契約とoption棚卸しのみ。製品導入は未実施。PKI責任者と信頼できない時計での証明書期限処理はOPEN | [導入契約](rauc-update-contract.md)、[全option](../research/component-options/rauc.md) |
 | 2026-11-13 | seedrngのseedを永続保存せず、起動・停止時を含め`/data/seedrng`へ書き込みません。内蔵hwrng（`CONFIG_HW_RANDOM_BCM2835=y`）とjitterに依存する方針です。seed保存のための定期的なSD書き込みと、暗号化されていない`/data`へのseed残存を避けます。一方、hwrngが弱い場合に保存seedのbackupがありません。 | seed保存経路の削除を実装、crng時刻はQEMUで採取。実機の時刻・品質、jitterの供給経路と起動時の保証は未確認。既存SDの古いseedは自動消去しない | [書き込みの台帳](write-policy.md)、[実装とQEMU記録](../experiments/2026-11-13-seedrng-zram.md) |
 | 2026-11-13 | 初回起動からzram swapを使い、login prompt表示後にbackgroundで有効化します。容量はRAMの約50%、圧縮はzstdまたはlzo-rleを候補とします。built-in（`CONFIG_ZRAM=y`）を方針とし、現行の`=m`との差を測ります。圧縮のCPU負荷、小さいmetadata用RAM、早いOOMの代わりにthrashする可能性を受け入れます。 | built-in・zstd優先・遅延有効化を実装。QEMUでboot・swap負荷を確認。`=y`対`=m`の単独比較、実機の速度・thrashは未実施 | [書き込みの台帳](write-policy.md)、[今回のQEMU記録](../experiments/2026-11-13-seedrng-zram.md)、[過去のQEMU実験](../experiments/2026-10-21-qemu-zram.md) |

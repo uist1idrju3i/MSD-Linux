@@ -105,7 +105,7 @@ INSTALLのmacro表記はprotocol／algorithm tokenへ展開した。内部`crmf`
 
 ## 実行時設定とARM最適化
 
-[openssl.cnfとARMの検討](openssl-minimal-runtime.md)に設定案、providerの制限、BCM2837の一次資料と実機での確認を分ける。設定だけの[QEMU比較](../../experiments/2026-11-18-openssl-cnf.md)は完了したが、製品には未適用。ARM最適化と実機の測定は未実施である。
+[openssl.cnfとARM](openssl-minimal-runtime.md)に採用設定と実機確認を分ける。[QEMU比較](../../experiments/2026-11-18-openssl-cnf.md)を経てC1（TLS最低版1.2・SECLEVEL=2）を採用し、C2は不採用。[適用・接続記録](../../experiments/2026-11-23-openssl-c1.md)を参照する。製品build・A/B起動はCI、ARM最適化と実機測定は未実施である。
 
 ## 実験と残る判断
 
