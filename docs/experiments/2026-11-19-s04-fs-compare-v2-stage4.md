@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。全smokeは20/851件成功後、21件目の`E2/T1-negative-final`で停止した。判定修正後は新しい出力先で851件を最初から再実行する方針で、再実行は未実施。全coverageは未完了である。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。最新の試行05は84/851件成功後、85件目の`F1/T1-negative-final`で停止した。main runは未開始で全coverageは未完了である。[sentinel修正後の単独診断](2026-11-23-s04-fs-compare-v2-negative-sentinel.md)は3構成で成功したが、全smokeの再試行は未実施。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 
@@ -458,3 +458,20 @@ sha256sum -c fs-compare/stage4-rerun-1dc14a3-04.files.sha256
 再試行05は修正後の新しいheadに固定し、fresh build後に単独の
 E1・E2/T1-negative-finalを先に診断する計画とする。
 両方と既定の代表21件が成功した場合だけ、新しい全851件smokeを開始する。
+
+## 試行05の全smoke停止
+
+実行commitは`12b5c744bb62714284e038ca67f57cb0cface785`。`smoke-coverage.json`は重複なしの85件を収録し、84件が成功、最後の`F1/T1-negative-final`が失敗した。1〜83件に加え、84件目の`F1/T1-final`も成功している。停止した経路は1始まりで85件目、配列indexでは84に当たる。全851件の完了とは扱わない。
+
+guestは次を出して終了値1で停止した。
+
+```text
+msd.fscmp: T1_NEGATIVE_FINAL_CHECK stack_open=not_applicable mount=yes fsck=0 manifest=no loss_points=1 negative_control=t1_negative_control_no_present_file
+msd.fscmp: error=t1_negative_control_no_present_file
+```
+
+`W1/file-000.dat`と`W1/file-001.dat`はともにack=0、fsync省略で、復旧点1048では両方が`reason=missing`だった。mountとfsckは成功している。旧判定器は残存fileだけから改変対照を作るため、対象が0件になった。fsyncしていないfileの消失を、同期済みdataの破損とは扱わない。この試行自体は失敗・中断として残す。
+
+host driver PID `1871398`は終了済み。hostの結果は終了値1、30111.008838891983秒で、guest側QEMUのPID `129987`は`phase-run.json`で`reaped=true`。main runは未開始である。
+
+保全原本は`smoke-05-final/rerun-12b5c74-05-smoke.tar`、SHA-256は`49f6bdbca8f604bc12d1402609e1c9f0732379c2129b9bda791ae3e70cdf594c`。textの写しはorphan branch `data/fs-compare-experiments`のcommit `03b03956647fbc4eb5a8ae07ad914ff5e65811fd`、`fs-compare/stage4-negative-sentinel-01.tar.zst`に保存した。写しのSHA-256は`2129bcac5b560635833015ac8869e3dd4b34a6e654695f232b037eedc7abd6d0`。取得・照合方法と修正後の結果は[sentinel診断記録](2026-11-23-s04-fs-compare-v2-negative-sentinel.md)を参照。このdata branchはmergeも削除もしない。

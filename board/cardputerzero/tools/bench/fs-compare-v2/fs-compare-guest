@@ -1122,26 +1122,49 @@ EOF
 	fi
 }
 
+prepare_t1_negative_sentinel()
+{
+	[ "$TEST" = T1-negative-final ] || return 0
+	t1_sentinel="${WORKLOAD_ROOT}/.t1-negative-sentinel"
+	t1_sentinel_payload='fs-compare-v2 negative-final sentinel'
+	printf '%s\n' "$t1_sentinel_payload" >"$t1_sentinel" ||
+		fail t1_negative_sentinel_write_failed
+	fsync "$t1_sentinel" || fail t1_negative_sentinel_file_fsync_failed
+	fsync "$WORKLOAD_ROOT" || fail t1_negative_sentinel_directory_fsync_failed
+	t1_sentinel_hash="$(printf '%s\n' "$t1_sentinel_payload" | sha256sum)" ||
+		fail t1_negative_sentinel_hash_failed
+	t1_sentinel_hash=${t1_sentinel_hash%% *}
+	printf '.t1-negative-sentinel\t%s\tnegative-sentinel\tnot_mapped\t0\n' \
+		"$t1_sentinel_hash" >"${RUN_PATH}/T1-negative-sentinel.tsv"
+	console "T1_NEGATIVE_SENTINEL path=.t1-negative-sentinel sha256=$t1_sentinel_hash file_fsync=yes directory_fsync=yes"
+}
+
 check_t1_negative_manifest()
 (
-	control_source=$1
-	point_entry=$2
+	point_entry=$1
+	control_source="${RUN_PATH}/T1-negative-sentinel.tsv"
 	expected_file="${RUN_PATH}/T1-negative-expected.tsv"
 	: >"$expected_file"
-	while IFS="$tab" read -r relative expected marker marker_entry marker_sequence; do
-		[ -n "$relative" ] || continue
-		[ -f "${REPLAY_WORKLOAD_ROOT}/${relative}" ] || continue
-		printf '%s\t%s\t%s\t%s\t%s\n' "$relative" "$expected" "$marker" \
-			"$marker_entry" "$marker_sequence"
-	done <"$control_source" |
-		awk -F '\t' 'BEGIN { OFS = "\t" } {
-			$2 = (substr($2, 1, 1) == "0" ? "1" : "0") substr($2, 2); print
-		}' >"$expected_file"
-	if [ ! -s "$expected_file" ]; then
-		printf '%s\n' t1_negative_control_no_present_file
+	if [ ! -s "$control_source" ] ||
+	   [ "$(wc -l <"$control_source")" -ne 1 ] ||
+	   ! awk -F '\t' 'NF != 5 || $1 != ".t1-negative-sentinel" ||
+		length($2) != 64 || $2 ~ /[^0-9a-f]/ { bad = 1 }
+		END { exit (NR != 1 || bad) }' "$control_source"; then
+		printf '%s\n' t1_negative_sentinel_manifest_invalid
 		exit 0
 	fi
 	manifest_strict_hash=yes
+	manifest_context=negative_sentinel
+	expected_file=$control_source
+	check_t1_manifest
+	if [ "$manifest_ok" != yes ]; then
+		printf '%s\n' t1_negative_sentinel_invalid
+		exit 0
+	fi
+	expected_file="${RUN_PATH}/T1-negative-expected.tsv"
+	awk -F '\t' 'BEGIN { OFS = "\t" } {
+		$2 = (substr($2, 1, 1) == "0" ? "1" : "0") substr($2, 2); print
+	}' "$control_source" >"$expected_file"
 	manifest_context=negative_control
 	check_t1_manifest
 	if [ "$manifest_ok" = no ] && [ "$manifest_hash_mismatch" = yes ]; then
@@ -1153,9 +1176,9 @@ check_t1_negative_manifest()
 
 validate_t1_negative_final()
 {
-	if [ "$negative_control" = t1_negative_control_no_present_file ]; then
-		fail "$negative_control"
-	fi
+	case "$negative_control" in
+		t1_negative_control_no_present_file|t1_negative_sentinel_*) fail "$negative_control" ;;
+	esac
 	[ "$mount_ok" = yes ] && [ "$fsck_status" = 0 ] &&
 		[ "$negative_control" = yes ]
 }
@@ -1403,7 +1426,7 @@ $result
 EOF
 		negative_control=no
 		if [ "$TEST" = T1-negative-final ] && [ "$mount_ok" = yes ]; then
-			negative_control="$(check_t1_negative_manifest "$expected_file" "$entry")"
+			negative_control="$(check_t1_negative_manifest "$entry")"
 		fi
 		if [ "$mount_ok" = yes ]; then
 			if [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then
@@ -2271,6 +2294,7 @@ dispatch()
 		fail "mount_failed"
 	fi
 	mark_t1_setup_done
+	prepare_t1_negative_sentinel
 	console "mounted config=$CONFIG base_config=$BASE_CONFIG variant_id=$VARIANT_ID test=$TEST"
 	case "$TEST" in
 		T4-sync|T4-nosync|T5)
