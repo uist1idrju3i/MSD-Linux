@@ -119,6 +119,10 @@ class Runner(unittest.TestCase):
         for already_installed in (False, True):
             with self.subTest(already_installed=already_installed), tempfile.TemporaryDirectory() as directory:
                 built, measure, final = self.summary_fixture(Path(directory))
+                for tree, content in ((built, b"ssh-rsa\0"), (measure, b"ssh-ed25519\0")):
+                    (tree / "putty/root/usr/bin/plink").write_bytes(content)
+                    (tree / "putty/files.json").write_text(json.dumps([
+                        dict(path="usr/bin/plink", bytes=len(content))]))
                 path = built / "dropbear/files.json"
                 original = json.loads(path.read_text())
                 path.write_text(json.dumps([*original, dict(path="usr/lib/libcrypt.so.2", bytes=7)]))
@@ -144,6 +148,7 @@ class Runner(unittest.TestCase):
                 self.assertEqual(result["squashfs_delta"], 4)
                 self.assertEqual(result["dependency_closure"], {"libcrypt.so.2": "usr/lib/libcrypt.so.2"})
                 self.assertTrue(all(call.args[0].is_relative_to(measure) for call in needed.call_args_list))
+                self.assertEqual(report["putty_binary_protocol_ids"]["hostkey"], ["ssh-ed25519"])
 
     def test_summary_rejects_failed_final_process_despite_complete_serial(self):
         with tempfile.TemporaryDirectory() as directory:
