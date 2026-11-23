@@ -22,6 +22,8 @@
 
 ## 2. クライアント実装・フロントエンド
 
+2026-11-23追記: 端末側のclientに限り[OpenSSH・Dropbear・PuTTYを比較](../../experiments/2026-11-23-ssh-client-compare.md)しました。利用者の希望するOpenSSHを第一候補に維持し、[optionと採否](../component-options/ssh-client.md)を記録しています。これはserverの採用や製品defconfigの変更ではありません。以下の実装全般の調査と、今回のclient-only payloadの実測を区別します。
+
 | 実装 | 形態 | ライセンス | Buildroot 収録 | 特徴 |
 |---|---|---|---|---|
 | OpenSSH `ssh` | CLI | （同上） | openssh に同梱 | scp・sftp・ssh-agent・ssh-keygen・ssh-copy-id を含む標準セット。`ProxyCommand`・`-J`・ポート転送・証明書・FIDO 鍵まで揃います。 |

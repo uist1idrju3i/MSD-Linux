@@ -2,6 +2,10 @@
 
 [2026-11-19 差分訂正](../alternatives/update-delivery.md)
 
+## 2026-11-23 SSH client比較
+
+[実験記録](../../experiments/2026-11-23-ssh-client-compare.md#集計器と版表記の訂正)にBuildroot commit・option抽出・既定鍵候補の訂正を記録しました。生証拠と実測値は保持しています。
+
 ## 2026-11-15 storage設計・E34
 
 訂正: [設計](../storage/storage-option-coverage.md)・[実験・E34](../storage/storage-integrity-corrections.md)。

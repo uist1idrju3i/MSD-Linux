@@ -1,0 +1,657 @@
+{
+  "sizes": {
+    "baseline": {
+      "median": 20496384,
+      "minimum": 20496384,
+      "maximum": 20496384,
+      "image_sha256": "de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0"
+    },
+    "openssh": {
+      "median": 20824064,
+      "minimum": 20824064,
+      "maximum": 20824064,
+      "image_sha256": "ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52"
+    },
+    "dropbear": {
+      "median": 20701184,
+      "minimum": 20701184,
+      "maximum": 20701184,
+      "image_sha256": "4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545"
+    },
+    "putty": {
+      "median": 20807680,
+      "minimum": 20807680,
+      "maximum": 20807680,
+      "image_sha256": "0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056"
+    }
+  },
+  "candidates": {
+    "openssh": {
+      "files": [
+        {
+          "path": "usr/bin/ssh",
+          "bytes": 797448,
+          "sha256": "922b690a8e2ad50862d02311d90cafb0715c357fdfed8f4d5b6ed9cf02ec246f"
+        }
+      ],
+      "direct_needed": [
+        "libssl.so.3",
+        "libcrypto.so.3",
+        "libz.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "dependency_closure": {
+        "libssl.so.3": "usr/lib/libssl.so.3",
+        "libcrypto.so.3": "usr/lib/libcrypto.so.3",
+        "libz.so.1": "usr/lib/libz.so.1",
+        "libc.so.6": "lib/libc.so.6",
+        "ld-linux-aarch64.so.1": "lib/ld-linux-aarch64.so.1"
+      },
+      "installed_added": 797448,
+      "squashfs_delta": 327680,
+      "good": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wrong": [
+        255,
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    "dropbear": {
+      "files": [
+        {
+          "path": "usr/bin/dbclient",
+          "bytes": 273752,
+          "sha256": "470b3754e32388f249dd80bbd33b9abe4501be20b481f905d34f2f47e2a5cad7"
+        },
+        {
+          "path": "usr/lib/libcrypt.so.2",
+          "bytes": 202648,
+          "sha256": "3994f430b55885ece58027124eb1b0356b30d398fe3efab1d7c7be9e7fa69a13"
+        }
+      ],
+      "direct_needed": [
+        "libcrypt.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "dependency_closure": {
+        "libcrypt.so.2": "usr/lib/libcrypt.so.2",
+        "libc.so.6": "lib/libc.so.6",
+        "ld-linux-aarch64.so.1": "lib/ld-linux-aarch64.so.1"
+      },
+      "installed_added": 476400,
+      "squashfs_delta": 204800,
+      "good": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wrong": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "putty": {
+      "files": [
+        {
+          "path": "usr/bin/plink",
+          "bytes": 899376,
+          "sha256": "6ad4ba1c3f0eccb80ef1def3261055c07eaaa86139af5a7bb774d57737a802f7"
+        }
+      ],
+      "direct_needed": [
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "dependency_closure": {
+        "libm.so.6": "lib/libm.so.6",
+        "libc.so.6": "lib/libc.so.6",
+        "ld-linux-aarch64.so.1": "lib/ld-linux-aarch64.so.1"
+      },
+      "installed_added": 899376,
+      "squashfs_delta": 311296,
+      "good": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wrong": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "algorithms": {
+    "openssh": {
+      "kex": [
+        "diffie-hellman-group1-sha1",
+        "diffie-hellman-group14-sha1",
+        "diffie-hellman-group14-sha256",
+        "diffie-hellman-group16-sha512",
+        "diffie-hellman-group18-sha512",
+        "diffie-hellman-group-exchange-sha1",
+        "diffie-hellman-group-exchange-sha256",
+        "ecdh-sha2-nistp256",
+        "ecdh-sha2-nistp384",
+        "ecdh-sha2-nistp521",
+        "mlkem768nistp256-sha256",
+        "curve25519-sha256",
+        "curve25519-sha256@libssh.org",
+        "sntrup761x25519-sha512",
+        "sntrup761x25519-sha512@openssh.com",
+        "mlkem768x25519-sha256"
+      ],
+      "cipher": [
+        "3des-cbc",
+        "aes128-cbc",
+        "aes192-cbc",
+        "aes256-cbc",
+        "aes128-ctr",
+        "aes192-ctr",
+        "aes256-ctr",
+        "aes128-gcm@openssh.com",
+        "aes256-gcm@openssh.com",
+        "chacha20-poly1305@openssh.com"
+      ],
+      "mac": [
+        "hmac-sha1",
+        "hmac-sha1-96",
+        "hmac-sha2-256",
+        "hmac-sha2-512",
+        "hmac-md5",
+        "hmac-md5-96",
+        "umac-64@openssh.com",
+        "umac-128@openssh.com",
+        "hmac-sha1-etm@openssh.com",
+        "hmac-sha1-96-etm@openssh.com",
+        "hmac-sha2-256-etm@openssh.com",
+        "hmac-sha2-512-etm@openssh.com",
+        "hmac-md5-etm@openssh.com",
+        "hmac-md5-96-etm@openssh.com",
+        "umac-64-etm@openssh.com",
+        "umac-128-etm@openssh.com"
+      ],
+      "key": [
+        "ssh-ed25519",
+        "ssh-ed25519-cert-v01@openssh.com",
+        "sk-ssh-ed25519@openssh.com",
+        "sk-ssh-ed25519-cert-v01@openssh.com",
+        "ssh-mldsa44-ed25519",
+        "ssh-mldsa44-ed25519-cert",
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+        "ecdsa-sha2-nistp521",
+        "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+        "sk-ecdsa-sha2-nistp256@openssh.com",
+        "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+        "ssh-rsa",
+        "ssh-rsa-cert-v01@openssh.com"
+      ],
+      "key-sig": [
+        "ssh-ed25519",
+        "ssh-ed25519-cert-v01@openssh.com",
+        "sk-ssh-ed25519@openssh.com",
+        "sk-ssh-ed25519-cert-v01@openssh.com",
+        "ssh-mldsa44-ed25519",
+        "ssh-mldsa44-ed25519-cert",
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+        "ecdsa-sha2-nistp521",
+        "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+        "sk-ecdsa-sha2-nistp256@openssh.com",
+        "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+        "webauthn-sk-ecdsa-sha2-nistp256@openssh.com",
+        "webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+        "ssh-rsa",
+        "ssh-rsa-cert-v01@openssh.com",
+        "rsa-sha2-256",
+        "rsa-sha2-256-cert-v01@openssh.com",
+        "rsa-sha2-512",
+        "rsa-sha2-512-cert-v01@openssh.com"
+      ]
+    },
+    "dropbear": {
+      "kex": [
+        "sntrup761x25519-sha512",
+        "sntrup761x25519-sha512@openssh.com",
+        "mlkem768x25519-sha256",
+        "curve25519-sha256",
+        "curve25519-sha256@libssh.org",
+        "ecdh-sha2-nistp521",
+        "ecdh-sha2-nistp384",
+        "ecdh-sha2-nistp256",
+        "diffie-hellman-group14-sha256"
+      ],
+      "cipher": [
+        "chacha20-poly1305@openssh.com",
+        "aes256-ctr",
+        "aes128-ctr"
+      ],
+      "mac": [
+        "hmac-sha2-256"
+      ],
+      "sig": [
+        "ssh-ed25519",
+        "sk-ssh-ed25519@openssh.com",
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp521",
+        "sk-ecdsa-sha2-nistp256@openssh.com",
+        "rsa-sha2-256"
+      ]
+    }
+  },
+  "putty_binary_protocol_ids": {
+    "kex": [
+      "curve25519-sha256",
+      "curve25519-sha256@libssh.org",
+      "diffie-hellman-group-exchange-sha1",
+      "diffie-hellman-group-exchange-sha256",
+      "diffie-hellman-group1-sha1",
+      "diffie-hellman-group14-sha1",
+      "diffie-hellman-group14-sha256",
+      "diffie-hellman-group15-sha512",
+      "diffie-hellman-group16-sha512",
+      "diffie-hellman-group17-sha512",
+      "diffie-hellman-group18-sha512",
+      "ecdh-sha2-nistp256",
+      "ecdh-sha2-nistp384",
+      "ecdh-sha2-nistp521",
+      "mlkem1024nistp384-sha384",
+      "mlkem768nistp256-sha256",
+      "mlkem768x25519-sha256",
+      "sntrup761x25519-sha512",
+      "sntrup761x25519-sha512@openssh.com"
+    ],
+    "cipher": [
+      "3des-cbc",
+      "3des-ctr",
+      "aes128-cbc",
+      "aes128-ctr",
+      "aes128-gcm@openssh.com",
+      "aes192-cbc",
+      "aes192-ctr",
+      "aes256-cbc",
+      "aes256-ctr",
+      "aes256-gcm@openssh.com",
+      "arcfour",
+      "arcfour128",
+      "arcfour256",
+      "blowfish-cbc",
+      "blowfish-ctr",
+      "chacha20-poly1305@openssh.com",
+      "des-cbc@ssh.com"
+    ],
+    "mac": [
+      "hmac-md5",
+      "hmac-md5-etm@openssh.com",
+      "hmac-sha1",
+      "hmac-sha1-96",
+      "hmac-sha1-96-etm@openssh.com",
+      "hmac-sha1-etm@openssh.com",
+      "hmac-sha2-256",
+      "hmac-sha2-256-etm@openssh.com",
+      "hmac-sha2-512",
+      "hmac-sha2-512-etm@openssh.com"
+    ],
+    "hostkey": [
+      "ecdsa-sha2-nistp256",
+      "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp384",
+      "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp521",
+      "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+      "rsa-sha2-256",
+      "rsa-sha2-256-cert-v01@openssh.com",
+      "rsa-sha2-512",
+      "rsa-sha2-512-cert-v01@openssh.com",
+      "ssh-dss",
+      "ssh-dss-cert-v01@openssh.com",
+      "ssh-ed25519",
+      "ssh-ed25519-cert-v01@openssh.com",
+      "ssh-rsa",
+      "ssh-rsa-cert-v01@openssh.com"
+    ],
+    "limitation": "ELF文字列とsource登録表の照合候補。runtime queryではなく全algorithmの交渉試験でもない"
+  },
+  "final_process": {
+    "qmp_quit": true,
+    "returncode": 0,
+    "fallback": [],
+    "error": null
+  },
+  "home_changes": {
+    "openssh": [
+      {
+        "condition": "good",
+        "repeat": 1,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 2,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 3,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 4,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 5,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 1,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 2,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 3,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 4,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 5,
+        "changed": []
+      }
+    ],
+    "dropbear": [
+      {
+        "condition": "good",
+        "repeat": 1,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 2,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 3,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 4,
+        "changed": []
+      },
+      {
+        "condition": "good",
+        "repeat": 5,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 1,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 2,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 3,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 4,
+        "changed": []
+      },
+      {
+        "condition": "wrong",
+        "repeat": 5,
+        "changed": []
+      }
+    ],
+    "putty": [
+      {
+        "condition": "good",
+        "repeat": 1,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "good",
+        "repeat": 2,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "good",
+        "repeat": 3,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "good",
+        "repeat": 4,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "good",
+        "repeat": 5,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "wrong",
+        "repeat": 1,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "wrong",
+        "repeat": 2,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "wrong",
+        "repeat": 3,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "wrong",
+        "repeat": 4,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      },
+      {
+        "condition": "wrong",
+        "repeat": 5,
+        "changed": [
+          "/root/.putty/randomseed"
+        ]
+      }
+    ]
+  },
+  "writable_opens": {
+    "openssh": [
+      "openat(AT_FDCWD, \"/dev/null\", O_RDWR) = 3",
+      "openat(AT_FDCWD, \"/dev/null\", O_RDWR) = 7"
+    ],
+    "dropbear": [
+      "openat(AT_FDCWD, \"/dev/urandom\", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3",
+      "openat(AT_FDCWD, \"/root/.ssh/known_hosts\", O_RDWR|O_CREAT|O_APPEND, 0666) = 9"
+    ],
+    "putty": [
+      "openat(AT_FDCWD, \"/dev/null\", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3",
+      "openat(AT_FDCWD, \"/root/.putty/randomseed\", O_WRONLY|O_CREAT, 0600) = 1",
+      "openat(AT_FDCWD, \"/root/.putty/randomseed\", O_WRONLY|O_CREAT, 0600) = 5"
+    ]
+  },
+  "trace_available": {
+    "openssh": {
+      "observed": 10,
+      "expected": 10
+    },
+    "dropbear": {
+      "observed": 10,
+      "expected": 10
+    },
+    "putty": {
+      "observed": 10,
+      "expected": 10
+    }
+  },
+  "openssh_effective_config": {
+    "host": "example.invalid",
+    "user": "root",
+    "hostname": "example.invalid",
+    "port": "22",
+    "addressfamily": "any",
+    "batchmode": "no",
+    "canonicalizefallbacklocal": "yes",
+    "canonicalizehostname": "false",
+    "checkhostip": "no",
+    "compression": "no",
+    "controlmaster": "false",
+    "enablesshkeysign": "no",
+    "clearallforwardings": "no",
+    "exitonforwardfailure": "no",
+    "fingerprinthash": "SHA256",
+    "forwardx11": "no",
+    "forwardx11trusted": "no",
+    "gatewayports": "no",
+    "hashknownhosts": "no",
+    "hostbasedauthentication": "no",
+    "identitiesonly": "no",
+    "kbdinteractiveauthentication": "yes",
+    "nohostauthenticationforlocalhost": "no",
+    "passwordauthentication": "yes",
+    "permitlocalcommand": "no",
+    "proxyusefdpass": "no",
+    "pubkeyauthentication": "true",
+    "requesttty": "auto",
+    "sessiontype": "default",
+    "stdinnull": "no",
+    "forkafterauthentication": "no",
+    "streamlocalbindunlink": "no",
+    "stricthostkeychecking": "ask",
+    "tcpkeepalive": "true",
+    "tunnel": "false",
+    "verifyhostkeydns": "false",
+    "visualhostkey": "no",
+    "updatehostkeys": "true",
+    "enableescapecommandline": "no",
+    "warnweakcrypto": "yes",
+    "canonicalizemaxdots": "1",
+    "connectionattempts": "1",
+    "forwardx11timeout": "1200",
+    "numberofpasswordprompts": "3",
+    "serveralivecountmax": "3",
+    "serveraliveinterval": "0",
+    "requiredrsasize": "1024",
+    "obscurekeystroketiming": "yes",
+    "ciphers": "chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr",
+    "hostkeyalgorithms": "ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-mldsa44-ed25519-cert,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256,ssh-mldsa44-ed25519",
+    "hostbasedacceptedalgorithms": "ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-mldsa44-ed25519-cert,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256,ssh-mldsa44-ed25519",
+    "kexalgorithms": "mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256",
+    "casignaturealgorithms": "ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256,ssh-mldsa44-ed25519",
+    "loglevel": "INFO",
+    "macs": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1",
+    "securitykeyprovider": "$SSH_SK_PROVIDER",
+    "pubkeyacceptedalgorithms": "ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-mldsa44-ed25519-cert,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256,ssh-mldsa44-ed25519",
+    "xauthlocation": "/usr/X11R6/bin/xauth",
+    "identityfile": [
+      "~/.ssh/id_rsa",
+      "~/.ssh/id_ecdsa",
+      "~/.ssh/id_ecdsa_sk",
+      "~/.ssh/id_ed25519",
+      "~/.ssh/id_ed25519_sk",
+      "~/.ssh/id_mldsa44_ed25519"
+    ],
+    "canonicaldomains": "none",
+    "globalknownhostsfile": "/etc/ssh/ssh_known_hosts /etc/ssh/ssh_known_hosts2",
+    "userknownhostsfile": "/root/.ssh/known_hosts /root/.ssh/known_hosts2",
+    "revokedhostkeys": "none",
+    "logverbose": "none",
+    "channeltimeout": "none",
+    "permitremoteopen": "any",
+    "addkeystoagent": "false",
+    "forwardagent": "no",
+    "connecttimeout": "none",
+    "tunneldevice": "any:any",
+    "canonicalizepermittedcnames": "none",
+    "controlpersist": "no",
+    "escapechar": "~",
+    "ipqos": "ef cs0",
+    "rekeylimit": "0 0",
+    "streamlocalbindmask": "0177",
+    "syslogfacility": "USER"
+  },
+  "final_inputs": {
+    "output-integrity/images/Image": "45d52f6e148cebaee66ecbc9735c6260ec23ca8c9ad0b00032cf04d20f1420e8",
+    "output-ssh-runtime-06/qemu.dtb": "211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5",
+    "output-ssh-runtime-06/initrd.gz": "fa82a014568ed4163f6e1fdadc9e5e142b072e7dad4ed275b79f13e0f751a1e1",
+    "output-ssh-tools-01/bin/qemu-system-aarch64": "8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73",
+    "board/cardputerzero/tools/bench/ssh-client-compare/runtime.py": "acc18ff509dd7fb77185c8cc3f2caa181664fd22a94204b77653b96891292010",
+    "board/cardputerzero/tools/bench/ssh-client-compare/guest.sh": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "sshd_version": "OpenSSH_10.2p1 Ubuntu-2ubuntu3.8, OpenSSL 3.5.5 27 Jan 2026",
+    "host_os": "PRETTY_NAME=\"Ubuntu 26.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"26.04\"\nVERSION=\"26.04.1 LTS (Resolute Raccoon)\"\nVERSION_CODENAME=resolute\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=resolute\nLOGO=ubuntu-logo\n",
+    "strace_sha256": "b9a53832680490472b7b2d579914b2bbf02378e846db7f916a6adf282e95d122"
+  },
+  "run_qemu_hash_lines": [
+    "run-qemu: sha256 7b0b7c001845d0664d5c4c37b087236365eb09d33d61319caa03cd6c3a81a5a6  ./output-ssh-runtime-06/qemu-launch",
+    "run-qemu: sha256 45d52f6e148cebaee66ecbc9735c6260ec23ca8c9ad0b00032cf04d20f1420e8  ./output-integrity/images/Image",
+    "run-qemu: sha256 211465fc4c8d0da8657daacbc0fea9ed4d4aff91f7d9c2059a0fe05caa0190a5  ./output-ssh-runtime-06/qemu.dtb",
+    "run-qemu: sha256 3b6a07d0d404fab4e23b6d34bc6696a6a312dd92821332385e5af7c01c421351  ./output-ssh-runtime-06/unused-sd.img"
+  ]
+}

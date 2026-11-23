@@ -1,0 +1,129 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+output-ssh-compare-01/baseline-1,baseline,1,squashfs,20500480,byte,0,sha256=5ee8766e50c9b0c08d35a762f4e5fa7c5810c695b50616914f04bbdbfc1ab2be; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/baseline-2,baseline,2,squashfs,20500480,byte,0,sha256=5ee8766e50c9b0c08d35a762f4e5fa7c5810c695b50616914f04bbdbfc1ab2be; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/baseline-3,baseline,3,squashfs,20500480,byte,0,sha256=5ee8766e50c9b0c08d35a762f4e5fa7c5810c695b50616914f04bbdbfc1ab2be; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/baseline-4,baseline,4,squashfs,20500480,byte,0,sha256=5ee8766e50c9b0c08d35a762f4e5fa7c5810c695b50616914f04bbdbfc1ab2be; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/baseline-5,baseline,5,squashfs,20500480,byte,0,sha256=5ee8766e50c9b0c08d35a762f4e5fa7c5810c695b50616914f04bbdbfc1ab2be; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/baseline,baseline,1,build,0,exit,1,seconds=35.596415; not a timing comparison
+output-ssh-compare-01/openssh,openssh,1,installed_added,797448,byte,0,minimal runtime dependency closure; common libraries reused; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh-1,openssh,1,squashfs,20828160,byte,0,sha256=b0c77b452127e472d9716b01ebc5e35b1404612430346d66beddb83481c7b758; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh-2,openssh,2,squashfs,20828160,byte,0,sha256=b0c77b452127e472d9716b01ebc5e35b1404612430346d66beddb83481c7b758; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh-3,openssh,3,squashfs,20828160,byte,0,sha256=b0c77b452127e472d9716b01ebc5e35b1404612430346d66beddb83481c7b758; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh-4,openssh,4,squashfs,20828160,byte,0,sha256=b0c77b452127e472d9716b01ebc5e35b1404612430346d66beddb83481c7b758; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh-5,openssh,5,squashfs,20828160,byte,0,sha256=b0c77b452127e472d9716b01ebc5e35b1404612430346d66beddb83481c7b758; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/openssh,openssh,1,build,0,exit,1,seconds=367.331372; not a timing comparison
+output-ssh-compare-01/dropbear,dropbear,1,installed_added,476400,byte,0,minimal runtime dependency closure; common libraries reused; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear-1,dropbear,1,squashfs,20705280,byte,0,sha256=03f28b46b5926083638943c62f282f0894ef48888ff3bd2ce29aab334f663bbe; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear-2,dropbear,2,squashfs,20705280,byte,0,sha256=03f28b46b5926083638943c62f282f0894ef48888ff3bd2ce29aab334f663bbe; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear-3,dropbear,3,squashfs,20705280,byte,0,sha256=03f28b46b5926083638943c62f282f0894ef48888ff3bd2ce29aab334f663bbe; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear-4,dropbear,4,squashfs,20705280,byte,0,sha256=03f28b46b5926083638943c62f282f0894ef48888ff3bd2ce29aab334f663bbe; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear-5,dropbear,5,squashfs,20705280,byte,0,sha256=03f28b46b5926083638943c62f282f0894ef48888ff3bd2ce29aab334f663bbe; sort-wrapper trial excluded from final size comparison
+output-ssh-compare-01/dropbear,dropbear,1,build,0,exit,1,seconds=258.790999; not a timing comparison
+output-ssh-compare-01/putty,putty,1,build,1,exit,0,"Command '['make', '-C', '/work/vendor/buildroot', 'O=/work/output-ssh-compare-01/putty/buildroot', 'BR2_EXTERNAL=/work', 'BR2_JLEVEL=4', '-j4', 'PUTTY_INSTALL_TARGET_CMDS=$(INSTALL) -D -m 0755 $(@D)/buildroot-build/plink $(TARGET_DIR)/usr/bin/plink', 'PUTTY_POST_INSTALL_TARGET_HOOKS=', 'PUTTY_INSTALL_INIT_SYSV=', 'PUTTY_INSTALL_INIT_SYSTEMD=', 'putty']' returned non-zero exit status 2."
+output-ssh-measure-02/baseline-1,baseline,1,squashfs,20496384,byte,1,sha256=de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0
+output-ssh-measure-02/baseline-2,baseline,2,squashfs,20496384,byte,1,sha256=de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0
+output-ssh-measure-02/baseline-3,baseline,3,squashfs,20496384,byte,1,sha256=de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0
+output-ssh-measure-02/baseline-4,baseline,4,squashfs,20496384,byte,1,sha256=de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0
+output-ssh-measure-02/baseline-5,baseline,5,squashfs,20496384,byte,1,sha256=de50cc9898b1b83709efee7f7f7037ff83988a8044dc17d5a0696d7594492da0
+output-ssh-measure-02/baseline,baseline,1,measure,0,exit,1,seconds=37.197833; not a timing comparison
+output-ssh-measure-02/openssh,openssh,1,installed_added,797448,byte,1,minimal runtime dependency closure; common libraries reused
+output-ssh-measure-02/openssh-1,openssh,1,squashfs,20824064,byte,1,sha256=ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52
+output-ssh-measure-02/openssh-2,openssh,2,squashfs,20824064,byte,1,sha256=ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52
+output-ssh-measure-02/openssh-3,openssh,3,squashfs,20824064,byte,1,sha256=ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52
+output-ssh-measure-02/openssh-4,openssh,4,squashfs,20824064,byte,1,sha256=ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52
+output-ssh-measure-02/openssh-5,openssh,5,squashfs,20824064,byte,1,sha256=ce8ecd403565cd05b2ea306e49c982d4084ef0f0d651c6c8f1af3c8799cf7e52
+output-ssh-measure-02/openssh,openssh,1,measure,0,exit,1,seconds=38.189193; not a timing comparison
+output-ssh-measure-02/dropbear,dropbear,1,installed_added,476400,byte,1,minimal runtime dependency closure; common libraries reused
+output-ssh-measure-02/dropbear-1,dropbear,1,squashfs,20701184,byte,1,sha256=4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545
+output-ssh-measure-02/dropbear-2,dropbear,2,squashfs,20701184,byte,1,sha256=4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545
+output-ssh-measure-02/dropbear-3,dropbear,3,squashfs,20701184,byte,1,sha256=4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545
+output-ssh-measure-02/dropbear-4,dropbear,4,squashfs,20701184,byte,1,sha256=4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545
+output-ssh-measure-02/dropbear-5,dropbear,5,squashfs,20701184,byte,1,sha256=4d5abc1fd71e6ab9a5f3dafa8cd3e4fbf36adfe2d622d659474c762f2301e545
+output-ssh-measure-02/dropbear,dropbear,1,measure,0,exit,1,seconds=37.760406; not a timing comparison
+output-ssh-measure-02/putty,putty,1,installed_added,899376,byte,1,minimal runtime dependency closure; common libraries reused
+output-ssh-measure-02/putty-1,putty,1,squashfs,20807680,byte,1,sha256=0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056
+output-ssh-measure-02/putty-2,putty,2,squashfs,20807680,byte,1,sha256=0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056
+output-ssh-measure-02/putty-3,putty,3,squashfs,20807680,byte,1,sha256=0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056
+output-ssh-measure-02/putty-4,putty,4,squashfs,20807680,byte,1,sha256=0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056
+output-ssh-measure-02/putty-5,putty,5,squashfs,20807680,byte,1,sha256=0682e394887ac592dbff40f889c2f849cc671968d6c91cfb52cedb6a81058056
+output-ssh-measure-02/putty,putty,1,measure,0,exit,1,seconds=38.228212; not a timing comparison
+output-ssh-runtime-01/attempt,all,1,attempt_accepted,0,bool,0,"{""qmp_quit"": false, ""returncode"": 0, ""fallback"": [""SIGTERM""], ""error"": ""guest panic or network setup failure""}"
+output-ssh-runtime-02/openssh-good-1,openssh,1,good,127,exit,0,"failed attempt; known_hosts_changed=0; authentication/command failed: SSH_BEGIN openssh good 1 (127); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-02/openssh-wrong-1,openssh,1,wrong,127,exit,0,"failed attempt; known_hosts_changed=0; authentication/command failed: SSH_BEGIN openssh good 1 (127); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-02/attempt,all,1,attempt_accepted,0,bool,0,"{""qmp_quit"": true, ""returncode"": 0, ""fallback"": [], ""error"": ""authentication/command failed: SSH_BEGIN openssh good 1 (127)""}"
+output-ssh-runtime-03/openssh-good-1,openssh,1,good,0,exit,0,"known_hosts unchanged; initramfs only; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-03/openssh-wrong-1,openssh,1,wrong,255,exit,0,"known_hosts unchanged; initramfs only; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-03/attempt,all,1,attempt_accepted,0,bool,0,"{""qmp_quit"": true, ""returncode"": 0, ""fallback"": [], ""error"": null}"
+output-ssh-runtime-04/openssh-good-1,openssh,1,good,0,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-wrong-1,openssh,1,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-good-2,openssh,2,good,0,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-wrong-2,openssh,2,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-good-3,openssh,3,good,0,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-wrong-3,openssh,3,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-good-4,openssh,4,good,0,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-wrong-4,openssh,4,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-good-5,openssh,5,good,0,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/openssh-wrong-5,openssh,5,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; None; preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-04/attempt,all,1,attempt_accepted,0,bool,0,"{""qmp_quit"": false, ""returncode"": 0, ""fallback"": [""SIGTERM""], ""error"": null}"
+output-ssh-runtime-05/openssh-good-1,openssh,1,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-wrong-1,openssh,1,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-good-2,openssh,2,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-wrong-2,openssh,2,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-good-3,openssh,3,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-wrong-3,openssh,3,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-good-4,openssh,4,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-wrong-4,openssh,4,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-good-5,openssh,5,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/openssh-wrong-5,openssh,5,wrong,255,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-good-1,dropbear,1,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-wrong-1,dropbear,1,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-good-2,dropbear,2,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-wrong-2,dropbear,2,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-good-3,dropbear,3,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-wrong-3,dropbear,3,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-good-4,dropbear,4,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-wrong-4,dropbear,4,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-good-5,dropbear,5,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/dropbear-wrong-5,dropbear,5,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-good-1,putty,1,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-wrong-1,putty,1,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-good-2,putty,2,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-wrong-2,putty,2,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-good-3,putty,3,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-wrong-3,putty,3,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-good-4,putty,4,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-wrong-4,putty,4,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-good-5,putty,5,good,0,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/putty-wrong-5,putty,5,wrong,1,exit,0,"failed attempt; known_hosts_changed=0; ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1); preflight or rejected attempt, not final aggregation"
+output-ssh-runtime-05/attempt,all,1,attempt_accepted,0,bool,0,"{""qmp_quit"": true, ""returncode"": 0, ""fallback"": [], ""error"": ""ValueError: negative control did not reject host key: SSH_BEGIN putty wrong 1 (1)""}"
+output-ssh-runtime-06/openssh-good-1,openssh,1,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-wrong-1,openssh,1,wrong,255,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-good-2,openssh,2,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-wrong-2,openssh,2,wrong,255,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-good-3,openssh,3,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-wrong-3,openssh,3,wrong,255,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-good-4,openssh,4,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-wrong-4,openssh,4,wrong,255,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-good-5,openssh,5,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/openssh-wrong-5,openssh,5,wrong,255,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-good-1,dropbear,1,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-wrong-1,dropbear,1,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-good-2,dropbear,2,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-wrong-2,dropbear,2,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-good-3,dropbear,3,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-wrong-3,dropbear,3,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-good-4,dropbear,4,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-wrong-4,dropbear,4,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-good-5,dropbear,5,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/dropbear-wrong-5,dropbear,5,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-good-1,putty,1,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-wrong-1,putty,1,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-good-2,putty,2,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-wrong-2,putty,2,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-good-3,putty,3,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-wrong-3,putty,3,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-good-4,putty,4,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-wrong-4,putty,4,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-good-5,putty,5,good,0,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/putty-wrong-5,putty,5,wrong,1,exit,1,known_hosts unchanged; initramfs only
+output-ssh-runtime-06/attempt,all,1,attempt_accepted,1,bool,1,"{""qmp_quit"": true, ""returncode"": 0, ""fallback"": [], ""error"": null}"
