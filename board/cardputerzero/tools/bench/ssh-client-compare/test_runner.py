@@ -69,6 +69,25 @@ class Runner(unittest.TestCase):
                 with self.subTest(process=process), self.assertRaisesRegex(ValueError, "final runtime"):
                     summarize(build, measure, [final], final)
 
+    def test_summary_retains_preparation_failure_and_rejects_missing_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build, measure, final = self.summary_fixture(root)
+            failed = root / "prepare-failed"
+            failed.mkdir()
+            evidence = '{"error":"FileNotFoundError: fixture"}'
+            (failed / "failure.json").write_text(evidence)
+            with mock.patch("summarize.needed", return_value=[]):
+                rows, report = summarize(build, measure, [failed, final], final)
+            row = next(row for row in rows if row["run_id"] == "prepare-failed/attempt")
+            self.assertEqual((row["value"], row["valid"]), (0, 0))
+            self.assertIn("FileNotFoundError: fixture", row["note"])
+            self.assertEqual((failed / "failure.json").read_text(), evidence)
+            self.assertEqual(report["final_process"]["returncode"], 0)
+            (failed / "failure.json").unlink()
+            with self.assertRaisesRegex(ValueError, "missing process/failure"):
+                summarize(build, measure, [failed, final], final)
+
     def test_measure_from_rebases_payload_on_current_reference(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -26,8 +26,18 @@ def process_accepted(process):
             and process.get("fallback") == [] and process.get("error") is None)
 
 
+def load_process(directory):
+    path = directory / "process.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    failure = directory / "failure.json"
+    if failure.exists():
+        return dict(error="process.json missing", failure=json.loads(failure.read_text()))
+    raise ValueError(f"missing process/failure evidence: {directory}")
+
+
 def summarize(build, measure, attempts, final):
-    final_process = json.loads((final / "process.json").read_text())
+    final_process = load_process(final)
     if final not in attempts or not process_accepted(final_process):
         raise ValueError("final runtime process was not accepted")
     rows = []
@@ -46,7 +56,7 @@ def summarize(build, measure, attempts, final):
                     row["note"] += "; preflight or rejected attempt, not final aggregation"
                 rows.append(row)
         if directory in attempts:
-            process = json.loads((directory / "process.json").read_text())
+            process = load_process(directory)
             accepted = directory == final and process_accepted(process)
             rows.append(dict(run_id=directory.name + "/attempt", variant="all", repeat=1,
                              metric="attempt_accepted", value=int(accepted), unit="bool", valid=int(accepted),
