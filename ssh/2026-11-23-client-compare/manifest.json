@@ -1,0 +1,1010 @@
+[
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/build.py",
+    "original_sha256": "b9bf12ede3b1b5105a49b71389354a3736c9ae77ee8dc1967900132a80fad7fe",
+    "public_sha256": "b9bf12ede3b1b5105a49b71389354a3736c9ae77ee8dc1967900132a80fad7fe",
+    "original_bytes": 8861,
+    "public_bytes": 8861,
+    "redacted": false
+  },
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/guest.sh",
+    "original_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "public_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "original_bytes": 4209,
+    "public_bytes": 4209,
+    "redacted": false
+  },
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/inventory.py",
+    "original_sha256": "6e43d5038fc51a69201ba1f589f92a6615be16b2527938d547e6d1c52fc528c9",
+    "public_sha256": "6e43d5038fc51a69201ba1f589f92a6615be16b2527938d547e6d1c52fc528c9",
+    "original_bytes": 9185,
+    "public_bytes": 9185,
+    "redacted": false
+  },
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/runtime.py",
+    "original_sha256": "acc18ff509dd7fb77185c8cc3f2caa181664fd22a94204b77653b96891292010",
+    "public_sha256": "acc18ff509dd7fb77185c8cc3f2caa181664fd22a94204b77653b96891292010",
+    "original_bytes": 17146,
+    "public_bytes": 17146,
+    "redacted": false
+  },
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/summarize.py",
+    "original_sha256": "78bb6c27439e737c1d55547fed71cfe804f87517e302b0f669c6159e9b45f82b",
+    "public_sha256": "78bb6c27439e737c1d55547fed71cfe804f87517e302b0f669c6159e9b45f82b",
+    "original_bytes": 7736,
+    "public_bytes": 7736,
+    "redacted": false
+  },
+  {
+    "path": "board/cardputerzero/tools/bench/ssh-client-compare/test_runner.py",
+    "original_sha256": "365ed93676c63ad64a90afe2f08685a06867de30bbd221df7d7e8a568166d055",
+    "public_sha256": "365ed93676c63ad64a90afe2f08685a06867de30bbd221df7d7e8a568166d055",
+    "original_bytes": 4407,
+    "public_bytes": 4407,
+    "redacted": false
+  },
+  {
+    "path": "output-integrity/.config",
+    "original_sha256": "c14c6763bf1185cf52f235e314e7935e5928b3ec5f4ecc269652865fa0cd9575",
+    "public_sha256": "c14c6763bf1185cf52f235e314e7935e5928b3ec5f4ecc269652865fa0cd9575",
+    "original_bytes": 134834,
+    "public_bytes": 134834,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/baseline/build.log",
+    "original_sha256": "6432b522ad293a1de23c7c16527a72d9121de6f637b133356a15a7bd883e7d01",
+    "public_sha256": "6432b522ad293a1de23c7c16527a72d9121de6f637b133356a15a7bd883e7d01",
+    "original_bytes": 20730,
+    "public_bytes": 20730,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/dropbear/build.log",
+    "original_sha256": "09cdb739578c628a9a1b15293b20d6cd8a555ad7672289a66b5b1a83d046670e",
+    "public_sha256": "09cdb739578c628a9a1b15293b20d6cd8a555ad7672289a66b5b1a83d046670e",
+    "original_bytes": 625569,
+    "public_bytes": 625569,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/dropbear/buildroot/.config",
+    "original_sha256": "478446568b2267d3722c755334f1e2829210102873ef71413cad2778de307362",
+    "public_sha256": "478446568b2267d3722c755334f1e2829210102873ef71413cad2778de307362",
+    "original_bytes": 135184,
+    "public_bytes": 135184,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/dropbear/dependencies.json",
+    "original_sha256": "25e27c25a737755a6614522ab349ba5b79debf578b6ea020776bd83af9bb7d78",
+    "public_sha256": "25e27c25a737755a6614522ab349ba5b79debf578b6ea020776bd83af9bb7d78",
+    "original_bytes": 135,
+    "public_bytes": 135,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/dropbear/files.json",
+    "original_sha256": "7009010e83a87367f027e98838cd799c40d333dbc62755034e8b16fdbf2de744",
+    "public_sha256": "7009010e83a87367f027e98838cd799c40d333dbc62755034e8b16fdbf2de744",
+    "original_bytes": 294,
+    "public_bytes": 294,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/inputs.json",
+    "original_sha256": "29e6fd99b8c6a3e0cdaa92e02acfd97d0659f70ad3fc8a368aafcd154819bcd4",
+    "public_sha256": "29e6fd99b8c6a3e0cdaa92e02acfd97d0659f70ad3fc8a368aafcd154819bcd4",
+    "original_bytes": 490,
+    "public_bytes": 490,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/openssh/build.log",
+    "original_sha256": "fd13b36fd57bf2d6f40223fd3547c94fb3b11d4ae7c439c3d09c85c34414c33e",
+    "public_sha256": "b5541c9a35c4f1a22dd79452a59e4d3e514f15c4144d0860ab4b29bd65f0abf7",
+    "original_bytes": 2561713,
+    "public_bytes": 2560133,
+    "redacted": true
+  },
+  {
+    "path": "output-ssh-compare-01/openssh/buildroot/.config",
+    "original_sha256": "621a0b7444f99e5d243a2c8ad7b37f9524c5753a0569ca2bea7cfff3a27083ae",
+    "public_sha256": "621a0b7444f99e5d243a2c8ad7b37f9524c5753a0569ca2bea7cfff3a27083ae",
+    "original_bytes": 135043,
+    "public_bytes": 135043,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/openssh/dependencies.json",
+    "original_sha256": "6e1e6e5d91adbfb3c0c3282b55e4fee5269dd10f270fe6e707e15faeff4574e1",
+    "public_sha256": "6e1e6e5d91adbfb3c0c3282b55e4fee5269dd10f270fe6e707e15faeff4574e1",
+    "original_bytes": 213,
+    "public_bytes": 213,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/openssh/files.json",
+    "original_sha256": "23ebbe0b60567c6810f592197e00c746217f22a942613b67e9df822e9e7b4ca9",
+    "public_sha256": "23ebbe0b60567c6810f592197e00c746217f22a942613b67e9df822e9e7b4ca9",
+    "original_bytes": 141,
+    "public_bytes": 141,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/build.log",
+    "original_sha256": "1964a0e6ee6f1c186de3da1fbdafbc62ff71ba4a9b2c4437ddce412c4ccab126",
+    "public_sha256": "1964a0e6ee6f1c186de3da1fbdafbc62ff71ba4a9b2c4437ddce412c4ccab126",
+    "original_bytes": 124456,
+    "public_bytes": 124456,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/buildroot/.config",
+    "original_sha256": "f838f3a93f4a2ada099aa4dc5207618dca41dc2e171a61b9dcd7f58eed3be155",
+    "public_sha256": "f838f3a93f4a2ada099aa4dc5207618dca41dc2e171a61b9dcd7f58eed3be155",
+    "original_bytes": 134879,
+    "public_bytes": 134879,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/dependencies.json",
+    "original_sha256": "ed465630a8addcdf8c0848830614a30374c1a7a594d048b7cabc3d462ca659f2",
+    "public_sha256": "ed465630a8addcdf8c0848830614a30374c1a7a594d048b7cabc3d462ca659f2",
+    "original_bytes": 123,
+    "public_bytes": 123,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/files.json",
+    "original_sha256": "e526aaf3824f8240eaa3652b2d339a9669a8821b8dbd676ab5d6d767d9dff331",
+    "public_sha256": "e526aaf3824f8240eaa3652b2d339a9669a8821b8dbd676ab5d6d767d9dff331",
+    "original_bytes": 143,
+    "public_bytes": 143,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/install-02.json",
+    "original_sha256": "57843e10034ab1b5bb12fa6132cc038fc64cbe48b61e9cdbdc0d0b4745a9e10d",
+    "public_sha256": "57843e10034ab1b5bb12fa6132cc038fc64cbe48b61e9cdbdc0d0b4745a9e10d",
+    "original_bytes": 85,
+    "public_bytes": 85,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/putty/install-02.log",
+    "original_sha256": "0305dd246d67058524f639b328c5ee8e9f2b36de3016846be22a55af8e8d7106",
+    "public_sha256": "0305dd246d67058524f639b328c5ee8e9f2b36de3016846be22a55af8e8d7106",
+    "original_bytes": 725,
+    "public_bytes": 725,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/results.csv",
+    "original_sha256": "71a3fca38d269cfeeeaf836887e82917ca6f362160306b0bc0380a023ddd1ad7",
+    "public_sha256": "71a3fca38d269cfeeeaf836887e82917ca6f362160306b0bc0380a023ddd1ad7",
+    "original_bytes": 2720,
+    "public_bytes": 2720,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-compare-01/script-checkpoint/build.py",
+    "original_sha256": "fda3f8b46bf540c0c24843108e92ffbbc7ff9b2553bc07363b353a5640dcd8bf",
+    "public_sha256": "fda3f8b46bf540c0c24843108e92ffbbc7ff9b2553bc07363b353a5640dcd8bf",
+    "original_bytes": 7883,
+    "public_bytes": 7883,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-inventory-05/inventory.json",
+    "original_sha256": "229c3654c7f6bdbaf0572e3862e02bc2745ab2abbfd26ac7c74b4d9e8d19b7be",
+    "public_sha256": "229c3654c7f6bdbaf0572e3862e02bc2745ab2abbfd26ac7c74b4d9e8d19b7be",
+    "original_bytes": 9842,
+    "public_bytes": 9842,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-inventory-05/options.csv",
+    "original_sha256": "3aa02c2336da3b8247db1dfd1f56fb97ef3a1e8dfa9f713afba861d7b8d148f0",
+    "public_sha256": "3aa02c2336da3b8247db1dfd1f56fb97ef3a1e8dfa9f713afba861d7b8d148f0",
+    "original_bytes": 437255,
+    "public_bytes": 437255,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/baseline/build.log",
+    "original_sha256": "15226ecf12ac6743f63eb24f210fb4d136382b106871ebfeb63f8abf54659ab4",
+    "public_sha256": "15226ecf12ac6743f63eb24f210fb4d136382b106871ebfeb63f8abf54659ab4",
+    "original_bytes": 6565,
+    "public_bytes": 6565,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/dropbear/build.log",
+    "original_sha256": "26dd79462b0a3ca61df195e25bbc515e3eb93e48319e998c96369b0079e5b3a3",
+    "public_sha256": "26dd79462b0a3ca61df195e25bbc515e3eb93e48319e998c96369b0079e5b3a3",
+    "original_bytes": 6625,
+    "public_bytes": 6625,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/dropbear/dependencies.json",
+    "original_sha256": "25e27c25a737755a6614522ab349ba5b79debf578b6ea020776bd83af9bb7d78",
+    "public_sha256": "25e27c25a737755a6614522ab349ba5b79debf578b6ea020776bd83af9bb7d78",
+    "original_bytes": 135,
+    "public_bytes": 135,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/dropbear/files.json",
+    "original_sha256": "7009010e83a87367f027e98838cd799c40d333dbc62755034e8b16fdbf2de744",
+    "public_sha256": "7009010e83a87367f027e98838cd799c40d333dbc62755034e8b16fdbf2de744",
+    "original_bytes": 294,
+    "public_bytes": 294,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/inputs.json",
+    "original_sha256": "0bcced66317998868e1b0c516681f1d902a9d7f6a9dede3d72bb872b3daf51e0",
+    "public_sha256": "0bcced66317998868e1b0c516681f1d902a9d7f6a9dede3d72bb872b3daf51e0",
+    "original_bytes": 668,
+    "public_bytes": 668,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/openssh/build.log",
+    "original_sha256": "77a0332c86247a52fe379b992328b7d0ead21c96a022767ad8ace5a64d306069",
+    "public_sha256": "77a0332c86247a52fe379b992328b7d0ead21c96a022767ad8ace5a64d306069",
+    "original_bytes": 6610,
+    "public_bytes": 6610,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/openssh/dependencies.json",
+    "original_sha256": "6e1e6e5d91adbfb3c0c3282b55e4fee5269dd10f270fe6e707e15faeff4574e1",
+    "public_sha256": "6e1e6e5d91adbfb3c0c3282b55e4fee5269dd10f270fe6e707e15faeff4574e1",
+    "original_bytes": 213,
+    "public_bytes": 213,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/openssh/files.json",
+    "original_sha256": "23ebbe0b60567c6810f592197e00c746217f22a942613b67e9df822e9e7b4ca9",
+    "public_sha256": "23ebbe0b60567c6810f592197e00c746217f22a942613b67e9df822e9e7b4ca9",
+    "original_bytes": 141,
+    "public_bytes": 141,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/putty/build.log",
+    "original_sha256": "09637bd0ae786cc2c101c1be61e2de1f2181f5bc56e02626f15c25f225c5aa0a",
+    "public_sha256": "09637bd0ae786cc2c101c1be61e2de1f2181f5bc56e02626f15c25f225c5aa0a",
+    "original_bytes": 6740,
+    "public_bytes": 6740,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/putty/dependencies.json",
+    "original_sha256": "ed465630a8addcdf8c0848830614a30374c1a7a594d048b7cabc3d462ca659f2",
+    "public_sha256": "ed465630a8addcdf8c0848830614a30374c1a7a594d048b7cabc3d462ca659f2",
+    "original_bytes": 123,
+    "public_bytes": 123,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/putty/files.json",
+    "original_sha256": "e526aaf3824f8240eaa3652b2d339a9669a8821b8dbd676ab5d6d767d9dff331",
+    "public_sha256": "e526aaf3824f8240eaa3652b2d339a9669a8821b8dbd676ab5d6d767d9dff331",
+    "original_bytes": 143,
+    "public_bytes": 143,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-measure-02/results.csv",
+    "original_sha256": "3141b019abfc20723f04ffa983b2f870c18de25821d3e73eab7c53f4a81c1454",
+    "public_sha256": "3141b019abfc20723f04ffa983b2f870c18de25821d3e73eab7c53f4a81c1454",
+    "original_bytes": 3053,
+    "public_bytes": 3053,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/client.pub",
+    "original_sha256": "3ab8fbfa9de5d8a48f5305cb89baadb28640f21bb64b64a0b6fb27f5bc40a8e0",
+    "public_sha256": "3ab8fbfa9de5d8a48f5305cb89baadb28640f21bb64b64a0b6fb27f5bc40a8e0",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/failure.json",
+    "original_sha256": "d27eebfc3175449b22d9de3926270617a3faf0e3198984dfe19624d35c9870b6",
+    "public_sha256": "d27eebfc3175449b22d9de3926270617a3faf0e3198984dfe19624d35c9870b6",
+    "original_bytes": 54,
+    "public_bytes": 54,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/host.pub",
+    "original_sha256": "a220ee7c0fb7ca24144b335ae07d2d9d5b5216e4eca922f2d998c03d76386b35",
+    "public_sha256": "a220ee7c0fb7ca24144b335ae07d2d9d5b5216e4eca922f2d998c03d76386b35",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/inputs.json",
+    "original_sha256": "36e0e6d6df765f1f617133c17b6f81aa746940bddd94125059c6d0225bc48212",
+    "public_sha256": "36e0e6d6df765f1f617133c17b6f81aa746940bddd94125059c6d0225bc48212",
+    "original_bytes": 1237,
+    "public_bytes": 1237,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/process.json",
+    "original_sha256": "96117c89be90e41c901e6ea790a5ec13fabeab8c9d379768ae937b4f0a2584fa",
+    "public_sha256": "96117c89be90e41c901e6ea790a5ec13fabeab8c9d379768ae937b4f0a2584fa",
+    "original_bytes": 129,
+    "public_bytes": 129,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/results.csv",
+    "original_sha256": "21a3e250b1864a77b4011107be335ce7a80b2a9002f03d00248b90725ae5a0c2",
+    "public_sha256": "21a3e250b1864a77b4011107be335ce7a80b2a9002f03d00248b90725ae5a0c2",
+    "original_bytes": 52,
+    "public_bytes": 52,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/root/init",
+    "original_sha256": "73050650e7d93179cca89f9d909840d285c2d47b36f7d217383ee071d3c3cad5",
+    "public_sha256": "73050650e7d93179cca89f9d909840d285c2d47b36f7d217383ee071d3c3cad5",
+    "original_bytes": 3145,
+    "public_bytes": 3145,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/serial.log",
+    "original_sha256": "ef6fee71eb8358655b733c43eb8adaf44a0339e159f228433917be49d297d15c",
+    "public_sha256": "ef6fee71eb8358655b733c43eb8adaf44a0339e159f228433917be49d297d15c",
+    "original_bytes": 18572,
+    "public_bytes": 18572,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/sshd.log",
+    "original_sha256": "0e426c8da3be14d9eb514504aba8a9f456482c366e7864f2fb3af5792b82a617",
+    "public_sha256": "0e426c8da3be14d9eb514504aba8a9f456482c366e7864f2fb3af5792b82a617",
+    "original_bytes": 1124,
+    "public_bytes": 1124,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-01/wrong.pub",
+    "original_sha256": "ee2e9103c668ad8f05ce7a44d57bdd5ccee2a6dd8e809982d1d81ad3b6f3c067",
+    "public_sha256": "ee2e9103c668ad8f05ce7a44d57bdd5ccee2a6dd8e809982d1d81ad3b6f3c067",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/client.pub",
+    "original_sha256": "39673b324e8e636fa18f486bdc83cde29929d7aa72bd6b9d69af862f5533a2ed",
+    "public_sha256": "39673b324e8e636fa18f486bdc83cde29929d7aa72bd6b9d69af862f5533a2ed",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/failure.json",
+    "original_sha256": "e4e4f843538c4679ff886ba1cc8ad23602f09e345ad0b455ff6dea7cfcb442ff",
+    "public_sha256": "e4e4f843538c4679ff886ba1cc8ad23602f09e345ad0b455ff6dea7cfcb442ff",
+    "original_bytes": 79,
+    "public_bytes": 79,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/host.pub",
+    "original_sha256": "74b92f45fead0c17030a7703bd3ac091428a06a172da75b7c079b57a04c3a0d5",
+    "public_sha256": "74b92f45fead0c17030a7703bd3ac091428a06a172da75b7c079b57a04c3a0d5",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/inputs.json",
+    "original_sha256": "933c3389b07f60dba60b01b16f0060a05beaa3a4027a4c3c0505336f38ddc82b",
+    "public_sha256": "933c3389b07f60dba60b01b16f0060a05beaa3a4027a4c3c0505336f38ddc82b",
+    "original_bytes": 1237,
+    "public_bytes": 1237,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/process.json",
+    "original_sha256": "b78b82b784c7a3b0b480aca7f39ce895dd1ea0bc0e8a7197ab276b183e9c3de0",
+    "public_sha256": "b78b82b784c7a3b0b480aca7f39ce895dd1ea0bc0e8a7197ab276b183e9c3de0",
+    "original_bytes": 136,
+    "public_bytes": 136,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/results.csv",
+    "original_sha256": "77894f6b3e0aea780c7a1b19146e309deba8416b643b7d165ed9d8b8f18f1cc9",
+    "public_sha256": "77894f6b3e0aea780c7a1b19146e309deba8416b643b7d165ed9d8b8f18f1cc9",
+    "original_bytes": 340,
+    "public_bytes": 340,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/root/init",
+    "original_sha256": "54845c3b2eff95870bb668908fd76cafca98e4260c0d694b9909557d295d7630",
+    "public_sha256": "54845c3b2eff95870bb668908fd76cafca98e4260c0d694b9909557d295d7630",
+    "original_bytes": 3482,
+    "public_bytes": 3482,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/serial.log",
+    "original_sha256": "fdbac9ac0f5ae7bef13c1a1d1a7408db38a12082b379262533324a488e8575cf",
+    "public_sha256": "fdbac9ac0f5ae7bef13c1a1d1a7408db38a12082b379262533324a488e8575cf",
+    "original_bytes": 25251,
+    "public_bytes": 25251,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/sshd.log",
+    "original_sha256": "0a13ff20bd4497b14fa1d60ba7432a3d1015339e86f645b29861c6bfa0d6c026",
+    "public_sha256": "0a13ff20bd4497b14fa1d60ba7432a3d1015339e86f645b29861c6bfa0d6c026",
+    "original_bytes": 1124,
+    "public_bytes": 1124,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-02/wrong.pub",
+    "original_sha256": "772906f23c5c1ba63efe3752a5beb9d762e4fe27b9beca6d55f2dae97d395f27",
+    "public_sha256": "772906f23c5c1ba63efe3752a5beb9d762e4fe27b9beca6d55f2dae97d395f27",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/client.pub",
+    "original_sha256": "c593dd8418d09e47abcf317cd39d9a8ed96febb9c91f5e7f8b5b33899fff195a",
+    "public_sha256": "c593dd8418d09e47abcf317cd39d9a8ed96febb9c91f5e7f8b5b33899fff195a",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/guest-input.sh",
+    "original_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "public_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "original_bytes": 3496,
+    "public_bytes": 3496,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/host.pub",
+    "original_sha256": "560c369a444b94da4ba2dafc5c8b6575f2715ccc566e70bbc179555e0d4705c5",
+    "public_sha256": "560c369a444b94da4ba2dafc5c8b6575f2715ccc566e70bbc179555e0d4705c5",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/inputs.json",
+    "original_sha256": "fdfb0559679990a7cb1701797cd9f0d0b29ac1c0396afcb33aaf2503b604e630",
+    "public_sha256": "fdfb0559679990a7cb1701797cd9f0d0b29ac1c0396afcb33aaf2503b604e630",
+    "original_bytes": 1237,
+    "public_bytes": 1237,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/process.json",
+    "original_sha256": "607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8",
+    "public_sha256": "607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8",
+    "original_bytes": 77,
+    "public_bytes": 77,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/results.csv",
+    "original_sha256": "111f9b8ffaca6c95e126dffb596b6afb13944e163b55186a13ba6ab80de9af2a",
+    "public_sha256": "111f9b8ffaca6c95e126dffb596b6afb13944e163b55186a13ba6ab80de9af2a",
+    "original_bytes": 212,
+    "public_bytes": 212,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/root/init",
+    "original_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "public_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "original_bytes": 3496,
+    "public_bytes": 3496,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/runner.py",
+    "original_sha256": "bfc6a4f527c656c9191925335b17d8828e5405bc6c01d164f4a5a9902bca1135",
+    "public_sha256": "bfc6a4f527c656c9191925335b17d8828e5405bc6c01d164f4a5a9902bca1135",
+    "original_bytes": 16438,
+    "public_bytes": 16438,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/serial.log",
+    "original_sha256": "ec5f79b73d510bdbe99c38a8e31b6e3e99e3f365b7b31a8e0358e36b24b48817",
+    "public_sha256": "ec5f79b73d510bdbe99c38a8e31b6e3e99e3f365b7b31a8e0358e36b24b48817",
+    "original_bytes": 41384,
+    "public_bytes": 41384,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/sshd.log",
+    "original_sha256": "8d2de0d1d2338efc18cacd31746a59768280941040d632a2f0b68d3291e9e22e",
+    "public_sha256": "8d2de0d1d2338efc18cacd31746a59768280941040d632a2f0b68d3291e9e22e",
+    "original_bytes": 21376,
+    "public_bytes": 21376,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-03/wrong.pub",
+    "original_sha256": "ec7de7a05b838e160b01bf88111bca4c4000f834bcfdf38fb24070c3463f081f",
+    "public_sha256": "ec7de7a05b838e160b01bf88111bca4c4000f834bcfdf38fb24070c3463f081f",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/abort-request.json",
+    "original_sha256": "29dbd72f536ebb0042bcdb3a52568db6e345b321beb04ddd57958c3dae6c083b",
+    "public_sha256": "29dbd72f536ebb0042bcdb3a52568db6e345b321beb04ddd57958c3dae6c083b",
+    "original_bytes": 158,
+    "public_bytes": 158,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/client.pub",
+    "original_sha256": "99c8c85506072031afce836ff706f80eebf4c76bf7513d0c1ff65f5a0af1bb73",
+    "public_sha256": "99c8c85506072031afce836ff706f80eebf4c76bf7513d0c1ff65f5a0af1bb73",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/fixture-tools.log",
+    "original_sha256": "7590e6c0cb5895731dc64091b3e6f6a8ef3101f940f0ac07f241e7ffb8cc08a9",
+    "public_sha256": "7590e6c0cb5895731dc64091b3e6f6a8ef3101f940f0ac07f241e7ffb8cc08a9",
+    "original_bytes": 2014,
+    "public_bytes": 2014,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/guest-input.sh",
+    "original_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "public_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "original_bytes": 3496,
+    "public_bytes": 3496,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/host.pub",
+    "original_sha256": "f4c5094f7cd8a3de7718f7b15dd46d539ad806963344a6a31fbd8224b5ce221a",
+    "public_sha256": "f4c5094f7cd8a3de7718f7b15dd46d539ad806963344a6a31fbd8224b5ce221a",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/inputs.json",
+    "original_sha256": "8c8da8bb9730db1c5d374149ef8f2c5fbd4dc1475590492a116211d44ba52433",
+    "public_sha256": "8c8da8bb9730db1c5d374149ef8f2c5fbd4dc1475590492a116211d44ba52433",
+    "original_bytes": 1237,
+    "public_bytes": 1237,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/process.json",
+    "original_sha256": "980c01e50726d65ae3dc20b16e519aae275c28e7c50b402874cd7725cdff9374",
+    "public_sha256": "980c01e50726d65ae3dc20b16e519aae275c28e7c50b402874cd7725cdff9374",
+    "original_bytes": 95,
+    "public_bytes": 95,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/results.csv",
+    "original_sha256": "63544510c30d68b69922a521a9d39a719110a2d136f4d87257ca4c2d53213315",
+    "public_sha256": "63544510c30d68b69922a521a9d39a719110a2d136f4d87257ca4c2d53213315",
+    "original_bytes": 912,
+    "public_bytes": 912,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/root/init",
+    "original_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "public_sha256": "d742499cff4df514248b494c3faced34940cdcc33f988a52dcd65c28ea5b99f3",
+    "original_bytes": 3496,
+    "public_bytes": 3496,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/runner.py",
+    "original_sha256": "05e8edbc24315d0b49f6a748cdaed6ca57c199aa461cd81ee8b1709337d9bf04",
+    "public_sha256": "05e8edbc24315d0b49f6a748cdaed6ca57c199aa461cd81ee8b1709337d9bf04",
+    "original_bytes": 16561,
+    "public_bytes": 16561,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/serial.log",
+    "original_sha256": "99146eb08cc4aef808b4505855029c6e80ce3e35bd18f33d4f49658240fca8ac",
+    "public_sha256": "99146eb08cc4aef808b4505855029c6e80ce3e35bd18f33d4f49658240fca8ac",
+    "original_bytes": 109153,
+    "public_bytes": 109153,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/sshd.log",
+    "original_sha256": "37006f314b6ea86febc83404fc06c870b804f261944c6783509b108a2dd137ab",
+    "public_sha256": "37006f314b6ea86febc83404fc06c870b804f261944c6783509b108a2dd137ab",
+    "original_bytes": 107303,
+    "public_bytes": 107303,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-04/wrong.pub",
+    "original_sha256": "23219e7bcb6a5e8fe125de0f8e1c05586fc96cd35919816453c15dec47bac2ca",
+    "public_sha256": "23219e7bcb6a5e8fe125de0f8e1c05586fc96cd35919816453c15dec47bac2ca",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/client.pub",
+    "original_sha256": "2f7c7a31adaa21be0d95d57d49f3404643e2773ba47a14bf44d356d7f1a6e0fa",
+    "public_sha256": "2f7c7a31adaa21be0d95d57d49f3404643e2773ba47a14bf44d356d7f1a6e0fa",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/failure.json",
+    "original_sha256": "894ec16ee3998a8f8f14ce79cf9f75d5cddb49a6ddb49a0d6aea61a009caf3fc",
+    "public_sha256": "894ec16ee3998a8f8f14ce79cf9f75d5cddb49a6ddb49a0d6aea61a009caf3fc",
+    "original_bytes": 99,
+    "public_bytes": 99,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/fixture-tools.log",
+    "original_sha256": "e5cff3724441319f18bff279db8c6e8a64b97266eff17a2ab074e3b686b4ee18",
+    "public_sha256": "e5cff3724441319f18bff279db8c6e8a64b97266eff17a2ab074e3b686b4ee18",
+    "original_bytes": 232,
+    "public_bytes": 232,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/guest-input.sh",
+    "original_sha256": "2cb9be3b479f616871d4a3338006810b946f7ebae695d822b25a48b7b67f6557",
+    "public_sha256": "2cb9be3b479f616871d4a3338006810b946f7ebae695d822b25a48b7b67f6557",
+    "original_bytes": 4144,
+    "public_bytes": 4144,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/host.pub",
+    "original_sha256": "074cded4c5e1e7fe14c744bb8893b56cc80b33e9e4257e5372c6361e646475e1",
+    "public_sha256": "074cded4c5e1e7fe14c744bb8893b56cc80b33e9e4257e5372c6361e646475e1",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/inputs.json",
+    "original_sha256": "e94e0ef978013143d55995e3275edbad78705550555187433b53c6aee4708c97",
+    "public_sha256": "e94e0ef978013143d55995e3275edbad78705550555187433b53c6aee4708c97",
+    "original_bytes": 1237,
+    "public_bytes": 1237,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/process.json",
+    "original_sha256": "13363145b45b7f85755084fd37adf9eae71956a3dfa759cf072674ee93af313d",
+    "public_sha256": "13363145b45b7f85755084fd37adf9eae71956a3dfa759cf072674ee93af313d",
+    "original_bytes": 156,
+    "public_bytes": 156,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/results.csv",
+    "original_sha256": "989eef9c2aff1971a47209ba033866872ef0192065cc92a96df886d88fb503d3",
+    "public_sha256": "989eef9c2aff1971a47209ba033866872ef0192065cc92a96df886d88fb503d3",
+    "original_bytes": 4902,
+    "public_bytes": 4902,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/root/init",
+    "original_sha256": "2cb9be3b479f616871d4a3338006810b946f7ebae695d822b25a48b7b67f6557",
+    "public_sha256": "2cb9be3b479f616871d4a3338006810b946f7ebae695d822b25a48b7b67f6557",
+    "original_bytes": 4144,
+    "public_bytes": 4144,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/runner.py",
+    "original_sha256": "a361c1e90e79e4c2ff20aa8b4b78f71dbb7ec2c99d26be1136cd17018145df1e",
+    "public_sha256": "a361c1e90e79e4c2ff20aa8b4b78f71dbb7ec2c99d26be1136cd17018145df1e",
+    "original_bytes": 17034,
+    "public_bytes": 17034,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/serial.log",
+    "original_sha256": "73a3d4a6ed6e1f5f230e9479e33fff96538db5804ef5a9298afbd57947ff390c",
+    "public_sha256": "73a3d4a6ed6e1f5f230e9479e33fff96538db5804ef5a9298afbd57947ff390c",
+    "original_bytes": 330811,
+    "public_bytes": 330811,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/sshd.log",
+    "original_sha256": "ce684f4e75f06b1fe321eda155b32e8b82508adbdda5d7a62627ade5a2970626",
+    "public_sha256": "ce684f4e75f06b1fe321eda155b32e8b82508adbdda5d7a62627ade5a2970626",
+    "original_bytes": 290984,
+    "public_bytes": 290984,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-05/wrong.pub",
+    "original_sha256": "fcf4456cf81497a62528a25a44361ae8ba0ea548a9d270a4b3ec2288d48f7a3d",
+    "public_sha256": "fcf4456cf81497a62528a25a44361ae8ba0ea548a9d270a4b3ec2288d48f7a3d",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/client.pub",
+    "original_sha256": "1bbff1534375f525bd2bd222ae80b673f03e6bc7700a7a0eb7b81ec49f0ce4e0",
+    "public_sha256": "1bbff1534375f525bd2bd222ae80b673f03e6bc7700a7a0eb7b81ec49f0ce4e0",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/fixture-tools.log",
+    "original_sha256": "e5cff3724441319f18bff279db8c6e8a64b97266eff17a2ab074e3b686b4ee18",
+    "public_sha256": "e5cff3724441319f18bff279db8c6e8a64b97266eff17a2ab074e3b686b4ee18",
+    "original_bytes": 232,
+    "public_bytes": 232,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/guest-input.sh",
+    "original_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "public_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "original_bytes": 4209,
+    "public_bytes": 4209,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/host.pub",
+    "original_sha256": "41ff13ef43262edc17a633f4b67408acc9dceef50f9a00c09ecceb16c69b94f0",
+    "public_sha256": "41ff13ef43262edc17a633f4b67408acc9dceef50f9a00c09ecceb16c69b94f0",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/inputs.json",
+    "original_sha256": "f3f2d114f0e9e673a95416d842d886b523024650d5e4408a1427415558f14d2e",
+    "public_sha256": "f3f2d114f0e9e673a95416d842d886b523024650d5e4408a1427415558f14d2e",
+    "original_bytes": 1324,
+    "public_bytes": 1324,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/prepare.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_bytes": 0,
+    "public_bytes": 0,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/process.json",
+    "original_sha256": "607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8",
+    "public_sha256": "607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8",
+    "original_bytes": 77,
+    "public_bytes": 77,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/results.csv",
+    "original_sha256": "994872b68c429758cf479ce880c29faaeab62d40f63cf35e970a259cd4a2a90e",
+    "public_sha256": "994872b68c429758cf479ce880c29faaeab62d40f63cf35e970a259cd4a2a90e",
+    "original_bytes": 2412,
+    "public_bytes": 2412,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/root/init",
+    "original_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "public_sha256": "a1e4c46dee9a840f0657f651b357fad71434199a78a0c61331c7f30348339041",
+    "original_bytes": 4209,
+    "public_bytes": 4209,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/runner.py",
+    "original_sha256": "acc18ff509dd7fb77185c8cc3f2caa181664fd22a94204b77653b96891292010",
+    "public_sha256": "acc18ff509dd7fb77185c8cc3f2caa181664fd22a94204b77653b96891292010",
+    "original_bytes": 17146,
+    "public_bytes": 17146,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/serial.log",
+    "original_sha256": "d5d50be2c90cab19210620df75808ba71568fe3aa20ee82a87834764c699d3ca",
+    "public_sha256": "d5d50be2c90cab19210620df75808ba71568fe3aa20ee82a87834764c699d3ca",
+    "original_bytes": 331882,
+    "public_bytes": 331882,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/sshd.log",
+    "original_sha256": "e7a7c52079095baa3d02f05a005aa75ee92a08d7455a37a366bb356a96d4379f",
+    "public_sha256": "e7a7c52079095baa3d02f05a005aa75ee92a08d7455a37a366bb356a96d4379f",
+    "original_bytes": 290982,
+    "public_bytes": 290982,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-runtime-06/wrong.pub",
+    "original_sha256": "41e400138811f2a89195af09d40235ef3a07eca75c603f473c85ed4cabd5f5d4",
+    "public_sha256": "41e400138811f2a89195af09d40235ef3a07eca75c603f473c85ed4cabd5f5d4",
+    "original_bytes": 104,
+    "public_bytes": 104,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-summary-02/results.csv",
+    "original_sha256": "b83891e86018aa92aa692049a651ad0b00578066249ef3c5eef0685d4e5cf18f",
+    "public_sha256": "b83891e86018aa92aa692049a651ad0b00578066249ef3c5eef0685d4e5cf18f",
+    "original_bytes": 21381,
+    "public_bytes": 21381,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-summary-02/summary.json",
+    "original_sha256": "8246b86fcd513011c86868b4502bf15e7c710a293c149b17cd95e2248415d304",
+    "public_sha256": "8246b86fcd513011c86868b4502bf15e7c710a293c149b17cd95e2248415d304",
+    "original_bytes": 20346,
+    "public_bytes": 20346,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/dropbear-headers.txt",
+    "original_sha256": "636a4b295cfc3a6d265a8ad49a276c4332fb3002948a064cdd07e7b14bf01955",
+    "public_sha256": "582e312620b0105eafedf151bd075a634fc42fe4ed2258e80637d778a2e241c7",
+    "original_bytes": 965,
+    "public_bytes": 501,
+    "redacted": true
+  },
+  {
+    "path": "output-ssh-tools-01/dropbear-release-index.html",
+    "original_sha256": "0d117f675541258aae48d8c47752d070572dce5dc1384f7490dc2e661ef27d16",
+    "public_sha256": "0d117f675541258aae48d8c47752d070572dce5dc1384f7490dc2e661ef27d16",
+    "original_bytes": 15610,
+    "public_bytes": 15610,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/evidence_pack.py",
+    "original_sha256": "f27e018f3819527d347d8c7f625acc2472694ffc1b93f58ec2de89868c7979b8",
+    "public_sha256": "f27e018f3819527d347d8c7f625acc2472694ffc1b93f58ec2de89868c7979b8",
+    "original_bytes": 3577,
+    "public_bytes": 3577,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/hashes.json",
+    "original_sha256": "4a58c7e11883af685aca1bdf753702a9f854fdf9302a8e4160c0c3444ad5c44d",
+    "public_sha256": "4a58c7e11883af685aca1bdf753702a9f854fdf9302a8e4160c0c3444ad5c44d",
+    "original_bytes": 1843,
+    "public_bytes": 1843,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/openssh-upstream.html",
+    "original_sha256": "0219fe09a6fd2a5b442540235c883262edb0ff05d901ed932da29bfd6c2b7452",
+    "public_sha256": "50ebe77dfe6502da14a04bd919ee608905b0647812d411afe87733d1a81cb1b3",
+    "original_bytes": 785160,
+    "public_bytes": 792321,
+    "redacted": true
+  },
+  {
+    "path": "output-ssh-tools-01/putty-headers.txt",
+    "original_sha256": "05801603439ec5c1396919ee3950969d3693a9945c63c7782a2ab1d421de0cd0",
+    "public_sha256": "05801603439ec5c1396919ee3950969d3693a9945c63c7782a2ab1d421de0cd0",
+    "original_bytes": 299,
+    "public_bytes": 299,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/putty-latest.html",
+    "original_sha256": "bb30aa42d69d9e11508455074f5780e277e2607c613cfeaeaac1d8893af2bde5",
+    "public_sha256": "01018461f3111ba5b5975b61ec9598c1dc21a8ec21fe280b1dfec61dca7db6c4",
+    "original_bytes": 22778,
+    "public_bytes": 22750,
+    "redacted": true
+  },
+  {
+    "path": "output-ssh-tools-01/qemu-version.txt",
+    "original_sha256": "4d3f6aed38d7ef3fdadbf8d5fe081e9ff0e88fd9e7faa3f3d65025103380d84c",
+    "public_sha256": "4d3f6aed38d7ef3fdadbf8d5fe081e9ff0e88fd9e7faa3f3d65025103380d84c",
+    "original_bytes": 101,
+    "public_bytes": 101,
+    "redacted": false
+  },
+  {
+    "path": "output-ssh-tools-01/strace-build.log",
+    "original_sha256": "29a27209aa7d70805fb1cb715382fb1a85d51fe261a5ed887d8548617e48aec8",
+    "public_sha256": "191ec1d411b405956dba1c5a60e4fca3991baf02d45132a789e5c70e88ad2033",
+    "original_bytes": 355829,
+    "public_bytes": 354285,
+    "redacted": true
+  },
+  {
+    "path": "output-ssh-tools-01/versions.txt",
+    "original_sha256": "ed0952cff92ad4ecb095bd91d51a567ef466163beb52f0c47e80ef178e833237",
+    "public_sha256": "ed0952cff92ad4ecb095bd91d51a567ef466163beb52f0c47e80ef178e833237",
+    "original_bytes": 2626,
+    "public_bytes": 2626,
+    "redacted": false
+  }
+]
