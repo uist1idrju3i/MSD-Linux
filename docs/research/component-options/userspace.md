@@ -14,7 +14,7 @@ packageの機能は、そのpackageが提供できる範囲である。配布roo
 | `e2fsprogs` | ext系の作成・検査・拡張。configureでutilities・library・fuse等を選ぶ | `--enable-fsck --enable-resizer`、debugfs・defrag・uuidd・fuse2fs等は無効化。`/data`の拡張と起動後の検査は別の操作 |
 | `ifupdown-scripts` | interfaceのup/down hookと設定連携 | 認証方式やWi-Fi接続管理そのものではない。使用するifup/down実装とDHCP clientも確認する |
 | `initscripts` | SysV系の起動・終了script | 起動順と失敗の扱いが実際の既定値になる。daemonの自動再起動・権限分離を一律には提供しない |
-| `kbd` | console keymap・font等の操作 | M5内蔵keyboard用keymapと機器driverを区別する。locale、UTF-8、LCD上の視認性は別に確認する |
+| `kbd` | console keymap・font等の操作 | [loadkeys保持と未使用toolの削減](kbd.md)。M5内蔵keyboard用keymapと機器driverを区別し、実機keyboard・LCDの視認性は別に確認する |
 | `kmod` | moduleの検索・依存・読み込み等 | kernelのmodule署名、圧縮形式、depmodの生成先と組み合わせる。toolの存在はmoduleのロード成功を保証しない |
 | `libopenssl` | 暗号library、TLS、provider、openssl CLI | 下記のとおりbuild機能と実行時policyを分離する。A/B署名検証にCLIを使う |
 | `libv4l` | V4L library、capture/制御utilities、IR等の関連機能 | `-Dv4l-utils=true`、Qt GUI・BPF decoder・JPEG・DVB library・tracer等は無効。camera/IRのdriver・node・実機とは別 |

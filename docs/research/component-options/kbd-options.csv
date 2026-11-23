@@ -1,0 +1,75 @@
+option,source_help,default,decision,reason
+--bindir,--bindir=DIR            user executables [EPREFIX/bin],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--build,--build=BUILD     configure for building on BUILD [guessed],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--cache-file,--cache-file=FILE   cache test results in FILE [disabled],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--config-cache,"-C, --config-cache      alias for '--cache-file=config.cache'",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--datadir,--datadir=DIR           read-only architecture-independent data [DATAROOTDIR],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--datarootdir,--datarootdir=DIR       read-only arch.-independent data root [PREFIX/share],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-FEATURE,--disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no),help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-compress,--disable-compress      Do not compress fonts and keymaps when they are,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,不採用。install dataの圧縮だけでtool選択ではない
+--disable-dependency-tracking,--disable-dependency-tracking,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-libtool-lock,--disable-libtool-lock  avoid locking (might break parallel builds),help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-memcheck,--disable-memcheck      do not run memory checks (e.g. leak detection),help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-nls,--disable-nls           do not use Native Language Support,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-option-checking,--disable-option-checking  ignore unrecognized --enable/--with options,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-rpath,--disable-rpath         do not hardcode runtime library paths,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-silent-rules,"--disable-silent-rules  verbose build output (undo: ""make V=0"")",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--disable-tests,--disable-tests         do not build tests,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,recipeの指定を維持
+--disable-vlock,--disable-vlock         do not build vlock,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,recipeの指定を維持
+--docdir,--docdir=DIR            documentation root [DATAROOTDIR/doc/kbd],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--dvidir,--dvidir=DIR            dvi documentation [DOCDIR],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable,--disable-option-checking  ignore unrecognized --enable/--with options,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-FEATURE,--disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no),help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-aix-soname,--enable-aix-soname=aix|svr4|both,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-code-coverage,--enable-code-coverage  Whether to enable code coverage support,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-dependency-tracking,--enable-dependency-tracking,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-fast-install,--enable-fast-install[=PKGS],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-libkeymap,--enable-libkeymap      Build and install a libkeymap,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既定noを維持。standalone library用
+--enable-libkfont,--enable-libkfont       Build and install a libkfont,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既定noを維持。standalone library用
+--enable-optional-progs,--enable-optional-progs Build and install a optional programs,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既定noを維持。通常toolを個別には選べない
+--enable-pic,--enable-pic[=PKGS]     try to use only PIC/non-PIC objects [default=use,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-shared,--enable-shared[=PKGS]  build shared libraries [default=yes],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-silent-rules,"--enable-silent-rules   less verbose build output (undo: ""make V=1"")",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-static,--enable-static[=PKGS]  build static libraries [default=yes],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--enable-werror,--enable-werror         turn on -Werror for some kind of warnings,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--exec-prefix,--exec-prefix=EPREFIX   install architecture-dependent files in EPREFIX,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--help,"-h, --help              display this help and exit",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--host,--host=HOST       cross-compile to build programs to run on HOST [BUILD],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--htmldir,--htmldir=DIR           html documentation [DOCDIR],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--includedir,--includedir=DIR        C header files [PREFIX/include],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--infodir,--infodir=DIR           info documentation [DATAROOTDIR/info],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--libdir,--libdir=DIR            object code libraries [EPREFIX/lib],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--libexecdir,--libexecdir=DIR        program executables [EPREFIX/libexec],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--localedir,--localedir=DIR         locale-dependent data [DATAROOTDIR/locale],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--localstatedir,--localstatedir=DIR     modifiable single-machine data [PREFIX/var],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--mandir,--mandir=DIR            man documentation [DATAROOTDIR/man],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--no-create,"-n, --no-create         do not create output files",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--oldincludedir,--oldincludedir=DIR     C header files for non-gcc [/usr/include],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--pdfdir,--pdfdir=DIR            pdf documentation [DOCDIR],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--prefix,--prefix=PREFIX         install architecture-independent files in PREFIX,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--program-prefix,--program-prefix=PREFIX            prepend PREFIX to installed program names,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--program-suffix,--program-suffix=SUFFIX            append SUFFIX to installed program names,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--program-transform-name,--program-transform-name=PROGRAM   run sed PROGRAM on installed program names,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--psdir,--psdir=DIR             ps documentation [DOCDIR],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--quiet,"-q, --quiet, --silent   do not print 'checking ...' messages",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--runstatedir,--runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--sbindir,--sbindir=DIR           system admin executables [EPREFIX/sbin],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--sharedstatedir,--sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--silent,"-q, --quiet, --silent   do not print 'checking ...' messages",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--srcdir,--srcdir=DIR        find the sources in DIR [configure dir or '..'],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--sysconfdir,--sysconfdir=DIR        read-only single-machine data [PREFIX/etc],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--version,"-V, --version           display version information and exit",help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with,--disable-option-checking  ignore unrecognized --enable/--with options,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-PACKAGE,--with-PACKAGE[=ARG]    use PACKAGE [ARG=yes],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-bzip2,--with-bzip2            support bzip2 compression [default=auto],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-gcov,--with-gcov=GCOV        use given GCOV for coverage (GCOV=gcov).,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-gnu-ld,--with-gnu-ld           assume the C compiler uses GNU ld [default=no],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-libiconv-prefix,--with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-libintl-prefix,--with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-lzma,--with-lzma             support lzma compression [default=auto],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-sysroot,--with-sysroot[=DIR]    Search for dependent libraries within DIR (or the,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-zlib,--with-zlib             support zlib compression [default=auto],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--with-zstd,--with-zstd             support zstd compression [default=auto],help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--without-PACKAGE,--without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no),help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--without-libiconv-prefix,--without-libiconv-prefix     don't search for libiconv in includedir and libdir,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない
+--without-libintl-prefix,--without-libintl-prefix     don't search for libintl in includedir and libdir,help参照。個別の未明示値は今回変更しない,既定・recipeを維持,既存のconfigure共通処理・recipe条件を変更しない。tool個別選択の追加指定はしない

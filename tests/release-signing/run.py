@@ -215,6 +215,113 @@ class ReleaseSigning(unittest.TestCase):
         self.assertEqual((library.parent / "libstdc++.so.6").read_text(), "preserve")
         self.post_build()
 
+    def test_kbd_tools_pruned_loadkeys_and_busybox_retained(self):
+        self.fixture()
+        tool = BOARD / "tools/prune-kbd.py"
+        loadkeys = self.target / "usr/bin/loadkeys"
+        put(loadkeys, b"\x7fELF retained loadkeys", executable=True)
+        for name in ("dumpkeys", "setfont", "psfxtable"):
+            put(self.target / "usr/bin" / name, b"\x7fELF unused")
+        alias = self.target / "usr/bin/psfaddtable"
+        alias.symlink_to("psfxtable")
+        busybox = self.target / "usr/bin/openvt"
+        busybox.symlink_to("../../bin/busybox")
+        command("python3", tool, self.target)
+        self.assertEqual(loadkeys.read_bytes(), b"\x7fELF retained loadkeys")
+        self.assertTrue(busybox.is_symlink())
+        self.assertFalse(alias.is_symlink())
+        self.assertFalse((self.target / "usr/bin/setfont").exists())
+        command("python3", tool, self.target)
+
+    def test_kbd_post_build_checks_only_retained_consumers(self):
+        self.fixture()
+        for prefix in ("usr/share", "usr/share/kbd"):
+            for name in ("consolefonts", "consoletrans", "unimaps"):
+                put(self.target / prefix / name / "README", "Run setfont font.psf\n")
+        put(self.target / "usr/share/keymaps/unused.map", "setfont\n")
+        put(self.target / "usr/bin/setfont", b"\x7fELF font")
+        consumer = self.target / "usr/libexec/font-client"
+        put(consumer, "#!/bin/sh\nsetfont font.psf\n", executable=True)
+        self.post_build(ok=False)
+        self.assertTrue((self.target / "usr/bin/setfont").exists())
+        consumer.unlink()
+        self.post_build()
+        self.assertFalse((self.target / "usr/bin/setfont").exists())
+        self.assertTrue((self.target / "usr/bin/loadkeys").exists())
+        self.assertFalse((self.target / "usr/share/consolefonts").exists())
+
+    def test_kbd_reference_refuses_before_any_removal(self):
+        self.fixture()
+        put(self.target / "usr/bin/setfont", b"\x7fELF font")
+        put(self.target / "usr/bin/dumpkeys", b"\x7fELF dump")
+        consumer = self.target / "usr/libexec/font-client"
+        for data in (b"#!/bin/sh\nsetfont font.psf\n", b"\x7fELF\x00setfont\x00"):
+            put(consumer, data)
+            command("python3", BOARD / "tools/prune-kbd.py", self.target, ok=False)
+            self.assertTrue((self.target / "usr/bin/setfont").exists())
+            self.assertTrue((self.target / "usr/bin/dumpkeys").exists())
+        consumer.unlink()
+        consumer.symlink_to("../bin/setfont")
+        command("python3", BOARD / "tools/prune-kbd.py", self.target, ok=False)
+        empty = self.work / "empty"
+        empty.mkdir()
+        command("python3", BOARD / "tools/prune-kbd.py", empty)
+        command("python3", BOARD / "tools/prune-kbd.py", self.work / "missing", ok=False)
+        put(empty / "usr/bin/setfont", "font")
+        command("python3", BOARD / "tools/prune-kbd.py", empty, ok=False)
+
+    def test_kbd_bench_rejects_bad_keymap_markers(self):
+        spec = importlib.util.spec_from_file_location("kbd_bench", BOARD / "tools/bench/kbd.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        allowlist = "board/cardputerzero/qemu/serial-allowlist.txt"
+        with mock.patch.object(bench.subprocess, "run") as run:
+            sources = bench.source_inputs()
+            self.assertIn(allowlist, run.call_args.args[0])
+            self.assertEqual(sources[allowlist], bench.COMMON.sha(ROOT / allowlist))
+        with mock.patch.object(bench.subprocess, "run", side_effect=subprocess.CalledProcessError(1, "git diff")):
+            with self.assertRaises(subprocess.CalledProcessError):
+                bench.source_inputs()
+        valid = "KBD_LOADKEYS_RESULT=0\nMODULE_INVENTORY_BEGIN\nusbnet 42 0 - Live 0x123\nMODULE_INVENTORY_END\n"
+        negative = "KBD_LOADKEYS_RESULT=1\nmsd-keymap: failed to load map\nMSD/Linux ready\nlogin:\n"
+        output = "QEMU reached ready after 1 seconds.\nQEMU serial log contains boot error patterns.\n"
+        process = dict(qmp_quit=True, reaped=True, returncode=0, fallback=[], error=None)
+        self.assertTrue(bench.negative_rejected(1, negative, output, process))
+        prefixes = set()
+        for name in ("first", "retry"):
+            out = self.work / name
+            missing = self.work / "missing-input"
+            with mock.patch.object(bench, "source_inputs", return_value={}), \
+                    mock.patch.object(bench.COMMON, "sha", return_value="hash"), \
+                    mock.patch.object(bench, "tool_version", return_value="version"):
+                with self.assertRaises(FileNotFoundError):
+                    bench.build(missing, missing, missing, out)
+            report = json.loads((out / "results.json").read_text())
+            plan = json.loads((out / "plan.json").read_text())
+            self.assertEqual(len(plan), 21)
+            self.assertTrue(all(row["run_id"].startswith(report["run_prefix"] + "-") for row in plan))
+            self.assertTrue(all(row["value"] == "" and row["valid"] == "false" for row in plan))
+            prefixes.add(report["run_prefix"])
+        self.assertEqual(len(prefixes), 2)
+        for rc, text, log, state in ((124, negative, output, process),
+                                     (1, negative.replace("login:", ""), output, process),
+                                     (1, negative, "QEMU did not show the boot marker", process),
+                                     (1, negative, output, dict(process, qmp_quit=False)),
+                                     (0, negative, output, process),
+                                     (1, "", output, process)):
+            self.assertFalse(bench.negative_rejected(rc, text, log, state))
+        self.assertEqual(bench.check_serial(valid), [("usbnet", 42, "-", "Live")])
+        for text in ("", valid.replace("RESULT=0", "RESULT=1"), "KBD_LOADKEYS_RESULT=0\n" + valid,
+                     valid.replace("usbnet 42 0 - Live 0x123\n", ""), valid.replace("42 0", "invalid 0")):
+            with self.assertRaises(ValueError):
+                bench.check_serial(text)
+        with mock.patch.object(bench.subprocess, "run") as run:
+            run.return_value = subprocess.CompletedProcess([], 1, "unsquashfs version 4.7.5\n", "")
+            self.assertEqual(bench.tool_version(Path("unsquashfs"), "-version"), "unsquashfs version 4.7.5")
+            run.return_value = subprocess.CompletedProcess([], 1, "failed\n", "")
+            with self.assertRaises(ValueError):
+                bench.tool_version(Path("unsquashfs"), "-version")
+
     def test_libgomp_consumers_refuse_removal(self):
         self.fixture()
         library = self.target / "usr/lib/libgomp.so.1.0.0"
