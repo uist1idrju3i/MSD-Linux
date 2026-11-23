@@ -247,7 +247,7 @@ class ReleaseSigning(unittest.TestCase):
         consumer.unlink()
         self.post_build()
         self.assertFalse((self.target / "usr/bin/setfont").exists())
-        self.assertTrue((self.target / "bin/loadkeys").exists())
+        self.assertTrue((self.target / "usr/bin/loadkeys").exists())
         self.assertFalse((self.target / "usr/share/consolefonts").exists())
 
     def test_kbd_reference_refuses_before_any_removal(self):
