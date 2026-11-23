@@ -96,7 +96,10 @@ def boot(reference, slot, out):
     log_path = out / "serial.log"
     socket = out / "qmp.sock"
     environment = dict(os.environ, OUTPUT_DIR=str(reference), ROOT_DEVICE="/dev/mmcblk0p" + ("5" if slot == "A" else "6"),
-                       QEMU_EXTRA_APPEND="msd.module-test=usbnet,bcm2835-unicam,imx219", QEMU_QMP_SOCKET=str(socket))
+                       QEMU_EXTRA_APPEND="msd.module-test=usbnet,bcm2835-unicam,imx219", QEMU_QMP_SOCKET=str(socket),
+                       QEMU_COPY_IMAGE="1")
+    for name in ("QEMU_DRIVE_FILE", "QEMU_DRIVE_FORMAT"):
+        environment.pop(name, None)
     process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                start_new_session=True, env=environment)

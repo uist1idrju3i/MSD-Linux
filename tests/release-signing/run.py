@@ -812,6 +812,67 @@ class OpenSSLFeatures(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
+    @staticmethod
+    def probe_fixture(root):
+        reference = root / "reference"
+        images = reference / "images"
+        images.mkdir(parents=True)
+        for name in ("Image", "sdcard.img", "bcm2710-rpi-cm0.dtb"):
+            (images / name).write_bytes(b"original")
+        tools = reference / "host/bin"
+        tools.mkdir(parents=True)
+        fdtput = tools / "fdtput"
+        fdtput.write_text("#!/bin/sh\nexit 0\n")
+        fdtput.chmod(0o755)
+        record = root / "record.json"
+        fake = root / "fake-qemu.py"
+        fake.write_text(textwrap.dedent('''\
+            #!/usr/bin/env python3
+            import json
+            import os
+            from pathlib import Path
+            import socket
+            import sys
+            if "--version" in sys.argv:
+                print("QEMU emulator version fixture")
+                sys.exit(0)
+            image = sys.argv[sys.argv.index("-drive") + 1].split(",")[0].removeprefix("file=")
+            dtb = sys.argv[sys.argv.index("-dtb") + 1]
+            Path(image).write_bytes(b"guest writes")
+            Path(dtb).write_bytes(b"dtb writes")
+            with socket.socket(socket.AF_UNIX) as server:
+                server.bind(os.environ["QEMU_QMP_SOCKET"])
+                Path(os.environ["FEATURE_FAKE_RECORD"]).write_text(json.dumps(
+                    dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid())))
+            '''))
+        fake.chmod(0o755)
+        environment = dict(QEMU_SYSTEM_AARCH64=str(fake), FEATURE_FAKE_RECORD=str(record),
+                           QEMU_COPY_IMAGE="0", QEMU_DRIVE_FILE=str(images / "sdcard.img"),
+                           QEMU_DTB_BLUETOOTH="0")
+        return reference, environment, record
+
+    def test_probe_forces_image_copy_over_environment(self):
+        probe = self.load("feature_probe_copy", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            reference, environment, record = self.probe_fixture(root)
+            try:
+                with mock.patch.dict(os.environ, environment):
+                    with self.assertRaisesRegex(ValueError, "QEMU exited before probe completed"):
+                        probe.boot(reference, "A", root / "out")
+                observed = json.loads(record.read_text())
+                self.assertNotEqual(Path(observed["image"]), reference / "images/sdcard.img")
+                self.assertEqual((reference / "images/sdcard.img").read_bytes(), b"original")
+                self.assertEqual((reference / "images/bcm2710-rpi-cm0.dtb").read_bytes(), b"original")
+                self.assertTrue(json.loads((root / "out/process.json").read_text())["reaped"])
+            finally:
+                if record.exists():
+                    observed = json.loads(record.read_text())
+                    for name in ("image", "dtb"):
+                        path = Path(observed[name])
+                        if path.parent != reference / "images":
+                            shutil.rmtree(path.parent, ignore_errors=True)
+
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")
         data = io.BytesIO()
