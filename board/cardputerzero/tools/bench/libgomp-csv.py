@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import json
 import math
 from pathlib import Path
 
@@ -13,7 +14,9 @@ FIELDS = ["run_id", "variant", "repeat", "metric", "value", "unit", "valid", "no
 FIELDS += [name for name in LEGACY if name != "variant"]
 
 
-def export(source, destination, prefix, followup=None):
+def export(source, destination, prefix, followup=None, followup_plan=None):
+    if bool(followup) != bool(followup_plan):
+        raise ValueError("followup and followup plan must be supplied together")
     with source.open(newline="") as stream:
         reader = csv.DictReader(stream)
         if reader.fieldnames != LEGACY:
@@ -49,6 +52,11 @@ def export(source, destination, prefix, followup=None):
         output.append(dict(row, run_id=run_id, repeat=repeats[key], metric=metric,
                            value=row[metric], unit=unit, valid=str(valid).lower(), note=note))
     if followup:
+        planned = json.loads(followup_plan.read_text())
+        if (not isinstance(planned, dict) or not planned or
+                any(type(repeat) is not int or repeat < 1 for repeat in planned.values())):
+            raise ValueError("followup plan must declare run IDs and positive repeat numbers")
+        seen = set()
         with followup.open(newline="") as stream:
             reader = csv.DictReader(stream)
             if reader.fieldnames != FIELDS[:8]:
@@ -56,13 +64,18 @@ def export(source, destination, prefix, followup=None):
             for row in reader:
                 if set(row) != set(FIELDS[:8]) or any(v is None for v in row.values()):
                     raise ValueError("malformed followup row")
-                if (not row["run_id"] or row["run_id"] in ids or int(row["repeat"]) < 1 or
+                if (row["run_id"] not in planned or row["run_id"] in ids or
+                        int(row["repeat"]) != planned[row["run_id"]] or
                         row["valid"] not in ("true", "false") or
                         (row["valid"] == "true" and not row["value"]) or
+                        (not row["value"] and not row["note"].startswith("not run:")) or
                         (row["value"] and not math.isfinite(float(row["value"])))):
                     raise ValueError("invalid followup trial or duplicate run ID")
                 ids.add(row["run_id"])
+                seen.add(row["run_id"])
                 output.append(dict.fromkeys(FIELDS, "") | row)
+        if seen != set(planned):
+            raise ValueError("incomplete followup; missing planned run IDs: " + ", ".join(sorted(set(planned) - seen)))
     with destination.open("x", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS, lineterminator="\n")
         writer.writeheader()
@@ -76,5 +89,6 @@ if __name__ == "__main__":
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--run-prefix", required=True)
     parser.add_argument("--followup", type=Path)
+    parser.add_argument("--followup-plan", type=Path)
     args = parser.parse_args()
-    export(args.input, args.out, args.run_prefix, args.followup)
+    export(args.input, args.out, args.run_prefix, args.followup, args.followup_plan)

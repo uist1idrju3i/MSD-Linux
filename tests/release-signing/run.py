@@ -274,7 +274,10 @@ class ReleaseSigning(unittest.TestCase):
         template = (ROOT / ".agents/skills/experiment-record/assets/results-template.csv").read_text()
         source.write_text(original)
         followup.write_text(template + "followup,current,1,elf_count,2,count,true,scanned\n")
+        plan = self.work / "plan.json"
+        plan.write_text(json.dumps({"followup": 1}))
         args = ("python3", tool, "--input", source, "--followup", followup,
+                "--followup-plan", plan,
                 "--out", output, "--run-prefix", "trial")
         command(*args)
         rows = list(csv.DictReader(io.StringIO(output.read_text())))
@@ -300,6 +303,20 @@ class ReleaseSigning(unittest.TestCase):
             followup.write_text(template + bad)
             command(*args, ok=False)
             self.assertFalse(output.exists())
+
+        observed = template + "followup,current,1,elf_count,2,count,true,scanned\n"
+        for expected, data in (({"followup": 1}, template),
+                               ({"followup": 1, "followup-r2": 2}, observed),
+                               ({"followup": 2}, observed),
+                               ({"followup": 1}, template + "followup,current,1,exit_code,,status,false,missing\n")):
+            plan.write_text(json.dumps(expected))
+            followup.write_text(data)
+            command(*args, ok=False)
+            self.assertFalse(output.exists())
+        plan.write_text(json.dumps({"followup": 1}))
+        followup.write_text(template + "followup,current,1,exit_code,,status,false,not run: unavailable\n")
+        command(*args)
+        self.assertEqual(list(csv.DictReader(io.StringIO(output.read_text())))[-1]["valid"], "false")
 
     def test_binary_index_removal_refuses_non_busybox(self):
         self.fixture()

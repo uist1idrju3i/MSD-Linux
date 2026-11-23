@@ -177,6 +177,9 @@ CIのserialとprocess結果はartifact `14797469336`から取得した。
 初回のnot_runと追試の削除前bootは`valid=false`・value空欄にし、未実施を0に置き換えない。
 初回のfull build未実施もその時点の状態として保持する。
 変換器は上書き、空の原表、不正列、重複ID、追試の非有限値を拒否する。
+追試は`--followup-plan`で予定IDと反復番号を照合する。headerのみ、予定行の欠損、反復番号の不足は出力前に拒否する。
+未実施行はvalue空欄・valid=falseに加えてnoteの`not run:`印を必須とする。予定した行そのものを省略してはならない。
+`libgomp-followup-plan.json`は既存追試8行のexport完全性を検査するために追加した定義であり、実行前に登録した測定計画ではない。
 
 初回commitを含むcheckoutで、未使用の出力名へ次のように再生成する。
 
@@ -194,6 +197,7 @@ tar -xzf docs/experiments/2026-11-23-libgomp-current-audit-evidence.tar.gz \
 python3 board/cardputerzero/tools/bench/libgomp-csv.py \
   --input output-libgomp-csv-replay/source.csv \
   --followup output-libgomp-csv-replay/current.csv \
+  --followup-plan board/cardputerzero/tools/bench/libgomp-followup-plan.json \
   --out output-libgomp-csv-replay/derived.csv --run-prefix libgomp-r1
 cmp output-libgomp-csv-replay/derived.csv docs/experiments/2026-11-23-libgomp-prune.csv
 ```

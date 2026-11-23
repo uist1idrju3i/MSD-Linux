@@ -1,0 +1,10 @@
+{
+  "libgomp-current-r2-ci-build": 1,
+  "libgomp-current-r2-audit": 1,
+  "libgomp-current-r2-btrfs": 1,
+  "libgomp-current-r2-cryptsetup": 1,
+  "libgomp-current-r2-old-image-negative": 1,
+  "libgomp-current-r2-ci-slot-A": 1,
+  "libgomp-current-r2-ci-slot-B": 1,
+  "libgomp-current-r2-before-boot": 1
+}
