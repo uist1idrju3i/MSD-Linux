@@ -17,6 +17,12 @@ def configure_tokens(text):
     return re.findall(r"(?<!\S)(--[A-Za-z][A-Za-z0-9_-]*)", text)
 
 
+def unix_cache_value(relative, cache, token):
+    if relative.parent == Path("cmake/platforms") and relative.stem != "unix":
+        return "非対象platform（Unix build）"
+    return cache.get(token, "非対象platform")
+
+
 def collect(build, serial):
     rows, sources = {}, {}
     defaults = {}
@@ -77,7 +83,7 @@ def collect(build, serial):
                 cleaned = re.sub(r"(?m)#.*$", "", text)
                 for match in re.finditer(r"set\(\s*(\w+)\s+([^()]*?)\s+CACHE (BOOL|STRING|PATH)", cleaned):
                     add(variant, "CMake:" + str(path.relative_to(source)), match[1], path,
-                        match[2].strip() + "; build=" + cache.get(match[1], "非対象platform"), match[0])
+                        match[2].strip() + "; build=" + unix_cache_value(path.relative_to(source), cache, match[1]), match[0])
                 for match in re.finditer(r"option\(\s*(\w+)\s+([^)]*)\)", text):
                     add(variant, "CMake", match[1], path, evidence=match[0])
         if variant == "openssh":

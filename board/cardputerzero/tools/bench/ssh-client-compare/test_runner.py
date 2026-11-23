@@ -12,13 +12,20 @@ from unittest import mock
 import build
 
 from build import VARIANTS, overrides
-from inventory import configure_tokens, encode_multiline
+from inventory import configure_tokens, encode_multiline, unix_cache_value
 from runtime import initramfs, parse_config, parse_serial
 from summarize import putty_protocol_ids
 from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_unix_cache_does_not_supply_windows_declarations(self):
+        cache = {"PUTTY_GSSAPI": "OFF"}
+        self.assertEqual(unix_cache_value(Path("cmake/platforms/unix.cmake"), cache, "PUTTY_GSSAPI"), "OFF")
+        self.assertEqual(unix_cache_value(Path("cmake/platforms/windows.cmake"), cache, "PUTTY_GSSAPI"),
+                         "非対象platform（Unix build）")
+        self.assertEqual(unix_cache_value(Path("cmake/setup.cmake"), {}, "missing"), "非対象platform")
+
     def test_config_preserves_repeated_values_and_ignores_incomplete_lines(self):
         result = parse_config("identityfile first\nidentityfile second\nport 22\nidentityfile\n")
         self.assertEqual(result, dict(identityfile=["first", "second"], port="22"))
