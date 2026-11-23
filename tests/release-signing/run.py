@@ -233,6 +233,23 @@ class ReleaseSigning(unittest.TestCase):
         self.assertFalse((self.target / "usr/bin/setfont").exists())
         command("python3", tool, self.target)
 
+    def test_kbd_post_build_checks_only_retained_consumers(self):
+        self.fixture()
+        for prefix in ("usr/share", "usr/share/kbd"):
+            for name in ("consolefonts", "consoletrans", "unimaps"):
+                put(self.target / prefix / name / "README", "Run setfont font.psf\n")
+        put(self.target / "usr/share/keymaps/unused.map", "setfont\n")
+        put(self.target / "usr/bin/setfont", b"\x7fELF font")
+        consumer = self.target / "usr/libexec/font-client"
+        put(consumer, "#!/bin/sh\nsetfont font.psf\n", executable=True)
+        self.post_build(ok=False)
+        self.assertTrue((self.target / "usr/bin/setfont").exists())
+        consumer.unlink()
+        self.post_build()
+        self.assertFalse((self.target / "usr/bin/setfont").exists())
+        self.assertTrue((self.target / "bin/loadkeys").exists())
+        self.assertFalse((self.target / "usr/share/consolefonts").exists())
+
     def test_kbd_reference_refuses_before_any_removal(self):
         self.fixture()
         put(self.target / "usr/bin/setfont", b"\x7fELF font")

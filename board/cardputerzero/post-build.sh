@@ -94,7 +94,6 @@ done
 
 python3 "$(dirname "$0")/tools/openssl-c1.py" "$target_dir/etc/ssl/openssl.cnf"
 python3 "$(dirname "$0")/tools/prune-libgomp.py" "$target_dir"
-python3 "$(dirname "$0")/tools/prune-kbd.py" "$target_dir"
 
 keymap="$target_dir/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map"
 test -f "$keymap"
@@ -107,6 +106,7 @@ done
 for data_dir in consolefonts consoletrans unimaps; do
 	rm -rf "${target_dir:?}/usr/share/$data_dir" "${target_dir:?}/usr/share/kbd/$data_dir"
 done
+python3 "$(dirname "$0")/tools/prune-kbd.py" "$target_dir"
 
 # libv4l-utils は meson の単一トグルで全 utility を target に入れるため、
 # カメラ/IR の確認に必要な 4 本（v4l2-ctl, media-ctl, ir-keytable, ir-ctl）
