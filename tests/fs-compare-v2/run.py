@@ -1266,6 +1266,10 @@ class LightSmoke(unittest.TestCase):
             ("sentinel_manifest_empty", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
             ("sentinel_manifest_bad_hash", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
             ("sentinel_manifest_wrong_path", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_no_newline", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_no_newline_missing", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_no_newline_corrupt", w1,
+             {"W1/file": b"data", sentinel: b"corrupt"}, "yes", manifest_invalid),
             ("w1_lost_w2_present", w1 + f"2\tW2/target.dat\t{digest}\t1\t1\tw2\n",
              {"W2/target.dat": b"data"}, "no", "yes"),
             ("w1_lost_w3_present", w1 + f"2\tW3/append.log\t{digest}\t1\t1\tw3\n",
@@ -1278,7 +1282,7 @@ class LightSmoke(unittest.TestCase):
         ]:
             with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
                 directory = Path(temporary)
-                if case != "sentinel_missing":
+                if case not in ("sentinel_missing", "sentinel_manifest_no_newline_missing"):
                     files.setdefault(sentinel, sentinel_data)
                 for path, data in files.items():
                     (directory / path).parent.mkdir(parents=True, exist_ok=True)
@@ -1289,6 +1293,8 @@ class LightSmoke(unittest.TestCase):
                     sentinel_record = sentinel_row.replace(sentinel_hash, "")
                 elif case == "sentinel_manifest_wrong_path":
                     sentinel_record = sentinel_row.replace(sentinel, "W1/file")
+                elif case.startswith("sentinel_manifest_no_newline"):
+                    sentinel_record = sentinel_row.rstrip("\n")
                 if case != "sentinel_manifest_missing":
                     (directory / "T1-negative-sentinel.tsv").write_text(
                         "" if case == "sentinel_manifest_empty" else sentinel_record)

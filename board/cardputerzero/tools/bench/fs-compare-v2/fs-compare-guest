@@ -1146,6 +1146,7 @@ check_t1_negative_manifest()
 	expected_file="${RUN_PATH}/T1-negative-expected.tsv"
 	: >"$expected_file"
 	if [ ! -s "$control_source" ] ||
+	   [ "$(wc -l <"$control_source")" -ne 1 ] ||
 	   ! awk -F '\t' 'NF != 5 || $1 != ".t1-negative-sentinel" ||
 		length($2) != 64 || $2 ~ /[^0-9a-f]/ { bad = 1 }
 		END { exit (NR != 1 || bad) }' "$control_source"; then
