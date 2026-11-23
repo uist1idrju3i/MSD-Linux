@@ -266,6 +266,7 @@ printf '%s\n' "$update_version" > "$update_trust_dir/version"
 "$(dirname "$0")/tools/write-version-info.sh" "$target_dir" "$(dirname "$0")"
 
 "$(dirname "$0")/tools/sign-modules.sh" "$target_dir" "$base_dir/build/linux-custom"
+sh "$(dirname "$0")/tools/prune-module-indexes.sh" "$target_dir"
 
 # SquashFS sort: Buildroot does not expose mksquashfs -sort because COMP_OPTS is
 # calculated without prompting, so a wrapper in $HOST_DIR injects the file

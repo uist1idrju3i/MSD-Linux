@@ -1,0 +1,12 @@
+kind,variant,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail
+pack,before,,37048525,20500480,,0,f586296e056f05fce6d6a0b9d596428bea8df87471aa51275edb219571992243
+pack,before-aa,,37048525,20500480,,0,f586296e056f05fce6d6a0b9d596428bea8df87471aa51275edb219571992243
+pack,after,,36110243,20332544,,0,5d9134b56c06d85c63c60d03b575004e92744da4d6ab6c4b64eb17ca0ec96b2c
+pack,fixture,,37048525,20500480,,0,8de83645d0d2efd591d92c7c3d739707d5244ba5dffb2e08230b4a6192face2f
+qemu,before,5,,,19,0,ready/login; QMP quit; modules loaded
+qemu,before,6,,,19,0,ready/login; QMP quit; modules loaded
+qemu,after,5,,,19,0,ready/login; QMP quit; modules loaded
+qemu,after,6,,,19,0,ready/login; QMP quit; modules loaded
+qemu,fixture,5,,,20,0,ready/login; QMP quit; modules loaded
+negative,existing-output,,,,,1,FileExistsError; no overwrite
+not_run,latest-main-product-build,,,,,,deferred to CI; local full build estimated 1-2 h

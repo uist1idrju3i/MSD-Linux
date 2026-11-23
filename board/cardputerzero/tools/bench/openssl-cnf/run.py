@@ -114,6 +114,16 @@ def inventory(root):
     return result
 
 
+def prepare_module_indexes(reference, rootfs, log):
+    versions = sorted(path for path in (rootfs / "lib/modules").iterdir() if path.is_dir())
+    if not versions:
+        raise ValueError("fixture has no kernel module directory")
+    for version in versions:
+        command([reference / "host/sbin/depmod", "-a", "-b", rootfs, version.name], log)
+        if not (version / "modules.dep.bin").is_file():
+            raise ValueError("fixture depmod did not produce modules.dep.bin")
+
+
 def build(reference, out):
     manifest = dict(reference=str(reference.relative_to(ROOT)), files={}, variants={})
     inputs = [reference / "images" / name for name in (
@@ -122,6 +132,7 @@ def build(reference, out):
     inputs += list((reference / "build").glob("libopenssl-*/configdata.pm"))
     inputs += list((reference / "build").glob("linux*/.config"))
     inputs += list((reference / "build").glob("busybox-*/.config"))
+    inputs += [reference / "host/sbin/depmod"]
     for path in inputs:
         manifest["files"][str(path.relative_to(ROOT))] = sha(path)
     with (out / "build.log").open("x") as log:
@@ -148,6 +159,7 @@ def build(reference, out):
                         r"set_attributes: failed to change uid and gids on .+, because Operation not permitted",
                         line) for line in diagnostics)):
                 raise RuntimeError("unsquashfs failed; see build.log")
+            prepare_module_indexes(reference, rootfs, log)
             cnf = rootfs / "etc/ssl/openssl.cnf"
             original = cnf.read_text()
             cnf.write_text(configuration(original, variant))

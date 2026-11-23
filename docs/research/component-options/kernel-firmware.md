@@ -41,6 +41,23 @@ kernelの起動引数は、組込みmoduleなら`module.parameter=value`、loada
 
 `CONFIG_LSM`の文字列は複数LSM名を含むが、名前の列挙は、それぞれのbuild・起動・policy適用を保証しない。AppArmor、Landlock、nftablesの導入を評価する際には、kernel capability、userspace、policyと権限、起動後の状態、拒否試験を分ける。
 
+## module binary indexの配送候補
+
+2026-11-23の[監査](../../experiments/2026-11-23-module-binary-index.md)では、既存artifactの通常起動はBusyBox modprobeで、テキストindexを使っていた。
+defconfigの`BR2_PACKAGE_KMOD_TOOLS=y`は`BR2_PACKAGE_BUSYBOX_SHOW_OTHERS`への依存で正規化後に残らず、kmod libraryだけの配送と区別する。
+既存OpenSSL測定器はlibkmodからmoduleをloadするため、最初は削除前に停止した。
+その後、利用者が製品と測定器を分けることを承認した。[続行の記録](../../experiments/2026-11-23-module-index-prune.md)では、external post-buildでbinary indexを削除し、測定器は展開したfixture内でhost depmodを実行する形にした。
+
+| 選択肢 | 効果・背反 | 今回の扱い |
+|---|---|---|
+| binaryとテキストの両indexを維持 | libkmodはbinaryを必要とする | 製品では不採用。測定fixtureで自前生成し、製品imageへは書き戻さない |
+| external post-buildでbinaryだけ削除 | BusyBoxのテキストlookupを維持。kmod CLIへ変われば不適合 | 採用。host depmod・署名後に実行し、modprobeのsymlinkがBusyBoxでなければ削除を拒否 |
+| kmod CLIを有効化 | kmodのmodprobeはbinary indexを要求。BusyBoxと同じfileを読むわけではない | 今回は変更しない。将来有効化時に配送条件を再確認 |
+| module本体を削除 | 実機のhotplug・driver利用・依存先に影響 | 今回は変更しない。QEMUだけで不要と判断しない |
+
+既存imageの再packでは非圧縮938,282 bytes、SquashFS 167,936 bytes減。前後のQEMU A/Bで19 moduleが一致した。
+最新設定の製品buildと実機は未確認。kernel Kconfig、kmod library、module本体の配送は変えない。
+
 ## Firmware・M5 packageの制御
 
 Raspberry Pi GPU firmwareは`BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI_CD`と`gpu_mem=16`を対応させる。CPU/RAM、display、camera、UART、tryboot等にはboot firmware側の設定もあるが、現在のCLI用途と将来の機能追加を分けて採否を判断する。周波数を上げる案は、安定性・熱・電源・SDカード保全まで測る前に採用しない。

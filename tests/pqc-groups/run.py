@@ -9,6 +9,7 @@ import sys
 import tempfile
 import tarfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -24,6 +25,43 @@ cnspec = importlib.util.spec_from_file_location(
     "cnf_probe", ROOT / "board/cardputerzero/tools/bench/openssl-cnf/run.py")
 cnf = importlib.util.module_from_spec(cnspec)
 cnspec.loader.exec_module(cnf)
+index_spec = importlib.util.spec_from_file_location(
+    "module_index", ROOT / "board/cardputerzero/tools/bench/module-index.py")
+module_index = importlib.util.module_from_spec(index_spec)
+index_spec.loader.exec_module(module_index)
+
+
+class ModuleIndexTests(unittest.TestCase):
+    def test_reference_requires_pre_pruning_binary_indexes(self):
+        module_index.require_unpruned_reference({"lib/modules/test/modules.dep.bin": (1, "hash")})
+        for files in ({}, {"lib/modules/test/modules.dep": (1, "hash")},
+                      {"usr/share/modules.dep.bin": (1, "hash")}):
+            with self.subTest(files=files), self.assertRaisesRegex(ValueError, "--reference.*pre-pruning"):
+                module_index.require_unpruned_reference(files)
+
+    def test_probe_exit_status_gates_readiness(self):
+        with tempfile.TemporaryDirectory() as directory:
+            probe = Path(directory) / "test probe"
+            for code in (0, 7):
+                with self.subTest(code=code):
+                    probe.write_text("#!/bin/sh\nprintf 'libkmod configs load rc=0\\n'\n"
+                                     f"exit {code}\n")
+                    probe.chmod(0o755)
+                    script = module_index.fixture_probe_check(probe, "/dev/stdout")
+                    result = subprocess.run(["sh", "-c", script + "echo 'MSD/Linux ready'"],
+                                            capture_output=True, text=True)
+                    self.assertEqual(result.returncode, code)
+                    self.assertIn(f"MODULE_INDEX_PROBE_RESULT={code}\n", result.stdout)
+                    self.assertEqual("MSD/Linux ready" in result.stdout, code == 0)
+
+    def test_missing_probe_cannot_reach_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            script = module_index.fixture_probe_check(Path(directory) / "missing", "/dev/stdout")
+            result = subprocess.run(["sh", "-c", script + "echo 'MSD/Linux ready'"],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 127)
+            self.assertIn("MODULE_INDEX_PROBE_RESULT=127\n", result.stdout)
+            self.assertNotIn("MSD/Linux ready", result.stdout)
 
 
 class ProbeTests(unittest.TestCase):
@@ -87,6 +125,32 @@ class SerialTests(unittest.TestCase):
 
 
 class CnfTests(unittest.TestCase):
+    def test_fixture_builds_private_indexes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            version = root / "lib/modules/test-kernel"
+            version.mkdir(parents=True)
+            def depmod(args, log):
+                self.assertEqual(args, [Path("reference/host/sbin/depmod"), "-a", "-b", root, "test-kernel"])
+                (version / "modules.dep.bin").write_bytes(b"fixture index")
+            with patch.object(cnf, "command", side_effect=depmod):
+                cnf.prepare_module_indexes(Path("reference"), root, None)
+            self.assertEqual((version / "modules.dep.bin").read_bytes(), b"fixture index")
+
+    def test_fixture_indexes_empty_failed_or_missing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lib/modules").mkdir(parents=True)
+            with self.assertRaises(ValueError):
+                cnf.prepare_module_indexes(Path("reference"), root, None)
+            (root / "lib/modules/test-kernel").mkdir()
+            with patch.object(cnf, "command"):
+                with self.assertRaises(ValueError):
+                    cnf.prepare_module_indexes(Path("reference"), root, None)
+            with patch.object(cnf, "command", side_effect=subprocess.CalledProcessError(1, "depmod")):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    cnf.prepare_module_indexes(Path("reference"), root, None)
+
     def fixture(self):
         logs = {"module-config": "CONFIG_MODULE_SIG_FORCE=y",
                 "providers": "Providers:\n  default\n"}

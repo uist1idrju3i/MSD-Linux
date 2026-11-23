@@ -175,13 +175,9 @@ usr/share/et/et_h.awk 1800
 usr/share/keymaps/tca8418_keypad_m5stack_keymap.map 1810
 usr/share/ss/ct_c.awk 1820
 usr/share/ss/ct_c.sed 1830
-lib/modules/@KVER@/modules.alias.bin 1840
 lib/modules/@KVER@/kernel/sound/usb/snd-usbmidi-lib.ko.xz 1850
 lib/modules/@KVER@/modules.builtin 1860
-lib/modules/@KVER@/modules.builtin.alias.bin 1870
 lib/modules/@KVER@/modules.builtin.modinfo 1880
-lib/modules/@KVER@/modules.dep.bin 1890
-lib/modules/@KVER@/modules.builtin.bin 1900
 lib/modules/@KVER@/modules.dep 1910
 lib/modules/@KVER@/modules.devname 1920
 lib/modules/@KVER@/modules.symbols 1930

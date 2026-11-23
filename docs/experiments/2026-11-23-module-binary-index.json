@@ -1,0 +1,1676 @@
+{
+  "base_commit": "723b664abc1e6bde1a4010261bb90a082e0c6ebc",
+  "buildroot_commit": "bbbdab36565d4941b6b0449a0eedb5aac8a10c2e",
+  "host": "Linux-7.0.0-44-generic-x86_64-with-glibc2.43",
+  "baseline_config_sha256": "c14c6763bf1185cf52f235e314e7935e5928b3ec5f4ecc269652865fa0cd9575",
+  "normalized_config_sha256": "07526cfac8811bb92dc5c1ac3da22326a4ef326a19316782f71bc055a29bc53a",
+  "modprobe_link": "../bin/busybox",
+  "rootfs_regular_bytes": 37049861,
+  "rootfs_regular_files": 1411,
+  "indexes": [
+    {
+      "path": "lib/modules/6.18.59-v8/modules.alias.bin",
+      "bytes": 442710,
+      "sha256": "ada21de1b1560a83d831859916716231129962efbedf9dfc23c02e94b8068aee"
+    },
+    {
+      "path": "lib/modules/6.18.59-v8/modules.builtin.alias.bin",
+      "bytes": 95714,
+      "sha256": "bd09d11e59e440fa599cde0a6740972357978ea268e5989e05684e0eb2a30539"
+    },
+    {
+      "path": "lib/modules/6.18.59-v8/modules.builtin.bin",
+      "bytes": 19011,
+      "sha256": "a6cc898a2fdf8adf39fc4778149f5ed11760d38f8b68ed0f4aff92ef49ea7a8a"
+    },
+    {
+      "path": "lib/modules/6.18.59-v8/modules.dep.bin",
+      "bytes": 141048,
+      "sha256": "3cb8fa5e57a1c7b87e33cdd3c3d1112d6d6b5f7f0a1c1c6214125e3614589bbe"
+    },
+    {
+      "path": "lib/modules/6.18.59-v8/modules.symbols.bin",
+      "bytes": 239799,
+      "sha256": "21c74c5dbdc31a38b0b92207def7ea91f727bc7aa2a01a58e008a10d59283cb8"
+    }
+  ],
+  "binary_index_bytes": 938282,
+  "squashfs": {
+    "path": "output-integrity/images/rootfs.squashfs",
+    "bytes": 20500480,
+    "sha256": "b68236f9612b010d42a0a9227d59332d94b2b84d19a593dc16ea9f269e2ea885"
+  },
+  "elf": [
+    {
+      "path": "bin/busybox",
+      "bytes": 870848,
+      "sha256": "2aacc588d1293951a0a0d9fc11de37e1a2ed7f24c9b956483739728853c68028",
+      "needed": [
+        "libresolv.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/chattr",
+      "bytes": 10024,
+      "sha256": "aa0cacd9e59afe82c44f056e7f8962011b95c17bb4ad0dbaef76673b31141108",
+      "needed": [
+        "libe2p.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/dmesg",
+      "bytes": 82096,
+      "sha256": "98d162025626a38840c298a45e890b997c576d59e74e3c1174b0203670a331ed",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/findmnt",
+      "bytes": 89456,
+      "sha256": "bb8675ad5d4601b5af87287b2f24c2a8f958d701efe7455c0781c2a80d131cf0",
+      "needed": [
+        "libmount.so.1",
+        "libblkid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/lsattr",
+      "bytes": 10024,
+      "sha256": "1a3d5f2bca0507cbf7e91630c58ab5812969b04b6644843a464c80a4f104c5f8",
+      "needed": [
+        "libe2p.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/lsblk",
+      "bytes": 227192,
+      "sha256": "9313cc3c9e9287727dace24c11982171696123c6a822ad15654ce454b7971333",
+      "needed": [
+        "libblkid.so.1",
+        "libmount.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "bin/pipesz",
+      "bytes": 63352,
+      "sha256": "d2e9739fb983c9d6ee0126a4447e1a9f9f467dc429a1cecad9f34fbb9adfa78e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/ld-linux-aarch64.so.1",
+      "bytes": 198152,
+      "sha256": "2850f8e0673886effa11dc19cd80e8c87d08e078da68b226cb08d79781758f88",
+      "needed": [],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libanl.so.1",
+      "bytes": 5920,
+      "sha256": "bdf7764b31d733720ac2582def4484f2d2cefd42163da6c114899cbc7bde1798",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libatomic.so.1.2.0",
+      "bytes": 38816,
+      "sha256": "40e4979bca3cdb69be35bb4db0326c9e834304f8a514f630af000d1940a0c788",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libblkid.so.1.1.0",
+      "bytes": 359136,
+      "sha256": "89c6041fd99eef05f057d53a1aa459a878507f4c530e8867a0d3889fe8ae1f05",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libc.so.6",
+      "bytes": 1613984,
+      "sha256": "3bc4c3a49aaa9e2d3cc7dadc5a4452d4200612ce7df54a1cc740ddcccf337750",
+      "needed": [
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libdl.so.2",
+      "bytes": 5920,
+      "sha256": "861bda29091afcb24dc860a983f51dc2c96d9092af345809cc0f5b7aab6a25b2",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libfdisk.so.1.1.0",
+      "bytes": 456584,
+      "sha256": "53a60b425062b20162895d234161ae883a9f3d8d856658a8b0445eaa3108a8c0",
+      "needed": [
+        "libuuid.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libgcc_s.so.1",
+      "bytes": 129360,
+      "sha256": "f9147d0d880d6de7231f5f9160f3f610e0cacbf6d02f50c61ed127a86fec6c3a",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libm.so.6",
+      "bytes": 575344,
+      "sha256": "8823081763685deba3fc6897095e16c2f9326104aa555ac8726f12a9daee230f",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libmount.so.1.1.0",
+      "bytes": 420280,
+      "sha256": "fcfdf8a330548d983f6f53017fc05ee6616887e4910f2d8fa6e845c71f87b88a",
+      "needed": [
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libmvec.so.1",
+      "bytes": 198504,
+      "sha256": "d2d674ebbaf2c6820937e342bf579a900a027771f505836c243d0b9457751bf8",
+      "needed": [
+        "libm.so.6",
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libnsl.so.1",
+      "bytes": 87912,
+      "sha256": "91da7355281b08dfa04f8fee6fdfb2f7a6b0787f26d635707e8b3e8ddf5d965b",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libnss_dns.so.2",
+      "bytes": 5920,
+      "sha256": "9aec7871d6a832f110d1f8cea0ee5c0a8b12b2b65895d2f5f20e86e4704c5d0d",
+      "needed": [
+        "libresolv.so.2",
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libnss_files.so.2",
+      "bytes": 5920,
+      "sha256": "e3373789c9fea9ddd566c692796846cc767ae866769f33fea8ea0ddef450bee1",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libpthread.so.0",
+      "bytes": 8416,
+      "sha256": "c7a4a85d9af4f2d823ce54a7fb89f400a7b9389467b9f4209bd9dd4247082f4e",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libresolv.so.2",
+      "bytes": 55360,
+      "sha256": "f12e4378881a6de7651dcaaa5de7b611d755d29b629b8864e469d018ecb58715",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/librt.so.1",
+      "bytes": 5992,
+      "sha256": "49c830f96004367217b16f3893c05a277b6c08c15590239fe261496e97fd664f",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libsmartcols.so.1.1.0",
+      "bytes": 284528,
+      "sha256": "7a340ea6ec6b87450109ef632ac5d435285af030ee3f96ca093e0cb1420d5705",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libutil.so.1",
+      "bytes": 5920,
+      "sha256": "7506693753782c8db1650e6addb21e1e32fcad39668e6abf53c1a6f86282b307",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "lib/libuuid.so.1.3.0",
+      "bytes": 30560,
+      "sha256": "f55898bfa3ba9517c28aee57c9dff8bccd3149f7e6e171a39e104fd6db0f1be6",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/badblocks",
+      "bytes": 26416,
+      "sha256": "682f20ecbc22f5ed3b5a78ae87d623233a6eebcf95b7833fce73e30da50978a1",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/blkdiscard",
+      "bytes": 34672,
+      "sha256": "fcbe532c419d81066a5435124fcc4a9c3f3d19da36b680aba04afeef793bd104",
+      "needed": [
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/blkid",
+      "bytes": 137104,
+      "sha256": "bd392a01bd24595fd027fedd836964743d951ad9c875c9157a98722bb3a98fc4",
+      "needed": [
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/blkpr",
+      "bytes": 38768,
+      "sha256": "2f39282c21b996f303902bb3c4e1b88ddc4d3c1ff4c4219aecb521f06c0925c4",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/blkzone",
+      "bytes": 87920,
+      "sha256": "e0e9626963e327e73e76d35d6fc225294484d490ad1204a9928657a710fa9abb",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/blockdev",
+      "bytes": 92016,
+      "sha256": "032899d0d061011c37e5db520b397079baba324ee96cd101dceebdf899ab171a",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/chcpu",
+      "bytes": 42864,
+      "sha256": "79d3d56c035aa956fda829d1612926c163b80e8a86e38659a0019ecc36fb69ea",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/ctrlaltdel",
+      "bytes": 38768,
+      "sha256": "5c27e1d3931e0d85205f153837d52717be1cd6f7edbb0608f6866aeb208623fe",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/dumpe2fs",
+      "bytes": 26408,
+      "sha256": "e6c7851332416b42c73f54b4f3a3bf489c6a98824babcaf3f3c873ef73af7479",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libe2p.so.2",
+        "libuuid.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/e2freefrag",
+      "bytes": 14112,
+      "sha256": "e3e21e8374ccc3e23a27558a44f737a07d365b56698ce0f8f715ad0639f061c5",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/e2fsck",
+      "bytes": 315272,
+      "sha256": "f8ff691df86d57ac33e87de2fb4da8aab514c31872dabf10d300b57d24c637ec",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libblkid.so.1",
+        "libuuid.so.1",
+        "libe2p.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/e2undo",
+      "bytes": 14112,
+      "sha256": "3c0e04d58c362ea171bd6f7f18f007380f22de0033846c5b4f14ff4ca0497f43",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/e4crypt",
+      "bytes": 22384,
+      "sha256": "82e6b9582b917ba756e2fb6a2738a25e640657a7f5343b8afd0f98e0d7c4babc",
+      "needed": [
+        "libuuid.so.1",
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/fdisk",
+      "bytes": 161680,
+      "sha256": "3b8f1651580ca6fc90b3832ce659f20c16ea0101ae827333a00f68fb997c5a36",
+      "needed": [
+        "libfdisk.so.1",
+        "libuuid.so.1",
+        "libblkid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/filefrag",
+      "bytes": 14136,
+      "sha256": "81feee80fe4173515c8d7c2c730412528866d2441d053009356cc738dd56e9a1",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/findfs",
+      "bytes": 10096,
+      "sha256": "359acb0950a58859cc7f3eadd527e592a3f258d306f1c00878f7968964742f66",
+      "needed": [
+        "libblkid.so.1",
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/fsck",
+      "bytes": 26592,
+      "sha256": "84ab4114650e50e80bf017539627b48e44f6a8cd6e50940c7d2f484c1ed81521",
+      "needed": [
+        "libblkid.so.1",
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/fsfreeze",
+      "bytes": 10096,
+      "sha256": "5d57621768b7b28bc6d590670f800c40bce0dcc5a002db79665cfa6d864348d7",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/fstrim",
+      "bytes": 87920,
+      "sha256": "5536ca00a0714b7d9c44e489855c12857ef977bbc7ebf443564df280a0930805",
+      "needed": [
+        "libmount.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/logsave",
+      "bytes": 10024,
+      "sha256": "5c1fda82e0c4751ab8bf952952cc1426e1a3203955e9f90965e44ed0f66af08a",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/mke2fs",
+      "bytes": 125016,
+      "sha256": "a9c139d2311af2e17016cd5d7a08476204f92af1585b69bc7a1ad8dd481e3540",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libblkid.so.1",
+        "libuuid.so.1",
+        "libe2p.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/mkfs",
+      "bytes": 10096,
+      "sha256": "c0dc7efe7b73e67cbe71565565a0f6a9afa73f07e1e204ccae7118796bf84d6b",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/mklost+found",
+      "bytes": 10016,
+      "sha256": "66adfd6652b4079cda5baf5e6b94cdbed17ceaec2f9a473442d7e747075096f1",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/mkswap",
+      "bytes": 124792,
+      "sha256": "ece3781b5ec959914f38be8674ad0d8ac193acb16e7406f10209a283f792f1ef",
+      "needed": [
+        "libuuid.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/resize2fs",
+      "bytes": 55072,
+      "sha256": "203968374edaa50f309b05db33e7b11ecbe965314b2e5c2133f3c756dea91e69",
+      "needed": [
+        "libe2p.so.2",
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/sfdisk",
+      "bytes": 153456,
+      "sha256": "b29e83653b1a458c4b642106a83c53833dd0f2df2d6caf1b36b2864a8732e654",
+      "needed": [
+        "libfdisk.so.1",
+        "libuuid.so.1",
+        "libblkid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/swaplabel",
+      "bytes": 14192,
+      "sha256": "d7872df225eff7d636643e5adcbb66ccf239103d1b451703b2f204ee96fdecf4",
+      "needed": [
+        "libblkid.so.1",
+        "libuuid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/swapoff",
+      "bytes": 46960,
+      "sha256": "f1cb4cc4e6540fa235fa777540bc7638407f90498f79c81d060ea207624e6aa6",
+      "needed": [
+        "libmount.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/swapon",
+      "bytes": 55152,
+      "sha256": "13ad642b2546c24bd9a5eff1bcb7e8803dc5785ffb138292e7c1094fbc28af7f",
+      "needed": [
+        "libblkid.so.1",
+        "libmount.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "sbin/tune2fs",
+      "bytes": 104472,
+      "sha256": "164674f841ea3b7b24806203f481762229bf63f0706eee4a71cd740a99b10957",
+      "needed": [
+        "libext2fs.so.2",
+        "libcom_err.so.2",
+        "libblkid.so.1",
+        "libuuid.so.1",
+        "libe2p.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/bits",
+      "bytes": 42864,
+      "sha256": "f67812783c2187f17b7de42e980dec8095be03223f21c7b50c507aa90b7bf1fe",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/choom",
+      "bytes": 59248,
+      "sha256": "0cf8da5b4af9a352a91ae81da6bb5860a925751ab91a73bfb4bb56260a22253e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/chvt",
+      "bytes": 14384,
+      "sha256": "1ab6924d664f497ea668f365367800d63841ea2d9d29db14cfa5f726113e5b0d",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/col",
+      "bytes": 34672,
+      "sha256": "e7c8a2e207f200a84eb3f2d426c44c6902bfdb3c1e8c4f81db45573f4c4e1ba4",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/colcrt",
+      "bytes": 14192,
+      "sha256": "2bfbb6dab3b8345d0cda3be0928b43f9814c9ebc527701c83bc0f87c0354347d",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/colrm",
+      "bytes": 30576,
+      "sha256": "460c5494000d38321d5c96469ebbbd9350cd110450d571889f44f325e16bddbb",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/column",
+      "bytes": 59248,
+      "sha256": "b0b276a6d1c4273e5c872997d1667b6dcafa549807aee141488d78f592a45525",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/deallocvt",
+      "bytes": 14384,
+      "sha256": "5f36496bb0485d2b1386522454a4a9b69b86f074f675a6410a9f1f505e9fe95c",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/dumpkeys",
+      "bytes": 170560,
+      "sha256": "d3d5365aceafb4718f295856b2e3a9a0236f0ccf91ee4acd18e5b2b31417dd37",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/enosys",
+      "bytes": 55152,
+      "sha256": "145dc39b85017f0592e1460d30817edf9d6f72e5c404463c1b3d523d6f5bcf65",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/exch",
+      "bytes": 10096,
+      "sha256": "b8e68d9f34ca44281d6321cdb01d9477f85f4efd09ee05ba9cb9f2e6e054ead4",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/fadvise",
+      "bytes": 30576,
+      "sha256": "2b63c205bff71b722bdaded9477e09b8164b6bf3f17967cff82f5e7def0c51bb",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/fgconsole",
+      "bytes": 10336,
+      "sha256": "8f291871d1c7ef753a703d55a6328a1e42684876e92352b074356b3a05df186b",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/fincore",
+      "bytes": 42960,
+      "sha256": "bf1dec1e3c7894c7ef7ae0d8595fc0539c94953698953543641e8c183c92c035",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/flock",
+      "bytes": 38832,
+      "sha256": "1290dc34a27c232a1e79e45c027c3e685e2ca73cad4d9bf4e521cd4ca031033b",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/getkeycodes",
+      "bytes": 14336,
+      "sha256": "e0c55d69fedce35032ab0f12ba225e35d17816040352316ac18d3d5956d9b19f",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/getopt",
+      "bytes": 34672,
+      "sha256": "3b5211e32ac96731cb1dc5330233c6b978b8b3d3db874d0ab7b55ed7a131a358",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/hexdump",
+      "bytes": 55160,
+      "sha256": "cb6868d4afc6bb8b3e14b87ffae5fda557c19c2ca37ecda9e339e54b02904074",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/ir-ctl",
+      "bytes": 59264,
+      "sha256": "08c99e66d5bace59843f4bf93a217e1205c34749bc7ab584cd7f13dd0da0b36a",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/ir-keytable",
+      "bytes": 103632,
+      "sha256": "c1635b8a32c7964bf0b88b81c18b4a3b0f3cc4413754126c4d9f2743549ed8e9",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/isosize",
+      "bytes": 30576,
+      "sha256": "52183c97adc494fb96b1aecd668ac36f8d1638918482a0d384d0f945af910241",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/kbd_mode",
+      "bytes": 14672,
+      "sha256": "b9e78ee07921479538b07d3ba34a352ab98e7d9bc73c35cff9fa4c50490ba06e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/kbdinfo",
+      "bytes": 14384,
+      "sha256": "edab9f944f082552dba8629050464c7ec82a43b055d95621e1cf0e4399f8bc29",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/kbdrate",
+      "bytes": 14464,
+      "sha256": "c8899c7db443cc10f0d24c6a1d556427055cc75788866a84b5321a462ca2fd99",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/loadkeys",
+      "bytes": 212024,
+      "sha256": "7c142a8c3d6ccc9c4c404d634d650d461b0ac366157aee832d7fb3c3e391a332",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/loadunimap",
+      "bytes": 35176,
+      "sha256": "e84f09dd2985167632565bda33c8d16c1ef2604b0780cb53cbcc3146c7de8e53",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/look",
+      "bytes": 14192,
+      "sha256": "6aa187fdd8b98f1146c10075fd33f67aa59d0275d978e04df5dd08bcbaec501e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lsclocks",
+      "bytes": 51056,
+      "sha256": "5fb96839ff30f428f3e09010198dfecb45381054ca7fb30500cfc0b66a190c86",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lscpu",
+      "bytes": 153464,
+      "sha256": "6dc66536e2bdb488d1914fb03ebeeb31e4ff6eb2a436a3f44072512d1325de9b",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lsipc",
+      "bytes": 108400,
+      "sha256": "ad0b736e78607d797dfcd685a57b1bf6ce9d6e5ce74de53f8b74b6e9c1df5fb4",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lsirq",
+      "bytes": 51216,
+      "sha256": "b452814349e5296be36edbe5528009ff21ce6a495af681629a10c6d8a12d9e4c",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lslocks",
+      "bytes": 80144,
+      "sha256": "68e55bfa79e8c6aff72d2cd08ce92155b8736beefed0f5955a1782e7842cc8da",
+      "needed": [
+        "libmount.so.1",
+        "libblkid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/lsns",
+      "bytes": 87928,
+      "sha256": "977d2ba34ae83679ea86a0060f07e0878c0ebf918e624010fe870451aac31895",
+      "needed": [
+        "libsmartcols.so.1",
+        "libmount.so.1",
+        "libblkid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/mapscrn",
+      "bytes": 31128,
+      "sha256": "e857d626d9fdea3f469b97987389bf0ec90a855df6a09186db67e2e0343c7459",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/mcookie",
+      "bytes": 38840,
+      "sha256": "68196a132c27f3e1f951e76cebb463a7d57f6905e2a4e04459a6a82b350130ce",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/media-ctl",
+      "bytes": 55872,
+      "sha256": "0e5b79875e8f0375826b2810f314b85162b90ba3b77777af07d485517240649d",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/namei",
+      "bytes": 38768,
+      "sha256": "b88f503d92a8eff8c3aac1e5a57758f129d086c912f709472442c85fd7a331c1",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/openssl",
+      "bytes": 959488,
+      "sha256": "4bce4eb8984a47841dd439e077e06d39aa1a514fa0acd5d55e133dccc530d0a2",
+      "needed": [
+        "libssl.so.3",
+        "libcrypto.so.3",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/openvt",
+      "bytes": 18816,
+      "sha256": "f979ecda0b41e357e6564fc3ad13ab7717b5f118bf2acfc1d3cc331d61395c2b",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/prlimit",
+      "bytes": 43376,
+      "sha256": "d514c3ce5bd5e2e6891bc77c6dfba4976846cb2e62f16c5b63e01026f0e7d200",
+      "needed": [
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/psfxtable",
+      "bytes": 22384,
+      "sha256": "94c1ee652f38849e35e5047ae564bab17c7bc8641844c601072635c1a2f61154",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/renice",
+      "bytes": 14192,
+      "sha256": "6d699239da5ed6778b82b8aa9bf7e8947c37f1e6eb26aeeabdb509aa65cde49e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/rev",
+      "bytes": 10096,
+      "sha256": "bdd5b4cd7ce138c3226891c17aa803df8024cd6f70bd224eddce4974d2951f09",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/script",
+      "bytes": 75632,
+      "sha256": "48c7e77143e559eef1960f540a919914d8e805c0fda755aa9590e4d63af942d1",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/scriptlive",
+      "bytes": 59248,
+      "sha256": "8f6342e55fffff6c73de542911e7d54ac73d768d3d7e285a1245ad8311ba8d0a",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/scriptreplay",
+      "bytes": 46960,
+      "sha256": "a7cbebb39dda62dac8f7de41619955d321a828033a6142eee83a5d92f73f2c09",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setarch",
+      "bytes": 88184,
+      "sha256": "acde297d83b836282b245f3800a583ab04865152d900d2ddd54e2079a6fbcf8e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setfont",
+      "bytes": 56056,
+      "sha256": "930a1cc97ce88491604420a3df3afa1d99d58e544613d6b4120edcc4b49b6da8",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setkeycodes",
+      "bytes": 14384,
+      "sha256": "974b0a27e190de4618c596d25047d7a016aba329a5127bd04c356cf9a73f3105",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setleds",
+      "bytes": 14440,
+      "sha256": "6927f87a9bcf238c1f7032102f5ea33cf476aa2fc58c37ef88d13c333c7bb5b3",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setmetamode",
+      "bytes": 14480,
+      "sha256": "eb827c9dae19aa3f9cf373b2b2747e3f0c9c9ad46c3198b9c0303000a3ab5782",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setpgid",
+      "bytes": 10096,
+      "sha256": "045b9cc532b255629d53fdf55b9aaa0790f11ca1939858dbc9a88ab80d909068",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setsid",
+      "bytes": 10096,
+      "sha256": "53e0b19e90d16a5d5c8142bcea92faf689cceb2d3523b23349c0cdbc3e08cdad",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/setvtrgb",
+      "bytes": 14432,
+      "sha256": "c7f812063e6624c0dc5fdcfa2e7d218a85e82c2985101fecf4b8ea398c0d0ec1",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/showconsolefont",
+      "bytes": 22672,
+      "sha256": "cd30ea805ea7b2384864c7856a3232f11846516b338792617858f35b78e7fd22",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/showkey",
+      "bytes": 14528,
+      "sha256": "286664038aa897b5618f995207d1f466f856f842f91fc8ec2694192341dbb437",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/uuidgen",
+      "bytes": 34672,
+      "sha256": "0593d71fa98606efc221a9397f51ebb0e99906458fb1448759d252e267f7ebe1",
+      "needed": [
+        "libuuid.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/uuidparse",
+      "bytes": 42864,
+      "sha256": "bf33c28e7d75df0092f573b2125f068ddf056566dfb4c1bc059e950b78f795a8",
+      "needed": [
+        "libuuid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/v4l2-ctl",
+      "bytes": 397352,
+      "sha256": "be5d1e62c26ca5360847f8f5d282d01886d9b6d8819dab135fec03b724250b83",
+      "needed": [
+        "libv4l2.so.0",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/bin/whereis",
+      "bytes": 26480,
+      "sha256": "6d245f7456fd19af996c8e21018b841466494dea5b2e7b21dd8601da174aff3a",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/gconv/ARIB-STD-B24.so",
+      "bytes": 30336,
+      "sha256": "94515e8b75c141013da7a6e5b5c39925391496da5d2c67143603bc63c8776158",
+      "needed": [
+        "libJIS.so",
+        "libJISX0213.so",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/gconv/EN300-468-TAB00.so",
+      "bytes": 18048,
+      "sha256": "3a4200fbca78ab092c3a4c0cfc5dd3cb99d8317bb0ebf91cd35f395432a4f6b2",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libcom_err.so.2.1",
+      "bytes": 14032,
+      "sha256": "8cc70fd104105e4986a9f78827e453d8fa1f9f452d5308aa8dad7ed0eb51ce74",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libcrypto.so.3",
+      "bytes": 5200792,
+      "sha256": "13fb0a3dc8fcbea11e5b74009467707e3f1848b0686a4734fdb07a74662d239e",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libe2p.so.2.3",
+      "bytes": 36328,
+      "sha256": "5b1db1f1cd7b01a1357002c435df2b6e488677eacdd71698e56b4abe8ae5ec17",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libext2fs.so.2.4",
+      "bytes": 404832,
+      "sha256": "901f236092d5266bb9cb60b8df14c67d7c9423887a451bff9139f9c2243eb411",
+      "needed": [
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libgomp.so.1.0.0",
+      "bytes": 302440,
+      "sha256": "09243619063f72a749b84b80870730c2d59d3fd022ba783c5f69b0c38fea435d",
+      "needed": [
+        "libc.so.6"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libkmod.so.2.5.1",
+      "bytes": 87920,
+      "sha256": "6ff7dce656ce6e9ad550073ea74c86106549eda34d696d8bb8ac6b4a08e65212",
+      "needed": [
+        "libcrypto.so.3",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": true
+    },
+    {
+      "path": "usr/lib/libss.so.2.0",
+      "bytes": 26328,
+      "sha256": "f7b69fcad316a724fa75c0d8797e12122e357ebe4fa412ebe6724e6e825baaf0",
+      "needed": [
+        "libcom_err.so.2",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libssl.so.3",
+      "bytes": 929336,
+      "sha256": "2057c3b0d96ed44dc828f217d95d6e7eb3e0cd56c09e95c657cf4d57347fcd53",
+      "needed": [
+        "libcrypto.so.3",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libstdc++.so.6.0.33",
+      "bytes": 2386792,
+      "sha256": "2a05d1e36b467c36820bf3cac72bce5d586e10704126d81ad338937e235f96a4",
+      "needed": [
+        "libm.so.6",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l/ov511-decomp",
+      "bytes": 14112,
+      "sha256": "c17c741fabcbbe97a351481179ec999c1650eb0ed40672a001c5df5cfa413ff1",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l/ov518-decomp",
+      "bytes": 22304,
+      "sha256": "e73c5c6026915c5cd1af5617743257ae4fe9a2db0f2a4fdc08347fea864b46db",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l/plugins/libv4l-mplane.so",
+      "bytes": 9936,
+      "sha256": "aea2b656b1fce477fc9f07adfe588317105eb7386bb439fa7f6c27084b852c93",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l/v4l1compat.so",
+      "bytes": 9784,
+      "sha256": "34bab3030ea2ea4a775b655ae50e3575c81d9708ad6280babf76f1dcb7d85c18",
+      "needed": [
+        "libv4l1.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l/v4l2convert.so",
+      "bytes": 9856,
+      "sha256": "56d06150caf145515eb65db462d1983200a614e2d5490672b0e64ca43a641be9",
+      "needed": [
+        "libv4l2.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l1.so.0.0.0",
+      "bytes": 24016,
+      "sha256": "44ac703ea77bc56b860551603e3d87236d38fb18a56e87386ec52945e97df093",
+      "needed": [
+        "libv4l2.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l2.so.0.0.0",
+      "bytes": 51256,
+      "sha256": "945061b071397b7b7300c68f6044be343ca8147a250320b58f4146955cae07c3",
+      "needed": [
+        "libv4lconvert.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4l2rds.so.0.0.0",
+      "bytes": 26320,
+      "sha256": "79f4835f5a8d0fae237ac5b9e624efa4e34b45228a2ae23ae9a17da21213901d",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libv4lconvert.so.0.0.0",
+      "bytes": 129056,
+      "sha256": "71a85f7c8cbf75bc620d6486df51fb2966b1b5cacf0206277465e84e38bc673b",
+      "needed": [
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/libz.so.1.3.2",
+      "bytes": 75552,
+      "sha256": "dfc0fef144795b3c1e62f086050ad3aa5104336677a479fa6f2c97360c12e3bc",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/lib/ossl-modules/legacy.so",
+      "bytes": 124624,
+      "sha256": "079a645e067920ac7bcfb3c4c5a452de1c489e9d4ee7d3326103f0b38995b6b7",
+      "needed": [
+        "libcrypto.so.3",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/addpart",
+      "bytes": 30576,
+      "sha256": "13423b5d8bd130dab7e6a232209be954c5425d9b8d20eb40f7e499c9d3ec0c44",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/delpart",
+      "bytes": 30576,
+      "sha256": "b2b3a046b0c4f65e0ca2907d027f67d169ed4eae7d757fa6dec9f50f6671c2d9",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/ldattach",
+      "bytes": 38768,
+      "sha256": "14146ee6bda3ecacdf416421aa2e0ffb236108acc74758df4b1858c3b79193fd",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/partx",
+      "bytes": 128888,
+      "sha256": "d2c5b80ec2e43d2bcc1d159625dcac9e7b13efc5b0c2e6b85125ef0ae8d89893",
+      "needed": [
+        "libblkid.so.1",
+        "libsmartcols.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/readprofile",
+      "bytes": 34704,
+      "sha256": "c0b06546d55e585fd75865af74b07fe410e3af27f4e184bc9691333a0b852349",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/resizepart",
+      "bytes": 79728,
+      "sha256": "8168acc2216dc59a4eafa7a429fa74c570f00a5d495e52912a1f425a3879f852",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    },
+    {
+      "path": "usr/sbin/rtcwake",
+      "bytes": 51056,
+      "sha256": "625bdb8a7497610123cf4c7a5ce50b850307604e1c9dee809af3e22f54198e80",
+      "needed": [
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "libkmod_name_reference": false
+    }
+  ],
+  "saved_archive_sha256": "cc77a7c23d9be0657909479440e4229f77de61adf230dbd7fe932503172a94bf",
+  "saved_formal_runs": [
+    {
+      "path": "output-openssl-cnf-r5/C0-AA-r1/serial.log",
+      "serial_sha256": "0685336db1b3e0ca9e19bce817dacb2a367ebce5126c0a1e50f3af9ba1161c81",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C0-AA-r2/serial.log",
+      "serial_sha256": "583eac6f4a36b5ae0ed3fcfdc0c8377567d3b68b4b9619631213877661b73434",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C0-AA-r3/serial.log",
+      "serial_sha256": "bc07e07a53e12d03833899c9d121de57fec09d30f7a0a950a2aed062a3a09099",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C0-r1/serial.log",
+      "serial_sha256": "6da091e37576224a81914193802cd696e3dddaf2ca3e761c8064471be4d9de29",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C0-r2/serial.log",
+      "serial_sha256": "45a8b7fdac8fe59a2c5a7e5a907fb43429df10e688bcfef04edca316b9090824",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C0-r3/serial.log",
+      "serial_sha256": "685074faa4b8434a8fe5079e8c35403f197d952331a92fb81700b4ea69afeb1d",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C1-r1/serial.log",
+      "serial_sha256": "dd76fb4f7add64864883465fad20d8c9e476d3873e3430580c9e3921903b86ba",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C1-r2/serial.log",
+      "serial_sha256": "2bc9680e4913f04f50d502c0124592b20a40d1b8f7b2f77ed2029808e92b8ab1",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C1-r3/serial.log",
+      "serial_sha256": "87d368bf6ed1c1c4920a46df064fe0970bd8898a799993bb06cb34a943d005d6",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C2-r1/serial.log",
+      "serial_sha256": "aa6fd4cbc8fea382c181eec89749882f56e5e0f4553b5a24211cc28afda939a9",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C2-r2/serial.log",
+      "serial_sha256": "6c4415fa9a2e96ab18c2c0973261faa9365dd87e43ec45ca5600c3ba1b6281eb",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    },
+    {
+      "path": "output-openssl-cnf-r5/C2-r3/serial.log",
+      "serial_sha256": "149f7fd165031c906131802d3adf1aecef7216dfd7895d2cc9cc927a96342653",
+      "result": "CNF_RESULT case=module rc=0 pass=1 writes=0 sectors=0",
+      "module_log": "libkmod configs load rc=0\n"
+    }
+  ],
+  "after": null,
+  "decision": "stop: existing OpenSSL experiment uses libkmod binary index reader; no product files removed",
+  "host_os": "Ubuntu 26.04.1 LTS",
+  "readelf_version": "GNU readelf (GNU Binutils for Ubuntu) 2.46"
+}
