@@ -18,7 +18,7 @@ meson,project,manpages,man生成,false,あり,最新stableも1.15.2・差なし,
 meson,project,tests,上流test suite,true,あり,最新stableも1.15.2・差なし,製品false / 検証用別build,採用,recipeはfalse。②でhost試験を別途実行する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L88
 meson,project,fuzzing,fuzz test,false,あり,最新stableも1.15.2・差なし,false,不採用,製品binaryに試験機能を含めない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L93
 system.conf,system,compatible,機種識別,必須,あり,最新stableも1.15.2・差なし,MSD/Linux CardputerZero専用値,採用,異機種bundleをslot write前に拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L66
-system.conf,system,min-bundle-version,bundle下限SemVer,なし,あり,最新stableも1.15.2・差なし,OPEN,保留,単調な内部版の永続下限とは別。期限問題と併せ④で利用者判断する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L72
+system.conf,system,min-bundle-version,bundle下限SemVer,なし,あり,最新stableも1.15.2・差なし,未指定,不採用,内部版の永続下限は署名済みtag commitの%ctをwrapperで比較・保存する。SemVer比較で代用しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L72
 system.conf,system,bootloader,boot選択backend,必須,あり,最新stableも1.15.2・差なし,custom,採用,trybootを専用backendで扱う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L97
 system.conf,system,bundle-formats,許可するbundle形式,plain verity crypt,あり,最新stableも1.15.2・差なし,verity,採用,plainとcryptを暗黙に受け入れない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L104
 system.conf,system,mountprefix,一時mount配置,/mnt/rauc/,あり,最新stableも1.15.2・差なし,/run/rauc,採用,一時fileとmount点をRAM側へ限定する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L117
@@ -37,10 +37,10 @@ system.conf,system,variant-name,固定variant,なし,あり,最新stableも1.15.
 system.conf,system,variant-file,fileによるvariant,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,可変fileで入力policyを変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L228
 system.conf,system,variant-dtb,DT compatibleをvariant化,false,あり,最新stableも1.15.2・差なし,false,不採用,DTによる実boot照合とbundle variantは別にする,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L233
 system.conf,system,perform-pre-check,bundle全体の事前読取り検査,false,あり,最新stableも1.15.2・差なし,false,不採用,streamingの部分取得を維持する。入力verityと書込後read-backを別に検査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L241
-system.conf,system,prevent-late-fallback,good後に旧slotをbad化,false,あり,最新stableも1.15.2・差なし,false,不採用,旧slotの自動無効化を持ち込まない。rollback制約はOPEN,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L255
+system.conf,system,prevent-late-fallback,good後に旧slotをbad化,false,あり,最新stableも1.15.2・差なし,false,不採用,旧slotの自動無効化を持ち込まない。旧版bundleは署名済み内部版と永続下限で拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L255
 system.conf,keyring,path,CMS信頼CA file,なし,あり,最新stableも1.15.2・差なし,RO rootの専用CA PEM,採用,TLS CAとは分離し端末には公開CAだけを置く,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L274
 system.conf,keyring,directory,hash形式のCA directory,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,単一の管理されたCA fileに統一する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L278
-system.conf,keyring,use-bundle-signing-time,検証時計を署名時刻へ変更,false,あり,最新stableも1.15.2・差なし,OPEN（決定までfalse）,保留,期限検査の無効化ではない。信頼できない時計の選択肢として評価する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L288
+system.conf,keyring,use-bundle-signing-time,検証時計を署名時刻へ変更,false,あり,最新stableも1.15.2・差なし,true（採用計画・未実装）,採用,利用者が案3を採用。署名時刻で証明書を評価しreplay・rollbackは署名済み内部版と永続下限で拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L288
 system.conf,keyring,allow-partial-chain,中間CAをtrust anchor化,false,あり,最新stableも1.15.2・差なし,false,不採用,offline rootまでのchainを検証する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L294
 system.conf,keyring,allowed-signer-cns,署名者CN制限,なし,あり,最新stableも1.15.2・差なし,OPEN,保留,PKI責任者と命名・rotation手順を④で決める。compatible検査は残す,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L305
 system.conf,keyring,check-crl,CRL検証,false,あり,最新stableも1.15.2・差なし,OPEN（決定までfalse）,保留,CRL自身の期限と配布・clock問題があり運用判断を要する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L322
@@ -105,7 +105,7 @@ manifest,image.*,hooks,slotの前後・install hook,なし,あり,最新stable�
 manifest,image.*,adaptive,block再利用方式,なし,あり,最新stableも1.15.2・差なし,両imageでblock-hash-index,採用,4 KiB単位で照合し転送とwriteの実測を分ける,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L971
 manifest,image.*,convert,artifact変換,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,tar-extract/composefs/keepによるartifact変換を使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L990
 manifest,image.*,converted,変換後file一覧,変換時RAUC生成,あり,最新stableも1.15.2・差なし,未設定,不採用,slot imageをそのまま含める,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1016
-manifest,meta.<label>,<key>,自由metadata,なし,あり,最新stableも1.15.2・差なし,内部単調版等を④で定義,保留,署名済みでもRAUCが比較しない。期限・rollback方針の承認後に契約化する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1043
+manifest,meta.<label>,<key>,自由metadata,なし,あり,最新stableも1.15.2・差なし,内部単調版等を④で定義,保留,署名済みでもRAUCが比較しない。方針（署名時刻と単調内部版）は承認済み。keyと形式を④で定義する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1043
 system.conf,slot.<slot-class>.<idx>,force-install-same,install-sameの旧名,install-same未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L974
 system.conf,slot.<slot-class>.<idx>,ignore-checksum,install-sameの旧名,他の二名未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L978
 manifest,rollout,<key>,予約された自由設定,なし・RAUCは解釈しない,あり,最新stableも1.15.2・差なし,未設定,不採用,未実装の段階配布policyを安全機構と見なさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1026
@@ -136,7 +136,7 @@ cli,bundle,--mksquashfs-args,SquashFS生成引数,なし,あり,最新stableも1
 cli,resign,--append,署名追記,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2592
 cli,resign,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2593
 cli,resign,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2594
-cli,resign,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,OPEN・製品では未採用,保留,info/resign用でinstallには存在しない。期限無効化を導入済みと扱わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2595
+cli,resign,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,false,不採用,期限の完全無効化は採用せず署名時刻で評価する。info/resign用でinstallには存在しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2595
 cli,replace,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2600
 cli,replace,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2601
 cli,replace,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2602
@@ -155,7 +155,7 @@ cli,extract,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・�
 cli,extract,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2627
 cli,info,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2632
 cli,info,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2633
-cli,info,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,OPEN・製品では未採用,保留,info/resign用でinstallには存在しない。期限無効化を導入済みと扱わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2634
+cli,info,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,false,不採用,期限の完全無効化は採用せず署名時刻で評価する。info/resign用でinstallには存在しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2634
 cli,info,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2635
 cli,info,--output-format,出力形式,readable,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2636
 cli,info,--dump-cert,証明書表示,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2637
