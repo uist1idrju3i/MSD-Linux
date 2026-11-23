@@ -20,6 +20,7 @@
 | CI・開発用イメージ・品質検査 | [CI.md](CI.md) | workflow の構成と成果物 |
 | 永続storageへの書き込みとprogressの規則 | [書き込みの台帳](design/write-policy.md) | AGENTS.md §10の例外と、規則に合わない現行の箇所 |
 | 利用者が決めた製品の方針 | [方針の記録](design/product-decisions.md) | 方針と実装状況 |
+| RAUC導入の承認済み契約 | [slot・tryboot・PKI・PR分割](design/rauc-update-contract.md) | 文書のみ。製品統合・実機確認は未実施 |
 
 ## 調べる人
 

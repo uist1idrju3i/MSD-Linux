@@ -4,7 +4,7 @@
 
 ## 比較の前提
 
-2026-11-13に再確認した[標準frameworkへの移行方針](../../design/product-decisions.md)に基づき、利用者はRAUCで進めると決定しました。imageの配布先はGitHub Releases、差分更新はRAUC adaptiveの`block-hash-index`を想定します。実装計画は利用者review待ちで、製品への導入は未実施です。移行後は公開`msd-update`を廃止します。移行までCMSを残し、`msd-update`存続中はOpenSSL CLIを維持します。移行後に`no-apps`を再検討します。
+2026-11-13に再確認した[標準frameworkへの移行方針](../../design/product-decisions.md)に基づき、利用者はRAUCで進めると決定しました。imageの配布先はGitHub Releases、差分更新はRAUC adaptiveの`block-hash-index`です。2026-11-23に[導入契約とPR分割](../../design/rauc-update-contract.md)が承認されました。製品への導入は未実施です。移行後は公開`msd-update`を廃止します。移行までCMSを残し、`msd-update`存続中はOpenSSL CLIを維持します。移行後に`no-apps`を再検討します。
 
 現行の`msd-update`を、RAUC、SWUpdate、Mender等で置換・補完できるか比較します。更新framework、bootloaderのslot選択、配信server、署名metadataは役割が違います。frameworkを入れても、CM0のfirmware・SD・電源断・healthの検証は残ります。
 
@@ -26,7 +26,7 @@
 
 | 候補 | 利用できる仕組み | 本機で残る統合と背反 | 提案 |
 |---|---|---|---|
-| RAUC | signed bundle、slot group、health後のmark-good、custom bootloader backend。network/D-Bus等を選べる | GLib・OpenSSL等とbundle形式が増える。現行Ed25519 manifestをそのまま読めるものではない。CM0向けbackendと復旧試験が必要 | 利用者が移行先の方針として選択。実装計画はreview待ち |
+| RAUC | signed bundle、slot group、health後のmark-good、custom bootloader backend。network/D-Bus等を選べる | GLib・OpenSSL等とbundle形式が増える。現行Ed25519 manifestをそのまま読めるものではない。CM0向けbackendと復旧試験が必要 | 利用者が移行先として選択し、導入契約を承認。製品実装は未着手 |
 | SWUpdate | `sw-description`、handler、複数payload、選択可能な暗号・download・server連携 | handler・scriptの自由度だけ管理対象と特権処理が増える。不要なwebserver、Lua、MTD等を落とした構成とboot連携が必要 | rootfs以外の周辺firmwareも統合するなら実験候補 |
 | Mender | A/B rootfs、standalone更新、server連携、Update Modules | serverは必須ではない。現行Buildroot recipeと上流clientは世代が違う。artifact、bootloader、依存、署名方式を移す費用 | 端末群の管理が必要なら再検討 |
 | Rugix Ctrl | READMEはA/B・復旧構成、差分更新、署名の事前検証、永続state管理を説明する | Bakeryは別のimage build system、Adminは別のUI。Ctrlだけを組み込む範囲、boot flow、署名と鍵、最終依存を調べる必要がある | Buildroot維持のまま比較する追加候補 |
@@ -94,7 +94,7 @@ Buildroot submoduleの更新通知は、未採用候補を含む各framework・�
 
 ## 実験の優先順
 
-利用者が選択したRAUCの最小構成とadaptiveを優先します。署名・CMS・依存とcustom backendの費用を測り、実装計画を利用者へ示してから製品へ導入します。SWUpdate等は比較資料として残し、利用者の再判断なしに移行先を変更しません。
+利用者が承認した[RAUCの導入契約](../../design/rauc-update-contract.md)に従い、最小構成とadaptiveを優先します。署名・CMS・依存とcustom backendの費用は後続PRで測ります。SWUpdate等は比較資料として残し、利用者の再判断なしに移行先を変更しません。
 
 1. 現行の正常系・異常系host testと、署名・board・版・長さ・inactive slotの不変条件を候補へ移します。公開SemVerと内部番号は未決定で、比較だけで変更しません。
 2. signed manifestとpayloadの結合、download中断、署名後の書換え、設定migration、disk-full、active slot拒否を試します。streaming時は書込み開始と認証完了の順序を別に記録します。
@@ -104,8 +104,8 @@ Buildroot submoduleの更新通知は、未採用候補を含む各framework・�
 
 ## 採用前のoption調査
 
-RAUCを進める方針の決定だけでは、[component-options手順](../../../.agents/skills/component-options/SKILL.md)の完了にはなりません。[既存表](update-build-options.md)は主なbuild optionとBuildrootの公開設定を扱っていますが、全上流build option・実行時設定・CLIのtokenを抽出した`missing=0`の照合、既定値・最新版との差分・各optionの採否理由は揃っていません。製品導入の根拠としては不足しています。
+[component-options手順](../../../.agents/skills/component-options/SKILL.md)に従う全tokenの採否・既定値・最新stableとの差は、2026-11-23の[RAUC棚卸し](../component-options/rauc.md)へ追加しました。[従来表](update-build-options.md)は当時の主要build optionと暗号library比較として残します。scopeを明示した機械照合の`missing=0`と、製品のbuild・設定反映・測定は別の検証です。
 
-実装計画では、この網羅表と、採用するnetwork／streaming／service、shared data-directory、署名・鍵、boot backend、依存・license・監視を具体化します。今回のresearch保存ではpackageや製品設定を追加していません。
+network／streaming／非常駐構成、shared data-directory、署名・鍵、boot backendは[導入契約](../../design/rauc-update-contract.md)と後続PRへ分けました。PKI責任者と時計・期限の扱いはOPENです。今回の文書化でpackageや製品設定は追加していません。
 
 原文の固定HEAD・Release応答・取得時刻・hashは[sources.json](sources.json)にあります。開発HEADをstable releaseへ読み替えず、GitHubのlatest応答だけで全系列の保守状態を確定しません。
