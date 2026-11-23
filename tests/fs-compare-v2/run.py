@@ -1247,12 +1247,25 @@ class LightSmoke(unittest.TestCase):
                   + 'echo "control=$negative_control"\n'
                   + 'validate_t1_negative_final\n')
         digest = M.hashlib.sha256(b"data").hexdigest()
+        sentinel = ".t1-negative-sentinel"
+        sentinel_data = b"sentinel"
+        sentinel_hash = M.hashlib.sha256(sentinel_data).hexdigest()
+        sentinel_row = f"{sentinel}\t{sentinel_hash}\tnegative-sentinel\tnot_mapped\t0\n"
         w1 = f"1\tW1/file\t{digest}\t0\t1\tw1\n"
-        no_present = "t1_negative_control_no_present_file"
+        sentinel_invalid = "t1_negative_sentinel_invalid"
+        manifest_invalid = "t1_negative_sentinel_manifest_invalid"
         for case, markers, files, manifest, control in [
             ("normal", w1, {"W1/file": b"data"}, "yes", "yes"),
-            ("missing", w1, {}, "no", no_present),
-            ("empty", "", {}, "yes", no_present),
+            ("all_unsynced_lost", w1, {}, "no", "yes"),
+            ("some_unsynced_remain", w1 + f"2\tW1/other\t{digest}\t0\t1\tw1-other\n",
+             {"W1/file": b"data"}, "no", "yes"),
+            ("empty", "", {}, "yes", "yes"),
+            ("sentinel_missing", w1, {"W1/file": b"data"}, "yes", sentinel_invalid),
+            ("sentinel_corrupt", w1, {"W1/file": b"data", sentinel: b"corrupt"}, "yes", sentinel_invalid),
+            ("sentinel_manifest_missing", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_empty", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_bad_hash", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
+            ("sentinel_manifest_wrong_path", w1, {"W1/file": b"data"}, "yes", manifest_invalid),
             ("w1_lost_w2_present", w1 + f"2\tW2/target.dat\t{digest}\t1\t1\tw2\n",
              {"W2/target.dat": b"data"}, "no", "yes"),
             ("w1_lost_w3_present", w1 + f"2\tW3/append.log\t{digest}\t1\t1\tw3\n",
@@ -1265,10 +1278,20 @@ class LightSmoke(unittest.TestCase):
         ]:
             with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
                 directory = Path(temporary)
+                if case != "sentinel_missing":
+                    files.setdefault(sentinel, sentinel_data)
                 for path, data in files.items():
                     (directory / path).parent.mkdir(parents=True, exist_ok=True)
                     (directory / path).write_bytes(data)
                 (directory / "T1-markers.tsv").write_text(markers)
+                sentinel_record = sentinel_row
+                if case == "sentinel_manifest_bad_hash":
+                    sentinel_record = sentinel_row.replace(sentinel_hash, "")
+                elif case == "sentinel_manifest_wrong_path":
+                    sentinel_record = sentinel_row.replace(sentinel, "W1/file")
+                if case != "sentinel_manifest_missing":
+                    (directory / "T1-negative-sentinel.tsv").write_text(
+                        "" if case == "sentinel_manifest_empty" else sentinel_record)
                 result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary, case],
                                         text=True, capture_output=True)
                 self.assertEqual(result.returncode, 0 if control == "yes" else 1, result.stderr)
@@ -1280,19 +1303,23 @@ class LightSmoke(unittest.TestCase):
                 control_rows = (directory / "T1-negative-expected.tsv").read_text()
                 for row in control_rows.splitlines():
                     self.assertIn(row.split("\t")[0], files)
-                if control == no_present:
-                    self.assertIn("error=" + no_present, result.stderr)
+                if control.startswith("t1_negative_sentinel_"):
+                    self.assertIn("error=" + control, result.stderr)
                     self.assertEqual(control_rows, "")
                 if case == "normal":
                     self.assertIn("reason=hash_mismatch", result.stderr)
                     self.assertNotIn("context=recovery", result.stderr)
                     self.assertIn(digest, (directory / "T1-expected.tsv").read_text())
-                    self.assertNotIn(digest, (directory / "T1-negative-expected.tsv").read_text())
+                    self.assertNotIn(sentinel_hash, control_rows)
+                    self.assertEqual(control_rows.split("\t")[0], sentinel)
+                if case not in ("sentinel_manifest_missing", "sentinel_manifest_empty"):
+                    self.assertEqual((directory / "T1-negative-sentinel.tsv").read_text(), sentinel_record)
                 diagnostics = [line for line in result.stderr.splitlines()
                                if line.startswith("T1_MANIFEST_FAIL")]
                 recovery = [line for line in diagnostics if "context=recovery " in line]
                 controls = [line for line in diagnostics if "context=negative_control " in line]
-                self.assertEqual(len(diagnostics), len(recovery) + len(controls))
+                sentinels = [line for line in diagnostics if "context=negative_sentinel " in line]
+                self.assertEqual(len(diagnostics), len(recovery) + len(controls) + len(sentinels))
                 self.assertEqual(bool(recovery), manifest == "no")
                 self.assertEqual(bool(controls), control == "yes")
                 self.assertTrue(all(" entry=147 " in line for line in diagnostics))
@@ -1306,6 +1333,36 @@ class LightSmoke(unittest.TestCase):
                 self.assertEqual([row["text"] for row in records],
                                  [f"msd.fscmp: {line}" for line in diagnostics])
 
+    def test_t1_negative_sentinel_syncs_file_and_parent_before_recording_hash(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+        body = guest.split("\nprepare_t1_negative_sentinel()\n{\n", 1)[1].split("\n}\n", 1)[0]
+        script = ('RUN_PATH=$1; WORKLOAD_ROOT=$1/work; TEST=$2; mode=$3\n'
+                  'console() { echo "$*"; }\nfail() { echo "error=$*" >&2; exit 1; }\n'
+                  'fsync() { printf "%s\\n" "$1" >>"$RUN_PATH/fsync-order"; '
+                  '[ -e "$1" ] || return 1; '
+                  'if [ "$mode" = file_fail ] && [ -f "$1" ]; then return 1; fi; '
+                  'if [ "$mode" = directory_fail ] && [ -d "$1" ]; then return 1; fi; return 0; }\n'
+                  'prepare_t1_negative_sentinel() {\n' + body + '\n}\nprepare_t1_negative_sentinel\n')
+        for mode in ("normal", "file_fail", "directory_fail", "ordinary"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                (root / "work").mkdir()
+                result = subprocess.run(["sh", "-eu", "-c", script, "fixture", temporary,
+                                         "T1" if mode == "ordinary" else "T1-negative-final", mode],
+                                        text=True, capture_output=True)
+                self.assertEqual(result.returncode, 1 if mode.endswith("_fail") else 0, result.stderr)
+                expected = root / "T1-negative-sentinel.tsv"
+                if mode == "ordinary":
+                    self.assertFalse((root / "fsync-order").exists())
+                else:
+                    order = (root / "fsync-order").read_text().splitlines()
+                    self.assertEqual(order, [str(root / "work/.t1-negative-sentinel")]
+                                     + ([] if mode == "file_fail" else [str(root / "work")]))
+                self.assertEqual(expected.exists(), mode == "normal")
+                if mode == "normal":
+                    fields = expected.read_text().strip().split("\t")
+                    self.assertEqual(fields[1], M.hashlib.sha256((root / "work/.t1-negative-sentinel").read_bytes()).hexdigest())
+
     def test_t1_negative_final_guard(self):
         guest = (V2 / "fs-compare-guest").read_text()
         body = guest.split("\nvalidate_t1_negative_final()\n{\n", 1)[1].split("\n}\n", 1)[0]
@@ -1313,6 +1370,7 @@ class LightSmoke(unittest.TestCase):
             ("yes", "0", "yes", 0), ("no", "0", "yes", 1),
             ("yes", "4", "yes", 1), ("yes", "0", "no", 1),
             ("yes", "0", "t1_negative_control_no_present_file", 1),
+            ("yes", "0", "t1_negative_sentinel_invalid", 1),
         ]:
             with self.subTest(mount=mount, fsck=fsck, control=control):
                 result = subprocess.run(["sh", "-eu", "-c",
