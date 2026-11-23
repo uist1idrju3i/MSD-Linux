@@ -198,6 +198,36 @@ class ReleaseSigning(unittest.TestCase):
             self.assertEqual((module_dir / name).read_text(), name)
         self.post_build()
 
+    def test_unused_libgomp_removed_and_unrelated_library_retained(self):
+        empty = self.work / "empty-target"
+        empty.mkdir()
+        command("python3", BOARD / "tools/prune-libgomp.py", empty)
+        command("python3", BOARD / "tools/prune-libgomp.py", self.work / "missing", ok=False)
+        self.fixture()
+        library = self.target / "usr/lib/libgomp.so.1.0.0"
+        put(library, b"\x7fELF libgomp.so.1")
+        (library.parent / "libgomp.so.1").symlink_to(library.name)
+        put(library.parent / "libstdc++.so.6", "preserve")
+        self.post_build()
+        self.assertFalse(list(library.parent.glob("libgomp.so*")))
+        self.assertEqual((library.parent / "libstdc++.so.6").read_text(), "preserve")
+        self.post_build()
+
+    def test_libgomp_consumers_refuse_removal(self):
+        self.fixture()
+        library = self.target / "usr/lib/libgomp.so.1.0.0"
+        put(library, b"\x7fELF libgomp.so.1")
+        consumer = self.target / "usr/bin/openmp-client"
+        for data in (b"\x7fELF DT_NEEDED libgomp.so.1", b'dlopen("libgomp.so.1")'):
+            with self.subTest(data=data):
+                put(consumer, data)
+                command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)
+                self.assertTrue(library.exists())
+        consumer.unlink()
+        consumer.symlink_to("../lib/libgomp.so.1.0.0")
+        command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)
+        self.assertTrue(library.exists())
+
     def test_binary_index_removal_refuses_non_busybox(self):
         self.fixture()
         index = self.target / "lib/modules/test-kernel/modules.dep.bin"

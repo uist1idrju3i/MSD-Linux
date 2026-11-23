@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [libgomp配送削減](2026-11-23-libgomp-prune.md) | [CSV](2026-11-23-libgomp-prune.csv) | 2026-11-23 | 既存image再pack・QEMU比較完了 | 146 ELFに利用者なし。rootfs −302,440 bytes、SquashFS −135,168 bytes。前後A/Bの19 module一致。最新製品buildは未実施 |
 | [module index削除](2026-11-23-module-index-prune.md) | [CSV](2026-11-23-module-index-prune.csv) | 2026-11-23 | 既存image再pack・QEMU比較完了 | rootfs −938,282 bytes、SquashFS −167,936 bytes。前後A/Bの19 module一致。測定器は自前indexでlibkmod load成功。最新製品buildはCI待ち |
 | [module binary index](2026-11-23-module-binary-index.md) | [CSV](2026-11-23-module-binary-index.csv) | 2026-11-23 | 削除前に停止 | 既存5 fileは938,282 bytes。通常起動はBusyBoxだがOpenSSL測定器にlibkmod利用あり。製品変更・新規build・QEMU・圧縮差は未実施 |
 | [OpenSSL C1採用](2026-11-23-openssl-c1.md) | [CSV](2026-11-23-openssl-c1.csv) | 2026-11-23 | host接続確認完了 | TLS最低版1.2・SECLEVEL=2をpost-buildで適用。外部TLS13接続、A/A、hostname不一致の計16 caseが期待どおり。製品build・A/B・実機は未確認 |

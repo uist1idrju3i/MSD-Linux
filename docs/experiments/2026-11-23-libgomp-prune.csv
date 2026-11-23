@@ -1,0 +1,12 @@
+kind,variant,slot,rootfs_regular_bytes,squashfs_bytes,module_count,exit_code,detail
+pack,before,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
+pack,before-aa,,36110243,20332544,,0,38ea3a21a99cee7835881827bb66dba96795c3a4c335bb30bd7922062b1debe5
+pack,after,,35807803,20197376,,0,720e723724e233e9a65339b2f90a59cad7b3635c0f157b529270c1751bb8229b
+qemu,before,A,,,19,0,ready/login; QMP quit; no fallback
+qemu,before,B,,,19,0,ready/login; QMP quit; no fallback
+qemu,after,A,,,19,0,ready/login; QMP quit; no fallback
+qemu,after,B,,,19,0,ready/login; QMP quit; no fallback
+negative,openmp,,,,,1,consumer refused; library retained
+negative,dlopen,,,,,1,consumer refused; library retained
+negative,existing-output,,,,,1,FileExistsError; no overwrite
+not_run,latest-product-build,,,,,,repack only; full build deferred to CI
