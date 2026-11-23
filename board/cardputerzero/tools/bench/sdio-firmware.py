@@ -38,20 +38,8 @@ def links(root):
 
 def build(artifact, host, config, out):
     out.mkdir()
-    source = KBD.source_inputs()
-    paths = [Path(__file__).relative_to(ROOT), Path("board/cardputerzero/tools/prune-sdio-firmware.py")]
-    subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *map(str, paths)], cwd=ROOT, check=True)
-    source.update({str(p): COMMON.sha(ROOT / p) for p in paths})
     prefix = "sdio-" + uuid.uuid4().hex
-    report = dict(execution_head=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-                  source_sha256=source, run_prefix=prefix, host=platform.platform(),
-                  config_sha256=COMMON.sha(config), input_sha256={name: COMMON.sha(artifact / "images" / name)
-                  for name in ("sdcard.img.xz", "Image", "bcm2710-rpi-cm0.dtb", "bcm2710-rpi-3-b.dtb")},
-                  host_tools_sha256={name: COMMON.sha(host / name)
-                  for name in ("bin/unsquashfs", "bin/mksquashfs.orig", "sbin/sfdisk")},
-                  host_tools_versions={name: KBD.tool_version(host / name, flag) for name, flag in
-                  (("bin/unsquashfs", "-version"), ("bin/mksquashfs.orig", "-version"), ("sbin/sfdisk", "--version"))},
-                  variants={}, modules={})
+    report = dict(run_prefix=prefix, host=platform.platform(), phase="preflight", variants={}, modules={})
     rows = {}
 
     def plan(variant, metric, repeat=1):
@@ -71,12 +59,30 @@ def build(artifact, host, config, out):
             plan(variant, metric)
     for variant, metric in (("aa", "image_equal"), ("negative", "missing_required_rejected"), ("modules", "inventory_equal")):
         plan(variant, metric)
+    plan("preflight", "preflight_exit_code")
     (out / "plan.json").write_text(json.dumps(list(rows.values()), indent=2) + "\n")
     with (out / "build.log").open("x") as log:
         def run(args):
             subprocess.run(list(map(str, args)), stdout=log, stderr=subprocess.STDOUT, check=True)
 
         try:
+            report["execution_head"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+            source = report["source_sha256"] = KBD.source_inputs()
+            paths = [Path(__file__).relative_to(ROOT), Path("board/cardputerzero/tools/prune-sdio-firmware.py")]
+            subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *map(str, paths)], cwd=ROOT, check=True)
+            source.update({str(p): COMMON.sha(ROOT / p) for p in paths})
+            report["config_sha256"] = COMMON.sha(config)
+            for field, parent, names in (
+                    ("input_sha256", artifact / "images", ("sdcard.img.xz", "Image", "bcm2710-rpi-cm0.dtb", "bcm2710-rpi-3-b.dtb")),
+                    ("host_tools_sha256", host, ("bin/unsquashfs", "bin/mksquashfs.orig", "sbin/sfdisk"))):
+                hashes = report[field] = {}
+                for name in names:
+                    hashes[name] = COMMON.sha(parent / name)
+            versions = report["host_tools_versions"] = {}
+            for name, flag in (("bin/unsquashfs", "-version"), ("bin/mksquashfs.orig", "-version"), ("sbin/sfdisk", "--version")):
+                versions[name] = KBD.tool_version(host / name, flag)
+            record("preflight", "preflight_exit_code", 0)
+            report["phase"] = "measurement"
             disk = out / "source.img"
             with lzma.open(artifact / "images/sdcard.img.xz") as src, disk.open("xb") as dst:
                 shutil.copyfileobj(src, dst)
@@ -188,8 +194,12 @@ def build(artifact, host, config, out):
             record("modules", "inventory_equal", int(equal), equal)
             if not equal:
                 raise ValueError("module inventories differ")
+            report["phase"] = "complete"
         except Exception as error:
             report["error"] = str(error)
+            report["error_type"] = type(error).__name__
+            if report["phase"] == "preflight":
+                record("preflight", "preflight_exit_code", 1, False, str(error))
             raise
         finally:
             (out / "results.json").write_text(json.dumps(report, indent=2) + "\n")

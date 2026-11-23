@@ -173,6 +173,15 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/sdio-firmware.py \
 
 ## 実機で確認する残件
 
+### Review後の事前確認の記録
+
+PR #298のReview後、入力hashの計算を計画保存後の例外処理内へ移した。
+今後の試行は従来の21行に`preflight_exit_code`を追加した22行になる。
+入力image・config・host tool等の事前確認が失敗しても、UUID、計画、取得済みhash、errorを保存し、
+事前確認は終了1・valid=false、未実施の測定は空欄・valid=falseで記録して非0終了する。
+host試験ではconfigのhashを実際に計算し、存在しない入力imageのhash計算で失敗する経路を確認する。
+初回の公開21行・証拠archive・実行commitは当時のまま保持する。
+
 - brcmfmacが報告するchip ID・revision、実際に選んだbin・NVRAM・clm_blobのfile名と成功/失敗log。
 - btbcmが報告するchip ID・revision・HCI/LM subversion、実際に選んだhcdのfile名とpatch適用結果。
 - CM0の製造版・board compatible、Wi-Fiの接続・再接続・国別規制、BTの接続。

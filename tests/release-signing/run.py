@@ -308,21 +308,30 @@ class ReleaseSigning(unittest.TestCase):
         bench = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(bench)
         identifiers = []
+        config = self.work / "sdio.config"
+        put(config, "real input for hashing")
         for retry in range(2):
             out = self.work / f"sdio-retry-{retry}"
             with mock.patch.object(bench.KBD, "source_inputs", return_value={
                     "board/cardputerzero/qemu/serial-allowlist.txt": "allowlist"}), \
-                    mock.patch.object(bench.COMMON, "sha", return_value="fixture"), \
-                    mock.patch.object(bench.KBD, "tool_version", return_value="fixture"), \
                     mock.patch.object(bench.subprocess, "check_output", return_value="fixture-head\n"), \
                     mock.patch.object(bench.subprocess, "run"):
                 with self.assertRaises(FileNotFoundError):
-                    bench.build(self.work / "missing-artifact", self.work, self.work / "config", out)
+                    bench.build(self.work / "missing-artifact", self.work, config, out)
             report = json.loads((out / "results.json").read_text())
             with (out / "results.csv").open() as stream:
                 rows = list(csv.DictReader(stream))
-            self.assertEqual(len(rows), 21)
-            self.assertTrue(all(row["valid"] == "false" and row["value"] == "" for row in rows))
+            self.assertEqual(len(rows), 22)
+            preflight = next(row for row in rows if row["variant"] == "preflight")
+            self.assertEqual(preflight["value"], "1")
+            self.assertEqual(preflight["valid"], "false")
+            self.assertIn("sdcard.img.xz", preflight["note"])
+            self.assertTrue(all(row["valid"] == "false" and row["value"] == ""
+                                for row in rows if row is not preflight))
+            self.assertEqual(report["phase"], "preflight")
+            self.assertEqual(report["error_type"], "FileNotFoundError")
+            self.assertEqual(report["config_sha256"], hashlib.sha256(config.read_bytes()).hexdigest())
+            self.assertEqual(len(json.loads((out / "plan.json").read_text())), 22)
             self.assertIn("board/cardputerzero/qemu/serial-allowlist.txt", report["source_sha256"])
             self.assertIn("board/cardputerzero/tools/prune-sdio-firmware.py", report["source_sha256"])
             identifiers.append({row["run_id"] for row in rows})
