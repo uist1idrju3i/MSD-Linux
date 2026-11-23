@@ -173,6 +173,9 @@ class ReleaseSigning(unittest.TestCase):
         for name in ("scripts/sign-file", "certs/signing_key.pem", "certs/signing_key.x509"):
             put(base / "build/linux-custom" / name, "")
         (target / "lib/modules").mkdir(parents=True)
+        put(target / "bin/busybox", "#!/bin/sh\nexit 0\n", True)
+        (target / "sbin").mkdir(exist_ok=True)
+        (target / "sbin/modprobe").symlink_to("../bin/busybox")
         (host / "bin").mkdir(parents=True)
         (host / "bin/openssl").symlink_to(shutil.which("openssl"))
         self.base, self.target, self.host = base, target, host
@@ -181,6 +184,28 @@ class ReleaseSigning(unittest.TestCase):
 
     def post_build(self, ok=True):
         command("sh", BOARD / "post-build.sh", self.target, env=self.build_env, ok=ok)
+
+    def test_binary_module_indexes_removed_text_retained(self):
+        self.fixture()
+        module_dir = self.target / "lib/modules/test-kernel"
+        for name in ("modules.dep", "modules.alias", "modules.symbols", "modules.builtin",
+                     "modules.dep.bin", "modules.alias.bin", "modules.symbols.bin",
+                     "modules.builtin.bin", "modules.builtin.alias.bin", "other.bin"):
+            put(module_dir / name, name)
+        self.post_build()
+        self.assertFalse(list(module_dir.glob("modules.*.bin")))
+        for name in ("modules.dep", "modules.alias", "modules.symbols", "modules.builtin", "other.bin"):
+            self.assertEqual((module_dir / name).read_text(), name)
+        self.post_build()
+
+    def test_binary_index_removal_refuses_non_busybox(self):
+        self.fixture()
+        index = self.target / "lib/modules/test-kernel/modules.dep.bin"
+        put(index, "preserve")
+        (self.target / "sbin/modprobe").unlink()
+        (self.target / "sbin/modprobe").symlink_to("../bin/kmod")
+        command("sh", BOARD / "tools/prune-module-indexes.sh", self.target, ok=False)
+        self.assertEqual(index.read_text(), "preserve")
 
     def test_post_build_public_and_both_keys(self):
         self.fixture()

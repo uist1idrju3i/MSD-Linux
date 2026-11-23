@@ -45,17 +45,18 @@ kernelの起動引数は、組込みmoduleなら`module.parameter=value`、loada
 
 2026-11-23の[監査](../../experiments/2026-11-23-module-binary-index.md)では、既存artifactの通常起動はBusyBox modprobeで、テキストindexを使っていた。
 defconfigの`BR2_PACKAGE_KMOD_TOOLS=y`は`BR2_PACKAGE_BUSYBOX_SHOW_OTHERS`への依存で正規化後に残らず、kmod libraryだけの配送と区別する。
-ただし、既存OpenSSL測定器はlibkmodからmoduleをloadし、未load時にはbinary indexを必要とする。
-利用者がいれば削除せず停止する条件に従い、製品からは何も削除していない。
+既存OpenSSL測定器はlibkmodからmoduleをloadするため、最初は削除前に停止した。
+その後、利用者が製品と測定器を分けることを承認した。[続行の記録](../../experiments/2026-11-23-module-index-prune.md)では、external post-buildでbinary indexを削除し、測定器は展開したfixture内でhost depmodを実行する形にした。
 
 | 選択肢 | 効果・背反 | 今回の扱い |
 |---|---|---|
-| binaryとテキストの両indexを維持 | BusyBoxと既存libkmod測定器の経路を維持。既存5 binary fileは非圧縮938,282 bytes | 維持。圧縮後の削減量ではない |
-| external post-buildでbinaryだけ削除 | BusyBoxのテキストlookupは残せるが、libkmod利用に影響する | 測定器の扱いが決まるまで停止。host depmod後に実行する必要もある |
+| binaryとテキストの両indexを維持 | libkmodはbinaryを必要とする | 製品では不採用。測定fixtureで自前生成し、製品imageへは書き戻さない |
+| external post-buildでbinaryだけ削除 | BusyBoxのテキストlookupを維持。kmod CLIへ変われば不適合 | 採用。host depmod・署名後に実行し、modprobeのsymlinkがBusyBoxでなければ削除を拒否 |
 | kmod CLIを有効化 | kmodのmodprobeはbinary indexを要求。BusyBoxと同じfileを読むわけではない | 今回は変更しない。将来有効化時に配送条件を再確認 |
 | module本体を削除 | 実機のhotplug・driver利用・依存先に影響 | 今回は変更しない。QEMUだけで不要と判断しない |
 
-この配送候補はkernel Kconfigやkmod全optionの採否変更ではなく、容量削減の実装にも至っていない。
+既存imageの再packでは非圧縮938,282 bytes、SquashFS 167,936 bytes減。前後のQEMU A/Bで19 moduleが一致した。
+最新設定の製品buildと実機は未確認。kernel Kconfig、kmod library、module本体の配送は変えない。
 
 ## Firmware・M5 packageの制御
 

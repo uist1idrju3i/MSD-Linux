@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [module index削除](2026-11-23-module-index-prune.md) | [CSV](2026-11-23-module-index-prune.csv) | 2026-11-23 | 既存image再pack・QEMU比較完了 | rootfs −938,282 bytes、SquashFS −167,936 bytes。前後A/Bの19 module一致。測定器は自前indexでlibkmod load成功。最新製品buildはCI待ち |
 | [module binary index](2026-11-23-module-binary-index.md) | [CSV](2026-11-23-module-binary-index.csv) | 2026-11-23 | 削除前に停止 | 既存5 fileは938,282 bytes。通常起動はBusyBoxだがOpenSSL測定器にlibkmod利用あり。製品変更・新規build・QEMU・圧縮差は未実施 |
 | [OpenSSL C1採用](2026-11-23-openssl-c1.md) | [CSV](2026-11-23-openssl-c1.csv) | 2026-11-23 | host接続確認完了 | TLS最低版1.2・SECLEVEL=2をpost-buildで適用。外部TLS13接続、A/A、hostname不一致の計16 caseが期待どおり。製品build・A/B・実機は未確認 |
 | [SSH client比較（#9）](2026-11-23-ssh-client-compare.md) | [CSV](2026-11-23-ssh-client-compare.csv) | 2026-11-23 | QEMU比較完了・製品未導入 | 3候補でEd25519認証・別host key拒否を各5回。OpenSSHの追加797,448 bytes・圧縮差327,680 bytes。失敗試行・暗号・RAM内writeは本文 |

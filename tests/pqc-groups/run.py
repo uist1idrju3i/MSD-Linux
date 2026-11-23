@@ -9,6 +9,7 @@ import sys
 import tempfile
 import tarfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -87,6 +88,32 @@ class SerialTests(unittest.TestCase):
 
 
 class CnfTests(unittest.TestCase):
+    def test_fixture_builds_private_indexes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            version = root / "lib/modules/test-kernel"
+            version.mkdir(parents=True)
+            def depmod(args, log):
+                self.assertEqual(args, [Path("reference/host/sbin/depmod"), "-a", "-b", root, "test-kernel"])
+                (version / "modules.dep.bin").write_bytes(b"fixture index")
+            with patch.object(cnf, "command", side_effect=depmod):
+                cnf.prepare_module_indexes(Path("reference"), root, None)
+            self.assertEqual((version / "modules.dep.bin").read_bytes(), b"fixture index")
+
+    def test_fixture_indexes_empty_failed_or_missing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lib/modules").mkdir(parents=True)
+            with self.assertRaises(ValueError):
+                cnf.prepare_module_indexes(Path("reference"), root, None)
+            (root / "lib/modules/test-kernel").mkdir()
+            with patch.object(cnf, "command"):
+                with self.assertRaises(ValueError):
+                    cnf.prepare_module_indexes(Path("reference"), root, None)
+            with patch.object(cnf, "command", side_effect=subprocess.CalledProcessError(1, "depmod")):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    cnf.prepare_module_indexes(Path("reference"), root, None)
+
     def fixture(self):
         logs = {"module-config": "CONFIG_MODULE_SIG_FORCE=y",
                 "providers": "Providers:\n  default\n"}
