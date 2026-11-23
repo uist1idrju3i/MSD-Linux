@@ -109,3 +109,12 @@ docker/msd-dev env OUTPUT_DIR=/work/output-module-index-r1/fixture \
 archiveのSHA-256は`e0ad1ecc9cbb01f629655aa22dc8aea174ac23970b6549c7d284a793facb3664`。
 QEMU binaryのSHA-256は`8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73`、kernelは`45d52f6e148cebaee66ecbc9735c6260ec23ca8c9ad0b00032cf04d20f1420e8`で、各serial冒頭の`run-qemu: sha256`行にも残る。
 snapshotはserial内の`MODULE_INVENTORY_BEGIN`と`MODULE_INVENTORY_END`の間で、同じ行を比較用JSONにも収録した。
+
+## Review後の測定器修正
+
+`899a5d2`の測定器はfixture内のC probeが失敗してもreadyへ進めた。
+保存済みlogの`libkmod configs load rc=0`は当時の成功の観測として保持するが、起動試験だけでprobeの成功を保証する設計ではなかった。
+修正版は終了値を`MODULE_INDEX_PROBE_RESULT`としてserialへ出し、0以外ならS98を終了してreadyを出さない。
+既存boot harnessはreadyとloginの両方を要求するため、この場合は起動成功にならない。
+host試験では、成功らしい文字列を出しても終了7のprobeはreadyへ進めず、probe不在も終了127になることを確かめる。
+この修正後のQEMUは未再実行。以前の5 bootと容量のCSV・archiveは変更していない。

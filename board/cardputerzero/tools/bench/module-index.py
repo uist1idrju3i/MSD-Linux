@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import subprocess
 
 
@@ -23,6 +24,13 @@ def sha(path):
 def inventory(root):
     return {str(p.relative_to(root)): (p.stat().st_size, sha(p))
             for p in root.rglob("*") if p.is_file() and not p.is_symlink()}
+
+
+def fixture_probe_check(probe="/usr/libexec/module-index-kmod-probe", console="/dev/console"):
+    return ("module_probe_rc=0\n"
+            f"{shlex.quote(str(probe))} >{shlex.quote(console)} 2>&1 || module_probe_rc=$?\n"
+            f"printf 'MODULE_INDEX_PROBE_RESULT=%s\\n' \"$module_probe_rc\" >{shlex.quote(console)}\n"
+            "[ \"$module_probe_rc\" -eq 0 ] || exit \"$module_probe_rc\"\n")
 
 
 def build(reference, out):
@@ -87,7 +95,7 @@ def build(reference, out):
                 target = root / "usr/libexec/module-index-kmod-probe"
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(probe, target)
-                markers = "/usr/libexec/module-index-kmod-probe >/dev/console 2>&1\n" + markers
+                markers = fixture_probe_check() + markers
             if script.count("done\n") != 1:
                 raise ValueError("unexpected ready script")
             ready.write_text(script.replace("done\n", "done\n" + markers))

@@ -25,6 +25,36 @@ cnspec = importlib.util.spec_from_file_location(
     "cnf_probe", ROOT / "board/cardputerzero/tools/bench/openssl-cnf/run.py")
 cnf = importlib.util.module_from_spec(cnspec)
 cnspec.loader.exec_module(cnf)
+index_spec = importlib.util.spec_from_file_location(
+    "module_index", ROOT / "board/cardputerzero/tools/bench/module-index.py")
+module_index = importlib.util.module_from_spec(index_spec)
+index_spec.loader.exec_module(module_index)
+
+
+class ModuleIndexTests(unittest.TestCase):
+    def test_probe_exit_status_gates_readiness(self):
+        with tempfile.TemporaryDirectory() as directory:
+            probe = Path(directory) / "test probe"
+            for code in (0, 7):
+                with self.subTest(code=code):
+                    probe.write_text("#!/bin/sh\nprintf 'libkmod configs load rc=0\\n'\n"
+                                     f"exit {code}\n")
+                    probe.chmod(0o755)
+                    script = module_index.fixture_probe_check(probe, "/dev/stdout")
+                    result = subprocess.run(["sh", "-c", script + "echo 'MSD/Linux ready'"],
+                                            capture_output=True, text=True)
+                    self.assertEqual(result.returncode, code)
+                    self.assertIn(f"MODULE_INDEX_PROBE_RESULT={code}\n", result.stdout)
+                    self.assertEqual("MSD/Linux ready" in result.stdout, code == 0)
+
+    def test_missing_probe_cannot_reach_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            script = module_index.fixture_probe_check(Path(directory) / "missing", "/dev/stdout")
+            result = subprocess.run(["sh", "-c", script + "echo 'MSD/Linux ready'"],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 127)
+            self.assertIn("MODULE_INDEX_PROBE_RESULT=127\n", result.stdout)
+            self.assertNotIn("MSD/Linux ready", result.stdout)
 
 
 class ProbeTests(unittest.TestCase):
