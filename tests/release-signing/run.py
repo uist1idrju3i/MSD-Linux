@@ -229,6 +229,28 @@ class ReleaseSigning(unittest.TestCase):
         command("python3", BOARD / "tools/prune-libgomp.py", self.target, ok=False)
         self.assertTrue(library.exists())
 
+    def test_libgomp_audit_requires_configured_tools(self):
+        spec = importlib.util.spec_from_file_location("libgomp_bench", BOARD / "tools/bench/libgomp.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        root = self.work / "audit-root"
+        root.mkdir()
+        config = self.work / "normalized.config"
+        config.write_text("")
+        self.assertEqual(bench.audit_configured(root, config)["elf"], {})
+        config.write_text("BR2_PACKAGE_BTRFS_PROGS=y\nBR2_PACKAGE_CRYPTSETUP=y\n")
+        with self.assertRaisesRegex(ValueError, "configured product ELF missing"):
+            bench.audit_configured(root, config)
+        for name in ("usr/bin/btrfs", "usr/sbin/cryptsetup"):
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(shutil.which("true"), path)
+        self.assertEqual(set(bench.audit_configured(root, config)["configured_tools"]),
+                         {"usr/bin/btrfs", "usr/sbin/cryptsetup"})
+        put(root / "usr/bin/consumer", "GOMP_parallel")
+        with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
+            bench.audit_configured(root, config)
+
     def test_binary_index_removal_refuses_non_busybox(self):
         self.fixture()
         index = self.target / "lib/modules/test-kernel/modules.dep.bin"

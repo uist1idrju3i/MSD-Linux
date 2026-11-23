@@ -2,6 +2,10 @@
 
 [2026-11-19 差分訂正](../alternatives/update-delivery.md)
 
+## 2026-11-23 libgomp
+
+旧構成の監査範囲を[再監査記録](../../experiments/2026-11-23-libgomp-prune.md)で訂正。
+
 ## 2026-11-23 SSH client比較
 
 [実験記録](../../experiments/2026-11-23-ssh-client-compare.md#集計器と版表記の訂正)にBuildroot commit・option抽出・既定鍵候補の訂正を記録しました。生証拠と実測値は保持しています。

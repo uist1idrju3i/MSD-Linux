@@ -48,6 +48,23 @@ def audit(root):
     return result
 
 
+def audit_configured(root, config):
+    if not root.is_dir():
+        raise ValueError("audit root directory does not exist")
+    selected = config.read_text().splitlines()
+    tools = {"BR2_PACKAGE_BTRFS_PROGS": "usr/bin/btrfs",
+             "BR2_PACKAGE_CRYPTSETUP": "usr/sbin/cryptsetup"}
+    enabled = [name for option, name in tools.items() if option + "=y" in selected]
+    missing = [name for name in enabled if not (root / name).is_file() or
+               not (root / name).read_bytes().startswith(b"\x7fELF")]
+    if missing:
+        raise ValueError("configured product ELF missing; use matching build output: " + ", ".join(missing))
+    result = audit(root)
+    result["configured_tools"] = {name: result["elf"][name] for name in enabled}
+    result["config_sha256"] = COMMON.sha(config)
+    return result
+
+
 def build(reference, config, out):
     out.mkdir()
     with (out / "build.log").open("x") as log:
@@ -69,7 +86,7 @@ def build(reference, config, out):
             raise ValueError("--reference must contain libgomp before pruning")
         report = dict(reference_squashfs=COMMON.sha(reference / "images/rootfs.squashfs"),
                       kernel=COMMON.sha(reference / "images/Image"), host=platform.platform(),
-                      config_sha256=COMMON.sha(config), audit=audit(original), variants={})
+                      config_sha256=COMMON.sha(config), audit=audit_configured(original, config), variants={})
         recipes = sorted({p.parent.name for p in (ROOT / "vendor/buildroot/package").glob("*/*.mk")
                           if re.search(r"openmp|libgomp", p.read_text(), re.I)})
         report["openmp_recipes"] = recipes
@@ -143,8 +160,17 @@ def build(reference, config, out):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--reference", type=Path, required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--reference", type=Path)
+    source.add_argument("--audit-root", type=Path)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
-    build(args.reference.resolve(), args.config.resolve(), args.out.resolve())
+    if args.audit_root:
+        args.out.mkdir()
+        report = audit_configured(args.audit_root.resolve(), args.config.resolve())
+        (args.out / "audit.json").write_text(json.dumps(report, indent=2) + "\n")
+        print(json.dumps({"elf_count": len(report["elf"]),
+                          "configured_tools": report["configured_tools"]}, indent=2))
+    else:
+        build(args.reference.resolve(), args.config.resolve(), args.out.resolve())

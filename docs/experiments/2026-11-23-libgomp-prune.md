@@ -1,6 +1,6 @@
 # 未使用libgompのtarget配送削減
 
-- 状態: 既存imageの容量比較・QEMU前後A/Bは完了。full製品buildは未実施
+- 状態: 初回は旧構成の容量・前後A/Bを比較。追試で現行構成のCI build・削除後A/Bと184 ELFの参照を確認
 - 日付: 2026-11-23
 - 基準: `f4e1f65cf9a66aa4756675a926a7edaaf99d5377`
 - 関連: [toolchain設定](../research/component-options/buildroot-toolchain.md)、[実験一覧](README.md)
@@ -88,8 +88,8 @@ beforeとafterを並列に実行し、各variant内のA、Bは順次実行した
 失敗させる対照は、OpenMP client、dlopen client、既存出力先の計3件。
 前2件は削除を拒否して終了1、既存出力先も`FileExistsError`で終了1となり、上書きしなかった。
 正常のpack・bootとこれらの負の対照、full製品buildのnot_runは[CSV](2026-11-23-libgomp-prune.csv)で分けた。
-full Buildroot buildは所要見込み1〜2時間のため、候補1と同じくCIへ残す。今回はCIを起動していない。
-現在のHEADの製品imageでのA/B成功や、実機での改善とは報告しない。
+初回はfull Buildroot buildをCIへ残し、既存imageだけを使った。現行構成の追試は末尾に分けて記す。
+初回の結果を現在のHEADの製品imageのA/B成功や、実機での改善とは報告しない。
 
 比較元には、削除前のlibgompとhost toolsを含むbuild出力を指定する。
 現在のpost-buildでlibgompを削除済みのimageは比較元に使えない。
@@ -117,5 +117,48 @@ archive SHA-256は`f194d5a1d6797f93b6ffc2c8fa488221009bf1043500091843183f6fcd60c
 ## 製品I/Oと未確認
 
 変更はbuild時のtarget配送だけであり、製品の画面や実行時の永続writeを追加しない。
-最新製品のfull Buildroot build、実機、LCD、keyboard、I2C、firmware tryboot、SD電源断は未確認。
+修正後HEADの製品build、実機、LCD、keyboard、I2C、firmware tryboot、SD電源断は未確認。
 QEMUの成功を実機の証拠としない。
+
+## Review後の現行設定の再監査
+
+初回の既存imageには、現在の正規化設定で有効なbtrfs-progsとcryptsetupが入っていなかった。
+146 ELFの不使用という観測は初回imageだけの結果であり、現在の製品構成全体の結果ではない。
+この条件差を見落とさないよう、測定器は有効な両packageのELFが欠けたimageの監査を拒否する。
+
+再監査の計画は、現行CI成果物で両ELFの存在と全ELFのDT_NEEDED・literalなlibgomp・GOMP_を調べることとした。
+削除済みの製品imageでも`--audit-root`で参照を監査できる。新しい`output-libgomp-current-r2`を使い、初回archiveを変更しなかった。
+
+| 項目 | 追試の条件・結果 |
+|---|---|
+| source | PR #296のHEAD `126cc57fe5324f710f6ec75024b34d94284ffe12`。defconfigは手元の正規化元とbyte一致 |
+| CI | [run 45128825802、build job 137539472527](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/45128825802/job/137539472527)はsuccess |
+| 入力 | [artifact 14798117190](https://github.com/uist1idrju3i/MSD-Linux/actions/runs/45128825802/artifacts/14798117190)、`msd-cardputerzero-build` |
+| artifact ZIP SHA-256 | `22c12c8647170234ed4540b874c0446fc0a45679bbac79258f8b82de9674d23a`。APIのdigestと照合 |
+| sdcard.img.xz SHA-256 | `913eb4986bf8890420d464b4baef2d1d9ca704ee9304845f9e0883d1cf75d84f` |
+| kernel SHA-256 | `6a615f51ef32e0f981227197df1ff7474734193dd2efe6d21201739ae7a8de46`。初回のkernelとは異なる |
+| btrfs | `usr/bin/btrfs`、1,003,208 bytes、ELFを収録。DT_NEEDED・literal・GOMP_に該当参照なし |
+| cryptsetup | `usr/sbin/cryptsetup`、224,112 bytes、ELFを収録。DT_NEEDED・literal・GOMP_に該当参照なし |
+| 全体監査 | 184 ELF。DT_NEEDEDの利用者0、他fileのliteral参照0、非providerのGOMP_参照0 |
+| 負の対照 | 初回imageと現行設定の組合せは、両ELFの欠損を検出して終了1 |
+| CIの削除後A/B | 両slotがready・loginへ到達。QMP quit、終了0、reaped、fallbackなし。GPIO6 power-fail smoke stepもsuccess |
+
+初回ZIP取得は300秒でtimeoutし、507,822,080 bytesで中断した。Rangeで再開し、全体digestの一致後に展開した。
+取得は`https://nightly.link/uist1idrju3i/MSD-Linux/actions/artifacts/14798117190.zip`を使った。
+`images/sdcard.img.xz`を展開し、sfdisk JSONの5番目のpartitionのstartを512倍したoffsetからunsquashfsでslot Aを取り出した。
+非rootの所有者設定だけの警告はextract.logに残し、それ以外の展開失敗は許容しなかった。
+監査は次のCLIを使用した。正規化configは初回と共通だが、今回のimageには両packageのELFが存在することを追加検査している。
+
+```sh
+python3 board/cardputerzero/tools/bench/libgomp.py \
+  --audit-root output-libgomp-current-r2/root \
+  --config output-libgomp-current-r2/normalized.config \
+  --out output-libgomp-current-r2/audit
+```
+
+[追試の証拠archive](2026-11-23-libgomp-current-audit-evidence.tar.gz)にはaudit JSON、全184 ELFのhash、両toolのELF、正規化config、使用source、CI metadata・全serial・process結果、負の対照log、8行のtemplate形式CSVを保存した。
+SHA-256は`7fc6b11e95b6326e8e81ea5436a35732647d2f6b8ed447f4fa021024ee76b465`。
+CIのserialとprocess結果はartifact `14797469336`から取得した。
+初回146 ELFの結果と同じ標本ではないため、初回の容量値やQEMU module数を現行構成の値に置き換えない。
+現行CI成果物はlibgomp削除後であり、対応する削除前製品imageは未取得である。
+現行構成の前後4 boot比較・容量比較、修正後HEADのCI結果は、この追試では未確認。取得後のQEMUも再実行していない。
