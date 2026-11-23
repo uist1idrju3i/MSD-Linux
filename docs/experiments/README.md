@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [OpenSSL 4機能](2026-11-23-openssl-features.md) | [CSV](2026-11-23-openssl-features.csv) | 2026-11-23 | 同一commitのcold full build・QEMU A/B完了 | rootfs -598,724 bytes、SquashFS -212,992 bytes。19 moduleと暗号algorithm一覧一致。証明書圧縮の未利用を証明できず4項目組の製品採用は見送り |
 | [SDIO firmware配送](2026-11-23-sdio-firmware.md) | [CSV](2026-11-23-sdio-firmware.csv) | 2026-11-23 | 現行CI再pack・QEMU比較完了 | CYW43439とCM0専用43436sを併存保持。rootfs −1,759,026 bytes、SquashFS −1,069,056 bytes。前後A/Bの19 module一致。SDIO・BTの実機読込みは未確認 |
 | [kbd tool配送の最小化](2026-11-23-kbd-tools.md) | [CSV](2026-11-23-kbd-tools.csv) | 2026-11-23 | 現行CIの再pack・QEMU比較完了 | rootfs −532,908 bytes、SquashFS −147,456 bytes。前後A/Bのloadkeys終了0・19 module一致、失敗対照を拒否。実機keyboard未確認 |
 | [libgomp配送削減](2026-11-23-libgomp-prune.md) | [CSV](2026-11-23-libgomp-prune.csv) | 2026-11-23 | 旧構成の容量・前後A/Bと現行CIの再監査完了 | 旧構成: rootfs −302,440 bytes、SquashFS −135,168 bytes、19 module一致。現行184 ELFに参照未検出、削除後A/B成功。現行の前後比較は未実施 |
