@@ -33,7 +33,26 @@ def read_attempt(directory, expected):
     return rows
 
 
+def verify_images(pair, probe, analysis):
+    build = json.loads((pair / "results.json").read_text())
+    regression = json.loads((probe / "metadata.json").read_text())["inputs_sha256"]
+    measured = json.loads((analysis / "metadata.json").read_text())["inputs_sha256"]
+    for variant in ("baseline", "candidate"):
+        produced = build.get("variants", {}).get(variant, {})
+        images = produced.get("images_sha256", {})
+        expected = {".config": produced.get("config_sha256")}
+        expected.update({"images/" + name: images.get(name) for name in ("Image", "rootfs.squashfs", "sdcard.img")})
+        for name, digest in expected.items():
+            if not isinstance(digest, str) or len(digest) != 64 or set(digest) - set("0123456789abcdef"):
+                raise ValueError(f"missing or invalid build hash: {variant}/{name}")
+            if regression.get(f"{variant}/{name}") != digest:
+                raise ValueError(f"probe/build hash mismatch: {variant}/{name}")
+        if measured.get(variant) != images["rootfs.squashfs"]:
+            raise ValueError(f"analysis/build hash mismatch: {variant}/images/rootfs.squashfs")
+
+
 def export(pair, probe, host, analysis, out):
+    verify_images(pair, probe, analysis)
     rows = read_attempt(pair, 6) + read_attempt(probe, 50) + read_attempt(analysis, 17)
     for row in rows:
         if row["metric"] == "rootfs_regular_bytes":

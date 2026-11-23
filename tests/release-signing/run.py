@@ -1204,6 +1204,77 @@ class OpenSSLFeatures(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     export.read_attempt(directory, 1)
 
+    def test_export_requires_matching_build_probe_and_analysis_hashes(self):
+        export = self.load("feature_export_hashes", "openssl-features/export.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            pair, probe, analysis, host = (root / name for name in ("pair", "probe", "analysis", "host"))
+            for directory, count in ((pair, 6), (probe, 50), (analysis, 17)):
+                directory.mkdir()
+                rows = [dict(run_id=f"{directory.name}-{number}", variant="baseline", repeat=1,
+                             metric="bytes", value=1, unit="bytes", valid="true", note="fixture")
+                        for number in range(count)]
+                (directory / "plan.json").write_text(json.dumps(rows))
+                with (directory / "results.csv").open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=export.FIELDS)
+                    writer.writeheader()
+                    writer.writerows(rows)
+            build = dict(variants={})
+            regression = dict(inputs_sha256={})
+            measured = dict(inputs_sha256={})
+            for variant in ("baseline", "candidate"):
+                images = {name: hashlib.sha256(f"{variant}/{name}".encode()).hexdigest()
+                          for name in ("Image", "rootfs.squashfs", "sdcard.img")}
+                config = hashlib.sha256(variant.encode()).hexdigest()
+                build["variants"][variant] = dict(config_sha256=config, images_sha256=images)
+                regression["inputs_sha256"][f"{variant}/.config"] = config
+                regression["inputs_sha256"].update({f"{variant}/images/{name}": digest for name, digest in images.items()})
+                measured["inputs_sha256"][variant] = images["rootfs.squashfs"]
+            originals = {pair / "results.json": build, probe / "metadata.json": regression,
+                         analysis / "metadata.json": measured}
+            for path, data in originals.items():
+                path.write_text(json.dumps(data))
+            host.mkdir()
+            (host / "metadata.json").write_text('{"fixture":1}')
+            with (host / "results.csv").open("w", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=("case", "variant", "protocol", "negative", "exit_code", "pass", "host", "port"))
+                writer.writeheader()
+                writer.writerows(dict(case=number, variant="C1", protocol="1.3", negative=0, exit_code=0,
+                                      **{"pass": 1, "host": "localhost", "port": 443}) for number in range(1, 17))
+            out = root / "valid.csv"
+            export.export(pair, probe, host, analysis, out)
+            with out.open() as stream:
+                self.assertEqual(len(list(csv.DictReader(stream))), 89)
+            mutations = [(probe / "metadata.json", ("inputs_sha256", f"{variant}/{name}"), "0" * 64)
+                         for variant in ("baseline", "candidate")
+                         for name in (".config", "images/Image", "images/rootfs.squashfs", "images/sdcard.img")]
+            mutations += [(analysis / "metadata.json", ("inputs_sha256", variant), "0" * 64)
+                          for variant in ("baseline", "candidate")]
+            mutations += [(pair / "results.json", ("variants", "baseline", "images_sha256", "Image"), value)
+                          for value in (None, "invalid", "")]
+            mutations += [(probe / "metadata.json", ("inputs_sha256", "baseline/images/sdcard.img"),
+                           build["variants"]["candidate"]["images_sha256"]["sdcard.img"])]
+            for number, (path, keys, value) in enumerate(mutations):
+                with self.subTest(path=path.name, keys=keys, value=value):
+                    changed = json.loads(json.dumps(originals[path]))
+                    current = changed
+                    for key in keys[:-1]:
+                        current = current[key]
+                    if value is None:
+                        del current[keys[-1]]
+                    else:
+                        current[keys[-1]] = value
+                    path.write_text(json.dumps(changed))
+                    rejected = root / f"rejected-{number}.csv"
+                    with self.assertRaises(ValueError):
+                        export.export(pair, probe, host, analysis, rejected)
+                    self.assertFalse(rejected.exists())
+                    path.write_text(json.dumps(originals[path]))
+            (probe / "metadata.json").unlink()
+            with self.assertRaises(FileNotFoundError):
+                export.export(pair, probe, host, analysis, root / "missing.csv")
+            self.assertFalse((root / "missing.csv").exists())
+
     def test_cold_pair_uses_same_path_and_only_four_feature_changes(self):
         build = self.load("feature_build", "openssl-features-build.py")
         with tempfile.TemporaryDirectory() as temporary:
