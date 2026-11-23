@@ -319,7 +319,8 @@ class ReleaseSigning(unittest.TestCase):
                 with self.assertRaises(FileNotFoundError):
                     bench.build(self.work / "missing-artifact", self.work, self.work / "config", out)
             report = json.loads((out / "results.json").read_text())
-            rows = list(csv.DictReader((out / "results.csv").open()))
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), 21)
             self.assertTrue(all(row["valid"] == "false" and row["value"] == "" for row in rows))
             self.assertIn("board/cardputerzero/qemu/serial-allowlist.txt", report["source_sha256"])

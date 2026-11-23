@@ -1,0 +1,93 @@
+path,kind,target,bytes,sha256,disposition,reason
+lib/firmware/bmi270-init-data.fw,regular,,8192,2d75e68e343a13ff99be98261dfbd99d9e8c6f267da9e3c5aeb883276ad178db,keep,削除対象外
+lib/firmware/brcm/BCM43430A1.hcd,regular,,30049,c096ad4a5c3f06ed7d69eba246bf89ada9acba64a5b6f51b1e9c12f99bb1e1a7,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/BCM43430A1.raspberrypi,3-model-b.hcd",symlink,BCM43430A1.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM43430A1.raspberrypi,model-zero-2-w.hcd",symlink,../synaptics/SYN43430A1.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM43430A1.raspberrypi,model-zero-w.hcd",symlink,BCM43430A1.hcd,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/BCM43430B0.hcd,regular,,44376,338c2c6631131f516bfc7e64ef0872bd0402e1f98ef9d0c900eef0c814d90a25,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/BCM43430B0.raspberrypi,model-zero-2-w.hcd",symlink,../synaptics/SYN43430B0.hcd,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/BCM4343A2.hcd,regular,,6746,5f7fb0a863f9ee8874e4ad37ccc69abbc751fdc0257cb3fdd0ba0e89378ff76a,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/BCM4345C0.hcd,regular,,63806,51c45e77ddad91a19e96dc8fb75295b2087c279940df2634b23baf71b6dea42c,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C0.raspberrypi,3-model-a-plus.hcd",symlink,BCM4345C0.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C0.raspberrypi,3-model-b-plus.hcd",symlink,BCM4345C0.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C0.raspberrypi,4-compute-module.hcd",symlink,BCM4345C0.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C0.raspberrypi,4-model-b.hcd",symlink,BCM4345C0.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C0.raspberrypi,5-model-b.hcd",symlink,BCM4345C0.hcd,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/BCM4345C5.hcd,regular,,55676,fb9f4ec2df5301bd35f416384e103c012c5983024c49aa72fbbaf90177512caa,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C5.raspberrypi,4-compute-module.hcd",symlink,BCM4345C5.hcd,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/BCM4345C5.raspberrypi,400.hcd",symlink,BCM4345C5.hcd,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43430-sdio.bin,symlink,../cypress/cyfmac43430-sdio.bin,,,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43430-sdio.clm_blob,symlink,../cypress/cyfmac43430-sdio.clm_blob,,,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,0-compute-module.bin",symlink,brcmfmac43436s-sdio.bin,,,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,0-compute-module.txt",symlink,brcmfmac43436s-sdio.nolpo.txt,,,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.bin",symlink,../cypress/cyfmac43430-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.clm_blob",symlink,../cypress/cyfmac43430-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt",symlink,brcmfmac43430-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.bin",symlink,brcmfmac43436s-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.txt",symlink,brcmfmac43436s-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-w.bin",symlink,../cypress/cyfmac43430-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-w.clm_blob",symlink,../cypress/cyfmac43430-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-w.txt",symlink,brcmfmac43430-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43430-sdio.txt,regular,,1121,fc3949a4c32f07c18308e7e145c7615be314158e7d714a80e04e4791f16495f9,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43430b0-sdio.raspberrypi,model-zero-2-w.bin",symlink,brcmfmac43436-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430b0-sdio.raspberrypi,model-zero-2-w.clm_blob",symlink,brcmfmac43436-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43430b0-sdio.raspberrypi,model-zero-2-w.txt",symlink,brcmfmac43436-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43436-sdio.bin,regular,,416101,510a7dd1e056199b309425548ee0bd846993a1837ac7fa1e4d3e641f05a1327a,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43436-sdio.clm_blob,regular,,11209,fce7cbb62ffa6a5a65ca97b13f6fbf28d06c02d986c2072d65bf72164755fc34,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43436-sdio.raspberrypi,model-zero-2-w.bin",symlink,brcmfmac43436-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43436-sdio.raspberrypi,model-zero-2-w.clm_blob",symlink,brcmfmac43436-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43436-sdio.raspberrypi,model-zero-2-w.txt",symlink,brcmfmac43436-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43436-sdio.txt,regular,,1706,4cda90facd8844cff60d80b34b24ecbae76adb9a62508a109461b8bf42b478d1,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43436s-sdio.bin,regular,,442211,68b9bcc9855d91733cd44c21de4cb507c91b0d32d838c0696def5eb96c99e2de,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43436s-sdio.nolpo.txt,regular,,1185,f1c6b0c53fabaaa455be978bf80eff09c1438c84f8521b75fd8d414ba74b591c,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43436s-sdio.raspberrypi,0-compute-module.bin",symlink,brcmfmac43436s-sdio.bin,,,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43436s-sdio.raspberrypi,0-compute-module.txt",symlink,brcmfmac43436s-sdio.nolpo.txt,,,keep,必須の探索名・CM0 fallback
+"lib/firmware/brcm/brcmfmac43436s-sdio.raspberrypi,model-zero-2-w.bin",symlink,brcmfmac43436s-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43436s-sdio.raspberrypi,model-zero-2-w.txt",symlink,brcmfmac43436s-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43436s-sdio.txt,regular,,1185,37a8b85a5a9742761101b764a07bc4d0c8b09f2e180eaea3b503a834277ad595,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43439-sdio.bin,symlink,../cypress/cyfmac43439-sdio.bin,,,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43439-sdio.clm_blob,symlink,../cypress/cyfmac43439-sdio.clm_blob,,,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43439-sdio.txt,symlink,../cypress/cyfmac43439-sdio.txt,,,keep,必須の探索名・CM0 fallback
+lib/firmware/brcm/brcmfmac43455-sdio.bin,symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43455-sdio.clm_blob,symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-a-plus.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-a-plus.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-a-plus.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-compute-module.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-compute-module.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-compute-module.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-model-b.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-model-b.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,5-model-b.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,500.bin",symlink,../cypress/cyfmac43455-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,500.clm_blob",symlink,../cypress/cyfmac43455-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,500.txt",symlink,brcmfmac43455-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43455-sdio.txt,regular,,2074,ca709be81a78bdb6932936374f39943acbd7af07fae6151011127599a3ce9e3d,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43456-sdio.bin,regular,,495898,ddf83f2100885b166be52d21c8966db164fdd4e1d816aca2acc67ee9cc28d726,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43456-sdio.clm_blob,regular,,7163,2dbd7d22fc9af0eb560ceab45b19646d211bc7b34a1dd00c6bfac5dd6ba25e8a,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,4-compute-module.bin",symlink,brcmfmac43456-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,4-compute-module.clm_blob",symlink,brcmfmac43456-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,4-compute-module.txt",symlink,brcmfmac43456-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,400.bin",symlink,brcmfmac43456-sdio.bin,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,400.clm_blob",symlink,brcmfmac43456-sdio.clm_blob,,,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/brcm/brcmfmac43456-sdio.raspberrypi,400.txt",symlink,brcmfmac43456-sdio.txt,,,remove,対象外board・familyで保持rootから未到達
+lib/firmware/brcm/brcmfmac43456-sdio.txt,regular,,2053,44e0bb322dc1f39a4b0a89f30ffdd28bc93f7d7aaf534d06d229fe56f6198194,remove,対象外board・familyで保持rootから未到達
+"lib/firmware/cardputerzero,st7789v_lcd.bin",regular,,93,1fa1dab483f512fe7d5190e07a5ad53e88ed2bcc70cbed05e861adf4be6391b3,keep,削除対象外
+lib/firmware/cypress/cyfmac43430-sdio.bin,regular,,399344,0717f8e798f3962230e76e9d840385ba127a38d31d6a55acd5c97cf53e4acc9d,keep,保持したaliasの到達先
+lib/firmware/cypress/cyfmac43430-sdio.clm_blob,regular,,4733,3376b9c9b32d16bf762e21c7fafb665365070ae240d092498d0d1987c22022aa,keep,保持したaliasの到達先
+lib/firmware/cypress/cyfmac43439-sdio.bin,regular,,229520,4130a8b89245a210633738dce32f811100bba3d6ae757b1b3aeed6998b0c8c93,keep,保持したaliasの到達先
+lib/firmware/cypress/cyfmac43439-sdio.clm_blob,regular,,3208,c5cdf90b0067efbc31e1cd67f6a26ef7a8214ce4e89efea4c4e2ec85a6e67ec6,keep,保持したaliasの到達先
+lib/firmware/cypress/cyfmac43439-sdio.txt,regular,,1438,ee72a1ab824f7850c655bbeb74c72592e8a6e7aea0359afe79f03f47c1709c28,keep,保持したaliasの到達先
+lib/firmware/cypress/cyfmac43455-sdio.bin,regular,,609309,d608f866582519c0a28d86db43040f4f1b98dd1d153e72e9752586546b4a36c3,remove,対象外board・familyで保持rootから未到達
+lib/firmware/cypress/cyfmac43455-sdio.clm_blob,regular,,2676,9823842cae9fb9a5dd1e5fb31f595516ec7deee341354bef30bb3026eee29cc1,remove,対象外board・familyで保持rootから未到達
+lib/firmware/synaptics/SYN43430A1.hcd,regular,,46979,55071227c94d86369d04f9aff3bbfd4197a78a53dc350295123e1a8b048bba8f,remove,対象外board・familyで保持rootから未到達
+lib/firmware/synaptics/SYN43430B0.hcd,regular,,44376,338c2c6631131f516bfc7e64ef0872bd0402e1f98ef9d0c900eef0c814d90a25,remove,対象外board・familyで保持rootから未到達
