@@ -243,6 +243,9 @@ class ReleaseSigning(unittest.TestCase):
         config.write_text("BR2_PACKAGE_BTRFS_PROGS=y\nBR2_PACKAGE_CRYPTSETUP=y\n")
         with self.assertRaisesRegex(ValueError, "configured product ELF missing"):
             bench.audit_configured(root, config)
+        legacy = bench.audit_configured(root, config, legacy_reference=True)
+        self.assertEqual(legacy["scope"], "legacy-reference")
+        self.assertEqual(legacy["missing_configured_tools"], ["usr/bin/btrfs", "usr/sbin/cryptsetup"])
         for name in ("usr/bin/btrfs", "usr/sbin/cryptsetup"):
             path = root / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -252,6 +255,8 @@ class ReleaseSigning(unittest.TestCase):
         put(root / "usr/bin/consumer", "GOMP_parallel")
         with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
             bench.audit_configured(root, config)
+        with self.assertRaisesRegex(ValueError, "possible OpenMP consumers"):
+            bench.audit_configured(root, config, legacy_reference=True)
 
     def test_bench_hash_without_file_digest(self):
         spec = importlib.util.spec_from_file_location("module_index", BOARD / "tools/bench/module-index.py")

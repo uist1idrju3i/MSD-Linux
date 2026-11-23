@@ -48,7 +48,7 @@ def audit(root):
     return result
 
 
-def audit_configured(root, config):
+def audit_configured(root, config, legacy_reference=False):
     if not root.is_dir():
         raise ValueError("audit root directory does not exist")
     selected = config.read_text().splitlines()
@@ -57,15 +57,17 @@ def audit_configured(root, config):
     enabled = [name for option, name in tools.items() if option + "=y" in selected]
     missing = [name for name in enabled if not (root / name).is_file() or
                not (root / name).read_bytes().startswith(b"\x7fELF")]
-    if missing:
+    if missing and not legacy_reference:
         raise ValueError("configured product ELF missing; use matching build output: " + ", ".join(missing))
     result = audit(root)
-    result["configured_tools"] = {name: result["elf"][name] for name in enabled}
+    result["configured_tools"] = {name: result["elf"][name] for name in enabled if name not in missing}
+    result["missing_configured_tools"] = missing
+    result["scope"] = "legacy-reference" if legacy_reference else "configured-product"
     result["config_sha256"] = COMMON.sha(config)
     return result
 
 
-def build(reference, config, out):
+def build(reference, config, out, legacy_reference=False):
     out.mkdir()
     with (out / "build.log").open("x") as log:
         def run(args):
@@ -86,7 +88,8 @@ def build(reference, config, out):
             raise ValueError("--reference must contain libgomp before pruning")
         report = dict(reference_squashfs=COMMON.sha(reference / "images/rootfs.squashfs"),
                       kernel=COMMON.sha(reference / "images/Image"), host=platform.platform(),
-                      config_sha256=COMMON.sha(config), audit=audit_configured(original, config), variants={})
+                      config_sha256=COMMON.sha(config),
+                      audit=audit_configured(original, config, legacy_reference), variants={})
         recipes = sorted({p.parent.name for p in (ROOT / "vendor/buildroot/package").glob("*/*.mk")
                           if re.search(r"openmp|libgomp", p.read_text(), re.I)})
         report["openmp_recipes"] = recipes
@@ -163,9 +166,13 @@ if __name__ == "__main__":
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--reference", type=Path)
     source.add_argument("--audit-root", type=Path)
+    parser.add_argument("--legacy-reference", action="store_true",
+                        help="repack an old image; record missing configured tools, not a current-product audit")
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    if args.legacy_reference and not args.reference:
+        parser.error("--legacy-reference requires --reference, not --audit-root")
     if args.audit_root:
         args.out.mkdir()
         report = audit_configured(args.audit_root.resolve(), args.config.resolve())
@@ -173,4 +180,4 @@ if __name__ == "__main__":
         print(json.dumps({"elf_count": len(report["elf"]),
                           "configured_tools": report["configured_tools"]}, indent=2))
     else:
-        build(args.reference.resolve(), args.config.resolve(), args.out.resolve())
+        build(args.reference.resolve(), args.config.resolve(), args.out.resolve(), args.legacy_reference)

@@ -93,13 +93,17 @@ beforeとafterを並列に実行し、各variant内のA、Bは順次実行した
 
 比較元には、削除前のlibgompとhost toolsを含むbuild出力を指定する。
 現在のpost-buildでlibgompを削除済みのimageは比較元に使えない。
+以下は初回の旧構成を再現する手順であり、現行製品構成の比較ではない。
+`--legacy-reference`を明示すると、現行設定で有効なのにimageにないtoolを結果のmissing_configured_toolsに記録し、scopeをlegacy-referenceとする。
+省略時の欠損拒否と、全fileのlibgomp・GOMP_利用者の検査は維持する。現行CIの監査にはこのoptionを使わない。
 出力名は未使用のものに変え、repository rootで実行する。
 
 ```sh
 docker/msd-dev make -s -C vendor/buildroot BR2_EXTERNAL=/work \
   O=/work/output-libgomp-config msd_cardputerzero_defconfig
 python3 board/cardputerzero/tools/bench/libgomp.py \
-  --reference output-integrity --config output-libgomp-config/.config --out output-libgomp-r1
+  --reference output-integrity --config output-libgomp-config/.config \
+  --legacy-reference --out output-libgomp-r1
 docker/msd-dev env OUTPUT_DIR=/work/output-libgomp-r1/before \
   QEMU_LOG_DIR=/work/output-libgomp-r1/before/logs board/cardputerzero/qemu/test-boot.sh
 docker/msd-dev env OUTPUT_DIR=/work/output-libgomp-r1/before \
@@ -207,4 +211,17 @@ cmp output-libgomp-csv-replay/derived.csv docs/experiments/2026-11-23-libgomp-pr
 共有hash関数は1 MiBずつ読み、SHA-256へ渡す実装に変えた。3.11以降の`hashlib.file_digest`に依存しない。
 このhostにはPython 3.10がないため、3.10での実行成功とは扱わない。
 代わりに3.10の構文としてparseし、file_digestを使えない状態で空file・複数chunk・欠損fileを試験した。
-同APIを削った別processでも`--audit-root`が現行184 ELFを調べ、audit.jsonを残すことを確認する。
+同APIを削った別processでも`--audit-root`が現行184 ELFを調べ、audit.jsonを残すことを確認した。
+
+## 明示した旧構成での再現手順の検査
+
+`--legacy-reference`を付けて再packし、before・before-aa・afterの3 imageを生成できた。
+初回と同じ入力SquashFS・kernelを使い、rootfs通常file合計とSquashFS bytesは3条件とも初回と一致した。
+現行設定で有効なbtrfs・cryptsetupの欠損は結果に残る。これを現行構成全体の比較とは扱わない。
+A/Aのhashは一致したが、初回とのimage hash一致のassertionは失敗した。
+展開treeの内容・種別・modeを照合したところ、bin/busyboxのmodeだけが初回0755・今回4755で異なり、内容は一致した。
+hash一致や新しいQEMU成功は主張しない。初回の数値・hash・生証拠は維持する。
+
+[再現手順の検査の生証拠](2026-11-23-libgomp-replay-validation.tar.gz)にresults.json、build.log、検査用CSV、hash不一致の記録、sourceを保存した。
+検査用CSVは容量6行とhash不一致1行であり、公開CSV19行の初回・CI監査とは分けている。
+archiveのSHA-256は`8526425f1eabfbdbcabec3cf08a75c77ecdd2ae906db7a6a60e71bc9184dc3be`。
