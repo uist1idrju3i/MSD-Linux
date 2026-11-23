@@ -6,6 +6,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+
+import build
 
 from build import overrides
 from inventory import encode_multiline
@@ -14,6 +17,35 @@ from summarize import putty_protocol_ids
 
 
 class Runner(unittest.TestCase):
+    def test_measure_from_rebases_payload_on_current_reference(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            reference, source, out = root / "reference", root / "source", root / "out"
+            (reference / "target/usr/bin").mkdir(parents=True)
+            (reference / "target/current").write_text("new baseline")
+            (source / "openssh/root/usr/bin").mkdir(parents=True)
+            (source / "openssh/root/obsolete").write_text("old baseline")
+            (source / "openssh/root/usr/bin/ssh").write_bytes(b"ssh")
+            (source / "openssh/files.json").write_text('[{"path":"usr/bin/ssh","bytes":3}]')
+            (source / "openssh/dependencies.json").write_text('{}')
+
+            def fake_run(command, *args, **kwargs):
+                if Path(command[0]).name == "mksquashfs":
+                    Path(command[2]).write_bytes(b"image")
+
+            arguments = ["build.py", "--reference", str(reference), "--out", str(out),
+                         "--measure-from", str(source), "--variants", "openssh", "--repetitions", "1"]
+            with mock.patch("sys.argv", arguments), mock.patch.object(build, "ROOT", root), \
+                    mock.patch.object(build.os, "nice"), mock.patch.object(build, "run", side_effect=fake_run), \
+                    mock.patch.object(build, "needed", return_value=[]), \
+                    mock.patch.object(build, "sha", return_value="0" * 64), \
+                    mock.patch.object(build.subprocess, "check_output", return_value="commit"):
+                build.main()
+            self.assertTrue((out / "openssh/root/current").is_file())
+            self.assertFalse((out / "openssh/root/obsolete").exists())
+            self.assertEqual((out / "openssh/root/usr/bin/ssh").read_bytes(), b"ssh")
+            self.assertEqual(json.loads((out / "openssh/files.json").read_text())[0]["bytes"], 3)
+
     def test_multiline_source_values_round_trip_without_losing_whitespace(self):
         value = "before\n  \n  after\n"
         self.assertEqual(json.loads(encode_multiline(value)[5:]), value)

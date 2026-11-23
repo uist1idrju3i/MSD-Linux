@@ -49,12 +49,13 @@ def needed(path):
     return re.findall(r"Shared library: \[([^]]+)\]", result)
 
 
-def payload(variant, output, reference, log):
+def payload(variant, output, reference, log, source=None):
+    source = source if source is not None else output / "buildroot/target"
     tree = output / "root"
     shutil.copytree(reference / "target", tree, symlinks=True)
     name = {"openssh": "ssh", "dropbear": "dbclient", "putty": "plink"}[variant]
     binary = tree / "usr/bin" / name
-    shutil.copyfile(output / "buildroot/target/usr/bin" / name, binary)
+    shutil.copyfile(source / "usr/bin" / name, binary)
     binary.chmod(0o755)
     strip = reference / "host/bin/aarch64-linux-strip"
     run([strip, "--strip-unneeded", binary], log)
@@ -68,13 +69,13 @@ def payload(variant, output, reference, log):
             relative = next((Path(directory) / library for directory in ("usr/lib", "lib")
                              if (tree / directory / library).exists()), None)
             if relative is None:
-                source = next((output / "buildroot/target" / directory / library
+                dependency = next((source / directory / library
                                for directory in ("usr/lib", "lib")
-                               if (output / "buildroot/target" / directory / library).exists()), None)
-                if source is None:
+                               if (source / directory / library).exists()), None)
+                if dependency is None:
                     raise ValueError(f"missing dependency {library}")
                 relative = Path("usr/lib") / library
-                shutil.copyfile(source.resolve(), tree / relative)
+                shutil.copyfile(dependency.resolve(), tree / relative)
                 run([strip, "--strip-unneeded", tree / relative], log)
             dependencies[library] = str(relative)
             queue.append(tree / relative)
@@ -124,10 +125,7 @@ def main():
                     if variant != "baseline":
                         if args.measure_from:
                             source = args.measure_from.resolve() / variant
-                            shutil.copytree(source / "root", work / "root", symlinks=True)
-                            for name in ("files.json", "dependencies.json"):
-                                shutil.copyfile(source / name, work / name)
-                            added = sum(row["bytes"] for row in json.loads((work / "files.json").read_text()))
+                            added = payload(variant, work, reference, log, source / "root")
                         else:
                             output = work / "buildroot"
                             command = ["make", "-C", ROOT / "vendor/buildroot", f"O={output}",
