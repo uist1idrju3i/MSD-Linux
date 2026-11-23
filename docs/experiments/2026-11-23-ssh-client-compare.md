@@ -134,7 +134,23 @@ python3 board/cardputerzero/tools/bench/ssh-client-compare/test_runner.py
 
 ## 生証拠の保存
 
-[証拠commit b47bc80](https://github.com/uist1idrju3i/MSD-Linux/tree/b47bc80e771debd276517bab4027d14c9a726ef0/ssh/2026-11-23-client-compare)は独立した`devin/1795399034-ssh-client-evidence` branchにあります。共有data branchとその作業treeを変更しないため、既存形式の別branchにしました。`pack-02/evidence.tar.gz`は676,360 bytes、SHA-256は`91f1c8e2467a13242a6b3eab9316e026493528f3ae1af14f5e86d3686a080139`です。
+[証拠commit c54603a](https://github.com/uist1idrju3i/MSD-Linux/tree/c54603a2bcd2fdaf7de099b04abda377f12449ed/ssh-client-compare/2026-11-23)を共有証拠branch `data/fs-compare-experiments`の`ssh-client-compare/2026-11-23/`に保存しています。このbranchはmerge・削除せず保持します。初回の`devin/1795399034-ssh-client-evidence`から移しましたが、旧branchも今回は削除していません。`pack-02/evidence.tar.gz`は676,360 bytes、SHA-256は`91f1c8e2467a13242a6b3eab9316e026493528f3ae1af14f5e86d3686a080139`のままです。
+
+push後、既存のobjectを共有しない新しいbare repositoryへremoteから取得して照合しました。保存した6 fileすべてが移行用copyとbyte単位で一致し、うちarchive・manifest・metadataの5 fileは旧保存先とも一致しています。READMEは保存先の案内だけを更新しました。archive内の130 memberも旧archiveとbyte単位で一致し、公開file 129件のhashとbytesはmanifestと一致しました。
+
+Git作業treeの未使用の取得先に展開します。固定SHAを取得するため、共有branchに後続の証拠が追加されても同じ内容を参照できます。
+
+```sh
+evidence_sha=c54603a2bcd2fdaf7de099b04abda377f12449ed
+git fetch origin "$evidence_sha"
+git archive "$evidence_sha" ssh-client-compare/2026-11-23 | tar -xf -
+printf '%s  %s\n' \
+  91f1c8e2467a13242a6b3eab9316e026493528f3ae1af14f5e86d3686a080139 \
+  ssh-client-compare/2026-11-23/pack-02/evidence.tar.gz | sha256sum -c -
+mkdir ssh-client-compare/2026-11-23/raw && \
+  tar -xzf ssh-client-compare/2026-11-23/pack-02/evidence.tar.gz \
+    -C ssh-client-compare/2026-11-23/raw
+```
 
 129 fileとmanifestの130 memberをbyte照合しました。公開copyの5 fileはURL query・Set-Cookieを伏せ、元fileと公開copyのhashをmanifestで分けています。秘密鍵・root tree全体・initramfs・SD imageは公開しません。古い事前試行のrunner本文は未保存のものもあり、hashだけの記録と区別します。guestの実行scriptは各rootのinitから保存しました。正式測定の後にgenerated settings用のshellcheck注釈と、集計CSV・option表出力のLF化を加えました。runtime動作・CSV field値は変更しておらず、測定時のsourceはarchiveのものです。
 
