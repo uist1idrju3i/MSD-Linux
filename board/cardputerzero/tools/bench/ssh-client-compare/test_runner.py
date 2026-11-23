@@ -10,6 +10,7 @@ import unittest
 from unittest import mock
 
 import build
+import inventory
 
 from build import VARIANTS, overrides
 from inventory import configure_tokens, encode_multiline, unix_cache_value
@@ -19,6 +20,26 @@ from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_dropbear_small_is_an_unchanged_default_not_an_explicit_override(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            recipe = root / "vendor/buildroot/package/dropbear"
+            recipe.mkdir(parents=True)
+            (recipe / "Config.in").write_text("config BR2_PACKAGE_DROPBEAR\n\tbool\n"
+                                             "config BR2_PACKAGE_DROPBEAR_SMALL\n\tbool\n\tdefault y\n")
+            (recipe / "dropbear.mk").write_text("")
+            source = root / "build/dropbear/buildroot/build/dropbear-fixture"
+            (source / "src").mkdir(parents=True)
+            for name in ("configure", "src/default_options.h", "src/cli-runopts.c"):
+                (source / name).write_text("")
+            with mock.patch.object(inventory, "ROOT", root), mock.patch.object(inventory, "VARIANTS", ("dropbear",)), \
+                    mock.patch.object(inventory.subprocess, "check_output", return_value=""):
+                rows, _ = inventory.collect(root / "build", None)
+            rows = {row["option"]: row for row in rows}
+            self.assertEqual(rows["BR2_PACKAGE_DROPBEAR_SMALL"]["upstream_default"], "y")
+            self.assertEqual(rows["BR2_PACKAGE_DROPBEAR_SMALL"]["decision"], "不採用（明示変更せず）")
+            self.assertEqual(rows["BR2_PACKAGE_DROPBEAR"]["decision"], "採用（比較条件の明示指定）")
+
     def test_unix_cache_does_not_supply_windows_declarations(self):
         cache = {"PUTTY_GSSAPI": "OFF"}
         self.assertEqual(unix_cache_value(Path("cmake/platforms/unix.cmake"), cache, "PUTTY_GSSAPI"), "OFF")

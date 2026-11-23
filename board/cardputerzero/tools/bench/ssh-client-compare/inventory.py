@@ -39,7 +39,7 @@ def collect(build, serial):
         key = (variant, category, token)
         selected = token in {
             "BR2_PACKAGE_OPENSSH", "BR2_PACKAGE_OPENSSH_CLIENT", "BR2_PACKAGE_DROPBEAR",
-            "BR2_PACKAGE_PUTTY", "BR2_PACKAGE_DROPBEAR_SMALL", "PROGRAMS", "-F", "-T", "-i", "-p",
+            "BR2_PACKAGE_PUTTY", "PROGRAMS", "-F", "-T", "-i", "-p",
             "-P", "-o", "-Q", "-hostkey", "-batch", "-noagent", "BatchMode", "StrictHostKeyChecking",
             "UserKnownHostsFile", "UpdateHostKeys", "GlobalKnownHostsFile", "IdentitiesOnly",
         } or (category == "client設定" and token.lower() in {
