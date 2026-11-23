@@ -257,6 +257,14 @@ class ReleaseSigning(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("kbd_bench", BOARD / "tools/bench/kbd.py")
         bench = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(bench)
+        allowlist = "board/cardputerzero/qemu/serial-allowlist.txt"
+        with mock.patch.object(bench.subprocess, "run") as run:
+            sources = bench.source_inputs()
+            self.assertIn(allowlist, run.call_args.args[0])
+            self.assertEqual(sources[allowlist], bench.COMMON.sha(ROOT / allowlist))
+        with mock.patch.object(bench.subprocess, "run", side_effect=subprocess.CalledProcessError(1, "git diff")):
+            with self.assertRaises(subprocess.CalledProcessError):
+                bench.source_inputs()
         valid = "KBD_LOADKEYS_RESULT=0\nMODULE_INVENTORY_BEGIN\nusbnet 42 0 - Live 0x123\nMODULE_INVENTORY_END\n"
         self.assertEqual(bench.check_serial(valid), [("usbnet", 42, "-", "Live")])
         for text in ("", valid.replace("RESULT=0", "RESULT=1"), "KBD_LOADKEYS_RESULT=0\n" + valid,

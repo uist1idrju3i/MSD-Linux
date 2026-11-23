@@ -66,17 +66,21 @@ def check_serial(text):
     return sorted(modules)
 
 
-def build(artifact, host, config, out):
-    out.mkdir()
+def source_inputs():
     scripts = [Path(__file__).relative_to(ROOT), Path("board/cardputerzero/post-build.sh"),
                Path("board/cardputerzero/squashfs-sort.txt"),
                *(Path("board/cardputerzero/tools") / name for name in
                  ("prune-kbd.py", "prune-libgomp.py", "prune-module-indexes.sh", "bench/module-index.py", "bench/libgomp.py")),
                *(Path("board/cardputerzero/qemu") / name for name in
-                 ("test-boot.sh", "test-ab.sh", "test-qemu.sh", "boot-test.py", "run-qemu.sh", "check-serial-log.sh")),
+                 ("test-boot.sh", "test-ab.sh", "test-qemu.sh", "boot-test.py", "run-qemu.sh", "check-serial-log.sh", "serial-allowlist.txt")),
                Path("board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py")]
     subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *map(str, scripts)], cwd=ROOT, check=True)
-    source = {str(p): COMMON.sha(ROOT / p) for p in scripts}
+    return {str(p): COMMON.sha(ROOT / p) for p in scripts}
+
+
+def build(artifact, host, config, out):
+    out.mkdir()
+    source = source_inputs()
     report = dict(execution_head=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
                   source_sha256=source, host=platform.platform(), config_sha256=COMMON.sha(config),
                   input_sha256={p: COMMON.sha(artifact / "images" / p) for p in
