@@ -2,6 +2,7 @@
 """Host-only checks; no build or VM is started."""
 
 import gzip
+import csv
 import json
 from pathlib import Path
 import tempfile
@@ -10,13 +11,64 @@ from unittest import mock
 
 import build
 
-from build import overrides
+from build import VARIANTS, overrides
 from inventory import encode_multiline
 from runtime import initramfs, parse_serial
 from summarize import putty_protocol_ids
+from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def summary_fixture(self, root, traced=True):
+        build, measure, final = (root / name for name in ("build", "measure", "final"))
+        for path in (build, measure, final):
+            path.mkdir()
+        with (measure / "results.csv").open("w", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=("run_id", "variant", "repeat", "metric", "value", "unit", "valid", "note"))
+            writer.writeheader()
+            for variant in ("baseline", *VARIANTS):
+                for repeat in range(1, 6):
+                    writer.writerow(dict(run_id=f"{variant}-{repeat}", variant=variant,
+                                         repeat=repeat, metric="squashfs", value=100,
+                                         unit="byte", valid=1, note="sha256=fixture"))
+        serial = []
+        for variant in VARIANTS:
+            work = build / variant
+            (work / "root/usr/bin").mkdir(parents=True)
+            (work / "root/usr/bin/client").write_bytes(b"client")
+            if variant == "putty":
+                (work / "root/usr/bin/plink").write_bytes(b"plink")
+            (work / "files.json").write_text('[{"path":"usr/bin/client","bytes":6}]')
+            (work / "dependencies.json").write_text('{}')
+            for condition in ("good", "wrong"):
+                for repeat in range(1, 6):
+                    serial.extend((f"SSH_BEGIN {variant} {condition} {repeat}", "SSH_HOME_BEFORE",
+                                   "0" * 64 + "  /root/key", "SSH_REMOTE_OK" if condition == "good" else
+                                   "REMOTE HOST IDENTIFICATION HAS CHANGED", "SSH_HOME_AFTER",
+                                   "0" * 64 + "  /root/key"))
+                    if traced:
+                        serial.extend(("SSH_TRACE_BEGIN", "SSH_TRACE_END"))
+                    serial.append(f"SSH_RESULT {variant} {condition} {repeat} {0 if condition == 'good' else 1} 0")
+        serial.extend(("SSH_CONFIG_BEGIN", "identityfile first", "identityfile second",
+                       "SSH_CONFIG_END", "SSH_COMPARE_DONE"))
+        (final / "serial.log").write_text("\n".join(serial))
+        (final / "inputs.json").write_text('{}')
+        (final / "process.json").write_text(json.dumps(dict(qmp_quit=True, returncode=0, fallback=[], error=None)))
+        return build, measure, final
+
+    def test_summary_rejects_failed_final_process_despite_complete_serial(self):
+        with tempfile.TemporaryDirectory() as directory:
+            build, measure, final = self.summary_fixture(Path(directory))
+            for override in ({"returncode":7}, {"returncode":-9}, {"qmp_quit":False},
+                             {"fallback":["TERM"]}, {"error":"late failure"}, {}):
+                process = dict(qmp_quit=True, returncode=0, fallback=[], error=None)
+                process.update(override)
+                if not override:
+                    process = {}
+                (final / "process.json").write_text(json.dumps(process))
+                with self.subTest(process=process), self.assertRaisesRegex(ValueError, "final runtime"):
+                    summarize(build, measure, [final], final)
+
     def test_measure_from_rebases_payload_on_current_reference(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -21,7 +21,15 @@ def putty_protocol_ids(data):
             for kind, pattern in patterns.items()}
 
 
+def process_accepted(process):
+    return (process.get("qmp_quit") is True and process.get("returncode") == 0
+            and process.get("fallback") == [] and process.get("error") is None)
+
+
 def summarize(build, measure, attempts, final):
+    final_process = json.loads((final / "process.json").read_text())
+    if final not in attempts or not process_accepted(final_process):
+        raise ValueError("final runtime process was not accepted")
     rows = []
     for directory in [build, measure, *attempts]:
         path = directory / "results.csv"
@@ -39,7 +47,7 @@ def summarize(build, measure, attempts, final):
                 rows.append(row)
         if directory in attempts:
             process = json.loads((directory / "process.json").read_text())
-            accepted = directory == final and process["qmp_quit"] and process["returncode"] == 0 and not process["fallback"] and not process["error"]
+            accepted = directory == final and process_accepted(process)
             rows.append(dict(run_id=directory.name + "/attempt", variant="all", repeat=1,
                              metric="attempt_accepted", value=int(accepted), unit="bool", valid=int(accepted),
                              note=json.dumps(process, ensure_ascii=False)))
@@ -62,7 +70,7 @@ def summarize(build, measure, attempts, final):
     if len(trials) != 30:
         raise ValueError("incomplete final runtime")
     report = dict(sizes=sizes, candidates={}, algorithms={}, putty_binary_protocol_ids={},
-                  final_process=json.loads((final / "process.json").read_text()))
+                  final_process=final_process)
     for variant in VARIANTS:
         files = json.loads((build / variant / "files.json").read_text())
         binary = build / variant / "root" / files[0]["path"]
