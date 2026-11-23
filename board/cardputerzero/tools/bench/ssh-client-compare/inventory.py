@@ -10,6 +10,7 @@ import re
 import subprocess
 
 from build import ROOT, VARIANTS, sha
+from runtime import parse_config
 
 
 def configure_tokens(text):
@@ -23,7 +24,8 @@ def collect(build, serial):
         text = serial.read_text(errors="replace")
         if "SSH_CONFIG_BEGIN" in text:
             block = text.split("SSH_CONFIG_BEGIN", 1)[1].split("SSH_CONFIG_END", 1)[0]
-            defaults = dict(line.split(None, 1) for line in block.splitlines() if len(line.split(None, 1)) == 2)
+            defaults = {key: "\n".join(value) if isinstance(value, list) else value
+                        for key, value in parse_config(block).items()}
 
     def add(variant, category, token, path, default="上流資料に明記なし", evidence=""):
         relative = str(path.relative_to(ROOT))

@@ -13,12 +13,24 @@ import build
 
 from build import VARIANTS, overrides
 from inventory import configure_tokens, encode_multiline
-from runtime import initramfs, parse_serial
+from runtime import initramfs, parse_config, parse_serial
 from summarize import putty_protocol_ids
 from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_config_preserves_repeated_values_and_ignores_incomplete_lines(self):
+        result = parse_config("identityfile first\nidentityfile second\nport 22\nidentityfile\n")
+        self.assertEqual(result, dict(identityfile=["first", "second"], port="22"))
+        self.assertEqual(json.loads(encode_multiline("\n".join(result["identityfile"]))[5:]), "first\nsecond")
+        self.assertEqual(parse_config(""), {})
+        self.assertEqual(parse_config("identityfile\n"), {})
+        with tempfile.TemporaryDirectory() as directory:
+            build, measure, final = self.summary_fixture(Path(directory))
+            with mock.patch("summarize.needed", return_value=[]):
+                _, report = summarize(build, measure, [final], final)
+            self.assertEqual(report["openssh_effective_config"]["identityfile"], ["first", "second"])
+
     def test_configure_tokens_preserve_case_and_complete_names(self):
         self.assertEqual(configure_tokens("  --with-Werror  --enable-FEATURE[=ARG]  --without-X"),
                          ["--with-Werror", "--enable-FEATURE", "--without-X"])

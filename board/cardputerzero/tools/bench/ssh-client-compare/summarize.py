@@ -9,7 +9,7 @@ import re
 import statistics
 
 from build import ROOT, VARIANTS, needed, sha
-from runtime import parse_serial
+from runtime import parse_config, parse_serial
 
 
 def putty_protocol_ids(data):
@@ -123,7 +123,7 @@ def summarize(build, measure, attempts, final):
         report["writable_opens"][variant] = sorted(set(operations)) if traced == 10 else None
         report["trace_available"][variant] = dict(observed=traced, expected=10)
     block = serial.split("SSH_CONFIG_BEGIN", 1)[1].split("SSH_CONFIG_END", 1)[0]
-    report["openssh_effective_config"] = dict(line.split(None, 1) for line in block.splitlines() if len(line.split(None, 1)) == 2)
+    report["openssh_effective_config"] = parse_config(block)
     report["final_inputs"] = json.loads((final / "inputs.json").read_text())
     report["run_qemu_hash_lines"] = [line.replace(str(ROOT), ".") for line in serial.splitlines() if "run-qemu: sha256" in line]
     return rows, report

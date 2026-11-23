@@ -22,6 +22,15 @@ import time
 from build import ROOT, VARIANTS, sha
 
 
+def parse_config(text):
+    values = {}
+    for line in text.splitlines():
+        fields = line.split(None, 1)
+        if len(fields) == 2:
+            values.setdefault(fields[0], []).append(fields[1])
+    return {key: items[0] if len(items) == 1 else items for key, items in values.items()}
+
+
 def parse_serial(text, variants, repetitions):
     if "SSH_COMPARE_DONE" not in text or "Kernel panic" in text:
         raise ValueError("incomplete guest or panic")
