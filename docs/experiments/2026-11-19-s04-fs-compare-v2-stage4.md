@@ -237,3 +237,224 @@ checkerが改変を見逃す場合の不合格、およびmount・fsck失敗を�
 使う方式へ修正した。W1欠損時にW2・W3・W4の各fileを使えること、
 W1が存在する場合、期待fileが全て欠損した場合の専用理由、
 checkerの検出失敗をhost回帰テストへ追加した。
+
+## b242681での再試行01〜03: いずれも停止
+
+判定修正後の`b242681202aa74ecaa04abb7874c904bc55b2b16`にsourceを固定し、
+fresh build、既定の代表21件、単独の`E2/T1-negative-final`診断、
+全851件の順で実行する計画で再試行した。各試行は別の出力先を使った。
+3試行とも途中で失敗し、単独E2診断と全851件は未実施である。
+下表の成功件数は代表21件のうち実行できた件数だけを示す。
+旧20件や異なる試行の成功を引き継いでいない。
+
+| 試行 | build | 代表診断 | 停止理由 |
+|---|---|---|---|
+| 01 | 0.813036秒で失敗 | 0成功、21未実施 | worktreeのsubmoduleの相対Git参照がDocker内で解決できず、Buildrootのcommit取得で停止。compileと容量gateより前 |
+| 02 | 3567.344184秒で成功 | 0成功、1失敗、20未実施 | standalone cloneへ変更したが、既存の開発imageはQEMU 11.1.2。規則が要求する11.1.3と不一致で、既知boot診断17件をfatalと判定 |
+| 03 | 1442.812923秒で成功 | 2成功、1失敗、18未実施 | imageを再構築し11.1.3へ一致。E1/smokeのA/Aは成功したが、E1/T1の区間markerとkernel printkが連結して停止 |
+
+試行03のimage IDは
+`sha256:1aea11386e31cc82eff0807de3e372a0b4443c881f3bc3765a56810b32e2ca65`。
+QEMU binaryのSHA-256は
+`8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73`で、
+実binaryの版出力と`boot-diagnostics.json`はともに11.1.3だった。
+stage4はDocker image IDを記録しないため、外側の実行記録に保存した。
+stage4のQEMUの版とhashは再構築imageと一致している。
+
+### 証拠の保存状況
+
+この3試行のtext証拠はorphan branch `data/fs-compare-experiments`の
+commit `e3d073d42822535330ec08d3dc112e5abd859d67`に保存した。
+配置は`fs-compare/stage4-rerun-b242681-01-03.tar.zst`、
+memberごとのhashは同名の`.files.sha256`、選別・除外・加工の記録は
+同名の`.selection.json`である。
+[保管branchの案内](https://github.com/uist1idrju3i/MSD-Linux/blob/e3d073d42822535330ec08d3dc112e5abd859d67/README.md)にも対象を記した。
+既存の古い証拠archiveには追加していない。
+保管した証拠の識別名は次のとおり。要約と
+[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)には生の秒数を残す。
+
+- 01: `attempt-01-failure.md`、`build.log`、`build-host-result.json`、
+  `failed-rerun-b242681-01`。旧worktreeは証拠を保存した後に削除した。
+- 02: `attempt-02-diagnosis.json`、`build-02-host-result.json`、
+  `representative-02.log`、`rerun-b242681-02`。
+  `rerun-02-copy-manifest.json`で1595 fileのsize・hashを照合した。
+- 03: `attempt-03-diagnosis.json`、`image-inspect-03.json`、
+  `qemu-verify-03.json`、`build-03-host-result.json`、
+  `representative-03.log`、`rerun-b242681-03`。
+  `rerun-03-copy-manifest.json`で1795 fileのsize・hashを照合した。
+
+archiveはlog、結果JSON、manifest、診断JSON、実行scriptなどの
+text 682 fileを含む。image・binaryなど2736 fileは含めず、
+除外したpath・size・hashを`.selection.json`に残した。
+試行02のbuild log 1 fileは署名付きdownload URLのqueryだけを保管用の写しで伏せた。
+その変更前後のhashも同JSONに残し、元logと他のmemberは変更していない。
+旧copy manifestは元の保存物全体のhash、`.files.sha256`は今回公開した
+memberのhashであり、対象が異なる。push後にremoteからcommitを取得し、
+archiveと全682 memberのhashを照合した。
+
+### data branchからの取得と読取り専用の再分類
+
+リポジトリの最上位で次を実行する。`zstd`、`tar`、`sha256sum`が必要である。
+`evidence-b242681-01-03`は新しい保存先とし、既存の証拠を上書きしない。
+data branchをmergeしたり、実行中のcloneを変更したりする必要はない。
+
+```sh
+git fetch origin data/fs-compare-experiments
+data_sha=e3d073d42822535330ec08d3dc112e5abd859d67
+mkdir evidence-b242681-01-03
+git archive "$data_sha" fs-compare/stage4-rerun-b242681-01-03.tar.zst \
+  fs-compare/stage4-rerun-b242681-01-03.files.sha256 \
+  fs-compare/stage4-rerun-b242681-01-03.selection.json fs-compare/SHA256SUMS |
+  tar -xf - -C evidence-b242681-01-03
+cd evidence-b242681-01-03
+grep '  stage4-rerun-b242681-01-03\.' fs-compare/SHA256SUMS |
+  (cd fs-compare && sha256sum -c -)
+zstd -dc fs-compare/stage4-rerun-b242681-01-03.tar.zst | tar -xf -
+sha256sum -c fs-compare/stage4-rerun-b242681-01-03.files.sha256
+cd ..
+```
+
+次の再分類では、修正commitの判定器と規則を新しい証拠directoryへ取り出す。
+原log・結果JSONへ書き込まずに実行し、fatal 0件と前後のhash一致を要求する。
+失敗した試行を成功へ書き換える操作ではない。
+
+```sh
+judge_sha=1dc14a323f4387503a04691838431b741bf97e9f
+bench=board/cardputerzero/tools/bench/fs-compare-v2
+git show "$judge_sha:$bench/supervisor.py" > evidence-b242681-01-03/supervisor.py
+git show "$judge_sha:$bench/boot-diagnostics.json" > evidence-b242681-01-03/boot-diagnostics.json
+python3 - <<'PY'
+import hashlib
+import importlib.util
+from pathlib import Path
+
+root = Path("evidence-b242681-01-03")
+spec = importlib.util.spec_from_file_location("supervisor", root / "supervisor.py")
+judge = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(judge)
+log = root / "rerun-b242681-03/representative/03-E1-T1/probe-E1-T1/qemu-run.log"
+before = hashlib.sha256(log.read_bytes()).hexdigest()
+records = judge.aggregate_errors([("run", log)], "T1")
+fatal = sum(not row["expected"] for row in records)
+assert before == hashlib.sha256(log.read_bytes()).hexdigest()
+assert before == "1ae02dbeda610a19d3dcd56a30f20cd746ca9d0dfa2a1724bfcd9b20340a2430"
+print(f"records={len(records)} fatal={fatal} SHA-256 unchanged")
+assert fatal == 0
+PY
+```
+
+試行03の`representative/03-E1-T1/probe-E1-T1/qemu-run.log`の
+SHA-256は`1ae02dbeda610a19d3dcd56a30f20cd746ca9d0dfa2a1724bfcd9b20340a2430`。
+500行目と505行目は次のとおり。
+
+```text
+msd.fscmp: expected_errors_begin kind=T1_replay[  276.732017] EXT4-fs (dm-1): recovery complete
+msd.fscmp: expected_errors_end kind=T1_replay
+```
+
+旧host判定器は開始kindを`T1_replay[`と読み、開始・終了をともに
+不正な区間として記録した。QEMU logのfatalは2件で、
+driver終了状態によるhost側のfatalを含めると3件だった。
+
+修正では[既存のserial断片分離](../../board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py)を
+この開始・終了markerにも適用する。markerを先に処理し、同じ行のtimestamp付き
+kernel断片を独立に判定する。未知のkind、区間外の診断、kernel panicは
+引き続き拒否する。[host回帰テスト](../../tests/fs-compare-v2/run.py)に
+上記の実測行と、連結した終了marker、T6、未知kind、誤ったphase、
+閉じていない区間、kernel fatalの検査を加えた。
+
+修正した判定器で試行03の元QEMU logを読み取り専用で再集計すると、
+診断は61件、fatalは0件だった。読取り前後のSHA-256は上記と一致し、
+原log、元の判定結果、凍結した実験sourceは変更していない。
+
+guestの`console()`は既に末尾改行付きの`printf`を使っている。
+先頭改行を加えてもmarkerの後ろへのprintk割り込みは防げない。
+storageへの`sync`もserialの排他にはならないため、guestは変更しない。
+この修正はhost判定器の検査であり、失敗した試行03を成功へ変更せず、
+QEMUや実機の電源断の再実行とも扱わない。
+
+## 1dc14a3での再試行04: 負対照の未設定変数で停止
+
+sourceを`1dc14a323f4387503a04691838431b741bf97e9f`に固定した新しい
+standalone cloneで再試行した。Docker関連fileは`b242681`と同一だったため、
+試行03と同じimage IDを再利用した。実binaryのQEMU 11.1.3とhashも一致した。
+fresh出力は`output-fscmp-v2-04`、runs directoryは`rerun-1dc14a3-04`である。
+
+buildは3499.8475962750017秒で成功した。代表21件は7成功・1失敗・13未実施で停止した。
+成功した経路はE1/smokeのA/A、T1、T1-final、T1-sample、
+T1-sample-selected、T1-negativeである。試行03が停止したE1/T1は成功したが、
+8件目のE1/T1-negative-finalが次のguestエラーで終了した。
+
+```text
+/usr/libexec/fs-compare-guest: line 1117: point_entry: parameter not set
+msd.fscmp: error=guest_exit status=2
+```
+
+今回は開始markerとkernel printkは別行だった。
+`T1_NEGATIVE_FINAL_CHECK`の成功行と`finished`は出ていない。
+単独E2診断と全851件smokeは開始しなかった。失敗した試行を成功へ変更せず、
+凍結sourceと原logは変更していない。元の保存物2153 fileは
+`rerun-04-copy-manifest.json`でsize・hashを照合した。
+各probeの秒数と終了状態は[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)へ追記した。
+
+### 原因と負対照経路の監査
+
+#287で追加した負対照は`check_t1_manifest()`を使うが、その診断に必要な
+`point_entry`を渡していなかった。回復経路は
+`result="$(check_manifest_at_point ...)"`で実行するため、
+その関数内で設定した`point_entry`は親shellへ残らない。
+後続の負対照がhash不一致を記録しようとすると、`set -u`により停止する。
+修正では負対照関数の第2引数へ最終点の`entry`を渡し、
+そのsubshell内で`point_entry`に設定する。回復経路と同じentryを診断へ記録する。
+
+負対照の他の変数も確認した。`RUN_PATH`、`REPLAY_WORKLOAD_ROOT`、`tab`は
+guestの共通初期化、`mount_ok`は呼出し元が設定する。
+`expected_file`、`manifest_strict_hash`、`manifest_context`は負対照内で設定し、
+marker関連の各値はmanifestの各行を`read`して取得する。
+`ack_count`、`manifest_ok`、`manifest_hash_mismatch`、`actual`もchecker内で設定する。
+strict hashを指定する負対照では、回復時だけ使うW2の先行更新照合と
+W3のtail検査へ入らない。これらに回復経路だけの代入への依存は見つからなかった。
+負対照はsubshellなのでcontextとstrict指定は回復経路へ残らない。
+
+旧hostテストも`sh -eu`だったが、`check_manifest_at_point`を
+command substitutionにせず直接実行し、`point_entry`を親shellへ残していた。
+回帰テストをguestと同じ呼出し方に直し、負対照直前で同変数が未設定であること、
+回復・負対照の診断がともに最終点のentryを記録することを検査した。
+修正前は1テスト内の5ケースが`point_entry: parameter not set`で失敗し、
+修正後は全67テストが成功した。正常・欠損・空集合・各workload・
+checkerの検出失敗の既存ケースもこの呼出し方で検査している。
+
+### 試行04の証拠と取得
+
+orphan branch `data/fs-compare-experiments`のcommit
+`f2062dd2d978911704c9b49a41e70ed6abc0be2a`に、
+`fs-compare/stage4-rerun-1dc14a3-04.tar.zst`を保存した。
+928個のtext証拠を原本のまま収録し、image・binaryなど1380 fileは除外した。
+memberのhashは同名の`.files.sha256`、除外したpath・size・hashは
+同名の`.selection.json`にある。push後にremoteから取得し、
+archiveと全928 memberのhashを照合した。
+
+取得には前節と同じく`zstd`、`tar`、`sha256sum`を使う。
+新しい保存先で次を実行する。data branchをmergeする必要はない。
+
+```sh
+git fetch origin data/fs-compare-experiments
+data_sha=f2062dd2d978911704c9b49a41e70ed6abc0be2a
+mkdir evidence-1dc14a3-04
+git archive "$data_sha" fs-compare/stage4-rerun-1dc14a3-04.tar.zst \
+  fs-compare/stage4-rerun-1dc14a3-04.files.sha256 \
+  fs-compare/stage4-rerun-1dc14a3-04.selection.json fs-compare/SHA256SUMS |
+  tar -xf - -C evidence-1dc14a3-04
+cd evidence-1dc14a3-04
+grep '  stage4-rerun-1dc14a3-04\.' fs-compare/SHA256SUMS |
+  (cd fs-compare && sha256sum -c -)
+zstd -dc fs-compare/stage4-rerun-1dc14a3-04.tar.zst | tar -xf -
+sha256sum -c fs-compare/stage4-rerun-1dc14a3-04.files.sha256
+```
+
+主な一次資料は`build-04-host-result.json`、`representative-04.log`、
+`attempt-04-diagnosis.json`と、`rerun-1dc14a3-04/representative/results.csv`、
+その下の`08-E1-T1-negative-final/probe-E1-T1-negative-final/qemu-run.log`である。
+再試行05は修正後の新しいheadに固定し、fresh build後に単独の
+E1・E2/T1-negative-finalを先に診断する計画とする。
+両方と既定の代表21件が成功した場合だけ、新しい全851件smokeを開始する。

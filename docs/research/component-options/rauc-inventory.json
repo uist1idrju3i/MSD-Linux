@@ -1,0 +1,1518 @@
+{
+  "source_commit": "4fb7c798d6ae412344fb8f8d310d773046af3441",
+  "tag": "v1.15.2",
+  "latest_stable": "v1.15.2",
+  "latest_api": "https://api.github.com/repos/rauc/rauc/releases/latest",
+  "latest_published_at": "2026-03-27T10:47:01Z",
+  "buildroot": "bbbdab36565d4941b6b0449a0eedb5aac8a10c2e",
+  "baseline": "82c72840215a287c06bf62828d8159d1aab78f6e",
+  "sha256": {
+    "https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt": "e7beb3f667ac740e9ee29b36081f4e8fc6e021c7ce53d74405f01ee056ab294a",
+    "https://github.com/rauc/rauc/blob/v1.15.2/meson.build": "c17697c293aab1abd7921a488af4365f5df3bfc515b1d847101beb6d58b70e40",
+    "https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst": "b071047bc4348a6ddada6c394d2e56db6fff45e923fd95f0b067f04729b59668",
+    "https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst": "4fd15cb14a71212f24f0f7370c688430301a4fd58c60114538dbcfbb8d9521ae",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/main.c": "48474d5d79eac0607b40e5ab77df1c8d02c3f1484d3640eaa82fbc7ebc6ac800",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c": "7a77c17573b004f79bef1923b375223c995dbe18dfaccb40f2fd49903dbf0aeb",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/manifest.c": "0a984e77e5e27ff499089d7a30e6cf740bc3f5ac27c1eb67d8f3a02a74e8c426",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/bundle.c": "c49bdf3a2ff9a4e16107cd594aaa6311b69ed327bfc295d66d25ea806d18ab3a",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/nbd.c": "0b8a1d29235f81ee4018eee601187a2f0275f698ed48354f35c8f78134b1a40f",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/service.c": "3c2ff3dfb6c719e836dc25be8007b75678729cb3fc22ffd5c566a2e03502e68b",
+    "https://github.com/rauc/rauc/blob/v1.15.2/src/signature.c": "864c0e35254225f1bd2bce04988ab241c744fc925c6b20ba29064688a6ee0b8d",
+    "https://github.com/rauc/rauc/blob/v1.15.2/docs/meson.build": "f869ff802dce2177c9b55ba3e66019b545a001ed3a1ad766762e3cdf22059bb0"
+  },
+  "surfaces": {
+    "meson": 18,
+    "system.conf": 68,
+    "manifest": 24,
+    "meson-builtin": 8,
+    "buildroot": 7,
+    "cli": 70,
+    "command": 17,
+    "kconfig": 30,
+    "kernel-cmdline": 5,
+    "environment": 48
+  },
+  "decisions": {
+    "不採用": 178,
+    "採用": 108,
+    "保留": 9
+  },
+  "missing": 0,
+  "identifiers": [
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "service"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "create"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "network"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "streaming"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "json"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "gpt"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "composefs"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "pkcs11_engine"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "streaming_user"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "systemdunitdir"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "systemdcatalogdir"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "dbuspolicydir"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "dbussystemservicedir"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "dbusinterfacesdir"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "htmldocs"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "manpages"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "tests"
+    },
+    {
+      "surface": "meson",
+      "scope": "project",
+      "option": "fuzzing"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "compatible"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "min-bundle-version"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "bootloader"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "bundle-formats"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "mountprefix"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "grubenv"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "barebox-statename"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "barebox-dtbpath"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "boot-attempts"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "boot-attempts-primary"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "efi-use-bootnext"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "activate-installed"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "statusfile"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "data-directory"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "max-bundle-download-size"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "max-bundle-signature-size"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "variant-name"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "variant-file"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "variant-dtb"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "perform-pre-check"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "system",
+      "option": "prevent-late-fallback"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "path"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "directory"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "use-bundle-signing-time"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "allow-partial-chain"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "allowed-signer-cns"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "check-crl"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "keyring",
+      "option": "check-purpose"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "streaming",
+      "option": "sandbox-user"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "streaming",
+      "option": "tls-cert"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "streaming",
+      "option": "tls-key"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "streaming",
+      "option": "tls-ca"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "streaming",
+      "option": "send-headers"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "encryption",
+      "option": "key"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "encryption",
+      "option": "cert"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "casync",
+      "option": "install-args"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "casync",
+      "option": "storepath"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "casync",
+      "option": "tmppath"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "casync",
+      "option": "use-desync"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "autoinstall",
+      "option": "path"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "handlers",
+      "option": "system-info"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "handlers",
+      "option": "pre-install"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "handlers",
+      "option": "post-install"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "handlers",
+      "option": "bootloader-custom-backend"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "device"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "type"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "extra-mkfs-opts"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "bootname"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "parent"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "allow-mounted"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "readonly"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "install-same"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "resize"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "extra-mount-opts"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "region-start"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "region-size"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "size-limit"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "artifacts.<repo-name>",
+      "option": "path"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "artifacts.<repo-name>",
+      "option": "type"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "artifacts.<repo-name>",
+      "option": "description"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "artifacts.<repo-name>",
+      "option": "parent-class"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "log.<logger>",
+      "option": "filename"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "log.<logger>",
+      "option": "events"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "log.<logger>",
+      "option": "format"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "log.<logger>",
+      "option": "max-size"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "log.<logger>",
+      "option": "max-files"
+    },
+    {
+      "surface": "manifest",
+      "scope": "update",
+      "option": "compatible"
+    },
+    {
+      "surface": "manifest",
+      "scope": "update",
+      "option": "version"
+    },
+    {
+      "surface": "manifest",
+      "scope": "update",
+      "option": "description"
+    },
+    {
+      "surface": "manifest",
+      "scope": "update",
+      "option": "build"
+    },
+    {
+      "surface": "manifest",
+      "scope": "update",
+      "option": "min-rauc-version"
+    },
+    {
+      "surface": "manifest",
+      "scope": "bundle",
+      "option": "format"
+    },
+    {
+      "surface": "manifest",
+      "scope": "bundle",
+      "option": "verity-hash"
+    },
+    {
+      "surface": "manifest",
+      "scope": "bundle",
+      "option": "verity-salt"
+    },
+    {
+      "surface": "manifest",
+      "scope": "bundle",
+      "option": "verity-size"
+    },
+    {
+      "surface": "manifest",
+      "scope": "bundle",
+      "option": "crypt-key"
+    },
+    {
+      "surface": "manifest",
+      "scope": "hooks",
+      "option": "filename"
+    },
+    {
+      "surface": "manifest",
+      "scope": "hooks",
+      "option": "hooks"
+    },
+    {
+      "surface": "manifest",
+      "scope": "handler",
+      "option": "filename"
+    },
+    {
+      "surface": "manifest",
+      "scope": "handler",
+      "option": "args"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "filename"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "type"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "sha256"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "size"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "hooks"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "adaptive"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "convert"
+    },
+    {
+      "surface": "manifest",
+      "scope": "image.*",
+      "option": "converted"
+    },
+    {
+      "surface": "manifest",
+      "scope": "meta.<label>",
+      "option": "<key>"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "force-install-same"
+    },
+    {
+      "surface": "system.conf",
+      "scope": "slot.<slot-class>.<idx>",
+      "option": "ignore-checksum"
+    },
+    {
+      "surface": "manifest",
+      "scope": "rollout",
+      "option": "<key>"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "prefix"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "bindir"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "libexecdir"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "libdir"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "datadir"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "mandir"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "c_std"
+    },
+    {
+      "surface": "meson-builtin",
+      "scope": "used-by-rauc",
+      "option": "warning_level"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC_DBUS"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC_GPT"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC_NETWORK"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC_STREAMING"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_RAUC_JSON"
+    },
+    {
+      "surface": "buildroot",
+      "scope": "package",
+      "option": "BR2_PACKAGE_HOST_RAUC"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--ignore-compatible"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--ignore-version-limit"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--transaction-id"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--require-manifest-hash"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--progress"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--handler-args"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "install",
+      "option": "--override-boot-slot"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle",
+      "option": "--mksquashfs-args"
+    },
+    {
+      "surface": "cli",
+      "scope": "resign",
+      "option": "--append"
+    },
+    {
+      "surface": "cli",
+      "scope": "resign",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "resign",
+      "option": "--no-verify"
+    },
+    {
+      "surface": "cli",
+      "scope": "resign",
+      "option": "--no-check-time"
+    },
+    {
+      "surface": "cli",
+      "scope": "replace",
+      "option": "--trust-environment"
+    },
+    {
+      "surface": "cli",
+      "scope": "replace",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "replace",
+      "option": "--no-verify"
+    },
+    {
+      "surface": "cli",
+      "scope": "replace",
+      "option": "--signing-keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--trust-environment"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--no-verify"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--mksquashfs-args"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--casync-args"
+    },
+    {
+      "surface": "cli",
+      "scope": "convert",
+      "option": "--ignore-image"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract_signature",
+      "option": "--key"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract_signature",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract_signature",
+      "option": "--trust-environment"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract",
+      "option": "--key"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "extract",
+      "option": "--trust-environment"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--no-verify"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--no-check-time"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--key"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--output-format"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--dump-cert"
+    },
+    {
+      "surface": "cli",
+      "scope": "info",
+      "option": "--dump-recipients"
+    },
+    {
+      "surface": "cli",
+      "scope": "status",
+      "option": "--detailed"
+    },
+    {
+      "surface": "cli",
+      "scope": "status",
+      "option": "--output-format"
+    },
+    {
+      "surface": "cli",
+      "scope": "status",
+      "option": "--override-boot-slot"
+    },
+    {
+      "surface": "cli",
+      "scope": "write_slot",
+      "option": "--image-type"
+    },
+    {
+      "surface": "cli",
+      "scope": "write_slot",
+      "option": "-l"
+    },
+    {
+      "surface": "cli",
+      "scope": "service",
+      "option": "--handler-args"
+    },
+    {
+      "surface": "cli",
+      "scope": "service",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "service",
+      "option": "--override-boot-slot"
+    },
+    {
+      "surface": "cli",
+      "scope": "signing",
+      "option": "--cert"
+    },
+    {
+      "surface": "cli",
+      "scope": "signing",
+      "option": "--key"
+    },
+    {
+      "surface": "cli",
+      "scope": "signing",
+      "option": "--intermediate"
+    },
+    {
+      "surface": "cli",
+      "scope": "signing",
+      "option": "--signing-keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "--tls-cert"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "--tls-key"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "--tls-ca"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "--tls-no-verify"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "--http-header"
+    },
+    {
+      "surface": "cli",
+      "scope": "bundle_access",
+      "option": "-H"
+    },
+    {
+      "surface": "cli",
+      "scope": "encryption",
+      "option": "--to"
+    },
+    {
+      "surface": "cli",
+      "scope": "encryption",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--conf"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "-c"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--confopt"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "-C"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--cert"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--key"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--keyring"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--intermediate"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--mount"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--debug"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "-d"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--version"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "--help"
+    },
+    {
+      "surface": "cli",
+      "scope": "global",
+      "option": "-h"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "help"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "install"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "bundle"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "resign"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "convert"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "encrypt"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "replace-signature"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "extract-signature"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "extract"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "info"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "status"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "write-slot"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "service"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "mount"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "status mark-good"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "status mark-bad"
+    },
+    {
+      "surface": "command",
+      "scope": "rauc",
+      "option": "status mark-active"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_BLK_DEV_DM"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_BLK_DEV_LOOP"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_BLK_DEV_NBD"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_BOOTCHOOSER"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CMD_BOOTCHOOSER"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CMD_STATE"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CRYPTO_AES"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CRYPTO_DEV_FSL_CAAM_AHASH_API"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CRYPTO_SHA256"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_CRYPTO_SHA2_ARM_CE"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_DM_CRYPT"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_DM_VERITY"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_IS_IN_*"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_IS_IN_FAT"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_IS_IN_MMC"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_OFFSET"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_OFFSET_REDUND"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_ENV_SIZE"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_FEATURE_SEAMLESS_*"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_FEATURE_TAR_AUTODETECT"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_FEATURE_TAR_LONG_OPTIONS"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_IMAGE_RAUC"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_MD"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_RAUC"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_SQUASHFS"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_STATE"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_STATE_DRV"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_SYS_MMC_ENV_DEV"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_SYS_MMC_ENV_PART"
+    },
+    {
+      "surface": "kconfig",
+      "scope": "integration",
+      "option": "CONFIG_SYS_REDUNDAND_ENVIRONMENT"
+    },
+    {
+      "surface": "kernel-cmdline",
+      "scope": "boot-identification",
+      "option": "rauc.slot"
+    },
+    {
+      "surface": "kernel-cmdline",
+      "scope": "boot-identification",
+      "option": "rauc.external"
+    },
+    {
+      "surface": "kernel-cmdline",
+      "scope": "boot-identification",
+      "option": "bootchooser.active"
+    },
+    {
+      "surface": "kernel-cmdline",
+      "scope": "boot-identification",
+      "option": "root"
+    },
+    {
+      "surface": "kernel-cmdline",
+      "scope": "boot-identification",
+      "option": "systemd.verity_root_data"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "PSEUDO_LOCALSTATEDIR"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "PSEUDO_DISABLED"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "DBUS_STARTER_BUS_TYPE"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "G_MESSAGES_DEBUG"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_NBD_SERVER"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_CURL_VERBOSE"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_TEST_NBD_SERVER"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_PKCS11_MODULE"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_PKCS11_PIN"
+    },
+    {
+      "surface": "environment",
+      "scope": "input",
+      "option": "RAUC_KEY_PASSPHRASE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SYSTEM_CONFIG"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SYSTEM_VARIANT"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_CURRENT_BOOTNAME"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BUNDLE_MOUNT_POINT"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_UPDATE_SOURCE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_TRANSACTION_ID"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_MOUNT_PREFIX"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_META_*"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOTS"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_TARGET_SLOTS"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_NAME_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_CLASS_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_TYPE_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_DEVICE_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_BOOTNAME_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_PARENT_<N>"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SYSTEM_COMPATIBLE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_MF_COMPATIBLE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_MF_VERSION"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_MF_BUILD"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_NAME"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_STATE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_CLASS"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_TYPE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_DEVICE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_BOOTNAME"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_PARENT"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_SLOT_MOUNT_POINT"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_IMAGE_NAME"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_IMAGE_SIZE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_IMAGE_DIGEST"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_IMAGE_CLASS"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_PARTITION_ACTIVATING"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_PARTITION_START"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_PARTITION_SIZE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_REGION_START"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_REGION_SIZE"
+    },
+    {
+      "surface": "environment",
+      "scope": "handler-output",
+      "option": "RAUC_BOOT_SIZE_LIMIT"
+    }
+  ]
+}

@@ -9,6 +9,7 @@
 | 主題 | 本文 |
 |---|---|
 | 端末側SSH clientのOpenSSH・Dropbear・PuTTY比較 | [比較条件・採否](ssh-client.md)、[全抽出option](ssh-client-options.csv)、[実験記録](../../experiments/2026-11-23-ssh-client-compare.md)。製品未導入です |
+| RAUC 1.15.2の全build・設定・manifest・CLI・Kconfigと採否 | [棚卸しと再照合](rauc.md)、[全採否表](rauc-options.csv)、[抽出記録](rauc-inventory.json)。承認済みの[導入契約](../../design/rauc-update-contract.md)と、未実装・OPENを区別 |
 | 2026-11-13の利用者判断と未実装・未決定の区別 | [製品方針](../../design/product-decisions.md)。seed非保存・初回zram・速度優先・更新移行までのCMS／CLI維持・legal-info補足collector・DEFAULTとML-KEM維持を決定。ML-DSA／SLH-DSA削除は署名移行時に判断。`/data`の具体値は未決定 |
 | OpenSSL 3.5.9の最小化・openssl.cnf・ARM最適化の調査草案 | [現状・採否・設定案](openssl-minimal.md)、[全option表](openssl-minimal-options.csv) |
 | PQCとhybrid TLS groupsの判断資料（維持を決定） | [DEFAULT・consumer・HNDL・選択肢と決定](openssl-pqc-groups.md)、[5構成の容量とVM／QEMU実験](../../experiments/2026-11-13-pqc-groups.md) |

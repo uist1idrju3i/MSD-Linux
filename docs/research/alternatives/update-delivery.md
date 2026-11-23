@@ -6,7 +6,7 @@
 
 2026-11-03に、MSD/Linuxの`origin/main` `94915bfef27f0d50ae0f4c6e24ffa98daf68a12e`と、固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`を基準に確認しました。暗号libraryはOpenSSLを採用する方針（2026-11-03 利用者決定）、差分更新は必須でnetwork依存可。記載したframework構成のbuild、QEMU、実機での更新は本リポジトリでは試していません。
 
-利用者はRAUCで進め、imageをGitHub Releasesへ配置し、差分更新にはRAUC adaptive（`block-hash-index`）を想定すると決定しました。実装計画は利用者review待ちです。[差分方式の比較と測定案](update-delta.md)に根拠、失敗時の状態、2026-11-19に共有されたRange観測を保存しました。
+利用者はRAUCで進め、imageをGitHub Releasesへ配置し、差分更新にRAUC adaptive（`block-hash-index`）を使う計画を承認しました。現在の条件と後続PRは[導入契約](../../design/rauc-update-contract.md)、全optionの採否は[棚卸し](../component-options/rauc.md)を参照してください。製品導入は未実施です。[差分方式の比較と測定案](update-delta.md)に根拠、失敗時の状態、2026-11-19に共有されたRange観測を保存しました。
 
 ## 更新fileを渡す4つの経路
 

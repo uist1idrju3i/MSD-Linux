@@ -4,6 +4,10 @@
 
 ## 前提
 
+現在のRAUC導入条件は[承認済み契約](../../design/rauc-update-contract.md)、
+固定1.15.2の全option採否は[棚卸し](../component-options/rauc.md)を参照してください。
+本書は以下の基準日時の比較を保存し、製品実装済みとは扱いません。
+
 2026-11-03に、MSD/Linuxの`origin/main` `94915bfef27f0d50ae0f4c6e24ffa98daf68a12e`と、固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`を基準に設定を調べました。`origin/main`の値は文書化ブランチ作成時の`git rev-parse origin/main`で確認しました。暗号libraryはOpenSSLを採用する方針（2026-11-03 利用者決定）、差分更新は必須でnetwork依存可。調べた構成のbuild、QEMU、実機での起動や暗号性能の測定は本リポジトリでは試していません。
 
 ## OpenSSLの保守期限と現行版

@@ -11,6 +11,7 @@
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
 | [SSH client比較（#9）](2026-11-23-ssh-client-compare.md) | [CSV](2026-11-23-ssh-client-compare.csv) | 2026-11-23 | QEMU比較完了・製品未導入 | 3候補でEd25519認証・別host key拒否を各5回。OpenSSHの追加797,448 bytes・圧縮差327,680 bytes。失敗試行・暗号・RAM内writeは本文 |
+| [RAUC streaming](2026-11-23-rauc-streaming-poc.md) | [CSV](2026-11-23-rauc-streaming-poc.csv) | 2026-11-23 | host metadata各5回・Phase A未完 | 206・302成功、200拒否、403/429/切断のretry観測。Retry-Afterは待たない。実Releaseはassetなし。install・QEMU・adaptive再利用は未実施 |
 | [deps一括更新](2026-11-22-deps-update.md) | [CSV](2026-11-22-deps-update.csv) | 2026-11-22 | build・icount gate・kernel .config差分確認 | snapshot不整合をsnapshot更新で解消。QEMU 11.1.3は現行11.1.2比1.09xでgate成立。kernel差分は新規moduleのみ。実機・bq27220未確認 |
 | [RAID6 PQ](2026-11-19-raid6-pq.md) | [CSV](2026-11-19-raid6-pq.csv) | 2026-11-19 | QEMU各5回とA/A完了 | PQ benchmarkだけを省略。Btrfs mount・scrub成功。実機時間・algorithm未確認 |
 | [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 全smokeは20/851成功後、21件目E2/T1-negative-finalで停止 | 代表21件はA/A・負対照を含め経路確認成功。判定修正後に新しい出力先で851件を最初から再実行予定・未実施。全coverageは未完了 |

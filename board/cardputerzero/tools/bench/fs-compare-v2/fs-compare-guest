@@ -1125,6 +1125,7 @@ EOF
 check_t1_negative_manifest()
 (
 	control_source=$1
+	point_entry=$2
 	expected_file="${RUN_PATH}/T1-negative-expected.tsv"
 	: >"$expected_file"
 	while IFS="$tab" read -r relative expected marker marker_entry marker_sequence; do
@@ -1402,7 +1403,7 @@ $result
 EOF
 		negative_control=no
 		if [ "$TEST" = T1-negative-final ] && [ "$mount_ok" = yes ]; then
-			negative_control="$(check_t1_negative_manifest "$expected_file")"
+			negative_control="$(check_t1_negative_manifest "$expected_file" "$entry")"
 		fi
 		if [ "$mount_ok" = yes ]; then
 			if [ -n "$FSCRYPT_REPLAY_KEY_ID" ]; then

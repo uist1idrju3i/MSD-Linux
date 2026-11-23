@@ -4,7 +4,7 @@
 
 ## 決定と調査の範囲
 
-利用者はRAUCで進め、imageをGitHub Releasesへ配置し、差分更新にはRAUC adaptiveの`block-hash-index`を想定すると決定した。実装計画は利用者review待ちであり、frameworkの製品導入はまだ行っていない。RAUCでは完全imageとindexを含むbundleのRelease asset化を計画する。現行の`sdcard.img.xz`をそのままRAUCへ渡せるという意味ではない。
+利用者はRAUCで進め、imageをGitHub Releasesへ配置し、差分更新にRAUC adaptiveの`block-hash-index`を使う計画を承認した。現在の条件は[導入契約](../../design/rauc-update-contract.md)、全optionの採否は[棚卸し](../component-options/rauc.md)を参照する。frameworkの製品導入はまだ行っていない。RAUCでは完全imageとindexを含むbundleのRelease asset化を計画する。現行の`sdcard.img.xz`をそのままRAUCへ渡せるという意味ではない。
 
 比較対象は固定Buildroot `8b238854d909c9cce32ef9671d968b03e323b55d`のRAUC 1.15.2とSWUpdate 2026.05.1。以下は一次資料と実装を調べた結果で、build・QEMU・CM0実機での更新、転送量、RAM、所要時間は未測定である。SWUpdateとcasyncは比較として残し、並行採用する方針にはしない。
 
@@ -67,7 +67,7 @@ adaptiveはRAUC 1.8から文書化された機能で、[casyncとの比較](http
 
 ## Phase A第2段の測定案
 
-実装計画の利用者review後に、RAUC fullとadaptiveを主比較にする。casync・zchunk・rdiffは差分方式の対照として別構成で評価する案で、製品へ追加する決定ではない。[採用前のoption調査](updates.md#採用前のoption調査)とboot連携の計画を先に確定する。
+承認済みの[導入契約](../../design/rauc-update-contract.md)に従い、RAUC fullとadaptiveを主比較にする。casync・zchunk・rdiffは差分方式の対照として別構成で評価する案で、製品へ追加する決定ではない。[全optionの採否](../component-options/rauc.md)とboot連携の受入条件を固定し、測定は後続PR⑥で行う。
 
 | 試験 | 入力と対照 | 記録・判定 |
 |---|---|---|

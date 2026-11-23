@@ -1,0 +1,296 @@
+surface,scope,option,meaning_ja,upstream_default,available_1_15_2,latest_change,msd_value,decision,reason_ja,source
+meson,project,service,D-Bus常駐service,true,あり,最新stableも1.15.2・差なし,false,不採用,BusyBox initで操作時だけ起動し、service起動時のboot ID保存を避ける,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L2
+meson,project,create,bundle作成と変更command,true,あり,最新stableも1.15.2・差なし,target=false / host=true,採用,buildと署名を分離し、端末に作成機能を持ち込まない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L7
+meson,project,network,libcurlによるnetwork取得,true,あり,最新stableも1.15.2・差なし,true,採用,GitHub ReleasesのHTTPS取得に必要,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L12
+meson,project,streaming,NBDによる部分取得,true,あり,最新stableも1.15.2・差なし,true,採用,full bundleをRangeで読みadaptiveと併用する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L17
+meson,project,json,JSON出力,enabled,あり,最新stableも1.15.2・差なし,enabled,採用,状態を表示wrapperと試験器で機械判定する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L22
+meson,project,gpt,GPT操作,auto,あり,最新stableも1.15.2・差なし,disabled,不採用,既存MBRの固定partitionを更新し、表を書き換えない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L27
+meson,project,composefs,composefs artifact,disabled,あり,最新stableも1.15.2・差なし,disabled,不採用,bootとSquashFSのblock imageだけを更新する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L32
+meson,project,pkcs11_engine,PKCS#11 engine,true,あり,最新stableも1.15.2・差なし,target=false / host=false,不採用,今回HSMを必須にしない。recipeのOpenSSL ENGINE強制とは別,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L37
+meson,project,streaming_user,streaming helperの実行user,nobody,あり,最新stableも1.15.2・差なし,nobody,採用,network helperを非特権にし、②でuidと権限を確認する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L44
+meson,project,systemdunitdir,systemd unit配置,空文字（自動配置）,あり,最新stableも1.15.2・差なし,未設定,不採用,製品はBusyBox initでservice=false,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L51
+meson,project,systemdcatalogdir,systemd catalog配置,空文字（自動配置）,あり,最新stableも1.15.2・差なし,未設定,不採用,製品はBusyBox initでservice=false,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L56
+meson,project,dbuspolicydir,D-Bus policy配置,空文字（自動配置）,あり,最新stableも1.15.2・差なし,未設定,不採用,常駐D-Busを導入しない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L61
+meson,project,dbussystemservicedir,D-Bus service配置,空文字（自動配置）,あり,最新stableも1.15.2・差なし,未設定,不採用,常駐D-Busを導入しない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L66
+meson,project,dbusinterfacesdir,D-Bus interface配置,空文字（自動配置）,あり,最新stableも1.15.2・差なし,未設定,不採用,常駐D-Busを導入しない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L71
+meson,project,htmldocs,HTML生成,false,あり,最新stableも1.15.2・差なし,false,不採用,host調査資料を参照し製品imageへ収録しない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L78
+meson,project,manpages,man生成,false,あり,最新stableも1.15.2・差なし,false,不採用,製品の操作文書は別に提供する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L83
+meson,project,tests,上流test suite,true,あり,最新stableも1.15.2・差なし,製品false / 検証用別build,採用,recipeはfalse。②でhost試験を別途実行する,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L88
+meson,project,fuzzing,fuzz test,false,あり,最新stableも1.15.2・差なし,false,不採用,製品binaryに試験機能を含めない,https://github.com/rauc/rauc/blob/v1.15.2/meson_options.txt#L93
+system.conf,system,compatible,機種識別,必須,あり,最新stableも1.15.2・差なし,MSD/Linux CardputerZero専用値,採用,異機種bundleをslot write前に拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L66
+system.conf,system,min-bundle-version,bundle下限SemVer,なし,あり,最新stableも1.15.2・差なし,OPEN,保留,単調な内部版の永続下限とは別。期限問題と併せ④で利用者判断する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L72
+system.conf,system,bootloader,boot選択backend,必須,あり,最新stableも1.15.2・差なし,custom,採用,trybootを専用backendで扱う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L97
+system.conf,system,bundle-formats,許可するbundle形式,plain verity crypt,あり,最新stableも1.15.2・差なし,verity,採用,plainとcryptを暗黙に受け入れない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L104
+system.conf,system,mountprefix,一時mount配置,/mnt/rauc/,あり,最新stableも1.15.2・差なし,/run/rauc,採用,一時fileとmount点をRAM側へ限定する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L117
+system.conf,system,grubenv,GRUB環境,/boot/grub/grubenv,あり,最新stableも1.15.2・差なし,未設定,不採用,trybootでGRUBを使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L121
+system.conf,system,barebox-statename,barebox状態名,barebox側state探索,あり,最新stableも1.15.2・差なし,未設定,不採用,custom backendに統一する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L125
+system.conf,system,barebox-dtbpath,bareboxの別DTB,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,custom backendに統一する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L131
+system.conf,system,boot-attempts,mark-good時の試行回数,uboot/bareboxで3,あり,最新stableも1.15.2・差なし,未設定,不採用,customには適用されずfirmware trybootで扱う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L142
+system.conf,system,boot-attempts-primary,primary時の試行回数,uboot/bareboxで3,あり,最新stableも1.15.2・差なし,未設定,不採用,customには適用されずfirmware trybootで扱う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L149
+system.conf,system,efi-use-bootnext,EFI BootNext使用,EFIでtrue,あり,最新stableも1.15.2・差なし,未設定,不採用,EFIを使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L155
+system.conf,system,activate-installed,install直後の自動activate,true,あり,最新stableも1.15.2・差なし,false,採用,両imageのwrite・read-back完了前にslotを切り替えない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L165
+system.conf,system,statusfile,旧status配置指定,per-slot（data-directoryなし）,あり,最新stableも1.15.2・差なし,直接指定しない,不採用,非推奨。data-directoryにcentral.raucsをまとめる,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L174
+system.conf,system,data-directory,共有statusとindex保存,なし,あり,最新stableも1.15.2・差なし,/data/rauc,採用,RO rootとbundle外p7で状態を共有する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L188
+system.conf,system,max-bundle-download-size,非streaming download上限byte,8388608,あり,最新stableも1.15.2・差なし,既定維持・fallback禁止,採用,streamingでは無効。full-downloadの容量gateの代用にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L208
+system.conf,system,max-bundle-signature-size,署名最大byte,65536,あり,最新stableも1.15.2・差なし,65536,採用,入力の上限を維持する。④で実chainサイズを検査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L215
+system.conf,system,variant-name,固定variant,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,今回は機種compatibleを一つに固定する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L223
+system.conf,system,variant-file,fileによるvariant,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,可変fileで入力policyを変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L228
+system.conf,system,variant-dtb,DT compatibleをvariant化,false,あり,最新stableも1.15.2・差なし,false,不採用,DTによる実boot照合とbundle variantは別にする,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L233
+system.conf,system,perform-pre-check,bundle全体の事前読取り検査,false,あり,最新stableも1.15.2・差なし,false,不採用,streamingの部分取得を維持する。入力verityと書込後read-backを別に検査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L241
+system.conf,system,prevent-late-fallback,good後に旧slotをbad化,false,あり,最新stableも1.15.2・差なし,false,不採用,旧slotの自動無効化を持ち込まない。rollback制約はOPEN,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L255
+system.conf,keyring,path,CMS信頼CA file,なし,あり,最新stableも1.15.2・差なし,RO rootの専用CA PEM,採用,TLS CAとは分離し端末には公開CAだけを置く,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L274
+system.conf,keyring,directory,hash形式のCA directory,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,単一の管理されたCA fileに統一する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L278
+system.conf,keyring,use-bundle-signing-time,検証時計を署名時刻へ変更,false,あり,最新stableも1.15.2・差なし,OPEN（決定までfalse）,保留,期限検査の無効化ではない。信頼できない時計の選択肢として評価する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L288
+system.conf,keyring,allow-partial-chain,中間CAをtrust anchor化,false,あり,最新stableも1.15.2・差なし,false,不採用,offline rootまでのchainを検証する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L294
+system.conf,keyring,allowed-signer-cns,署名者CN制限,なし,あり,最新stableも1.15.2・差なし,OPEN,保留,PKI責任者と命名・rotation手順を④で決める。compatible検査は残す,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L305
+system.conf,keyring,check-crl,CRL検証,false,あり,最新stableも1.15.2・差なし,OPEN（決定までfalse）,保留,CRL自身の期限と配布・clock問題があり運用判断を要する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L322
+system.conf,keyring,check-purpose,証明書の用途検査,未設定（OpenSSL既定）,あり,最新stableも1.15.2・差なし,codesign,採用,④で専用release証明書の用途とchain拒否を試す,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L332
+system.conf,streaming,sandbox-user,取得helperのuser,nobody,あり,最新stableも1.15.2・差なし,nobody,採用,書込みworkerとは権限を分ける,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L353
+system.conf,streaming,tls-cert,TLS client証明書,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,公開Release取得に相互TLSは不要,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L360
+system.conf,streaming,tls-key,TLS client秘密鍵,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,端末に署名用・TLS client秘密鍵を置かない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L364
+system.conf,streaming,tls-ca,HTTPS信頼CA,system trust store,あり,最新stableも1.15.2・差なし,TLS用CA store,採用,bundle署名CAをHTTPS認証に流用しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L368
+system.conf,streaming,send-headers,端末情報のHTTP送信,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,公開asset取得に端末識別子を送らない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L374
+system.conf,encryption,key,crypt復号鍵,crypt使用時必須,あり,最新stableも1.15.2・差なし,未設定,不採用,bundleはverityのみで端末秘密鍵を不要にする,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L411
+system.conf,encryption,cert,crypt復号証明書,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,bundle暗号化は今回の範囲外,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L414
+system.conf,casync,install-args,casync追加引数,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,adaptiveを使いchunk store方式を追加しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L426
+system.conf,casync,storepath,casync store,bundle位置から導出,あり,最新stableも1.15.2・差なし,未設定,不採用,GitHubのfull asset一つを配布する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L431
+system.conf,casync,tmppath,casync一時directory,未設定・casyncはTMPDIR又は/var/tmp,あり,最新stableも1.15.2・差なし,未設定,不採用,casyncは使わず一般の一時fileはRAMにする,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L438
+system.conf,casync,use-desync,desync使用,false,あり,最新stableも1.15.2・差なし,false,不採用,実験的な別取得実装を増やさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L446
+system.conf,autoinstall,path,service起動時の自動install,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,利用者の同意なしに更新を開始しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L462
+system.conf,handlers,system-info,機種情報handler,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,compatibleをRO設定に固定し任意scriptを増やさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L479
+system.conf,handlers,pre-install,全体の前処理handler,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,入力検査とslot照合は製品wrapperで実装する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L513
+system.conf,handlers,post-install,全体の後処理handler,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,read-backとactivateの順序は③で明示的に制御する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L518
+system.conf,handlers,bootloader-custom-backend,custom handler,custom時必須,あり,最新stableも1.15.2・差なし,RO rootの専用backend,採用,get操作を無書込みにしhealth後だけ確定する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L523
+system.conf,slot.<slot-class>.<idx>,device,対象block device,必須,あり,最新stableも1.15.2・差なし,rootfs=p5/p6、boot=p2/p3,採用,p1とp7をinstall対象に含めない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L545
+system.conf,slot.<slot-class>.<idx>,type,slot書込み形式,raw,あり,最新stableも1.15.2・差なし,raw,採用,FATもSquashFSも完成したimageをblockへ書きadaptiveを適用する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L548
+system.conf,slot.<slot-class>.<idx>,extra-mkfs-opts,mkfs追加引数,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,raw imageを使いinstall時にformatしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L556
+system.conf,slot.<slot-class>.<idx>,bootname,boot識別子,なし,あり,最新stableも1.15.2・差なし,rootfs.0=A、rootfs.1=B,採用,cmdlineとDTと実rootの三者照合に使う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L560
+system.conf,slot.<slot-class>.<idx>,parent,slot group親,なし,あり,最新stableも1.15.2・差なし,boot.0=rootfs.0、boot.1=rootfs.1,採用,bootとrootfsを同じinactive groupにする,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L569
+system.conf,slot.<slot-class>.<idx>,allow-mounted,mount中の更新許可,false,あり,最新stableも1.15.2・差なし,false,不採用,active又はmount中のslotは拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L577
+system.conf,slot.<slot-class>.<idx>,readonly,非更新slot宣言,false,あり,最新stableも1.15.2・差なし,false,不採用,四つのslotは更新対象。p1/p7はslot宣言自体を作らない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L582
+system.conf,slot.<slot-class>.<idx>,install-same,同一hash時もinstall,true,あり,最新stableも1.15.2・差なし,true,採用,statusの古いhashだけでwrite全体を省かずadaptiveのblock検証を使う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L588
+system.conf,slot.<slot-class>.<idx>,resize,ext4更新後の拡張,false,あり,最新stableも1.15.2・差なし,false,不採用,raw slotと既存partition境界を維持する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L600
+system.conf,slot.<slot-class>.<idx>,extra-mount-opts,mount追加引数,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,raw imageを書きslotをmountして展開しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L605
+system.conf,slot.<slot-class>.<idx>,region-start,特殊boot region開始,対象typeで必須,あり,最新stableも1.15.2・差なし,未設定,不採用,MBR/GPT切替handlerは使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L609
+system.conf,slot.<slot-class>.<idx>,region-size,特殊boot region長,対象typeで必須,あり,最新stableも1.15.2・差なし,未設定,不採用,MBR/GPT切替handlerは使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L619
+system.conf,slot.<slot-class>.<idx>,size-limit,eMMC boot上限,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,SD製品で旧eMMC互換optionを使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L629
+system.conf,artifacts.<repo-name>,path,artifact repository配置,必須,あり,最新stableも1.15.2・差なし,未設定,不採用,slot imageだけを配布し永続artifact storeを増やさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L655
+system.conf,artifacts.<repo-name>,type,artifact repository形式,必須,あり,最新stableも1.15.2・差なし,未設定,不採用,files/trees/composefs repositoryは使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L660
+system.conf,artifacts.<repo-name>,description,artifact説明,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,artifactを採用しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L675
+system.conf,artifacts.<repo-name>,parent-class,artifactの親class,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,artifactを採用しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L678
+system.conf,log.<logger>,filename,event log保存先,section使用時必須,あり,最新stableも1.15.2・差なし,sectionなし,不採用,相対名は/data配下になるため永続logを禁止する。操作logはRAMへ,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L697
+system.conf,log.<logger>,events,記録event,all,あり,最新stableも1.15.2・差なし,sectionなし,不採用,自動起動logによる永続writeを増やさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L704
+system.conf,log.<logger>,format,event log形式,readable,あり,最新stableも1.15.2・差なし,sectionなし,不採用,consoleとRAMの表示wrapperで必要情報を扱う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L712
+system.conf,log.<logger>,max-size,log rotation byte上限,制限なし,あり,最新stableも1.15.2・差なし,sectionなし,不採用,永続event loggerを使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L720
+system.conf,log.<logger>,max-files,rotation保存数,10,あり,最新stableも1.15.2・差なし,sectionなし,不採用,永続event loggerを使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L731
+manifest,update,compatible,対応機種,必須,あり,最新stableも1.15.2・差なし,systemと同じ専用値,採用,異機種入力を拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L781
+manifest,update,version,bundle版,なし,あり,最新stableも1.15.2・差なし,公開SemVerと内部単調版を識別,採用,RAUCの文字列表示だけでanti-rollback達成とはしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L785
+manifest,update,description,説明,なし,あり,最新stableも1.15.2・差なし,release説明,採用,成功・失敗時に対象更新を表示する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L790
+manifest,update,build,build識別,なし,あり,最新stableも1.15.2・差なし,source commit等,採用,buildと署名を分離して入力の由来を追跡する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L794
+manifest,update,min-rauc-version,RAUC最小版,なし,あり,最新stableも1.15.2・差なし,1.15.2,採用,新しいimage type等を旧RAUCで誤処理させない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L799
+manifest,bundle,format,bundleの保護形式,plain,あり,最新stableも1.15.2・差なし,verity,採用,入力をblockごとに検証しstreamingに使う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L810
+manifest,bundle,verity-hash,bundle root hash,RAUC生成,あり,最新stableも1.15.2・差なし,RAUC生成,採用,installed rootの信頼hashとして流用しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L817
+manifest,bundle,verity-salt,bundle salt,RAUC生成,あり,最新stableも1.15.2・差なし,RAUC生成,採用,手書きせず作成toolに生成させる,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L822
+manifest,bundle,verity-size,bundle hash tree長,RAUC生成,あり,最新stableも1.15.2・差なし,RAUC生成,採用,streaming入力の検証に使用する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L827
+manifest,bundle,crypt-key,bundle復号鍵,crypt時RAUC生成,あり,最新stableも1.15.2・差なし,未設定,不採用,verityだけを採用し暗号化は追加しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L832
+manifest,hooks,filename,bundle同梱hook,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,任意bundle scriptにslot判定を委ねない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L842
+manifest,hooks,hooks,install-check等,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,互換検査をhookで上書きさせない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L845
+manifest,handler,filename,全installの置換handler,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,標準の署名・image処理を維持する。custom bootloaderとは別,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L876
+manifest,handler,args,置換handler引数,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,標準installを置き換えない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L881
+manifest,image.*,filename,image file名,通常必須（emptyfs以外）,あり,最新stableも1.15.2・差なし,boot.img / rootfs.squashfs,採用,両方の完成imageを一つのfull bundleへ含める,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L923
+manifest,image.*,type,image内容形式,file名から推定,あり,最新stableも1.15.2・差なし,boot=raw、rootfs=squashfs,採用,v1.15で追加。曖昧な拡張子判定を避ける,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L944
+manifest,image.*,sha256,image全体hash,RAUC生成,あり,最新stableも1.15.2・差なし,RAUC生成,採用,書込後の全長read-backと照合する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L955
+manifest,image.*,size,image長,RAUC生成,あり,最新stableも1.15.2・差なし,RAUC生成,採用,slot容量とread-back長を固定する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L959
+manifest,image.*,hooks,slotの前後・install hook,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,標準raw writerと明示的な製品制御を使う,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L963
+manifest,image.*,adaptive,block再利用方式,なし,あり,最新stableも1.15.2・差なし,両imageでblock-hash-index,採用,4 KiB単位で照合し転送とwriteの実測を分ける,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L971
+manifest,image.*,convert,artifact変換,なし,あり,最新stableも1.15.2・差なし,未設定,不採用,tar-extract/composefs/keepによるartifact変換を使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L990
+manifest,image.*,converted,変換後file一覧,変換時RAUC生成,あり,最新stableも1.15.2・差なし,未設定,不採用,slot imageをそのまま含める,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1016
+manifest,meta.<label>,<key>,自由metadata,なし,あり,最新stableも1.15.2・差なし,内部単調版等を④で定義,保留,署名済みでもRAUCが比較しない。期限・rollback方針の承認後に契約化する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1043
+system.conf,slot.<slot-class>.<idx>,force-install-same,install-sameの旧名,install-same未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L974
+system.conf,slot.<slot-class>.<idx>,ignore-checksum,install-sameの旧名,他の二名未指定時true,あり,最新stableも1.15.2・差なし,未設定,不採用,非推奨aliasを新設定に使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/config_file.c#L978
+manifest,rollout,<key>,予約された自由設定,なし・RAUCは解釈しない,あり,最新stableも1.15.2・差なし,未設定,不採用,未実装の段階配布policyを安全機構と見なさない,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1026
+meson-builtin,used-by-rauc,prefix,RAUCが参照又は既定指定するMeson共通option,/usr/local,あり,最新stableも1.15.2・差なし,/usr,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L20
+meson-builtin,used-by-rauc,bindir,RAUCが参照又は既定指定するMeson共通option,bin,あり,最新stableも1.15.2・差なし,bin,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L24
+meson-builtin,used-by-rauc,libexecdir,RAUCが参照又は既定指定するMeson共通option,libexec,あり,最新stableも1.15.2・差なし,libexec,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L26
+meson-builtin,used-by-rauc,libdir,RAUCが参照又は既定指定するMeson共通option,実行環境で自動判定,あり,最新stableも1.15.2・差なし,lib,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L228
+meson-builtin,used-by-rauc,datadir,RAUCが参照又は既定指定するMeson共通option,share,あり,最新stableも1.15.2・差なし,share,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L238
+meson-builtin,used-by-rauc,mandir,RAUCが参照又は既定指定するMeson共通option,share/man,あり,最新stableも1.15.2・差なし,製品へmanを収録しない,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/docs/meson.build#L44
+meson-builtin,used-by-rauc,c_std,RAUCが参照又は既定指定するMeson共通option,gnu11（RAUC project指定）,あり,最新stableも1.15.2・差なし,gnu11,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L7
+meson-builtin,used-by-rauc,warning_level,RAUCが参照又は既定指定するMeson共通option,2（RAUC project指定。Meson共通では1）,あり,最新stableも1.15.2・差なし,2,採用,Buildrootの配置・toolchainを継承する。任意のcompiler flagsとは区別する,https://github.com/rauc/rauc/blob/v1.15.2/meson.build#L8
+buildroot,package,BR2_PACKAGE_RAUC,target RAUC,n,あり,最新stableも1.15.2・差なし,y,採用,標準bundle検証とwriterを導入する,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L1
+buildroot,package,BR2_PACKAGE_RAUC_DBUS,D-Bus service,n,あり,最新stableも1.15.2・差なし,n,不採用,常駐と起動時のstatus writeを避ける,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L25
+buildroot,package,BR2_PACKAGE_RAUC_GPT,GPT操作,n,あり,最新stableも1.15.2・差なし,n,不採用,既存MBRのpartitionを書き換えない,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L32
+buildroot,package,BR2_PACKAGE_RAUC_NETWORK,network取得,n,あり,最新stableも1.15.2・差なし,y,採用,libcurlによるHTTPS取得に必要,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L40
+buildroot,package,BR2_PACKAGE_RAUC_STREAMING,streaming,n,あり,最新stableも1.15.2・差なし,y,採用,libnlとkernel NBDでRangeを取得する,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L49
+buildroot,package,BR2_PACKAGE_RAUC_JSON,JSON出力,n,あり,最新stableも1.15.2・差なし,y,採用,表示wrapperと機械試験で状態を読む,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in#L57
+buildroot,package,BR2_PACKAGE_HOST_RAUC,host作成tool,n,あり,最新stableも1.15.2・差なし,y,採用,targetと同じ固定版でbundle作成・署名を分離する,https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/rauc/Config.in.host#L1
+cli,install,--ignore-compatible,機種検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2572
+cli,install,--ignore-version-limit,版下限検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2573
+cli,install,--transaction-id,取引識別,なし,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2574
+cli,install,--require-manifest-hash,manifest hash固定,なし,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2575
+cli,install,--progress,進行bar,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,service=true専用。採用するservice=falseではwrapperが進捗callback出力を英日表示する,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2577
+cli,install,--handler-args,置換handler追加引数,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2579
+cli,install,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2580
+cli,install,--override-boot-slot,boot検出上書き,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2581
+cli,bundle,--mksquashfs-args,SquashFS生成引数,なし,あり,最新stableも1.15.2・差なし,host作成条件を固定,採用,再現性とfull/adaptive対照の圧縮条件を揃える,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2587
+cli,resign,--append,署名追記,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2592
+cli,resign,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2593
+cli,resign,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2594
+cli,resign,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,OPEN・製品では未採用,保留,info/resign用でinstallには存在しない。期限無効化を導入済みと扱わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2595
+cli,replace,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2600
+cli,replace,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2601
+cli,replace,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2602
+cli,replace,--signing-keyring,署名後検証CA,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2603
+cli,convert,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2608
+cli,convert,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2609
+cli,convert,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2610
+cli,convert,--mksquashfs-args,SquashFS生成引数,なし,あり,最新stableも1.15.2・差なし,host作成条件を固定,採用,再現性とfull/adaptive対照の圧縮条件を揃える,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2611
+cli,convert,--casync-args,casync引数,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2612
+cli,convert,--ignore-image,変換時のimage除外,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2613
+cli,extract_signature,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2618
+cli,extract_signature,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2619
+cli,extract_signature,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2620
+cli,extract,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2625
+cli,extract,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2626
+cli,extract,--trust-environment,bundle access安全検査の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2627
+cli,info,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2632
+cli,info,--no-verify,署名検証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2633
+cli,info,--no-check-time,証明書期限検査の省略,false,あり,最新stableも1.15.2・差なし,OPEN・製品では未採用,保留,info/resign用でinstallには存在しない。期限無効化を導入済みと扱わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2634
+cli,info,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2635
+cli,info,--output-format,出力形式,readable,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2636
+cli,info,--dump-cert,証明書表示,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2637
+cli,info,--dump-recipients,復号受信者表示,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2638
+cli,status,--detailed,詳細status,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2643
+cli,status,--output-format,出力形式,readable,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2644
+cli,status,--override-boot-slot,boot検出上書き,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2646
+cli,write_slot,--image-type,直接writeのimage形式,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2652
+cli,write_slot,-l,直接writeのimage形式（短縮形）,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2652
+cli,service,--handler-args,置換handler追加引数,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2657
+cli,service,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2658
+cli,service,--override-boot-slot,boot検出上書き,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2659
+cli,signing,--cert,署名証明書指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2664
+cli,signing,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2665
+cli,signing,--intermediate,中間CA指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2666
+cli,signing,--signing-keyring,署名後検証CA,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2667
+cli,bundle_access,--tls-cert,TLS client証明書,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2672
+cli,bundle_access,--tls-key,TLS client秘密鍵,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2673
+cli,bundle_access,--tls-ca,TLS用CA指定,なし,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2674
+cli,bundle_access,--tls-no-verify,TLS認証の省略,false,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2675
+cli,bundle_access,--http-header,HTTP追加header,なし,あり,最新stableも1.15.2・差なし,Phase Aで認証要否を評価,保留,公開assetでは既定で送らない。tokenをredirect先へ漏らさない条件を測る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2676
+cli,bundle_access,-H,HTTP追加header（短縮形）,なし,あり,最新stableも1.15.2・差なし,Phase Aで認証要否を評価,保留,公開assetでは既定で送らない。tokenをredirect先へ漏らさない条件を測る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2676
+cli,encryption,--to,暗号化受信者,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,採用しない取得・暗号化・変換・任意handlerの機能を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2681
+cli,encryption,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2682
+cli,global,--conf,system.conf選択,なし,あり,最新stableも1.15.2・差なし,RO rootの専用system.conf,採用,可変etcでpolicyを隠さず起動前にpathを固定する,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2782
+cli,global,-c,system.conf選択（短縮形）,なし,あり,最新stableも1.15.2・差なし,RO rootの専用system.conf,採用,可変etcでpolicyを隠さず起動前にpathを固定する,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2782
+cli,global,--confopt,設定の都度上書き,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2783
+cli,global,-C,設定の都度上書き（短縮形）,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,製品経路では入力検査・実boot照合・RO policyを迂回させない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2783
+cli,global,--cert,署名証明書指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2785
+cli,global,--key,秘密鍵指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2786
+cli,global,--keyring,署名用CA指定,なし,あり,最新stableも1.15.2・差なし,専用RO keyring,採用,製品は固定CAだけを使い、任意CAへの差替えは公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2788
+cli,global,--intermediate,中間CA指定,なし,あり,最新stableも1.15.2・差なし,署名hostだけ,採用,build成果物と分離した署名環境でCMS chainを生成・検証する。端末では公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2789
+cli,global,--mount,一時mount prefix,なし,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2790
+cli,global,--debug,debug表示,false,あり,最新stableも1.15.2・差なし,開発・故障解析時だけ,採用,出力をRAMに限定しsigned URL・秘密情報を保存しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2791
+cli,global,-d,debug表示（短縮形）,false,あり,最新stableも1.15.2・差なし,開発・故障解析時だけ,採用,出力をRAMに限定しsigned URL・秘密情報を保存しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2791
+cli,global,--version,版表示,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2792
+cli,global,--help,help表示,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2793
+cli,global,-h,help表示（短縮形）,false,あり,最新stableも1.15.2・差なし,操作・試験時だけ指定,採用,対象更新と状態を明示し、結果をRAMの表示・記録へ送る,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2793
+command,rauc,help,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,操作と試験のhelp,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2801
+command,rauc,install,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,検証済みのinactive group更新,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2804
+command,rauc,bundle,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,hostでfull bundle作成,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2808
+command,rauc,resign,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,独立署名hostで再署名し生成側と鍵を分離,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2811
+command,rauc,convert,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,casync/artifact変換は使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2814
+command,rauc,encrypt,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,cryptは使わない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2817
+command,rauc,replace-signature,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,今回はresign経路に統一,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2819
+command,rauc,extract-signature,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,署名hostでCMS chainを検査,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2822
+command,rauc,extract,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,製品で任意展開を公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2826
+command,rauc,info,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,bundleの検証と表示,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2829
+command,rauc,status,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,状態の読取り,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2832
+command,rauc,write-slot,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,認証を迂回する直接writeを製品UIに公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2839
+command,rauc,service,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,起動時のboot ID保存と常駐を避ける,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2844
+command,rauc,mount,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,不採用,開発用mountを製品UIに公開しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2848
+command,rauc,status mark-good,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,S99msd-health成功後にだけ確定,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2835
+command,rauc,status mark-bad,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,失敗候補を操作中に無効化。p1を無条件変更しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2836
+command,rauc,status mark-active,command入口,明示実行のみ,あり,最新stableも1.15.2・差なし,限定wrapper経由,採用,両image read-back後にtryingだけを記録,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2837
+kconfig,integration,CONFIG_BLK_DEV_DM,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L441
+kconfig,integration,CONFIG_BLK_DEV_LOOP,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L442
+kconfig,integration,CONFIG_BLK_DEV_NBD,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L447
+kconfig,integration,CONFIG_BOOTCHOOSER,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L722
+kconfig,integration,CONFIG_CMD_BOOTCHOOSER,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L732
+kconfig,integration,CONFIG_CMD_STATE,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L731
+kconfig,integration,CONFIG_CRYPTO_AES,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L454
+kconfig,integration,CONFIG_CRYPTO_DEV_FSL_CAAM_AHASH_API,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L465
+kconfig,integration,CONFIG_CRYPTO_SHA256,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L445
+kconfig,integration,CONFIG_CRYPTO_SHA2_ARM_CE,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L464
+kconfig,integration,CONFIG_DM_CRYPT,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L454
+kconfig,integration,CONFIG_DM_VERITY,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L443
+kconfig,integration,CONFIG_ENV_IS_IN_*,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1078
+kconfig,integration,CONFIG_ENV_IS_IN_FAT,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1078
+kconfig,integration,CONFIG_ENV_IS_IN_MMC,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1079
+kconfig,integration,CONFIG_ENV_OFFSET,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1093
+kconfig,integration,CONFIG_ENV_OFFSET_REDUND,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1094
+kconfig,integration,CONFIG_ENV_SIZE,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1092
+kconfig,integration,CONFIG_FEATURE_SEAMLESS_*,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L510
+kconfig,integration,CONFIG_FEATURE_TAR_AUTODETECT,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L508
+kconfig,integration,CONFIG_FEATURE_TAR_LONG_OPTIONS,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L509
+kconfig,integration,CONFIG_IMAGE_RAUC,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1766
+kconfig,integration,CONFIG_MD,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L440
+kconfig,integration,CONFIG_RAUC,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1725
+kconfig,integration,CONFIG_SQUASHFS,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,②で最終config照合,採用,verity入力とNBD streamingに必要。installed-root dm-verityの方針を変更しない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L444
+kconfig,integration,CONFIG_STATE,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L723
+kconfig,integration,CONFIG_STATE_DRV,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L724
+kconfig,integration,CONFIG_SYS_MMC_ENV_DEV,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1148
+kconfig,integration,CONFIG_SYS_MMC_ENV_PART,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1149
+kconfig,integration,CONFIG_SYS_REDUNDAND_ENVIRONMENT,上流integrationのKconfig token,RAUCは指定しない・kernel等の設定に依存,あり,最新stableも1.15.2・差なし,追加しない,不採用,別bootloader・暗号化・archive展開・他SoCの例であり本製品の追加設定にしない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L1091
+kernel-cmdline,boot-identification,rauc.slot,明示的なbootname又はslot名,なし,あり,最新stableも1.15.2・差なし,A又はB,採用,DT・実rootとの三者照合を必須とし、欠落は拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L596
+kernel-cmdline,boot-identification,rauc.external,全slotをinactiveと見なす外部boot指定,指定なし,あり,最新stableも1.15.2・差なし,禁止,不採用,通常更新のslot保護を解除する指定を受け付けない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L610
+kernel-cmdline,boot-identification,bootchooser.active,bareboxによるbootname,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,custom trybootを使いbarebox識別を使わない,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L630
+kernel-cmdline,boot-identification,root,実rootのdevice又はUUID等,RAUCは指定があればfallback検出,あり,最新stableも1.15.2・差なし,A=p5、B=p6と照合,採用,RAUCのfallbackだけに依存せず実mountを確認し、NFS bootは拒否する,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L172
+kernel-cmdline,boot-identification,systemd.verity_root_data,systemdのroot device識別,なし,あり,最新stableも1.15.2・差なし,指定しない,不採用,systemdを使わない。installed-root dm-verityの設計は範囲外,https://github.com/rauc/rauc/blob/v1.15.2/docs/integration.rst#L680
+environment,input,PSEUDO_LOCALSTATEDIR,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,採用,署名・build host又は明示的なRAM上の故障解析に限定する。端末の自動writeは許可しない,https://github.com/rauc/rauc/blob/v1.15.2/src/bundle.c#L207
+environment,input,PSEUDO_DISABLED,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,採用,署名・build host又は明示的なRAM上の故障解析に限定する。端末の自動writeは許可しない,https://github.com/rauc/rauc/blob/v1.15.2/src/bundle.c#L210
+environment,input,DBUS_STARTER_BUS_TYPE,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L242
+environment,input,G_MESSAGES_DEBUG,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,採用,署名・build host又は明示的なRAM上の故障解析に限定する。端末の自動writeは許可しない,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L2898
+environment,input,RAUC_NBD_SERVER,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/main.c#L3081
+environment,input,RAUC_CURL_VERBOSE,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/nbd.c#L462
+environment,input,RAUC_TEST_NBD_SERVER,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/nbd.c#L1342
+environment,input,RAUC_PKCS11_MODULE,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/signature.c#L153
+environment,input,RAUC_PKCS11_PIN,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,不採用,PKCS#11・D-Bus・試験専用の上書きを製品入力として受け入れない。内部helper変数はRAUC自身に任せる,https://github.com/rauc/rauc/blob/v1.15.2/src/signature.c#L175
+environment,input,RAUC_KEY_PASSPHRASE,RAUCが読む環境変数,未設定（RAUC_NBD_SERVER等は内部起動時設定）,あり,最新stableも1.15.2・差なし,製品wrapperで環境を限定,採用,署名・build host又は明示的なRAM上の故障解析に限定する。端末の自動writeは許可しない,https://github.com/rauc/rauc/blob/v1.15.2/src/signature.c#L218
+environment,handler-output,RAUC_SYSTEM_CONFIG,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1512
+environment,handler-output,RAUC_SYSTEM_VARIANT,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1516
+environment,handler-output,RAUC_CURRENT_BOOTNAME,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1520
+environment,handler-output,RAUC_BUNDLE_MOUNT_POINT,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1523
+environment,handler-output,RAUC_UPDATE_SOURCE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1526
+environment,handler-output,RAUC_TRANSACTION_ID,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1529
+environment,handler-output,RAUC_MOUNT_PREFIX,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1534
+environment,handler-output,RAUC_META_*,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1537
+environment,handler-output,RAUC_SLOTS,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1541
+environment,handler-output,RAUC_TARGET_SLOTS,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1547
+environment,handler-output,RAUC_SLOT_NAME_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1552
+environment,handler-output,RAUC_SLOT_CLASS_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1555
+environment,handler-output,RAUC_SLOT_TYPE_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1558
+environment,handler-output,RAUC_SLOT_DEVICE_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1561
+environment,handler-output,RAUC_SLOT_BOOTNAME_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1564
+environment,handler-output,RAUC_SLOT_PARENT_<N>,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1567
+environment,handler-output,RAUC_SYSTEM_COMPATIBLE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1589
+environment,handler-output,RAUC_MF_COMPATIBLE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1597
+environment,handler-output,RAUC_MF_VERSION,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1601
+environment,handler-output,RAUC_MF_BUILD,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1605
+environment,handler-output,RAUC_SLOT_NAME,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1627
+environment,handler-output,RAUC_SLOT_STATE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1630
+environment,handler-output,RAUC_SLOT_CLASS,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1634
+environment,handler-output,RAUC_SLOT_TYPE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1637
+environment,handler-output,RAUC_SLOT_DEVICE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1640
+environment,handler-output,RAUC_SLOT_BOOTNAME,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1648
+environment,handler-output,RAUC_SLOT_PARENT,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1656
+environment,handler-output,RAUC_SLOT_MOUNT_POINT,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1659
+environment,handler-output,RAUC_IMAGE_NAME,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1667
+environment,handler-output,RAUC_IMAGE_SIZE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1671
+environment,handler-output,RAUC_IMAGE_DIGEST,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1675
+environment,handler-output,RAUC_IMAGE_CLASS,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1679
+environment,handler-output,RAUC_BOOT_PARTITION_ACTIVATING,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1686
+environment,handler-output,RAUC_BOOT_PARTITION_START,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1690
+environment,handler-output,RAUC_BOOT_PARTITION_SIZE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1695
+environment,handler-output,RAUC_BOOT_REGION_START,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1699
+environment,handler-output,RAUC_BOOT_REGION_SIZE,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1703
+environment,handler-output,RAUC_BOOT_SIZE_LIMIT,handler/hookへ渡す情報,呼出し時にRAUCが設定,あり,最新stableも1.15.2・差なし,任意hookを使わない,不採用,custom bootloaderの引数契約とは別。将来hookを加える時だけ再審査する,https://github.com/rauc/rauc/blob/v1.15.2/docs/reference.rst#L1708
