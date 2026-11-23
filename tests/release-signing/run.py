@@ -215,6 +215,55 @@ class ReleaseSigning(unittest.TestCase):
         self.assertEqual((library.parent / "libstdc++.so.6").read_text(), "preserve")
         self.post_build()
 
+    def test_kbd_tools_pruned_loadkeys_and_busybox_retained(self):
+        self.fixture()
+        tool = BOARD / "tools/prune-kbd.py"
+        loadkeys = self.target / "usr/bin/loadkeys"
+        put(loadkeys, b"\x7fELF retained loadkeys", executable=True)
+        for name in ("dumpkeys", "setfont", "psfxtable"):
+            put(self.target / "usr/bin" / name, b"\x7fELF unused")
+        alias = self.target / "usr/bin/psfaddtable"
+        alias.symlink_to("psfxtable")
+        busybox = self.target / "usr/bin/openvt"
+        busybox.symlink_to("../../bin/busybox")
+        command("python3", tool, self.target)
+        self.assertEqual(loadkeys.read_bytes(), b"\x7fELF retained loadkeys")
+        self.assertTrue(busybox.is_symlink())
+        self.assertFalse(alias.is_symlink())
+        self.assertFalse((self.target / "usr/bin/setfont").exists())
+        command("python3", tool, self.target)
+
+    def test_kbd_reference_refuses_before_any_removal(self):
+        self.fixture()
+        put(self.target / "usr/bin/setfont", b"\x7fELF font")
+        put(self.target / "usr/bin/dumpkeys", b"\x7fELF dump")
+        consumer = self.target / "usr/libexec/font-client"
+        for data in (b"#!/bin/sh\nsetfont font.psf\n", b"\x7fELF\x00setfont\x00"):
+            put(consumer, data)
+            command("python3", BOARD / "tools/prune-kbd.py", self.target, ok=False)
+            self.assertTrue((self.target / "usr/bin/setfont").exists())
+            self.assertTrue((self.target / "usr/bin/dumpkeys").exists())
+        consumer.unlink()
+        consumer.symlink_to("../bin/setfont")
+        command("python3", BOARD / "tools/prune-kbd.py", self.target, ok=False)
+        empty = self.work / "empty"
+        empty.mkdir()
+        command("python3", BOARD / "tools/prune-kbd.py", empty)
+        command("python3", BOARD / "tools/prune-kbd.py", self.work / "missing", ok=False)
+        put(empty / "usr/bin/setfont", "font")
+        command("python3", BOARD / "tools/prune-kbd.py", empty, ok=False)
+
+    def test_kbd_bench_rejects_bad_keymap_markers(self):
+        spec = importlib.util.spec_from_file_location("kbd_bench", BOARD / "tools/bench/kbd.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        valid = "KBD_LOADKEYS_RESULT=0\nMODULE_INVENTORY_BEGIN\nusbnet 42 0 - Live 0x123\nMODULE_INVENTORY_END\n"
+        self.assertEqual(bench.check_serial(valid), [("usbnet", 42, "-", "Live")])
+        for text in ("", valid.replace("RESULT=0", "RESULT=1"), "KBD_LOADKEYS_RESULT=0\n" + valid,
+                     valid.replace("usbnet 42 0 - Live 0x123\n", ""), valid.replace("42 0", "invalid 0")):
+            with self.assertRaises(ValueError):
+                bench.check_serial(text)
+
     def test_libgomp_consumers_refuse_removal(self):
         self.fixture()
         library = self.target / "usr/lib/libgomp.so.1.0.0"
