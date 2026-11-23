@@ -4,9 +4,11 @@
 import gzip
 import csv
 import json
+import os
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -15,12 +17,62 @@ import inventory
 
 from build import VARIANTS, overrides
 from inventory import configure_tokens, encode_multiline, unix_cache_value
-from runtime import initramfs, parse_config, parse_serial
+from runtime import execute, initramfs, parse_config, parse_serial, prepare
 from summarize import putty_protocol_ids
 from summarize import summarize
 
 
 class Runner(unittest.TestCase):
+    def test_prepare_keeps_key_copies_and_archive_private_under_permissive_umask(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            out, reference = root / "out", root / "reference"
+            out.mkdir(mode=0o755)
+            (reference / "target/dev").mkdir(parents=True)
+            (reference / "images").mkdir()
+            (reference / "images/bcm2710-rpi-cm0.dtb").write_bytes(b"dtb")
+            for name in ("client", "settings", "known-good", "known-wrong"):
+                (out / name).write_bytes(b"test fixture")
+            args = SimpleNamespace(out=out, reference=reference, build=root, variants=[], strace=None)
+            previous = os.umask(0)
+            try:
+                with mock.patch("runtime.subprocess.run"):
+                    prepare(args)
+            finally:
+                os.umask(previous)
+            for path in (out, out / "root", out / "root/fixtures"):
+                self.assertEqual(path.stat().st_mode & 0o777, 0o700)
+            for name in ("client", "settings", "known-good", "known-wrong"):
+                path = out / "root/fixtures" / name
+                self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(path.read_bytes(), b"test fixture")
+            self.assertEqual((out / "initrd.gz").stat().st_mode & 0o777, 0o600)
+            with self.assertRaises(FileExistsError):
+                prepare(args)
+
+    def test_execute_keeps_generated_keys_and_settings_private_before_prepare_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            def run(command, **kwargs):
+                if command[0] == "ssh-keygen":
+                    path = Path(command[-1])
+                    path.write_bytes(b"test private key")
+                    path.with_suffix(".pub").write_text("ssh-ed25519 fixture\n")
+                else:
+                    raise RuntimeError("prepare failed")
+            args = SimpleNamespace(out=out, reference=out, build=out, variants=[], repetitions=1, strace=None)
+            previous = os.umask(0)
+            try:
+                with mock.patch("runtime.ROOT", Path("/")), mock.patch("runtime.subprocess.run", side_effect=run), \
+                        mock.patch("runtime.subprocess.check_output", return_value="256 SHA256:fixture comment"):
+                    with self.assertRaisesRegex(RuntimeError, "prepare failed"):
+                        execute(args)
+            finally:
+                os.umask(previous)
+            self.assertEqual(out.stat().st_mode & 0o777, 0o700)
+            for name in ("client", "host", "wrong", "settings", "sshd.conf"):
+                self.assertEqual((out / name).stat().st_mode & 0o777, 0o600)
+
     def test_sha_without_python311_file_digest_handles_empty_large_and_missing_files(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "payload"

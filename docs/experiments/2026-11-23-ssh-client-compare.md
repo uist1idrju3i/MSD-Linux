@@ -173,4 +173,9 @@ archive作成の初回は固定containerにzstd commandがなく失敗しまし�
 
 ## 制約と残件
 
+review後、再実行用runnerの出力・root・fixture directoryを0700、秘密鍵のcopyと
+settings・sshd設定・initramfsを0600に制限した。guest内の変換鍵もumask 077で作る。
+localhostの試験sshdが動く間に、同じhostの別利用者が鍵を読める問題への対策である。
+host回帰試験で権限を検査したが、QEMUは再実行していない。保存済みの生証拠は変更しない。
+
 実機LCD・Wi-Fi・鍵入力・SD書込み・電力・対話PTY・forwarding・agent・PKCS#11/FIDO・全algorithm交渉は未確認です。計測用straceの影響、既存rootfsの共有library、同一VM内での反復を含むため、速度やメモリの優劣には使えません。PuTTYのalgorithm候補列と条件付きoptionの到達性にはsource確認だけの項目が残ります。製品の永続鍵保存・host確認UI・英日progress・実行時の暗号制限は後続の設計・検証事項です。

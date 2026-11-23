@@ -80,12 +80,16 @@ def export_qemu(out):
     (out / "hashes.json").write_text(json.dumps(hashes, indent=2) + "\n")
 
 
+def private_file(path, mode="wb"):
+    return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), mode)
+
+
 def initramfs(tree, destination):
     entries = [(str(path.relative_to(tree)), path) for path in sorted(tree.rglob("*"))]
     entries.extend((name, None) for name in ("dev/console", "dev/null")
                    if not (tree / name).exists())
     entries.append(("TRAILER!!!", None))
-    with destination.open("xb") as raw, gzip.GzipFile(filename="", fileobj=raw, mode="wb", mtime=0) as stream:
+    with private_file(destination) as raw, gzip.GzipFile(filename="", fileobj=raw, mode="wb", mtime=0) as stream:
         for index, (name, path) in enumerate(entries, 1):
             data, major, minor = b"", 0, 0
             if path is None:
@@ -107,8 +111,12 @@ def initramfs(tree, destination):
 
 
 def prepare(args):
+    args.out.mkdir(mode=0o700, parents=True, exist_ok=True)
+    args.out.chmod(0o700)
     tree = args.out / "root"
-    shutil.copytree(args.reference / "target", tree, symlinks=True)
+    tree.mkdir(mode=0o700)
+    shutil.copytree(args.reference / "target", tree, symlinks=True, dirs_exist_ok=True)
+    tree.chmod(0o700)
     for variant in args.variants:
         files = json.loads((args.build / variant / "files.json").read_text())
         for row in files:
@@ -119,12 +127,13 @@ def prepare(args):
             shutil.copyfile(args.build / variant / "root" / row["path"], destination)
             destination.chmod(0o755)
     fixtures = tree / "fixtures"
-    fixtures.mkdir()
+    fixtures.mkdir(mode=0o700)
     if args.strace:
         shutil.copyfile(args.strace, fixtures / "strace")
         (fixtures / "strace").chmod(0o755)
     for name in ("client", "settings", "known-good", "known-wrong"):
-        shutil.copyfile(args.out / name, fixtures / name)
+        with (args.out / name).open("rb") as source, private_file(fixtures / name) as destination:
+            shutil.copyfileobj(source, destination)
     if "dropbear" in args.variants:
         source = next((args.build / "dropbear/buildroot/build").glob("dropbear-*"))
         with (args.out / "fixture-tools.log").open("a") as log:
@@ -147,8 +156,10 @@ def prepare(args):
 
 
 def execute(args):
+    args.out.chmod(0o700)
     for name in ("client", "host", "wrong"):
         subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", args.out / name], check=True)
+        (args.out / name).chmod(0o600)
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         port = listener.getsockname()[1]
@@ -157,7 +168,8 @@ def execute(args):
               f"AuthorizedKeysFile {args.out}/client.pub\nPidFile {args.out}/sshd.pid\n"
               "PasswordAuthentication no\nKbdInteractiveAuthentication no\nUsePAM no\n"
               f"AllowUsers {login}\nPubkeyAcceptedAlgorithms ssh-ed25519\nLogLevel DEBUG2\n")
-    (args.out / "sshd.conf").write_text(config)
+    with private_file(args.out / "sshd.conf", "w") as stream:
+        stream.write(config)
     fingerprints = {}
     for condition, key in (("good", "host"), ("wrong", "wrong")):
         public = (args.out / f"{key}.pub").read_text().split()
@@ -168,7 +180,8 @@ def execute(args):
     settings = dict(port=str(port), login=login, variants=" ".join(args.variants),
                     repetitions=str(args.repetitions), good_fingerprint=fingerprints["good"],
                     wrong_fingerprint=fingerprints["wrong"])
-    (args.out / "settings").write_text("".join(f"{key}={shlex.quote(value)}\n" for key, value in settings.items()))
+    with private_file(args.out / "settings", "w") as stream:
+        stream.write("".join(f"{key}={shlex.quote(value)}\n" for key, value in settings.items()))
     relative = lambda path: str(path.relative_to(ROOT))
     command = [str(ROOT / "docker/msd-dev"), "python3", relative(Path(__file__).resolve()), "prepare",
                "--out", relative(args.out), "--reference", relative(args.reference),
@@ -306,8 +319,9 @@ def main():
     if args.strace:
         args.strace = args.strace.resolve()
     os.nice(19)
+    os.umask(0o077)
     if args.phase == "run":
-        args.out.mkdir(parents=True, exist_ok=False)
+        args.out.mkdir(mode=0o700, parents=True, exist_ok=False)
         shutil.copyfile(__file__, args.out / "runner.py")
         shutil.copyfile(Path(__file__).with_name("guest.sh"), args.out / "guest-input.sh")
         try:

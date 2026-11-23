@@ -1,6 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC1091,SC2154
 set -u
+umask 077
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
