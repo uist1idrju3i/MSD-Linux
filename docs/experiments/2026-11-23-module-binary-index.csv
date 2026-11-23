@@ -1,0 +1,9 @@
+state,scope,path,bytes,sha256
+observed,rootfs_regular_unique,output-integrity/target,37049861,
+observed,squashfs,output-integrity/images/rootfs.squashfs,20500480,b68236f9612b010d42a0a9227d59332d94b2b84d19a593dc16ea9f269e2ea885
+observed,binary_index,lib/modules/6.18.59-v8/modules.alias.bin,442710,ada21de1b1560a83d831859916716231129962efbedf9dfc23c02e94b8068aee
+observed,binary_index,lib/modules/6.18.59-v8/modules.builtin.alias.bin,95714,bd09d11e59e440fa599cde0a6740972357978ea268e5989e05684e0eb2a30539
+observed,binary_index,lib/modules/6.18.59-v8/modules.builtin.bin,19011,a6cc898a2fdf8adf39fc4778149f5ed11760d38f8b68ed0f4aff92ef49ea7a8a
+observed,binary_index,lib/modules/6.18.59-v8/modules.dep.bin,141048,3cb8fa5e57a1c7b87e33cdd3c3d1112d6d6b5f7f0a1c1c6214125e3614589bbe
+observed,binary_index,lib/modules/6.18.59-v8/modules.symbols.bin,239799,21c74c5dbdc31a38b0b92207def7ea91f727bc7aa2a01a58e008a10d59283cb8
+not_run,after,,,
