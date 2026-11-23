@@ -1,0 +1,90 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+openssl-features-f40c3733458d44df99deb13b180973ab-baseline-build_exit_code,baseline,1,build_exit_code,0,status,true,full cold build
+openssl-features-f40c3733458d44df99deb13b180973ab-baseline-rootfs_regular_bytes,baseline,1,rootfs_regular_bytes,45606894,bytes,true,"full cold build; Buildroot target staging, includes THIS_IS_NOT_YOUR_ROOT_FILESYSTEM; see rootfs_image_regular_bytes"
+openssl-features-f40c3733458d44df99deb13b180973ab-baseline-squashfs_bytes,baseline,1,squashfs_bytes,24018944,bytes,true,full cold build
+openssl-features-f40c3733458d44df99deb13b180973ab-candidate-build_exit_code,candidate,1,build_exit_code,0,status,true,full cold build
+openssl-features-f40c3733458d44df99deb13b180973ab-candidate-rootfs_regular_bytes,candidate,1,rootfs_regular_bytes,45008170,bytes,true,"full cold build; Buildroot target staging, includes THIS_IS_NOT_YOUR_ROOT_FILESYSTEM; see rootfs_image_regular_bytes"
+openssl-features-f40c3733458d44df99deb13b180973ab-candidate-squashfs_bytes,candidate,1,squashfs_bytes,23805952,bytes,true,full cold build
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-boot,baseline-A,1,boot,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-providers,baseline-A,1,providers,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-c1-minimum,baseline-A,1,c1-minimum,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-c1-security,baseline-A,1,c1-security,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-ed25519,baseline-A,1,ed25519,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-ed25519-reject,baseline-A,1,ed25519-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-update-valid,baseline-A,1,update-valid,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-update-invalid,baseline-A,1,update-invalid,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-update-unchanged,baseline-A,1,update-unchanged,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-argon2id-format,baseline-A,1,argon2id-format,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-argon2id-metadata,baseline-A,1,argon2id-metadata,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-argon2id-open,baseline-A,1,argon2id-open,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-argon2id-close,baseline-A,1,argon2id-close,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-x509,baseline-A,1,x509,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-x509-reject,baseline-A,1,x509-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-cms-sign,baseline-A,1,cms-sign,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-cms-verify,baseline-A,1,cms-verify,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-cms-reject,baseline-A,1,cms-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-tls1_2,baseline-A,1,tls1_2,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-tls1_2-hostname,baseline-A,1,tls1_2-hostname,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-tls1_3,baseline-A,1,tls1_3,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-tls1_3-hostname,baseline-A,1,tls1_3-hostname,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-A-modules,baseline-A,1,modules,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-B-boot,baseline-B,1,boot,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-baseline-B-modules,baseline-B,1,modules,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-boot,candidate-A,1,boot,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-providers,candidate-A,1,providers,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-c1-minimum,candidate-A,1,c1-minimum,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-c1-security,candidate-A,1,c1-security,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-ed25519,candidate-A,1,ed25519,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-ed25519-reject,candidate-A,1,ed25519-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-update-valid,candidate-A,1,update-valid,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-update-invalid,candidate-A,1,update-invalid,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-update-unchanged,candidate-A,1,update-unchanged,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-argon2id-format,candidate-A,1,argon2id-format,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-argon2id-metadata,candidate-A,1,argon2id-metadata,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-argon2id-open,candidate-A,1,argon2id-open,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-argon2id-close,candidate-A,1,argon2id-close,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-x509,candidate-A,1,x509,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-x509-reject,candidate-A,1,x509-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-cms-sign,candidate-A,1,cms-sign,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-cms-verify,candidate-A,1,cms-verify,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-cms-reject,candidate-A,1,cms-reject,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-tls1_2,candidate-A,1,tls1_2,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-tls1_2-hostname,candidate-A,1,tls1_2-hostname,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-tls1_3,candidate-A,1,tls1_3,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-tls1_3-hostname,candidate-A,1,tls1_3-hostname,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-A-modules,candidate-A,1,modules,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-B-boot,candidate-B,1,boot,0,status,true,observed target result
+openssl-probe-f389737e241940f2b6d3b05e924bd281-candidate-B-modules,candidate-B,1,modules,0,status,true,observed target result
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-rootfs_image_regular_bytes,baseline,1,rootfs_image_regular_bytes,45605558,bytes,true,actual extracted SquashFS
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-squashfs_used_bytes,baseline,1,squashfs_used_bytes,24016246,bytes,true,"SquashFS superblock, excluding padding"
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-openssl_elf_bytes,baseline,1,openssl_elf_bytes,7214240,bytes,true,four installed OpenSSL ELF files
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-usr/lib/libcrypto.so.3,baseline,1,usr/lib/libcrypto.so.3,5200792,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-usr/lib/libssl.so.3,baseline,1,usr/lib/libssl.so.3,929336,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-usr/bin/openssl,baseline,1,usr/bin/openssl,959488,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-usr/lib/ossl-modules/legacy.so,baseline,1,usr/lib/ossl-modules/legacy.so,124624,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-rootfs_image_regular_bytes,candidate,1,rootfs_image_regular_bytes,45006834,bytes,true,actual extracted SquashFS
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-squashfs_used_bytes,candidate,1,squashfs_used_bytes,23804436,bytes,true,"SquashFS superblock, excluding padding"
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-openssl_elf_bytes,candidate,1,openssl_elf_bytes,6615960,bytes,true,four installed OpenSSL ELF files
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-usr/lib/libcrypto.so.3,candidate,1,usr/lib/libcrypto.so.3,5020472,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-usr/lib/libssl.so.3,candidate,1,usr/lib/libssl.so.3,622136,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-usr/bin/openssl,candidate,1,usr/bin/openssl,848728,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-candidate-usr/lib/ossl-modules/legacy.so,candidate,1,usr/lib/ossl-modules/legacy.so,124624,bytes,true,installed regular file
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-control,baseline,1,control_squashfs_bytes,24018944,bytes,true,normalized repack; isolated changes only four OpenSSL files
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-baseline-aa-control,baseline-aa,1,control_squashfs_bytes,24018944,bytes,true,normalized repack; isolated changes only four OpenSSL files
+openssl-analysis-c1aaad12bdc54bb59fb05d9e428e04ee-isolated-control,isolated,1,control_squashfs_bytes,23805952,bytes,true,normalized repack; isolated changes only four OpenSSL files
+openssl-host-9a16303d856b6e1d-1,host-C0,1,tls1.3,0,status,true,host-only endpoint github.com:443
+openssl-host-9a16303d856b6e1d-2,host-C0-AA,1,tls1.3,0,status,true,host-only endpoint github.com:443
+openssl-host-9a16303d856b6e1d-3,host-C1,1,tls1.3-hostname,1,status,true,host-only endpoint github.com:443
+openssl-host-9a16303d856b6e1d-4,host-C1,1,tls1.2,0,status,true,host-only endpoint github.com:443
+openssl-host-9a16303d856b6e1d-5,host-C1,1,tls1.3,0,status,true,host-only endpoint github.com:443
+openssl-host-9a16303d856b6e1d-6,host-C1,1,tls1.2,0,status,true,host-only endpoint api.github.com:443
+openssl-host-9a16303d856b6e1d-7,host-C1,1,tls1.3,0,status,true,host-only endpoint api.github.com:443
+openssl-host-9a16303d856b6e1d-8,host-C1,1,tls1.2,0,status,true,host-only endpoint codeload.github.com:443
+openssl-host-9a16303d856b6e1d-9,host-C1,1,tls1.3,0,status,true,host-only endpoint codeload.github.com:443
+openssl-host-9a16303d856b6e1d-10,host-C1,1,tls1.2,0,status,true,host-only endpoint objects.githubusercontent.com:443
+openssl-host-9a16303d856b6e1d-11,host-C1,1,tls1.3,0,status,true,host-only endpoint objects.githubusercontent.com:443
+openssl-host-9a16303d856b6e1d-12,host-C1,1,tls1.2,0,status,true,host-only endpoint release-assets.githubusercontent.com:443
+openssl-host-9a16303d856b6e1d-13,host-C1,1,tls1.3,0,status,true,host-only endpoint release-assets.githubusercontent.com:443
+openssl-host-9a16303d856b6e1d-14,host-C1,1,tls1.2,0,status,true,host-only endpoint muromi.moe:443
+openssl-host-9a16303d856b6e1d-15,host-C1,1,tls1.3,0,status,true,host-only endpoint muromi.moe:443
+openssl-host-9a16303d856b6e1d-16,host-C1,1,tls1.3,0,status,true,host-only endpoint time.cloudflare.com:4460

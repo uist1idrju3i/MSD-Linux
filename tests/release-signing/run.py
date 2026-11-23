@@ -1,6 +1,7 @@
 """Exercise release signing with throwaway keys and adversarial archives."""
 
 import csv
+import base64
 import hashlib
 import importlib.util
 import io
@@ -801,6 +802,239 @@ class OpenSSLPolicy(unittest.TestCase):
                     config.write_text(text)
                     command(sys.executable, tool, config, ok=False)
                     self.assertEqual(config.read_text(), text)
+
+
+class OpenSSLFeatures(unittest.TestCase):
+    @staticmethod
+    def load(name, relative):
+        spec = importlib.util.spec_from_file_location(name, BOARD / "tools/bench" / relative)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_guest_results_require_all_cases_and_logs(self):
+        probe = self.load("feature_probe", "openssl-features/probe.py")
+        data = io.BytesIO()
+        with tarfile.open(fileobj=data, mode="w") as archive:
+            for name in probe.CASES:
+                archive.addfile(tarfile.TarInfo("logs/" + name + ".log"))
+        encoded = base64.b64encode(data.getvalue()).decode()
+        text = ("MODULE_INVENTORY_BEGIN\nmodule 123 0 - Live 0x0000\nMODULE_INVENTORY_END\n"
+                + "".join(f"FEATURE_RESULT case={name} rc=0\n" for name in probe.CASES)
+                + f"FEATURE_LOGS_BEGIN\n{encoded}\nFEATURE_LOGS_END\nFEATURE_DONE\nFEATURE_EXIT=0\n")
+        names, modules, payload = probe.parse(text, "A")
+        self.assertEqual(set(names), set(probe.CASES))
+        self.assertEqual(len(modules), 1)
+        self.assertEqual(payload, data.getvalue())
+        for invalid in ("", text.replace("FEATURE_DONE\n", ""),
+                        text.replace("FEATURE_EXIT=0", "FEATURE_EXIT=124"),
+                        text.replace("case=ed25519 rc=0", "case=ed25519 rc=1"),
+                        text.replace(encoded, ""),
+                        text + "FEATURE_RESULT case=ed25519 rc=0\n",
+                        text.replace("FEATURE_LOGS_END", "MISSING_LOGS_END")):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises((ValueError, tarfile.TarError)):
+                    probe.parse(invalid, "A")
+
+    def test_inventory_covers_symbols_without_inventing_values(self):
+        inventory = self.load("feature_inventory", "openssl-features/inventory.py")
+        source = ('config BR2_HIDDEN\n\tbool\n'
+                  'config BR2_PACKAGE_LIBOPENSSL_ENABLE_CMP\n\tbool "enable CMP"\n\tdefault y\n')
+        rows = inventory.collect(source, "BR2_PACKAGE_LIBOPENSSL_ENABLE_CMP=y\n", "")
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(rows[0]["baseline"].startswith("not-recorded"))
+        self.assertEqual(rows[1]["candidate"], "n")
+        self.assertEqual(rows[1]["configure_flag"], "no-cmp")
+        for source, config in (("", ""), (source, ""), (source + source, "BR2_PACKAGE_LIBOPENSSL_ENABLE_CMP=y\n")):
+            with self.assertRaises(ValueError):
+                inventory.collect(source, config, "")
+
+    def test_algorithm_comparison_rejects_difference_or_missing_logs(self):
+        probe = self.load("feature_algorithms", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for variant in ("baseline", "candidate"):
+                (root / f"{variant}-A").mkdir()
+            for differing in (False, True):
+                for variant in ("baseline", "candidate"):
+                    with tarfile.open(root / f"{variant}-A/guest-logs.tar.gz", "w:gz") as archive:
+                        for name in probe.ALGORITHMS:
+                            payload = b"changed" if differing and variant == "candidate" else b"same"
+                            member = tarfile.TarInfo("logs/" + name + "-algorithms.log")
+                            member.size = len(payload)
+                            archive.addfile(member, io.BytesIO(payload))
+                if differing:
+                    with self.assertRaises(ValueError):
+                        probe.compare_algorithms(root)
+                else:
+                    inventories = probe.compare_algorithms(root)
+                    self.assertEqual(inventories["baseline"], inventories["candidate"])
+            with tarfile.open(root / "candidate-A/guest-logs.tar.gz", "w:gz"):
+                pass
+            with self.assertRaises(KeyError):
+                probe.compare_algorithms(root)
+
+    def test_image_analysis_distinguishes_rootfs_and_staging(self):
+        analysis = self.load("feature_analysis", "openssl-features/analyze.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            pair = root / "pair"
+            tools = pair / "baseline/host/bin"
+            tools.mkdir(parents=True)
+            for name in ("unsquashfs", "mksquashfs.orig"):
+                (tools / name).write_text("tool")
+            for variant in ("baseline", "candidate"):
+                images = pair / variant / "images"
+                images.mkdir(parents=True)
+                (images / "rootfs.squashfs").write_bytes(b"hsqs" + bytes(92))
+
+            def run(args, **_kwargs):
+                if "-d" in args:
+                    target = Path(args[args.index("-d") + 1])
+                    for name in analysis.OPENSSL:
+                        path = target / name
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_text(target.name)
+                    (target / "etc/ssl").mkdir(parents=True)
+                    (target / "etc/ssl/openssl.cnf").write_text("C1")
+                    (target / "lib/modules/6.0").mkdir(parents=True)
+                elif "-noappend" in args:
+                    Path(args[2]).write_bytes(b"deterministic pack")
+                return subprocess.CompletedProcess(args, 0, "", "")
+
+            out = root / "result"
+            with mock.patch.object(analysis.subprocess, "run", side_effect=run):
+                analysis.analyze(pair, out)
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 17)
+            self.assertTrue(all(row["valid"] == "true" for row in rows))
+            self.assertEqual(next(row["value"] for row in rows if row["variant"] == "baseline"
+                                  and row["metric"] == "rootfs_image_regular_bytes"), "34")
+            for number in range(2):
+                failed = root / f"failed-{number}"
+                with self.assertRaises(FileNotFoundError):
+                    analysis.analyze(root / "missing", failed)
+                self.assertIn("error", json.loads((failed / "metadata.json").read_text()))
+                with (failed / "results.csv").open() as stream:
+                    self.assertTrue(all(row["valid"] == "false" for row in csv.DictReader(stream)))
+
+    def test_guest_rejection_is_not_satisfied_by_timeout(self):
+        guest = (BOARD / "tools/bench/openssl-features/guest.sh").read_text()
+        functions = guest.split("check()\n", 1)[1].split("echo MODULE_INVENTORY_BEGIN", 1)[0]
+        with tempfile.TemporaryDirectory() as temporary:
+            (Path(temporary) / "logs").mkdir()
+            for status, message in ((1, "expected rejection"), (124, "expected rejection"), (1, "unrelated")):
+                with self.subTest(status=status, message=message):
+                    result = subprocess.run(["sh", "-c", "set -eu\ncheck()\n" + functions
+                                             + f"reject negative 'expected rejection' sh -c 'echo {message}; exit {status}'"],
+                                            cwd=temporary, capture_output=True, text=True)
+                    self.assertEqual(result.returncode == 0, status == 1 and message == "expected rejection")
+                    self.assertEqual("FEATURE_RESULT" in result.stdout, result.returncode == 0)
+
+    def test_failed_build_preserves_plan_and_unique_attempt(self):
+        build = self.load("feature_build", "openssl-features-build.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            prefixes = []
+            for number in range(2):
+                out = Path(temporary) / str(number)
+                with mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                        mock.patch.object(build.subprocess, "check_output", side_effect=OSError("missing git")):
+                    with self.assertRaises(OSError):
+                        build.build(out)
+                report = json.loads((out / "results.json").read_text())
+                self.assertIn("missing git", report["error"])
+                self.assertEqual(len(json.loads((out / "plan.json").read_text())), 6)
+                with (out / "results.csv").open() as stream:
+                    rows = list(csv.DictReader(stream))
+                self.assertEqual(len(rows), 6)
+                self.assertTrue(all(row["value"] == "" and row["valid"] == "false" for row in rows))
+                prefixes.append(report["run_prefix"])
+            self.assertNotEqual(*prefixes)
+
+    def test_export_refuses_empty_incomplete_and_duplicate_rows(self):
+        export = self.load("feature_export", "openssl-features/export.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            row = dict(run_id="fixture-1", variant="baseline", repeat=1, metric="bytes", value="",
+                       unit="bytes", valid="false", note="not run")
+            (directory / "plan.json").write_text(json.dumps([row]))
+
+            def write(rows):
+                with (directory / "results.csv").open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=export.FIELDS)
+                    writer.writeheader()
+                    writer.writerows(rows)
+
+            write([row])
+            self.assertEqual(export.read_attempt(directory, 1)[0]["note"], "not run")
+            for rows in ([], [row, row], [dict(row, valid="true")], [dict(row, repeat=0)]):
+                write(rows)
+                with self.assertRaises(ValueError):
+                    export.read_attempt(directory, 1)
+
+    def test_cold_pair_uses_same_path_and_only_four_feature_changes(self):
+        build = self.load("feature_build", "openssl-features-build.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            out = repo / "pair"
+            work = out / "work"
+            builds = []
+
+            def run(args, **_kwargs):
+                if args[-1] == "msd_cardputerzero_defconfig":
+                    self.assertFalse(work.exists())
+                    work.mkdir()
+                    (work / ".config").write_text("".join(
+                        "BR2_PACKAGE_LIBOPENSSL_ENABLE_" + name + "=y\n" for name in build.OPTIONS))
+                elif "--disable" in args and args[-1].startswith("BR2_PACKAGE_LIBOPENSSL_ENABLE_"):
+                    config = work / ".config"
+                    config.write_text(config.read_text().replace(args[-1] + "=y", "# " + args[-1] + " is not set"))
+                elif args == ["make", "-C", str(work)]:
+                    builds.append(str(work))
+                    (work / "target").mkdir()
+                    (work / "target/payload").write_text("fixture")
+                    (work / "images").mkdir()
+                    for name in ("Image", "rootfs.squashfs", "sdcard.img"):
+                        (work / "images" / name).write_text("image")
+
+            with mock.patch.object(build, "ROOT", repo), \
+                    mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                    mock.patch.object(build.subprocess, "check_output", side_effect=["commit", b"", "buildroot"]), \
+                    mock.patch.object(build.subprocess, "run", side_effect=run):
+                build.build(out)
+            self.assertEqual(builds, [str(work), str(work)])
+            self.assertFalse(work.exists())
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertTrue(all(row["valid"] == "true" for row in rows))
+            self.assertTrue(all(row["value"] == "7" for row in rows if row["metric"] == "rootfs_regular_bytes"))
+            self.assertTrue(all(row["value"] == "5" for row in rows if row["metric"] == "squashfs_bytes"))
+            self.assertTrue(all(" is not set" in line for line in (out / "candidate/.config").read_text().splitlines()))
+
+    def test_probe_collection_failure_preserves_invalid_rows(self):
+        probe = self.load("feature_probe_failures", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            for mode in ("timeout", "mismatch"):
+                out = Path(temporary) / mode
+                results = [(probe.CASES, [("module", size, "-", "Live")], b"") for size in (1, 1, 2, 2)]
+                with mock.patch.object(sys, "argv", ["probe", "--pair", temporary, "--out", str(out)]), \
+                        mock.patch.object(probe.KBD, "source_inputs", return_value={}), \
+                        mock.patch.object(probe.KBD.COMMON, "sha", return_value="sha"), \
+                        mock.patch.object(probe.shutil, "which", return_value="/fake/qemu"), \
+                        mock.patch.object(probe.subprocess, "check_output", return_value="fixture"), \
+                        mock.patch.object(probe, "boot", side_effect=TimeoutError("fixture") if mode == "timeout" else results):
+                    with self.assertRaises((ValueError, TimeoutError)):
+                        probe.main()
+                with (out / "results.csv").open() as stream:
+                    rows = list(csv.DictReader(stream))
+                self.assertEqual(len(rows), 50)
+                self.assertTrue((out / "failure.json").exists())
+                if mode == "timeout":
+                    self.assertTrue(all(row["valid"] == "false" for row in rows))
+                    self.assertTrue(all("aborted" in row["note"] for row in rows if row["variant"] == "baseline-A"))
+                else:
+                    self.assertTrue(all(row["valid"] == "false" for row in rows if row["metric"] == "modules"))
 
 
 if __name__ == "__main__":
