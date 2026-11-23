@@ -60,7 +60,7 @@ OpenSSHのlibssl依存は、このrecipe条件で得たbinaryの実測で、SSH�
 
 ## 実行条件と計測器
 
-- source基準commitは`82c72840215a287c06bf62828d8159d1aab78f6e`、Buildrootは`8b238854d909c9cce32ef9671d968b03e323b55d`です。
+- source基準commitは`82c72840215a287c06bf62828d8159d1aab78f6e`、Buildrootは`bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`です。保存済みの3候補の`.config`は、いずれも`2026.08.1-245-gbbbdab36565`を記録しています。
 - buildは固定`docker/msd-dev`、各`O=output-ssh-compare-01/{openssh,dropbear,putty}/buildroot`、GCC 14.3.0のBootlin 2025.08-1外部toolchain、`-Os`、4並列、nice 19で直列に行いました。初回package directoryはcoldで、ccacheは既存cacheを使用します。cache hit率・時間・RAMを比較した実験ではありません。
 - 共通target・kernel・DTBは既存`output-integrity`を再利用しました。kernelは6.18.59-v8、OpenSSLは3.5.9です。この出力を現在のmainから新規buildしたとは主張しません。保存済み`.config`、binary hash、追加file hashを証拠に収録します。
 - 圧縮toolは実binaryで確認したmksquashfs 4.7.5。zstd level 22、128 KiB block、2並列、全時刻0、全owner root、xattrなしです。最初のsort wrapperを外した中立な圧縮で各5回を比較しました。製品の既存imageとの圧縮条件を同一視しません。
@@ -110,9 +110,11 @@ straceのfile syscallとHOME内file hashを各試行の前後に採りました�
 
 ## 再実行
 
-以下の出力先は空である必要があります。既存の記録を消して実行しません。candidateは`--variants openssh dropbear putty`、反復は`--repetitions 5`で選べます。容量だけなら`--measure-from`で固定済みpayloadを再利用できます。
+以下の出力先は空である必要があります。既存の記録を消して実行しません。candidateは`--variants openssh dropbear putty`、反復は`--repetitions 5`で選べます。容量だけなら`--measure-from`で固定済みのclientと依存を再利用し、指定した`--reference`のtargetへ組み直せます。旧基準のroot全体は再利用しません。Buildrootが下記の実験時commitと違う場合は止め、専用cloneのsubmoduleを基準commitへそろえてから実行します。
 
 ```sh
+test "$(git -C vendor/buildroot rev-parse HEAD)" = \
+  bbbdab36565d4941b6b0449a0eedb5aac8a10c2e || exit 1
 docker/msd-dev python3 board/cardputerzero/tools/bench/ssh-client-compare/build.py \
   --reference output-integrity --out output-ssh-compare-new
 docker/msd-dev python3 board/cardputerzero/tools/bench/ssh-client-compare/runtime.py \
@@ -127,6 +129,17 @@ python3 board/cardputerzero/tools/bench/ssh-client-compare/test_runner.py
 ```
 
 共通targetを別の保存出力にする時は`--reference`も明示し、差分容量を同じ数値とは見込みません。QEMUのexportは同じarchitectureのhost用で、localhost sshdの起動権限と空きportが必要です。fixtureの秘密鍵・initramfs・root treeは公開しません。
+
+## 集計器と版表記の訂正
+
+PR #292のreviewを受け、保存済みの入力から派生CSV・JSONとoption表を再生成しました。QEMU・client build・容量測定は再実行せず、生の証拠archiveは書き換えていません。変更前の抽出表・要約もarchive内に履歴として保持します。
+
+- Buildrootを`8b238854`とした本文は誤記でした。archive内の3つの`.config`、source基準commitのsubmodule参照、保存したrecipe 6 fileのhashを照合し、上記の`bbbdab36565`へ訂正しました。vendorは変更していません。
+- `--measure-from`で基準を変えると旧root全体が混入する不具合を修正しました。今回の正式容量では、3候補の基準file内容が共通targetと一致し、この条件は発生していません。追加bytes・圧縮差・hashは元のままです。
+- 正式集計はQMP quit・終了0・fallbackなし・errorなしを満たす最終runだけを許可します。準備段階の`failure.json`も失敗として保持します。今回の正式run06は元からこの条件を満たしており、正常15・負対照15の判定は変わりません。
+- straceがないrunの書込みopenは`null`（未観測）とし、空のtraceとは区別します。正式runの`trace_available`は各候補10/10です。
+- configureの大文字を保持し、`--with-Werror`等を完全名で再抽出しました。option表は896件から897件へ変わりました。`ssh -G`の`identityfile`は最後の1件だけでなく、出力順の6候補をJSON配列とCSVの複数行cellに保持します。
+- Windows宣言にUnix cacheの`build=OFF`を割り当てず、非対象platformとしました。`BR2_PACKAGE_DROPBEAR_SMALL=y`は明示指定ではなく既定維持へ分類を訂正しました。build条件・binary・製品の採否は変えていません。
 
 ## 環境の補足
 

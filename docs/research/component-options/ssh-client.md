@@ -16,7 +16,7 @@ OpenSSHはBSD系・MIT・Public domain等の混在、DropbearはMIT・BSD-2-Clau
 
 ## 固定版と一次資料
 
-Buildrootは`8b238854d909c9cce32ef9671d968b03e323b55d`です。2026-11-23に[OpenSSH release notes](https://www.openssh.com/releasenotes.html)、[Dropbear配布一覧](https://matt.ucc.asn.au/dropbear/releases/)、[PuTTY最新版](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)を取得しました。観測した最新版は順に10.6p2、2026.94、0.85で、固定版と同じです。この比較に版を上げる変更や、それに伴うoption差はありません。取得本文・hashは実験の証拠に収録します。
+実験時のBuildrootは`bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`です。以前の`8b238854`表記は、保存済みconfig・recipe hashとの照合で訂正しました。2026-11-23に[OpenSSH release notes](https://www.openssh.com/releasenotes.html)、[Dropbear配布一覧](https://matt.ucc.asn.au/dropbear/releases/)、[PuTTY最新版](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)を取得しました。観測した最新版は順に10.6p2、2026.94、0.85で、固定版と同じです。この比較に版を上げる変更や、それに伴うoption差はありません。取得本文・hashは実験の証拠に収録します。
 
 recipeは`vendor/buildroot/package/openssh/openssh.mk`、`vendor/buildroot/package/dropbear/dropbear.mk`、`vendor/buildroot/package/putty/putty.mk`と各`Config.in`です。固定commitのsubmodule内fileで、各hashは抽出JSONに収録しています。上流sourceの取得とhash検査は各Buildroot recipeに従いました。
 
