@@ -7,7 +7,8 @@
 ## 範囲と状態
 
 利用者が承認したRAUC導入計画を、後続PR②〜⑦の受入条件として固定する。
-本PR①は文書だけであり、製品のpackage、kernel、boot処理、署名、更新形式は変更しない。
+PR①で固定した契約に観測結果と利用者判断を追記した文書であり、
+製品のpackage、kernel、boot処理、署名、更新形式は変更しない。
 固定対象はBuildrootが収録するRAUC 1.15.2である。
 既存の[framework比較](../research/alternatives/updates.md)、
 [配信比較](../research/alternatives/update-delivery.md)、
@@ -30,7 +31,7 @@ p1・p7のslot宣言やimage sectionは作らない。p7へのstatus保存まで
 wrapperから`--conf`で固定して読む。可変な`/etc` overlayによるpolicyの隠蔽を避ける。
 設定は`bootloader=custom`、`bundle-formats=verity`、
 `data-directory=/data/rauc`、`activate-installed=false`、
-一時mount点は`mountprefix=/run/rauc`とする。
+一時mount点は`mountprefix=/run/rauc`、`[keyring]`は`use-bundle-signing-time=true`とする計画である。
 rootfsの`bootname`に対応してkernel cmdlineへ`rauc.slot=A`又は`rauc.slot=B`を渡す。
 cmdline、firmwareのDT情報、実際にmountしたroot partitionを照合し、
 不一致・欠落・曖昧な場合は永続書込みとactivateの前に拒否する。
@@ -101,6 +102,29 @@ full-download fallbackは、全量と一時領域の容量検査、保存先の�
 利用者の明示同意、異常時の非activateを満たす別経路としてだけ許す。
 現時点でfallbackを実装済みとは扱わない。
 
+### Phase Aの観測済み事項と残件
+
+[2026-11-23のstreaming PoC](../experiments/2026-11-23-rauc-streaming-poc.md)では、
+host上の実RAUC 1.15.2の`info`とlocalhostの模擬HTTP serverを使い、各条件を5回試した。
+`install`は実行していないため、製品のinstall経路全体の合格とは扱わない。
+
+| 条件 | 観測した事実 | Phase Aの状態 |
+|---|---|---|
+| Range拒否・200 | RAUCは非0で失敗し、full-downloadで成功するfallbackは行わなかった | 既定失敗の契約に適合。server側の送信量は0ではない。RAUC側の受信量は集計が得られず未計測 |
+| redirect・206 | 302後に206を取得し、CMS検証済みで終了0 | 模擬serverで確認済み。実GitHub assetの観測とは分ける |
+| 切断・再接続 | 一度の切断後に再接続し、同じ8-byte Rangeを再要求して検証成功。毎回切断では上限後に失敗 | 確認済み。残り4 bytesからのresumeや再起動後の再開は未確認 |
+| 429・Retry-After | 指定3秒に対し次要求は約1.0秒後。一度だけなら回復、継続時は5回retry後に失敗 | OPEN。Retry-Afterを遵守していない |
+| 期限切れsigned URL・403 | 同じobject URLを5回retryして失敗。元URLの再解決や新しい署名queryの取得は観測せず | OPEN。再解決による回復は未実装 |
+| activation | 全試行でbackendのset-primary/set-state呼出し0、架空slot・状態fileのhash不変 | `info`試験で確認。実slotや実/dataへのwrite量の証明ではない |
+
+429への対応は、wrapperによるbackoff、RAUCへのpatch、現挙動を制約として受容する案から選ぶ。
+403への対応は、wrapperがURLを再解決してRAUCを再実行する案と、RAUCへのpatchを比較する。
+いずれも未決定であり、wrapperの停止・再実行やpatchの安全性を確認済みとはしない。
+
+Phase Aには`install`、adaptiveのblock再利用、端末側index生成・再生成のwrite量、
+実GitHub Release assetのredirect・206・期限切れ挙動の観測が残る。
+bundle作成時のindex生成を、端末での再利用やwrite量の測定に読み替えない。
+
 hash indexは4 KiB blockごとのSHA-256を持ち、RAUCの
 `data-directory`配下、すなわち`/data/rauc`内へ置く。
 index生成・再利用・破損時の再生成に伴うread/write量を別々に測る。
@@ -110,10 +134,27 @@ adaptiveは転送を減らす仕組みであり、SD writeも同率で減ると�
 
 ## CMS・PKI・橋渡し
 
-CMS/X.509を使い、offline root CA、issuing CA、短命release証明書のchainを採る。
+CMS/X.509を使い、offline root CAからrelease証明書を手作業で発行する。
+中間issuing CAと短命証明書を前提とした旧計画は置き換える。
 まずECDSA P-256を評価し、host生成、chain・用途検査、target検証の相互運用を④で確かめる。
-端末に置くのは公開CAだけであり、署名秘密鍵は置かない。
+root CAの秘密鍵はofflineだけに置き、GitHubへ置かない。
+GitHub Secretへ登録するのはrelease秘密鍵とrelease証明書だけとし、現行Ed25519と同じ運用にする。
+端末が信頼設定として持つのはCAの公開部分だけで、署名秘密鍵は置かない。
+bundle内のrelease証明書まで端末が受け取らないという意味ではない。
 再現可能なbuild成果物と、鍵を持つ署名処理を別環境・別権限に分ける。
+
+release証明書の有効期間は1年案とし、期限の1か月前にofflineで更新・発行する。
+④では証明書の公開部分をrepositoryへ入れ、週次workflowで期限を検査する。
+期限の1か月前になったらIssueで知らせる処理も④で実装し、同じ期限のIssueを重複作成しない。
+これは残件であり、本変更でworkflowやSecretを作らない。
+
+release鍵の漏洩時は署名・配信を止め、GitHub Secretを無効化して新しいrelease鍵へ入れ替える。
+offline CAで新証明書を発行し、漏洩した証明書の失効情報を配布して旧署名を拒否する手順を④で検証する。
+assetの削除やSecretの交換だけで、端末が既に持つ旧bundleを失効できるとは扱わない。
+署名時刻の利用では、漏洩鍵による過去時刻の署名を期限だけで防げない。
+CRL等の失効情報の配布・更新と、信頼できない時計での評価は④の残件とする。
+root CA漏洩時はrelease鍵だけの交換では足りず、新CAへの信頼切替と安全な復旧手段を別途用意する。
+鍵保管・手動発行・失効・復旧の担当者は未割当である。
 
 橋渡しreleaseは旧Ed25519方式で署名する。
 旧方式でRAUC本体とkeyringを導入し、旧方式のhealth・確定を完了してから、
@@ -122,19 +163,30 @@ RAUCを唯一の更新writerへ切り替える。
 移行完了後の⑦で公開`msd-update`、旧tar形式、旧公開鍵と旧署名経路を撤去する。
 橋渡し前の端末まで更新不能にする削除を先に行わない。
 
-### OPEN: 利用者の決定待ち
+### 採用決定: 署名時刻と単調版
 
-| 論点 | 選択肢と条件 | 状態 |
-|---|---|---|
-| PKI責任者 | 鍵保管、CA発行、release署名、失効、復旧の担当者と承認分離を決める | OPEN。人・組織を本PRで割り当てない |
-| 信頼できない時計と期限 | 案1: 信頼できる時刻を得るまで更新を保留する。短命証明書とCRL運用が可能だがoffline更新を制限する | OPEN |
-| 同上 | 案2: 期限検査を無効化し、署名済みの単調版と永続下限でrollbackを拒否する。盗難・失効済み鍵の悪用を時刻で制限できなくなる | 利用者への提案であり未承認。1.15.2の`install`には`--no-check-time`がなく、そのまま指定して実現できない |
-| 同上 | 案3: `use-bundle-signing-time=true`で署名時刻を評価する。証明書期限の完全無効化とは違い、古い署名のreplay対策が別途必要 | OPEN。既定falseを変更しない |
+時計は案3を採用する。`use-bundle-signing-time=true`でbundleの署名時刻を基準に証明書を評価する。
+証明書期限を完全に無効化する案は採用せず、`--no-check-time`を製品経路で使わない。
+RAUC 1.15.2の`install`には同option自体が存在しない。
+`use-bundle-signing-time`が変えるのはCMS検証の時刻だけであり、HTTPSのTLS証明書は端末の時計で検証される。
+端末の時計がTLS証明書の有効期間外なら、取得はCMS検証の前に失敗する。
+時計がずれた状態でのHTTPS取得と、時刻の補正（NTP、手動設定）の要否は⑤の試験対象とする。
 
-`min-bundle-version`は設定されたSemVer下限との比較であり、
-現在までの最大内部版を自動的に永続更新する機能ではない。
-単調版の比較・保存・橋渡し時の初期値・失効後の回復を、承認なしに決定済みとしない。
-期限無効化の可否が確定するまで、そのためのRAUC patchや独自検証器は追加しない。
+replayとrollbackは、署名対象manifestに含めた内部版と`/data/rauc`の永続下限で拒否する。
+内部版は[版の規則](../../.agents/skills/release-versioning/SKILL.md)どおりtag commitの`%ct`とし、
+releaseごとに厳密に増加させる。同じ値・過去の値は通常の更新として受理しない。
+署名検証後、slotへのwrite前に下限と比較し、版の欠落・不正や下限の読取り失敗・破損では更新を止める。
+`min-bundle-version`はSemVer比較であり、この内部版の永続下限を自動更新する機能ではない。
+比較・保存はwrapper/backend側で実装し、RO rootにある現行版と永続下限も照合する。
+
+下限はhealthとmark-goodの成功後、更新完了表示前に確定版へ引き上げる計画である。
+試し起動の前に下限を上げて旧slotへの回復を妨げない。
+状態fileは同一directory内の一時file、`fsync`、`rename`、directoryの`fsync`で保存する。
+保存失敗を更新完了とせず、mark-goodと下限保存の間の電断もreconcileしてから次の更新を許す。
+通常起動で同じ値を書き直さず、回復writeは表示付きの処理にする。
+橋渡し時の初期下限・記録形式・再実行境界は③④で固定し、電断・破損・旧版・同版を⑥で試す。
+時機・量・表示は[書き込みの計画](write-policy.md#rauc導入で追加する計画)に登録した。
+この決定は実装済みや、SDの複製・巻戻しに耐えるhardware単調counterの存在を意味しない。
 
 ## progress・中断・書込み
 
@@ -160,7 +212,7 @@ inline installの進捗出力をwrapperで扱う実現性と中断境界を⑤�
 |---|---|---|
 | ② Buildroot統合 | 固定RAUC、host-rauc、network・streaming・JSON、非常駐構成、必要kernel設定、RO設定と公開CAの配置準備 | Meson最終値・依存・uid・NBDのconfigを採否表と照合。vendorを編集せずbuild。license/SBOM、常駐なし、defaultのidle writeを確認。ENGINE強制はOpenSSL削減と別件 |
 | ③ custom backendとhealth | slot三者照合、read-back gate、trying、mark-good、bootstate、reconcile、S99連携 | get-primary/get-stateのwrite 0、照合異常の拒否、各保存失敗、冪等な再実行、health失敗時非確定をhost試験。実firmware trybootは実機待ちと明示 |
-| ④ PKI・橋渡し・署名 | CMS chain、P-256評価、build/sign分離、旧方式での橋渡し、排他 | 悪署名・誤CA・用途違い・期限条件・旧版・橋渡し中断を試験。OPENの利用者判断を得て文書を更新し、未決のまま本番署名へ進まない |
+| ④ PKI・橋渡し・署名 | offline CAの手動発行、P-256評価、release鍵のSecret運用、公開証明書、週次期限通知、旧方式での橋渡し、排他 | 署名時刻・単調版・永続下限、誤CA・用途違い・期限・失効・鍵交換・旧版・橋渡し中断を試験。1年案・1か月前更新とIssue通知を具体化し、担当者・復旧手順を確定する |
 | ⑤ streaming・adaptive・表示 | Phase Aを先行、full asset取得、index、英日progress/cancel | RAUC自身でHTTP異常を検証。Range拒否の既定失敗、無断fallbackなし、indexのbackground writeなし、cancel失敗を成功表示しない。LCDは実機待ち |
 | ⑥ QEMU測定 | 下表の比較と故障注入、証拠保存 | baselineと候補の同条件・各5回・A/A、生値と失敗を実験記録へ保存。容量・RAM・時間・取得量・write量を比較し、未測定を埋めず利用者へ報告 |
 | ⑦ 旧方式撤去 | 橋渡し完了後に旧command・tar・鍵・CI経路・操作文書を撤去 | RAUCだけがwriterであることと旧入力拒否を検査。未移行端末の救済経路を確認してから削除。tryboot・実SD電断の実機証拠をQEMU結果で代用しない |
