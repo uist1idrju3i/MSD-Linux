@@ -228,7 +228,7 @@ def main():
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
     out = args.out.resolve()
-    out.mkdir()
+    out.mkdir(parents=True)
     prefix = "openssl-probe-" + uuid.uuid4().hex
     rows = [dict(run_id=f"{prefix}-{variant}-{slot}-{case}", variant=f"{variant}-{slot}", repeat=1,
                  metric=case, value="", unit="status", valid="false", note="not run")

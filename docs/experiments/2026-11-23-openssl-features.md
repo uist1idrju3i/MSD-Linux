@@ -162,7 +162,10 @@ host C1 16行を含む。全行validで、正式測定の失敗・欠損は0行�
 公開する2つのCSVは行終端だけLFへ統一した。証拠archive内の生CSVは変更していない。
 
 ```sh
-docker/msd-dev python3 board/cardputerzero/tools/bench/openssl-features/export.py \
+mkdir -p output-openssl-features-r1/historical-export
+tar -xzf docs/experiments/2026-11-23-openssl-features.tar.gz \
+  -C output-openssl-features-r1/historical-export runners/export.py
+docker/msd-dev python3 output-openssl-features-r1/historical-export/runners/export.py \
   --pair output-openssl-features-r1/cold-pair-01 \
   --probe output-openssl-features-r1/probe-01 \
   --host output-openssl-features-r1/c1-host-probe-01 \
@@ -170,6 +173,9 @@ docker/msd-dev python3 board/cardputerzero/tools/bench/openssl-features/export.p
   --out output-openssl-features-r1/reexport.csv
 python3 -c 'from pathlib import Path; p = Path("output-openssl-features-r1/reexport.csv"); p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n"))'
 ```
+
+この再集計にはarchiveの当時のexporterを使う。保守版は実際に起動したkernelのhashも要求するため、
+そのfieldがない過去のrecordを受理しない。欠けたfieldを生のmetadataへ後付けしない。
 
 full buildの実行IDは`openssl-features-f40c3733458d44df99deb13b180973ab`、
 QEMUは`openssl-probe-f389737e241940f2b6d3b05e924bd281`。
@@ -248,6 +254,18 @@ docker/msd-dev env QEMU_COPY_IMAGE=0 python3 board/cardputerzero/tools/bench/ope
 26 file、146,561 bytes、SHA-256は
 `5588898ecf3d3ed1609c950cd08df8b0324eb6f09cfc9c892c21d1327c276809`。
 全fileを保存元と照合し、秘密鍵・TLS session keyを含まないことも検査した。
+
+### PR #300の追加修正
+
+- 子processの生成から`Popen`の戻り値とPIDの保存まで、TERM・INT・HUPをhandler内で保留する。
+  参照の保存後に中断例外へ変え、通常の停止・reapへ進む。子へsignal maskを継承させない。
+  実processを生成した直後、constructorが戻る前に3 signalを送る試験で回収を確認する。
+- `KERNEL_IMAGE`を指定した場合はそのfile、空または未指定なら比較元の`images/Image`を一時領域へ複製する。
+  そのcopyを`KERNEL_IMAGE`へ明示し、SHA-256・元path・起動pathを各bootの`process.json`へ保存する。
+  比較元imageのhashとは別の記録である。exportでは前後A/Bの4記録をbuildの`Image`のhashと照合し、
+  不一致・field欠損を拒否する。同じ内容の別pathは許可し、別内容のkernelでは回帰が成功しても集計を拒否する。
+- probeの出力先は親directoryも作る。上の追試commandをfresh checkoutで使えるようにし、
+  入力欠損時も計画と未実施50行を保存する。既存の出力先は上書きせず拒否する。
 
 ## 未確認
 

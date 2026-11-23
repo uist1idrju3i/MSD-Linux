@@ -1422,6 +1422,29 @@ class OpenSSLFeatures(unittest.TestCase):
             self.assertTrue(all(row["value"] == "5" for row in rows if row["metric"] == "squashfs_bytes"))
             self.assertTrue(all(" is not set" in line for line in (out / "candidate/.config").read_text().splitlines()))
 
+    def test_probe_creates_missing_parent_directories_and_preserves_attempt(self):
+        probe = self.load("feature_probe_parents", "openssl-features/probe.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            out = root / "new-parent" / "probe"
+            args = [sys.executable, probe.__file__, "--pair", str(root / "missing-pair"), "--out", str(out)]
+            result = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertTrue(out.is_dir())
+            plan = (out / "plan.json").read_bytes()
+            results = (out / "results.csv").read_bytes()
+            self.assertEqual(len(json.loads(plan)), 50)
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 50)
+            self.assertTrue(all(row["valid"] == "false" and row["value"] == "" for row in rows))
+            self.assertTrue((out / "failure.json").is_file())
+            again = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(again.returncode, 0)
+            self.assertIn("FileExistsError", again.stderr)
+            self.assertEqual((out / "plan.json").read_bytes(), plan)
+            self.assertEqual((out / "results.csv").read_bytes(), results)
+
     def test_probe_collection_failure_preserves_invalid_rows(self):
         probe = self.load("feature_probe_failures", "openssl-features/probe.py")
         with tempfile.TemporaryDirectory() as temporary:
