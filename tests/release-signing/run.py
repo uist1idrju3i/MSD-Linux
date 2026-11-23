@@ -21,6 +21,9 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SIGN = ROOT / ".github/scripts/sign-update-bundle.sh"
 BOARD = ROOT / "board/cardputerzero"
+_firmware_spec = importlib.util.spec_from_file_location("sdio_firmware", BOARD / "tools/prune-sdio-firmware.py")
+FIRMWARE = importlib.util.module_from_spec(_firmware_spec)
+_firmware_spec.loader.exec_module(FIRMWARE)
 CNF = ("openssl_conf = openssl_init\nconfig_diagnostics = 1\n"
        "[openssl_init]\nproviders = provider_sect\n"
        "[provider_sect]\ndefault = default_sect\n"
@@ -169,6 +172,8 @@ class ReleaseSigning(unittest.TestCase):
         put(target / "etc/mdev.conf", "$MODALIAS=.* 0:0 660 @modprobe\n")
         put(target / "etc/ssl/openssl.cnf", CNF)
         put(target / "usr/share/keymaps/tca8418_keypad_m5stack_keymap.map", "")
+        for name in FIRMWARE.REQUIRED:
+            put(target / "lib/firmware" / name, "firmware fixture")
         put(base / "build/busybox-fixture/.config",
             "CONFIG_DESKTOP=y\nCONFIG_FEATURE_DD_IBS_OBS=y\nCONFIG_FEATURE_MD5_SHA1_SUM_CHECK=y\n"
             "CONFIG_FEATURE_SWAPON_PRI=y\n")
@@ -249,6 +254,108 @@ class ReleaseSigning(unittest.TestCase):
         self.assertFalse((self.target / "usr/bin/setfont").exists())
         self.assertTrue((self.target / "usr/bin/loadkeys").exists())
         self.assertFalse((self.target / "usr/share/consolefonts").exists())
+
+    def test_sdio_firmware_pruning_and_link_closure(self):
+        self.fixture()
+        base = self.target / "lib/firmware"
+        alias = base / "brcm/brcmfmac43439-sdio.bin"
+        alias.unlink()
+        alias.symlink_to("../cypress/cyfmac43439-sdio.bin")
+        put(base / "cypress/cyfmac43439-sdio.bin", "retained CYW43439")
+        optional = base / "brcm/BCM43430A1.raspberrypi,0-compute-module.hcd"
+        optional.symlink_to("../synaptics/SYN43430A1.hcd")
+        put(base / "synaptics/SYN43430A1.hcd", "retained optional link target")
+        put(base / "brcm/brcmfmac43455-sdio.bin", "unused")
+        put(base / "brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.bin", "unused")
+        put(base / "brcm/BCM4345C0.hcd", "unused")
+        put(base / "cypress/cyfmac43455-sdio.bin", "unused")
+        put(base / "synaptics/SYN43430B0.hcd", "unused")
+        put(base / "brcm/unrelated.dat", "preserved")
+        removed = FIRMWARE.prune(self.target)
+        self.assertEqual(len(removed), 5)
+        self.assertEqual(alias.read_text(), "retained CYW43439")
+        self.assertEqual(optional.read_text(), "retained optional link target")
+        self.assertEqual((base / "brcm/unrelated.dat").read_text(), "preserved")
+        self.assertEqual(FIRMWARE.prune(self.target), [])
+        self.post_build()
+
+    def test_sdio_firmware_refuses_missing_empty_and_bad_links(self):
+        self.fixture()
+        base = self.target / "lib/firmware"
+        required = base / "brcm/BCM4343A2.hcd"
+        unused = base / "brcm/BCM4345C0.hcd"
+        put(unused, "must not be removed on error")
+        for link in (None, "absent.hcd", "/etc/passwd", "../../../outside", required.name,
+                     "missing/../BCM43430A1.hcd", "BCM43430A1.hcd/../BCM43430B0.hcd",
+                     "BCM43430A1.hcd/.", "BCM43430A1.hcd/"):
+            required.unlink()
+            if link is not None:
+                required.symlink_to(link)
+            with self.assertRaises(ValueError):
+                FIRMWARE.prune(self.target)
+            self.assertTrue(unused.exists())
+            required.unlink(missing_ok=True)
+            put(required, "restore")
+        required.write_bytes(b"")
+        with self.assertRaises(ValueError):
+            FIRMWARE.prune(self.target)
+        self.assertTrue(unused.exists())
+        empty = self.work / "empty-firmware-target"
+        empty.mkdir()
+        with self.assertRaises(ValueError):
+            FIRMWARE.prune(empty)
+
+    def test_sdio_bench_failed_retries_have_distinct_ids(self):
+        spec = importlib.util.spec_from_file_location("sdio_bench", BOARD / "tools/bench/sdio-firmware.py")
+        bench = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bench)
+        identifiers = []
+        config = self.work / "sdio.config"
+        put(config, "real input for hashing")
+        for retry in range(2):
+            out = self.work / f"sdio-retry-{retry}"
+            with mock.patch.object(bench.KBD, "source_inputs", return_value={
+                    "board/cardputerzero/qemu/serial-allowlist.txt": "allowlist"}), \
+                    mock.patch.object(bench.subprocess, "check_output", return_value="fixture-head\n"), \
+                    mock.patch.object(bench.subprocess, "run"):
+                with self.assertRaises(FileNotFoundError):
+                    bench.build(self.work / "missing-artifact", self.work, config, out)
+            report = json.loads((out / "results.json").read_text())
+            with (out / "results.csv").open() as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 22)
+            preflight = next(row for row in rows if row["variant"] == "preflight")
+            self.assertEqual(preflight["value"], "1")
+            self.assertEqual(preflight["valid"], "false")
+            self.assertIn("sdcard.img.xz", preflight["note"])
+            self.assertTrue(all(row["valid"] == "false" and row["value"] == ""
+                                for row in rows if row is not preflight))
+            self.assertEqual(report["phase"], "preflight")
+            self.assertEqual(report["error_type"], "FileNotFoundError")
+            self.assertEqual(report["config_sha256"], hashlib.sha256(config.read_bytes()).hexdigest())
+            self.assertEqual(len(json.loads((out / "plan.json").read_text())), 22)
+            self.assertIn("board/cardputerzero/qemu/serial-allowlist.txt", report["source_sha256"])
+            self.assertIn("board/cardputerzero/tools/prune-sdio-firmware.py", report["source_sha256"])
+            identifiers.append({row["run_id"] for row in rows})
+            with self.assertRaises(FileExistsError):
+                bench.build(self.work, self.work, self.work, out)
+        self.assertTrue(identifiers[0].isdisjoint(identifiers[1]))
+
+    def test_sdio_firmware_resolves_directory_links_before_parent(self):
+        self.fixture()
+        base = self.target / "lib/firmware"
+        required = base / "brcm/BCM4343A2.hcd"
+        required.unlink()
+        put(base / "cypress/kept/payload.hcd", "selected firmware")
+        (base / "cypress/kept/subdir").mkdir()
+        (base / "brcm/BCM-directory.hcd").symlink_to("../cypress/kept/subdir")
+        required.symlink_to("BCM-directory.hcd/../payload.hcd")
+        put(base / "brcm/payload.hcd", "not the selected firmware")
+        self.assertEqual(required.read_text(), "selected firmware")
+        FIRMWARE.prune(self.target)
+        self.assertEqual(required.read_text(), "selected firmware")
+        self.assertTrue((base / "brcm/BCM-directory.hcd").is_symlink())
+        self.assertEqual(FIRMWARE.prune(self.target), [])
 
     def test_kbd_reference_refuses_before_any_removal(self):
         self.fixture()

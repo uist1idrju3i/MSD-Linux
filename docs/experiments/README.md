@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [SDIO firmware配送](2026-11-23-sdio-firmware.md) | [CSV](2026-11-23-sdio-firmware.csv) | 2026-11-23 | 現行CI再pack・QEMU比較完了 | CYW43439とCM0専用43436sを併存保持。rootfs −1,759,026 bytes、SquashFS −1,069,056 bytes。前後A/Bの19 module一致。SDIO・BTの実機読込みは未確認 |
 | [kbd tool配送の最小化](2026-11-23-kbd-tools.md) | [CSV](2026-11-23-kbd-tools.csv) | 2026-11-23 | 現行CIの再pack・QEMU比較完了 | rootfs −532,908 bytes、SquashFS −147,456 bytes。前後A/Bのloadkeys終了0・19 module一致、失敗対照を拒否。実機keyboard未確認 |
 | [libgomp配送削減](2026-11-23-libgomp-prune.md) | [CSV](2026-11-23-libgomp-prune.csv) | 2026-11-23 | 旧構成の容量・前後A/Bと現行CIの再監査完了 | 旧構成: rootfs −302,440 bytes、SquashFS −135,168 bytes、19 module一致。現行184 ELFに参照未検出、削除後A/B成功。現行の前後比較は未実施 |
 | [module index削除](2026-11-23-module-index-prune.md) | [CSV](2026-11-23-module-index-prune.csv) | 2026-11-23 | 既存image再pack・QEMU比較完了 | rootfs −938,282 bytes、SquashFS −167,936 bytes。前後A/Bの19 module一致。測定器は自前indexでlibkmod load成功。最新製品buildはCI待ち |

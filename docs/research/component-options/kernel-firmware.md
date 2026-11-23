@@ -66,6 +66,45 @@ Wi-FiのSDIO firmwareがあるだけでは、認証、国別規制、DHCP/DNS、
 
 M5 packageは外部moduleをbuildし、`KCFLAGS`へ`CONFIG_CARDPUTERO_V0_5=1`を渡す。overlayはC preprocessorと`dtc -@ -I dts -O dtb`を経由する。指定を増やす前に、driverが読むproperty、共有resetや電源の責務、標準DT bindingとの違いを追う。[公式OSとの照合](../hardware/official-software.md)と[ハードウェアの資料](../hardware/hardware-spec.md)から、設定変更の機能要件を確認できる。
 
+## CM0のSDIO firmware配送
+
+公式CM0 datasheetはCYW43439を挙げるが、固定配送には43436sを指すCM0専用aliasがある。
+実機のchip ID・revision・BT subversionが未取得なので、単一familyに絞らない。
+[比較記録](../../experiments/2026-11-23-sdio-firmware.md)に一次資料・名前の規則・残件を、
+[file一覧](sdio-firmware-files.csv)に全92 entryの採否・hash・symlinkの到達先を残した。
+
+固定Buildroot `bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`の
+[package Config.in](https://github.com/buildroot/buildroot/blob/bbbdab36565d4941b6b0449a0eedb5aac8a10c2e/package/brcmfmac_sdio-firmware-rpi/Config.in)全3 tokenを表の最初の3行と機械照合した。
+固定LibreELEC `6596d332eaadd63e2413e3937715a084f61c39e2`は2026-11-23取得の最新HEADと同じで、
+firmwareデータにconfigure optionや実行時の引数・環境変数はない。Buildroot masterの同Config.inも固定版と一致した。
+`.mk`は広いglobで配送するため、非公開のchip選択optionを追加で渡す方法もない。
+以下の残りは供給経路を区別する関連設定で、Raspberry Pi boot設定全体の再調査ではない。
+
+| option | 意味・既定値 | 固定版の採否と理由 |
+|---|---|---|
+| `BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI` | 無線firmware。既定n | yを維持。固定供給元・PROPRIETARYの許諾は変更しない |
+| `BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_BT` | brcm/synapticsのhcd一式。既定n | yを維持。個別chipの選択肢がないためexternal post-buildで絞る |
+| `BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI_WIFI` | brcmfmac/cyfmac一式。既定n | yを維持。CM0用alias・NVRAMを保持する。BCM43XXXと同時選択できない |
+| `BR2_PACKAGE_RPI_FIRMWARE` | boot/GPU firmware。既定n | yを維持。SDIO firmwareの供給元ではない |
+| `BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI_CD` | Linux bootに必要なcut-down一式。既定n | 現行yを維持。SDIO削減には使わない |
+| `BR2_PACKAGE_RPI_FIRMWARE_CONFIG_FILE` | boot/config.txtの入力。既定空 | 現行board設定を維持。無線blobの選択肢ではない |
+| `BR2_PACKAGE_RPI_FIRMWARE_INSTALL_DTB_OVERLAYS` | overlay install。既定y | yを維持。CM0/M5のDTを削る変更はしない |
+| `BR2_PACKAGE_LINUX_FIRMWARE_BRCM_BCM43XX` | linux-firmwareのBroadcom集合。既定n。CYW43XXをselect | 不採用。供給元の切替と重複配送になる。CM0固有alias・許諾の照合を別途要する |
+| `BR2_PACKAGE_LINUX_FIRMWARE_BRCM_BCM43XXX` | 同BCM43xxx集合。既定n。CYW43XXXをselect | 不採用。現行Wi-Fi optionと競合し、chip一つへの配送最小化にもならない |
+
+runtimeの探索名はsdio.c・of.c・firmware.c・btbcm.cに従う。
+`brcmfmac.alternative_fw_path`と`firmware_class.path`は既定の空文字を維持し、探索先を増やさない。
+module引数・boot設定・sysctlの全体は既存の設定表を参照する。この変更で製品の表示・永続writeは増えない。
+
+代替は、現状の全配送を維持、linux-firmwareへ供給元を変更、必要blobを自前で再配送、external post-buildの4案。
+全配送は確実だが容量を減らせない。供給元変更と自前再配送はalias・NVRAM・license・更新監視を抱えるため見送る。
+固定供給元・legal-infoを維持し、保持rootとsymlinkの到達先を検査するpost-buildを採用した。
+新しい依存・Blob版・CVE対応・保守期間は追加していない。RAMと起動時間の差は未測定である。
+
+再pack比較ではrootfs通常file合計1,759,026 bytes、SquashFS 1,069,056 bytes減。
+前後QEMU A/Bの19 moduleは一致したが、対象SDIOもBTも実機でのfirmware読込みは未確認。
+実機でchip ID・revision・BT subversionと選択file名のlogを取得してから、さらに絞れるか再検討する。
+
 ## 一次資料と既存の実測
 
 - [固定kernelのソース](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602)、[同版のkernel引数](https://github.com/raspberrypi/linux/blob/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/kernel-parameters.txt)、[sysctl](https://github.com/raspberrypi/linux/tree/b3495ea401d709af0701a85babcba5e3d788a602/Documentation/admin-guide/sysctl)

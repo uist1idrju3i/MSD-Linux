@@ -1,6 +1,5 @@
 bin/busybox 10
 usr/share/udhcpc/default.script 70
-lib/firmware/cypress/cyfmac43455-sdio.bin 80
 lib/ld-linux-aarch64.so.1 90
 bin/chattr 100
 bin/compile_et 110
@@ -48,18 +47,11 @@ lib/modules/@KVER@/kernel/crypto/crypto_user.ko.xz 520
 lib/modules/@KVER@/kernel/crypto/ctr.ko.xz 530
 lib/modules/@KVER@/kernel/crypto/deflate.ko.xz 540
 lib/libc.so.6 550
-lib/firmware/brcm/brcmfmac43436-sdio.clm_blob 560
-lib/firmware/brcm/brcmfmac43436-sdio.txt 570
 lib/firmware/brcm/brcmfmac43436s-sdio.nolpo.txt 580
 lib/firmware/brcm/brcmfmac43436s-sdio.txt 590
-lib/firmware/brcm/brcmfmac43455-sdio.txt 600
-lib/firmware/brcm/brcmfmac43456-sdio.clm_blob 610
-lib/firmware/brcm/brcmfmac43456-sdio.txt 620
 lib/firmware/cypress/cyfmac43430-sdio.clm_blob 640
 lib/firmware/cypress/cyfmac43439-sdio.clm_blob 650
 lib/firmware/cypress/cyfmac43439-sdio.txt 660
-lib/firmware/cypress/cyfmac43455-sdio.clm_blob 670
-lib/firmware/synaptics/SYN43430A1.hcd 680
 lib/libanl.so.1 690
 lib/libatomic.so.1.2.0 700
 bin/findmnt 710
@@ -115,7 +107,6 @@ lib/firmware/bmi270-init-data.fw 1200
 lib/firmware/brcm/BCM43430A1.hcd 1210
 lib/firmware/brcm/BCM43430B0.hcd 1220
 lib/firmware/brcm/BCM4343A2.hcd 1230
-lib/firmware/synaptics/SYN43430B0.hcd 1240
 sbin/mklost+found 1250
 sbin/resize2fs 1260
 sbin/swaplabel 1270
