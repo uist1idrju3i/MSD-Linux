@@ -4,6 +4,7 @@
 import argparse
 import base64
 import csv
+from contextlib import contextmanager
 import gzip
 import hashlib
 import importlib.util
@@ -93,20 +94,40 @@ def parse(text, slot):
 
 
 def boot(reference, slot, out):
+    launching = False
+    pending_signal = None
+
     def interrupt(number, _frame):
+        nonlocal pending_signal
+        if launching:
+            if pending_signal is None:
+                pending_signal = number
+            return
         raise RuntimeError(f"signal {signal.Signals(number).name}")
+
+    @contextmanager
+    def defer_signals():
+        nonlocal launching, pending_signal
+        launching = True
+        try:
+            yield
+        finally:
+            launching = False
+            number, pending_signal = pending_signal, None
+            if number is not None:
+                interrupt(number, None)
 
     signals = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
     handlers = {number: signal.signal(number, interrupt) for number in signals}
     try:
         with tempfile.TemporaryDirectory(prefix="ossl-probe-", dir="/tmp") as temporary:
-            return supervise_boot(reference, slot, out, Path(temporary))
+            return supervise_boot(reference, slot, out, Path(temporary), defer_signals)
     finally:
         for number, handler in handlers.items():
             signal.signal(number, handler)
 
 
-def supervise_boot(reference, slot, out, temporary):
+def supervise_boot(reference, slot, out, temporary, defer_signals):
     out.mkdir()
     log_path = out / "serial.log"
     socket = temporary / "qmp.sock"
@@ -120,10 +141,11 @@ def supervise_boot(reference, slot, out, temporary):
     pending = bytearray()
     state = dict(qmp_quit=False, reaped=False, returncode=None, fallback=[], error=None)
     try:
-        process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
-                                   stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                   start_new_session=True, env=environment)
-        state["pid"] = process.pid
+        with defer_signals():
+            process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
+                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       start_new_session=True, env=environment)
+            state["pid"] = process.pid
         selector.register(process.stdout, selectors.EVENT_READ)
         with log_path.open("xb") as log:
             def receive(marker, timeout=300):

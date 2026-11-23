@@ -981,6 +981,48 @@ class OpenSSLFeatures(unittest.TestCase):
                         except ProcessLookupError:
                             pass
 
+    def test_probe_defers_signals_until_spawn_reference_is_stored(self):
+        probe = self.load("feature_probe_spawn_signals", "openssl-features/probe.py")
+        popen = subprocess.Popen
+        for number in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            with self.subTest(signal=number), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                out = root / "out"
+                children = []
+                events = []
+
+                def spawn(_command, **kwargs):
+                    child = popen([sys.executable, "-c", "import time; time.sleep(60)"], **kwargs)
+                    children.append(child)
+                    self.assertEqual(os.getpgid(child.pid), child.pid)
+                    events.append("child created")
+                    signal.raise_signal(number)
+                    events.append("constructor returned")
+                    return child
+
+                handlers = {item: signal.getsignal(item) for item in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)}
+                try:
+                    with mock.patch.object(probe.subprocess, "Popen", side_effect=spawn):
+                        with self.assertRaisesRegex(RuntimeError, signal.Signals(number).name):
+                            probe.boot(root, "A", out)
+                    self.assertEqual(events, ["child created", "constructor returned"])
+                    state = json.loads((out / "process.json").read_text())
+                    self.assertEqual(state["pid"], children[0].pid)
+                    self.assertTrue(state["reaped"])
+                    self.assertEqual(state["returncode"], -signal.SIGTERM)
+                    self.assertEqual(state["fallback"], ["SIGTERM"])
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(children[0].pid, 0)
+                    self.assertIsNotNone(children[0].poll())
+                    self.assertEqual(handlers, {item: signal.getsignal(item) for item in handlers})
+                finally:
+                    for child in children:
+                        if child.poll() is None:
+                            os.killpg(child.pid, signal.SIGKILL)
+                        child.wait(timeout=5)
+                        child.stdin.close()
+                        child.stdout.close()
+
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")
         data = io.BytesIO()
