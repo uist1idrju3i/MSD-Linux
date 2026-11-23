@@ -215,6 +215,22 @@ cmp output-libgomp-csv-replay/derived.csv docs/experiments/2026-11-23-libgomp-pr
 
 ## 明示した旧構成での再現手順の検査
 
+実行時のHEADは`b98ee3ef5a5633fb22af0c14f3f6542dd86de984`で、測定器libgomp.py・試験・本文に未commit変更があった。
+cleanなb98ee3eの実行ではない。使った測定器の変更は`e2e4401899ffb764bf1320cc513b47a46347d790`に収録した。
+以下のSHA-256は保存sourceとgitの版を後から照合した値であり、生証拠archiveへの追記ではない。
+
+| 使用file（board/cardputerzero配下） | SHA-256 |
+| --- | --- |
+| tools/bench/libgomp.py | `cb5d622901e81565d073d56e16af9807623c2c6d840be6bbea11e1edcedf5cde` |
+| tools/bench/module-index.py | `aa183b78e2adb978cb46bbdc0d973ffe0c5434f7296c5edc982842f7059b0c95` |
+| tools/prune-libgomp.py | `1b153a62786e4f35996bdfa992f8d1c282599330cfef6bd5fa3ff7b82cc497a7` |
+| tools/prune-module-indexes.sh | `229861e535b78df0981ecd9bf855acf05321767a1d3d8e565a18be6fe70b9ec1` |
+| squashfs-sort.txt | `1e8f93f0db8ab2425b58fb873d833bd53737f2fd3eca9bdda509fd659a9a4305` |
+
+両Python fileはarchive内のsourceとe2e4401の内容が一致する。
+両削除scriptとsort指定はb98ee3eからe2e4401まで変更がなく、実行中も変更していない。
+したがってe2e4401のfileで使用版を復元できる。以後のHEADを無条件に使う手順ではない。
+
 `--legacy-reference`を付けて再packし、before・before-aa・afterの3 imageを生成できた。
 初回と同じ入力SquashFS・kernelを使い、rootfs通常file合計とSquashFS bytesは3条件とも初回と一致した。
 現行設定で有効なbtrfs・cryptsetupの欠損は結果に残る。これを現行構成全体の比較とは扱わない。
