@@ -842,8 +842,30 @@ class OpenSSLFeatures(unittest.TestCase):
             Path(dtb).write_bytes(b"dtb writes")
             with socket.socket(socket.AF_UNIX) as server:
                 server.bind(os.environ["QEMU_QMP_SOCKET"])
+                server.listen(1)
                 Path(os.environ["FEATURE_FAKE_RECORD"]).write_text(json.dumps(
                     dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid())))
+                if os.environ.get("FEATURE_FAKE_MODE") == "normal":
+                    print("MSD/Linux ready\\nlogin:", flush=True)
+                    heredoc = False
+                    for line in sys.stdin:
+                        if line.startswith("sh /run/features.sh"):
+                            print("FEATURE_EXIT=0\\n# ", flush=True)
+                            break
+                        if line.startswith("base64 -d"):
+                            heredoc = True
+                        elif line.strip() == "FEATURE_SCRIPT":
+                            heredoc = False
+                        print("> " if heredoc else "# ", flush=True)
+                    with server.accept()[0] as connection, connection.makefile("rwb") as stream:
+                        stream.write(b'{"QMP":{}}\\n')
+                        stream.flush()
+                        for line in stream:
+                            request = json.loads(line)
+                            stream.write(json.dumps({"return": {}, "id": request["id"]}).encode() + b"\\n")
+                            stream.flush()
+                            if request["execute"] == "quit":
+                                break
             '''))
         fake.chmod(0o755)
         environment = dict(QEMU_SYSTEM_AARCH64=str(fake), FEATURE_FAKE_RECORD=str(record),
@@ -872,6 +894,45 @@ class OpenSSLFeatures(unittest.TestCase):
                         path = Path(observed[name])
                         if path.parent != reference / "images":
                             shutil.rmtree(path.parent, ignore_errors=True)
+
+    def test_probe_short_socket_and_owned_temporary_files_are_cleaned(self):
+        probe = self.load("feature_probe_temporary", "openssl-features/probe.py")
+        for mode in ("early", "normal", "spawn"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                parent = root / ("deep" * 35)
+                parent.mkdir()
+                environment.update(TMPDIR=str(parent), FEATURE_FAKE_MODE=mode)
+                out = parent / "out"
+                created = []
+
+                def fail_spawn(*_args, **kwargs):
+                    created.append(Path(kwargs["env"]["TMPDIR"]))
+                    raise OSError("spawn failed")
+
+                with mock.patch.dict(os.environ, environment), \
+                        mock.patch.object(probe.BOOT, "check_boot_log", return_value=True), \
+                        mock.patch.object(probe, "parse", return_value=([], [], b"")):
+                    if mode == "normal":
+                        probe.boot(reference, "B", out)
+                    elif mode == "spawn":
+                        with mock.patch.object(probe.subprocess, "Popen", side_effect=fail_spawn):
+                            with self.assertRaisesRegex(OSError, "spawn failed"):
+                                probe.boot(reference, "B", out)
+                        self.assertEqual(len(created), 1)
+                        self.assertFalse(created[0].exists())
+                        continue
+                    else:
+                        with self.assertRaisesRegex(ValueError, "QEMU exited before probe completed"):
+                            probe.boot(reference, "B", out)
+                observed = json.loads(record.read_text())
+                self.assertLess(len(os.fsencode(observed["qmp"])), 108)
+                for name in ("image", "dtb", "qmp"):
+                    self.assertFalse(Path(observed[name]).parent.exists(), observed[name])
+                state = json.loads((out / "process.json").read_text())
+                self.assertTrue(state["reaped"])
+                self.assertEqual(state["qmp_quit"], mode == "normal")
 
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")

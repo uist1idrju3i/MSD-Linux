@@ -17,6 +17,7 @@ import shutil
 import signal
 import subprocess
 import tarfile
+import tempfile
 import time
 import uuid
 
@@ -92,12 +93,17 @@ def parse(text, slot):
 
 
 def boot(reference, slot, out):
+    with tempfile.TemporaryDirectory(prefix="ossl-probe-", dir="/tmp") as temporary:
+        return supervise_boot(reference, slot, out, Path(temporary))
+
+
+def supervise_boot(reference, slot, out, temporary):
     out.mkdir()
     log_path = out / "serial.log"
-    socket = out / "qmp.sock"
+    socket = temporary / "qmp.sock"
     environment = dict(os.environ, OUTPUT_DIR=str(reference), ROOT_DEVICE="/dev/mmcblk0p" + ("5" if slot == "A" else "6"),
                        QEMU_EXTRA_APPEND="msd.module-test=usbnet,bcm2835-unicam,imx219", QEMU_QMP_SOCKET=str(socket),
-                       QEMU_COPY_IMAGE="1")
+                       QEMU_COPY_IMAGE="1", TMPDIR=str(temporary))
     for name in ("QEMU_DRIVE_FILE", "QEMU_DRIVE_FORMAT"):
         environment.pop(name, None)
     process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
