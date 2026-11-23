@@ -8,7 +8,7 @@
 
 ## 実装と事前の判定基準
 
-実行commitは`3a27872d9d6f3a44a9838b00d03698c187d3f795`。`fs-compare-guest`は`T1-negative-final`の準備時だけ、workload root直下に`.t1-negative-sentinel`を作り、fileと親directoryを順にfsyncする。期待hashは書き込むpayloadから求め、RAM上の`T1-negative-sentinel.tsv`へ記録する。通常workloadを始める前に完了し、通常fileの`--no-fsync`は維持する。
+実行commitは`3a27872d9d6f3a44a9838b00d03698c187d3f795`。`fs-compare-guest`は`T1-negative-final`の準備時だけ、workload root直下に`.t1-negative-sentinel`を作り、fileと親directoryを順にfsyncする。期待hashは書き込むpayloadから求め、`/data/fs-compare/<RUN_ID>/T1-negative-sentinel.tsv`へ記録する。`/data`は[S02msd-data](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)がext4でmountするデータ領域（既定は`/dev/mmcblk0p7`）で、RAMではない。期待値は[guest](../../board/cardputerzero/tools/bench/fs-compare-v2/fs-compare-guest)の`RUN_PATH`直下、再生対象のfilesystemをmountする`RUN_PATH/mount`の外に保存するため、そのfilesystemの再生対象には含まれない。通常workloadを始める前に完了し、通常fileの`--no-fsync`は維持する。
 
 復旧後は元の期待値を使って、同じ`check_t1_manifest`でsentinelの存在とhashを先に確認する。欠損・破損、期待値の欠損・空・不正を成功やskipにしない。成功した場合だけ、期待値の写しのhash先頭を変更し、同じ判定器が`hash_mismatch`で拒否することを要求する。元の期待値とsentinelは変更しない。対照の拒否をdata消失件数へ加えない。
 
