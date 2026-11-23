@@ -537,6 +537,20 @@
       "openat(AT_FDCWD, \"/root/.putty/randomseed\", O_WRONLY|O_CREAT, 0600) = 5"
     ]
   },
+  "trace_available": {
+    "openssh": {
+      "observed": 10,
+      "expected": 10
+    },
+    "dropbear": {
+      "observed": 10,
+      "expected": 10
+    },
+    "putty": {
+      "observed": 10,
+      "expected": 10
+    }
+  },
   "openssh_effective_config": {
     "host": "example.invalid",
     "user": "root",

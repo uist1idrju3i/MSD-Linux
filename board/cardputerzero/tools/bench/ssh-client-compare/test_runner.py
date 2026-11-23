@@ -88,6 +88,21 @@ class Runner(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "missing process/failure"):
                 summarize(build, measure, [failed, final], final)
 
+    def test_summary_distinguishes_missing_empty_and_incomplete_trace(self):
+        for traced in (False, True):
+            with self.subTest(traced=traced), tempfile.TemporaryDirectory() as directory:
+                build, measure, final = self.summary_fixture(Path(directory), traced=traced)
+                with mock.patch("summarize.needed", return_value=[]):
+                    _, report = summarize(build, measure, [final], final)
+                for variant in VARIANTS:
+                    self.assertEqual(report["writable_opens"][variant], [] if traced else None)
+                    self.assertEqual(report["trace_available"][variant]["observed"], 10 if traced else 0)
+                if traced:
+                    path = final / "serial.log"
+                    path.write_text(path.read_text().replace("SSH_TRACE_END", "", 1))
+                    with mock.patch("summarize.needed", return_value=[]), self.assertRaisesRegex(ValueError, "incomplete trace"):
+                        summarize(build, measure, [final], final)
+
     def test_measure_from_rebases_payload_on_current_reference(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -97,8 +97,10 @@ def summarize(build, measure, attempts, final):
     report["putty_binary_protocol_ids"]["limitation"] = "ELF文字列とsource登録表の照合候補。runtime queryではなく全algorithmの交渉試験でもない"
     report["home_changes"] = {}
     report["writable_opens"] = {}
+    report["trace_available"] = {}
     for variant in VARIANTS:
         homes, operations = [], []
+        traced = 0
         for condition in ("good", "wrong"):
             for repeat in range(1, 6):
                 body = serial.split(f"SSH_BEGIN {variant} {condition} {repeat}", 1)[1].split(
@@ -109,11 +111,17 @@ def summarize(build, measure, attempts, final):
                 first, second = parse(before), parse(after)
                 homes.append(dict(condition=condition, repeat=repeat,
                                   changed=sorted(path for path in first.keys() | second.keys() if first.get(path) != second.get(path))))
-                trace = body.split("SSH_TRACE_BEGIN", 1)[1].split("SSH_TRACE_END", 1)[0]
-                operations.extend(re.sub(r"^\d+\s+", "", line) for line in trace.splitlines()
-                                  if any(token in line for token in ("O_WRONLY", "O_RDWR", "mkdir(", "rename(", "unlink(")))
+                has_begin, has_end = "SSH_TRACE_BEGIN" in body, "SSH_TRACE_END" in body
+                if has_begin != has_end:
+                    raise ValueError("incomplete trace block")
+                if has_begin:
+                    traced += 1
+                    trace = body.split("SSH_TRACE_BEGIN", 1)[1].split("SSH_TRACE_END", 1)[0]
+                    operations.extend(re.sub(r"^\d+\s+", "", line) for line in trace.splitlines()
+                                      if any(token in line for token in ("O_WRONLY", "O_RDWR", "mkdir(", "rename(", "unlink(")))
         report["home_changes"][variant] = homes
-        report["writable_opens"][variant] = sorted(set(operations))
+        report["writable_opens"][variant] = sorted(set(operations)) if traced == 10 else None
+        report["trace_available"][variant] = dict(observed=traced, expected=10)
     block = serial.split("SSH_CONFIG_BEGIN", 1)[1].split("SSH_CONFIG_END", 1)[0]
     report["openssh_effective_config"] = dict(line.split(None, 1) for line in block.splitlines() if len(line.split(None, 1)) == 2)
     report["final_inputs"] = json.loads((final / "inputs.json").read_text())
