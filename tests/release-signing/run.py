@@ -285,7 +285,9 @@ class ReleaseSigning(unittest.TestCase):
         required = base / "brcm/BCM4343A2.hcd"
         unused = base / "brcm/BCM4345C0.hcd"
         put(unused, "must not be removed on error")
-        for link in (None, "absent.hcd", "/etc/passwd", "../../../outside", required.name):
+        for link in (None, "absent.hcd", "/etc/passwd", "../../../outside", required.name,
+                     "missing/../BCM43430A1.hcd", "BCM43430A1.hcd/../BCM43430B0.hcd",
+                     "BCM43430A1.hcd/.", "BCM43430A1.hcd/"):
             required.unlink()
             if link is not None:
                 required.symlink_to(link)
@@ -338,6 +340,22 @@ class ReleaseSigning(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 bench.build(self.work, self.work, self.work, out)
         self.assertTrue(identifiers[0].isdisjoint(identifiers[1]))
+
+    def test_sdio_firmware_resolves_directory_links_before_parent(self):
+        self.fixture()
+        base = self.target / "lib/firmware"
+        required = base / "brcm/BCM4343A2.hcd"
+        required.unlink()
+        put(base / "cypress/kept/payload.hcd", "selected firmware")
+        (base / "cypress/kept/subdir").mkdir()
+        (base / "brcm/BCM-directory.hcd").symlink_to("../cypress/kept/subdir")
+        required.symlink_to("BCM-directory.hcd/../payload.hcd")
+        put(base / "brcm/payload.hcd", "not the selected firmware")
+        self.assertEqual(required.read_text(), "selected firmware")
+        FIRMWARE.prune(self.target)
+        self.assertEqual(required.read_text(), "selected firmware")
+        self.assertTrue((base / "brcm/BCM-directory.hcd").is_symlink())
+        self.assertEqual(FIRMWARE.prune(self.target), [])
 
     def test_kbd_reference_refuses_before_any_removal(self):
         self.fixture()

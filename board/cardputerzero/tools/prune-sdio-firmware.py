@@ -2,6 +2,7 @@
 """Keep both documented CM0 wireless families and their firmware link targets."""
 
 import argparse
+import os
 from pathlib import Path
 import re
 
@@ -37,39 +38,47 @@ def prune(target):
             raise ValueError("unexpected firmware directory: " + str(parent))
     keep = set()
 
-    def retain(path, active):
+    def resolve(path, active):
         if path in active:
             raise ValueError("firmware symlink cycle: " + str(path))
-        if path in keep:
-            return
         if not path.is_relative_to(base):
             raise ValueError("firmware symlink escapes firmware directory: " + str(path))
         if path.is_symlink():
-            link = path.readlink()
-            if link.is_absolute():
+            link = os.readlink(path)
+            if os.path.isabs(link):
                 raise ValueError("absolute firmware symlink: " + str(path))
-            joined = path.parent / link
-            parts = []
-            for part in joined.relative_to(base).parts:
+            current = path.parent
+            for part in link.split("/"):
+                if not current.is_dir():
+                    raise ValueError("firmware path component is not a directory: " + str(current))
                 if part == "..":
-                    if not parts:
-                        raise ValueError("firmware symlink escapes firmware directory: " + str(path))
-                    parts.pop()
-                elif part != ".":
-                    parts.append(part)
-            retain(base.joinpath(*parts), active | {path})
-        elif not path.resolve().is_relative_to(base.resolve()):
+                    current = current.parent
+                elif part not in ("", "."):
+                    current = resolve(current / part, active | {path})
+                if not current.is_relative_to(base):
+                    raise ValueError("firmware symlink escapes firmware directory: " + str(path))
+            keep.add(path)
+            return current
+        if not path.resolve().is_relative_to(base.resolve()):
             raise ValueError("firmware target escapes firmware directory: " + str(path))
-        elif not path.is_file() or path.stat().st_size == 0:
+        try:
+            path.stat()
+        except OSError as error:
+            raise ValueError("missing or empty required firmware: " + str(path)) from error
+        return path
+
+    def retain(path):
+        resolved = resolve(path, set())
+        if not resolved.is_file() or resolved.stat().st_size == 0:
             raise ValueError("missing or empty required firmware: " + str(path))
-        keep.add(path)
+        keep.add(resolved)
 
     for name in sorted(REQUIRED):
-        retain(base / name, set())
+        retain(base / name)
     for name in sorted(OPTIONAL):
         path = base / name
         if path.exists() or path.is_symlink():
-            retain(path, set())
+            retain(path)
     removed = []
     for directory, pattern in OWNED.items():
         for path in sorted((base / directory).glob("*")):
