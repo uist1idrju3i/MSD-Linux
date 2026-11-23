@@ -26,7 +26,7 @@ def sha(path):
 
 
 def build(out):
-    out.mkdir()
+    out.mkdir(parents=True)
     prefix = "openssl-features-" + uuid.uuid4().hex
     rows = [dict(run_id=f"{prefix}-{variant}-{metric}", variant=variant, repeat=1,
                  metric=metric, value="", unit="bytes" if metric.endswith("bytes") else "status",

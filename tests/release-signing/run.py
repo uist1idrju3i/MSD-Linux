@@ -952,6 +952,21 @@ class OpenSSLFeatures(unittest.TestCase):
                 prefixes.append(report["run_prefix"])
             self.assertNotEqual(*prefixes)
 
+    def test_build_creates_missing_parents_without_reusing_output(self):
+        build = self.load("feature_build_parents", "openssl-features-build.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary) / "new-parent" / "pair"
+            with mock.patch.object(build.platform, "platform", return_value="fixture"), \
+                    mock.patch.object(build.subprocess, "check_output", side_effect=OSError("missing git")):
+                with self.assertRaises(OSError):
+                    build.build(out)
+            plan = (out / "plan.json").read_bytes()
+            self.assertEqual(len(json.loads(plan)), 6)
+            self.assertTrue((out / "results.csv").exists())
+            with self.assertRaises(FileExistsError):
+                build.build(out)
+            self.assertEqual((out / "plan.json").read_bytes(), plan)
+
     def test_export_refuses_empty_incomplete_and_duplicate_rows(self):
         export = self.load("feature_export", "openssl-features/export.py")
         with tempfile.TemporaryDirectory() as temporary:
