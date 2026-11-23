@@ -93,8 +93,17 @@ def parse(text, slot):
 
 
 def boot(reference, slot, out):
-    with tempfile.TemporaryDirectory(prefix="ossl-probe-", dir="/tmp") as temporary:
-        return supervise_boot(reference, slot, out, Path(temporary))
+    def interrupt(number, _frame):
+        raise RuntimeError(f"signal {signal.Signals(number).name}")
+
+    signals = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
+    handlers = {number: signal.signal(number, interrupt) for number in signals}
+    try:
+        with tempfile.TemporaryDirectory(prefix="ossl-probe-", dir="/tmp") as temporary:
+            return supervise_boot(reference, slot, out, Path(temporary))
+    finally:
+        for number, handler in handlers.items():
+            signal.signal(number, handler)
 
 
 def supervise_boot(reference, slot, out, temporary):
@@ -106,14 +115,16 @@ def supervise_boot(reference, slot, out, temporary):
                        QEMU_COPY_IMAGE="1", TMPDIR=str(temporary))
     for name in ("QEMU_DRIVE_FILE", "QEMU_DRIVE_FORMAT"):
         environment.pop(name, None)
-    process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
-                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               start_new_session=True, env=environment)
+    process = None
     selector = selectors.DefaultSelector()
-    selector.register(process.stdout, selectors.EVENT_READ)
     pending = bytearray()
     state = dict(qmp_quit=False, reaped=False, returncode=None, fallback=[], error=None)
     try:
+        process = subprocess.Popen([str(ROOT / "board/cardputerzero/qemu/run-qemu.sh")],
+                                   stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   start_new_session=True, env=environment)
+        state["pid"] = process.pid
+        selector.register(process.stdout, selectors.EVENT_READ)
         with log_path.open("xb") as log:
             def receive(marker, timeout=300):
                 deadline = time.monotonic() + timeout
@@ -159,16 +170,20 @@ def supervise_boot(reference, slot, out, temporary):
         state["error"] = repr(error)
         raise
     finally:
-        for number in (signal.SIGTERM, signal.SIGKILL):
-            if process.poll() is None:
-                state["fallback"].append(signal.Signals(number).name)
-                SUPERVISOR.signal_group(process, number)
-                SUPERVISOR.reap(process, 5)
-        state.update(reaped=process.poll() is not None, returncode=process.returncode)
+        for number in (signal.SIGHUP, signal.SIGINT, signal.SIGTERM):
+            signal.signal(number, signal.SIG_IGN)
+        if process is not None:
+            for number in (signal.SIGTERM, signal.SIGKILL):
+                if process.poll() is None:
+                    state["fallback"].append(signal.Signals(number).name)
+                    SUPERVISOR.signal_group(process, number)
+                    SUPERVISOR.reap(process, 5)
+            state.update(reaped=process.poll() is not None, returncode=process.returncode)
         (out / "process.json").write_text(json.dumps(state, indent=2) + "\n")
         selector.close()
-        process.stdin.close()
-        process.stdout.close()
+        if process is not None:
+            process.stdin.close()
+            process.stdout.close()
     text = log_path.read_text(errors="replace")
     if state["fallback"] or not state["qmp_quit"] or state["returncode"] != 0:
         raise ValueError("unclean QEMU supervision")

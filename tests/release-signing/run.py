@@ -10,11 +10,13 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tarfile
 import tempfile
 import textwrap
+import time
 import unittest
 from unittest import mock
 
@@ -833,6 +835,7 @@ class OpenSSLFeatures(unittest.TestCase):
             from pathlib import Path
             import socket
             import sys
+            import time
             if "--version" in sys.argv:
                 print("QEMU emulator version fixture")
                 sys.exit(0)
@@ -845,6 +848,8 @@ class OpenSSLFeatures(unittest.TestCase):
                 server.listen(1)
                 Path(os.environ["FEATURE_FAKE_RECORD"]).write_text(json.dumps(
                     dict(image=image, dtb=dtb, qmp=os.environ["QEMU_QMP_SOCKET"], pid=os.getpid())))
+                if os.environ.get("FEATURE_FAKE_MODE") == "hang":
+                    time.sleep(60)
                 if os.environ.get("FEATURE_FAKE_MODE") == "normal":
                     print("MSD/Linux ready\\nlogin:", flush=True)
                     heredoc = False
@@ -933,6 +938,48 @@ class OpenSSLFeatures(unittest.TestCase):
                 state = json.loads((out / "process.json").read_text())
                 self.assertTrue(state["reaped"])
                 self.assertEqual(state["qmp_quit"], mode == "normal")
+
+    def test_probe_signals_reap_separate_session_and_clean_copies(self):
+        probe = self.load("feature_probe_signals", "openssl-features/probe.py")
+        for number in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            with self.subTest(signal=number), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                reference, environment, record = self.probe_fixture(root)
+                environment["FEATURE_FAKE_MODE"] = "hang"
+                out = root / "out"
+                script = ("from pathlib import Path; import runpy; "
+                          f"runpy.run_path({probe.__file__!r})['boot']("
+                          f"Path({str(reference)!r}), 'A', Path({str(out)!r}))")
+                process = subprocess.Popen([sys.executable, "-c", script], env=dict(os.environ, **environment),
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                try:
+                    deadline = time.monotonic() + 10
+                    while not record.exists() and process.poll() is None and time.monotonic() < deadline:
+                        time.sleep(0.01)
+                    self.assertTrue(record.exists(), "fake QEMU did not start")
+                    observed = json.loads(record.read_text())
+                    self.assertEqual(os.getpgid(observed["pid"]), observed["pid"])
+                    process.send_signal(number)
+                    process.communicate(timeout=15)
+                    self.assertEqual(process.returncode, 1)
+                    state = json.loads((out / "process.json").read_text())
+                    self.assertIn(signal.Signals(number).name, state["error"])
+                    self.assertEqual(state["fallback"], ["SIGTERM"])
+                    self.assertTrue(state["reaped"])
+                    self.assertEqual(state["returncode"], -signal.SIGTERM)
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(observed["pid"], 0)
+                    for name in ("image", "dtb", "qmp"):
+                        self.assertFalse(Path(observed[name]).parent.exists())
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                    process.communicate()
+                    if record.exists():
+                        try:
+                            os.kill(json.loads(record.read_text())["pid"], signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
 
     def test_guest_results_require_all_cases_and_logs(self):
         probe = self.load("feature_probe", "openssl-features/probe.py")
