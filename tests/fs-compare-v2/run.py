@@ -385,6 +385,40 @@ class Errors(unittest.TestCase):
             self.assertEqual([r["expected"] for r in M.aggregate_errors(paths[:1] * 2, "T3")],
                              [True, False])
 
+    def test_wifi_sdio_interleaved_with_smoke_profile_and_other_markers(self):
+        header = ("run-qemu: version=QEMU emulator version 11.1.2\n"
+                  "run-qemu: machine=raspi3b memory=1G icount=off\n"
+                  "[ 0.000000] Linux version 6.18.59-v8 fixture\n"
+                  "[ 0.000000] Machine model: Raspberry Pi 3 Model B\n")
+        profile = "msd.fscmp: SMOKE_PROFILE sha256=" + "a" * 64
+        wifi = "[ 26.439258] mmc1: Failed to initialize a non-removable card"
+        for phase in ("run", "verify"):
+            for marker in (profile, "msd.fscmp: environment_ok kernel=6.18.59-v8",
+                           "msd.fscmp: T3_READY seq=1", "msd.fscmp: finished"):
+                with self.subTest(phase=phase, marker=marker):
+                    prefix = "" if marker == profile else profile + "\n"
+                    records = self.boot_scan(header + prefix + marker + wifi + "\n", phase)
+                    self.assertEqual(len(records), 1)
+                    self.assertTrue(records[0]["expected"])
+                    self.assertEqual(records[0]["text"], wifi)
+                    self.assertEqual(records[0]["known_boot"], "wifi-sdio")
+                    self.assertEqual(records[0]["line"], 5 if marker == profile else 6)
+            mixed = header + profile + wifi
+            records = self.boot_scan(mixed + wifi, phase)
+            self.assertEqual([r["expected"] for r in records], [True, False])
+            for error in ("unknown driver: failed", "EIO", "Kernel panic"):
+                records = self.boot_scan(mixed + "[ 27.000000] " + error, phase)
+                self.assertEqual([r["expected"] for r in records], [True, False])
+            for old in ("11.1.2", "6.18.59-v8", "raspi3b", "Raspberry Pi 3 Model B",
+                        "SMOKE_PROFILE", "a" * 64):
+                with self.subTest(phase=phase, unknown=old):
+                    records = self.boot_scan(mixed.replace(old, "unknown"), phase)
+                    self.assertTrue(records)
+                    self.assertFalse(any(r["expected"] for r in records))
+            records = self.boot_scan(header + profile + "[ 27.000000] efi: UEFI not found.", phase)
+            self.assertEqual([r["expected"] for r in records], [False])
+        self.assertFalse(self.boot_scan(header + profile + wifi, "host")[0]["expected"])
+
     def test_grow_reread_allows_kernel_interleaving_not_unknown_errors_or_userspace(self):
         text = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/raspi3b-first-run.log.gz").read_bytes()).decode()
         grow = "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0"

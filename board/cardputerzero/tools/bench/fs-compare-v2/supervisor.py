@@ -218,7 +218,8 @@ def aggregate_errors(logs, test):
         qemu = machine = kernel = model = closed = False
         grow_pending = False
         grow_complete = "msd-data: setup synchronized / 初期設定の同期が完了しました。" in lines
-        smoke = any(re.fullmatch(r"msd\.fscmp: SMOKE_PROFILE sha256=[a-f0-9]{64}", line) for line in lines)
+        smoke = any(re.fullmatch(r"msd\.fscmp: SMOKE_PROFILE sha256=[a-f0-9]{64}", text)
+                    for _, text in boot_serial_lines(lines, lambda: True))
         def known_environment():
             return (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
                     and qemu and machine and kernel and model)
