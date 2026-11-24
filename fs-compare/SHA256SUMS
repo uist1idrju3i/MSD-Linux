@@ -28,3 +28,6 @@ adcc69586fb255cf42da8102956aaa23ec10a8dfe62676b34e0bba1e2e848fbb  ./phase2-t4.ta
 2129bcac5b560635833015ac8869e3dd4b34a6e654695f232b037eedc7abd6d0  stage4-negative-sentinel-01.tar.zst
 b8901cbac424c523d6dcb80103e5601fd7b3b962f622120c56218577866cff3d  stage4-negative-sentinel-01.files.sha256
 030c9e98674229e633646dd1ee07b395bb74aff493ae176daecb29421dd02b15  stage4-negative-sentinel-01.selection.json
+30a4b298456c3e33ede77ad94ab03970e673f8f6b09c4d5c0a11bc5e0857220f  stage4-wifi-sdio-late-01.tar.zst
+48fdb23e3634afc22802c902a3a268a13bbb3575748d40f56ebb36a1d36a01f2  stage4-wifi-sdio-late-01.files.sha256
+2e842a8e22b36fbf61d3e44aebb15d817f8cf550dc2b3be718177c3d8396dece  stage4-wifi-sdio-late-01.licenses.txt
