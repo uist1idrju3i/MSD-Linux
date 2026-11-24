@@ -475,3 +475,15 @@ msd.fscmp: error=t1_negative_control_no_present_file
 host driver PID `1871398`は終了済み。hostの結果は終了値1、30111.008838891983秒で、guest側QEMUのPID `129987`は`phase-run.json`で`reaped=true`。main runは未開始である。
 
 保全原本は`smoke-05-final/rerun-12b5c74-05-smoke.tar`、SHA-256は`49f6bdbca8f604bc12d1402609e1c9f0732379c2129b9bda791ae3e70cdf594c`。textの写しはorphan branch `data/fs-compare-experiments`のcommit `03b03956647fbc4eb5a8ae07ad914ff5e65811fd`、`fs-compare/stage4-negative-sentinel-01.tar.zst`に保存した。写しのSHA-256は`2129bcac5b560635833015ac8869e3dd4b34a6e654695f232b037eedc7abd6d0`。取得・照合方法と修正後の結果は[sentinel診断記録](2026-11-23-s04-fs-compare-v2-negative-sentinel.md)を参照。このdata branchはmergeも削除もしない。
+
+## 試行06の代表停止
+
+代表10件目E1/T3で停止。既知のWi-Fi用mmc1診断がmarker後に出てfatalになった。206/206 phaseに同じ診断がある。一般のboot区間は維持し、固定環境のwifi-sdioだけをphase内1回に限って許容する。
+
+| verify | 診断行 | 最初のmarker行 |
+|---|---:|---:|
+| 05代表 | 312 | 318 |
+| 05 smoke | 312 | 318 |
+| 06代表 | 375 | 317 |
+
+原本`fscmp-v2-stage4-attempt-06-5bb55e9/rerun-5bb55e9-06-failed.tar`のSHA-256は`12a787c8e19965f28b90bde5b90d06c36c65e96c0c5a91bc472ba20202d964d1`。[調査・別出力の再判定・証拠の取得](2026-11-24-s04-fs-compare-v2-wifi-sdio.md)を参照。元結果は変更しない。

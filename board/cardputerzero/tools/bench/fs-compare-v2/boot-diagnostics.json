@@ -78,8 +78,8 @@
       "id": "wifi-sdio",
       "phases": ["run", "verify"],
       "pattern": "mmc1: Failed to initialize a non-removable card",
-      "reason": "mmc1 is the unpopulated Wi-Fi SDIO host, not the mmc0 SD image.",
-      "source": "linux-b3495ea401d709af0701a85babcba5e3d788a602/arch/arm/boot/dts/broadcom/bcm2710-rpi-3-b.dts:18; drivers/mmc/core/core.c:2337"
+      "reason": "mmc1 is the unpopulated Wi-Fi SDIO host, not the mmc0 SD image. Its asynchronous non-removable scan reports once per phase, independently of userspace startup.",
+      "source": "linux-a40f735325391b1705161b07f36ed45e1bf04521/arch/arm/boot/dts/broadcom/bcm2710-rpi-3-b.dts:18; arch/arm/boot/dts/broadcom/bcm270x.dtsi:50; drivers/mmc/core/core.c:2265; qemu-v11.1.3/hw/arm/raspi.c:279; hw/gpio/bcm2835_gpio.c:210"
     }
   ]
 }
