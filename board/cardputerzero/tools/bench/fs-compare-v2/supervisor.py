@@ -176,7 +176,8 @@ def boot_serial_lines(lines, enabled):
     origin = 0
     for number, text in enumerate(lines, 1):
         marker = text.startswith(("msd.fscmp: expected_errors_begin kind=",
-                                  "msd.fscmp: expected_errors_end kind="))
+                                  "msd.fscmp: expected_errors_end kind=")) or (
+                                      enabled() and text.startswith("msd.fscmp:"))
         if not enabled() or text.startswith("msd.fscmp:"):
             if pending:
                 yield origin, pending
@@ -209,6 +210,8 @@ def boot_serial_lines(lines, enabled):
 def aggregate_errors(logs, test):
     records = []
     boot_rules = load_json(Path(__file__).with_name("boot-diagnostics.json"))
+    wifi = next(entry for entry in boot_rules["entries"] if entry["id"] == "wifi-sdio")
+    wifi_seen = set()
     for phase, path in logs:
         context = None
         lines = Path(path).read_text(errors="replace").splitlines()
@@ -216,23 +219,28 @@ def aggregate_errors(logs, test):
         grow_pending = False
         grow_complete = "msd-data: setup synchronized / 初期設定の同期が完了しました。" in lines
         smoke = any(re.fullmatch(r"msd\.fscmp: SMOKE_PROFILE sha256=[a-f0-9]{64}", line) for line in lines)
-        def boot_period():
+        def known_environment():
             return (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
-                    and qemu and machine and kernel and model and not closed)
+                    and qemu and machine and kernel and model)
 
-        for line_number, text in boot_serial_lines(lines, boot_period):
+        for line_number, text in boot_serial_lines(lines, known_environment):
             normalized = re.sub(r"^\[\s*[0-9]+\.[0-9]+\] ", "", text)
             qemu |= text == "run-qemu: version=" + boot_rules["qemu"]
             machine |= text == boot_rules["machine"]
             kernel |= normalized.startswith("Linux version " + boot_rules["kernel"] + " ")
             model |= normalized == "Machine model: Raspberry Pi 3 Model B"
             closed |= text.startswith("msd.fscmp:")
-            boot = (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
-                    and qemu and machine and kernel and model and not closed)
+            boot = known_environment() and not closed
             benign = None
+            if (known_environment() and phase in wifi["phases"]
+                    and re.fullmatch(wifi["pattern"], normalized)):
+                if phase not in wifi_seen:
+                    benign = wifi
+                wifi_seen.add(phase)
             if boot:
                 for entry in boot_rules["entries"]:
-                    if (phase in entry["phases"] and re.fullmatch(entry["pattern"], normalized)
+                    if (entry["id"] != "wifi-sdio" and phase in entry["phases"]
+                            and re.fullmatch(entry["pattern"], normalized)
                             and (entry["id"] != "grow-reread-busy" or (grow_pending and grow_complete))):
                         benign = entry
                         break
