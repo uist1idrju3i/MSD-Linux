@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [v2 Wi-Fi SDIO診断](2026-11-24-s04-fs-compare-v2-wifi-sdio.md) | [CSV](2026-11-24-s04-fs-compare-v2-wifi-sdio.csv) | 2026-11-24 | 試行06の誤分類を修正・別出力で再判定 | 原log 206/206に同じ診断。旧fatal 1から新0、原結果は失敗のまま保持。新しい代表21件・851件・mainは未実施 |
 | [OpenSSL 4機能](2026-11-23-openssl-features.md) | [CSV](2026-11-23-openssl-features.csv) | 2026-11-23 | 同一commitのcold full build・QEMU A/B完了 | rootfs -598,724 bytes、SquashFS -212,992 bytes。19 moduleと暗号algorithm一覧一致。証明書圧縮の未利用を証明できず4項目組の製品採用は見送り |
 | [SDIO firmware配送](2026-11-23-sdio-firmware.md) | [CSV](2026-11-23-sdio-firmware.csv) | 2026-11-23 | 現行CI再pack・QEMU比較完了 | CYW43439とCM0専用43436sを併存保持。rootfs −1,759,026 bytes、SquashFS −1,069,056 bytes。前後A/Bの19 module一致。SDIO・BTの実機読込みは未確認 |
 | [kbd tool配送の最小化](2026-11-23-kbd-tools.md) | [CSV](2026-11-23-kbd-tools.csv) | 2026-11-23 | 現行CIの再pack・QEMU比較完了 | rootfs −532,908 bytes、SquashFS −147,456 bytes。前後A/Bのloadkeys終了0・19 module一致、失敗対照を拒否。実機keyboard未確認 |
@@ -21,7 +22,7 @@
 | [RAUC streaming](2026-11-23-rauc-streaming-poc.md) | [CSV](2026-11-23-rauc-streaming-poc.csv) | 2026-11-23 | host metadata各5回・Phase A未完 | 206・302成功、200拒否、403/429/切断のretry観測。Retry-Afterは待たない。実Releaseはassetなし。install・QEMU・adaptive再利用は未実施 |
 | [deps一括更新](2026-11-22-deps-update.md) | [CSV](2026-11-22-deps-update.csv) | 2026-11-22 | build・icount gate・kernel .config差分確認 | snapshot不整合をsnapshot更新で解消。QEMU 11.1.3は現行11.1.2比1.09xでgate成立。kernel差分は新規moduleのみ。実機・bq27220未確認 |
 | [RAID6 PQ](2026-11-19-raid6-pq.md) | [CSV](2026-11-19-raid6-pq.csv) | 2026-11-19 | QEMU各5回とA/A完了 | PQ benchmarkだけを省略。Btrfs mount・scrub成功。実機時間・algorithm未確認 |
-| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 試行05は84/851成功後、85件目F1/T1-negative-finalで停止 | main未開始。生coverageは85件を収録。失敗とtext証拠を保全、全coverage未完了 |
+| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 試行05はsmoke 85件目、06は代表10件目で停止 | 06のWi-Fi SDIO誤分類を修正し別出力で再判定。原結果は失敗のまま保持。851件完了・mainは未実施 |
 | [v2負対照のsentinel](2026-11-23-s04-fs-compare-v2-negative-sentinel.md) | [CSV](2026-11-23-s04-fs-compare-v2-negative-sentinel.csv) | 2026-11-23 | 同期済みsentinelでF1・E1・E2の単独診断成功 | host 68試験成功。全smokeとmainは未実施。事前確認失敗3件も保全 |
 | [cnf](2026-11-18-openssl-cnf.md) | [CSV](2026-11-18-openssl-cnf.csv) | 2026-11-18 | QEMU各3回 | C1/C2成功・未適用 |
 | [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |

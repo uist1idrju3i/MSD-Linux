@@ -16,6 +16,8 @@ fs-compare-v2の[第4段A](../../experiments/2026-11-19-s04-fs-compare-v2-stage4
 
 試行05は全smokeの1〜84件目が成功し、85件目の`F1/T1-negative-final`で停止しました。fsyncしていない通常fileが復旧時にすべて消え、改変した期待hashを照合する負対照の対象が無くなったためです。[PR #301](https://github.com/uist1idrju3i/MSD-Linux/pull/301)で負対照を同期済みsentinelへ固定し、sentinel自体の検証後に、改変した期待値の写しを判定器が拒否する形へ修正しました。[修正後の単独診断](../../experiments/2026-11-23-s04-fs-compare-v2-negative-sentinel.md)はF1・E1・E2で成功しました。修正後の全851件とmain runは未実施で、全coverageは未完了です。短縮workloadを性能・durability・idle writeの新たな測定値として下表へ転用しません。
 
+試行06はfresh buildとE1・E2・F1の先行診断後、代表9件成功、10件目E1/T3で停止しました。既知のWi-Fi SDIO診断がmarker後に出てfatalになる誤分類でした。[修正と別出力での再判定](../../experiments/2026-11-24-s04-fs-compare-v2-wifi-sdio.md)では旧fatal 1件、新0件を確認し、原結果は失敗のまま保存しました。新しい代表21件、全851件、main run、実SDの確認は未実施です。
+
 2026-11-15追記: [E34反復測定](../../experiments/2026-11-15-fs-compare-matrix.md)のQEMU条件では、F2FS F3系/P044のidle writeを反復し、btrfs B2/P097は各3回0でした。下表の機能比較へこの限定的な観測を補います。実機の耐久性・全構成の採否は確定しません。
 
 以下の性能・RAM・tool size の定性的比較は、kernel documentation の機能記述と形式上の特徴からの【推測】である。比較用 image、同じ SD card、同じ workload で測っていない値を既知の数値として扱わない。fsck の時間、tool size、kernel size は候補間で共通の測定条件がなく、すべて未測定とする。Linux 6.18 系の基準で、bcachefs は上流 kernel 本体から外れたため、別途導入しない限り対象 kernel に含まれない【一次: K12】。

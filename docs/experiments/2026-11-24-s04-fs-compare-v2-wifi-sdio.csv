@@ -1,0 +1,36 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+history,canonical,1,unique_phase_contents,206,count,true,SHA256 dedup; groups overlap
+history,canonical,1,wifi_sdio_hits,206,count,true,SHA256 dedup; groups overlap
+history,canonical,1,late_hits,1,count,true,SHA256 dedup; groups overlap
+attempt05-early,canonical,1,unique_phase_contents,2,count,true,SHA256 dedup; groups overlap
+attempt05-early,canonical,1,wifi_sdio_hits,2,count,true,SHA256 dedup; groups overlap
+attempt05-early,canonical,1,late_hits,0,count,true,SHA256 dedup; groups overlap
+attempt05-representative,canonical,1,unique_phase_contents,23,count,true,SHA256 dedup; groups overlap
+attempt05-representative,canonical,1,wifi_sdio_hits,23,count,true,SHA256 dedup; groups overlap
+attempt05-representative,canonical,1,late_hits,0,count,true,SHA256 dedup; groups overlap
+attempt05-smoke,canonical,1,unique_phase_contents,95,count,true,SHA256 dedup; groups overlap
+attempt05-smoke,canonical,1,wifi_sdio_hits,95,count,true,SHA256 dedup; groups overlap
+attempt05-smoke,canonical,1,late_hits,0,count,true,SHA256 dedup; groups overlap
+attempt06-early,canonical,1,unique_phase_contents,3,count,true,SHA256 dedup; groups overlap
+attempt06-early,canonical,1,wifi_sdio_hits,3,count,true,SHA256 dedup; groups overlap
+attempt06-early,canonical,1,late_hits,0,count,true,SHA256 dedup; groups overlap
+attempt06-representative,canonical,1,unique_phase_contents,12,count,true,SHA256 dedup; groups overlap
+attempt06-representative,canonical,1,wifi_sdio_hits,12,count,true,SHA256 dedup; groups overlap
+attempt06-representative,canonical,1,late_hits,1,count,true,SHA256 dedup; groups overlap
+04-representative,E1-T3-verify,1,wifi_line,299,line,true,Source line numbers unchanged
+04-representative,E1-T3-verify,1,first_marker_line,326,line,true,Source line numbers unchanged
+04-representative,E1-T3-verify,1,wifi_kernel_time,6.348661,s,true,Source line numbers unchanged
+04-smoke,E1-T3-verify,1,wifi_line,321,line,true,Source line numbers unchanged
+04-smoke,E1-T3-verify,1,first_marker_line,327,line,true,Source line numbers unchanged
+04-smoke,E1-T3-verify,1,wifi_kernel_time,16.917942,s,true,Source line numbers unchanged
+05-representative,E1-T3-verify,1,wifi_line,312,line,true,Source line numbers unchanged
+05-representative,E1-T3-verify,1,first_marker_line,318,line,true,Source line numbers unchanged
+05-representative,E1-T3-verify,1,wifi_kernel_time,16.384711,s,true,Source line numbers unchanged
+05-smoke,E1-T3-verify,1,wifi_line,312,line,true,Source line numbers unchanged
+05-smoke,E1-T3-verify,1,first_marker_line,318,line,true,Source line numbers unchanged
+05-smoke,E1-T3-verify,1,wifi_kernel_time,15.760728,s,true,Source line numbers unchanged
+06-representative,E1-T3-verify,1,wifi_line,375,line,true,Source line numbers unchanged
+06-representative,E1-T3-verify,1,first_marker_line,317,line,true,Source line numbers unchanged
+06-representative,E1-T3-verify,1,wifi_kernel_time,26.439258,s,true,Source line numbers unchanged
+baseline,rejudge,1,fatal_errors,1,count,true,One fixed input; no QEMU rerun
+candidate,rejudge,1,fatal_errors,0,count,true,One fixed input; no QEMU rerun
