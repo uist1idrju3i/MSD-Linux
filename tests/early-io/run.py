@@ -7,6 +7,7 @@ import select
 import signal
 import subprocess
 import tempfile
+import termios
 import time
 from types import SimpleNamespace
 import unittest
@@ -21,6 +22,15 @@ COMPATIBLES = ['cardputerzero,st7789v_lcd', 'm5stack,tca8418c', 'm5stack,m5ioe1'
 
 
 class EarlyIO(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tools = tempfile.TemporaryDirectory(prefix='msd-early-io-tools-')
+        cls.addClassCleanup(cls.tools.cleanup)
+        cls.console = Path(cls.tools.name) / 'msd-console'
+        subprocess.run(['cc', '-std=c99', '-Wall', '-Wextra', '-Werror',
+                        str(REPO / 'package/msd-console/msd-console.c'),
+                        '-o', str(cls.console)], check=True)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='msd-early-io-')
         self.addCleanup(self.temporary.cleanup)
@@ -35,6 +45,7 @@ class EarlyIO(unittest.TestCase):
         self.link('/proc/uptime', 'proc/uptime')
         self.link('/dev/stderr', 'dev/kmsg')
         self.write('dev/console', '')
+        self.link(self.console, 'bin/msd-console')
         self.script('modprobe', 'printf "%s\\n" "$1" >>"$MSD_EARLY_IO_ROOT/modules"\n'
                     '[ "${FAIL_MODULE:-}" != "$1" ] || exit 1\n'
                     '[ "${SLOW_MODULE:-}" != "$1" ] || exec sleep 10')
@@ -171,6 +182,44 @@ class EarlyIO(unittest.TestCase):
         self.write('sys/firmware/devicetree/base/compatible', 'raspberrypi,3-model-b\0')
         self.write('sys/firmware/devicetree/base/lcd/compatible', COMPATIBLES[0] + '\0')
         self.failed()
+
+    def test_stopped_console_does_not_change_boot_decision(self):
+        self.physical()
+        master, slave = pty.openpty()
+        self.addCleanup(os.close, master)
+        self.addCleanup(os.close, slave)
+        termios.tcflow(slave, termios.TCOOFF)
+        name = os.ttyname(slave)
+        fd = os.open(name, os.O_WRONLY | os.O_NONBLOCK | os.O_NOCTTY)
+        try:
+            with self.assertRaises(BlockingIOError):
+                os.write(fd, b'blocked')
+        finally:
+            os.close(fd)
+        (self.root / 'dev/console').unlink()
+        self.link(name, 'dev/console')
+        self.link(name, 'dev/tty1')
+        started = time.monotonic()
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.state(), 'ready')
+        self.assertIn('early-io end ready', result.stderr)
+        self.assertLess(time.monotonic() - started, 2)
+        self.env['FAIL_MODULE'] = MODULES[0]
+        started = time.monotonic()
+        self.failed()
+        self.assertLess(time.monotonic() - started, 2)
+
+    def test_console_writer_empty_and_error(self):
+        target = self.root / 'dev/console'
+        self.assertEqual(subprocess.run([str(self.console)]).returncode, 2)
+        self.assertEqual(subprocess.run([str(self.console), '', str(target)]).returncode, 0)
+        self.assertEqual(target.read_text(), '\n')
+        missing = self.root / 'dev/missing-console'
+        result = subprocess.run([str(self.console), 'progress', str(missing), str(target)])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(missing.exists())
+        self.assertEqual(target.read_text(), '\nprogress\n')
 
     def test_s3_launcher_explicit_mode(self):
         source = REPO / 'board/cardputerzero/tools/bench/s3/s3-qemu.py'

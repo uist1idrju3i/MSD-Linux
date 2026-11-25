@@ -65,6 +65,9 @@ kernel fbconでは日本語を描けないためで、[AGENTS.md §10の例外](
 開始・module段階・device待ちの経過・終了・中断可否をconsole/kernel logへ英語で出力します。secretは扱いません。
 `quiet`でも進捗と中断可否が見えるように、kernel logのinfo levelとは別に`/dev/console`へ直接出力します。
 製品の既定cmdlineでは最後のconsoleがserial側のため、存在する`/dev/tty1`にも明示出力し、fbcon側へ届けます。
+送信には`msd-console`の`O_NONBLOCK`を使い、XOFFなどで止まった端末を待ちません。
+書込み失敗や部分送信は再試行せず、起動の判定やdriver準備の期限を変えません。kmsgへの出力は残します。
+shellの直接出力は端末でblockし、markerごとのtimeout待ちは準備の期限を消費するため採用しません。
 
 markerは`early-io begin`、`LCD bound`、`keyboard ready`、`early-io end`です。
 将来の測定はPINの人間待ち時間とdriver準備時間を分け、同一buildのA/A、初回と通常起動を分けて各5回以上測ります。

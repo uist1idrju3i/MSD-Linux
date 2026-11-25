@@ -27,6 +27,7 @@ mkswap
 mount
 modprobe
 msd-data-grow
+msd-console
 msd-hwinfo
 msd-syncfs
 dumpe2fs
