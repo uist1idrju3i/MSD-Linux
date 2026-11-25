@@ -6,7 +6,7 @@ case "${1:-start}" in
 esac
 
 if ! /usr/libexec/msd/early-io gate; then
-	printf '%s\n' 'Early I/O unavailable; /data blocked. / 入出力を使えません。/dataの処理を停止します。' >&2
+	printf '%s\n' 'Early I/O unavailable; /data blocked; safe to power off.' >&2
 	while :; do sleep 60; done
 fi
 
@@ -61,10 +61,10 @@ if mount -t ext4 -o noatime,nodev,nosuid,data=ordered,errors=remount-ro,noinit_i
 	[ "$setup_status" -eq 0 ] || data_changed=1
 	if [ "$data_changed" -eq 1 ]; then
 		if ! /usr/sbin/msd-syncfs /data; then
-			printf '%s\n' 'msd-data: setup syncfs failed; keeping /data mounted. / 初期設定の同期に失敗しました。/dataのマウントを維持します。' >&2
+			printf '%s\n' 'msd-data: setup syncfs failed; keeping /data mounted.' >&2
 			exit 1
 		fi
-		printf 'msd-data: setup synchronized / 初期設定の同期が完了しました。\n' >/dev/console
+		printf 'msd-data: setup synchronized\n' >/dev/console
 	fi
 	exit "$setup_status"
 else

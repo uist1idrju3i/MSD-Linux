@@ -154,7 +154,7 @@ grep_syncfs() {
 }
 INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'initial directory setup failed'
 grep_syncfs || fail 'initial directories were not synchronized'
-grep -Fq 'msd-data: setup synchronized / 初期設定の同期が完了しました。' "$CONSOLE" || fail 'syncfs success was not bilingual'
+grep -Fxq 'msd-data: setup synchronized' "$CONSOLE" || fail 'syncfs success was not English-only'
 [ "$(tail -n 1 "$STUB_LOG")" = 'msd-syncfs </data>' ] || fail 'syncfs ran before setup finished'
 mkdir -p "$TEST_DIR/data/etc" "$TEST_DIR/data/msd-update"
 INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'unchanged startup failed'
@@ -181,7 +181,7 @@ if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_AFTER=200 INIT_SCRIPT_SYNCFS_STATUS
 	fail 'syncfs failure was hidden'
 fi
 grep -Fq 'setup syncfs failed' "$TEST_DIR/data.log" || fail 'syncfs failure was not logged'
-grep -Fq 'msd-data: setup syncfs failed; keeping /data mounted. / 初期設定の同期に失敗しました。/dataのマウントを維持します。' "$TEST_DIR/data.log" || fail 'syncfs failure was not bilingual'
+grep -Fxq 'msd-data: setup syncfs failed; keeping /data mounted.' "$TEST_DIR/data.log" || fail 'syncfs failure was not English-only'
 INIT_SCRIPT_CMP_STATUS=0 run_data_init || fail 'format synchronization failed'
 grep_syncfs || fail 'format was not synchronized'
 printf 'ok - setup syncfs follows writes, skips unchanged boots, and reports errors\n'

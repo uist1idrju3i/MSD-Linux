@@ -61,7 +61,7 @@ bounded() {
 			sleep_pid=
 			kill -0 "$command_pid" 2>/dev/null || break
 			clock
-			marker "waiting elapsed=$((now + limit - deadline)) limit=$limit; safe to power off / 準備中です。電源を切れます。"
+			marker "waiting elapsed=$((now + limit - deadline)) limit=$limit; safe to power off"
 		done
 	) &
 	progress_pid=$!
@@ -125,16 +125,16 @@ prepare() {
 	ram_run || return 1
 	mkdir -p "$state" || return 1
 	publish failed || return 1
-	marker 'early-io begin; safe to power off / 入出力を準備します。電源を切れます。'
+	marker 'early-io begin; safe to power off'
 	case "$limit" in ''|*[!0-9]*|0) return 1 ;; esac
 	[ "$limit" -le 60 ] || return 1
 	clock
 	deadline=$((now + limit))
 	if qemu_absent; then
 		publish hardware-absent-qemu || return 1
-		marker 'LCD bound skipped hardware-absent / LCDは試験環境にありません。'
-		marker 'keyboard ready skipped hardware-absent / キーボードは試験環境にありません。'
-		marker 'early-io end hardware-absent-qemu / 試験環境として続行します。'
+		marker 'LCD bound skipped hardware-absent'
+		marker 'keyboard ready skipped hardware-absent'
+		marker 'early-io end hardware-absent-qemu'
 		return 0
 	fi
 	for compatible in cardputerzero,st7789v_lcd m5stack,tca8418c \
@@ -144,28 +144,28 @@ prepare() {
 	[ -s "$root/lib/firmware/cardputerzero,st7789v_lcd.bin" ] || return 1
 	[ -s "$root/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map" ] || return 1
 	for module in gpio-forwarder m5ioe1 pwm_bl_m5stack panel-mipi-dbi-m tca8418_keypad_m5stack; do
-		marker "loading $module; safe to power off / ドライバーを読み込みます。電源を切れます。"
+		marker "loading $module; safe to power off"
 		bounded modprobe "$module" || return 1
 	done
 	lcd_done='' keyboard_done=''
 	while remaining; do
 		if [ -z "$lcd_done" ] && lcd_ready; then
 			lcd_done=yes
-			marker 'LCD bound / LCDの登録を確認しました。'
+			marker 'LCD bound'
 		fi
 		if [ "$lcd_done" = yes ] && [ -z "$keyboard_done" ] && keyboard_ready; then
 			bounded loadkeys -C "$dev/tty0" -q \
 				"$root/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map" || return 1
 			keyboard_done=yes
-			marker 'keyboard ready / キーボードの登録を確認しました。'
+			marker 'keyboard ready'
 		fi
 		if [ "$lcd_done:$keyboard_done" = yes:yes ]; then
 			remaining || return 1
 			publish ready || return 1
-			marker 'early-io end ready / 入出力の準備ができました。'
+			marker 'early-io end ready'
 			return 0
 		fi
-		marker "waiting elapsed=$((limit - left)) limit=$limit; safe to power off / 準備中です。電源を切れます。"
+		marker "waiting elapsed=$((limit - left)) limit=$limit; safe to power off"
 		sleep 1
 	done
 	return 1
@@ -174,7 +174,7 @@ prepare() {
 case "${1:-prepare}" in
 	prepare)
 		if prepare; then exit 0; fi
-		marker 'early-io end failed / 入出力を準備できません。起動を停止します。'
+		marker 'early-io end failed; boot blocked; safe to power off'
 		exit 1
 		;;
 	gate)

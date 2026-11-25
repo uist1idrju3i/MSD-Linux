@@ -53,13 +53,15 @@ QEMU launcherだけが`msd.early_io=qemu`を追加します。例外は次のす
 
 moduleとfirmwareの読取り、kernelの登録、devtmpfsのsymlink、tmpfsの状態だけを変更します。
 永続fileへの保存は追加しません。[書込みの台帳](write-policy.md)の既存S02の未対応を解消したものではありません。
-開始・module段階・device待ちの経過・終了・中断可否をconsole/kernel logへ英日併記します。secretは扱いません。
+boot中の画面の文言は、利用者が決めた案Cに従い、英語だけにします。
+kernel fbconでは日本語を描けないためで、[AGENTS.md §10の例外](write-policy.md#boot中の画面の文言案c)として理由と範囲を記録しています。
+開始・module段階・device待ちの経過・終了・中断可否をconsole/kernel logへ英語で出力します。secretは扱いません。
 
 markerは`early-io begin`、`LCD bound`、`keyboard ready`、`early-io end`です。
 将来の測定はPINの人間待ち時間とdriver準備時間を分け、同一buildのA/A、初回と通常起動を分けて各5回以上測ります。
 今回のsoftware試験を起動時間の改善値へ転用しません。
 
-実機の残件は、driver bindとsysfs配置、firmwareの実配送、最初の可読frame、backlight、英日font、全必要keyとkeymap、
+実機の残件は、driver bindとsysfs配置、firmwareの実配送、最初の可読frame、backlight、英語の文字とprogressの見え方、全必要keyとkeymap、
 入力の取りこぼし、watchdog、I2C/SPI、A/B両slot、実SD write・FTL・電断です。
 QEMUのhardware-absent成功は、表示・入力の確認ではありません。
 
@@ -83,4 +85,5 @@ moduleの実load試験はこのQEMU条件から除外しています。fixture�
 試験専用wrapperがRAM上に偽DTとsleepするmodprobeを作り、同じ製品helperを3秒期限で呼びます。
 実際のBusyBox timeoutと進捗表示、失敗後にS02へ進まないことを確かめるためのもので、driverの実probeではありません。
 このwrapperは製品overlayへ入りません。通常のA/Bは上記を一つずつ実行します。
-今回の結果・入力hash・失敗した構築は[検証記録](../experiments/2026-11-25-early-io.md)に残しています。
+gate導入時のQEMU結果・入力hash・失敗した構築は[検証記録](../experiments/2026-11-25-early-io.md)に残しています。
+案Cへ文言を変えた後のQEMU起動と実機表示は未確認です。

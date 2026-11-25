@@ -85,8 +85,17 @@ class EarlyIO(unittest.TestCase):
             self.link('/dev/null', 'dev/' + node)
 
     def run_helper(self, action='prepare'):
-        return subprocess.run([str(HELPER), action], env=self.env, capture_output=True,
-                              text=True, timeout=5)
+        result = subprocess.run([str(HELPER), action], env=self.env, capture_output=True,
+                                text=True, timeout=5)
+        self.assertTrue(result.stdout.isascii(), result.stdout)
+        self.assertTrue(result.stderr.isascii(), result.stderr)
+        return result
+
+    def test_boot_scripts_use_english_only(self):
+        for script in [HELPER, *(OVERLAY / 'etc/init.d').glob('S??*')]:
+            for number, line in enumerate(script.read_text().splitlines(), 1):
+                if not line.lstrip().startswith('#'):
+                    self.assertTrue(line.isascii(), f'{script}:{number}: {line}')
 
     def state(self):
         return (self.root / 'run/msd-early-io/state').read_text().strip()
