@@ -50,7 +50,10 @@ QEMU launcherだけが`msd.early_io=qemu`を追加します。例外は次のす
 重複modeは拒否するため、QEMUで`QEMU_EXTRA_APPEND=msd.early_io=required`を追加すると失敗側を試せます。
 
 独立launcherの[S3](../../board/cardputerzero/tools/bench/s3/s3-qemu.py)も同じ明示modeを渡します。
-boottimeはtest-boot経由、openssl-featuresとssh-client-compareはrun-qemu経由なので、共通launcherのmodeを使います。
+boottimeはtest-boot経由、openssl-featuresはrun-qemu経由なので、共通launcherのmodeを使います。
+SSH比較はrun-qemuへ`rdinit=/init`を渡し、独自initramfsの`/init`を起動します。
+製品のrcSと早期I/Oを通らないため、この変更の影響はなく、早期I/Oの検証対象外です。
+mode引数を渡しても、SSH比較の起動を早期I/Oの検証結果には数えません。
 fs-compare-v2は元のrootfsを展開し、rcSを置き換えずにS97の試験hookを加えたimageを使います。
 そのためS02前のgateも通りますが、supervisorからrun-qemuを起動するため追加のmode指定は不要です。
 dm-verityとread-orderのQEMU wrapperは渡された引数を保持し、共通launcherのmodeを引き継ぎます。
