@@ -31,7 +31,11 @@ has_node() {
 }
 
 qemu_absent() {
-	[ "$(tr ' ' '\n' <"$root/proc/cmdline" | sed -n 's/^msd\.early_io=//p')" = qemu ] || return 1
+	awk '{
+		for (i=1; i<=NF; i++) {
+			if ($i ~ /^msd[.]early_io(=|$)/) { count++; mode=$i }
+		}
+	} END { exit !(count == 1 && mode == "msd.early_io=qemu") }' "$root/proc/cmdline" || return 1
 	tr '\000' '\n' <"$dt/compatible" |
 		grep -Eq '^raspberrypi,(3-model-b|0-compute-module)$' || return 1
 	for compatible in cardputerzero,st7789v_lcd m5stack,tca8418c \

@@ -40,7 +40,7 @@ timeout、module・bind・firmware・keymap・inputの不備では成功状態�
 通常の製品cmdlineには例外を設定しません。DT nodeが欠けた実機は起動を停止します。
 QEMU launcherだけが`msd.early_io=qemu`を追加します。例外は次のすべてが一致した場合に限ります。
 
-- mode指定が一つだけで、値が`qemu`。
+- mode指定が一つだけで、値が`qemu`。空値と値なしの指定も件数に含め、重複は拒否。
 - DT rootがPi 3BまたはCM0の既知compatible。
 - LCD、キーボード、M5IOE1、GPIO forwarder、backlightのcompatibleがすべて無い。
 

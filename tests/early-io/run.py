@@ -189,6 +189,20 @@ class EarlyIO(unittest.TestCase):
         self.write('proc/cmdline', 'msd.early_io=qemu msd.early_io=required')
         self.failed()
 
+    def test_empty_and_duplicate_modes_reject_stale_qemu_state(self):
+        for cmdline in ['', 'msd.early_io=', 'msd.early_io',
+                        'msd.early_io=qemu msd.early_io=',
+                        'msd.early_io= msd.early_io=qemu',
+                        'msd.early_io=qemu msd.early_io= msd.early_io=',
+                        'msd.early_io=qemu msd.early_io=qemu',
+                        'msd.early_io=qemu msd.early_io',
+                        'msd.early_io msd.early_io=qemu']:
+            with self.subTest(cmdline=cmdline):
+                self.write('proc/cmdline', cmdline + '\n')
+                self.write('run/msd-early-io/state', 'hardware-absent-qemu\n')
+                self.assertNotEqual(self.run_helper('gate').returncode, 0)
+                self.failed()
+
     def test_each_module_failure(self):
         self.physical()
         for index, module in enumerate(MODULES):
