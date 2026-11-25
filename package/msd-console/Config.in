@@ -1,0 +1,4 @@
+config BR2_PACKAGE_MSD_CONSOLE
+	bool "msd-console"
+	help
+	  Write boot progress to terminals without waiting for output space.

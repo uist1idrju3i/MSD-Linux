@@ -1,0 +1,12 @@
+#!/bin/sh
+
+case "${1:-start}" in
+	start) ;;
+	*) exit 0 ;;
+esac
+
+helper=/usr/libexec/msd/early-io
+if ! "$helper" prepare; then
+	printf '%s\n' 'Early I/O failed; boot blocked; safe to power off.' >&2
+	while :; do sleep 60; done
+fi

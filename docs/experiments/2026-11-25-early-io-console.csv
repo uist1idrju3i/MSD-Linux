@@ -1,0 +1,11 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+host,marker-dependencies,1,test_count,24,count,true,includes missing executable and empty or incomplete BusyBox config
+console-a,hardware-absent,1,boot_test_exit,0,exit,true,ready and login with QMP quit and no fallback
+console-a,hardware-absent,1,console_marker_count,4,count,true,unprefixed userspace lines in required order
+console-a,hardware-absent,1,qmp_quit,1,bool,true,normal boot cleanup
+console-timeout,fake-module,1,boot_test_exit,124,exit,true,intentional blocked boot; not a normal boot success
+console-timeout,fake-module,1,console_marker_count,4,count,true,begin and loading and waiting and failed
+console-timeout,fake-module,1,console_waiting_count,1,count,true,unprefixed elapsed and safe to power off
+console-timeout,fake-module,1,data_marker_count,0,count,true,fail closed before data
+console-timeout,fake-module,1,ready_marker_count,0,count,true,fail closed before ready
+console-timeout,fake-module,1,qmp_quit,0,bool,true,observed monitor timeout cleanup via SIGTERM fallback; process reaped

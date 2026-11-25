@@ -10,6 +10,8 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [早期I/Oのconsole出力](2026-11-25-early-io-console.md) | [CSV](2026-11-25-early-io-console.csv) | 2026-11-25 | host 24試験・再packのQEMU Aとmodule期限対照 | 追加したC helperから時刻prefixなしの4 markerとwaitingを確認。対照は/data・ready前で停止。実機・この条件のBは未確認 |
+| [S02前のI/O gate](2026-11-25-early-io.md) | [CSV](2026-11-25-early-io.csv) | 2026-11-25 | host 17試験・既存image再packのQEMU A/Bと失敗対照 | A/BはQMP timeout後の単独再試行で成功。4 marker、guestの3秒期限、/data前の停止を確認。製品full build・実機は未確認 |
 | [v2 Wi-Fi SDIO診断](2026-11-24-s04-fs-compare-v2-wifi-sdio.md) | [CSV](2026-11-24-s04-fs-compare-v2-wifi-sdio.csv) | 2026-11-24 | 試行06の誤分類を修正・別出力で再判定 | 原log 206/206に同じ診断。旧fatal 1から新0、原結果は失敗のまま保持。新しい代表21件・851件・mainは未実施 |
 | [OpenSSL 4機能](2026-11-23-openssl-features.md) | [CSV](2026-11-23-openssl-features.csv) | 2026-11-23 | 同一commitのcold full build・QEMU A/B完了 | rootfs -598,724 bytes、SquashFS -212,992 bytes。19 moduleと暗号algorithm一覧一致。証明書圧縮の未利用を証明できず4項目組の製品採用は見送り |
 | [SDIO firmware配送](2026-11-23-sdio-firmware.md) | [CSV](2026-11-23-sdio-firmware.csv) | 2026-11-23 | 現行CI再pack・QEMU比較完了 | CYW43439とCM0専用43436sを併存保持。rootfs −1,759,026 bytes、SquashFS −1,069,056 bytes。前後A/Bの19 module一致。SDIO・BTの実機読込みは未確認 |

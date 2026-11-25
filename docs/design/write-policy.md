@@ -14,6 +14,17 @@
 | 未対応 | 規則に合わない可能性がある現行の箇所です。直すPRで状態を変えます |
 | 未確認 | 書き込みがあるかどうかを、まだ測っていない箇所です |
 
+## boot中の画面の文言（案C）
+
+AGENTS.md §10の英日併記について、利用者の判断で案C（英語だけ）に決定しました。
+理由は、kernel fbconでは日本語を描けないためです。
+例外の範囲は、電源投入からinitの起動処理が終わるまでの自動表示と、起動失敗で待機している間の表示です。
+early-ioのmarker・progress・中断可否・成功失敗、S02の/data診断、slot・ready表示も英語だけにします。
+consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いです。実機LCDでの英語の可読性とprogressの見え方は未確認です。
+
+文書とマニュアルは引き続き日本語だけです。起動完了後の対話toolの画面はこの例外に含めず、英日併記を維持します。
+この決定は表示言語だけの例外であり、永続storageへの書込みやprogress・中断可否の表示義務を免除しません。
+
 ## 現行の箇所
 
 2026-11-12に基準commit `d7d9d622eae2f5f78dc0b891203f3641f334123b` の外部tree、生成rootfs、BusyBox・kernelの生成configとsourceを棚卸ししました。[今回の実験](../experiments/2026-11-12-write-inventory.md)ではQEMUの起動後idleにもp7への書き込みがあり、規則への適合は未達です。実機、shutdown、tryboot、障害回復の量は未測定です。
@@ -44,20 +55,31 @@ RAUCの自動mark-goodは利用者が始めた更新をhealth成功後に完結�
 | RAUC install | 同意・署名検証後だけinactive p2/p3・p5/p6へwrite。量はimage長を上限の基準としてfull/adaptiveで別測定 | 取得・write・read-backのbytes/割合・経過とcancel可否を英日表示 | 計画。悪署名時はp1・全slot・p7のwrite 0を⑥で検査 |
 | status・adaptive index | `/data/rauc`。更新操作の間だけstatusと4 KiB block hash indexを生成・再利用・必要時再生成。indexは概算32 byte/4 KiB、metadataとjournalの量は別途測定 | index処理も更新のprogress区間に含める | 計画。background再生成・起動ごとの再生成なし。cold/warm/corruptを測る |
 | custom backendのtrying | 両imageの同期・全長read-back後、`/data/rauc/bootstate`へ候補を保存。小さい状態fileだがfsync・rename・directory同期とFSのwrite量は未測定 | 次回が試し起動であることと、中断可否を英日表示 | 計画。`set-primary`ではp1の確定primaryを書かない。get-primary/get-stateはwrite 0 |
-| health後の自動mark-good | 試し起動の`S99msd-health`成功後だけ、p1の`autoboot.txt`とp7のbootstate/statusを書いて確定。通常起動では同じ状態を書き直さない。FAT cluster・FS metadataを含む量は未測定 | 起動画面とconsoleで確定中・電源断不可を英日表示。2秒以上は進捗又は経過時間も表示 | 計画・自動writeの登録。更新の完結に必要。p1と/dataの原子性は仮定せず、各境界で電断後の整合を試す |
-| 内部版の永続下限 | health・mark-good成功後、完了表示前に`/data/rauc`の下限を署名済みtag commitの`%ct`へ引き上げる。小さい状態fileだがFS metadata・journalを含むwrite量は未測定 | 更新確定中の英日progressと電源断不可表示に含める | 計画・未実装。replay/rollback拒否に必要。一時file・fsync・rename・directory同期を使い、失敗時は完了としない。通常起動の同値再書込みなし。中断後の回復writeも表示し、③④⑥で境界を検証 |
-| 起動時reconcile | 前回の更新・確定が途切れた時だけp1・p7・実bootを照合。読取りは無書込み。回復writeが必要な場合の量は未測定 | 不整合と回復内容を英日表示し、progress付き回復処理とする | 計画。get操作内の修復は禁止。③で冪等性を試験し、実SD電断は実機で確認 |
+| health後の自動mark-good | 試し起動の`S99msd-health`成功後だけ、p1の`autoboot.txt`とp7のbootstate/statusを書いて確定。通常起動では同じ状態を書き直さない。FAT cluster・FS metadataを含む量は未測定 | 起動画面とconsoleで確定中・電源断不可を英語だけで表示。2秒以上は進捗又は経過時間も表示 | 計画・自動writeの登録。更新の完結に必要。p1と/dataの原子性は仮定せず、各境界で電断後の整合を試す |
+| 内部版の永続下限 | health・mark-good成功後、完了表示前に`/data/rauc`の下限を署名済みtag commitの`%ct`へ引き上げる。小さい状態fileだがFS metadata・journalを含むwrite量は未測定 | 更新確定中のprogressと電源断不可表示に含める。boot中は英語だけで表示 | 計画・未実装。replay/rollback拒否に必要。一時file・fsync・rename・directory同期を使い、失敗時は完了としない。通常起動の同値再書込みなし。中断後の回復writeも表示し、③④⑥で境界を検証 |
+| 起動時reconcile | 前回の更新・確定が途切れた時だけp1・p7・実bootを照合。読取りは無書込み。回復writeが必要な場合の量は未測定 | 不整合と回復内容を英語だけで表示し、progress付き回復処理とする | 計画。get操作内の修復は禁止。③で冪等性を試験し、実SD電断は実機で確認 |
 
 RAUCのevent log・download buffer・lock・一時fileはRAMへ置く。
 非常駐の構成を計画し、service起動時のboot ID保存を持ち込まない。
-LCD・日本語fontと実SDのFTL writeは未確認で、QEMUの0件をその保証にしない。
+LCD、起動完了後の対話toolの日本語fontと実SDのFTL writeは未確認で、QEMUの0件をその保証にしない。
 実装PRで各行のwrite量・起動条件・表示・失敗時の動作を照合して状態を更新する。
 
 ## RAMに置いているもの
 
-S02の末尾同期の成功・失敗表示は英日併記です。consoleの日本語fontの収録文字とLCDでの見え方は未確認です。かなに限る案とfontの選定は未決定であり、既存の英語のみの表示やprogressの未対応を解消したものではありません。
+### /dataより前の入出力準備
 
-2026-11-15のslot表示追加は、[03914の最終判断](../research/verification/session-decisions-2026-11-15.md#03914の判断と最終slot表示)に従います。`S98msd-ready`が`MSD/Linux ready`直前の別行に`Boot from slot A`/`Boot from slot B`、試し起動は` (try)`付き、不明は`Boot from slot ?`を表示します。この行の英語のみは利用者が承認した限定例外で、他の画面の英日併記は維持します。既存のserial出力経路と利用可能な`/dev/tty1`へ表示し、tty1がなければ作成せずskipします。`msd-update status`はDTを読むだけで、失敗時のcmdline fallbackも読取りだけです。追加の保存先はなく、既存の`/run/msd-ready`はRAMのまま、`/etc/issue`と永続storageは変更しません。LCD/firmware trybootは実機待ちです。
+[早期I/O](early-io.md)はS02より前に必要なmoduleだけを読み、firmware・keymapを読取り、
+deviceの登録とdevtmpfsのinput symlinkを確認します。状態はtmpfsの`/run/msd-early-io/state`、
+診断はconsoleとkernel logだけです。永続writeやPIN保存は追加しません。
+準備期限は既定20秒で、開始・段階・待ち時間・成功失敗・中断可否を案Cに従って英語だけで表示します。
+失敗時はS02のformat・fsck・mountへ進みません。QEMUのdevice不在は明示された試験状態へ分けます。
+LCDにまだ表示できない間はconsole出力だけです。実機画面のprogress・中断可否・英語の可読性の適合確認は未対応で、入力・SD writeも未確認です。
+この変更は既存S02の永続writeやprogressの未対応を解消するものではありません。
+
+S02の末尾同期の成功・失敗表示も案Cに従って英語だけにします。実機LCDでの見え方は未確認です。
+boot中の日本語fontの選定は行いません。この言語の決定はprogressの未対応を解消するものではありません。
+
+2026-11-15のslot表示追加は、[03914の最終判断](../research/verification/session-decisions-2026-11-15.md#03914の判断と最終slot表示)に従います。`S98msd-ready`が`MSD/Linux ready`直前の別行に`Boot from slot A`/`Boot from slot B`、試し起動は` (try)`付き、不明は`Boot from slot ?`を表示します。この行の英語のみは当時、利用者が承認した限定例外でした。現在は上記の案Cとしてboot中の画面全体へ適用し、起動完了後の対話toolの画面は英日併記を維持します。既存のserial出力経路と利用可能な`/dev/tty1`へ表示し、tty1がなければ作成せずskipします。`msd-update status`はDTを読むだけで、失敗時のcmdline fallbackも読取りだけです。追加の保存先はなく、既存の`/run/msd-ready`はRAMのまま、`/etc/issue`と永続storageは変更しません。LCD/firmware trybootは実機待ちです。
 
 | 対象 | 置き場所 | 根拠 |
 |---|---|---|

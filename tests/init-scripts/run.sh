@@ -48,7 +48,7 @@ chmod +x "$STUB_DIR/stub"
 for command in \
 	watchdog mkdir dd od tr cmp mkfs.ext4 fsck.ext4 mount awk msd-data-grow \
 	loadkeys mv rm msd-hwinfo touch sed lsmod modprobe cat msd-update reboot \
-	dmesg grep tail insmod umount wc sync sleep df dumpe2fs msd-syncfs; do
+	dmesg grep tail insmod umount wc sync sleep df dumpe2fs msd-syncfs early-io; do
 	ln -s stub "$STUB_DIR/$command"
 done
 
@@ -61,6 +61,7 @@ chmod +x "$INIT_DIR/S01probe"
 
 for script in \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog \
+	board/cardputerzero/rootfs-overlay/etc/init.d/S02a-msd-early-io \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S04msd-keymap \
@@ -83,6 +84,7 @@ do
 		-e "s|/etc/init.d|${INIT_DIR}|g" \
 		-e "s|/usr/sbin/msd-data-grow|${STUB_DIR}/msd-data-grow|g" \
 		-e "s|/usr/sbin/msd-syncfs|${STUB_DIR}/msd-syncfs|g" \
+		-e "s|/usr/libexec/msd/early-io|${STUB_DIR}/early-io|g" \
 		-e "s|/data/etc|${TEST_DIR}/data/etc|g" \
 		-e "s|/data/msd-update|${TEST_DIR}/data/msd-update|g" \
 		-e "s|/usr/sbin/msd-hwinfo|${STUB_DIR}/msd-hwinfo|g" \
@@ -152,7 +154,7 @@ grep_syncfs() {
 }
 INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'initial directory setup failed'
 grep_syncfs || fail 'initial directories were not synchronized'
-grep -Fq 'msd-data: setup synchronized / 初期設定の同期が完了しました。' "$CONSOLE" || fail 'syncfs success was not bilingual'
+grep -Fxq 'msd-data: setup synchronized' "$CONSOLE" || fail 'syncfs success was not English-only'
 [ "$(tail -n 1 "$STUB_LOG")" = 'msd-syncfs </data>' ] || fail 'syncfs ran before setup finished'
 mkdir -p "$TEST_DIR/data/etc" "$TEST_DIR/data/msd-update"
 INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'unchanged startup failed'
@@ -179,7 +181,7 @@ if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_AFTER=200 INIT_SCRIPT_SYNCFS_STATUS
 	fail 'syncfs failure was hidden'
 fi
 grep -Fq 'setup syncfs failed' "$TEST_DIR/data.log" || fail 'syncfs failure was not logged'
-grep -Fq 'msd-data: setup syncfs failed; keeping /data mounted. / 初期設定の同期に失敗しました。/dataのマウントを維持します。' "$TEST_DIR/data.log" || fail 'syncfs failure was not bilingual'
+grep -Fxq 'msd-data: setup syncfs failed; keeping /data mounted.' "$TEST_DIR/data.log" || fail 'syncfs failure was not English-only'
 INIT_SCRIPT_CMP_STATUS=0 run_data_init || fail 'format synchronization failed'
 grep_syncfs || fail 'format was not synchronized'
 printf 'ok - setup syncfs follows writes, skips unchanged boots, and reports errors\n'
