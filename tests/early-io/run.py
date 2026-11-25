@@ -3,6 +3,7 @@ import ast
 import os
 from pathlib import Path
 import pty
+import select
 import signal
 import subprocess
 import tempfile
@@ -148,7 +149,14 @@ class EarlyIO(unittest.TestCase):
         result = self.run_helper()
         self.assertNotEqual(result.returncode, 0)
         console = (self.root / 'dev/console').read_text()
-        fbcon = os.read(master, 16384).decode()
+        fbcon = bytearray()
+        deadline = time.monotonic() + 1
+        while b'early-io end failed; boot blocked' not in fbcon:
+            left = deadline - time.monotonic()
+            if left <= 0 or not select.select([master], [], [], left)[0]:
+                break
+            fbcon.extend(os.read(master, 64))
+        fbcon = fbcon.decode()
         for text in ['early-io begin', 'loading gpio-forwarder', 'waiting elapsed=',
                      'limit=3; safe to power off', 'early-io end failed; boot blocked']:
             self.assertIn(text, console)
