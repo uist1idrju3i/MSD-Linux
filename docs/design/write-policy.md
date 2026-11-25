@@ -55,6 +55,16 @@ LCD・日本語fontと実SDのFTL writeは未確認で、QEMUの0件をその保
 
 ## RAMに置いているもの
 
+### /dataより前の入出力準備
+
+[早期I/O](early-io.md)はS02より前に必要なmoduleだけを読み、firmware・keymapを読取り、
+deviceの登録とdevtmpfsのinput symlinkを確認します。状態はtmpfsの`/run/msd-early-io/state`、
+診断はconsoleとkernel logだけです。永続writeやPIN保存は追加しません。
+準備期限は既定20秒で、開始・段階・待ち時間・成功失敗・中断可否を英日表示します。
+失敗時はS02のformat・fsck・mountへ進みません。QEMUのdevice不在は明示された試験状態へ分けます。
+LCDにまだ表示できない間はconsole出力だけです。実機画面のprogress・中断可否・英日表示の適合確認は未対応で、入力・SD writeも未確認です。
+この変更は既存S02の永続writeやprogressの未対応を解消するものではありません。
+
 S02の末尾同期の成功・失敗表示は英日併記です。consoleの日本語fontの収録文字とLCDでの見え方は未確認です。かなに限る案とfontの選定は未決定であり、既存の英語のみの表示やprogressの未対応を解消したものではありません。
 
 2026-11-15のslot表示追加は、[03914の最終判断](../research/verification/session-decisions-2026-11-15.md#03914の判断と最終slot表示)に従います。`S98msd-ready`が`MSD/Linux ready`直前の別行に`Boot from slot A`/`Boot from slot B`、試し起動は` (try)`付き、不明は`Boot from slot ?`を表示します。この行の英語のみは利用者が承認した限定例外で、他の画面の英日併記は維持します。既存のserial出力経路と利用可能な`/dev/tty1`へ表示し、tty1がなければ作成せずskipします。`msd-update status`はDTを読むだけで、失敗時のcmdline fallbackも読取りだけです。追加の保存先はなく、既存の`/run/msd-ready`はRAMのまま、`/etc/issue`と永続storageは変更しません。LCD/firmware trybootは実機待ちです。

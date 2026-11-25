@@ -87,6 +87,7 @@ case "${QEMU_DTB_BLUETOOTH:-0}" in
 esac
 
 append_args=(
+	"msd.early_io=qemu"
 	"earlycon=pl011,mmio32,0x3f201000"
 	"console=ttyAMA1,115200"
 	"root=$ROOT_DEVICE"

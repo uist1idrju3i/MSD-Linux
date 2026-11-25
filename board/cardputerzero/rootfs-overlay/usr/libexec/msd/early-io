@@ -1,0 +1,190 @@
+#!/bin/sh
+
+umask 077
+root=${MSD_EARLY_IO_ROOT:-}
+sys=$root/sys
+dev=$root/dev
+dt=$sys/firmware/devicetree/base
+state=$root/run/msd-early-io
+limit=${MSD_EARLY_IO_TIMEOUT:-20}
+
+marker() {
+	printf '<6>msd-early-io: %s\n' "$*" >"$dev/kmsg" 2>/dev/null ||
+		printf 'msd-early-io: %s\n' "$*" >&2
+}
+
+publish() {
+	printf '%s\n' "$1" >"$state/state.new" && mv "$state/state.new" "$state/state"
+}
+
+ram_run() {
+	awk '$2 == "/run" && $3 == "tmpfs" { found=1 } END { exit !found }' "$root/proc/mounts"
+}
+
+has_node() {
+	find "$dt" -type f -name compatible -exec cat '{}' + 2>/dev/null |
+		tr '\000' '\n' | grep -Fxq "$1"
+}
+
+qemu_absent() {
+	[ "$(tr ' ' '\n' <"$root/proc/cmdline" | sed -n 's/^msd\.early_io=//p')" = qemu ] || return 1
+	tr '\000' '\n' <"$dt/compatible" |
+		grep -Eq '^raspberrypi,(3-model-b|0-compute-module)$' || return 1
+	for compatible in cardputerzero,st7789v_lcd m5stack,tca8418c \
+		m5stack,m5ioe1 m5stack,gpio-forwarder m5stack,pwm-backlight; do
+		if has_node "$compatible"; then return 1; fi
+	done
+}
+
+clock() {
+	read -r now _ <"$root/proc/uptime"
+	now=${now%.*}
+}
+
+remaining() {
+	clock
+	left=$((deadline - now))
+	[ "$left" -gt 0 ]
+}
+
+bounded() {
+	remaining || return 1
+	timeout -s KILL "$left" "$@" &
+	command_pid=$!
+	(
+		sleep_pid=
+		trap '[ -z "$sleep_pid" ] || { kill "$sleep_pid" 2>/dev/null; wait "$sleep_pid" 2>/dev/null; }; exit 0' TERM INT
+		while kill -0 "$command_pid" 2>/dev/null; do
+			sleep 1 &
+			sleep_pid=$!
+			wait "$sleep_pid"
+			sleep_pid=
+			kill -0 "$command_pid" 2>/dev/null || break
+			clock
+			marker "waiting elapsed=$((now + limit - deadline)) limit=$limit; safe to power off / 準備中です。電源を切れます。"
+		done
+	) &
+	progress_pid=$!
+	wait "$command_pid"
+	command_status=$?
+	kill "$progress_pid" 2>/dev/null || true
+	wait "$progress_pid" 2>/dev/null || true
+	return "$command_status"
+}
+
+bound_device() {
+	bus=$1 compatible=$2 driver=$3
+	for device in "$sys/bus/$bus/devices/"*; do
+		[ -r "$device/of_node/compatible" ] || continue
+		tr '\000' '\n' <"$device/of_node/compatible" | grep -Fxq "$compatible" || continue
+		[ "$(basename "$(readlink -f "$device/driver")")" = "$driver" ] || continue
+		readlink -f "$device"
+		return 0
+	done
+	return 1
+}
+
+lcd_ready() {
+	lcd=$(bound_device spi cardputerzero,st7789v_lcd panel-mipi-dbi-spi) || return 1
+	backlight=$(bound_device platform m5stack,pwm-backlight pwm-backlight) || return 1
+	drm_ok='' fb_ok='' backlight_ok=''
+	for entry in "$sys/class/drm/card"*; do
+		case "$(readlink -f "$entry")" in
+			"$lcd"/*) [ ! -c "$dev/dri/${entry##*/}" ] || drm_ok=yes ;;
+		esac
+	done
+	for entry in "$sys/class/graphics/fb"*; do
+		case "$(readlink -f "$entry")" in
+			"$lcd"/*) [ ! -c "$dev/${entry##*/}" ] || fb_ok=yes ;;
+		esac
+	done
+	for entry in "$sys/class/backlight/"*; do
+		case "$(readlink -f "$entry")" in
+			"$backlight"/*) [ ! -r "$entry/brightness" ] || backlight_ok=yes ;;
+		esac
+	done
+	[ "$drm_ok:$fb_ok:$backlight_ok" = yes:yes:yes ]
+}
+
+keyboard_ready() {
+	keyboard=$(bound_device i2c m5stack,tca8418c tca8418_keypad) || return 1
+	for entry in "$sys/class/input/event"*; do
+		[ -r "$entry/device/name" ] || continue
+		[ "$(cat "$entry/device/name")" = tca8418c ] || continue
+		case "$(readlink -f "$entry/device")" in "$keyboard"/*) ;; *) continue ;; esac
+		[ -c "$dev/input/${entry##*/}" ] || continue
+		MSD_KEYBOARD_SYSFS=$sys MSD_KEYBOARD_DEV=$dev \
+			"$root/usr/libexec/msd/cardputer-keyboard" add "${entry##*/}" || return 1
+		[ -L "$dev/input/cardputer-zero-internal" ] &&
+			[ "$(readlink -f "$dev/input/cardputer-zero-internal")" = "$(readlink -f "$dev/input/${entry##*/}")" ] && return 0
+	done
+	return 1
+}
+
+prepare() {
+	ram_run || return 1
+	mkdir -p "$state" || return 1
+	publish failed || return 1
+	marker 'early-io begin; safe to power off / 入出力を準備します。電源を切れます。'
+	case "$limit" in ''|*[!0-9]*|0) return 1 ;; esac
+	[ "$limit" -le 60 ] || return 1
+	clock
+	deadline=$((now + limit))
+	if qemu_absent; then
+		publish hardware-absent-qemu || return 1
+		marker 'LCD bound skipped hardware-absent / LCDは試験環境にありません。'
+		marker 'keyboard ready skipped hardware-absent / キーボードは試験環境にありません。'
+		marker 'early-io end hardware-absent-qemu / 試験環境として続行します。'
+		return 0
+	fi
+	for compatible in cardputerzero,st7789v_lcd m5stack,tca8418c \
+		m5stack,m5ioe1 m5stack,gpio-forwarder m5stack,pwm-backlight; do
+		has_node "$compatible" || return 1
+	done
+	[ -s "$root/lib/firmware/cardputerzero,st7789v_lcd.bin" ] || return 1
+	[ -s "$root/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map" ] || return 1
+	for module in gpio-forwarder m5ioe1 pwm_bl_m5stack panel-mipi-dbi-m tca8418_keypad_m5stack; do
+		marker "loading $module; safe to power off / ドライバーを読み込みます。電源を切れます。"
+		bounded modprobe "$module" || return 1
+	done
+	lcd_done='' keyboard_done=''
+	while remaining; do
+		if [ -z "$lcd_done" ] && lcd_ready; then
+			lcd_done=yes
+			marker 'LCD bound / LCDの登録を確認しました。'
+		fi
+		if [ "$lcd_done" = yes ] && [ -z "$keyboard_done" ] && keyboard_ready; then
+			bounded loadkeys -C "$dev/tty0" -q \
+				"$root/usr/share/keymaps/tca8418_keypad_m5stack_keymap.map" || return 1
+			keyboard_done=yes
+			marker 'keyboard ready / キーボードの登録を確認しました。'
+		fi
+		if [ "$lcd_done:$keyboard_done" = yes:yes ]; then
+			remaining || return 1
+			publish ready || return 1
+			marker 'early-io end ready / 入出力の準備ができました。'
+			return 0
+		fi
+		marker "waiting elapsed=$((limit - left)) limit=$limit; safe to power off / 準備中です。電源を切れます。"
+		sleep 1
+	done
+	return 1
+}
+
+case "${1:-prepare}" in
+	prepare)
+		if prepare; then exit 0; fi
+		marker 'early-io end failed / 入出力を準備できません。起動を停止します。'
+		exit 1
+		;;
+	gate)
+		ram_run || exit 1
+		[ -r "$state/state" ] || exit 1
+		case "$(cat "$state/state")" in
+			ready) exit 0 ;;
+			hardware-absent-qemu) qemu_absent; exit $? ;;
+			*) exit 1 ;;
+		esac
+		;;
+	*) exit 2 ;;
+esac

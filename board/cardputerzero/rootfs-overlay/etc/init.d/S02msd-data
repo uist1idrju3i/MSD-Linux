@@ -5,6 +5,11 @@ case "${1:-start}" in
 	*) exit 0 ;;
 esac
 
+if ! /usr/libexec/msd/early-io gate; then
+	printf '%s\n' 'Early I/O unavailable; /data blocked. / 入出力を使えません。/dataの処理を停止します。' >&2
+	while :; do sleep 60; done
+fi
+
 DATA_DEVICE="${MSD_DATA_DEVICE:-/dev/mmcblk0p7}"
 data_changed=0
 

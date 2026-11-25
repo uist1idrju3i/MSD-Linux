@@ -48,7 +48,7 @@ chmod +x "$STUB_DIR/stub"
 for command in \
 	watchdog mkdir dd od tr cmp mkfs.ext4 fsck.ext4 mount awk msd-data-grow \
 	loadkeys mv rm msd-hwinfo touch sed lsmod modprobe cat msd-update reboot \
-	dmesg grep tail insmod umount wc sync sleep df dumpe2fs msd-syncfs; do
+	dmesg grep tail insmod umount wc sync sleep df dumpe2fs msd-syncfs early-io; do
 	ln -s stub "$STUB_DIR/$command"
 done
 
@@ -61,6 +61,7 @@ chmod +x "$INIT_DIR/S01probe"
 
 for script in \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog \
+	board/cardputerzero/rootfs-overlay/etc/init.d/S02a-msd-early-io \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay \
 	board/cardputerzero/rootfs-overlay/etc/init.d/S04msd-keymap \
@@ -83,6 +84,7 @@ do
 		-e "s|/etc/init.d|${INIT_DIR}|g" \
 		-e "s|/usr/sbin/msd-data-grow|${STUB_DIR}/msd-data-grow|g" \
 		-e "s|/usr/sbin/msd-syncfs|${STUB_DIR}/msd-syncfs|g" \
+		-e "s|/usr/libexec/msd/early-io|${STUB_DIR}/early-io|g" \
 		-e "s|/data/etc|${TEST_DIR}/data/etc|g" \
 		-e "s|/data/msd-update|${TEST_DIR}/data/msd-update|g" \
 		-e "s|/usr/sbin/msd-hwinfo|${STUB_DIR}/msd-hwinfo|g" \

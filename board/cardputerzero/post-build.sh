@@ -8,9 +8,11 @@ mkdir -p "$target_dir/run" "$target_dir/tmp" "$target_dir/var/log" "$target_dir/
 # Update this inventory when executable rootfs-overlay scripts gain commands.
 required_target_commands='
 awk
+basename
 cat
 cmp
 dd
+find
 fsck.ext4
 fsync
 grep
@@ -23,6 +25,7 @@ mkdir
 mkfs.ext4
 mkswap
 mount
+modprobe
 msd-data-grow
 msd-hwinfo
 msd-syncfs
@@ -47,6 +50,7 @@ sync
 swapon
 tar
 touch
+timeout
 tr
 umount
 v4l2-ctl

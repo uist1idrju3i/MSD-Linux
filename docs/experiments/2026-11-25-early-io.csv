@@ -1,0 +1,19 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+host,sysfs-fixture,1,test_count,17,count,true,normal and failures with fake sysfs and host timeout
+init,init-scripts,1,result,0,exit,true,existing data tests use a successful early-io gate stub
+supervisor,qemu-boot,1,test_count,11,count,true,fake VM process lifecycle regression
+a,hardware-absent-qemu-p5,1,result,0,exit,true,QMP quit; reaped; no fallback
+a,hardware-absent-qemu-p5,1,ordered_early_io_markers,4,count,true,all before data and ready; no physical probe
+b,hardware-absent-qemu-p6,1,result,0,exit,true,QMP quit; reaped; no fallback
+b,hardware-absent-qemu-p6,1,ordered_early_io_markers,4,count,true,all before data and ready; no physical probe
+required,duplicate-mode-p5,1,result,124,exit,true,expected host boot timeout after blocked init
+required,duplicate-mode-p5,1,data_or_ready_markers,0,count,true,failed and boot blocked observed
+unpack-01,without-fakeroot,1,result,2,exit,false,unsquashfs uid/gid permission failure; no boot
+build-02,with-fakeroot,1,result,0,exit,true,BusyBox rebuilt; no boot
+04-a,hardware-absent-qemu-p5,1,result,1,exit,false,ready observed but QMP timed out; SIGTERM fallback; 4 parallel VMs
+04-b,hardware-absent-qemu-p6,1,result,1,exit,false,ready observed but QMP timed out; SIGTERM fallback; 4 parallel VMs
+04-a-retry,hardware-absent-qemu-p5,1,result,0,exit,true,sequential retry; host boot timeout 120s; QMP quit; no fallback
+04-b-retry,hardware-absent-qemu-p6,1,result,0,exit,true,sequential retry; host boot timeout 120s; QMP quit; no fallback
+04-required,duplicate-mode-p5,1,result,124,exit,true,expected host timeout after blocked init; no data or ready
+module-timeout-01,fake-module-p5,1,result,124,exit,true,expected host timeout after guest early-io timeout and blocked init
+module-timeout-01,fake-module-p5,1,guest_begin_to_failed,2.800952,seconds,true,3s guest deadline; fake DT and sleep30 modprobe; real BusyBox timeout
