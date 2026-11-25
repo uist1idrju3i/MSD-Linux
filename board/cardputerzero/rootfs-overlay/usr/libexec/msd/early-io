@@ -12,6 +12,9 @@ marker() {
 	printf '<6>msd-early-io: %s\n' "$*" >"$dev/kmsg" 2>/dev/null || true
 	printf 'msd-early-io: %s\n' "$*" >>"$dev/console" 2>/dev/null ||
 		printf 'msd-early-io: %s\n' "$*" >&2
+	if [ -c "$dev/tty1" ]; then
+		printf 'msd-early-io: %s\n' "$*" >"$dev/tty1" 2>/dev/null || true
+	fi
 }
 
 publish() {

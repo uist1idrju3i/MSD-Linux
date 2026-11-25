@@ -2,6 +2,7 @@
 import ast
 import os
 from pathlib import Path
+import pty
 import signal
 import subprocess
 import tempfile
@@ -135,6 +136,11 @@ class EarlyIO(unittest.TestCase):
     def test_quiet_console_progress_does_not_depend_on_kernel_loglevel(self):
         self.physical()
         self.write('proc/cmdline', 'quiet')
+        master, slave = pty.openpty()
+        self.addCleanup(os.close, master)
+        self.addCleanup(os.close, slave)
+        os.set_blocking(master, False)
+        self.link(os.ttyname(slave), 'dev/tty1')
         (self.root / 'dev/kmsg').unlink()
         self.write('dev/kmsg', '')
         self.env['MSD_EARLY_IO_TIMEOUT'] = '3'
@@ -142,9 +148,11 @@ class EarlyIO(unittest.TestCase):
         result = self.run_helper()
         self.assertNotEqual(result.returncode, 0)
         console = (self.root / 'dev/console').read_text()
+        fbcon = os.read(master, 16384).decode()
         for text in ['early-io begin', 'loading gpio-forwarder', 'waiting elapsed=',
                      'limit=3; safe to power off', 'early-io end failed; boot blocked']:
             self.assertIn(text, console)
+            self.assertIn(text, fbcon)
             self.assertNotIn(text, result.stderr)
         self.assertEqual(self.state(), 'failed')
 
