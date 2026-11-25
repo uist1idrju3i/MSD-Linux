@@ -56,6 +56,7 @@ moduleとfirmwareの読取り、kernelの登録、devtmpfsのsymlink、tmpfsの�
 boot中の画面の文言は、利用者が決めた案Cに従い、英語だけにします。
 kernel fbconでは日本語を描けないためで、[AGENTS.md §10の例外](write-policy.md#boot中の画面の文言案c)として理由と範囲を記録しています。
 開始・module段階・device待ちの経過・終了・中断可否をconsole/kernel logへ英語で出力します。secretは扱いません。
+`quiet`でも進捗と中断可否が見えるように、kernel logのinfo levelとは別に`/dev/console`へ直接出力します。
 
 markerは`early-io begin`、`LCD bound`、`keyboard ready`、`early-io end`です。
 将来の測定はPINの人間待ち時間とdriver準備時間を分け、同一buildのA/A、初回と通常起動を分けて各5回以上測ります。

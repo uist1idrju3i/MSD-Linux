@@ -9,7 +9,8 @@ state=$root/run/msd-early-io
 limit=${MSD_EARLY_IO_TIMEOUT:-20}
 
 marker() {
-	printf '<6>msd-early-io: %s\n' "$*" >"$dev/kmsg" 2>/dev/null ||
+	printf '<6>msd-early-io: %s\n' "$*" >"$dev/kmsg" 2>/dev/null || true
+	printf 'msd-early-io: %s\n' "$*" >>"$dev/console" 2>/dev/null ||
 		printf 'msd-early-io: %s\n' "$*" >&2
 }
 

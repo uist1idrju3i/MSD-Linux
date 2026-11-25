@@ -29,6 +29,7 @@ class EarlyIO(unittest.TestCase):
         self.write('sys/firmware/devicetree/base/compatible', 'raspberrypi,3-model-b\0brcm,bcm2837\0')
         self.link('/proc/uptime', 'proc/uptime')
         self.link('/dev/stderr', 'dev/kmsg')
+        self.write('dev/console', '')
         self.script('modprobe', 'printf "%s\\n" "$1" >>"$MSD_EARLY_IO_ROOT/modules"\n'
                     '[ "${FAIL_MODULE:-}" != "$1" ] || exit 1\n'
                     '[ "${SLOW_MODULE:-}" != "$1" ] || exec sleep 10')
@@ -112,6 +113,8 @@ class EarlyIO(unittest.TestCase):
         markers = ['early-io begin', 'LCD bound', 'keyboard ready', 'early-io end ready']
         offsets = [result.stderr.index(marker) for marker in markers]
         self.assertEqual(offsets, sorted(offsets))
+        console = (self.root / 'dev/console').read_text()
+        self.assertEqual([console.index(marker) for marker in markers], sorted(console.index(marker) for marker in markers))
         self.assertEqual(self.state(), 'ready')
         self.assertEqual((self.root / 'modules').read_text().splitlines(), MODULES + ['loadkeys'])
         self.assertEqual(self.run_helper('gate').returncode, 0)
@@ -125,6 +128,22 @@ class EarlyIO(unittest.TestCase):
         self.assertEqual(self.state(), 'hardware-absent-qemu')
         self.assertEqual(self.run_helper('gate').returncode, 0)
         self.assertFalse((self.root / 'modules').exists())
+
+    def test_quiet_console_progress_does_not_depend_on_kernel_loglevel(self):
+        self.physical()
+        self.write('proc/cmdline', 'quiet')
+        (self.root / 'dev/kmsg').unlink()
+        self.write('dev/kmsg', '')
+        self.env['MSD_EARLY_IO_TIMEOUT'] = '3'
+        self.env['SLOW_MODULE'] = MODULES[0]
+        result = self.run_helper()
+        self.assertNotEqual(result.returncode, 0)
+        console = (self.root / 'dev/console').read_text()
+        for text in ['early-io begin', 'loading gpio-forwarder', 'waiting elapsed=',
+                     'limit=3; safe to power off', 'early-io end failed; boot blocked']:
+            self.assertIn(text, console)
+            self.assertNotIn(text, result.stderr)
+        self.assertEqual(self.state(), 'failed')
 
     def test_unknown_machine_and_partial_dt_are_not_absent(self):
         self.write('proc/cmdline', 'msd.early_io=qemu')
