@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import ast
+import importlib.util
 import os
 from pathlib import Path
 import pty
@@ -30,6 +31,10 @@ class EarlyIO(unittest.TestCase):
         subprocess.run(['cc', '-std=c99', '-Wall', '-Wextra', '-Werror',
                         str(REPO / 'package/msd-console/msd-console.c'),
                         '-o', str(cls.console)], check=True)
+        spec = importlib.util.spec_from_file_location(
+            'fixture', REPO / 'board/cardputerzero/tools/bench/early-io-fixture.py')
+        cls.fixture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.fixture)
 
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='msd-early-io-')
@@ -220,6 +225,28 @@ class EarlyIO(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(missing.exists())
         self.assertEqual(target.read_text(), '\nprogress\n')
+
+    def test_fixture_marker_dependencies(self):
+        config = self.write('busybox.config', '\n'.join(self.fixture.MARKER_CONFIG) + '\n')
+        install = self.fixture.install_marker_commands
+        inputs = install(self.root, self.console, config, self.console)
+        self.assertEqual(inputs['usr/bin/msd-console'], self.fixture.digest(self.console))
+        for name in ['bin/sh', 'bin/true', 'usr/bin/printf', 'usr/bin/timeout']:
+            self.assertEqual((self.root / name).resolve(), self.root / 'bin/busybox')
+        for option in self.fixture.MARKER_CONFIG:
+            with self.subTest(option=option):
+                config.write_text('\n'.join(x for x in self.fixture.MARKER_CONFIG if x != option))
+                with self.assertRaises(ValueError):
+                    install(self.root, self.console, config, self.console)
+        config.write_text('\n'.join(self.fixture.MARKER_CONFIG))
+        missing = self.root / 'missing-command'
+        with self.assertRaises(ValueError):
+            install(self.root, self.console, config, missing)
+        with self.assertRaises(ValueError):
+            install(self.root, missing, config, self.console)
+        config.write_text('')
+        with self.assertRaises(ValueError):
+            install(self.root, self.console, config, self.console)
 
     def test_s3_launcher_explicit_mode(self):
         source = REPO / 'board/cardputerzero/tools/bench/s3/s3-qemu.py'

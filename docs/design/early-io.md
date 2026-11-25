@@ -87,6 +87,9 @@ host試験は`tests/early-io/run.sh`です。偽sysfs・modprobe・loadkeysで�
 
 既存buildから別のfixtureを作る場合は、固定開発image内で次を実行します。
 これは新規製品full buildではありません。baseのkernelとlibraryを使い、変更したinit/helperとtimeoutを有効にしたBusyBoxを両slotへ入れます。
+`msd-console`は同じbuildのcross compilerで現在のsourceから作り、元imageの有無によらず収録します。
+markerが使うshell・printf・trueとtimeoutのBusyBox設定、必要な実行fileが欠けていれば生成を止めます。
+`--busybox`で再利用する場合は、binaryと同じdirectoryの`.config`も必須です。
 実行するsourceは変更せず、生成物・入力hashは指定した別directoryに保存します。
 
 ```sh
@@ -101,4 +104,5 @@ moduleの実load試験はこのQEMU条件から除外しています。fixture�
 実際のBusyBox timeoutと進捗表示、失敗後にS02へ進まないことを確かめるためのもので、driverの実probeではありません。
 このwrapperは製品overlayへ入りません。通常のA/Bは上記を一つずつ実行します。
 gate導入時のQEMU結果・入力hash・失敗した構築は[検証記録](../experiments/2026-11-25-early-io.md)に残しています。
-案Cへ文言を変えた後のQEMU起動と実機表示は未確認です。
+案Cと非blocking送信を含む追加のA起動・期限対照は、[console出力の記録](../experiments/2026-11-25-early-io-console.md)を参照してください。
+実機表示と、この追加条件でのB起動は未確認です。

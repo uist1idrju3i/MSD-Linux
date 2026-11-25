@@ -11,6 +11,8 @@ import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[4]
+MARKER_CONFIG = ['CONFIG_ASH=y', 'CONFIG_SH_IS_ASH=y', 'CONFIG_ASH_PRINTF=y',
+                 'CONFIG_PRINTF=y', 'CONFIG_TRUE=y', 'CONFIG_TIMEOUT=y']
 
 
 def digest(path):
@@ -21,11 +23,33 @@ def digest(path):
     return value.hexdigest()
 
 
+def install_marker_commands(target, busybox, config, console):
+    options = config.read_text().splitlines()
+    for option in MARKER_CONFIG:
+        if option not in options:
+            raise ValueError('missing marker dependency: ' + option)
+    for source in (busybox, console):
+        if not source.is_file() or not os.access(source, os.X_OK):
+            raise ValueError('missing executable marker dependency: ' + str(source))
+    inputs = {}
+    for relative, source in [('bin/busybox', busybox), ('usr/bin/msd-console', console)]:
+        path = target / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, path)
+        inputs[relative] = digest(path)
+    for relative in ['bin/sh', 'bin/true', 'usr/bin/printf', 'usr/bin/timeout']:
+        path = target / relative
+        if path.is_symlink() or path.exists():
+            path.unlink()
+        path.symlink_to(os.path.relpath(target / 'bin/busybox', path.parent))
+    return inputs
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('build', type=Path)
     parser.add_argument('destination', type=Path)
-    parser.add_argument('--busybox', type=Path, help='Reuse the timeout-enabled BusyBox built by a previous fixture')
+    parser.add_argument('--busybox', type=Path, help='Reuse a timeout-enabled BusyBox with its adjacent .config')
     parser.add_argument('--module-timeout', action='store_true', help='Inject a RAM-only fake DT and a sleeping modprobe before the real helper')
     args = parser.parse_args()
     build = args.build.resolve()
@@ -49,6 +73,7 @@ def main():
         inputs[relative] = digest(source)
     if args.busybox:
         busybox_binary = args.busybox.resolve()
+        config = busybox_binary.with_name('.config')
     else:
         busybox_source = next((build / 'build').glob('busybox-*/Config.in')).parent
         busybox = destination / 'busybox'
@@ -65,12 +90,11 @@ def main():
                        input=b'\n' * 1000, check=True)
         subprocess.run(['make', '-C', str(busybox), '-j2', 'CROSS_COMPILE=' + cross], check=True)
         busybox_binary = busybox / 'busybox'
-    shutil.copy2(busybox_binary, target / 'bin/busybox')
-    timeout = target / 'usr/bin/timeout'
-    if timeout.is_symlink() or timeout.exists():
-        timeout.unlink()
-    timeout.symlink_to('../../bin/busybox')
-    inputs['bin/busybox'] = digest(target / 'bin/busybox')
+    console_source = ROOT / 'package/msd-console/msd-console.c'
+    console_binary = destination / 'msd-console'
+    subprocess.run([str(build / 'host/bin/aarch64-linux-gcc'), '-Os', '-Wall', '-Wextra', '-Werror',
+                    str(console_source), '-o', str(console_binary)], check=True)
+    inputs.update(install_marker_commands(target, busybox_binary, config, console_binary))
     if args.module_timeout:
         wrapper = target / 'usr/libexec/msd/early-io-timeout-fixture'
         wrapper.write_text('''#!/bin/sh
@@ -82,6 +106,8 @@ printf 'tmpfs /run tmpfs rw 0 0\\n' >"$root/proc/mounts"
 : >"$root/proc/cmdline"
 ln -s /proc/uptime "$root/proc/uptime"
 ln -s /dev/kmsg "$root/dev/kmsg"
+ln -s /dev/console "$root/dev/console"
+if [ -c /dev/tty1 ]; then ln -s /dev/tty1 "$root/dev/tty1"; fi
 for compatible in cardputerzero,st7789v_lcd m5stack,tca8418c m5stack,m5ioe1 m5stack,gpio-forwarder m5stack,pwm-backlight; do
     mkdir -p "$dt/$compatible"
     printf '%s\\000' "$compatible" >"$dt/$compatible/compatible"
@@ -119,8 +145,9 @@ exec /usr/libexec/msd/early-io "$@"
         shutil.copy2(build / 'images' / name, images / name)
     (destination / 'host').symlink_to(build / 'host', target_is_directory=True)
     record = dict(commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-                  description='Existing build with only listed overlay files replaced in both SquashFS slots; NOT a fresh product build or physical driver test',
+                  description='Existing build with listed files and source-built msd-console in both slots; NOT a fresh product build or physical driver test',
                   base_build=str(build), source_overlay_hashes=inputs,
+                  console_source_sha256=digest(console_source), marker_config_sha256=digest(config),
                   module_timeout_fixture=args.module_timeout,
                   base_images={name: digest(build / 'images' / name) for name in
                                ['Image', 'rootfs.squashfs', 'sdcard.img', 'bcm2710-rpi-3-b.dtb']},
