@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+import ast
 import os
 from pathlib import Path
 import signal
 import subprocess
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[2]
 OVERLAY = REPO / 'board/cardputerzero/rootfs-overlay'
@@ -152,6 +155,27 @@ class EarlyIO(unittest.TestCase):
         self.write('sys/firmware/devicetree/base/compatible', 'raspberrypi,3-model-b\0')
         self.write('sys/firmware/devicetree/base/lcd/compatible', COMPATIBLES[0] + '\0')
         self.failed()
+
+    def test_s3_launcher_explicit_mode(self):
+        source = REPO / 'board/cardputerzero/tools/bench/s3/s3-qemu.py'
+        tree = ast.parse(source.read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                        and node.name == 'qemu_command')
+        namespace = dict(os=os, Path=Path, QEMU='qemu-system-aarch64',
+                         args=SimpleNamespace(kernel='/kernel', dtb='/dtb'))
+        exec(compile(ast.Module(body=[function], type_ignores=[]), str(source), 'exec'), namespace)
+        for machine in ['raspi3b', 'raspi3ap']:
+            for append in ['', 'msd.s3bench=1', 'msd.s3verify=1']:
+                with self.subTest(machine=machine, append=append), patch.dict(
+                        os.environ, QEMU_MACHINE=machine, QEMU_EXTRA_APPEND=''):
+                    command = namespace['qemu_command']('/disk', '/log', append)
+                    cmdline = command[command.index('-append') + 1]
+                    self.assertEqual(cmdline.split().count('msd.early_io=qemu'), 1)
+                    if append:
+                        self.assertIn(append, cmdline.split())
+                    self.write('proc/cmdline', cmdline)
+                    self.assertEqual(self.run_helper().returncode, 0)
+                    self.assertEqual(self.state(), 'hardware-absent-qemu')
 
     def test_duplicate_mode_rejected(self):
         self.write('proc/cmdline', 'msd.early_io=qemu msd.early_io=required')

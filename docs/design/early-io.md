@@ -49,6 +49,13 @@ QEMU launcherだけが`msd.early_io=qemu`を追加します。例外は次のす
 これはemulatorの暗号学的な識別ではなく、試験launcherからの明示指定です。製品boot設定へコピーしません。
 重複modeは拒否するため、QEMUで`QEMU_EXTRA_APPEND=msd.early_io=required`を追加すると失敗側を試せます。
 
+独立launcherの[S3](../../board/cardputerzero/tools/bench/s3/s3-qemu.py)も同じ明示modeを渡します。
+boottimeはtest-boot経由、openssl-featuresとssh-client-compareはrun-qemu経由なので、共通launcherのmodeを使います。
+fs-compare-v2は元のrootfsを展開し、rcSを置き換えずにS97の試験hookを加えたimageを使います。
+そのためS02前のgateも通りますが、supervisorからrun-qemuを起動するため追加のmode指定は不要です。
+dm-verityとread-orderのQEMU wrapperは渡された引数を保持し、共通launcherのmodeを引き継ぎます。
+既に動いている実験や別cloneのsourceは変更しません。過去の測定値を新しい起動条件の値として扱いません。
+
 ## 書込み・表示と残件
 
 moduleとfirmwareの読取り、kernelの登録、devtmpfsのsymlink、tmpfsの状態だけを変更します。

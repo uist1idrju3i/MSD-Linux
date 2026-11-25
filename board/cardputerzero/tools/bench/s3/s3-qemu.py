@@ -35,6 +35,7 @@ def qemu_command(disk, log, append, qmp_socket=None):
         "rootwait",
         "ro",
         "rootfstype=squashfs",
+        "msd.early_io=qemu",
     ]
     extra_append = append or os.environ.get("QEMU_EXTRA_APPEND", "")
     if extra_append:
