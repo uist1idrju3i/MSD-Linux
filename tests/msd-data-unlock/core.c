@@ -277,6 +277,13 @@ static void initialization(void)
 	init(&f); prepare_input(&f);
 	assert(run(&f, true) == 0 && f.inspect_count == 3);
 	assert(f.ops[f.used - 1] == MSD_READY);
+	init(&f); prepare_input(&f); f.fail_at = 4; f.deactivate_error = -EBUSY;
+	assert(run(&f, true) == -EIO && f.checkpoints == 2 && !f.ready);
+	assert(f.deactivations == 1 && f.mapped);
+	init(&f); prepare_input(&f); f.progress_fail_at = 13;
+	f.progress_error = -EINTR; f.deactivate_error = -EBUSY;
+	assert(run(&f, true) == -EINTR && f.checkpoints == 2 && !f.ready);
+	assert(f.deactivations == 1 && f.mapped);
 	init(&f); prepare_input(&f); f.random_error = -EIO;
 	assert(run(&f, true) == -EIO && f.used == 0);
 	init(&f); prepare_input(&f); f.display_error = -EIO;
@@ -403,7 +410,7 @@ static void recovery(void)
 	}
 	init(&f); f.mask = 2; f.deactivate_error = -EBUSY;
 	input(&f, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"); input_error(&f, -EINTR);
-	assert(run(&f, false) == -EBUSY && f.deactivations == 1);
+	assert(run(&f, false) == -EINTR && f.deactivations == 1);
 	init(&f); f.mask = 2; f.progress_error = -EINTR; f.progress_fail_at = 6;
 	input(&f, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 	assert(run(&f, false) == -EINTR && !f.mapped && f.deactivations == 1);

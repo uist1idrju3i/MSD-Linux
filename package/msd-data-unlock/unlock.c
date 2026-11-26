@@ -215,11 +215,8 @@ static int slots(struct msd_backend *b, struct msd_ui *u, bool ready, int expect
 
 static int finish(struct msd_backend *b, int r)
 {
-	if (r < 0) {
-		int closed = b->deactivate(b->ctx);
-		if (closed < 0)
-			return closed;
-	}
+	if (r < 0)
+		b->deactivate(b->ctx);
 	return r;
 }
 
