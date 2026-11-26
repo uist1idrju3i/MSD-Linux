@@ -1,0 +1,6 @@
+eaf599fff5d13470ee97e254d3f7c34e47ee5d720191169cdbbfefebec214a17  qemu-old-a2/serial-mmcblk0p5.log
+0c9aea802551cc1b0ff7e71316c4c452bc20c8b629458d919ed23e5952cc80ce  qemu-old-b/serial-mmcblk0p6.log
+78476bb5cdeb29c62e2fd59bde9ff621e9d80697102e7bc1540b78812a225129  qemu-new-a/serial-mmcblk0p5.log
+d0c7ad2bfb0f3a5f63c556f69ccefcd34f48a5864fffb308271ef4f2976722d7  qemu-new-b/serial-mmcblk0p6.log
+4ec207982c1f9e5366be66421ae71aa1e55aada6d2bbb4de508567f5ed369d86  trivy-db-manifest.json
+da99bd0337cacb2e204858c5e2a71d8521a46ef99aec0fe9e87c1c3f39de1e75  trivy-db-original-metadata.json
