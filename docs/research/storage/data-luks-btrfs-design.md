@@ -1,5 +1,11 @@
 # /data の設計: LUKS + btrfs(dup data/metadata) + xxhash64 + zstd 透過圧縮
 
+## 現行設計と、この記録の時点
+
+2026-11-26に利用者が決めた[初期設定・PIN解錠・復旧の現行設計](../../design/data-unlock.md)を正本とする。状態は設計のみ・未実装である。初回PIN必須、固定slot 0/1、recovery、初期化限定grow、移行なし、PIN変更時のvolume key再暗号化の延期は、以下の当時の案を置き換える。
+
+以下は2026-11-15時点の観測・設計案・未決事項であり、値や本文は後の知識で書き換えない。cryptsetup 2.8.7、BTRFS未設定、DM_CRYPT=m等を現在の状態として読まない。後日の[cryptsetup 2.8.9の記録](../../experiments/2026-11-26-cryptsetup-2.8.9.md)と現行設計を参照する。「passwordなし」や既存ext4からの移行案も履歴である。
+
 - 種類: 設計調査（一次資料照合 + 方針案）
 - 作成日: 2026-11-15
 - 利用者の方針（2026-11-15）: 「dataはLUKS + btrfs (metadataもdataもdup)にします。xxhash64にします。」「/dataのbtrfsはzstd透過圧縮も行いたいですね。」

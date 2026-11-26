@@ -41,7 +41,7 @@
 | root前の無FAT counterと、commit後の破損確認・待機（未決定） | [状態保持](../boot/warm-reset-counter.md) / [root前policy](../boot/pre-root-loop-policy.md) / [稼働後の遅延切替](../boot/verity-delayed-failover.md) |
 | rootfs完全性（SquashFS+zstd+dm-verity(crc32c)+FEC+A/B切り戻し） | [rootfs完全性設計](rootfs-squashfs-verity-fec-design.md) |
 | 固定rpi 6.18.59のcorruption/I/O error全option、panic・watchdog・firmwareとloop対策 | [dm-verityのエラー設定](dm-verity-error-options.md) |
-| /dataのLUKS+btrfs(dup)+xxhash64+zstd圧縮 | [data LUKS+btrfs設計](data-luks-btrfs-design.md) |
+| /dataのLUKS2+Btrfs・PIN・recovery・起動の停止 | [現行設計（未実装）](../../design/data-unlock.md)。[2026-11-15の調査と当時の案](data-luks-btrfs-design.md)は履歴 |
 | zstdの使用箇所（SquashFS/zram/zswap/btrfs）とoption測定計画 | [zstd使用箇所とoption](zstd-usage-and-options.md) |
 | NEON・crypto extensionとverity/LUKS/btrfsのhash・cipher選択 | [ARM64 NEON・crypto](arm64-neon-crypto.md) |
 | 全optionのtoken分類、固定版との差、未測定と設計訂正 | [storage option網羅表](storage-option-coverage.md) |

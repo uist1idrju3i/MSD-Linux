@@ -20,6 +20,7 @@ AGENTS.md §10の英日併記について、利用者の判断で案C（英語�
 理由は、kernel fbconでは日本語を描けないためです。
 例外の範囲は、電源投入からinitの起動処理が終わるまでの自動表示と、起動失敗で待機している間の表示です。
 early-ioのmarker・progress・中断可否・成功失敗、S02の/data診断、slot・ready表示も英語だけにします。
+2026-11-26の決定で、起動中のPIN設定・解錠・recoveryの対話と警告もこの例外に含めます。[現行設計](data-unlock.md)は未実装です。
 consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いです。実機LCDでの英語の可読性とprogressの見え方は未確認です。
 
 文書とマニュアルは引き続き日本語だけです。起動完了後の対話toolの画面はこの例外に含めず、英日併記を維持します。
@@ -43,6 +44,26 @@ consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いで�
 | online resize後の書き込み | 変更前の[帰属測定](../experiments/2026-11-15-data-first-boot-writes.md)はp7計16,952 sector。新table寸法の16,384 sectorは寄与量の推定です。新規tableをgrow中に同期初期化した[追試](../experiments/2026-11-17-data-sync-itable.md)は全3回boot 16,848＋idle1 88 sector、idle2・3は0。全groupのITABLE_ZEROEDと観測時点のext4lazyinit不在を確認しました。[残量の帰属](../experiments/2026-11-17-data-idle-residual.md)はdirectory 24、bitmap 24、inode table 16、superblock 16、GDT 8 sectorの計88。[末尾syncfsの5回比較](../experiments/2026-11-18-data-syncfs.md)はbefore boot 16,848〜16,880＋idle1 88、after boot 16,936〜16,968＋idle1・2とも0。pilotで11 home-location blockの計88 sectorがhelper終了前へ移ったことを確認しました | なし（未対応） | 未対応 | S02がgrow・mkdir等の変更後に`msd-syncfs /data`を呼び、失敗を記録して非zeroを返します。変更なしなら省略します。総量の範囲は同じで、削減・規則への適合ではありません。発行worker・timerの実値、操作別の按分、progress、実機、既存SDの残存tableは未解決です |
 | [powerfail-notify](../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/powerfail-notify) | power-failのmdev eventでbackgroundの `sync` を呼び、既存のdirty dataをflushし得ます | なし | 未対応 | 従来の台帳の欠落です。緊急退避の例外候補ですが、許容時間・実機event・表示は未確認のままです |
 | `/data` の常時rw | アプリや利用者が `/data` に作ったfileの更新に加え、ext4のmetadata・journalも永続書き込みになります | なし | 未対応 | 書き込み窓、roへの切替、`commit=`、discard等を、この調査だけで変更しません |
+
+## LUKS2+Btrfsのdata初期設定と復旧で追加する計画
+
+[現行設計](data-unlock.md)に対応する2026-11-26の台帳です。以下は設計決定・未実装であり、上のext4経路を置換済み、または書込みを測定済みとは扱いません。量はすべて未測定です。既存台帳が20,000 byteを超えるため分割を検討し、今回は現行ext4と置換計画を同じ台帳で比較できるよう、この主題の表を一つに保ちます。
+
+| 操作 | 書込み先と時機・理由 | progress・中断可否 | 状態・受入条件 |
+|---|---|---|---|
+| 初期化前の固定範囲zero確認 | LUKS2 headerが無いときだけ、p7先頭からgenimageが作ったp7の固定長`N`までを読む。現在のp7容量には依存しない。`N`は512 MiB以上、PR Cで定数化。確認範囲にdataが残る領域を初期化しないため。SD書込みなし | 数秒〜数十秒かかり得るため、読取り済みbytes・総bytes又は割合と経過時間、読取りだけなので電源を切ってよい旨を英語表示 | 計画。通常のLUKS2起動では行わない。`N` bytes内の後方の非zeroと読取り失敗は停止。grow後・header書込み前の電断後も同じ`N`を確認 |
+| 初期化開始とpartition grow | PIN2回とrecovery照合又はskip再確認の後だけ、p4/p7のtableを書き換える。初期化の中でdisk終端まで広げるため。`N`より後ろの拡張領域に古いdataがあっても初期化の対象とする | 拡張中の進捗又は経過時間と中断可否を英語で表示 | 計画。通常起動でgrowせず、resize2fs相当の毎起動経路を無くす。gate失敗前はwrite 0。暗号化前のdataは消去せず、LUKS等で上書きしない部分には古い平文が残り得る |
+| LUKS2 format・slot 0登録 | 初期化中だけp7のheader・keyslot領域へpendingとPINで保護したvolume key等を書く。端末固有の暗号領域を作るため | formatの進捗又は経過時間を英語表示。電源断後は通常は次回に初期化をやり直すが、判定不能ならformatせず停止する旨も表示 | 計画。PIN平文はSDへ保存しない。LUKS2 headerが無い場合は、p7先頭からimageが作った大きさ`N`までに非zeroがあればformatせず停止。`N`より後ろは古いdataが残っても初期化の対象とする |
+| recovery slot追加 | 初回設定のformat後にslot 1へ追加する。PIN slot無効化後も復旧可能にするため | keyslot追加中の経過時間と中断可否を英語表示 | 計画。recovery平文はSDへ保存せず紙などSD外へ保管。slot 1の追加失敗は停止 |
+| Btrfs mkfs・directory作成 | mapping上にDUP・xxhash64のFSと`/data/etc`・`/data/msd-update`等を作る。初期化中だけ | mkfs・作成中の進捗又は経過時間と中断可否を英語表示 | 計画。利用者dataを作る通常起動はreadyまで禁止 |
+| 同期とready更新 | FS変更の同期後だけLUKS2 labelをreadyへ更新し永続化する。中断した初期化を区別するため | 同期・完了処理中と電源断可否を英語表示 | 計画。同期又はlabel更新の失敗時は完了とせず停止。headerを識別不能なら自動再formatしない |
+| 10回後のPIN slot消去 | RAM内の連続誤入力が10回になった時だけslot 0を消す。PIN経路を無効にする自動writeとして登録 | 消去中の経過時間と電源断可否、完了後はrecoveryが必要と英語表示 | 計画・自動writeの例外。利用者が採用した案A。slot 1を残し、最後のslotを消さない。削除失敗時は停止 |
+| recovery後のPIN再設定 | recovery解錠後、新PIN2回の一致を確認してslot 0を消去・追加する。以後のPIN解錠を再設定するため | 再設定中の進捗又は経過時間と電源断可否を英語表示 | 計画。slot 1を維持し、volume key再暗号化はしない。中断でslot 0が無ければ次回もrecoveryへ進む |
+| 解錠後のBtrfs mount・回復 | unlock後のmountに伴うmetadata、transaction、log replay等のwriteを含む。必要な回復を黙って無効化しないため | mount・回復・同期の間も進捗又は経過時間と電源断可否を英語表示 | 計画・回復writeの例外登録。発生量と終了時機は未測定。解錠後write 0やidle適合を仮定せずPR Cと実機で確認 |
+
+PIN入力、回数counter、blocklist照合、recovery入力、診断logはRAMだけに置きます。空Enter、通常の誤入力ごとの回数更新、電源再投入時のcounter初期化ではSDへ書きません。PIN認証の`-EPERM`以外のmetadata・I/O・OOM等は回数に含めず、その場で止めます。recovery照合のskipは警告後の再確認を必須とし、完了前の中断で作り直したrecovery keyは旧keyを無効にすると表示します。
+
+Btrfsの遅延transactionやidle、shutdownのwrite量は未確認です。表示終了後にもwriteがあれば未対応として残し、progressの処理区間に含めるか、追加の理由付き例外を判断します。scrub・balance等のbackground処理をこの計画で承認しません。実装PRで各行の書込み時機・量・画面・失敗時停止を検査してから状態を更新します。QEMUの観測を実SDのFTLや耐電断性の保証にしません。
 
 ## RAUC導入で追加する計画
 
