@@ -23,6 +23,8 @@ class Session:
     def __init__(self, mode):
         self.master, self.slave = pty.openpty()
         self.before = termios.tcgetattr(self.slave)
+        self.before[1] &= ~(termios.OPOST | termios.ONLCR)
+        termios.tcsetattr(self.slave, termios.TCSANOW, self.before)
         self.parent, child = socket.socketpair()
         self.parent.settimeout(10)
         self.args = [str(DRIVER), mode, str(self.slave), str(child.fileno())]
@@ -36,6 +38,7 @@ class Session:
         assert self.process.stdout.readline() == b"READY\n"
         assert PIN not in Path(f"/proc/{self.process.pid}/cmdline").read_bytes()
         assert not termios.tcgetattr(self.slave)[3] & termios.ECHO
+        assert termios.tcgetattr(self.slave)[1] & (termios.OPOST | termios.ONLCR) == (termios.OPOST | termios.ONLCR)
         self.output = b""
 
     def send(self, data):
@@ -60,6 +63,7 @@ class Session:
         assert termios.tcgetattr(self.slave) == self.before, "termios was not restored"
         assert PIN not in stdout + stderr + self.output
         assert b"must-not-be-used" not in stdout + stderr
+        assert not re.search(rb"(?<!\r)\n", self.output), "bare LF on console"
         os.close(self.master)
         os.close(self.slave)
         self.parent.close()
@@ -86,7 +90,7 @@ def read_cases():
         session.send(bytes([value]) * 4 + b"\n")
         stdout, _, output = session.finish()
         assert b"line-result=4 length=4" in stdout
-        assert output == b"****\n"
+        assert output == b"****\r\n"
     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT, signal.SIGTSTP):
         session = Session("read")
         session.send(b"partial")
@@ -104,7 +108,7 @@ def escape_cases():
         session.send(b"ab" + sequence + b"cd\n")
         stdout, stderr, output = session.finish()
         assert b"line-result=4 length=4" in stdout and not stderr
-        assert output == b"****\n", sequence
+        assert output == b"****\r\n", sequence
     session = Session("read")
     session.send(b"ab\x1b")
     time.sleep(0.02)

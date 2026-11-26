@@ -285,6 +285,7 @@ int msd_terminal_open(struct msd_terminal *t, int fd, int control,
 		return -errno;
 	struct termios raw = t->saved;
 	cfmakeraw(&raw);
+	raw.c_oflag = OPOST | ONLCR;
 	if (tcsetattr(fd, TCSAFLUSH, &raw))
 		return -errno;
 	t->active = true;
