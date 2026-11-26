@@ -142,20 +142,63 @@ image本体は含めず、path・size・hashだけを記録した。保存済み
 元manifestの値であり、今回の再hashではない。現存する参照build image 7件は再hashした。
 その他binary 203件は本体を除外してmetadataを記録。調査tarの49 memberも展開して照合した。
 
+### 保存先と取得方法
+
+試行05・06と同じorphan branch `data/fs-compare-experiments`にtextの写しを保存した。
+固定commitは`b898e1a83cd4b6c4a6f0028a1b347cb4e0672fbf`。data branchはmergeも削除もしない。
+各試行の原本textに、その試行の調査tarの内容を`investigation/`以下として加えた。
+元の4つのgzip archiveは変更せず、そのhashを同名`.selection.json`にも記録した。
+展開済みbuild rootfsのfirmware設定を除外し、原本と同じbyteのtextだけを再packした。
+除外fileのpath・size・hash・理由も同JSONに残す。image本体は含まない。
+
+| data branch内の保存先 | bytes | SHA-256 | 照合したmember数 | 除外数 |
+|---|---:|---|---:|---:|
+| `fs-compare/stage4-attempt-07-text-01.tar.zst` | 3478327 | `c4e289af8581413dee3bbad1d1bb3bcde3cb4a3e6a0ddcd1d0a0268fa7fba184` | 14323 | 800 |
+| `fs-compare/stage4-attempt-08-text-01.tar.zst` | 1489533 | `d3380db640ba5e68d58f7d37d789e4f0f7cffcb910781696c624a91af2994cce` | 9576 | 704 |
+
+前例と同じ通常のGit blobで、LFSは使わない。圧縮後は各50 MiB未満である。
+memberごとのhashは`.files.sha256`、archiveとsidecarのhashは`fs-compare/SHA256SUMS`、
+収録した本repo sourceのGPL-2.0原文は`fs-compare/stage4-attempt-07-08.licenses.txt`に付す。
+以下は修正後checkoutのrootで実行する。出力先が既にあれば停止する。
+
+```sh
+set -eu
+git fetch origin data/fs-compare-experiments
+data_sha=b898e1a83cd4b6c4a6f0028a1b347cb4e0672fbf
+mkdir evidence-t7
+git archive -o evidence-t7/data.tar "$data_sha" \
+  fs-compare/stage4-attempt-07-text-01.tar.zst \
+  fs-compare/stage4-attempt-07-text-01.files.sha256 \
+  fs-compare/stage4-attempt-07-text-01.selection.json \
+  fs-compare/stage4-attempt-08-text-01.tar.zst \
+  fs-compare/stage4-attempt-08-text-01.files.sha256 \
+  fs-compare/stage4-attempt-08-text-01.selection.json \
+  fs-compare/stage4-attempt-07-08.licenses.txt fs-compare/SHA256SUMS
+tar -xf evidence-t7/data.tar -C evidence-t7
+grep '  stage4-attempt-0' evidence-t7/fs-compare/SHA256SUMS > evidence-t7/checksums
+(cd evidence-t7/fs-compare && sha256sum -c ../checksums)
+for attempt in 07 08; do
+  mkdir "evidence-t7/unpacked-$attempt"
+  zstd -dc "evidence-t7/fs-compare/stage4-attempt-$attempt-text-01.tar.zst" > "evidence-t7/attempt-$attempt.tar"
+  tar -xf "evidence-t7/attempt-$attempt.tar" -C "evidence-t7/unpacked-$attempt"
+  (cd "evidence-t7/unpacked-$attempt" && sha256sum -c "../fs-compare/stage4-attempt-$attempt-text-01.files.sha256")
+done
+```
+
 ### 再判定の手順
 
-原本text archiveを別途入手し、修正後checkoutのrootで次を実行する。
+上の取得・照合を終えてから、修正後checkoutのrootで次を実行する。
 既存の出力先は上書きしない。元archiveから入力だけを取り出し、既存の失敗結果は移さない。
 終了値0は初回の`result-before-archive.json`に記録されたdriver_statusである。
 
 ```sh
-archive=attempt-08-smoke-failed-text-only.tar.gz
-printf '8738e97de0fe5104c36beba3e4049eec29bb5da21535f730197d17cc6eb7e75a  %s\n' "$archive" | sha256sum -c -
+archive=evidence-t7/fs-compare/stage4-attempt-08-text-01.tar.zst
+printf 'd3380db640ba5e68d58f7d37d789e4f0f7cffcb910781696c624a91af2994cce  %s\n' "$archive" | sha256sum -c -
 mkdir rejudge-t7
 out=rejudge-t7/probe-B1-T7
 mkdir "$out"
 prefix=run/attempt-1795577395970912517/probe-B1-T7
-tar -xzf "$archive" -C "$out" --strip-components=3 \
+tar --zstd -xf "$archive" -C "$out" --strip-components=3 \
   "$prefix/host.log" "$prefix/launcher.log" "$prefix/supervisor-run.log" \
   "$prefix/qemu-run.log" "$prefix/phase-run.json" "$prefix/summary.pending.csv"
 python3 board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py finalize "$out" T7 0
