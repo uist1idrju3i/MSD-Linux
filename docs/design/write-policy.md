@@ -53,7 +53,7 @@ consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いで�
 |---|---|---|---|
 | 初期化前の全体zero確認 | LUKS2 headerが無いときだけ、grow前のp7全体（imageが作った範囲すべて）を読む。後方にdataが残る領域を初期化しないため。SD書込みなし | 数秒〜数十秒かかり得るため、読取り済みbytes・総bytes又は割合と経過時間、読取りだけなので電源を切ってよい旨を英語表示 | 計画。通常のLUKS2起動では行わない。先頭だけzeroのp7と読取り失敗は初期化せず停止 |
 | 初期化開始とpartition grow | PIN2回とrecovery照合又はskip再確認の後だけ、p4/p7のtableを書き換える。初期化の中でdisk終端まで広げるため | 拡張中の進捗又は経過時間と中断可否を英語で表示 | 計画。通常起動でgrowせず、resize2fs相当の毎起動経路を無くす。gate失敗前はwrite 0 |
-| LUKS2 format・slot 0登録 | 初期化中だけp7のheader・keyslot領域へpendingとPINで保護したvolume key等を書く。端末固有の暗号領域を作るため | formatの進捗又は経過時間、電源断時は次回に初期化をやり直す旨を英語表示 | 計画。PIN平文はSDへ保存しない。未知の非empty内容をformatしない |
+| LUKS2 format・slot 0登録 | 初期化中だけp7のheader・keyslot領域へpendingとPINで保護したvolume key等を書く。端末固有の暗号領域を作るため | formatの進捗又は経過時間を英語表示。電源断後は通常は次回に初期化をやり直すが、判定不能ならformatせず停止する旨も表示 | 計画。PIN平文はSDへ保存しない。未知の非empty内容をformatしない |
 | recovery slot追加 | 初回設定のformat後にslot 1へ追加する。PIN slot無効化後も復旧可能にするため | keyslot追加中の経過時間と中断可否を英語表示 | 計画。recovery平文はSDへ保存せず紙などSD外へ保管。slot 1の追加失敗は停止 |
 | Btrfs mkfs・directory作成 | mapping上にDUP・xxhash64のFSと`/data/etc`・`/data/msd-update`等を作る。初期化中だけ | mkfs・作成中の進捗又は経過時間と中断可否を英語表示 | 計画。利用者dataを作る通常起動はreadyまで禁止 |
 | 同期とready更新 | FS変更の同期後だけLUKS2 labelをreadyへ更新し永続化する。中断した初期化を区別するため | 同期・完了処理中と電源断可否を英語表示 | 計画。同期又はlabel更新の失敗時は完了とせず停止。headerを識別不能なら自動再formatしない |

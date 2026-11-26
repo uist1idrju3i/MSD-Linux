@@ -104,7 +104,7 @@ recovery解錠後は新PINを2回入力する。slot 0が残っていればslot 
 
 ## progress・mount・health
 
-解錠、format、mkfs、partition拡張、同期では、開始前に処理と中断可否を示し、実行中は進捗を表示する。割合を出せない処理では経過時間を更新する。初期化中は`If power is lost, initialization will restart on the next boot.`と表示する。ただし、headerを認識できない破損時は前述の(d)で止まる。通常の解錠待ちと、書込み処理中に電源を切ってよいかを混同しない。約2秒を想定したArgon2idも実測で上限時間と扱わない。
+解錠、format、mkfs、partition拡張、同期では、開始前に処理と中断可否を示し、実行中は進捗を表示する。割合を出せない処理では経過時間を更新する。初期化中は`If power is lost, initialization normally restarts on the next boot. If it cannot, boot stops without formatting.`と表示する。headerを認識できない破損時は前述の(d)で止まり、自動でformatしないことを画面でも伝える。通常の解錠待ちと、書込み処理中に電源を切ってよいかを混同しない。約2秒を想定したArgon2idも実測で上限時間と扱わない。
 
 mapperのnodeはlibdevmapperが作る経路を使う。mdevはS10なのでS02の前提にしない。healthでは`/data`が`/dev/mapper/msd-data`上のBtrfsであることを検査する。`/dev/dm-N`等の表記差はdeviceの同一性で確認し、無関係なBtrfs mountを受け入れない。tryboot時の確定はこの検査と既存のready条件を満たした後に限る。
 
