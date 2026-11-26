@@ -97,6 +97,26 @@ DB本体の大きさ・hashも[入力・出力の記録](2026-11-26-dev-image-sn
 
 ## 回帰検査と限界
 
+### QEMU binaryと実行スクリプトの識別
+
+当時の旧A/B・新A/Bのserial logを確認し、`run-qemu: sha256`のQEMU binaryの値を次に転記した。両側ともA/Bで同じ値だった。Review対応時に上記の旧新image IDを指定してbinaryを再照合し、logの値と一致することも確認した。どちらもQEMU 11.1.3だが、binaryのhashは異なる。
+
+| 試験側 | QEMU binaryのSHA-256 | 大きさ |
+|---|---|---:|
+| 旧image | `8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73` | 34,696,504 bytes |
+| 新image | `82248f8b0b31dcdc63d59c3f21b1f57a74e3f57346c582d740d33c0e8edcef04` | 34,696,504 bytes |
+
+両imageとも`/usr/local/bin/qemu-system-aarch64`は`/opt/qemu/bin/qemu-system-aarch64`へのsymlinkである。表はsymlinkの文字列でなくbinary本体のhash・大きさ。次は当時のlogの該当行で、旧新それぞれのA/Bに記録されている。
+
+```text
+run-qemu: sha256 8b5c759a21dd5d841d96b37be4e60e3b324869dff22250b581c856e36ac15b73  /usr/local/bin/qemu-system-aarch64
+run-qemu: sha256 82248f8b0b31dcdc63d59c3f21b1f57a74e3f57346c582d740d33c0e8edcef04  /usr/local/bin/qemu-system-aarch64
+```
+
+共通の実行スクリプト`board/cardputerzero/qemu/run-qemu.sh`は4,288 bytes、SHA-256は`a10b7f2f4777f755dc4d7c5762f78f1d64f3f10cfa869f906e6fc2c75ad52231`。基準mainの`9abf168`と試験を記録した`f7a076b`で内容が一致する。binaryとスクリプト、照合した4 serial logの大きさ・hashも[入力・出力の記録](2026-11-26-dev-image-snapshot-sources.csv)に追記した。CSVのbinary行はimage IDと内部pathを組にして識別する。新しい起動試験を実行した値ではなく、当時のlogと保持したimageの照合結果である。
+
+### 回帰検査の結果
+
 - CI登録のhost 13 suiteはすべて終了値0。`msd-update`、`version-info`、`init-scripts`、`early-io`、`msd-hwinfo`、`msd-data-grow`、`qemu-log-check`、`qemu-boot`、`powerfail-log`、`msd-dev`、`release-signing`、`legal-info-supplement`、`fs-compare-v2`を実行した。
 - lint workflow相当のactionlint、pins consistencyとtest、kernel fragment・firmware config・Yocto比較のtest、shellcheck-tracked、zizmorを実行した。固定hadolintとDocker build check、Trivy gate test、CI scope testも終了値0。
 - 同じ既存product imageを旧新QEMUで起動した。旧A/Bは40・41秒、新A/Bは26・26秒でreadyとloginを検出し、QMP quit・終了値0・serial検査まで成功した。各1回で、旧側ではimageのcompileとも並行したため、時間の差を性能改善とは扱わない。
