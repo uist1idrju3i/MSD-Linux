@@ -57,14 +57,16 @@ blocklistの内容・由来と、recovery入力の区切り・大文字小文字
 
 S02は読取り失敗・metadata破損を空領域と誤認しない。LUKS2のlabel（またはsubsystem）に`pending`と`ready`を記録し、初期化の途中と完了を区別する。識別に使うfield・値はPR Cで固定し、境界を試験する。
 
-LUKS2 headerが無いときだけ、grow前のp7全体を読み、imageが作ったp7の範囲すべてがzeroであることを確認する。先頭の一部だけでは初期化を許可しない。全体の読取りは数秒〜数十秒かかり得るため、読取り済みbytes・総bytes又は割合と経過時間を表示する。読取りだけであることを示し、`Checking that the entire data partition is empty. Read-only check; safe to power off.`と表示する。読取り失敗はzeroと扱わず停止する。通常のLUKS2起動ではこの全体確認を行わない。
+LUKS2 headerが無いときだけ、p7の先頭からimageが作ったp7の大きさまでの全byteがzeroであることを確認する。この確認長を`N`とし、genimageで決める512 MiB以上の固定値をPR Cで定数として固定する。現在のpartition tableが示すp7の大きさから`N`を求めない。先頭の一部だけでは初期化を許可しない。`N` bytesの読取りは数秒〜数十秒かかり得るため、読取り済みbytes・総bytes又は割合と経過時間を表示する。読取りだけであることを示し、`Checking that the image-defined data region is empty. Read-only check; safe to power off.`と表示する。読取り失敗はzeroと扱わず停止する。通常のLUKS2起動ではこの確認を行わない。
+
+grow後、LUKS2 headerの書込み前に電源が切れた場合も、次回の確認範囲は同じ`N` bytesである。拡張した`N`より後ろの領域には中古SDの古いdataが残り得るが、この領域はzeroを条件にせず初期化の対象とする。暗号化前のdataの消去は行わない。LUKSやBtrfsの書込みで上書きされない部分に、古いdataが平文のまま残り得ることを許容する。LUKS2の作成をSD全体の消去・既存dataの暗号化とみなさない。
 
 | 状態 | 判定 | 動作 |
 |---|---|---|
-| (a) 未初期化 | LUKS2 headerがなく、grow前のp7全体（imageが作った範囲すべて）がzero | 初回設定から初期化する |
+| (a) 未初期化 | LUKS2 headerがなく、p7先頭から固定長`N`（imageが作ったp7の大きさ）の全byteがzero | 現在のp7容量によらず初回設定から初期化する |
 | (b) 完了 | LUKS2として認識でき、labelが`ready` | slot構成を検査して解錠する。slot 0が無ければrecovery入力から始める |
 | (c) 初期化中断 | LUKS2として認識でき、labelが`pending` | 利用者dataはまだ無いものとして初回設定からやり直す。新しいrecovery keyを生成する |
-| (d) 不明・異常 | その他の非empty内容、未知のlabel、判定不能な破損やI/O error | formatせず、その場で起動を止める |
+| (d) 不明・異常 | 上記に該当しない固定範囲内の非empty内容、未知のlabel、判定不能な破損やI/O error | formatせず、その場で起動を止める |
 
 (c)では`Initialization was interrupted. Initialization will restart with a new recovery key. The previous recovery key will no longer work.`と伝える。PINも2回入力し直す。`pending`の間は通常の利用へ進めず、利用者dataを作らせない。
 
@@ -116,7 +118,7 @@ LUKS2 header、keyslot、Btrfsのmetadata・transaction・log replayを含め、
 |---|---|---|
 | A | この設計、旧決定の置換、書込み台帳、索引だけ | 文書検査。実装・build・QEMU成功と扱わない |
 | B | C helper、libcryptsetup連携、host test | 正常設定、PINの長さと全ASCII範囲・空白・mask、弱PIN警告、2回不一致、空Enter・取消し・EOF、recovery照合・skip再確認、各slotとAPIの成功値、10回境界、error分類、削除失敗、PIN再設定中断、秘密の非出力を検査 |
-| C | 512 MiB以上のzero image、S02、fstab、初期化限定grow、health、固定入出力先への接続、serial harness、CI | (a)〜(d)、先頭はzeroで後ろにdataがあるp7を初期化しないこと、全体zero確認のprogress・読取り失敗時停止・通常のLUKS2起動での全体確認省略、gate失敗前の無書込み、入出力先欠損時に探索・代用せず停止、失敗時S02停止、各初期化境界の中断、recoveryのみの再起動、実容量とsparse性、mount同一性、healthを検査。ext4前提のimage検査・command在庫を更新 |
+| C | 512 MiB以上のzero imageと固定確認長`N`、S02、fstab、初期化限定grow、health、固定入出力先への接続、serial harness、CI | (a)〜(d)、先頭はzeroでも`N` bytes内の後方にdataがあれば初期化しないこと、固定範囲zero確認のprogress・読取り失敗時停止・通常のLUKS2起動での確認省略、拡張後・header書込み前の電源断から`N`より後ろに古いdataがあっても初期化をやり直せること、gate失敗前の無書込み、入出力先欠損時に探索・代用せず停止、失敗時S02停止、各初期化境界の中断、recoveryのみの再起動、実容量とsparse性、mount同一性、healthを検査。ext4前提のimage検査・command在庫を更新 |
 | 以後 | benchmark追従 | fs-compare-v2、旧fs-compare、write-inventory、s17系、S3、boottime、noexec、watchdog・panic・更新/署名probe等を個別に追従し、比較条件と証拠を更新 |
 
 PR Bはhost上で検査可能な単位を扱い、製品起動の接続はPR Cまで完了扱いにしない。ext4/e2fsprogsの製品経路を置換しても、内側のext4を比較するbenchmarkのtoolsや過去の証拠を一括削除しない。
