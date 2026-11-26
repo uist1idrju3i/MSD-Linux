@@ -522,6 +522,10 @@ def openssl_table(rows):
 
 def fake_fetch(url):
     fetch_calls.append(url)
+    if url.endswith('/package/cryptsetup/cryptsetup.mk'):
+        return 'CRYPTSETUP_VERSION_MAJOR = 2.8\nCRYPTSETUP_VERSION = $(CRYPTSETUP_VERSION_MAJOR).7\n'
+    if url == 'https://www.kernel.org/pub/linux/utils/cryptsetup/v2.8/':
+        return '<a href="cryptsetup-2.8.7.tar.xz">archive</a>'
     if url.endswith('/package/libopenssl/libopenssl.mk'):
         assert f'/{sha}/' in url
         return 'LIBOPENSSL_VERSION = 3.6.5\n'
@@ -744,6 +748,64 @@ for state, expected in [('参考', '全て最新'), ('保守期限超過', '更�
         ('OpenSSL upstream support', '3.6.5', '2026-11-01', state, 'https://example.com')
     ]) == expected
 print('ok - weekly Issue status distinguishes informational, expired and unverified support')
+
+assert module.cryptsetup_recipe_version('CRYPTSETUP_VERSION = 2.8.9\n') == '2.8.9'
+assert module.cryptsetup_recipe_version(
+    'CRYPTSETUP_VERSION_MAJOR = 2.8\nCRYPTSETUP_VERSION = $(CRYPTSETUP_VERSION_MAJOR).7\n'
+) == '2.8.7'
+for text in ('', 'CRYPTSETUP_VERSION = invalid\n',
+             'CRYPTSETUP_VERSION = 2.8.9\n' * 2,
+             'CRYPTSETUP_VERSION = 2.8.9\nCRYPTSETUP_VERSION = invalid\n',
+             'CRYPTSETUP_VERSION_MAJOR = 2.8\nCRYPTSETUP_VERSION_MAJOR = invalid\n'
+             'CRYPTSETUP_VERSION = $(CRYPTSETUP_VERSION_MAJOR).7\n',
+             'CRYPTSETUP_VERSION = $(CRYPTSETUP_VERSION_MAJOR).7\n'):
+    try:
+        module.cryptsetup_recipe_version(text)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('invalid cryptsetup recipe accepted')
+crypt_root = fixture()
+crypt_override = crypt_root / 'board/cardputerzero/package-overrides.mk'
+crypt_override.write_text('override CRYPTSETUP_VERSION = 2.8.9\n')
+
+
+def crypt_current_fetch(url):
+    if url == 'https://www.kernel.org/pub/linux/utils/cryptsetup/v2.8/':
+        return '<a href="cryptsetup-2.8.9.tar.xz">archive</a>'
+    return fake_fetch(url)
+
+
+with patch.object(module, 'fetch', crypt_current_fetch):
+    rows = module.cryptsetup_rows(crypt_root)
+    assert rows[0][1:4] == ('2.8.9', '2.8.9', '最新')
+    assert rows[1][3] == '参考'
+for recipe, expected in [('2.8.9', '更新あり'), ('2.9.0', '更新あり')]:
+    def crypt_fetch(url):
+        if url.endswith('/cryptsetup.mk'):
+            return f'CRYPTSETUP_VERSION = {recipe}\n'
+        return ('<a href="cryptsetup-2.8.10.tar.xz">stable</a>'
+                '<a href="cryptsetup-2.8.99-rc1.tar.xz">rc</a>'
+                '<a href="cryptsetup-2.9.0.tar.xz">other series</a>')
+    with patch.object(module, 'fetch', crypt_fetch):
+        rows = module.cryptsetup_rows(crypt_root)
+        assert rows[0][1:4] == ('2.8.9', '2.8.10', '更新あり')
+        assert rows[1][3] == expected
+for response in ('', '<a href="cryptsetup-2.8.10-rc1.tar.xz">rc only</a>'):
+    with patch.object(module, 'fetch', lambda url: (
+            fake_fetch(url) if url.endswith('/cryptsetup.mk') else response)):
+        assert module.cryptsetup_rows(crypt_root)[0][3] == '確認できず'
+with patch.object(module, 'fetch', side_effect=OSError('offline')):
+    assert module.upstream_summary(module.cryptsetup_rows(crypt_root)) == '監視失敗（未確認）'
+for text in ('override CRYPTSETUP_VERSION = invalid\n',
+             'override CRYPTSETUP_VERSION = 2.8.9\noverride CRYPTSETUP_VERSION = invalid\n',
+             'override CRYPTSETUP_VERSION = 2.8.9\n' * 2):
+    crypt_override.write_text(text)
+    assert module.cryptsetup_rows(crypt_root)[0][3] == '確認できず'
+crypt_override.unlink()
+with patch.object(module, 'fetch', fake_fetch):
+    assert module.cryptsetup_rows(crypt_root)[0][1] == '2.8.7'
+print('ok - cryptsetup override, stable-series updates, retirement and missing/error inputs')
 
 qemu_update = fixture()
 dockerfile = qemu_update / "docker/msd-dev.Dockerfile"
