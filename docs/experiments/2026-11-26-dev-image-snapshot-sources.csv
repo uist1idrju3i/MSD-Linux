@@ -72,6 +72,7 @@ output-dev-snapshot-20261126/copyright-hashes.json,2579,5ae26658d0392afc45937c2e
 output-data-unlock-helper/trivy-base309.json,8353569,c83abc1618479331f9c3a23b85c46cd1467be20184bf8f82ad7a49941e2da0fa
 output-dev-snapshot-20261126/trivy-new.json,7162956,dc59145edfa8bb4419e7d8af037cfd6322bad52ae718f5aed5a21a2f248985ee
 output-data-unlock-helper/trivy-cache/db/metadata.json,153,da99bd0337cacb2e204858c5e2a71d8521a46ef99aec0fe9e87c1c3f39de1e75
+output-data-unlock-helper/trivy-cache/db/trivy.db,1849851904,80b72081e35c6d7fb3df5897576145d15ffaa6c9843d02df2e68c25b99eb7d7f
 output-dev-snapshot-20261126/image-build.log,543162,cbfdace618c5ea65761beed54c74b5361dabd63117f223212778e0d3182c4543
 output-dev-snapshot-20261126/host-tests/results.csv,451,b9a815473ce79665881a41905df221d5088543dd71ec225b66a131ecf4a9cc8c
 output-openssl-lts/images/Image,19286528,c651cfd86fcb08943a863ecbc31f6fa0f2f6fea0f7c7bcd25fc8e3cdd327c261

@@ -74,6 +74,18 @@ Sizeは1,202,404 bytes増。製品rootfsの増加ではない。独立したcold
 
 TrivyはCIと同じ`ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb`を使用。scannersは`vuln,secret,misconfig`。DBのUpdatedAtは`2026-11-26T19:04:08.560197506Z`、DownloadedAtは`2026-11-26T22:41:04.107085862Z`。旧scan時のDBを`--skip-db-update`で固定して新scanに使った。gateは基準mainのスクリプトそのもので、除外やVEXは加えていない。
 
+比較時のcacheに保持していたDB本体をReview対応時に照合し、次を追記した。metadataのSHA-256は当初の記録と一致した。DB本体のhashはscan実行時には記録しておらず、保持した本体から今回取得した値である。配布元から同じDBを新たに取得できるかは未確認。
+
+| DBの識別情報 | 値 |
+|---|---|
+| schema Version | `2` |
+| UpdatedAt | `2026-11-26T19:04:08.560197506Z` |
+| NextUpdate | `2026-11-27T19:04:08.560197215Z` |
+| trivy.dbの大きさ | 1,849,851,904 bytes |
+| trivy.dbのSHA-256 | `80b72081e35c6d7fb3df5897576145d15ffaa6c9843d02df2e68c25b99eb7d7f` |
+
+DB本体の大きさ・hashも[入力・出力の記録](2026-11-26-dev-image-snapshot-sources.csv)に収録した。DB本体はcommitしない。
+
 | 検査 | 旧 | 新 |
 |---|---:|---:|
 | 脆弱性の検出レコード | 1,983 | 1,727 |
