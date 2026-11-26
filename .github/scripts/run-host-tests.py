@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SUITES = (
     "msd-update", "version-info", "init-scripts", "early-io", "msd-hwinfo", "msd-data-grow",
     "qemu-log-check", "qemu-boot", "powerfail-log", "msd-dev", "release-signing", "legal-info-supplement",
-    "fs-compare-v2",
+    "fs-compare-v2", "msd-data-unlock",
 )
 
 
@@ -70,6 +70,7 @@ def main() -> int:
     args = parser.parse_args()
     if not 1 <= args.jobs <= len(SUITES) or not 0 < args.timeout <= 300:
         parser.error("Invalid concurrency or timeout")
+    os.environ["MSD_TEST_REQUIRE_CRYPTSETUP"] = "1"
     results = run([(name, [f"tests/{name}/run.sh"]) for name in SUITES],
                   args.output_dir, args.jobs, args.timeout)
     return int(any(result["status"] != "passed" for result in results))

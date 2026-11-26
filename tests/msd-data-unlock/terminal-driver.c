@@ -1,0 +1,85 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+#define _GNU_SOURCE
+#include "terminal.h"
+
+#include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/prctl.h>
+#include <sys/resource.h>
+#include <time.h>
+
+struct fake { int mask; bool ready; };
+static int inspect(void *ctx, bool ready)
+{
+	struct fake *f = ctx;
+	return ready == f->ready ? f->mask : -EINVAL;
+}
+static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
+{
+	struct fake *f = ctx;
+	(void)a; (void)b;
+	switch (op) {
+	case MSD_FORMAT: f->mask = 1; f->ready = false; break;
+	case MSD_ADD_RECOVERY: f->mask = 3; break;
+	case MSD_DELETE_PIN: f->mask = 2; break;
+	case MSD_ADD_PIN: f->mask = 3; break;
+	case MSD_READY: f->ready = true; break;
+	default: break;
+	}
+	return op == MSD_AUTH_RECOVERY || op == MSD_ADD_RECOVERY ? 1 : 0;
+}
+static int deactivate(void *ctx)
+{
+	(void)ctx;
+	return 0;
+}
+
+int main(int argc, char **argv)
+{
+	assert(argc >= 3);
+	int fd = atoi(argv[2]);
+	int control = argc > 3 ? atoi(argv[3]) : -1;
+	assert(msd_security_init() == 0);
+	assert(!getenv("MSD_TEST_SECRET"));
+	struct rlimit limit;
+	assert(getrlimit(RLIMIT_CORE, &limit) == 0 && !limit.rlim_cur && !limit.rlim_max);
+	assert(prctl(PR_GET_DUMPABLE) == 0);
+	struct msd_secret *s = msd_secret_alloc();
+	assert(s);
+	struct msd_terminal t;
+	struct msd_ui u;
+	assert(fcntl(fd, F_SETFL, O_NONBLOCK) == 0);
+	assert(msd_terminal_open(&t, fd, control, s, &u) == 0);
+	puts("READY"); fflush(stdout);
+	int r;
+	if (!strcmp(argv[1], "read")) {
+		r = u.line(u.ctx, s->pin, sizeof(s->pin));
+		printf("line-result=%d length=%zu\n", r, strlen(s->pin));
+	} else if (!strcmp(argv[1], "display")) {
+		r = u.random(u.ctx, s->random, sizeof(s->random));
+		if (!r) {
+			msd_base32(s->random, s->recovery);
+			r = u.recovery(u.ctx, s->recovery);
+		}
+	} else if (!strcmp(argv[1], "progress")) {
+		r = u.progress(u.ctx, "Test operation", true);
+		assert(r == 0);
+		struct timespec wait = {2, 100000000};
+		nanosleep(&wait, NULL);
+		r = u.progress(u.ctx, "Test operation", false);
+	} else {
+		bool prepare = !strcmp(argv[1], "prepare");
+		struct fake f = {prepare ? 0 : 3, !prepare};
+		struct msd_backend b = {&f, inspect, operate, deactivate};
+		r = !strcmp(argv[1], "prepare") ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
+		printf("result=%d mask=%d ready=%d\n", r, f.mask, f.ready);
+	}
+	assert(msd_terminal_close(&t) == 0);
+	msd_secret_free(s);
+	puts("DONE");
+	return 0;
+}
