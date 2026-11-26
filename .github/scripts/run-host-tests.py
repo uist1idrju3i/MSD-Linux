@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SUITES = (
     "msd-update", "version-info", "init-scripts", "early-io", "msd-hwinfo", "msd-data-grow",
     "qemu-log-check", "qemu-boot", "powerfail-log", "msd-dev", "release-signing", "legal-info-supplement",
-    "fs-compare-v2",
+    "fs-compare-v2", "msd-data-unlock",
 )
 
 
