@@ -192,6 +192,7 @@ done
 終了値0は初回の`result-before-archive.json`に記録されたdriver_statusである。
 
 ```sh
+set -eu
 archive=evidence-t7/fs-compare/stage4-attempt-08-text-01.tar.zst
 printf 'd3380db640ba5e68d58f7d37d789e4f0f7cffcb910781696c624a91af2994cce  %s\n' "$archive" | sha256sum -c -
 mkdir rejudge-t7
