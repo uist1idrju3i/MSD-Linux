@@ -1,6 +1,17 @@
 #!/bin/sh
 set -eu
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
+include=${MSD_TEST_CRYPTSETUP_INCLUDE:-/usr/include}
+case ${MSD_TEST_REQUIRE_CRYPTSETUP:-0} in
+	0) ;;
+	1)
+		if [ ! -f "$include/libcryptsetup.h" ]; then
+			printf '%s\n' 'FAIL: real libcryptsetup test is required but development header is missing' >&2
+			exit 1
+		fi
+		;;
+	*) printf '%s\n' 'Invalid MSD_TEST_REQUIRE_CRYPTSETUP (expected 0 or 1)' >&2; exit 2 ;;
+esac
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT HUP INT TERM
 src="$root/package/msd-data-unlock"
@@ -12,7 +23,7 @@ cc=${CC:-cc}
 	"$src/unlock.c" "$src/terminal.c" "$root/tests/msd-data-unlock/terminal-driver.c" \
 	-o "$work/terminal-driver"
 python3 "$root/tests/msd-data-unlock/terminal.py" "$work/terminal-driver"
-include=${MSD_TEST_CRYPTSETUP_INCLUDE:-/usr/include}
+python3 "$root/tests/msd-data-unlock/requirements.py"
 if [ -f "$include/libcryptsetup.h" ]; then
 	"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" -I"$include" \
 		"$src/unlock.c" "$src/crypt-backend.c" "$root/tests/msd-data-unlock/real.c" \

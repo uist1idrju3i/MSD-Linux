@@ -10,6 +10,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -169,10 +170,17 @@ spec.loader.exec_module(runner)
 
 
 class ParallelRunner(unittest.TestCase):
+    def test_main_requires_real_cryptsetup(self) -> None:
+        with patch.object(sys, "argv", ["runner", "--output-dir", "unused"]), \
+             patch.dict(os.environ, {"MSD_TEST_REQUIRE_CRYPTSETUP": "0"}), \
+             patch.object(runner, "run", return_value=[]):
+            self.assertEqual(runner.main(), 0)
+            self.assertEqual(os.environ["MSD_TEST_REQUIRE_CRYPTSETUP"], "1")
+
     def test_suites_are_preserved_and_outputs_do_not_overlap(self) -> None:
         self.assertEqual(set(runner.SUITES), {"msd-update", "version-info", "init-scripts", "early-io", "msd-hwinfo",
                                              "msd-data-grow", "qemu-log-check", "qemu-boot", "powerfail-log", "msd-dev",
-                                             "release-signing", "legal-info-supplement", "fs-compare-v2"})
+                                             "release-signing", "legal-info-supplement", "fs-compare-v2", "msd-data-unlock"})
         self.assertIn("--jobs 2 --output-dir", WORKFLOW)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

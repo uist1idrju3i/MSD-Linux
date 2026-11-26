@@ -1,5 +1,9 @@
 # 開発環境とCIの依存監査
 
+## 2026-11-26のhost試験用header追加
+
+開発imageに`libcryptsetup-dev`を追加し、LUKS2 helperの実library試験をCIで必須にする。snapshotと製品用cryptsetupの版は変えない。[選択理由・設定・license・確認範囲](data-unlock-host.md)を別記し、以下の過去の監査とAPT一覧は保持する。
+
 ## 2026-11-12の現況
 
 `main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`では、[固定版チェッカー](../../../.github/scripts/check-pins.py)がkernel-hardening-checkerのtagを取得します。下記の「monitorへ反映する必要がある」は11月2日の改善案で、現在は実装済みです。[回帰試験の記録](../operations/github-actions-audit.md#変更の検証範囲と次の順番)と、全依存の監視が未完了であることを区別します。

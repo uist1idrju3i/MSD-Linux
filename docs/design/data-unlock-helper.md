@@ -30,13 +30,17 @@ PR Cの呼出し元がearly-io gateを確かめ、p7を固定長`N`とlabelで�
 
 `unlock`はreadyとslot構成を検査してから対話する。slot 0が無ければrecoveryへ進む。APIの非負値は成功として扱い、PIN認証APIの`-EPERM`だけを数える。passphraseの検証とmapperのactivateを分け、後者の権限errorを誤PINに数えない。検証で得るvolume keyはlockした作業領域に置き、activate後に消す。同じPINでArgon2を2回実行する方式ではない。metadataの検査、表示の失敗等が`-EPERM`でもPIN誤入力にはしない。10回後のslot 0消去前と消去後、PIN再設定前後にslot構成を検査する。想定外slotや最後のslotの消去は許さない。
 
-成功時は終了値0、処理失敗時は1、CLIの不備は2である。helperは失敗してもreadyへ進まないが、S02の待機loopは実装しない。PR Cの呼出し元は非zero終了時にS02からexitせず待機し、後続initへ進ませない。製品LCDを開けない場合はconsole・kernel logへ停止通知だけを試み、対話をserialへ移さない。LCDには表示できない制約は残る。
+helperが開いたmappingは、PIN再設定の中断を含む失敗時に閉じてから返す。既に存在するmappingを開けなかった場合、そのmappingは閉じない。閉じる処理が失敗した場合も失敗を返す。初期化のslot検査はreadyの前に終え、readyの書込みと同期成功を最後の失敗可能な操作とする。その後のprogress終了・端末復元のerrorでは、完了した初期化を失敗へ戻さない。
+
+成功時は終了値0、処理失敗時は1、CLIの不備は2である。S02の待機loopは実装しない。PR Cの呼出し元は非zero終了時にS02からexitせず待機し、後続initへ進ませない。製品LCDを開けない場合はconsole・kernel logへ停止通知だけを試み、対話をserialへ移さない。LCDには表示できない制約は残る。
 
 ## 入力と秘密の扱い
 
 PINの長さと文字、blocklist、recoveryの規則は[正本](data-unlock.md#pinとrecovery-keyの入力)に従う。blocklistは本repoで管理する手書きの共通例であり、NISTの一覧や流出集合を称するものではない。弱いPINも警告後に受理する。
 
-端末のechoとcanonical入力を止め、受理した1文字につき`*`を出す。Backspace・Deleteで直前の文字を消せる。過長や範囲外の行は改行まで読み捨て、短く切って認証しない。Ctrl-DはEOF、Ctrl-C・Escapeは中断とする。SIGINT・SIGTERM・SIGHUP・SIGQUIT・SIGTSTPでも失敗して端末設定を復元する。SIGKILLや電断では復元処理を実行できない。PIN待ちの期限は無い。端末への出力は非block fdと期限付きpollを使い、出力不能を無期限に待たない。
+端末のechoとcanonical入力を止め、受理した1文字につき`*`を出す。単独のBS・DEL byteで直前の文字を消せる。過長や範囲外の行は改行まで読み捨て、短く切って認証しない。Ctrl-DはEOF、Ctrl-C・単独Escapeは中断とする。SIGINT・SIGTERM・SIGHUP・SIGQUIT・SIGTSTPでも失敗して端末設定を復元する。SIGKILLや電断では復元処理を実行できない。PIN待ちの期限は無い。端末への出力は非block fdと期限付きpollを使い、出力不能を無期限に待たない。
+
+単独Escapeは後続byteを100 msだけ待って区別する。CSI・SS3のsequenceは最後まで読み捨て、矢印・Home・End・Delete等をPINへ入れたり、中断と扱ったりしない。Linux consoleのDelete sequenceは文字を削除せず無視する。出力には`OPOST|ONLCR`を設定し、改行をCRLFにする。
 
 秘密の作業領域はpage単位で`mlock`し、`MADV_DONTDUMP`を設定する。失敗時は入力前に止める。core limitとdumpableを0にし、環境変数をclearする。認証後や終了時のbufferを`explicit_bzero`で消す。Argon2用の64 MiB全体をhelperの`mlockall`で固定する方式ではなく、libraryの内部bufferはlibcryptsetupに委ねる。
 
@@ -52,6 +56,6 @@ docker/msd-dev tests/msd-data-unlock/run.sh
 
 fake backendはPINの範囲・境界、誤入力0〜10回、非負のAPI成功値、空Enterと取消し、固定slot、recovery照合とskip再確認、回数無制限のrecovery、PIN再設定の中断、各段階のI/O等の失敗、buffer消去を検査する。PTY試験は全印字可能ASCII、mask、過長・不正byte、EOF・中断signal、termios復元、実際の対話とsocketの順序、stdout・stderrへの非出力を検査する。
 
-hostのlibcryptsetup headerがあれば、同じbackendで通常fileにLUKS2 headerを作り、slot追加・削除・passphrase検証・ready・片側headerの自動復旧・未知label/slotの拒否を調べる。dmのactivateはしない。headerが無ければこの追加試験だけをskipと表示する。試験専用の`MSD_TEST_CRYPTSETUP_INCLUDE`でheader directoryを指定できる。製品helperはこの環境変数を読まない。
+hostのlibcryptsetup headerを使い、同じbackendで通常fileにLUKS2 headerを作り、slot追加・削除・passphrase検証・ready・片側headerの自動復旧・未知label/slotの拒否を調べる。dmのactivateはしない。[開発image](../../docker/msd-dev.Dockerfile)に`libcryptsetup-dev`を含め、CIのhost runnerは`MSD_TEST_REQUIRE_CRYPTSETUP=1`を設定する。この場合はheader不在を失敗とする。個別の`run.sh`では既定で追加試験だけをskipできる。試験専用の`MSD_TEST_CRYPTSETUP_INCLUDE`でheader directoryを指定できる。製品helperはこれらの環境変数を読まない。[依存追加の確認範囲](../research/dependencies/data-unlock-host.md)も参照する。
 
 target buildには製品のcryptsetup 2.8.9のstaging header・libraryを使う。full image build、mapperのactivate、S02以降の順序、LCD・内蔵キーボードの入出力、実機のArgon2時間、SDの電断はPR Bのhost testで確認済みとしない。hostのlibrary版が2.8.9と異なる場合も区別して報告する。
