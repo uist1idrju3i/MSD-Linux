@@ -4,7 +4,7 @@
 
 利用者が承認した第4段Aをv2内に実装した。通常測定と旧版を変えず、851 probeの経路確認を短いworkloadで実行する。正式な性能・durability測定ではない。実機のSD書込み、FTL、電断、LCDは対象外とする。
 
-fresh buildと、serial断片分離後の代表21件の経路確認は成功した。A/Aと負対照2件も含む。最新の試行05は84/851件成功後、85件目の`F1/T1-negative-final`で停止した。main runは未開始で全coverageは未完了である。[sentinel修正後の単独診断](2026-11-23-s04-fs-compare-v2-negative-sentinel.md)は3構成で成功したが、全smokeの再試行は未実施。初回のboot診断と明示sampleの停止を含む失敗試行も保持した。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
+代表21件の経路確認は成功したが、全851件smokeは未完了。最新の試行08は175件成功後、B1/T7の正常診断を誤分類して停止した。[試行07のhost中断と08の修正・再判定](2026-11-26-s04-fs-compare-v2-t7-btrfs.md)に原本のhashと結果を記録した。元の失敗試行は保持し、main runは未開始。[CSV](2026-11-19-s04-fs-compare-v2-stage4.csv)と[実装と保存仕様](../../board/cardputerzero/tools/bench/fs-compare-v2/README.md)を参照。
 
 ## 固定条件と判定基準
 

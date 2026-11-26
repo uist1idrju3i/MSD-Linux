@@ -1,0 +1,9 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+attempt-07-original,B1-T6,1,driver_status,143,status,false,host interruption; signal sender unknown
+attempt-07-isolated,B1-T6,1,child_status,0,status,true,same binaries configs QEMU and harness; separate run
+attempt-07-isolated,B1-T6,1,probe_elapsed,307.9504722050042,seconds,true,functionality only; not CM0 performance
+attempt-08-original,B1-T7,1,smoke_ok,0,bool,false,175 successful probes before failure at 176
+attempt-08-baseline,B1-T7,1,driver_status,0,status,true,initial driver status before judge failure
+attempt-08-baseline,B1-T7,1,fatal_errors,1,count,false,normal btrfs output misclassified
+attempt-08-candidate,B1-T7,1,driver_status,0,status,true,same six input files from preserved text archive
+attempt-08-candidate,B1-T7,1,fatal_errors,0,count,true,finalize status ok; no QEMU rerun
