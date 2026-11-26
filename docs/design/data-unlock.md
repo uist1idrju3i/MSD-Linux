@@ -4,7 +4,7 @@
 
 ## 状態と適用範囲
 
-2026-11-26の利用者決定を固定するPR Aの設計であり、未実装である。コード、image、CIを変更した記録ではない。基準mainは`9abf1683e32820334e18a898f2a8b351ba259322`。実装と観測を区別し、[2026-11-15の調査・設計案](../research/storage/data-luks-btrfs-design.md)は当時の記録として残す。
+2026-11-26の利用者決定を固定したPR Aの設計である。PR Bでhelperとhost testを追加したが、起動には未接続である。[実装の境界](data-unlock-helper.md)で確認範囲を区別する。PR Aの基準mainは`9abf1683e32820334e18a898f2a8b351ba259322`。[2026-11-15の調査・設計案](../research/storage/data-luks-btrfs-design.md)は当時の記録として残す。
 
 正式release前のため、既存ext4からの移行・変換・data引継ぎは実装しない。未知の非empty領域を勝手にformatしない。「passwordなし」と共通の初期PINを廃止し、初回起動で端末ごとの設定を行う。初期実装のPIN変更はkeyslotの入替えだけであり、volume keyの交換・再暗号化は後続課題とする。これは2026-11-03の旧決定を置き換える。
 
@@ -53,7 +53,7 @@ PINの平文・入力列をargv、log、SDへ出さない。環境変数、kerne
 | 照合skip | 利用者がskipを選べる。`If you copied this key incorrectly, recovery will be impossible.`と警告し、もう一度確認してから進む。再確認しなければskipを確定しない |
 | recovery解錠 | 正しいrecovery keyで解錠した後、新しいPINを2回入力して再設定するまで起動を完了しない |
 
-blocklistの内容・由来と、recovery入力の区切り・大文字小文字の受理規則はPR Bで固定し、設定時の照合と復旧時の解錠で同じ規則を使う。未決定の規則をこのPRで補わない。入力範囲外、長過ぎる入力、EOF、中断を正しい入力と扱わず、PIN bufferの切詰めによって別のPINを受け付けない。
+PR Bのblocklistはこのrepoで手書きした最小リスト`password,password1,qwerty,qwerty123,letmein,welcome,admin,admin123,123456,12345678,123456789,111111,000000,abcdef`とし、ASCIIの大小文字を区別せず完全一致で警告する。流出password集を取得したものではなく、網羅性は保証しない。recoveryはRFC 4648の`A-Z2-7`で生成し、入力は大小文字を区別せず、区切りなし32文字、又は同じ区切り（空白か`-`）で4文字ずつ8組だけを受け付ける。前後の空白や混在区切り、`0`等の別名は拒否する。照合・解錠とも同じ大文字32文字へ正規化する。入力範囲外、長過ぎる入力、EOF、中断を正しい入力と扱わず、PINを切り詰めない。[helperの接続契約と検査](data-unlock-helper.md)を参照する。起動への接続はPR Cまで未実装である。
 
 ## p7の判定と初期化
 
