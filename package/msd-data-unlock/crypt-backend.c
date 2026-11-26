@@ -14,6 +14,7 @@ struct msd_crypt {
 	const char *path;
 	const char *mapping;
 	struct msd_secret *secret;
+	bool active;
 };
 
 static const struct crypt_pbkdf_type pbkdf = {
@@ -96,6 +97,8 @@ static int operate(void *ctx, enum msd_op op, const char *first, const char *sec
 				(char *)c->secret->volume_key, size, 0);
 			if (activated < 0)
 				r = activated == -EPERM ? -EACCES : activated;
+			else
+				c->active = true;
 		}
 		explicit_bzero(c->secret->volume_key, sizeof(c->secret->volume_key));
 		return r;
@@ -121,6 +124,17 @@ static int operate(void *ctx, enum msd_op op, const char *first, const char *sec
 	return sync < 0 ? sync : r;
 }
 
+static int deactivate(void *ctx)
+{
+	struct msd_crypt *c = ctx;
+	if (!c->active)
+		return 0;
+	int r = crypt_deactivate_by_name(c->cd, c->mapping, 0);
+	if (r >= 0)
+		c->active = false;
+	return r;
+}
+
 int msd_crypt_open(struct msd_crypt **out, struct msd_backend *b,
 		   const char *path, const char *mapping)
 {
@@ -143,7 +157,8 @@ int msd_crypt_open(struct msd_crypt **out, struct msd_backend *b,
 	c->path = path;
 	c->mapping = mapping;
 	*out = c;
-	*b = (struct msd_backend){ .ctx = c, .inspect = inspect, .operate = operate };
+	*b = (struct msd_backend){ .ctx = c, .inspect = inspect, .operate = operate,
+		.deactivate = deactivate };
 	return 0;
 }
 

@@ -19,6 +19,7 @@ struct msd_backend {
 	void *ctx;
 	int (*inspect)(void *, bool ready);
 	int (*operate)(void *, enum msd_op, const char *, const char *);
+	int (*deactivate)(void *);
 };
 struct msd_ui {
 	void *ctx;

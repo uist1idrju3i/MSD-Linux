@@ -32,6 +32,12 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 	}
 	return op == MSD_AUTH_RECOVERY || op == MSD_ADD_RECOVERY ? 1 : 0;
 }
+static int deactivate(void *ctx)
+{
+	(void)ctx;
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	assert(argc >= 3);
@@ -68,7 +74,7 @@ int main(int argc, char **argv)
 	} else {
 		bool prepare = !strcmp(argv[1], "prepare");
 		struct fake f = {prepare ? 0 : 3, !prepare};
-		struct msd_backend b = {&f, inspect, operate};
+		struct msd_backend b = {&f, inspect, operate, deactivate};
 		r = !strcmp(argv[1], "prepare") ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
 		printf("result=%d mask=%d ready=%d\n", r, f.mask, f.ready);
 	}

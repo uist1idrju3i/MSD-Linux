@@ -211,6 +211,16 @@ static int slots(struct msd_backend *b, struct msd_ui *u, bool ready, int expect
 	return r < 0 ? r : r == expected ? 0 : -EINVAL;
 }
 
+static int finish(struct msd_backend *b, int r)
+{
+	if (r < 0) {
+		int closed = b->deactivate(b->ctx);
+		if (closed < 0)
+			return closed;
+	}
+	return r;
+}
+
 int msd_prepare(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 {
 	int r;
@@ -231,7 +241,7 @@ int msd_prepare(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 	r = 0;
 done:
 	explicit_bzero(s, sizeof(*s));
-	return r;
+	return finish(b, r);
 }
 
 static int recover(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
@@ -323,7 +333,7 @@ int msd_unlock(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 		break;
 	}
 	explicit_bzero(s, sizeof(*s));
-	return r;
+	return finish(b, r);
 }
 
 struct msd_secret *msd_secret_alloc(void)

@@ -12,12 +12,13 @@ struct fake {
 	struct input input[128];
 	unsigned count, next, inspect_count, inspect_fail_at;
 	int inspect_error, mask;
-	bool ready, bad_pin, delete_noop;
+	bool ready, bad_pin, delete_noop, mapped;
+	int deactivations, deactivate_error;
 	unsigned bad_recovery;
 	int ops[128], used, fail_at, failure, auth_success;
 	int checkpoints, checkpoint_fail, random_error, message_error, display_error;
 	int message_fail_at, messages;
-	int progress_error, progress_calls;
+	int progress_error, progress_calls, progress_fail_at;
 	char output[32768];
 };
 
@@ -98,7 +99,7 @@ static int progress(void *ctx, const char *phase, bool start)
 	struct fake *f = ctx;
 	assert(phase && *phase);
 	assert(start == (f->progress_calls++ % 2 == 0));
-	return f->progress_error;
+	return !f->progress_fail_at || f->progress_calls == f->progress_fail_at ? f->progress_error : 0;
 }
 
 static int inspect(void *ctx, bool ready)
@@ -131,13 +132,21 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 		return 1;
 	case MSD_AUTH_PIN:
 		assert(msd_pin_valid(a) && !b && (f->mask & 1));
-		return f->bad_pin ? -EPERM : f->auth_success;
+		if (f->bad_pin)
+			return -EPERM;
+		if (f->mapped)
+			return -EEXIST;
+		f->mapped = true;
+		return f->auth_success;
 	case MSD_AUTH_RECOVERY:
 		assert(strlen(a) == 32 && !b && (f->mask & 2));
 		if (f->bad_recovery) {
 			f->bad_recovery--;
 			return -EPERM;
 		}
+		if (f->mapped)
+			return -EEXIST;
+		f->mapped = true;
 		return f->auth_success;
 	case MSD_DELETE_PIN:
 		assert(f->mask == 3 && !a && !b);
@@ -157,14 +166,26 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 	return -EINVAL;
 }
 
+static int deactivate(void *ctx)
+{
+	struct fake *f = ctx;
+	f->deactivations++;
+	if (f->deactivate_error)
+		return f->deactivate_error;
+	f->mapped = false;
+	return 0;
+}
+
 static int run(struct fake *f, bool prepare)
 {
 	struct msd_secret *s = msd_secret_alloc();
 	assert(s);
 	memset(s, 0xa5, sizeof(*s));
-	struct msd_backend b = {f, inspect, operate};
+	struct msd_backend b = {f, inspect, operate, deactivate};
 	struct msd_ui u = {f, message, read_line, display, random_bytes, checkpoint, progress};
 	int r = prepare ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
+	if (r < 0 && !f->deactivate_error)
+		assert(!f->mapped);
 	for (size_t i = 0; i < sizeof(*s); i++)
 		assert(((unsigned char *)s)[i] == 0);
 	msd_secret_free(s);
@@ -345,6 +366,36 @@ static void recovery(void)
 	assert(run(&f, false) == 0);
 	init(&f); input(&f, ""); input_error(&f, -EINTR);
 	assert(run(&f, false) == -EINTR && f.used == 0);
+	for (int mask = 2; mask <= 3; mask++) {
+		for (int at = 0; at < 3; at++) {
+			init(&f); f.mask = mask;
+			if (mask == 3) { input(&f, ""); input(&f, "yes"); }
+			input(&f, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+			if (at == 0)
+				input_error(&f, -EINTR);
+			else {
+				input(&f, "Long safe PIN 99!");
+				if (at == 1)
+					input_error(&f, -ENODATA);
+				else {
+					input(&f, "Long safe PIN 99!");
+					f.fail_at = mask == 3 ? 3 : 2;
+				}
+			}
+			assert(run(&f, false) < 0 && !f.mapped && f.deactivations == 1);
+			f.count = f.next = f.used = f.fail_at = 0;
+			memset(f.input, 0, sizeof(f.input));
+			if (f.mask == 3) { input(&f, ""); input(&f, "yes"); }
+			recovery_input(&f);
+			assert(run(&f, false) == 0 && f.mapped);
+		}
+	}
+	init(&f); f.mask = 2; f.deactivate_error = -EBUSY;
+	input(&f, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"); input_error(&f, -EINTR);
+	assert(run(&f, false) == -EBUSY && f.deactivations == 1);
+	init(&f); f.mask = 2; f.progress_error = -EINTR; f.progress_fail_at = 6;
+	input(&f, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+	assert(run(&f, false) == -EINTR && !f.mapped && f.deactivations == 1);
 }
 
 int main(void)
