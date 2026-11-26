@@ -285,6 +285,65 @@ def openssl_rows(root: Path, today: date) -> list[tuple[str, str, str, str, str]
     return rows
 
 
+def cryptsetup_recipe_version(text: str) -> str:
+    major = re.findall(r"^CRYPTSETUP_VERSION_MAJOR\s*=\s*(.*?)\s*$", text, re.M)
+    versions = re.findall(
+        r"^CRYPTSETUP_VERSION\s*=\s*(.*?)\s*$",
+        text, re.M,
+    )
+    if len(versions) != 1 or not re.fullmatch(
+            r"\d+\.\d+\.\d+|\$\(CRYPTSETUP_VERSION_MAJOR\)\.\d+", versions[0]):
+        raise ValueError("Missing or ambiguous cryptsetup recipe version")
+    version = versions[0]
+    if version.startswith("$"):
+        if len(major) != 1 or not re.fullmatch(r"\d+\.\d+", major[0]):
+            raise ValueError("Missing or ambiguous cryptsetup series")
+        version = version.replace("$(CRYPTSETUP_VERSION_MAJOR)", major[0])
+    return version
+
+
+def cryptsetup_rows(root: Path) -> list[tuple[str, str, str, str, str]]:
+    source = "https://www.kernel.org/pub/linux/utils/cryptsetup/"
+    pin, recipe, latest = "未設定", "", "確認できず"
+    state = "確認できず"
+    override = ""
+    path = root / "board/cardputerzero/package-overrides.mk"
+    text = path.read_text() if path.exists() else ""
+    if "CRYPTSETUP_VERSION" in text:
+        matches = re.findall(r"^override CRYPTSETUP_VERSION\s*=\s*(.*?)\s*$", text, re.M)
+        if len(matches) != 1 or not re.fullmatch(r"\d+\.\d+\.\d+", matches[0]):
+            return [("cryptsetup override", pin, latest, state, str(path.relative_to(root)))]
+        override = matches[0]
+        pin = override
+    try:
+        sha = buildroot_gitlink_sha(root)
+        recipe = cryptsetup_recipe_version(fetch(
+            "https://raw.githubusercontent.com/buildroot/buildroot/"
+            f"{sha}/package/cryptsetup/cryptsetup.mk"))
+        pin = override or recipe
+    except (OSError, URLError, ValueError) as exc:
+        print(f"cryptsetup recipe: unavailable: {exc}", file=sys.stderr)
+    if pin != "未設定":
+        source += "v" + pin.rsplit(".", 1)[0] + "/"
+        try:
+            versions = re.findall(r'href="cryptsetup-(\d+\.\d+\.\d+)\.tar\.xz"', fetch(source))
+            versions = [v for v in versions if v.rsplit(".", 1)[0] == pin.rsplit(".", 1)[0]]
+            if not versions:
+                raise ValueError("No cryptsetup stable archives in pinned series")
+            latest = max(versions, key=branch_key)
+            state = "最新" if pin == latest else "更新あり"
+        except (OSError, URLError, ValueError) as exc:
+            print(f"cryptsetup releases: unavailable: {exc}", file=sys.stderr)
+    rows = [("cryptsetup (pinned series)", pin, latest, state, source)]
+    if override:
+        rows.append(("cryptsetup override retirement", override, recipe or "確認できず",
+                     ("更新あり" if branch_key(recipe) >= branch_key(override) else "参考")
+                     if recipe else "確認できず",
+                     "https://github.com/buildroot/buildroot/tree/"
+                     f"{buildroot_gitlink_sha(root)}/package/cryptsetup"))
+    return rows
+
+
 def branch_key(name: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.findall(r"\d+", name))
 
@@ -583,6 +642,7 @@ def latest_github_version(repository: str, *, tags: bool = False) -> str:
 def upstream(report_path: Path, root: Path, today: date | None = None) -> int:
     rows: list[tuple[str, str, str, str, str]] = []
     rows.extend(openssl_rows(root, today or date.today()))
+    rows.extend(cryptsetup_rows(root))
     fixed = "unknown"
     definition = (root / "configs/msd_cardputerzero_defconfig").read_text()
     match = re.search(r"linux-([0-9a-f]{40})\.tar\.gz", definition)

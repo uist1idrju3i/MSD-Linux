@@ -8,6 +8,7 @@
 
 | 主題 | 本文 |
 |---|---|
+| cryptsetup 2.8.9のsecurity修正・新option・OPAL互換性 | [全release noteの分類と採否](cryptsetup-2.8.9.md)、[更新検証](../../experiments/2026-11-26-cryptsetup-2.8.9.md) |
 | OpenSSLのCMP・QUIC・SSL trace・compressionの限定比較 | [利用者・全38 symbol](openssl-features.md)、[cold full build実験](../../experiments/2026-11-23-openssl-features.md) |
 | kbdのtool配送・loadkeys保持とBusyBoxの区別 | [選択肢と採否](kbd.md)、[容量・QEMU比較](../../experiments/2026-11-23-kbd-tools.md) |
 | 端末側SSH clientのOpenSSH・Dropbear・PuTTY比較 | [比較条件・採否](ssh-client.md)、[全抽出option](ssh-client-options.csv)、[実験記録](../../experiments/2026-11-23-ssh-client-compare.md)。製品未導入です |
