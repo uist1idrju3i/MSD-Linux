@@ -2,6 +2,7 @@
 """Exercise the real CI shell fragments and image-cache helper without a daemon."""
 
 from collections.abc import Callable
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -150,6 +151,43 @@ class CacheTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.output.write_text("")
         self.log.write_text("")
+
+    def test_download_key_tracks_external_package_inputs(self) -> None:
+        restore = step(BUILD.read_text(), "dl-restore")
+        key = field(restore, "key")
+        self.assertIn("steps.cache-generation.outputs.download-prefix", key)
+        self.assertIn("steps.cache-generation.outputs.buildroot", key)
+        self.assertEqual(field(restore, "restore-keys"),
+                         "${{ steps.cache-generation.outputs.download-prefix }}")
+        patterns = re.findall(r"'([^']+)'", re.search(r"hashFiles\(([^)]+)\)", key)[1])
+        names = ("configs/msd_cardputerzero_defconfig",
+                 "board/cardputerzero/package-overrides.mk",
+                 "board/cardputerzero/patches/cryptsetup/cryptsetup.hash")
+        for name in names:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("baseline")
+
+        def fingerprint() -> str:
+            paths = sorted({p for pattern in patterns for p in self.root.glob(pattern)
+                            if p.is_file()})
+            return hashlib.sha256(b"".join(hashlib.sha256(p.read_bytes()).digest()
+                                          for p in paths)).hexdigest()
+
+        baseline = fingerprint()
+        (self.root / "unrelated.txt").write_text("not a package input")
+        self.assertEqual(fingerprint(), baseline)
+        for name in names:
+            with self.subTest(name=name):
+                path = self.root / name
+                path.write_text("cryptsetup 2.8.9")
+                self.assertNotEqual(fingerprint(), baseline)
+                path.write_text("")
+                self.assertNotEqual(fingerprint(), baseline)
+                path.unlink()
+                self.assertNotEqual(fingerprint(), baseline)
+                path.write_text("baseline")
+                self.assertEqual(fingerprint(), baseline)
 
     def test_published_probe(self) -> None:
         for status, message, expected in (
