@@ -2,6 +2,21 @@
 
 利用者がチャットで決めた方針の記録。実装済みかどうかを「状態」に書く。設計の詳細は各リンク先。
 
+## 現行のdata暗号化の決定（2026-11-26）
+
+次の決定は下表の2026-11-03のdata暗号化の行を置き換える。旧行は当時の決定として残す。「passwordなし・PIN・passwordから選ぶ」「既定passwordのまま起動を続ける」「PIN設定時に既定でvolume keyを交換する」は現行仕様ではない。
+
+| 決めた日 | 方針 | 状態 | 関連 |
+|---|---|---|---|
+| 2026-11-26 | `/data`はLUKS2+Btrfs、data・metadataともDUP、xxhash64、zstd圧縮。cryptsetup 2.8.9、p7初期512 MiB以上。正式release前なのでext4移行はしない。初回起動でPINを2回入力し、共通の初期PINとpasswordなしを廃止する。 | 設計決定・未実装（PR A） | [現行設計](data-unlock.md) |
+| 2026-11-26 | PINは空白を含む印字可能ASCIIの4〜64文字、1文字ごとに`*`。6文字未満かblocklist一致はoffline総当たりへの弱さを警告するが拒否しない。連続誤入力は1起動10回、counterはRAMだけで再投入時0。10回でslot 0（PIN）だけを消し、slot 1（recovery）を残す案Aを採用する。SD抜取り時にはcounterが効かないリスクを許容する。 | 設計決定・未実装。NIST全体への適合を主張しない | [入力と復旧・NISTの位置付け](data-unlock.md) |
+| 2026-11-26 | 端末が160 bitのrecovery key（base32英数字32文字、4文字×8組）を生成し、SD外への保管を求める。1回入力して照合し、skip時は写し間違いで復旧できない旨の警告後に再確認する。空Enterでrecovery利用の確認、10回誤入力後は自動でrecoveryへ移る。復旧後の新PIN2回入力を必須とする。PIN変更はkeyslotだけを入れ替え、volume key再暗号化は後回しにする。 | 設計決定・未実装。2026-11-03のvolume key交換方針を置換 | [初期化とPIN再設定](data-unlock.md) |
+| 2026-11-26 | early-io gate成功後だけPIN入力・format・解錠へ進む。C helper＋libcryptsetup、pending/ready、初期化限定growを採用する。失敗時はS02で待ち、PIN待ちには期限を設けない。起動中のPIN・recovery画面も承認済みの英語だけの表示例外に含める。 | 設計決定・未実装。起動後の対話toolの英日併記は変更しない | [現行設計とPR分割](data-unlock.md)、[書込み台帳](write-policy.md) |
+
+## これまでの決定と状態
+
+下表には履歴も含む。上記の置換対象以外の決定は各行の状態で判断する。
+
 | 決めた日 | 方針 | 状態 | 関連 |
 |---|---|---|---|
 | 2026-11-23 | OpenSSL設定はC1（TLS最低版1.2・SECLEVEL=2）を採用し、C2のAEAD限定は採用しない。既存CA/CSR節、DEFAULT groups、ML-KEMを保持する。 | post-build処理とhostの外部接続確認を実装。製品build・A/B起動はCI、実機とCA配布・初期時刻は別途確認 | [採用設定](../research/component-options/openssl-minimal-runtime.md)、[接続記録](../experiments/2026-11-23-openssl-c1.md) |
@@ -25,7 +40,7 @@
 | 2026-11-04 | `/data`は頻繁に書き換えないため、速さより電源断への強さを優先します。同期書き込みなど遅い設定も候補から外さず、書き込み量を測って判断します。 | 比較の基準に反映済み | [filesystem optionの比較](../research/storage/filesystem-options.md) |
 | 2026-11-03 | 操作していない時やprogressを表示していない時は永続storageに書き込みません。2秒以上かかり得る処理ではprogressと中断可否を表示します。画面の文言は英語・日本語を併記します。 | 規則は制定済み（AGENTS.md §10）。現行の未対応箇所は台帳に記録 | [書き込みの台帳](write-policy.md) |
 | 2026-11-03 | 文書とユーザーズマニュアルは日本語だけにし、英語版は作りません。 | 規則は制定済み（AGENTS.md §2） | [AGENTS.md](../../AGENTS.md) |
-| 2026-11-03 | `/data`は初回起動から暗号化する方向で設計します。鍵は端末ごとに作り、build時に共通鍵を作りません。既定passwordの間も起動を止めません。passwordまたはPINを設定する時は、既定でvolume keyを替え、替えないoptionも用意します。解錠方式はpasswordなし・PIN・passwordから利用者が選びます。 | 計画のみ | （リンクなし。計画はリポジトリに入れていない） |
+| 2026-11-03 | `/data`は初回起動から暗号化する方向で設計します。鍵は端末ごとに作り、build時に共通鍵を作りません。既定passwordの間も起動を止めません。passwordまたはPINを設定する時は、既定でvolume keyを替え、替えないoptionも用意します。解錠方式はpasswordなし・PIN・passwordから利用者が選びます。 | 履歴。2026-11-26の上記決定で置換。旧方針は未実装のまま廃止 | [現行設計](data-unlock.md) |
 | 2026-11-03 | 一般userの初期名は`muromi`、UID/GIDは1000、homeは`/data/home/muromi`にします。 | 未実装 | R02の設計に反映予定 |
 | 2026-11-03 | Wi-Fi、`/data`暗号化、boot image検証などを行う対話型toolをRubyまたはmrubyで作ります。画面は英語・日本語を併記します。かなだけの日本語表示案とfbcon、fbterm、kmsconなどを比べます。 | 計画のみ | [フォントとコンソールの調査](../research/presentation/fonts.md) |
 | 2026-11-03 | timezoneの既定値はAsia/Tokyoにする方向です。`timedatectl`は導入しません。 | 2026-11-12にtzdataのasiaと既定localtimeを実装。QEMUのdateはJST +0900。RTC・NTP・実機は未確認 | [CardputerZeroのdefconfig](../../configs/msd_cardputerzero_defconfig)、[採用範囲](../research/component-options/timezone.md)、[実験](../experiments/2026-11-12-write-inventory.md) |
