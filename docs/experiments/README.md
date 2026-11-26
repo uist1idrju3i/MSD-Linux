@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [cryptsetup 2.8.9](2026-11-26-cryptsetup-2.8.9.md) | [CSV](2026-11-26-cryptsetup-2.8.9.csv) | 2026-11-26 | 新旧の製品build・target版・QEMU A/B・license照合 | 2.8.9を確認。kernel設定差0、rootfsは4,096 bytes増。既存のCVE・配布監査の残件は不変。`/data`の形式変更と実機検証は対象外 |
 | [v2 T7 Btrfs判定](2026-11-26-s04-fs-compare-v2-t7-btrfs.md) | [CSV](2026-11-26-s04-fs-compare-v2-t7-btrfs.csv) | 2026-11-26 | 試行07の中断と08の誤判定を区別・原logを別出力で再判定 | 07のB1/T6単独再実行は成功。08は正常行の限定許容で旧fatal 1から新0。原結果は失敗のまま保持。修正後のQEMU・全smokeは未実施 |
 | [早期I/Oのconsole出力](2026-11-25-early-io-console.md) | [CSV](2026-11-25-early-io-console.csv) | 2026-11-25 | host 24試験・再packのQEMU Aとmodule期限対照 | 追加したC helperから時刻prefixなしの4 markerとwaitingを確認。対照は/data・ready前で停止。実機・この条件のBは未確認 |
 | [S02前のI/O gate](2026-11-25-early-io.md) | [CSV](2026-11-25-early-io.csv) | 2026-11-25 | host 17試験・既存image再packのQEMU A/Bと失敗対照 | A/BはQMP timeout後の単独再試行で成功。4 marker、guestの3秒期限、/data前の停止を確認。製品full build・実機は未確認 |

@@ -1,0 +1,97 @@
+phase,check,artifact,value,unit,sha256
+baseline,artifact,Image,19286528,bytes,c7ac140e649f31fa4f15196c53158d73a20cf23a5e809c0f6a3e964adaecb9a0
+baseline,artifact,rootfs.squashfs,24023040,bytes,70c5f7fc9323e68ce766b01ace85ed8847c1a894ed64ef158111b7acb27ad6c5
+baseline,artifact,sdcard.img,771751936,bytes,9b7f22d34d9e54781a0e2745847326c57afee6786b44ce6e31a62ad685d32977
+baseline,artifact,usr/sbin/cryptsetup,224112,bytes,7bac515e244c5c1cd1c65f123b563a384d40ab677cbb1146261e4fd4e617a92f
+baseline,ready,boot,46,seconds,
+baseline,ready,ab,44,seconds,
+baseline,target-version,cryptsetup,2.8.7,,0f976f42f5c5ca06b04cc0c440b683bc16da00dd81f1c7c9b690f102a98547ba
+baseline,vex,host/exploitable,4,CVE-component pairs,
+baseline,vex,host/in_triage,2,CVE-component pairs,
+baseline,vex,host/resolved,736,CVE-component pairs,
+baseline,vex,host/resolved_with_pedigree,2,CVE-component pairs,
+baseline,vex,target/exploitable,145,CVE-component pairs,
+baseline,vex,target/resolved,15767,CVE-component pairs,
+baseline,vex,target/resolved_with_pedigree,6,CVE-component pairs,
+baseline,config,linux.config,6845,symbols,a020fa0b8957ba82b54695c555a7c1f06e8a02e12a4e975aebe3b6983450cf2b
+baseline,config,buildroot.config,3360,symbols,f1be2190751fe4cdb17f4739c0198c075671e8aa59ddfaacbf4b81e118853b1c
+baseline,license,COPYING,verified,,45670cce8b6a0ddd66c8016cd8ccef6cd71f35717cbacc7f1e895b3855207b33
+baseline,license,docs/licenses/COPYING.Apache-2.0,verified,,cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+baseline,license,docs/licenses/COPYING.CC-BY-SA-4.0,verified,,28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5
+baseline,license,docs/licenses/COPYING.GPL-2.0-or-later-WITH-cryptsetup-OpenSSL-exception,verified,,45670cce8b6a0ddd66c8016cd8ccef6cd71f35717cbacc7f1e895b3855207b33
+baseline,license,docs/licenses/COPYING.LGPL-2.1-or-later-WITH-cryptsetup-OpenSSL-exception,verified,,8c33cc37871654ec7ed87e6fbb896c8cf33ef5ef05b1611a5aed857596ffafa5
+new,artifact,Image,19286528,bytes,93c8fa6b4a7d12f0369c7e6f7f3101d6a253075390a2eb2d79bef4bc4caed58e
+new,artifact,rootfs.squashfs,24027136,bytes,3009fe4c4a18a3289c8a7173b35cf13e5996876c907a17602765bd66f11d5b37
+new,artifact,sdcard.img,771751936,bytes,93be14cba0d828dea688551004529d963dfb803b42fb485d769d6865be380d3b
+new,artifact,usr/sbin/cryptsetup,228208,bytes,9b0e238ccff2c30e5c809efd81e1f4c3543c09d7a649db2ff5f38442a290f9ac
+new,ready,boot,43,seconds,
+new,ready,ab,46,seconds,
+new,target-version,cryptsetup,2.8.9,,f74dfb750181657cc0828dcff1fc2ad1d1e4cd0f0661a0865c9cca9325df0b9c
+new,vex,host/exploitable,4,CVE-component pairs,
+new,vex,host/in_triage,2,CVE-component pairs,
+new,vex,host/resolved,736,CVE-component pairs,
+new,vex,host/resolved_with_pedigree,2,CVE-component pairs,
+new,vex,target/exploitable,145,CVE-component pairs,
+new,vex,target/resolved,15767,CVE-component pairs,
+new,vex,target/resolved_with_pedigree,6,CVE-component pairs,
+new,config,linux.config,6845,symbols,a020fa0b8957ba82b54695c555a7c1f06e8a02e12a4e975aebe3b6983450cf2b
+new,config,buildroot.config,3360,symbols,1130fbb7de9a6777512fc3566f0b344b2c738c6c5f23f8c796839965e104f6e9
+new,license,COPYING,verified,,45670cce8b6a0ddd66c8016cd8ccef6cd71f35717cbacc7f1e895b3855207b33
+new,license,docs/licenses/COPYING.Apache-2.0,verified,,cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+new,license,docs/licenses/COPYING.CC-BY-SA-4.0,verified,,28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5
+new,license,docs/licenses/COPYING.GPL-2.0-or-later-WITH-cryptsetup-OpenSSL-exception,verified,,45670cce8b6a0ddd66c8016cd8ccef6cd71f35717cbacc7f1e895b3855207b33
+new,license,docs/licenses/COPYING.LGPL-2.1-or-later-WITH-cryptsetup-OpenSSL-exception,verified,,8c33cc37871654ec7ed87e6fbb896c8cf33ef5ef05b1611a5aed857596ffafa5
+comparison,config-changes,linux.config,0,symbols,
+comparison,config-changes,buildroot.config,1,symbols,
+evidence,text-hash,output-cryptsetup-review/baseline/sbom.cdx.json,239187,bytes,65b3a57b6339d8be198bbd0ce3ffaadd62493985a76245c8d818890aa6d5dd2e
+evidence,text-hash,output-cryptsetup-review/baseline/show-info.json,81641,bytes,0807aa0dd7fd9b00cd7639fcec340439052c099169a351e8e669dab9ca390f6c
+evidence,text-hash,output-cryptsetup-review/baseline/vex.cdx.json,46746093,bytes,3abc09119b4f90571c6e9e608390f25e7bf3fa0c7e1c6524b2be57f13b051b3f
+evidence,text-hash,output-cryptsetup-review/baseline-ab.log,217,bytes,061f30b544f61dcfba5dd1cee482eff955172d86bc9a0ef51447cf7b870b8d6f
+evidence,text-hash,output-cryptsetup-review/baseline-boot.log,217,bytes,b8fdf2ac7525785c9ff729e7506d4c69772475660348f1f0c7a2ec8d49cce253
+evidence,text-hash,output-cryptsetup-review/baseline-build.log,7527343,bytes,88638d23f357c42a6e73870549c4d533f0fdbd9724b02936a3d26bd5ec97999e
+evidence,text-hash,output-cryptsetup-review/baseline-cve.log,0,bytes,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+evidence,text-hash,output-cryptsetup-review/baseline-defconfig.log,1781,bytes,7f51ea59c8d9f5c1e33cb4abc23e63299738c0c7cb39b10103ba3c615cbaed7a
+evidence,text-hash,output-cryptsetup-review/baseline-legal.log,17353,bytes,5bff373bac1e1e11420037aba2f4793dcd1d09c6bf1159af723105b685530fc6
+evidence,text-hash,output-cryptsetup-review/baseline-target-r2.log,62,bytes,d64f2d84b42a1ddfcb386d80b87575729e105ca225f7fff0d0a129160ad534b8
+evidence,text-hash,output-cryptsetup-review/baseline-target.log,676,bytes,675b27865e00429c1f73a2b6e9296e364b6e82d0432e29289c2d6aa7044e00ab
+evidence,text-hash,output-cryptsetup-review/host-check-pins-final.log,2690,bytes,397431ea7c01b7c29e0b106a6b4ff457e21d36f6eb1c8d101c87ad5941b84ef4
+evidence,text-hash,output-cryptsetup-review/host-check-pins-retry.log,2690,bytes,397431ea7c01b7c29e0b106a6b4ff457e21d36f6eb1c8d101c87ad5941b84ef4
+evidence,text-hash,output-cryptsetup-review/host-check-pins.log,1387,bytes,3cc2f027bd01439c5f199f2a63dbd4bc2b8c1ada9df0a30b6199d6999e9b5ff0
+evidence,text-hash,output-cryptsetup-review/host-fs-compare-v2.log,11259,bytes,c9993b2159bf756507542c43f2027ef4c7816e63d8bf6357f68594ebdb535f3d
+evidence,text-hash,output-cryptsetup-review/host-msd-data-grow.log,726,bytes,556b4b39049ff1356432e3e68dd57f1010b0c8341b6f228aec65835303af06aa
+evidence,text-hash,output-cryptsetup-review/host-msd-update.log,1700,bytes,a0828c43ce486c64addc9b61e8dec19831f742ead22b09a208ab805d0e40d98a
+evidence,text-hash,output-cryptsetup-review/host-qemu-boot-retry.log,112,bytes,d6f07e900bf7f75e7f4c7886166c88e3165d5c499fa95586198b0e001c378370
+evidence,text-hash,output-cryptsetup-review/host-qemu-boot.log,112,bytes,e9abcc0d03205929268c012fbb1a573d0916e71354db83a1ed224e637b92adc8
+evidence,text-hash,output-cryptsetup-review/new/sbom-before-project-fix.cdx.json,239074,bytes,01e3981ae69d5068d4729843c549a0c7f3fb25bd76c2464b6f42d1b60428503b
+evidence,text-hash,output-cryptsetup-review/new/sbom.cdx.json,239187,bytes,5dddf6da5775da275a6169ea5f690a54b54f318559ef26615528c2ede3c11562
+evidence,text-hash,output-cryptsetup-review/new/show-info.json,81705,bytes,d31b4d212f7b8eddeb5bc777d78e53af4cdf4181db5bf20caa860077f9ca1e2a
+evidence,text-hash,output-cryptsetup-review/new/vex.cdx.json,46746093,bytes,6cf86f85864255071712d35d124fc336a31b7c1689b0eb452ff633afd76cd3e4
+evidence,text-hash,output-cryptsetup-review/new-ab.log,217,bytes,5a25372eef5d2e9f701d5ec2b0bf74b6623c341e95546fd91b613feff86ed64a
+evidence,text-hash,output-cryptsetup-review/new-boot.log,217,bytes,efe95b5611eca5e42a8d0e07c46a4eb0f4e2f88dc6c92d09e7b45f5463fec8fc
+evidence,text-hash,output-cryptsetup-review/new-build.log,7678516,bytes,c546586c119229a28d4abce146e79753dd43b7dd198d3bb05515f0d2bd3fbed9
+evidence,text-hash,output-cryptsetup-review/new-cve.log,0,bytes,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+evidence,text-hash,output-cryptsetup-review/new-defconfig.log,1845,bytes,f6474083ca6ef5059763775db8b681d241e5a497e7f6fd7322f87f8591d0f2ce
+evidence,text-hash,output-cryptsetup-review/new-legal.log,17975,bytes,ba3d8a3a640f26e70b996c7ca7f4a54b341fb1e97c56c4b7bf684249aa6c97bc
+evidence,text-hash,output-cryptsetup-review/new-target.log,62,bytes,75e5cc31208ff833351fd05c29d03e477eed7d965b50cc6875cde35bc3621609
+evidence,text-hash,output-cryptsetup-review/nvd-manifest.json,15942,bytes,da591ba20331ff1c26cd53f1897d60a7528e8b6f04d5d5888314b7d513b5e343
+evidence,text-hash,output-cryptsetup-review/nvd-refresh.log,879,bytes,e77552036142eda7752657696d6fa0ca9efa45f9332916e84497c24526599cac
+evidence,text-hash,output-cryptsetup-review/option-diff.json,441,bytes,497fcfa248b3f91dfb8e3004ab19b62b2e62c1a1c21984d5445531c61c0d0ce9
+evidence,text-hash,output-cryptsetup-review/pins-consistency-final.log,0,bytes,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+evidence,text-hash,output-cryptsetup-review/pins-consistency.log,0,bytes,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+evidence,text-hash,output-cryptsetup-review/pins-upstream.log,288,bytes,dc1ee4727ea94d51354128619b701b8eb5145491e414553c9958adca7d412bf7
+evidence,text-hash,output-cryptsetup-review/target-baseline/process.json,167,bytes,9d9749758be0b03b304063916cf6b9caa6e9e0e6bcb951957d7115f2789f579c
+evidence,text-hash,output-cryptsetup-review/target-baseline/serial.log,18965,bytes,6fd2da077218e004066b4271d5e10685f3054864ac4e24811674167d3ba67aa3
+evidence,text-hash,output-cryptsetup-review/target-baseline-r2/process.json,77,bytes,607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8
+evidence,text-hash,output-cryptsetup-review/target-baseline-r2/serial.log,18850,bytes,0f976f42f5c5ca06b04cc0c440b683bc16da00dd81f1c7c9b690f102a98547ba
+evidence,text-hash,output-cryptsetup-review/target-new/process.json,77,bytes,607fcf886320159d926a79dfb9b157391ee76a463396a6f4e5e56c1564a5c5b8
+evidence,text-hash,output-cryptsetup-review/target-new/serial.log,18858,bytes,f74dfb750181657cc0828dcff1fc2ad1d1e4cd0f0661a0865c9cca9325df0b9c
+evidence,text-hash,output-cryptsetup-review/tools.log,411,bytes,b2d4ba605add50bd560af1329bf1c8e8258c24a4231fda25428dea666063e35a
+evidence,text-hash,output-cryptsetup-review/yomiyasu-experiment.log,694,bytes,5a5cc13195f9b6a883329dac711d528f31e1be98fad1fd5f8af87749a1f9ec09
+evidence,text-hash,output-cryptsetup-review/yomiyasu-indexes.log,6419,bytes,fc7fb2abcffd671d314ff3cdb302cda01a3f65e251434a04ca7c047fc7b2cdda
+evidence,text-hash,output-cryptsetup-review/yomiyasu-options.log,856,bytes,9f3bbbece486478d087068d64b7ab4e9598a7e115aba5395fc26cbd8f4408d75
+input,source-hash,board/cardputerzero/package-overrides.mk,277,bytes,0d756988d9ebf3b6f9c4140f5e4d40d765df46afa97cc62d5cfeeabee0081297
+input,source-hash,board/cardputerzero/patches/cryptsetup/cryptsetup.hash,812,bytes,3b6ce3b7038f78b1e5d57829854d44deea121799f4a6adb08a5766d0a9a4071b
+input,source-hash,.github/scripts/check-pins.py,41977,bytes,9648e94f95dd497e3464ef9b2732da81c36ea7434313503e17669a45296c5c2c
+input,source-hash,tests/check-pins/run.sh,39207,bytes,2d340e14688337b1ffbdaa35d92becbd582dfd6a1661ef21aae36e9e32d788ee
+input,source-hash,board/cardputerzero/tools/bench/cryptsetup-version.py,4968,bytes,a27c854c18561873342adefa635417a5d73e5f3fb57385269ffd0d572879ea65
+input,source-hash,tests/qemu-boot/run.py,9149,bytes,35aea55c846579da27e322d454a3297942ab04b65f85ef7e7f457c6b02c1b915

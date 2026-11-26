@@ -1,6 +1,14 @@
 docs/research/alternatives/sources.json	docs/README-linux.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
 docs/research/alternatives/sources.json	docs/README-kmsbsd.md	取得したSDL repository内の原文pathであり、本リポジトリの文書ではない
 # path	token	reason
+board/cardputerzero/patches/cryptsetup/cryptsetup.hash	docs/licenses/COPYING.Apache-2.0	cryptsetup上流source内のlicense原文pathであり、本リポジトリの文書ではない
+board/cardputerzero/patches/cryptsetup/cryptsetup.hash	docs/licenses/COPYING.CC-BY-SA-4.0	cryptsetup上流source内のlicense原文pathであり、本リポジトリの文書ではない
+board/cardputerzero/patches/cryptsetup/cryptsetup.hash	docs/licenses/COPYING.GPL-2.0-or-later-WITH-cryptsetup-OpenSSL-exception	cryptsetup上流source内のlicense原文pathであり、本リポジトリの文書ではない
+board/cardputerzero/patches/cryptsetup/cryptsetup.hash	docs/licenses/COPYING.LGPL-2.1-or-later-WITH-cryptsetup-OpenSSL-exception	cryptsetup上流source内のlicense原文pathであり、本リポジトリの文書ではない
+docs/experiments/2026-11-26-cryptsetup-2.8.9.csv	docs/licenses/COPYING.Apache-2.0	cryptsetup上流source内のlicense照合の記録であり、本リポジトリの文書ではない
+docs/experiments/2026-11-26-cryptsetup-2.8.9.csv	docs/licenses/COPYING.CC-BY-SA-4.0	cryptsetup上流source内のlicense照合の記録であり、本リポジトリの文書ではない
+docs/experiments/2026-11-26-cryptsetup-2.8.9.csv	docs/licenses/COPYING.GPL-2.0-or-later-WITH-cryptsetup-OpenSSL-exception	cryptsetup上流source内のlicense照合の記録であり、本リポジトリの文書ではない
+docs/experiments/2026-11-26-cryptsetup-2.8.9.csv	docs/licenses/COPYING.LGPL-2.1-or-later-WITH-cryptsetup-OpenSSL-exception	cryptsetup上流source内のlicense照合の記録であり、本リポジトリの文書ではない
 docs/research/sources/sources-other-url-results.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
 docs/research/sources/sources-url-reachability-more.md	documentation/documentation/asciidoc/	Raspberry Pi documentation リポジトリのページ題名の記録
 docs/UPDATE.md	documentation/asciidoc/	Raspberry Pi documentation リポジトリ内のパス

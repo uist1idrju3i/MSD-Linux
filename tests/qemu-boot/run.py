@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the actual boot shell entry points with a fake QEMU executable."""
 
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -154,6 +155,32 @@ class BootTest(unittest.TestCase):
         self.assertEqual(code, 0, output)
         self.assertIsNone(result)
         self.assertNotIn('"-qmp"', output)
+
+
+class CryptsetupVersionTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location(
+            "cryptsetup_version", ROOT / "board/cardputerzero/tools/bench/cryptsetup-version.py")
+        cls.probe = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.probe)
+
+    def test_target_version(self):
+        for line in ("cryptsetup 2.8.9", "cryptsetup 2.8.9 flags: BLKID KEYRING"):
+            for newline in ("\n", "\r\n"):
+                with self.subTest(line=line, newline=newline):
+                    self.probe.check_version(
+                        newline.join((line, "CRYPTSETUP_STATUS=0", "")), "2.8.9")
+
+    def test_empty_or_wrong_version_and_status(self):
+        valid = "cryptsetup 2.8.9\nCRYPTSETUP_STATUS=0\n"
+        for text in ("", "cryptsetup 2.8.9\n", "CRYPTSETUP_STATUS=0\n",
+                     valid.replace("2.8.9", "2.8.7"), valid.replace("STATUS=0", "STATUS=1"),
+                     valid + valid, valid.replace("2.8.9", "2.8.9-rc1"),
+                     valid.replace("cryptsetup ", "echo cryptsetup "),
+                     valid.replace("cryptsetup ", "# cryptsetup ")):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                self.probe.check_version(text, "2.8.9")
 
 
 if __name__ == "__main__":
