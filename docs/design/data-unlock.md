@@ -26,6 +26,10 @@ DUPは同じSD内の2copyであり別媒体の冗長化ではない。xxhash64�
 
 S02は[early-io gate](../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/early-io)成功後にだけhelperを呼ぶ。gate成功前にはPIN入力、format、解錠へ進まない。QEMUの`hardware-absent-qemu`は既存gateのhardware不在判定であり、PINの供給済み・認証済みを意味しない。
 
+PR Cでは製品の表示をLCDのconsole、入力を内蔵キーボードへ接続する。[early-ioの表示先](early-io.md#書込み表示と残件)にあるとおり、既定cmdlineの最後のconsoleはserial側なので、`/dev/console`をLCDの表示先とみなさない。LCD側への表示には同文書で明示されている`/dev/tty1`を使う。内蔵キーボードは[early-ioの準備条件](early-io.md#範囲と起動順序)にあるinput名`tca8418c`とkeymapを前提とするが、helperが読む具体的なdevice名と入力方式は同文書だけでは確定できない。PR Cで接続条件を固定し、実機で内蔵キーボード由来の入力がLCD側の対話に届くことを確かめる残件とする。`/dev/input/eventN`の番号を推測して固定しない。
+
+QEMUでは表示・入力ともserialの`/dev/ttyAMA1`を使う。helperの入出力先は製品用とQEMU用でそれぞれ固定し、使えそうなconsoleやkeyboardを探索して代用しない。所定の接続先が使えなければ起動を止める。製品側のLCD・内蔵キーボード接続を、QEMUのserial試験の成功で確認済みとしない。
+
 失敗時はS02からexitせず、その場で待つ。rcSはscriptの失敗だけでは後続を止めないためである。処理の停止後に`Boot stopped. Safe to power off.`と表示し、後続init、ready、loginへ進めない。既存dataが無傷であるという保証の表示ではない。PIN待ちに期限は設けない。S01のwatchdogは別processで給餌を続けるため、PIN待ちのtimeoutとしては使わない。
 
 電源投入からinit完了までと起動失敗待機中の画面は、承認済み例外により英語だけとする。初回設定・PIN・recoveryの対話もこの起動中の範囲に含む。文書は日本語、起動完了後のtoolは従来どおり英日併記である。
@@ -112,7 +116,7 @@ LUKS2 header、keyslot、Btrfsのmetadata・transaction・log replayを含め、
 |---|---|---|
 | A | この設計、旧決定の置換、書込み台帳、索引だけ | 文書検査。実装・build・QEMU成功と扱わない |
 | B | C helper、libcryptsetup連携、host test | 正常設定、PINの長さと全ASCII範囲・空白・mask、弱PIN警告、2回不一致、空Enter・取消し・EOF、recovery照合・skip再確認、各slotとAPIの成功値、10回境界、error分類、削除失敗、PIN再設定中断、秘密の非出力を検査 |
-| C | 512 MiB以上のzero image、S02、fstab、初期化限定grow、health、serial harness、CI | (a)〜(d)、先頭はzeroで後ろにdataがあるp7を初期化しないこと、全体zero確認のprogress・読取り失敗時停止・通常のLUKS2起動での全体確認省略、gate失敗前の無書込み、失敗時S02停止、各初期化境界の中断、recoveryのみの再起動、実容量とsparse性、mount同一性、healthを検査。ext4前提のimage検査・command在庫を更新 |
+| C | 512 MiB以上のzero image、S02、fstab、初期化限定grow、health、固定入出力先への接続、serial harness、CI | (a)〜(d)、先頭はzeroで後ろにdataがあるp7を初期化しないこと、全体zero確認のprogress・読取り失敗時停止・通常のLUKS2起動での全体確認省略、gate失敗前の無書込み、入出力先欠損時に探索・代用せず停止、失敗時S02停止、各初期化境界の中断、recoveryのみの再起動、実容量とsparse性、mount同一性、healthを検査。ext4前提のimage検査・command在庫を更新 |
 | 以後 | benchmark追従 | fs-compare-v2、旧fs-compare、write-inventory、s17系、S3、boottime、noexec、watchdog・panic・更新/署名probe等を個別に追従し、比較条件と証拠を更新 |
 
 PR Bはhost上で検査可能な単位を扱い、製品起動の接続はPR Cまで完了扱いにしない。ext4/e2fsprogsの製品経路を置換しても、内側のext4を比較するbenchmarkのtoolsや過去の証拠を一括削除しない。
