@@ -27,7 +27,12 @@ if mode not in ("no-server", "exit-before", "exit-after-marker"):
     server.bind(address)
     if mode != "refused":
         server.listen(1)
-Path(os.environ["FAKE_VM_STATE"]).write_text(json.dumps(dict(pid=os.getpid(), socket=address)))
+state = dict(pid=os.getpid(), socket=address)
+if mode == "cryptsetup":
+    image = Path(sys.argv[sys.argv.index("-drive") + 1].split(",")[0].removeprefix("file="))
+    state["image"] = str(image)
+    image.write_bytes(b"guest write")
+Path(os.environ["FAKE_VM_STATE"]).write_text(json.dumps(state))
 
 if mode == "exit-before":
     sys.exit(int(os.environ.get("FAKE_VM_EXIT", "0")))
@@ -50,6 +55,14 @@ if mode == "exit-after-marker":
 if mode in ("no-server", "refused", "timeout", "interrupt", "no-login"):
     while True:
         time.sleep(1)
+
+if mode == "cryptsetup":
+    for _ in range(2):
+        sys.stdin.readline()
+        print("# ", end="", flush=True)
+    sys.stdin.readline()
+    version = os.environ.get("FAKE_CRYPTSETUP_VERSION", "2.8.9")
+    print(f"\ncryptsetup {version}\nCRYPTSETUP_STATUS=0\n# ", end="", flush=True)
 
 connection, _ = server.accept()
 with connection, connection.makefile("rwb") as stream:

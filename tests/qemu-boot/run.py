@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import signal
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -164,6 +165,55 @@ class CryptsetupVersionTest(unittest.TestCase):
             "cryptsetup_version", ROOT / "board/cardputerzero/tools/bench/cryptsetup-version.py")
         cls.probe = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.probe)
+
+    def exercise(self, version="2.8.9", missing_image=False):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            images = directory / "output/images"
+            images.mkdir(parents=True)
+            original = b"original image"
+            for name in ("sdcard.img", "Image", "bcm2710-rpi-cm0.dtb"):
+                (images / name).write_bytes(original)
+            if missing_image:
+                (images / "sdcard.img").unlink()
+            scratch = directory / "tmp"
+            scratch.mkdir()
+            evidence = directory / "evidence"
+            state = directory / "vm.json"
+            environment = {k: v for k, v in os.environ.items() if not k.startswith("QEMU_")}
+            environment.update(TMPDIR=str(scratch), QEMU_DTB_BLUETOOTH="1",
+                               QEMU_SYSTEM_AARCH64=str(HERE / "fake-vm.py"),
+                               FAKE_VM_MODE="cryptsetup", FAKE_VM_STATE=str(state),
+                               FAKE_CRYPTSETUP_VERSION=version)
+            result = subprocess.run(
+                [sys.executable, self.probe.__file__, str(images.parent),
+                 str(evidence), "2.8.9"],
+                env=environment, capture_output=True, text=True, timeout=15)
+            self.assertEqual(list(scratch.iterdir()), [], result.stderr)
+            record = json.loads((evidence / "process.json").read_text())
+            if missing_image:
+                self.assertFalse(state.exists())
+            else:
+                vm = json.loads(state.read_text())
+                self.assertFalse(Path(vm["image"]).exists())
+                self.assertEqual((images / "sdcard.img").read_bytes(), original)
+            return result, record
+
+    def test_probe_cleans_copied_image_after_normal_quit(self):
+        result, record = self.exercise()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(record, dict(qmp_quit=True, returncode=0, fallback=[], error=None))
+
+    def test_probe_cleans_copied_image_after_wrong_version(self):
+        result, record = self.exercise(version="2.8.7")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIsNotNone(record["error"])
+        self.assertFalse(record["qmp_quit"])
+
+    def test_probe_cleans_scratch_after_missing_image(self):
+        result, record = self.exercise(missing_image=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIsNotNone(record["error"])
 
     def test_target_version(self):
         for line in ("cryptsetup 2.8.9", "cryptsetup 2.8.9 flags: BLKID KEYRING"):

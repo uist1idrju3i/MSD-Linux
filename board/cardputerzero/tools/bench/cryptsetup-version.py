@@ -51,7 +51,8 @@ def main():
             socket = Path(temporary) / "qmp.sock"
             environment = dict(os.environ, OUTPUT_DIR=str(args.output.resolve()),
                                ROOT_DEVICE="/dev/mmcblk0p5", ROOT_FSTYPE="squashfs",
-                               QEMU_COPY_IMAGE="1", QEMU_QMP_SOCKET=str(socket))
+                               QEMU_COPY_IMAGE="1", QEMU_QMP_SOCKET=str(socket),
+                               TMPDIR=temporary)
             for name in ("QEMU_DRIVE_FILE", "QEMU_DRIVE_FORMAT"):
                 environment.pop(name, None)
             with (args.evidence / "serial.log").open("xb") as log:
