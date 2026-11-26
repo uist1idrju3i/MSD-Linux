@@ -30,6 +30,8 @@ PR Cでは製品の表示をLCDのconsole、入力を内蔵キーボードへ接
 
 QEMUでは表示・入力ともserialの`/dev/ttyAMA1`を使う。helperの入出力先は製品用とQEMU用でそれぞれ固定し、使えそうなconsoleやkeyboardを探索して代用しない。所定の接続先が使えなければ起動を止める。製品側のLCD・内蔵キーボード接続を、QEMUのserial試験の成功で確認済みとしない。
 
+製品の`/dev/tty1`を開けない場合は、PINやrecoveryの対話を他の端末へ移さない。停止の通知だけを`/dev/console`とkernel logへ出してから待機する。通知は`Boot stopped. LCD console unavailable. Safe to power off.`とし、PINやrecovery keyを含めない。これはearly-io gateがLCDの準備を確かめた後にも起こり得る稀な障害を想定した経路であり、この場合LCDには案内を出せない。停止通知の出力に失敗しても、端末を探索したり起動を再開したりしない。PR Cの受入試験では、LCDの表示先を開けない場合に、他の端末で対話せず、停止通知だけをconsole・kernel logへ出してS02で待機することを確認する。
+
 失敗時はS02からexitせず、その場で待つ。rcSはscriptの失敗だけでは後続を止めないためである。処理の停止後に`Boot stopped. Safe to power off.`と表示し、後続init、ready、loginへ進めない。既存dataが無傷であるという保証の表示ではない。PIN待ちに期限は設けない。S01のwatchdogは別processで給餌を続けるため、PIN待ちのtimeoutとしては使わない。
 
 電源投入からinit完了までと起動失敗待機中の画面は、承認済み例外により英語だけとする。初回設定・PIN・recoveryの対話もこの起動中の範囲に含む。文書は日本語、起動完了後のtoolは従来どおり英日併記である。
