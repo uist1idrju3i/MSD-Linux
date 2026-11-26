@@ -19,6 +19,8 @@ import time
 SCHEMA = "fs-compare-v2/1"
 MARKERS = {"run": "msd.fscmp: finished", "verify": "msd.fscmp: recovery_finished"}
 CUT_MARKERS = {"T2": "msd.fscmp: workload-start", "T3": "msd.fscmp: writer-start"}
+GROW_COMPLETE_MARKERS = ("msd-data: setup synchronized",
+                         "msd-data: setup synchronized / 初期設定の同期が完了しました。")
 
 
 def atomic_write(path, content):
@@ -217,7 +219,7 @@ def aggregate_errors(logs, test):
         lines = Path(path).read_text(errors="replace").splitlines()
         qemu = machine = kernel = model = closed = False
         grow_pending = False
-        grow_complete = "msd-data: setup synchronized / 初期設定の同期が完了しました。" in lines
+        grow_complete = any(marker in lines for marker in GROW_COMPLETE_MARKERS)
         smoke = any(re.fullmatch(r"msd\.fscmp: SMOKE_PROFILE sha256=[a-f0-9]{64}", text)
                     for _, text in boot_serial_lines(lines, lambda: True))
         def known_environment():

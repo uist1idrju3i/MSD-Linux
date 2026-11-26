@@ -72,6 +72,93 @@ def fixture(directory, test="smoke", text=None, **overrides):
 
 
 class Judge(unittest.TestCase):
+    def test_grow_marker_matches_s02(self):
+        script = ROOT / "board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data"
+        self.assertIn(f"printf '{M.GROW_COMPLETE_MARKERS[0]}\\n' >/dev/console", script.read_text())
+
+    def test_attempt_09_e1_log_passes_final_judge(self):
+        payload = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/attempt-09-e1-run.log.gz").read_bytes())
+        self.assertEqual(M.hashlib.sha256(payload).hexdigest(),
+                         "9d9f48d3ee4204a87f629c0fd324aee43d98a53ad404d3d7b76a5a1a112e3b09")
+        text = payload.decode()
+        self.assertIn("msd-data: setup synchronized", text.splitlines())
+        self.assertIn("T1_NEGATIVE_CONTROL loss_detected=yes", text)
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "run"
+            fixture(directory, "T1-negative-final", text=text)
+            load = M.load_json
+            rules = load(V2 / "boot-diagnostics.json")
+            rules.update(qemu="QEMU emulator version 11.1.3", kernel="6.18.64-v8")
+            with mock.patch.object(M, "load_json", side_effect=lambda path:
+                                   rules if Path(path).name == "boot-diagnostics.json" else load(path)):
+                result = M.finalize(directory, "T1-negative-final", 0)
+            self.assertEqual(result["status"], "ok")
+            self.assertEqual(result["fatal_errors"], 0)
+
+    def grow_log(self, marker):
+        rules = M.load_json(V2 / "boot-diagnostics.json")
+        return (f"run-qemu: version={rules['qemu']}\n{rules['machine']}\n"
+                f"[ 0.000000] Linux version {rules['kernel']} fixture\n"
+                "[ 0.000000] Machine model: Raspberry Pi 3 Model B\n"
+                "msd-data-grow: extending partition 4 to the end of /dev/mmcblk0\n"
+                "Re-reading the partition table failed.: Device or resource busy\n"
+                "msd-data-grow: extending partition 7 to the end of /dev/mmcblk0\n"
+                "Re-reading the partition table failed.: Device or resource busy\n"
+                f"{marker}\nmsd.fscmp: SMOKE_PROFILE sha256={'a' * 64}\n"
+                "msd.fscmp: finished\n")
+
+    def test_grow_current_and_legacy_markers_pass_final_judge(self):
+        for marker in ("msd-data: setup synchronized",
+                       "msd-data: setup synchronized / 初期設定の同期が完了しました。"):
+            with self.subTest(marker=marker), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "run"
+                fixture(directory, "T1-negative-final", text=self.grow_log(marker))
+                result = M.finalize(directory, "T1-negative-final", 0)
+                self.assertEqual(result["status"], "ok")
+                self.assertEqual(result["fatal_errors"], 0)
+                records = [json.loads(line) for line in (directory / "errors.jsonl").read_text().splitlines()]
+                self.assertEqual(len(records), 2)
+                self.assertTrue(all(row["expected"] and row["known_boot"] == "grow-reread-busy"
+                                    for row in records))
+
+    def test_grow_marker_does_not_hide_failures(self):
+        marker = "msd-data: setup synchronized"
+        for mutation in ("missing-completion", "prefix", "suffix", "missing-grow", "wrong-partition",
+                         "userspace-between", "grow-error", "missing-finished", "phase-nonzero",
+                         "driver-nonzero", "changed-hash", "wrong-environment", "after-boot", "empty"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "run"
+                text = self.grow_log(marker)
+                if mutation == "missing-completion":
+                    text = text.replace(marker, "")
+                elif mutation == "prefix":
+                    text = text.replace(marker, "prefix " + marker)
+                elif mutation == "suffix":
+                    text = text.replace(marker, marker + " unexpected")
+                elif mutation == "missing-grow":
+                    text = text.replace("msd-data-grow: extending partition ", "unrelated: extending partition ")
+                elif mutation == "wrong-partition":
+                    text = text.replace("partition 4", "partition 5").replace("partition 7", "partition 6")
+                elif mutation == "userspace-between":
+                    text = text.replace("Re-reading", "unrelated userspace operation\nRe-reading")
+                elif mutation == "grow-error":
+                    text += "msd-data-grow failed; keeping /data mounted.\n"
+                elif mutation == "missing-finished":
+                    text = text.replace("msd.fscmp: finished", "")
+                elif mutation == "wrong-environment":
+                    text = text.replace("Machine model: Raspberry Pi 3 Model B", "Machine model: unknown")
+                elif mutation == "after-boot":
+                    text = "msd.fscmp: environment_ok\n" + text
+                elif mutation == "empty":
+                    text = ""
+                fixture(directory, "T1-negative-final", text=text,
+                        returncode=1 if mutation == "phase-nonzero" else 0)
+                if mutation == "changed-hash":
+                    with (directory / "qemu-run.log").open("a") as stream:
+                        stream.write("extra\n")
+                result = M.finalize(directory, "T1-negative-final", int(mutation == "driver-nonzero"))
+                self.assertEqual(result["status"], "fail:final_judge")
+
     def test_t7_btrfs_success_line_passes_final_judge(self):
         for count in ("147456", "0", "294912"):
             with self.subTest(count=count), tempfile.TemporaryDirectory() as temporary:
