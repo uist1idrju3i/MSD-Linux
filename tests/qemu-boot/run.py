@@ -166,7 +166,7 @@ class CryptsetupVersionTest(unittest.TestCase):
         cls.probe = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.probe)
 
-    def exercise(self, version="2.8.9", missing_image=False):
+    def exercise(self, version="2.8.9", missing_image=False, nested=False, existing=False):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
             images = directory / "output/images"
@@ -178,7 +178,10 @@ class CryptsetupVersionTest(unittest.TestCase):
                 (images / "sdcard.img").unlink()
             scratch = directory / "tmp"
             scratch.mkdir()
-            evidence = directory / "evidence"
+            evidence = directory / ("new/parent/evidence" if nested else "evidence")
+            if existing:
+                evidence.mkdir(parents=True)
+                (evidence / "serial.log").write_text("preserved evidence")
             state = directory / "vm.json"
             environment = {k: v for k, v in os.environ.items() if not k.startswith("QEMU_")}
             environment.update(TMPDIR=str(scratch), QEMU_DTB_BLUETOOTH="1",
@@ -190,6 +193,11 @@ class CryptsetupVersionTest(unittest.TestCase):
                  str(evidence), "2.8.9"],
                 env=environment, capture_output=True, text=True, timeout=15)
             self.assertEqual(list(scratch.iterdir()), [], result.stderr)
+            if existing:
+                self.assertFalse(state.exists())
+                self.assertEqual(list(evidence.iterdir()), [evidence / "serial.log"])
+                self.assertEqual((evidence / "serial.log").read_text(), "preserved evidence")
+                return result, None
             record = json.loads((evidence / "process.json").read_text())
             if missing_image:
                 self.assertFalse(state.exists())
@@ -214,6 +222,17 @@ class CryptsetupVersionTest(unittest.TestCase):
         result, record = self.exercise(missing_image=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIsNotNone(record["error"])
+
+    def test_probe_creates_missing_evidence_parents(self):
+        result, record = self.exercise(nested=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(record["qmp_quit"])
+
+    def test_probe_rejects_existing_evidence_without_overwrite(self):
+        result, record = self.exercise(nested=True, existing=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("FileExistsError", result.stderr)
+        self.assertIsNone(record)
 
     def test_target_version(self):
         for line in ("cryptsetup 2.8.9", "cryptsetup 2.8.9 flags: BLKID KEYRING"):

@@ -32,7 +32,7 @@ def main():
     args = parser.parse_args()
     if not re.fullmatch(r"\d+\.\d+\.\d+", args.expected):
         parser.error("expected must be a release version")
-    args.evidence.mkdir()
+    args.evidence.mkdir(parents=True)
     spec = importlib.util.spec_from_file_location(
         "supervisor", Path(__file__).with_name("fs-compare-v2") / "supervisor.py")
     supervisor = importlib.util.module_from_spec(spec)
