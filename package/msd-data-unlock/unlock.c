@@ -191,6 +191,8 @@ static int operation(struct msd_backend *b, struct msd_ui *u, enum msd_op op,
 		return r == -EPERM ? -EIO : r;
 	r = b->operate(b->ctx, op, first, second);
 	int end = u->progress(u->ctx, phases[op], false);
+	if (op == MSD_READY && r >= 0)
+		return r;
 	return end < 0 ? (end == -EPERM ? -EIO : end) : r;
 }
 
@@ -235,8 +237,7 @@ int msd_prepare(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 	    (r = operation(b, u, MSD_AUTH_PIN, s->pin, NULL)) < 0 ||
 	    (r = u->checkpoint(u->ctx, MSD_FILESYSTEM)) < 0 ||
 	    (r = slots(b, u, false, 3)) < 0 ||
-	    (r = operation(b, u, MSD_READY, NULL, NULL)) < 0 ||
-	    (r = slots(b, u, true, 3)) < 0)
+	    (r = operation(b, u, MSD_READY, NULL, NULL)) < 0)
 		goto done;
 	r = 0;
 done:

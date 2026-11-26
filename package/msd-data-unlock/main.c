@@ -92,7 +92,7 @@ done:
 	msd_crypt_close(crypt);
 	if (terminal.active && r < 0)
 		ui.message(ui.ctx, "Boot stopped. Safe to power off.\n");
-	if (msd_terminal_close(&terminal) < 0)
+	if (msd_terminal_close(&terminal) < 0 && (!prepare || r < 0))
 		r = -EIO;
 	if (fd >= 0)
 		close(fd);

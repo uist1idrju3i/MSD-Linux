@@ -264,8 +264,19 @@ static void initialization(void)
 	}
 	for (int at = 1; at <= 4; at++) {
 		init(&f); prepare_input(&f); f.inspect_fail_at = at; f.inspect_error = -EIO;
-		assert(run(&f, true) == -EIO);
+		assert(run(&f, true) == (at == 4 ? 0 : -EIO));
+		assert(f.ready == (at == 4));
 	}
+	for (int at = 1; at <= 14; at++) {
+		init(&f); prepare_input(&f);
+		f.ready = false;
+		f.progress_fail_at = at; f.progress_error = -EINTR;
+		assert(run(&f, true) == (at == 14 ? 0 : -EINTR));
+		assert(f.ready == (at == 14));
+	}
+	init(&f); prepare_input(&f);
+	assert(run(&f, true) == 0 && f.inspect_count == 3);
+	assert(f.ops[f.used - 1] == MSD_READY);
 	init(&f); prepare_input(&f); f.random_error = -EIO;
 	assert(run(&f, true) == -EIO && f.used == 0);
 	init(&f); prepare_input(&f); f.display_error = -EIO;
