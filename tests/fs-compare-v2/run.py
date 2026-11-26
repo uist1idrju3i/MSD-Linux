@@ -30,6 +30,7 @@ PREFLIGHT_SPEC = importlib.util.spec_from_file_location("preflight", V2 / "prefl
 P = importlib.util.module_from_spec(PREFLIGHT_SPEC)
 PREFLIGHT_SPEC.loader.exec_module(P)
 S = P.storage
+T7_BTRFS_OK = "msd.fscmp: T7_STEP command=btrfs found 147456 bytes used, no error found"
 
 
 def phase_result(test="smoke", phase="run", **overrides):
@@ -71,6 +72,63 @@ def fixture(directory, test="smoke", text=None, **overrides):
 
 
 class Judge(unittest.TestCase):
+    def test_t7_btrfs_success_line_passes_final_judge(self):
+        for count in ("147456", "0", "294912"):
+            with self.subTest(count=count), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "run"
+                fixture(directory, "T7", text=T7_BTRFS_OK.replace("147456", count) +
+                        "\nmsd.fscmp: finished\n")
+                result = M.finalize(directory, "T7", 0)
+                self.assertEqual(result["status"], "ok")
+                self.assertEqual(result["fatal_errors"], 0)
+                records = [json.loads(line) for line in (directory / "errors.jsonl").read_text().splitlines()]
+                self.assertEqual(len(records), 1)
+                self.assertTrue(records[0]["expected"])
+
+    def test_t7_btrfs_success_allowance_is_fully_scoped(self):
+        for test, phase, text in [
+                ("T6", "run", T7_BTRFS_OK),
+                ("T7", "verify", T7_BTRFS_OK),
+                ("T7", "host", T7_BTRFS_OK),
+                ("T7", "run", T7_BTRFS_OK.replace("command=btrfs", "command=e2fsck")),
+                ("T7", "run", T7_BTRFS_OK.replace("T7_STEP", "T6_STEP")),
+                ("T7", "run", T7_BTRFS_OK.replace("147456", "-1")),
+                ("T7", "run", T7_BTRFS_OK.replace("147456", "")),
+                ("T7", "run", "prefix " + T7_BTRFS_OK),
+                ("T7", "run", T7_BTRFS_OK + " ERROR: bad tree block"),
+                ("T7", "run", "msd.fscmp: no error found")]:
+            with self.subTest(test=test, phase=phase, text=text), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / f"qemu-{phase}.log"
+                path.write_text(text + "\n")
+                records = M.aggregate_errors([(phase, path)], test)
+                self.assertEqual(len(records), 1)
+                self.assertFalse(records[0]["expected"])
+
+    def test_t7_btrfs_success_does_not_hide_failed_execution(self):
+        error = "msd.fscmp: T7_STEP command=btrfs ERROR: bad tree block"
+        for mutation in ("btrfs-error", "mixed", "guest-error", "missing-marker", "phase-marker",
+                         "phase-nonzero", "driver-nonzero", "changed-hash", "empty-log"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "run"
+                text = T7_BTRFS_OK + "\nmsd.fscmp: finished\n"
+                if mutation == "btrfs-error":
+                    text = error + "\nmsd.fscmp: finished\n"
+                elif mutation == "mixed":
+                    text = error + "\n" + text
+                elif mutation == "guest-error":
+                    text += "msd.fscmp: error=T7_step_failed_command=btrfs status=1\n"
+                elif mutation == "missing-marker":
+                    text = T7_BTRFS_OK + "\n"
+                elif mutation == "empty-log":
+                    text = ""
+                fixture(directory, "T7", text=text,
+                        marker=mutation != "phase-marker", returncode=1 if mutation == "phase-nonzero" else 0)
+                if mutation == "changed-hash":
+                    path = directory / "qemu-run.log"
+                    path.write_text(path.read_text() + "changed\n")
+                result = M.finalize(directory, "T7", 1 if mutation == "driver-nonzero" else 0)
+                self.assertEqual(result["status"], "fail:final_judge")
+
     def test_only_complete_reaped_normal_phase_passes(self):
         self.assertTrue(M.phase_ok(phase_result(), "smoke", "run"))
         for overrides in [dict(returncode=-9), dict(returncode=1), dict(returncode=None),

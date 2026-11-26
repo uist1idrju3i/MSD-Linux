@@ -273,7 +273,9 @@ def aggregate_errors(logs, test):
             elif re.search(r"\b(error|failed|failure|fatal)\b|not found|No such file|Permission denied|No space left|Refusing |Could not |Timed out |did not finish|T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)|T6_READCHECK exit=[234]", text, re.I):
                 category = "diagnostic"
             if category:
-                expected = bool(category == "diagnostic" and (benign or (context and (
+                t7_btrfs_ok = (test == "T7" and phase == "run" and re.fullmatch(
+                    r"msd\.fscmp: T7_STEP command=btrfs found [0-9]+ bytes used, no error found", text))
+                expected = bool(category == "diagnostic" and (benign or t7_btrfs_ok or (context and (
                     re.search(r"T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)", text)
                     or re.search(r"EXT4-fs error|F2FS-fs.*error|BTRFS (?:error|warning)|checksum error|csum failed|device-mapper: integrity:", text, re.I)
                     or re.search(r"I/O error.*dev (?:dm-\d+|loop\d+)", text)
