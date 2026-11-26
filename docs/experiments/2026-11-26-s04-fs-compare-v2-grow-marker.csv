@@ -1,0 +1,11 @@
+run_id,variant,repeat,metric,value,unit,valid,note
+attempt-09-original,E1-T1-negative-final,1,child_status,1,status,false,early diagnostic failed; no coverage certificate issued
+attempt-09-original,E1-T1-negative-final,1,diagnostic_elapsed,386.91414464398986,seconds,false,not a performance measurement
+attempt-09-baseline,E1-T1-negative-final,1,driver_status,0,status,true,initial result-before-archive.json
+attempt-09-baseline,E1-T1-negative-final,1,fatal_errors,2,count,false,English grow completion marker not recognized
+attempt-09-archived,E1-T1-negative-final,1,fatal_errors,3,count,false,adds driver exit status 1 caused by the initial judge failure
+attempt-09-candidate,E1-T1-negative-final,1,fatal_errors,0,count,true,same six input files; finalize status ok; no QEMU rerun
+attempt-09-original,E1-T1-negative-final,1,mount_fail,0,count,true,negative control completed
+attempt-09-original,E1-T1-negative-final,1,fsck_fail,0,count,true,negative control completed
+attempt-09-original,E1-T1-negative-final,1,loss_points,1,count,true,expected negative-control loss detected
+attempt-09-original,E1-T1-negative-final,1,fsync_lost,,count,false,not a T3 test; no FSYNC_LOST marker; empty CSV value is not zero
