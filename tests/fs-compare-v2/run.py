@@ -121,6 +121,22 @@ class Judge(unittest.TestCase):
                 self.assertTrue(all(row["expected"] and row["known_boot"] == "grow-reread-busy"
                                     for row in records))
 
+    def test_grow_failure_before_completion_remains_fatal(self):
+        for marker in ("msd-data: setup synchronized",
+                       "msd-data: setup synchronized / 初期設定の同期が完了しました。"):
+            for error in ("resize2fs: Input/output error while trying to resize /dev/mmcblk0p7",
+                          "msd-data-grow failed; keeping /data mounted."):
+                with self.subTest(marker=marker, error=error), tempfile.TemporaryDirectory() as temporary:
+                    directory = Path(temporary) / "run"
+                    text = self.grow_log(marker).replace(marker, error + "\n" + marker)
+                    fixture(directory, "T1-negative-final", text=text)
+                    result = M.finalize(directory, "T1-negative-final", 0)
+                    self.assertEqual(result["status"], "fail:final_judge")
+                    self.assertEqual(result["fatal_errors"], 1)
+                    records = [json.loads(line) for line in (directory / "errors.jsonl").read_text().splitlines()]
+                    self.assertEqual([row["text"] for row in records if not row["expected"]], [error])
+                    self.assertEqual(sum(row["expected"] for row in records), 2)
+
     def test_grow_marker_does_not_hide_failures(self):
         marker = "msd-data: setup synchronized"
         for mutation in ("missing-completion", "prefix", "suffix", "missing-grow", "wrong-partition",
