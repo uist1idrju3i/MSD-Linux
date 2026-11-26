@@ -1,0 +1,15 @@
+{
+  "source_commit": "2c33ebf83a74212fad811ac5e5bb1e042844aca9",
+  "purpose": "試行09の保存log再判定に使う判定器と起動診断の規則。Python標準library以外の依存はない。",
+  "license": "../stage4-attempt-09.licenses.txt",
+  "files": {
+    "supervisor.py": {
+      "source": "board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py",
+      "sha256": "0cb094a1f4727d865f868cc006ae2799a060295ee06ec6bc1d24d1b82a00e7e4"
+    },
+    "boot-diagnostics.json": {
+      "source": "board/cardputerzero/tools/bench/fs-compare-v2/boot-diagnostics.json",
+      "sha256": "a8b0997d2c65c412292a324449309f00bbd53a9e214a9077f9404bc5a558a1f5"
+    }
+  }
+}

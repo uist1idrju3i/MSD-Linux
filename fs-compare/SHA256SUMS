@@ -42,3 +42,6 @@ edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6  stage4-attempt
 b9702f10e8c58729135376e6d758656ca36e2be74119139948dc5d336fb6f303  stage4-attempt-09-text-01.files.sha256
 838066c176732585fd9fbdb538baa657daa1d85d618b07c739ea2417f3fa1bb5  stage4-attempt-09-text-01.selection.json
 edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6  stage4-attempt-09.licenses.txt
+0cb094a1f4727d865f868cc006ae2799a060295ee06ec6bc1d24d1b82a00e7e4  stage4-attempt-09-judge-01/supervisor.py
+a8b0997d2c65c412292a324449309f00bbd53a9e214a9077f9404bc5a558a1f5  stage4-attempt-09-judge-01/boot-diagnostics.json
+b74b61f8d3e91611ef74b679ee6cdb4323244401d6d43eeeba11fef633ca1d32  stage4-attempt-09-judge-01/manifest.json
