@@ -31,3 +31,10 @@ b8901cbac424c523d6dcb80103e5601fd7b3b962f622120c56218577866cff3d  stage4-negativ
 30a4b298456c3e33ede77ad94ab03970e673f8f6b09c4d5c0a11bc5e0857220f  stage4-wifi-sdio-late-01.tar.zst
 48fdb23e3634afc22802c902a3a268a13bbb3575748d40f56ebb36a1d36a01f2  stage4-wifi-sdio-late-01.files.sha256
 2e842a8e22b36fbf61d3e44aebb15d817f8cf550dc2b3be718177c3d8396dece  stage4-wifi-sdio-late-01.licenses.txt
+c4e289af8581413dee3bbad1d1bb3bcde3cb4a3e6a0ddcd1d0a0268fa7fba184  stage4-attempt-07-text-01.tar.zst
+b7e7afb43feea1f0023c424e477b36a72c410fc100fabc5c747197cb98883379  stage4-attempt-07-text-01.files.sha256
+c5788e501841a99fa07393aaf2ec703ea2ee51d9d56fa9ade652f9aed9deb19a  stage4-attempt-07-text-01.selection.json
+d3380db640ba5e68d58f7d37d789e4f0f7cffcb910781696c624a91af2994cce  stage4-attempt-08-text-01.tar.zst
+7df15244271bb1c6ac10d7bfefeb37ea1ec87a039609cb32db8c169ef5ca34d9  stage4-attempt-08-text-01.files.sha256
+c4aa380551937ba16821c1f6e27d0da054390475632f3f02765bd8824b107a56  stage4-attempt-08-text-01.selection.json
+edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6  stage4-attempt-07-08.licenses.txt

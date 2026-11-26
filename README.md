@@ -1,5 +1,14 @@
 # /data file system比較実験の生データ
 
+試行07・08のtext証拠は`fs-compare/stage4-attempt-07-text-01.tar.zst`と
+`fs-compare/stage4-attempt-08-text-01.tar.zst`に保存した。各元text archiveに、
+単独再実行・host調査archiveの内容を`investigation/`以下として加えた写しである。
+元のgzip archive自体は変更していない。その4 hashと、収録・除外fileのpath・size・hashは
+同名`.selection.json`に記録した。展開済みbuild rootfsのfirmware設定は除外し、
+収録fileはbyte一致で照合した。07は14,323 file収録・800 file除外、08は9,576 file収録・704 file除外。
+image本体は含まない。各memberのhashは`.files.sha256`、GPL-2.0原文は
+`fs-compare/stage4-attempt-07-08.licenses.txt`に付す。通常のGit blobであり、LFSは使わない。
+
 2026-11-23のRAUC streaming Phase Aのtext証拠は、
 [RAUCの証拠](rauc/README.md)にあります。失敗した初回runも保持しています。
 
