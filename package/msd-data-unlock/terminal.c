@@ -82,6 +82,34 @@ static int get_byte(struct msd_terminal *t)
 	}
 }
 
+static int escape_sequence(struct msd_terminal *t)
+{
+	struct pollfd p = { .fd = t->fd, .events = POLLIN };
+	int r = poll(&p, 1, 100);
+	if (r <= 0)
+		return r < 0 ? -errno : -EINTR;
+	if ((r = get_byte(t)) < 0)
+		return r;
+	unsigned char c = t->secret->key;
+	t->secret->key = 0;
+	if (c != '[' && c != 'O')
+		return -EINTR;
+	bool first = true;
+	for (;;) {
+		if ((r = get_byte(t)) < 0)
+			return r;
+		c = t->secret->key;
+		t->secret->key = 0;
+		if (c >= 0x40 && c <= 0x7e && !(first && c == '['))
+			return 0;
+		if (c < 0x20 || c > 0x3f) {
+			if (!(first && c == '['))
+				return c == 3 ? -EINTR : -EINVAL;
+		}
+		first = false;
+	}
+}
+
 static int read_line(void *ctx, char *out, size_t cap)
 {
 	struct msd_terminal *t = ctx;
@@ -98,7 +126,12 @@ static int read_line(void *ctx, char *out, size_t cap)
 			if (c == '\n')
 				continue;
 		}
-		if (c == 3 || c == 27) { r = -EINTR; break; }
+		if (c == 27) {
+			if ((r = escape_sequence(t)) < 0)
+				break;
+			continue;
+		}
+		if (c == 3) { r = -EINTR; break; }
 		if (c == 4) { r = -ENODATA; break; }
 		if (c == '\n' || c == '\r') {
 			t->skip_lf = c == '\r';

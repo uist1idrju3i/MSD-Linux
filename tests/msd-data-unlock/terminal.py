@@ -95,6 +95,30 @@ def read_cases():
         assert f"line-result={-errno.EINTR} ".encode() in stdout
 
 
+def escape_cases():
+    sequences = [b"\x1b[A", b"\x1b[B", b"\x1b[C", b"\x1b[D", b"\x1b[H",
+                 b"\x1b[F", b"\x1b[1~", b"\x1b[4~", b"\x1b[3~", b"\x1bOH",
+                 b"\x1bOF", b"\x1bOA", b"\x1b[1;5D", b"\x1b[[A"]
+    for sequence in sequences:
+        session = Session("read")
+        session.send(b"ab" + sequence + b"cd\n")
+        stdout, stderr, output = session.finish()
+        assert b"line-result=4 length=4" in stdout and not stderr
+        assert output == b"****\n", sequence
+    session = Session("read")
+    session.send(b"ab\x1b")
+    time.sleep(0.02)
+    session.send(b"[3")
+    time.sleep(0.02)
+    session.send(b"~cd\n")
+    stdout, _, _ = session.finish()
+    assert b"line-result=4 length=4" in stdout
+    session = Session("read")
+    session.send(b"ab\x1b[3\x04")
+    stdout, _, _ = session.finish()
+    assert f"line-result={-errno.EINVAL} length=0".encode() in stdout
+
+
 def setup(grow_reply=b"grown\n", filesystem_reply=b"synced\n"):
     session = Session("prepare")
     session.until(b"Set a new PIN")
@@ -148,6 +172,7 @@ def unlock():
 
 
 read_cases()
+escape_cases()
 setup()
 setup(grow_reply=b"wrong\n")
 setup(filesystem_reply=b"wrong!\n")
