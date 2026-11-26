@@ -42,7 +42,7 @@ PINの長さと文字、blocklist、recoveryの規則は[正本](data-unlock.md#
 
 秘密をstdout・stderrへ出さず、libraryのlog callbackも抑止する。recovery keyの初回表示は意図した秘密の表示であり、選択した対話端末にだけ出す。QEMU harnessが端末出力を保存するなら、設計どおりkey表示を保存前に除外する必要がある。helper単独では外部のserial記録を防げない。
 
-format・slot操作・解錠・ready書込み中は、公開の処理名と経過秒、中断不可を端末へ出す。進捗用threadの生成や出力に失敗しても認証失敗回数へまとめない。cipher等は正本の暫定値で、Argon2idのparallel threadsは1とし、memoryを64 MiB以内に制限する。metadata操作後にはdeviceのfsync成功も必要とする。
+metadata検査・format・slot操作・解錠・ready書込み中は、公開の処理名と経過秒、中断不可を端末へ出す。`crypt_load`は読取り専用とは限らず、片方のheaderの損傷をもう片方から自動復旧して書き込む場合があるため、検査もprogressで囲む。進捗用threadの生成や出力に失敗しても認証失敗回数へまとめない。cipher等は正本の暫定値で、Argon2idのparallel threadsは1とし、memoryを64 MiB以内に制限する。metadata操作後にはdeviceのfsync成功も必要とする。
 
 ## 検査と残件
 
@@ -52,6 +52,6 @@ docker/msd-dev tests/msd-data-unlock/run.sh
 
 fake backendはPINの範囲・境界、誤入力0〜10回、非負のAPI成功値、空Enterと取消し、固定slot、recovery照合とskip再確認、回数無制限のrecovery、PIN再設定の中断、各段階のI/O等の失敗、buffer消去を検査する。PTY試験は全印字可能ASCII、mask、過長・不正byte、EOF・中断signal、termios復元、実際の対話とsocketの順序、stdout・stderrへの非出力を検査する。
 
-hostのlibcryptsetup headerがあれば、同じbackendで通常fileにLUKS2 headerを作り、slot追加・削除・passphrase検証・ready・未知label/slotの拒否を調べる。dmのactivateはしない。headerが無ければこの追加試験だけをskipと表示する。試験専用の`MSD_TEST_CRYPTSETUP_INCLUDE`でheader directoryを指定できる。製品helperはこの環境変数を読まない。
+hostのlibcryptsetup headerがあれば、同じbackendで通常fileにLUKS2 headerを作り、slot追加・削除・passphrase検証・ready・片側headerの自動復旧・未知label/slotの拒否を調べる。dmのactivateはしない。headerが無ければこの追加試験だけをskipと表示する。試験専用の`MSD_TEST_CRYPTSETUP_INCLUDE`でheader directoryを指定できる。製品helperはこの環境変数を読まない。
 
 target buildには製品のcryptsetup 2.8.9のstaging header・libraryを使う。full image build、mapperのactivate、S02以降の順序、LCD・内蔵キーボードの入出力、実機のArgon2時間、SDの電断はPR Bのhost testで確認済みとしない。hostのlibrary版が2.8.9と異なる場合も区別して報告する。

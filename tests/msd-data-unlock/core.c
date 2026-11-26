@@ -104,6 +104,7 @@ static int progress(void *ctx, const char *phase, bool start)
 static int inspect(void *ctx, bool ready)
 {
 	struct fake *f = ctx;
+	assert(f->progress_calls % 2 == 1);
 	if (++f->inspect_count == f->inspect_fail_at)
 		return f->inspect_error;
 	if (f->ready != ready)

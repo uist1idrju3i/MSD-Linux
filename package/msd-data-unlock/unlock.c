@@ -194,9 +194,20 @@ static int operation(struct msd_backend *b, struct msd_ui *u, enum msd_op op,
 	return end < 0 ? (end == -EPERM ? -EIO : end) : r;
 }
 
-static int slots(struct msd_backend *b, bool ready, int expected)
+static int metadata(struct msd_backend *b, struct msd_ui *u, bool ready)
 {
-	int r = b->inspect(b->ctx, ready);
+	const char *phase = "Checking LUKS2 metadata";
+	int r = u->progress(u->ctx, phase, true);
+	if (r < 0)
+		return r == -EPERM ? -EIO : r;
+	r = b->inspect(b->ctx, ready);
+	int end = u->progress(u->ctx, phase, false);
+	return end < 0 ? (end == -EPERM ? -EIO : end) : r;
+}
+
+static int slots(struct msd_backend *b, struct msd_ui *u, bool ready, int expected)
+{
+	int r = metadata(b, u, ready);
 	return r < 0 ? r : r == expected ? 0 : -EINVAL;
 }
 
@@ -208,14 +219,14 @@ int msd_prepare(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 	    (r = say(u, "If power is lost, initialization normally restarts on the next boot. If it cannot, boot stops without formatting.\n")) < 0 ||
 	    (r = u->checkpoint(u->ctx, MSD_GROW)) < 0 ||
 	    (r = operation(b, u, MSD_FORMAT, s->pin, NULL)) < 0 ||
-	    (r = slots(b, false, 1)) < 0 ||
+	    (r = slots(b, u, false, 1)) < 0 ||
 	    (r = operation(b, u, MSD_ADD_RECOVERY, s->pin, s->recovery)) < 0 ||
-	    (r = slots(b, false, 3)) < 0 ||
+	    (r = slots(b, u, false, 3)) < 0 ||
 	    (r = operation(b, u, MSD_AUTH_PIN, s->pin, NULL)) < 0 ||
 	    (r = u->checkpoint(u->ctx, MSD_FILESYSTEM)) < 0 ||
-	    (r = slots(b, false, 3)) < 0 ||
+	    (r = slots(b, u, false, 3)) < 0 ||
 	    (r = operation(b, u, MSD_READY, NULL, NULL)) < 0 ||
-	    (r = slots(b, true, 3)) < 0)
+	    (r = slots(b, u, true, 3)) < 0)
 		goto done;
 	r = 0;
 done:
@@ -238,7 +249,7 @@ static int recover(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s
 		explicit_bzero(s->line, sizeof(s->line));
 		if (r < 0)
 			continue;
-		mask = b->inspect(b->ctx, true);
+		mask = metadata(b, u, true);
 		if (mask < 0 || (mask != 2 && mask != 3))
 			return mask < 0 ? mask : -EINVAL;
 		r = operation(b, u, MSD_AUTH_RECOVERY, s->recovery, NULL);
@@ -250,15 +261,15 @@ static int recover(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s
 	}
 	if ((r = new_pin(u, s)) < 0)
 		return r;
-	mask = b->inspect(b->ctx, true);
+	mask = metadata(b, u, true);
 	if (mask < 0 || (mask != 2 && mask != 3))
 		return mask < 0 ? mask : -EINVAL;
 	if (mask == 3 && (r = operation(b, u, MSD_DELETE_PIN, NULL, NULL)) < 0)
 		return r;
-	if ((r = slots(b, true, 2)) < 0 ||
+	if ((r = slots(b, u, true, 2)) < 0 ||
 	    (r = operation(b, u, MSD_ADD_PIN, s->recovery, s->pin)) < 0)
 		return r;
-	return slots(b, true, 3);
+	return slots(b, u, true, 3);
 }
 
 int msd_unlock(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
@@ -266,7 +277,7 @@ int msd_unlock(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 	int r;
 	explicit_bzero(s, sizeof(*s));
 	for (;;) {
-		int mask = b->inspect(b->ctx, true);
+		int mask = metadata(b, u, true);
 		if (mask < 0 || (mask != 2 && mask != 3)) {
 			r = mask < 0 ? mask : -EINVAL;
 			break;
@@ -304,9 +315,9 @@ int msd_unlock(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 			break;
 		if (++s->failures < 10)
 			continue;
-		if ((r = slots(b, true, 3)) < 0 ||
+		if ((r = slots(b, u, true, 3)) < 0 ||
 		    (r = operation(b, u, MSD_DELETE_PIN, NULL, NULL)) < 0 ||
-		    (r = slots(b, true, 2)) < 0)
+		    (r = slots(b, u, true, 2)) < 0)
 			break;
 		r = recover(b, u, s);
 		break;

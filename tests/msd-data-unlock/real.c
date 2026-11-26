@@ -4,9 +4,11 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <libcryptsetup.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
@@ -29,6 +31,14 @@ int main(int argc, char **argv)
 	msd_crypt_close(c);
 	assert(msd_crypt_open(&c, &b, argv[1], NULL) == 0);
 	assert(b.inspect(b.ctx, true) == 3);
+	int fd = open(argv[1], O_RDWR | O_CLOEXEC);
+	assert(fd >= 0);
+	assert(pwrite(fd, "X", 1, 0) == 1 && fsync(fd) == 0);
+	assert(b.inspect(b.ctx, true) == 3);
+	char magic[6];
+	assert(pread(fd, magic, sizeof(magic), 0) == sizeof(magic));
+	assert(!memcmp(magic, "LUKS\xba\xbe", sizeof(magic)));
+	assert(close(fd) == 0);
 	assert(b.operate(b.ctx, MSD_DELETE_PIN, NULL, NULL) == 0);
 	assert(b.inspect(b.ctx, true) == 2);
 	assert(b.operate(b.ctx, MSD_DELETE_PIN, NULL, NULL) < 0);
@@ -61,6 +71,6 @@ int main(int argc, char **argv)
 	assert(b.inspect(b.ctx, true) == -EINVAL);
 	msd_crypt_close(c);
 	crypt_free(cd);
-	puts("ok - real libcryptsetup: pending/ready, fixed slots, passphrase validation, reset, PBKDF, unexpected slot/label");
+	puts("ok - real libcryptsetup: pending/ready, fixed slots, passphrase validation, reset, PBKDF, header recovery, unexpected slot/label");
 	return 0;
 }

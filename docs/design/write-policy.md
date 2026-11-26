@@ -51,6 +51,7 @@ consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いで�
 
 | 操作 | 書込み先と時機・理由 | progress・中断可否 | 状態・受入条件 |
 |---|---|---|---|
+| LUKS2 headerの検査と自動復旧 | helperの`crypt_load`が片側のheader損傷を検出すると、認識できるもう片側からheaderを復旧して書く場合がある。label・slot検査の前に起こり得るlibraryの動作 | 検査の開始前から経過秒と中断不可を英語表示する。read-onlyのzero確認とは別の処理 | PR Bのhelperでprogressを実装。hostのfileで片側損傷からの復旧を検査する。両側の判定不能やlibraryのI/O errorはformatへ進めず停止。S02への接続と実SDの確認はPR C以降 |
 | 初期化前の固定範囲zero確認 | LUKS2 headerが無いときだけ、p7先頭からgenimageが作ったp7の固定長`N`までを読む。現在のp7容量には依存しない。`N`は512 MiB以上、PR Cで定数化。確認範囲にdataが残る領域を初期化しないため。SD書込みなし | 数秒〜数十秒かかり得るため、読取り済みbytes・総bytes又は割合と経過時間、読取りだけなので電源を切ってよい旨を英語表示 | 計画。通常のLUKS2起動では行わない。`N` bytes内の後方の非zeroと読取り失敗は停止。grow後・header書込み前の電断後も同じ`N`を確認 |
 | 初期化開始とpartition grow | PIN2回とrecovery照合又はskip再確認の後だけ、p4/p7のtableを書き換える。初期化の中でdisk終端まで広げるため。`N`より後ろの拡張領域に古いdataがあっても初期化の対象とする | 拡張中の進捗又は経過時間と中断可否を英語で表示 | 計画。通常起動でgrowせず、resize2fs相当の毎起動経路を無くす。gate失敗前はwrite 0。暗号化前のdataは消去せず、LUKS等で上書きしない部分には古い平文が残り得る |
 | LUKS2 format・slot 0登録 | 初期化中だけp7のheader・keyslot領域へpendingとPINで保護したvolume key等を書く。端末固有の暗号領域を作るため | formatの進捗又は経過時間を英語表示。電源断後は通常は次回に初期化をやり直すが、判定不能ならformatせず停止する旨も表示 | 計画。PIN平文はSDへ保存しない。LUKS2 headerが無い場合は、p7先頭からimageが作った大きさ`N`までに非zeroがあればformatせず停止。`N`より後ろは古いdataが残っても初期化の対象とする |
