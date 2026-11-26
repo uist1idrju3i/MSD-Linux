@@ -27,7 +27,7 @@ python3 "$root/tests/msd-data-unlock/requirements.py"
 if [ -f "$include/libcryptsetup.h" ]; then
 	"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" -I"$include" \
 		"$src/unlock.c" "$src/crypt-backend.c" "$root/tests/msd-data-unlock/real.c" \
-		-Wl,-l:libcryptsetup.so.12 -o "$work/real"
+		-Wl,--wrap=fsync -Wl,-l:libcryptsetup.so.12 -o "$work/real"
 	"$cc" -std=c11 -Wall -Wextra -Werror -pthread -I"$src" -I"$include" \
 		"$src/main.c" "$src/unlock.c" "$src/terminal.c" "$src/crypt-backend.c" \
 		-Wl,-l:libcryptsetup.so.12 -o "$work/helper"

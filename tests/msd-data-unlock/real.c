@@ -10,6 +10,20 @@
 #include <string.h>
 #include <unistd.h>
 
+static bool fail_persist;
+static unsigned sync_failures;
+
+int __real_fsync(int fd);
+int __wrap_fsync(int fd)
+{
+	if (fail_persist) {
+		sync_failures++;
+		errno = EIO;
+		return -1;
+	}
+	return __real_fsync(fd);
+}
+
 int main(int argc, char **argv)
 {
 	assert(argc == 2);
@@ -70,7 +84,19 @@ int main(int argc, char **argv)
 	assert(msd_crypt_open(&c, &b, argv[1], NULL) == 0);
 	assert(b.inspect(b.ctx, true) == -EINVAL);
 	msd_crypt_close(c);
+	assert(crypt_set_label(cd, "pending", NULL) == 0);
 	crypt_free(cd);
+	assert(msd_crypt_open(&c, &b, argv[1], NULL) == 0);
+	assert(b.inspect(b.ctx, false) == 3);
+	fail_persist = true;
+	int ready_result = b.operate(b.ctx, MSD_READY, NULL, NULL);
+	fail_persist = false;
+	assert(ready_result == -EIO && sync_failures == 1);
+	msd_crypt_close(c);
+	assert(msd_crypt_open(&c, &b, argv[1], NULL) == 0);
+	assert(b.inspect(b.ctx, true) == 3);
+	msd_crypt_close(c);
+	puts("ok - real libcryptsetup: READY fsync EIO returns error with ready label retained");
 	puts("ok - real libcryptsetup: pending/ready, fixed slots, passphrase validation, reset, PBKDF, header recovery, unexpected slot/label");
 	return 0;
 }

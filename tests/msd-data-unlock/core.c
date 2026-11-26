@@ -13,7 +13,7 @@ struct fake {
 	unsigned count, next, inspect_count, inspect_fail_at;
 	int inspect_error, mask;
 	bool ready, bad_pin, delete_noop, mapped;
-	int deactivations, deactivate_error;
+	int deactivations, deactivate_error, ready_error;
 	unsigned bad_recovery;
 	int ops[128], used, fail_at, failure, auth_success;
 	int checkpoints, checkpoint_fail, random_error, message_error, display_error;
@@ -160,7 +160,7 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 	case MSD_READY:
 		assert(f->mask == 3 && !f->ready && !a && !b);
 		f->ready = true;
-		return 0;
+		return f->ready_error;
 	}
 	assert(0);
 	return -EINVAL;
@@ -277,6 +277,16 @@ static void initialization(void)
 	init(&f); prepare_input(&f);
 	assert(run(&f, true) == 0 && f.inspect_count == 3);
 	assert(f.ops[f.used - 1] == MSD_READY);
+	const int ready_errors[] = {-EIO, -ENOSPC};
+	for (size_t i = 0; i < sizeof(ready_errors)/sizeof(ready_errors[0]); i++) {
+		for (int busy = 0; busy < 2; busy++) {
+			init(&f); prepare_input(&f); f.ready_error = ready_errors[i];
+			f.deactivate_error = busy ? -EBUSY : 0;
+			assert(run(&f, true) == ready_errors[i] && f.ready && f.mask == 3);
+			assert(f.used == 4 && f.checkpoints == 2 && f.deactivations == 1);
+			assert(f.mapped == (busy != 0));
+		}
+	}
 	init(&f); prepare_input(&f); f.fail_at = 4; f.deactivate_error = -EBUSY;
 	assert(run(&f, true) == -EIO && f.checkpoints == 2 && !f.ready);
 	assert(f.deactivations == 1 && f.mapped);
