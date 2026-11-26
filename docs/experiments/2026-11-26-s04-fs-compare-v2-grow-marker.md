@@ -133,7 +133,7 @@ grow失敗・終了marker欠損・非zeroのphase/driver終了・hash不一致�
 | `attempt-09-e1-investigation-and-host-facts.tar.gz` | `90933411e639840a1fc67d7e0c984fc52e954a6372c3a7b881aa5d076d92a63a` |
 
 試行07・08と同じorphan branch `data/fs-compare-experiments`の固定commit
-`f64185d320339b5fca4adf088eb1b148cc664792`にtextを保存した。data branchはmergeも削除もしない。
+`0991c1f9f8389e5c666c71b4c7f87d4a71820c13`にtextと再判定器を保存した。data branchはmergeも削除もしない。
 保存先は`fs-compare/stage4-attempt-09-text-01.tar.zst`、304,817 bytes、SHA-256は
 `70aec2eed8de39de5e76b2e852bcd80463eaad67d65a16cfec540d83058d291b`。
 通常のGit blobで50 MiB未満。LFSは使わず、image binaryは収録しない。
@@ -143,19 +143,24 @@ grow失敗・終了marker欠損・非zeroのphase/driver終了・hash不一致�
 元archiveのhash、収録・除外fileのpath・size・hash・理由は`.selection.json`に残す。
 memberごとのhashは`.files.sha256`、archiveとsidecarのhashは`fs-compare/SHA256SUMS`、
 収録した本repo sourceのGPL-2.0原文は`fs-compare/stage4-attempt-09.licenses.txt`に付す。
+再判定に必要な`supervisor.py`と`boot-diagnostics.json`は、同じdata branchの
+`fs-compare/stage4-attempt-09-judge-01/`に保全した。由来のcommitとfileごとのhashは同directoryの
+`manifest.json`に記録し、3 fileのhashを`SHA256SUMS`にも加えた。
+再判定はこの写しを使い、feature branchやそのcommitをoriginから取得する必要はない。
 
 修正後checkoutのrootで実行する。既存directory、hash不一致、取得失敗があれば停止する。
 
 ```sh
 set -eu
 git fetch origin data/fs-compare-experiments
-data_sha=f64185d320339b5fca4adf088eb1b148cc664792
+data_sha=0991c1f9f8389e5c666c71b4c7f87d4a71820c13
 mkdir evidence-grow
 git archive -o evidence-grow/data.tar "$data_sha" \
   fs-compare/stage4-attempt-09-text-01.tar.zst \
   fs-compare/stage4-attempt-09-text-01.files.sha256 \
   fs-compare/stage4-attempt-09-text-01.selection.json \
-  fs-compare/stage4-attempt-09.licenses.txt fs-compare/SHA256SUMS
+  fs-compare/stage4-attempt-09.licenses.txt \
+  fs-compare/stage4-attempt-09-judge-01 fs-compare/SHA256SUMS
 tar -xf evidence-grow/data.tar -C evidence-grow
 grep '  stage4-attempt-09' evidence-grow/fs-compare/SHA256SUMS > evidence-grow/checksums
 (cd evidence-grow/fs-compare && sha256sum -c ../checksums)
@@ -168,25 +173,24 @@ tar --zstd -xf evidence-grow/fs-compare/stage4-attempt-09-text-01.tar.zst -C evi
 
 取得・照合後に、同じcheckoutのrootで実行する。新しい出力先へ6入力だけを展開する。
 終了値0は初回の`result-before-archive.json`に記録された値で、失敗後のdriver終了値1ではない。
-判定器と起動診断の規則は、修正済みの固定commitから同じworktreeへ取り出す。
+判定器と起動診断の規則は、上の手順で永続するdata branchの固定commitから取得する。
 現在のcheckoutでQEMUやkernelの固定版が更新されても、再判定にはその規則を使わない。
-`judge_sha`はPR #307でgrow完了行を修正したcommitで、submoduleの初期化は不要である。
+Python標準library以外の依存はなく、submoduleの初期化も不要である。
 
 ```sh
 set -eu
 archive=evidence-grow/fs-compare/stage4-attempt-09-text-01.tar.zst
 printf '70aec2eed8de39de5e76b2e852bcd80463eaad67d65a16cfec540d83058d291b  %s\n' "$archive" | sha256sum -c -
+(cd evidence-grow/fs-compare && sha256sum -c ../checksums)
 mkdir rejudge-grow
-judge_sha=2c33ebf83a74212fad811ac5e5bb1e042844aca9
-git fetch origin "$judge_sha"
-git worktree add --detach rejudge-grow/judge "$judge_sha"
+judge=evidence-grow/fs-compare/stage4-attempt-09-judge-01
 out=rejudge-grow/probe-E1-T1-negative-final
 mkdir "$out"
 prefix=run/early-e1-negative-final/probe-E1-T1-negative-final
 tar --zstd -xf "$archive" -C "$out" --strip-components=3 \
   "$prefix/host.log" "$prefix/launcher.log" "$prefix/supervisor-run.log" \
   "$prefix/qemu-run.log" "$prefix/phase-run.json" "$prefix/summary.pending.csv"
-python3 rejudge-grow/judge/board/cardputerzero/tools/bench/fs-compare-v2/supervisor.py finalize "$out" T1-negative-final 0
+python3 "$judge/supervisor.py" finalize "$out" T1-negative-final 0
 cat "$out/result.json"
 ```
 
