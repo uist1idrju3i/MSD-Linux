@@ -327,6 +327,8 @@ int msd_unlock(struct msd_backend *b, struct msd_ui *u, struct msd_secret *s)
 		    (r = operation(b, u, MSD_DELETE_PIN, NULL, NULL)) < 0 ||
 		    (r = slots(b, u, true, 2)) < 0)
 			break;
+		if ((r = say(u, "PIN is no longer available. A recovery key is required.\n")) < 0)
+			break;
 		r = recover(b, u, s);
 		break;
 	}

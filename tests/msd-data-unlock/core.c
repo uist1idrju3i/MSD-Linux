@@ -346,7 +346,12 @@ static void authentication(void)
 		assert(run(&f, false) == -ENODATA);
 		assert(f.used == n + (n == 10));
 		assert(f.mask == (n == 10 ? 2 : 3));
+		assert((strstr(f.output, "PIN is no longer available. A recovery key is required.") != NULL) == (n == 10));
 	}
+	init(&f); f.bad_pin = true; f.message_fail_at = 11; f.message_error = -EIO;
+	for (int i = 0; i < 10; i++) input(&f, "1234");
+	assert(run(&f, false) == -EIO && f.mask == 2 && f.used == 11);
+	assert(f.next == 10 && !strstr(f.output, "Enter recovery key:"));
 	init(&f); f.bad_pin = true;
 	for (int i = 0; i < 9; i++) input(&f, "1234");
 	input(&f, ""); input(&f, "no"); input(&f, "abc"); input_error(&f, -EINVAL);
@@ -357,6 +362,7 @@ static void authentication(void)
 	for (int i = 0; i < 10; i++) input(&f, "1234");
 	recovery_input(&f);
 	assert(run(&f, false) == -EIO && f.used == 11 && f.mask == 3);
+	assert(!strstr(f.output, "PIN is no longer available."));
 	init(&f); f.bad_pin = true; f.delete_noop = true;
 	for (int i = 0; i < 10; i++) input(&f, "1234");
 	assert(run(&f, false) == -EINVAL && f.used == 11);

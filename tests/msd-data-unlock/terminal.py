@@ -175,12 +175,35 @@ def unlock():
     assert key not in stdout + stderr + output
 
 
+def lockout(delete_failure=False):
+    notice = b"PIN is no longer available. A recovery key is required."
+    session = Session("lockout-delete-failure" if delete_failure else "lockout")
+    for attempt in range(10):
+        prompt = session.until(b"Enter PIN:")
+        assert notice not in prompt and b"Enter recovery key:" not in prompt
+        session.send(PIN + b"\n")
+    if not delete_failure:
+        prompt = session.until(b"Enter recovery key:")
+        assert prompt.count(notice) == 1
+        assert prompt.index(notice) < prompt.index(b"Enter recovery key:")
+        session.send(b"\x03")
+    stdout, stderr, output = session.finish()
+    assert not stderr and PIN not in output
+    if delete_failure:
+        assert b"result=-5 mask=3 ready=1" in stdout
+        assert notice not in output and b"Enter recovery key:" not in output
+    else:
+        assert b"result=-4 mask=2 ready=1" in stdout
+
+
 read_cases()
 escape_cases()
 setup()
 setup(grow_reply=b"wrong\n")
 setup(filesystem_reply=b"wrong!\n")
 unlock()
+lockout()
+lockout(delete_failure=True)
 progress = Session("progress")
 _, _, output = progress.finish()
 assert b"1 seconds. Do not power off." in output
