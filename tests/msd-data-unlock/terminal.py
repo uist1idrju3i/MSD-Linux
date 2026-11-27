@@ -42,6 +42,30 @@ class Session:
         self.output = b""
         self.transcript = b""
         self.secrets = {PIN}
+        self.recovery_forms = set()
+        self.initial_recovery_display = None
+
+    def recovery_key(self, key):
+        compact = key.replace(b" ", b"").replace(b"-", b"").upper()
+        assert re.fullmatch(rb"[A-Z2-7]{32}", compact)
+        groups = [compact[i:i + 4] for i in range(0, 32, 4)]
+        self.recovery_forms.update((compact, b" ".join(groups), b"-".join(groups)))
+
+    def allow_initial_recovery(self, display, match):
+        assert self.initial_recovery_display is None
+        start = len(self.transcript) - len(display) + match.start()
+        self.initial_recovery_display = (start, start + len(match.group()), match.group())
+
+    def assert_no_secrets(self, stdout, stderr):
+        for secret in self.secrets:
+            assert secret not in stdout + stderr + self.transcript, "secret leaked to captured output"
+        checked = self.transcript
+        if self.initial_recovery_display is not None:
+            start, end, original = self.initial_recovery_display
+            assert checked[start:end] == original
+            checked = checked[:start] + b"\0" * (end - start) + checked[end:]
+        for form in self.recovery_forms:
+            assert form not in (stdout + stderr + checked).upper(), "recovery key leaked to captured output"
 
     def send(self, data, secrets=()):
         self.secrets.update(secrets)
@@ -70,8 +94,7 @@ class Session:
             while select.select([self.master], [], [], 0)[0]:
                 self.read_output()
             assert termios.tcgetattr(self.slave) == self.before, "termios was not restored"
-            for secret in self.secrets:
-                assert secret not in stdout + stderr + self.transcript, "secret leaked to captured output"
+            self.assert_no_secrets(stdout, stderr)
             assert b"must-not-be-used" not in stdout + stderr
             assert not re.search(rb"(?<!\r)\n", self.transcript), "bare LF on console"
             return stdout, stderr, self.output
@@ -134,8 +157,8 @@ def escape_cases():
     assert f"line-result={-errno.EINVAL} length=0".encode() in stdout
 
 
-def setup(grow_reply=b"grown\n", filesystem_reply=b"synced\n"):
-    session = Session("prepare")
+def setup(grow_reply=b"grown\n", filesystem_reply=b"synced\n", repeat_key=False):
+    session = Session("prepare-repeat-key" if repeat_key else "prepare")
     session.until(b"Set a new PIN")
     session.send(PIN + b"\n")
     session.until(b"Enter the new PIN again:")
@@ -144,7 +167,8 @@ def setup(grow_reply=b"grown\n", filesystem_reply=b"synced\n"):
     match = re.search(rb"[A-Z2-7]{4}(?: [A-Z2-7]{4}){7}", display)
     assert match, "recovery key grouping missing"
     recovery = match.group().replace(b" ", b"")
-    session.secrets.update((recovery, recovery.lower()))
+    session.recovery_key(recovery)
+    session.allow_initial_recovery(display, match)
     assert PIN not in display
     session.send(b"\n")
     session.until(b"Skip verification? Type yes to confirm:")
@@ -177,7 +201,8 @@ def unlock():
     session.send(b"yes\n")
     session.until(b"Enter recovery key:")
     key = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-    session.send(key.lower() + b"\n", secrets=(key, key.lower()))
+    session.recovery_key(key)
+    session.send(key.lower() + b"\n")
     session.until(b"Set a new PIN")
     session.send(PIN + b"\n")
     session.until(b"Enter the new PIN again:")
@@ -219,6 +244,36 @@ def echo_negative_control():
     print("ok - PTY negative control: first PIN echo consumed by until is detected")
 
 
+def recovery_negative_controls():
+    try:
+        setup(repeat_key=True)
+    except AssertionError as error:
+        assert str(error) == "recovery key leaked to captured output"
+    else:
+        raise AssertionError("Repeated recovery key display was not detected")
+    session = object.__new__(Session)
+    session.secrets = {PIN}
+    session.recovery_forms = set()
+    key = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+    grouped = b" ".join(key[i:i + 4] for i in range(0, 32, 4))
+    session.recovery_key(key)
+    session.initial_recovery_display = (0, len(grouped), grouped)
+    session.transcript = grouped
+    session.assert_no_secrets(b"", b"")
+    for form in session.recovery_forms:
+        for variant in (form, form.lower(), form[:4] + form[4:].lower()):
+            for channel in range(3):
+                session.transcript = grouped + (b"\r\n" + variant if channel == 2 else b"")
+                try:
+                    session.assert_no_secrets(variant if channel == 0 else b"",
+                                              variant if channel == 1 else b"")
+                except AssertionError as error:
+                    assert str(error) == "recovery key leaked to captured output"
+                else:
+                    raise AssertionError("Recovery key format/channel leak was not detected")
+    print("ok - PTY negative controls: repeated recovery display and all formats/channels are detected")
+
+
 read_cases()
 escape_cases()
 setup()
@@ -228,6 +283,7 @@ unlock()
 lockout()
 lockout(delete_failure=True)
 echo_negative_control()
+recovery_negative_controls()
 progress = Session("progress")
 _, _, output = progress.finish()
 assert b"1 seconds. Do not power off." in output

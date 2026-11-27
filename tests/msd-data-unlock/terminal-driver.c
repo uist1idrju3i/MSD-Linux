@@ -12,7 +12,7 @@
 #include <sys/resource.h>
 #include <time.h>
 
-struct fake { int mask; bool ready, bad_pin, delete_failure, echo_pin; struct msd_ui *ui; };
+struct fake { int mask; bool ready, bad_pin, delete_failure, echo_pin, repeat_key; struct msd_ui *ui; };
 static int inspect(void *ctx, bool ready)
 {
 	struct fake *f = ctx;
@@ -24,7 +24,10 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 	(void)a; (void)b;
 	switch (op) {
 	case MSD_FORMAT: f->mask = 1; f->ready = false; break;
-	case MSD_ADD_RECOVERY: f->mask = 3; break;
+	case MSD_ADD_RECOVERY:
+		f->mask = 3;
+		if (f->repeat_key) assert(f->ui->recovery(f->ui->ctx, b) == 0);
+		break;
 	case MSD_DELETE_PIN:
 		if (f->delete_failure) return -EIO;
 		f->mask = 2; break;
@@ -81,13 +84,14 @@ int main(int argc, char **argv)
 		nanosleep(&wait, NULL);
 		r = u.progress(u.ctx, "Test operation", false);
 	} else {
-		bool prepare = !strcmp(argv[1], "prepare");
+		bool prepare = !strcmp(argv[1], "prepare") || !strcmp(argv[1], "prepare-repeat-key");
 		struct fake f = { .mask = prepare ? 0 : 3, .ready = !prepare,
 			.bad_pin = !strncmp(argv[1], "lockout", 7),
 			.delete_failure = !strcmp(argv[1], "lockout-delete-failure"),
-			.echo_pin = !strcmp(argv[1], "lockout-echo"), .ui = &u };
+			.echo_pin = !strcmp(argv[1], "lockout-echo"), .ui = &u,
+			.repeat_key = !strcmp(argv[1], "prepare-repeat-key") };
 		struct msd_backend b = {&f, inspect, operate, deactivate};
-		r = !strcmp(argv[1], "prepare") ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
+		r = prepare ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
 		printf("result=%d mask=%d ready=%d\n", r, f.mask, f.ready);
 	}
 	assert(msd_terminal_close(&t) == 0);
