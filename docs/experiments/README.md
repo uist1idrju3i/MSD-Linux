@@ -10,6 +10,7 @@
 
 | ID | S 番号 | 日付 | 状態 | 結論 |
 |---|---|---|---|---|
+| [開発imageのsnapshot](2026-11-26-dev-image-snapshot.md) | [全APT差分](2026-11-26-dev-image-snapshot-packages.csv) | 2026-11-26 | amd64 build・固定Trivy・host 13 suite・旧新QEMU A/B | 7 packageを保守更新しblocker 77から0。arm64は署名付きindexまで。製品full build・実機は未確認 |
 | [cryptsetup 2.8.9](2026-11-26-cryptsetup-2.8.9.md) | [CSV](2026-11-26-cryptsetup-2.8.9.csv) | 2026-11-26 | 新旧の製品build・target版・QEMU A/B・license照合 | 2.8.9を確認。kernel設定差0、rootfsは4,096 bytes増。既存のCVE・配布監査の残件は不変。`/data`の形式変更と実機検証は対象外 |
 | [v2 T7 Btrfs判定](2026-11-26-s04-fs-compare-v2-t7-btrfs.md) | [CSV](2026-11-26-s04-fs-compare-v2-t7-btrfs.csv) | 2026-11-26 | 試行07の中断と08の誤判定を区別・原logを別出力で再判定 | 07のB1/T6単独再実行は成功。08は正常行の限定許容で旧fatal 1から新0。原結果は失敗のまま保持。修正後のQEMU・全smokeは未実施 |
 | [v2 grow完了行判定](2026-11-26-s04-fs-compare-v2-grow-marker.md) | [CSV](2026-11-26-s04-fs-compare-v2-grow-marker.csv) | 2026-11-26 | 試行09のE1先行診断の誤判定・写しで再判定 | 完了行の表記不整合を修正し旧fatal 2から新0。原結果は失敗のまま保持。代表21件・851件は未開始 |
