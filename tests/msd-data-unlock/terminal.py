@@ -260,7 +260,12 @@ def recovery_negative_controls():
     session.initial_recovery_display = (0, len(grouped), grouped)
     session.transcript = grouped
     session.assert_no_secrets(b"", b"")
-    for form in session.recovery_forms:
+    forms = (
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",
+        b"ABCD EFGH IJKL MNOP QRST UVWX YZ23 4567",
+        b"ABCD-EFGH-IJKL-MNOP-QRST-UVWX-YZ23-4567",
+    )
+    for form in forms:
         for variant in (form, form.lower(), form[:4] + form[4:].lower()):
             for channel in range(3):
                 session.transcript = grouped + (b"\r\n" + variant if channel == 2 else b"")
