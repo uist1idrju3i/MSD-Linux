@@ -40,6 +40,8 @@ helperが開いたmappingは、PIN再設定の中断を含む失敗時に解除�
 
 ## 入力と秘密の扱い
 
+`unlock`で解錠が成功しても、最後の端末復元が失敗した場合はmappingの解除を試みてから失敗を返す。解除に失敗しても端末復元のerrorを保ち、backendの解放は解除の試行後に行う。解除が成功すれば同じ起動中に再試行できる。既に処理が失敗している場合は、その元のerrorを端末復元のerrorで上書きしない。完了した`prepare`を端末復元のerrorで失敗へ戻さない契約は変えない。
+
 PINの長さと文字、blocklist、recoveryの規則は[正本](data-unlock.md#pinとrecovery-keyの入力)に従う。blocklistは本repoで管理する手書きの共通例であり、NISTの一覧や流出集合を称するものではない。弱いPINも警告後に受理する。
 
 端末のechoとcanonical入力を止め、受理した1文字につき`*`を出す。単独のBS・DEL byteで直前の文字を消せる。過長や範囲外の行は改行まで読み捨て、短く切って認証しない。Ctrl-DはEOF、Ctrl-C・単独Escapeは中断とする。SIGINT・SIGTERM・SIGHUP・SIGQUIT・SIGTSTPでも失敗して端末設定を復元する。SIGKILLや電断では復元処理を実行できない。PIN待ちの期限は無い。端末への出力は非block fdと期限付きpollを使い、出力不能を無期限に待たない。

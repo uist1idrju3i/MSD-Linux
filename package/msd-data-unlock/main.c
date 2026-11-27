@@ -89,11 +89,14 @@ int main(int argc, char **argv)
 		goto done;
 	r = prepare ? msd_prepare(&backend, &ui, secret) : msd_unlock(&backend, &ui, secret);
 done:
-	msd_crypt_close(crypt);
 	if (terminal.active && r < 0)
 		ui.message(ui.ctx, "Boot stopped. Safe to power off.\n");
-	if (msd_terminal_close(&terminal) < 0 && (!prepare || r < 0))
-		r = -EIO;
+	int restored = msd_terminal_close(&terminal);
+	if (restored < 0 && !prepare && r >= 0) {
+		r = restored;
+		backend.deactivate(backend.ctx);
+	}
+	msd_crypt_close(crypt);
 	if (fd >= 0)
 		close(fd);
 	msd_secret_free(secret);

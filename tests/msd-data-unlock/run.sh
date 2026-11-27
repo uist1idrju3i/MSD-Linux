@@ -19,6 +19,11 @@ cc=${CC:-cc}
 "$cc" -std=c11 -Wall -Wextra -Werror -I"$src" \
 	"$src/unlock.c" "$root/tests/msd-data-unlock/core.c" -o "$work/core"
 "$work/core"
+"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" -Dmain=msd_helper_main \
+	-c "$src/main.c" -o "$work/main.o"
+"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" "$work/main.o" \
+	"$root/tests/msd-data-unlock/main-driver.c" -Wl,--wrap=open -o "$work/main-driver"
+"$work/main-driver"
 "$cc" -std=c11 -Wall -Wextra -Werror -pthread -I"$src" \
 	"$src/unlock.c" "$src/terminal.c" "$root/tests/msd-data-unlock/terminal-driver.c" \
 	-o "$work/terminal-driver"
