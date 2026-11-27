@@ -74,7 +74,7 @@ Sizeは1,202,404 bytes増。製品rootfsの増加ではない。独立したcold
 
 TrivyはCIと同じ`ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb`を使用。scannersは`vuln,secret,misconfig`。DBのUpdatedAtは`2026-11-26T19:04:08.560197506Z`、DownloadedAtは`2026-11-26T22:41:04.107085862Z`。旧scan時のDBを`--skip-db-update`で固定して新scanに使った。gateは基準mainのスクリプトそのもので、除外やVEXは加えていない。
 
-比較時のcacheに保持していたDB本体をReview対応時に照合し、次を追記した。metadataのSHA-256は当初の記録と一致した。DB本体のhashはscan実行時には記録しておらず、保持した本体から今回取得した値である。配布元から同じDBを新たに取得できるかは未確認。
+比較時のcacheに保持していたDB本体をReview対応時に照合し、次を追記した。metadataのSHA-256は当初の記録と一致した。DB本体のhashはscan実行時には記録しておらず、保持した本体から今回取得した値である。後述の固定OCI digestから別cacheへDBを再取得し、本体のhashが一致することも確認した。
 
 | DBの識別情報 | 値 |
 |---|---|
@@ -124,6 +124,57 @@ run-qemu: sha256 82248f8b0b31dcdc63d59c3f21b1f57a74e3f57346c582d740d33c0e8edcef0
 - 製品のsource・最終kernel configは変更していない。同じimage・kernel・DTBを使い、通常のharnessどおりSD imageをcopyして起動した。最新mainのfull製品build、製品SBOM/VEX・legal-infoの再生成、実機LCD・keyboard・SD・電源断の確認は行っていない。
 
 ## 再現手順と記録先
+
+### QEMU原logの取得と照合
+
+既存のfs-compare実験と同じorphan branch `data/fs-compare-experiments`の固定commit `d2420a9125fe918a46f2c16b651ac5ad5465f803`に保存した。data branchはmergeも削除もしない。保存先は`dev-image/2026-11-26-snapshot/qemu-logs.tar.zst`、13,002 bytes、SHA-256は`0ad0782a2629aeb52767bb11dfa5f5b60c257c6f9edf2532712df9532498a63e`。通常のGit blobであり、LFSは使わない。
+
+archiveには旧A/B・新A/Bのserial log 4件、比較時のDB metadata、取得元のOCI manifestを収録した。6 memberすべてを元のbyteのまま保存し、memberのhashは`qemu-logs.files.sha256`に残した。DB本体、image binary、秘密は収録していない。原logにはCRLFがあるため正規化せずarchiveに入れた。
+
+checkoutのrootで実行する。既存directory、取得失敗、hash不一致があれば停止する。
+
+```sh
+set -eu
+git fetch origin data/fs-compare-experiments
+data_sha=d2420a9125fe918a46f2c16b651ac5ad5465f803
+mkdir evidence-dev-snapshot
+git archive -o evidence-dev-snapshot/data.tar "$data_sha" dev-image/2026-11-26-snapshot
+tar -xf evidence-dev-snapshot/data.tar -C evidence-dev-snapshot
+saved=evidence-dev-snapshot/dev-image/2026-11-26-snapshot
+(cd "$saved" && sha256sum -c SHA256SUMS)
+mkdir evidence-dev-snapshot/unpacked
+tar --zstd -xf "$saved/qemu-logs.tar.zst" -C evidence-dev-snapshot/unpacked
+(cd evidence-dev-snapshot/unpacked && sha256sum -c "../dev-image/2026-11-26-snapshot/qemu-logs.files.sha256")
+```
+
+sources.csvでは、これらの取得先を`data/fs-compare-experiments@固定commit:archive内path#member`で識別する。
+
+### Trivy DB本体の再取得
+
+取得元は`ghcr.io/aquasecurity/trivy-db@sha256:4ec207982c1f9e5366be66421ae71aa1e55aada6d2bbb4de508567f5ed369d86`。OCI manifestのhashもdigestと一致した。DB layerのdigestは`sha256:d4596e8a5cfcaedee3741d685ceb916fc761d67be53981771e6e28b35d3be87b`。比較時にはOCI digestを記録していなかったが、このmanifestから再取得した`trivy.db`は保持していた本体とSHA-256が一致した。UpdatedAt・NextUpdate・schema Versionも上の表と一致した。再取得でDownloadedAtは変わるため、当時のmetadata全体のhashとは分ける。
+
+次は空の出力先へDBだけを取得し、本体を照合する手順である。新たなimage scanやgateの再実行ではない。sources.csvの`oci://取得元#trivy.db`は、このmanifest内のDB本体を表す。配布元での将来の保持は保証しない。
+
+```sh
+set -eu
+mkdir evidence-dev-snapshot-db
+docker run --rm -v "$PWD/evidence-dev-snapshot-db:/work" \
+  ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb \
+  image --download-db-only --cache-dir /work/cache \
+  --db-repository ghcr.io/aquasecurity/trivy-db@sha256:4ec207982c1f9e5366be66421ae71aa1e55aada6d2bbb4de508567f5ed369d86
+printf '%s  %s\n' 80b72081e35c6d7fb3df5897576145d15ffaa6c9843d02df2e68c25b99eb7d7f \
+  evidence-dev-snapshot-db/cache/db/trivy.db | sha256sum -c -
+python3 - <<'PY'
+import json
+from pathlib import Path
+metadata = json.loads(Path('evidence-dev-snapshot-db/cache/db/metadata.json').read_text())
+assert metadata['Version'] == 2
+assert metadata['UpdatedAt'] == '2026-11-26T19:04:08.560197506Z'
+assert metadata['NextUpdate'] == '2026-11-27T19:04:08.560197215Z'
+PY
+```
+
+### 当初のbuild・scan手順
 
 作業時のraw outputは非追跡の`output-dev-snapshot-20261126/`に保存した。過去の旧scan・DBは`output-data-unlock-helper/`のものを再利用し、hashを上記CSVに記録した。raw Trivy JSON、DB、image tarはcommitしない。これらのローカル出力の存在を文書の根拠にはせず、候補・全package・blocker・hashを本記録に保存する。
 
