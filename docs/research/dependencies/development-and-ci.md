@@ -4,6 +4,14 @@
 
 開発imageに`libcryptsetup-dev`を追加し、LUKS2 helperの実library試験をCIで必須にする。snapshotと製品用cryptsetupの版は変えない。[選択理由・設定・license・確認範囲](data-unlock-host.md)を別記し、以下の過去の監査とAPT一覧は保持する。
 
+## 2026-11-26のsnapshot更新
+
+最新main `9abf168`から独立した変更で、開発用OCIの固定snapshotを`20261121T225354Z`から`20261124T215723Z`へ進めました。#309の`libcryptsetup-dev`追加は含めません。QEMU builderと最終stageはともに、Kerberosの4 library、zstdのruntime・development package、`linux-libc-dev`の計7 packageを更新します。各sourceの中間版を含むDebian changelogは1 entryずつで、全件を確認しました。7 packageのcopyrightは旧新・両stageでhashが一致します。
+
+[全APT差分・変更履歴・optionの採否・license・再現手順](../../experiments/2026-11-26-dev-image-snapshot.md)を記録しました。amd64の最終stageは231件、QEMU builderは236件のままです。同じ固定Trivy 0.76.2・同じDBではgate対象が77件から0件になりました。総検出は1,983件から1,727件で、脆弱性ゼロではありません。HIGH/CRITICALかつ修正版ありの脆弱性、HIGH/CRITICALの秘密情報・設定不備というgate条件は変更していません。
+
+amd64のimage build、host 13 suite、lint、QEMU A/B起動を確認しました。arm64は署名付きAPT indexの修正版確認までで、image build・scanは未実施です。製品のkernel更新、full Buildroot build・legal-info・SBOM/VEX再生成、実機の検証は含みません。snapshotの日付監視は既存の`check-pins.py`を使い、packageの脆弱性は両archのTrivy監視で別に追います。以下の過去の台帳と当時の検出件数は保持します。
+
 ## 2026-11-12の現況
 
 `main`の`1ffccae4d0ed5c2a3dc9ccc03cee4fbb46865169`では、[固定版チェッカー](../../../.github/scripts/check-pins.py)がkernel-hardening-checkerのtagを取得します。下記の「monitorへ反映する必要がある」は11月2日の改善案で、現在は実装済みです。[回帰試験の記録](../operations/github-actions-audit.md#変更の検証範囲と次の順番)と、全依存の監視が未完了であることを区別します。
