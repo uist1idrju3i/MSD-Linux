@@ -40,9 +40,17 @@ class Session:
         assert not termios.tcgetattr(self.slave)[3] & termios.ECHO
         assert termios.tcgetattr(self.slave)[1] & (termios.OPOST | termios.ONLCR) == (termios.OPOST | termios.ONLCR)
         self.output = b""
+        self.transcript = b""
+        self.secrets = {PIN}
 
-    def send(self, data):
+    def send(self, data, secrets=()):
+        self.secrets.update(secrets)
         os.write(self.master, data)
+
+    def read_output(self):
+        data = os.read(self.master, 8192)
+        self.output += data
+        self.transcript += data
 
     def until(self, marker):
         deadline = time.monotonic() + 10
@@ -50,24 +58,27 @@ class Session:
             assert time.monotonic() < deadline, "terminal prompt timeout"
             readable, _, _ = select.select([self.master], [], [], 0.1)
             if readable:
-                self.output += os.read(self.master, 8192)
+                self.read_output()
         result = self.output
         self.output = b""
         return result
 
     def finish(self):
         stdout, stderr = self.process.communicate(timeout=15)
-        assert self.process.returncode == 0, stderr.decode(errors="replace")
-        while select.select([self.master], [], [], 0)[0]:
-            self.output += os.read(self.master, 8192)
-        assert termios.tcgetattr(self.slave) == self.before, "termios was not restored"
-        assert PIN not in stdout + stderr + self.output
-        assert b"must-not-be-used" not in stdout + stderr
-        assert not re.search(rb"(?<!\r)\n", self.output), "bare LF on console"
-        os.close(self.master)
-        os.close(self.slave)
-        self.parent.close()
-        return stdout, stderr, self.output
+        try:
+            assert self.process.returncode == 0, stderr.decode(errors="replace")
+            while select.select([self.master], [], [], 0)[0]:
+                self.read_output()
+            assert termios.tcgetattr(self.slave) == self.before, "termios was not restored"
+            for secret in self.secrets:
+                assert secret not in stdout + stderr + self.transcript, "secret leaked to captured output"
+            assert b"must-not-be-used" not in stdout + stderr
+            assert not re.search(rb"(?<!\r)\n", self.transcript), "bare LF on console"
+            return stdout, stderr, self.output
+        finally:
+            os.close(self.master)
+            os.close(self.slave)
+            self.parent.close()
 
 
 def read_cases():
@@ -133,6 +144,7 @@ def setup(grow_reply=b"grown\n", filesystem_reply=b"synced\n"):
     match = re.search(rb"[A-Z2-7]{4}(?: [A-Z2-7]{4}){7}", display)
     assert match, "recovery key grouping missing"
     recovery = match.group().replace(b" ", b"")
+    session.secrets.update((recovery, recovery.lower()))
     assert PIN not in display
     session.send(b"\n")
     session.until(b"Skip verification? Type yes to confirm:")
@@ -165,7 +177,7 @@ def unlock():
     session.send(b"yes\n")
     session.until(b"Enter recovery key:")
     key = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-    session.send(key.lower() + b"\n")
+    session.send(key.lower() + b"\n", secrets=(key, key.lower()))
     session.until(b"Set a new PIN")
     session.send(PIN + b"\n")
     session.until(b"Enter the new PIN again:")
@@ -175,9 +187,10 @@ def unlock():
     assert key not in stdout + stderr + output
 
 
-def lockout(delete_failure=False):
+def lockout(delete_failure=False, echo=False):
     notice = b"PIN is no longer available. A recovery key is required."
-    session = Session("lockout-delete-failure" if delete_failure else "lockout")
+    mode = "lockout-delete-failure" if delete_failure else "lockout"
+    session = Session("lockout-echo" if echo else mode)
     for attempt in range(10):
         prompt = session.until(b"Enter PIN:")
         assert notice not in prompt and b"Enter recovery key:" not in prompt
@@ -196,6 +209,16 @@ def lockout(delete_failure=False):
         assert b"result=-4 mask=2 ready=1" in stdout
 
 
+def echo_negative_control():
+    try:
+        lockout(echo=True)
+    except AssertionError as error:
+        assert str(error) == "secret leaked to captured output"
+    else:
+        raise AssertionError("PIN echo was not detected in the full transcript")
+    print("ok - PTY negative control: first PIN echo consumed by until is detected")
+
+
 read_cases()
 escape_cases()
 setup()
@@ -204,6 +227,7 @@ setup(filesystem_reply=b"wrong!\n")
 unlock()
 lockout()
 lockout(delete_failure=True)
+echo_negative_control()
 progress = Session("progress")
 _, _, output = progress.finish()
 assert b"1 seconds. Do not power off." in output

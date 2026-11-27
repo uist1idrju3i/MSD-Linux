@@ -12,7 +12,7 @@
 #include <sys/resource.h>
 #include <time.h>
 
-struct fake { int mask; bool ready, bad_pin, delete_failure; };
+struct fake { int mask; bool ready, bad_pin, delete_failure, echo_pin; struct msd_ui *ui; };
 static int inspect(void *ctx, bool ready)
 {
 	struct fake *f = ctx;
@@ -29,6 +29,10 @@ static int operate(void *ctx, enum msd_op op, const char *a, const char *b)
 		if (f->delete_failure) return -EIO;
 		f->mask = 2; break;
 	case MSD_AUTH_PIN:
+		if (f->echo_pin) {
+			f->echo_pin = false;
+			assert(f->ui->message(f->ui->ctx, a) == 0);
+		}
 		if (f->bad_pin) return -EPERM;
 		break;
 	case MSD_ADD_PIN: f->mask = 3; break;
@@ -80,7 +84,8 @@ int main(int argc, char **argv)
 		bool prepare = !strcmp(argv[1], "prepare");
 		struct fake f = { .mask = prepare ? 0 : 3, .ready = !prepare,
 			.bad_pin = !strncmp(argv[1], "lockout", 7),
-			.delete_failure = !strcmp(argv[1], "lockout-delete-failure") };
+			.delete_failure = !strcmp(argv[1], "lockout-delete-failure"),
+			.echo_pin = !strcmp(argv[1], "lockout-echo"), .ui = &u };
 		struct msd_backend b = {&f, inspect, operate, deactivate};
 		r = !strcmp(argv[1], "prepare") ? msd_prepare(&b, &u, s) : msd_unlock(&b, &u, s);
 		printf("result=%d mask=%d ready=%d\n", r, f.mask, f.ready);
