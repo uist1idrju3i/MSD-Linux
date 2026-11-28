@@ -213,7 +213,7 @@ def t6_repaired_summaries(lines):
     accepted = set()
     btrfs = False
     pending = None
-    for number, text in enumerate(lines, 1):
+    for number, text in boot_serial_lines(lines, lambda: True):
         if text.startswith("msd.fscmp: mounted "):
             btrfs = bool(re.fullmatch(
                 r"msd\.fscmp: mounted config=\S+ base_config=(?:B1|B2) variant_id=\S+ test=T6", text))
@@ -232,7 +232,7 @@ def t6_repaired_summaries(lines):
                 if (len(results) == len(metrics) == 1 and results[0][1] and metrics[0][1]
                         and results[0][1][1] == metrics[0][1][1]
                         and results[0][0] < metrics[0][0]):
-                    accepted.update(n for n, line in pending if n < results[0][0] and re.fullmatch(
+                    accepted.update((n, line) for n, line in pending if n < results[0][0] and re.fullmatch(
                         r"msd\.fscmp: T6_SCRUB Error summary:[ \t]+csum=[0-9]+", line))
             pending = None
         elif pending is not None:
@@ -316,7 +316,7 @@ def aggregate_errors(logs, test):
                     or re.search(r"EXT4-fs error|F2FS-fs.*error|BTRFS (?:error|warning)|checksum error|csum failed|device-mapper: integrity:", text, re.I)
                     or re.search(r"I/O error.*dev (?:dm-\d+|loop\d+)", text)
                     or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)
-                    or line_number in repaired_summaries))))
+                    or (line_number, text) in repaired_summaries))))
                 records.append(dict(file=Path(path).name, line=line_number, phase=phase,
                                     category=category, expected=expected, text=text,
                                     **({"known_boot": benign["id"], "reason": benign["reason"],

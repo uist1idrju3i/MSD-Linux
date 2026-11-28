@@ -221,6 +221,24 @@ class Judge(unittest.TestCase):
             self.assertTrue(any(not row["expected"] for row in
                                 M.aggregate_errors([("run", path)], "T6")))
 
+    def test_t6_scrub_evidence_splits_joined_kernel_output(self):
+        for marker in ("begin", "end"):
+            with self.subTest(marker=marker), tempfile.TemporaryDirectory() as temporary:
+                text = T6_SCRUB_OK.replace(
+                    f"expected_errors_{marker} kind=T6_corruption\n",
+                    f"expected_errors_{marker} kind=T6_corruption[ 1.000000] harmless kernel output\n")
+                directory = Path(temporary) / "run"
+                fixture(directory, "T6", text=text)
+                self.assertEqual(M.finalize(directory, "T6", 0)["status"], "ok")
+        text = T6_SCRUB_OK.replace("csum=1\n", "csum=1[ 1.000000] unrelated error\n")
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "qemu-run.log"
+            path.write_text(self.grow_log(M.GROW_COMPLETE_MARKERS[0]) + text)
+            records = M.aggregate_errors([("run", path)], "T6")
+            self.assertTrue(any(row["expected"] and "csum=1" in row["text"] for row in records))
+            self.assertTrue(any(not row["expected"] and "unrelated error" in row["text"]
+                                for row in records))
+
     def test_t6_repaired_csum_summary_is_fully_scoped(self):
         mutations = {
             "no-result": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n", ""),
