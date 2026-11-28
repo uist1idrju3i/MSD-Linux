@@ -70,3 +70,5 @@ representative,rerun-1dc14a3-04-06-E1-T1-sample-selected,E1,T1-sample-selected,p
 representative,rerun-1dc14a3-04-07-E1-T1-negative,E1,T1-negative,passed,403.0708015989985,
 representative,rerun-1dc14a3-04-08-E1-T1-negative-final,E1,T1-negative-final,failed,366.8501467819988,guest_point_entry_unset;guest_exit=2;remaining=13
 smoke,rerun-12b5c74-05,F1,T1-negative-final,failed,30110.169325197003,raw_probes=85;passed=84;guest_exit=1;host_exit=1;main_not_started
+smoke,rerun-9abf168-10,,,failed,0.11519312858581543,host_exit=125;docker_image_missing;probes_started=0;main_not_started
+smoke,rerun-2087ab7-11,B2,T6,failed,65696.03935909271,raw_probes=191;passed=190;failed=1;host_exit=1;T6_scrub_summary_false_positive;main_not_started

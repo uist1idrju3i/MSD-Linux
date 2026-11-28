@@ -209,6 +209,37 @@ def boot_serial_lines(lines, enabled):
         yield origin, pending
 
 
+def t6_repaired_summaries(serial_lines):
+    accepted = set()
+    btrfs = False
+    pending = None
+    for number, text in serial_lines:
+        if text.startswith("msd.fscmp: mounted "):
+            btrfs = bool(re.fullmatch(
+                r"msd\.fscmp: mounted config=\S+ base_config=B2 variant_id=\S+ test=T6", text))
+            pending = None
+        if text.startswith("msd.fscmp: expected_errors_begin "):
+            pending = [] if (btrfs and pending is None and
+                             text == "msd.fscmp: expected_errors_begin kind=T6_corruption") else None
+        elif text.startswith("msd.fscmp: expected_errors_end "):
+            if pending is not None and text == "msd.fscmp: expected_errors_end kind=T6_corruption":
+                results = [(n, re.fullmatch(
+                    r"msd\.fscmp: T6_SCRUB_RESULT corrected=([1-9][0-9]*) uncorrectable=0", line))
+                    for n, line in pending if line.startswith("msd.fscmp: T6_SCRUB_RESULT")]
+                metrics = [(n, re.fullmatch(
+                    r"msd\.fscmp: T6_SCRUB_METRICS corrected=([1-9][0-9]*) uncorrectable=0 repaired=yes", line))
+                    for n, line in pending if line.startswith("msd.fscmp: T6_SCRUB_METRICS")]
+                if (len(results) == len(metrics) == 1 and results[0][1] and metrics[0][1]
+                        and results[0][1][1] == metrics[0][1][1]
+                        and results[0][0] < metrics[0][0]):
+                    accepted.update((n, line) for n, line in pending if n < results[0][0] and re.fullmatch(
+                        r"msd\.fscmp: T6_SCRUB Error summary:[ \t]+csum=[0-9]+", line))
+            pending = None
+        elif pending is not None:
+            pending.append((number, text))
+    return accepted
+
+
 def aggregate_errors(logs, test):
     records = []
     boot_rules = load_json(Path(__file__).with_name("boot-diagnostics.json"))
@@ -217,6 +248,10 @@ def aggregate_errors(logs, test):
     for phase, path in logs:
         context = None
         lines = Path(path).read_text(errors="replace").splitlines()
+        t6_lines = (list(boot_serial_lines(lines, lambda: True))
+                    if test == "T6" and phase == "run" and Path(path).name == "qemu-run.log"
+                    else None)
+        repaired_summaries = t6_repaired_summaries(t6_lines) if t6_lines is not None else set()
         qemu = machine = kernel = model = closed = False
         grow_pending = False
         grow_complete = any(marker in lines for marker in GROW_COMPLETE_MARKERS)
@@ -226,7 +261,8 @@ def aggregate_errors(logs, test):
             return (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
                     and qemu and machine and kernel and model)
 
-        for line_number, text in boot_serial_lines(lines, known_environment):
+        serial_lines = t6_lines if t6_lines is not None else boot_serial_lines(lines, known_environment)
+        for line_number, text in serial_lines:
             normalized = re.sub(r"^\[\s*[0-9]+\.[0-9]+\] ", "", text)
             qemu |= text == "run-qemu: version=" + boot_rules["qemu"]
             machine |= text == boot_rules["machine"]
@@ -281,7 +317,8 @@ def aggregate_errors(logs, test):
                     re.search(r"T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)", text)
                     or re.search(r"EXT4-fs error|F2FS-fs.*error|BTRFS (?:error|warning)|checksum error|csum failed|device-mapper: integrity:", text, re.I)
                     or re.search(r"I/O error.*dev (?:dm-\d+|loop\d+)", text)
-                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)))))
+                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)
+                    or (line_number, text) in repaired_summaries))))
                 records.append(dict(file=Path(path).name, line=line_number, phase=phase,
                                     category=category, expected=expected, text=text,
                                     **({"known_boot": benign["id"], "reason": benign["reason"],

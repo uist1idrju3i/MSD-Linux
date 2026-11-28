@@ -26,7 +26,11 @@
 
 partition再読込みの例外は、既知の拡張メッセージに続く**次のuserspace行**で、同じlog内にsetup同期完了がある場合だけ認める。間にkernel行が割り込むことは許すが、そのkernel診断の判定は変えない。errno違い、番号違い、setup未完了はfatalとする。panic、Oops、BUG、guest error、EIO、ENOSPCは既知診断へ分類しない。T1/T6の明示的な破損区間に関する既存規則も変更しない。
 
-固定条件を満たすphase全体で、行の途中のkernel timestampから始まる断片を分け、続くuserspace行を保留中の断片へ連結する。markerの種類によらず同じ分離器を使う。kernel断片と連結したuserspace行はそれぞれ既存の規則で判定し、一般のboot許容区間は延ばさない。guest markerで保留を打ち切る。log本体は変更せず、診断の行番号は断片が始まった物理行を指す。混在した行全体を許可するpatternは追加しない。
+T6の`run` phaseの`qemu-run.log`は通常測定でも起動時を含むlog先頭から全体を分離する。`SMOKE_PROFILE`や上記の固定条件は分離の条件にせず、修復証拠の照合とerror分類に同じ断片列を使う。これは分離の適用範囲であり、通常測定で既知boot診断を許容する変更ではない。
+
+それ以外のlogでは上記の固定条件を読み進めながら確認し、成立後に一般の行を分離する。固定条件の成立前や対象外のlogでも、`msd.fscmp: expected_errors_begin kind=`または`msd.fscmp: expected_errors_end kind=`で始まる行はkernel出力と分離する。
+
+共通の分離器は行の途中のkernel timestampから始まる断片を分け、続くuserspace行を保留中の断片へ連結する。kernel断片と連結したuserspace行はそれぞれ既存の規則で判定し、一般のboot許容区間は延ばさない。guest markerで保留を打ち切る。log本体は変更せず、診断の行番号は断片が始まった物理行を指す。混在した行全体を許可するpatternは追加しない。
 
 再診断03の316–317行にあった`mmc1: Timeout waiting for hardware interrupt.`は、分離後は既存のfatal patternに一致しない。このためcontrollerを追加で無効化していない。この判定はtimeoutの原因や実機での安全性を確認したことを意味しない。
 
