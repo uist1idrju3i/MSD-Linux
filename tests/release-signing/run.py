@@ -627,11 +627,15 @@ class ReleaseSigning(unittest.TestCase):
         self.assertFalse(self.output.exists())
         workflow = (ROOT / ".github/workflows/release-sign.yml").read_text()
         build, sign = workflow.split("\n  sign:\n")
-        self.assertEqual(workflow.count("if: github.ref == 'refs/heads/main'"), 2)
-        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn('push:\n    tags: ["v[0-9]+.[0-9]+.[0-9]+", '
+                      '"v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"]', workflow)
+        self.assertNotIn("workflow_dispatch:", workflow)
+        self.assertIn("run: python3 .github/scripts/check-release-policy.py\n", build)
         self.assertNotIn("secrets.", build)
         self.assertNotIn("environment:", build)
-        self.assertIn("environment: release-signing", sign)
+        self.assertIn("environment: production", sign)
+        self.assertLess(sign.index("run: python3 .github/scripts/check-release-policy.py"),
+                        sign.index("secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM"))
         self.assertIn("secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM", sign)
         self.assertIn(expected, sign)
         self.assertIn("if: always()\n        run: rm -f", sign)

@@ -5,7 +5,7 @@
 | ワークフロー | 実行条件 | 内容と扱い |
 |---|---|---|
 | `build.yml` | PR、`main` への push、毎週月曜 03:47 UTC、手動実行 | PR と `main` への push は変更箇所で Buildroot ビルドを絞り、週次と手動実行は常にビルドします。テスト、Buildroot ビルド、QEMU 起動確認は開発用イメージ内で実行し、ビルドと起動確認はゲートです。キャッシュと成果物の受け渡しは runner で行います。 |
-| `release-sign.yml` | `main`上の手動実行だけ | 公開鍵だけで構築し、同じcommitとtar hashを確認したEnvironment `release-signing`の別jobでmanifestに署名します。tag・Releaseは作成しません。 |
+| `release-sign.yml` | `vX.Y.Z` または `vX.Y.Z-rc.N` の push | 公開鍵だけで構築し、同じcommitとtar hashを確認したEnvironment `production`の別jobでmanifestに署名します。tag・Releaseは作成しません。 |
 | `publish-dev-image.yml` | PR（常時）、入力変更を含む `main` push、手動 | PRでは常に`dev-image gate`を実行し、入力差分があれば両archを読取専用jobでbuild・検査します。公開ゲートは修正可能なHIGH/CRITICAL脆弱性とHIGH/CRITICALの秘密情報・設定不備が対象です。push・attestationはmain限定の別jobで実行します。手動の`dry_run`とmain以外の実行は公開しません。 |
 | `dev-image-scan.yml` | 開発用OCIの入力変更を含む `main` push、毎週月曜 07:31 UTC、手動実行 | `latest`のindex digestを一度だけ解決し、amd64とarm64を検査します。arch別の選別済みJSONとimage・検査器の情報を保存し、mainでは一つのIssueへ集約します。検出事項では失敗しませんが、片方でも検査失敗・資料欠落なら未確認として失敗します。 |
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
@@ -55,7 +55,7 @@ Buildroot の post-build は、rootfs-overlay の実行スクリプトが使う�
 
 ## 製品buildの起動条件
 
-`release-sign.yml`はmain上の手動起動専用です。公開鍵だけで構築する`build`と、Environment `release-signing`で承認後にmanifestへ署名する`sign`を分けます。通常の`build.yml`へ本番秘密鍵は渡しません。artifact名、fingerprint、公開前の確認は[署名手順](RELEASE-SIGNING.md)を参照してください。tag・Releaseの自動作成は行いません。
+`release-sign.yml`はリリースタグの push で起動します。公開鍵だけで構築する`build`と、Environment `production`で承認後にmanifestへ署名する`sign`を分けます。通常の`build.yml`へ本番秘密鍵は渡しません。artifact名、fingerprint、公開前の確認は[署名手順](RELEASE-SIGNING.md)を参照してください。tag・Releaseの自動作成は行いません。
 
 `changes` jobはPR全体の累積差分を調べます。改名は削除と追加として扱い、製品入力を文書側へ移す変更も見落としません。製品directory内のMarkdownは拡張子で除外せず、未知のpath、base/head取得失敗、fetch・diff失敗ではbuildします。週次・手動は常にbuildします。
 

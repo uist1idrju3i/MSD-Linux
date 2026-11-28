@@ -193,6 +193,16 @@ class ReleaseCheckerTests(unittest.TestCase):
         self.git("tag", "v0.2.0")
         self.assert_failure_contains("unrecorded local tag", "--require-tags")
 
+    def test_only_published_tags_must_be_recorded_when_release_list_is_given(self) -> None:
+        self.git("tag", "v0.2.0-rc.1")
+        published = self.root / "published-tags"
+        published.write_text("v0.1.0\n", encoding="utf-8")
+        args = ("--require-tags", "--published-tags", str(published))
+        result = self.run_checker(*args)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        published.write_text("v0.1.0\nv0.2.0-rc.1\n", encoding="utf-8")
+        self.assert_failure_contains("unrecorded published release tag 'v0.2.0-rc.1'", *args)
+
     def test_header_must_match_exactly(self) -> None:
         (self.root / "docs/releases/releases.csv").write_text(
             "tag,semver\nv0.1.0,0.1.0\n", encoding="utf-8"

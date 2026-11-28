@@ -49,7 +49,9 @@ def version_key(match: re.Match[str]) -> tuple[int, int, int, int, int]:
     )
 
 
-def check(root: Path, require_tags: bool) -> tuple[list[str], list[str]]:
+def check(
+    root: Path, require_tags: bool, published_tags: set[str] | None = None
+) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
     csv_path = root / "docs/releases/releases.csv"
@@ -177,8 +179,15 @@ def check(root: Path, require_tags: bool) -> tuple[list[str], list[str]]:
             for tag in result.stdout.splitlines():
                 if tag.startswith("v") and not TAG_RE.fullmatch(tag):
                     errors.append(f"invalid local v* tag {tag!r}")
-                elif TAG_RE.fullmatch(tag) and tag not in recorded_tags:
+                elif (
+                    published_tags is None
+                    and TAG_RE.fullmatch(tag)
+                    and tag not in recorded_tags
+                ):
                     errors.append(f"unrecorded local tag {tag!r}")
+            if published_tags is not None:
+                for tag in sorted(published_tags - recorded_tags):
+                    errors.append(f"unrecorded published release tag {tag!r}")
 
     return errors, warnings
 
@@ -187,14 +196,26 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--require-tags", action="store_true")
     parser.add_argument(
+        "--published-tags", type=Path,
+        help="with --require-tags, require ledger entries only for published tags in this file",
+    )
+    parser.add_argument(
         "--root",
         type=Path,
         default=Path(__file__).resolve().parents[2],
         help="repository root containing CHANGELOG.md and docs/releases/releases.csv",
     )
     args = parser.parse_args()
+    published_tags = None
+    if args.published_tags is not None:
+        if not args.require_tags:
+            parser.error("--published-tags requires --require-tags")
+        try:
+            published_tags = set(args.published_tags.read_text(encoding="utf-8").splitlines())
+        except (OSError, UnicodeError) as exc:
+            parser.error(f"cannot read published release tags: {exc}")
     root = args.root.resolve()
-    errors, warnings = check(root, args.require_tags)
+    errors, warnings = check(root, args.require_tags, published_tags)
     for warning in warnings:
         print(f"warning: {warning}")
     for error in errors:
