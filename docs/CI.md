@@ -11,7 +11,7 @@
 | `agent-docs.yml` | PR、`main` への push | エージェント指示ファイルとスキルのシンボリックリンク、および追跡テキストの文字範囲と検査テストを確認するゲートです。 |
 | `pins-check.yml` | 毎週月曜、手動実行 | 固定したカーネル tarball SHA・系列、Buildroot、Bootlin ツールチェーン、Buildroot のポイントリリース、CI ツール、Trivy、runner を確認し、Dependabot が扱えない更新や確認不能を「固定版の更新確認」Issue に集約します。更新ありは通知のみ、upstream の通信失敗・未照合はjobを失敗させます。 |
 | `lint.yml` | PR、`main` への push | actionlint、ShellCheck、zizmor を開発用イメージ内で実行し、hadolint と `docker build --check` で開発用 Dockerfile を検査するゲートです。開発用イメージの lint pin は Dockerfile の固定値を使い、zizmor はオフラインで動かします。hadolint は digest 固定イメージを `docker run` で実行します。 |
-| `security.yml` | 全 PR、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。mainの定期・手動実行は「製品SBOMの脆弱性監視」Issueを更新して差分をコメント（自動closeなし）。 |
+| `security.yml` | 全 PR、`main` への push、2時間ごと、手動実行 | OCIでSBOM/VEX/stateを生成し成果物を30日保存。全PRで同一NVD feedのbase/headを比較し、新規修正可能CRITICAL（CVSS v3.x/v4.0が9.0以上）のみ失敗。CVSSv2のみ・修正可否不明は失敗せず、feed鮮度・入力・例外・NVD entryの整合性エラーは失敗。追跡 Issue を更新するのは `main` の定期・手動実行だけです。「製品SBOMの脆弱性監視」Issue に差分をコメントします（自動 close なし）。 |
 
 3系統の通知は共通scriptで処理します。ページ送り、同時実行、失敗時の本文保持、未評価stateの扱いと回帰の範囲は[監視Issueの運用](ci-monitoring.md)を参照してください。
 
