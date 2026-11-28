@@ -48,6 +48,7 @@ jobs:
           docker/msd-dev tests/check-kernel-fragment/run.sh
           docker/msd-dev tests/check-firmware-config/run.sh
           docker/msd-dev tests/yocto-compare/run.sh
+          docker/msd-dev python3 -m unittest discover -s tests/release-policy
           docker/msd-dev python3 .github/scripts/shellcheck-tracked.py
 
   zizmor:

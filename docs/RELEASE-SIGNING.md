@@ -8,11 +8,11 @@
 
 現在の署名対象は、A/B更新bundle内の `manifest` です。`sdcard.img.xz` 全体やReleaseの全assetを署名する仕組みではありません。2026-11-12、通常のbuildと独立した[署名workflow](../.github/workflows/release-sign.yml)を追加しました。管理者からEnvironment Secret登録済みとの申告を受けていますが、値や保護設定をこちらから読み取ったわけではありません。
 
-**本番秘密鍵はEnvironment `release-signing`のSecretだけから、承認後の`sign` jobへ渡します。** 通常のBuildroot buildと`build` jobには渡しません。Repository Secretやcache、artifactへ複製せず、GitHub設定の保護を弱めて実行しないでください。
+**本番秘密鍵はEnvironment `production`のSecretだけから、承認後の`sign` jobへ渡します。** 通常のBuildroot buildと`build` jobには渡しません。Repository Secretやcache、artifactへ複製せず、GitHub設定の保護を弱めて実行しないでください。
 
 | 項目 | 実装の名前 | 内容 |
 |---|---|---|
-| GitHub Environment | `release-signing` | 署名jobだけが参照する保護された環境 |
+| GitHub Environment | `production` | 署名jobだけが参照する保護された環境 |
 | Environment secret | `MSD_RELEASE_ED25519_PRIVATE_KEY_PEM` | PEM形式の秘密鍵の内容。改行を含む |
 | buildの公開鍵入力 | `MSD_UPDATE_PUBLIC_KEY` | PEM公開鍵のパス。秘密鍵なしでimageを作る |
 | 互換用の既存入力 | `MSD_UPDATE_SIGNING_KEY` | ローカルの秘密鍵ファイルへのパス。本番workflowは使わない |
@@ -30,12 +30,12 @@
 
 ## 2. 署名用Environmentを先に作る
 
-1. [SettingsのEnvironments](https://github.com/uist1idrju3i/MSD-Linux/settings/environments) を開き、New environmentから `release-signing` を作ります。`github-pages` は流用しません。
+1. [SettingsのEnvironments](https://github.com/uist1idrju3i/MSD-Linux/settings/environments) を開き、New environmentから `production` を作ります。`github-pages` は流用しません。
 2. Required reviewersに、署名対象のcommitとassetを確認できる人を指定します。複数人を列挙しても、GitHub標準のこの設定は「そのうち1人の承認」であり、複数人の同意を必須にするものではありません。
 3. 別の承認者がいる場合はPrevent self-reviewを有効にします。所有者1人だけで、自分が起動したjobを自分で承認する運用では、この設定により実行できなくなります。別の承認者を用意するか、自己承認を許すリスクを明示して採用するかを先に決めます。保護を迂回して実行する手順にはしません。
 4. 管理者による保護ルールの迂回を許す設定は、無効を推奨します。復旧担当と手順も決めておきます。
-5. Deployment branches and tagsをSelected branches and tagsにし、Branchの `main` だけを許可します。現行workflowはmain上の手動起動だけを受け入れます。Tag起動は実装していません。
-6. ここで検査されるrefはworkflowが動くrefです。入力欄のタグ名や、後からcheckoutするcommitを、この設定だけで検証できるわけではありません。手動workflowでも対象タグ、commit、成功したbuildとの対応を別に検査します。
+5. Deployment branches and tagsをSelected branches and tagsにし、Tagの `v*` だけを許可します。管理者バイパスは無効にします。
+6. ワークフローは、タグのコミットが `main` の履歴にあり、CHANGELOG と台帳の条件を満たすことを構築前に確認します。承認後、署名する前にも `production` の設定を再検査します。
 7. [GitHubのEnvironment管理手順](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) と画面を照合し、保護の保存を確認します。workflowから存在しないEnvironmentを参照すると、保護のない環境が自動作成される場合があるため、Secretの保存より先に作成・点検します。
 
 ## 3. 手元の信頼できるPCで鍵を作る
@@ -78,7 +78,7 @@
 
 ### GitHub UIで登録する場合
 
-1. Environmentsから `release-signing` を開き、保護設定を再確認します。
+1. Environmentsから `production` を開き、保護設定を再確認します。
 2. Environment secretsのAdd secretを選びます。Repository secretsの画面ではありません。
 3. Nameへ `MSD_RELEASE_ED25519_PRIVATE_KEY_PEM` を入力します。
 4. Valueへ手元の秘密鍵PEMの全体を入力します。ヘッダー、本文、フッター、改行を含めます。公開鍵と取り違えないでください。秘密鍵を画面共有やチャットへ表示しません。
@@ -92,16 +92,16 @@
 gh auth status
 gh secret set MSD_RELEASE_ED25519_PRIVATE_KEY_PEM \
     --repo uist1idrju3i/MSD-Linux \
-    --env release-signing \
+    --env production \
     < "$HOME/.local/share/msd-linux/release-keys/release-1-private.pem"
-gh secret list --repo uist1idrju3i/MSD-Linux --env release-signing
+gh secret list --repo uist1idrju3i/MSD-Linux --env production
 ```
 
 一覧に出るのは名前などの情報で、鍵の値ではありません。`--body '秘密鍵の文字列'`、`echo`、デバッグの `set -x`、base64への変換による表示は使いません。秘密鍵の値を含むdotenvファイルも不要です。
 
 ## 5. mainの公開鍵buildと保護された署名jobを実行する
 
-1. mainの対象commit、公開鍵とfingerprint、成功した試験を確認します。Actionsの`Build and sign a release update`からRun workflowを選び、branchを`main`にします。入力で任意のcommit、タグ、artifactを指定する機能はありません。
+1. `main` の対象コミット、CHANGELOG の版、台帳の内部更新番号、成功した試験を確認します。管理者が署名なしの `vX.Y.Z-rc.N` を作成して push すると、署名ワークフローが始まります。
 2. `build` jobは同じ`github.sha`をcheckoutし、公開鍵だけでBuildrootを構築します。`key-origin=release`と公開鍵の一致を確認し、3 fileの`msd-update-bundle.unsigned.tar`、`sdcard.img.xz`、`COMMIT`、`SHA256SUMS`を`release-unsigned-<run ID>-<attempt>` artifactへ保存します。内部番号はcommit時刻で、`MSD_UPDATE_VERSION`は上書きしません。
 3. Environmentの承認画面ではcommitとbuildのartifactを照合してから承認します。`sign` jobは同じcommitのscriptと公開鍵だけをcheckoutし、同じrunのbuild artifactを取得します。build出力のcommitとtar hash、全memberとmanifest hashを検査し、artifact内のscriptは実行しません。
 4. Secretが空なら失敗します。鍵は`umask 077`でrunnerの一時領域へ書き、公開鍵との一致を確認してmanifestへraw Ed25519署名します。直後に公開鍵で署名を検証し、`msd-update-bundle.tar`を作ります。成功・失敗時とも後続のcleanup stepで鍵ファイルを削除し、公開候補と証拠のPEM・秘密鍵header検査後に`release-signed-<attempt>`を保存します。runnerの強制停止等ではstepの実行を保証できないため、使い捨てrunnerを前提にします。

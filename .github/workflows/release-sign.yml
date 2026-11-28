@@ -1,7 +1,8 @@
 name: Build and sign a release update
 
 on:
-  workflow_dispatch:
+  push:
+    tags: ["v*-rc.*"]
 
 permissions: {}
 
@@ -11,7 +12,6 @@ concurrency:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     timeout-minutes: 150
     permissions:
@@ -28,9 +28,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           submodules: true
+          fetch-depth: 0
           persist-credentials: false
-      - name: Require main
-        run: test "$GITHUB_REF" = refs/heads/main
+      - name: Verify tag and production policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/check-release-policy.py
       - name: Log in to GHCR
         env:
           GHCR_ACTOR: ${{ github.actor }}
@@ -81,8 +84,7 @@ jobs:
 
   sign:
     needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: release-signing
+    environment: production
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
@@ -99,13 +101,16 @@ jobs:
           BUILD_COMMIT: ${{ needs.build.outputs.commit }}
           ARTIFACT_NAME: ${{ needs.build.outputs.artifact-name }}
         run: |
-          test "$GITHUB_REF" = refs/heads/main
           test "$BUILD_COMMIT" = "$GITHUB_SHA"
           gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" \
             --name "$ARTIFACT_NAME" --dir "$RUNNER_TEMP/release-payload"
           cd "$RUNNER_TEMP/release-payload"
           test "$(cat COMMIT)" = "$GITHUB_SHA"
           sha256sum -c SHA256SUMS
+      - name: Recheck production policy before signing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/check-release-policy.py --production-only
       - name: Sign the validated manifest
         env:
           RELEASE_PRIVATE_KEY: ${{ secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM }}
