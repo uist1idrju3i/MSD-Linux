@@ -84,21 +84,32 @@ class ProductionPolicyTest(unittest.TestCase):
             os.chdir(tmp)
             try:
                 subprocess.run(["git", "init", "-q"], check=True)
-                subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
-                                "commit", "--allow-empty", "-qm", "release"],
-                               env=os.environ | {"GIT_COMMITTER_DATE": "2026-11-28T00:00:00Z"},
-                               check=True)
+                def git(*args):
+                    return subprocess.check_output(
+                        ["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid", *args],
+                        text=True,
+                        env=os.environ | {"GIT_COMMITTER_DATE": "2026-11-28T00:00:00Z"},
+                    ).strip()
                 Path("CHANGELOG.md").write_text("## [1.2.3-rc.1] - 2026-11-28\n", encoding="utf-8")
                 Path("docs/releases").mkdir(parents=True)
                 ledger = Path("docs/releases/releases.csv")
                 header = "tag,semver,prerelease,commit,update_number,signing_key,release_url,assets_sha256,note\n"
                 ledger.write_text(header + "v1.2.2,1.2.2,false,old,100,,,,\n", encoding="utf-8")
+                git("add", "CHANGELOG.md", str(ledger))
+                git("commit", "-qm", "release")
+                candidate = git("rev-parse", "HEAD")
+                git("update-ref", "refs/remotes/origin/main", candidate)
                 POLICY["check_version"]("v1.2.3-rc.1")
                 for tag in ("v1.2.3-rc.01", "v1.2.3+test", "v1.2.3"):
                     with self.subTest(tag=tag), self.assertRaises(ValueError):
                         POLICY["check_version"](tag)
                 ledger.write_text(header + "v1.2.2,1.2.2,false,old,1999999999,,,,\n", encoding="utf-8")
                 with self.assertRaisesRegex(ValueError, "commit time"):
+                    POLICY["check_version"]("v1.2.3-rc.1")
+                git("commit", "-qam", "new ledger entry")
+                git("update-ref", "refs/remotes/origin/main", git("rev-parse", "HEAD"))
+                git("switch", "--detach", candidate)
+                with self.assertRaisesRegex(ValueError, "origin/main release ledger"):
                     POLICY["check_version"]("v1.2.3-rc.1")
             finally:
                 os.chdir(original)

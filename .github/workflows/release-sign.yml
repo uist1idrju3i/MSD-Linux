@@ -94,6 +94,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
           persist-credentials: false
       - name: Download this build
         env:
@@ -107,10 +108,10 @@ jobs:
           cd "$RUNNER_TEMP/release-payload"
           test "$(cat COMMIT)" = "$GITHUB_SHA"
           sha256sum -c SHA256SUMS
-      - name: Recheck production policy before signing
+      - name: Recheck tag, ledger and production policy before signing
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/check-release-policy.py --production-only
+        run: python3 .github/scripts/check-release-policy.py
       - name: Sign the validated manifest
         env:
           RELEASE_PRIVATE_KEY: ${{ secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM }}

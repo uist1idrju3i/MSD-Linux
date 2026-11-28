@@ -93,8 +93,12 @@ def check_version(tag):
     heading = re.compile(rf"^## \[{re.escape(tag[1:])}\](?:\s|$)", re.MULTILINE)
     if not heading.search(Path("CHANGELOG.md").read_text(encoding="utf-8")):
         raise ValueError("CHANGELOG.md has no heading for the tag")
-    with Path("docs/releases/releases.csv").open(encoding="utf-8", newline="") as stream:
-        reader = csv.DictReader(stream)
+    ledger = "docs/releases/releases.csv"
+    for source, contents in (
+        ("tag", Path(ledger).read_text(encoding="utf-8")),
+        ("origin/main", git("show", f"refs/remotes/origin/main:{ledger}")),
+    ):
+        reader = csv.DictReader(contents.splitlines(keepends=True))
         if reader.fieldnames != check["HEADER"]:
             raise ValueError("invalid release ledger header")
         for row in reader:
@@ -102,19 +106,18 @@ def check_version(tag):
             if recorded is None:
                 raise ValueError("invalid tag in release ledger")
             if revision == row["commit"] or tag == row["tag"]:
-                raise ValueError("commit or version already appears in release ledger")
+                raise ValueError(f"commit or version already appears in {source} release ledger")
             previous = version_key(recorded)
             update = int(row["update_number"])
             if version <= previous or number <= update:
-                raise ValueError("commit time must increase in release ledger version order")
+                raise ValueError(f"commit time must increase in {source} release ledger version order")
 
 
 def main():
     try:
-        if sys.argv[1:] != ["--production-only"]:
-            if sys.argv[1:]:
-                raise ValueError("unknown release policy option")
-            check_version(check_tag())
+        if sys.argv[1:]:
+            raise ValueError("unknown release policy option")
+        check_version(check_tag())
         check_production()
     except (KeyError, IndexError, TypeError, ValueError, OSError,
             subprocess.CalledProcessError) as error:

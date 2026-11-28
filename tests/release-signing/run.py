@@ -633,7 +633,7 @@ class ReleaseSigning(unittest.TestCase):
         self.assertNotIn("secrets.", build)
         self.assertNotIn("environment:", build)
         self.assertIn("environment: production", sign)
-        self.assertLess(sign.index("check-release-policy.py --production-only"),
+        self.assertLess(sign.index("run: python3 .github/scripts/check-release-policy.py"),
                         sign.index("secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM"))
         self.assertIn("secrets.MSD_RELEASE_ED25519_PRIVATE_KEY_PEM", sign)
         self.assertIn(expected, sign)
