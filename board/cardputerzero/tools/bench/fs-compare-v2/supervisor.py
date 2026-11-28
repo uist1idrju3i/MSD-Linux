@@ -216,7 +216,7 @@ def t6_repaired_summaries(lines):
     for number, text in enumerate(lines, 1):
         if text.startswith("msd.fscmp: mounted "):
             btrfs = bool(re.fullmatch(
-                r"msd\.fscmp: mounted config=(B1|B2) base_config=\1 variant_id=\S+ test=T6", text))
+                r"msd\.fscmp: mounted config=\S+ base_config=(?:B1|B2) variant_id=\S+ test=T6", text))
             pending = None
         if text.startswith("msd.fscmp: expected_errors_begin "):
             pending = [] if (btrfs and pending is None and

@@ -206,6 +206,21 @@ class Judge(unittest.TestCase):
             self.assertEqual(result["status"], "ok")
             self.assertEqual(result["fatal_errors"], 0)
 
+    def test_t6_repaired_summary_uses_base_config_for_variants(self):
+        for config in ("P080", "P082", "P083"):
+            with self.subTest(config=config), tempfile.TemporaryDirectory() as temporary:
+                text = T6_SCRUB_OK.replace("config=B2 base_config=B2",
+                                          f"config={config} base_config=B2")
+                text = text.replace("variant_id=none", f"variant_id={config}")
+                directory = Path(temporary) / "run"
+                fixture(directory, "T6", text=text)
+                self.assertEqual(M.finalize(directory, "T6", 0)["status"], "ok")
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "qemu-run.log"
+            path.write_text(T6_SCRUB_OK.replace("base_config=B2", "base_config=E1"))
+            self.assertTrue(any(not row["expected"] for row in
+                                M.aggregate_errors([("run", path)], "T6")))
+
     def test_t6_repaired_csum_summary_is_fully_scoped(self):
         mutations = {
             "no-result": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n", ""),
