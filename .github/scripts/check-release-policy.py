@@ -85,8 +85,8 @@ def check_version(tag):
     check = runpy.run_path(str(Path(__file__).with_name("check-releases.py")))
     pattern, version_key = check["TAG_RE"], check["version_key"]
     match = pattern.fullmatch(tag)
-    if not match or match.group(4) is None:
-        raise ValueError("expected vX.Y.Z-rc.N")
+    if not match:
+        raise ValueError("expected vX.Y.Z or vX.Y.Z-rc.N")
     revision = git("rev-parse", "HEAD")
     number = int(git("show", "-s", "--format=%ct", revision))
     version = version_key(match)

@@ -90,7 +90,9 @@ class ProductionPolicyTest(unittest.TestCase):
                         text=True,
                         env=os.environ | {"GIT_COMMITTER_DATE": "2026-11-28T00:00:00Z"},
                     ).strip()
-                Path("CHANGELOG.md").write_text("## [1.2.3-rc.1] - 2026-11-28\n", encoding="utf-8")
+                Path("CHANGELOG.md").write_text(
+                    "## [1.2.3] - 2026-11-28\n## [1.2.3-rc.1] - 2026-11-28\n", encoding="utf-8",
+                )
                 Path("docs/releases").mkdir(parents=True)
                 ledger = Path("docs/releases/releases.csv")
                 header = "tag,semver,prerelease,commit,update_number,signing_key,release_url,assets_sha256,note\n"
@@ -100,7 +102,8 @@ class ProductionPolicyTest(unittest.TestCase):
                 candidate = git("rev-parse", "HEAD")
                 git("update-ref", "refs/remotes/origin/main", candidate)
                 POLICY["check_version"]("v1.2.3-rc.1")
-                for tag in ("v1.2.3-rc.01", "v1.2.3+test", "v1.2.3"):
+                POLICY["check_version"]("v1.2.3")
+                for tag in ("v1.2.3-rc.01", "v1.2.3+test"):
                     with self.subTest(tag=tag), self.assertRaises(ValueError):
                         POLICY["check_version"](tag)
                 ledger.write_text(header + "v1.2.2,1.2.2,false,old,1999999999,,,,\n", encoding="utf-8")

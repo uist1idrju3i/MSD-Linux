@@ -101,7 +101,7 @@ gh secret list --repo uist1idrju3i/MSD-Linux --env production
 
 ## 5. mainの公開鍵buildと保護された署名jobを実行する
 
-1. `main` の対象コミット、CHANGELOG の版、台帳の内部更新番号、成功した試験を確認します。管理者が署名なしの `vX.Y.Z-rc.N` を作成して push すると、署名ワークフローが始まります。
+1. `main` の対象コミット、CHANGELOG の版、台帳の内部更新番号、成功した試験を確認します。管理者が署名なしの `vX.Y.Z` または `vX.Y.Z-rc.N` を作成して push すると、署名ワークフローが始まります。
 2. `build` jobは同じ`github.sha`をcheckoutし、公開鍵だけでBuildrootを構築します。`key-origin=release`と公開鍵の一致を確認し、3 fileの`msd-update-bundle.unsigned.tar`、`sdcard.img.xz`、`COMMIT`、`SHA256SUMS`を`release-unsigned-<run ID>-<attempt>` artifactへ保存します。内部番号はcommit時刻で、`MSD_UPDATE_VERSION`は上書きしません。
 3. Environmentの承認画面ではcommitとbuildのartifactを照合してから承認します。`sign` jobは同じcommitのscriptと公開鍵だけをcheckoutし、同じrunのbuild artifactを取得します。build出力のcommitとtar hash、全memberとmanifest hashを検査し、artifact内のscriptは実行しません。
 4. Secretが空なら失敗します。鍵は`umask 077`でrunnerの一時領域へ書き、公開鍵との一致を確認してmanifestへraw Ed25519署名します。直後に公開鍵で署名を検証し、`msd-update-bundle.tar`を作ります。成功・失敗時とも後続のcleanup stepで鍵ファイルを削除し、公開候補と証拠のPEM・秘密鍵header検査後に`release-signed-<attempt>`を保存します。runnerの強制停止等ではstepの実行を保証できないため、使い捨てrunnerを前提にします。

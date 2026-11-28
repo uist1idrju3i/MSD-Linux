@@ -22,7 +22,7 @@ description: MSD-Linux のCHANGELOG、公開版、Release台帳を準備・検�
 
 1. release-prep PRで `CHANGELOG.md` の `[Unreleased]` の項目を `## [x.y.z] - YYYY-MM-DD` へ移します。
 2. merge後、利用者がmerge commitの `%ct` が台帳の最後の `update_number` より大きいことを確認します。
-3. 利用者がそのコミットに署名なしのタグを作成し、push します。署名ワークフローは `MSD_UPDATE_VERSION` を上書きせずに構築し、`production` の承認後に署名します。
+3. 利用者がそのコミットに署名なしの正式版タグ `vX.Y.Z` または RC タグ `vX.Y.Z-rc.N` を作成し、push します。署名ワークフローは `MSD_UPDATE_VERSION` を上書きせずに構築し、`production` の承認後に署名します。正式版は RC と同じコミットを使わず、内部更新番号が大きいコミットから構築します。
 4. Releaseをdraftで作成 → 全assetをupload → publishの順に進めます。Release immutabilityが有効なら、publishした時点でimmutableになります。
 5. follow-upの台帳PRでCSV行と `docs/releases/<tag>.sha256` を追加します。GitHub APIのasset `digest` と、downloadしたfileに対する `sha256sum` の値を照合し、一致を確認します。
    tagを作ってから台帳PRがmergeされるまでの間は、`check-releases.py --require-tags` が未記録のtagとして全PRの `agent-docs` を失敗させます。台帳PRはtagの作成直後に出します。

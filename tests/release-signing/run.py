@@ -627,7 +627,8 @@ class ReleaseSigning(unittest.TestCase):
         self.assertFalse(self.output.exists())
         workflow = (ROOT / ".github/workflows/release-sign.yml").read_text()
         build, sign = workflow.split("\n  sign:\n")
-        self.assertIn('push:\n    tags: ["v*-rc.*"]', workflow)
+        self.assertIn('push:\n    tags: ["v[0-9]+.[0-9]+.[0-9]+", '
+                      '"v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"]', workflow)
         self.assertNotIn("workflow_dispatch:", workflow)
         self.assertIn("run: python3 .github/scripts/check-release-policy.py\n", build)
         self.assertNotIn("secrets.", build)
