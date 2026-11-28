@@ -3,11 +3,10 @@ set -u
 
 disk="${MSD_DATA_GROW_DISK:-/dev/mmcblk0}"
 partition_prefix="${MSD_DATA_GROW_PARTITION_PREFIX:-/dev/mmcblk0p}"
-data_device="${MSD_DATA_GROW_DATA_DEVICE:-${partition_prefix}7}"
 sysfs_root="${MSD_DATA_GROW_SYSFS:-/sys}"
 
 log() {
-	printf 'msd-data-grow: %s\n' "$*" >&2
+	printf 'msd-data-partition-grow: %s\n' "$*" >&2
 }
 
 fail() {
@@ -93,6 +92,10 @@ case "$p4_type" in
 	5|f|85|0x05|0x0f|0x85) ;;
 	*) fail "partition 4 is not an extended MBR partition" ;;
 esac
+case "$p7_type" in
+	83|0x83) ;;
+	*) fail "partition 7 is not a Linux data partition" ;;
+esac
 
 disk_name="${disk##*/}"
 disk_size_file="$sysfs_root/class/block/$disk_name/size"
@@ -108,14 +111,12 @@ p7_end=$((p7_start + p7_size))
 [ "$p7_end" -le "$disk_sectors" ] || fail "partition 7 extends beyond the disk"
 [ "$p7_end" -le "$p4_end" ] || fail "partition 7 extends beyond the extended partition"
 
-table_changed=0
 if [ "$p4_end" -lt "$disk_sectors" ]; then
 	new_p4_size=$((disk_sectors - p4_start))
 	log "extending partition 4 to the end of $disk"
 	printf 'start=%s, size=%s, type=%s\n' "$p4_start" "$new_p4_size" "$p4_type" |
 		sfdisk --no-reread -N 4 "$disk" >/dev/null ||
 		fail "cannot extend partition 4"
-	table_changed=1
 fi
 
 if [ "$p7_end" -lt "$disk_sectors" ]; then
@@ -124,11 +125,8 @@ if [ "$p7_end" -lt "$disk_sectors" ]; then
 	printf 'start=%s, size=%s, type=%s\n' "$p7_start" "$new_p7_size" "$p7_type" |
 		sfdisk --no-reread -N 7 "$disk" >/dev/null ||
 		fail "cannot extend partition 7"
-	table_changed=1
 fi
 
-if [ "$table_changed" -eq 1 ] && [ "${MSD_DATA_GROW_SKIP_KERNEL_NOTIFY:-0}" != 1 ]; then
+if [ "${MSD_DATA_GROW_SKIP_KERNEL_NOTIFY:-0}" != 1 ]; then
 	partx --update --nr 7:7 "$disk" || fail "cannot notify the kernel about partition 7"
 fi
-
-resize2fs "$data_device" || fail "cannot resize the ext4 filesystem on $data_device"

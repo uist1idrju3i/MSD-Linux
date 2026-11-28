@@ -2,9 +2,11 @@
 
 [保存領域へ戻る](README.md) / [filesystem option調査](filesystem-options.md) / [ext4 mountとfeature](filesystem-options-ext4.md) / [調査の索引](../../../RESEARCH.md)
 
+以下の製品設定はPR C段1前のext4経路の記録です。現在の接続は[書込み台帳](../../design/write-policy.md)を参照してください。
+
 ## 範囲と出典
 
-固定版・最新版ともe2fsprogs 1.47.4です。一次資料は[e2fsprogs v1.47.4](https://github.com/tytso/e2fsprogs/tree/v1.47.4)の`mke2fs(8)`、`mke2fs.conf(5)`、`tune2fs(8)`、`e2fsck(8)`です。製品のdata partition labelは`data`で、容量は[`msd-data-grow`](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow)がpartitionとfilesystemを拡張して決めます。
+固定版・最新版ともe2fsprogs 1.47.4です。一次資料は[e2fsprogs v1.47.4](https://github.com/tytso/e2fsprogs/tree/v1.47.4)の`mke2fs(8)`、`mke2fs.conf(5)`、`tune2fs(8)`、`e2fsck(8)`です。製品のdata partition labelは`data`で、容量は[`msd-data-grow`](https://github.com/uist1idrju3i/MSD-Linux/blob/73b7f3d6db239186c617c713b36bad53494cb96b/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow)がpartitionとfilesystemを拡張して決めます。
 
 CLIの保守optionは起動時のmount値とは分けました。通常bootで実行するoption、offline repairのoption、filesystem作成時だけ適用するprofileを区別します。診断名も省略せず、必要な運用・追加書込み・復旧上の影響を表に記します。
 

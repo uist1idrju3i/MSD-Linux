@@ -20,7 +20,7 @@ fail() {
 }
 
 mkdir -p "$STUB_DIR" "$INIT_DIR"
-# shellcheck disable=SC2016 # The stub script must retain its variable expansions.
+# shellcheck disable=SC2016 # The stub retains its runtime arguments.
 printf '%s\n' \
 	'#!/bin/sh' \
 	'name=${0##*/}' \
@@ -28,25 +28,18 @@ printf '%s\n' \
 	'for arg do printf " <%s>" "$arg" >> "$INIT_SCRIPT_STUB_LOG"; done' \
 	'printf "\n" >> "$INIT_SCRIPT_STUB_LOG"' \
 	'case "$name" in' \
-	'	cmp) exit "${INIT_SCRIPT_CMP_STATUS:-1}" ;;' \
-	'	tr) printf "%s" "${INIT_SCRIPT_MAGIC:-}" ;;' \
-	'	mkfs.ext4) exit "${INIT_SCRIPT_MKFS_STATUS:-0}" ;;' \
-	'	fsck.ext4) exit "${INIT_SCRIPT_FSCK_STATUS:-0}" ;;' \
-	'	mount) exit "${INIT_SCRIPT_MOUNT_STATUS:-0}" ;;' \
-	'	mkdir) [ "$*" != "-p /run/msd" ] || exit 1; case "$*" in */data/etc*) exit "${INIT_SCRIPT_MKDIR_STATUS:-0}" ;; esac ;;' \
-	'	msd-data-grow) exit "${INIT_SCRIPT_GROW_STATUS:-0}" ;;' \
-	'	msd-syncfs) exit "${INIT_SCRIPT_SYNCFS_STATUS:-0}" ;;' \
-	'	dumpe2fs) exit "${INIT_SCRIPT_DUMPE2FS_STATUS:-0}" ;;' \
-	'	awk) if [ "$1" = "/^Block count:/ { print \$3; exit }" ]; then' \
-	'		if [ -e "$INIT_SCRIPT_SIZE_MARKER" ]; then printf "%s\n" "${INIT_SCRIPT_BLOCKS_AFTER-100}";' \
-	'		else : > "$INIT_SCRIPT_SIZE_MARKER"; printf "%s\n" "${INIT_SCRIPT_BLOCKS_BEFORE-100}"; fi; fi ;;' \
-	'	msd-update) exit 1 ;;' \
+	'early-io) exit "${INIT_SCRIPT_GATE_STATUS:-0}" ;;' \
+	'msd-data-boot) case "${1:-}" in health) exit "${INIT_SCRIPT_HEALTH_STATUS:-0}" ;; *) exit "${INIT_SCRIPT_BOOT_STATUS:-0}" ;; esac ;;' \
+	'sleep) exec /bin/sleep 60 ;;' \
+	'cat) exec /bin/cat "$@" ;;' \
+	'awk) exit 0 ;;' \
+	'msd-update) if [ "${1:-}" = status ]; then printf "tryboot=%s\n" "${INIT_SCRIPT_TRYBOOT:-0}"; else exit "${INIT_SCRIPT_COMMIT_STATUS:-0}"; fi ;;' \
 	'esac' \
 	'exit 0' > "$STUB_DIR/stub"
 chmod +x "$STUB_DIR/stub"
 
 for command in \
-	watchdog mkdir dd od tr cmp mkfs.ext4 fsck.ext4 mount awk msd-data-grow \
+	msd-data-boot watchdog mkdir dd od tr cmp mkfs.ext4 fsck.ext4 mount awk msd-data-grow \
 	loadkeys mv rm msd-hwinfo touch sed lsmod modprobe cat msd-update reboot \
 	dmesg grep tail insmod umount wc sync sleep df dumpe2fs msd-syncfs early-io; do
 	ln -s stub "$STUB_DIR/$command"
@@ -82,7 +75,9 @@ do
 		-e "s|/dev/console|${CONSOLE}|g" \
 		-e "s|/dev/kmsg|${CONSOLE}|g" \
 		-e "s|/etc/init.d|${INIT_DIR}|g" \
-		-e "s|/usr/sbin/msd-data-grow|${STUB_DIR}/msd-data-grow|g" \
+		-e "s|/usr/sbin/msd-data-boot|${STUB_DIR}/msd-data-boot|g" \
+		-e "s|/run/msd-early-io/state|${TEST_DIR}/early-state|g" \
+		-e "s|/run/msd-ready|${TEST_DIR}/ready|g" \
 		-e "s|/usr/sbin/msd-syncfs|${STUB_DIR}/msd-syncfs|g" \
 		-e "s|/usr/libexec/msd/early-io|${STUB_DIR}/early-io|g" \
 		-e "s|/data/etc|${TEST_DIR}/data/etc|g" \
@@ -101,90 +96,79 @@ do
 done
 
 data_init="${TEST_DIR}/S02msd-data"
-mount_options=noatime,nodev,nosuid,data=ordered,errors=remount-ro,noinit_itable
 run_data_init() {
 	: > "$STUB_LOG"
-	rm -f "$TEST_DIR/size-marker"
-	PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" INIT_SCRIPT_SIZE_MARKER="$TEST_DIR/size-marker" \
+	PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" \
 		/bin/sh "$data_init" start >"${TEST_DIR}/data.log" 2>&1
 }
 
-INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'existing ext4 startup failed'
-grep -Fq "mount <-t> <ext4> <-o> <$mount_options>" "$STUB_LOG" ||
-	fail 'existing ext4 mount does not suppress background inode initialization'
-if grep -Fq 'mkfs.ext4' "$STUB_LOG"; then
-	fail 'existing ext4 was reformatted'
+printf 'ready\n' >"$TEST_DIR/early-state"
+run_data_init || fail 'product data startup failed'
+grep -Fxq 'msd-data-boot <start> <product>' "$STUB_LOG" ||
+	fail 'product mode not selected'
+printf 'hardware-absent-qemu\n' >"$TEST_DIR/early-state"
+run_data_init || fail 'qemu data startup failed'
+grep -Fxq 'msd-data-boot <start> <qemu>' "$STUB_LOG" ||
+	fail 'qemu mode not selected'
+for fault in gate coordinator state; do
+	: >"$STUB_LOG"
+	printf 'ready\n' >"$TEST_DIR/early-state"
+	case "$fault" in
+		gate) gate_status=1; boot_status=0 ;;
+		coordinator) gate_status=0; boot_status=1 ;;
+		state) gate_status=0; boot_status=0; printf 'invalid\n' >"$TEST_DIR/early-state" ;;
+	esac
+	set +e
+	timeout 0.3 env PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" \
+		INIT_SCRIPT_GATE_STATUS="$gate_status" INIT_SCRIPT_BOOT_STATUS="$boot_status" \
+		/bin/sh "$data_init" start >"${TEST_DIR}/data.log" 2>&1
+	status=$?
+	set -e
+	[ "$status" -eq 124 ] || fail "$fault failure exited instead of waiting"
+	grep -Fq 'Boot stopped. Safe to power off.' "$TEST_DIR/data.log" ||
+		fail "$fault failure did not report stop"
+	if [ "$fault" != coordinator ] && grep -Fq msd-data-boot "$STUB_LOG"; then
+		fail "$fault failure reached coordinator"
+	fi
+done
+if awk '$2 == "/data" { found=1 } END { exit !found }' \
+	"$REPO_ROOT/board/cardputerzero/rootfs-overlay/etc/fstab"; then
+	fail 'fstab still mounts data'
 fi
+printf 'ok - S02 selects fixed product/qemu mode and waits on gate/state/coordinator failure\n'
 
-INIT_SCRIPT_CMP_STATUS=0 run_data_init || fail 'empty partition startup failed'
-grep -Fq 'mkfs.ext4 <-F> <-b> <4096> <-L> <data> <-E> <lazy_itable_init=0,lazy_journal_init=0>' "$STUB_LOG" ||
-	fail 'fallback format does not initialize inode tables and journal synchronously'
-grep -Fq "mount <-t> <ext4> <-o> <$mount_options>" "$STUB_LOG" ||
-	fail 'fallback mount does not suppress background inode initialization'
-
-if run_data_init; then
-	fail 'unrecognized non-empty partition was accepted'
+health_init="${TEST_DIR}/S99msd-health"
+for fault in none mount ready commit; do
+	: >"$STUB_LOG"
+	touch "$TEST_DIR/ready"
+	health_status=0
+	commit_status=0
+	[ "$fault" != mount ] || health_status=1
+	[ "$fault" != commit ] || commit_status=1
+	[ "$fault" != ready ] || rm "$TEST_DIR/ready"
+	set +e
+	PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" \
+		INIT_SCRIPT_TRYBOOT=1 INIT_SCRIPT_HEALTH_STATUS="$health_status" \
+		INIT_SCRIPT_COMMIT_STATUS="$commit_status" /bin/sh "$health_init"
+	status=$?
+	set -e
+	if [ "$fault" = none ]; then
+		[ "$status" -eq 0 ] || fail 'valid health was rejected'
+		grep -Fq 'msd-update <commit>' "$STUB_LOG" || fail 'valid health did not commit'
+	else
+		[ "$status" -eq 1 ] || fail "health $fault failure accepted"
+		grep -Fq reboot "$STUB_LOG" || fail "health $fault failure did not reboot"
+		if [ "$fault" != commit ] && grep -Fq 'msd-update <commit>' "$STUB_LOG"; then
+			fail "health $fault failure reached commit"
+		fi
+	fi
+done
+: >"$STUB_LOG"
+PATH="$STUB_DIR" INIT_SCRIPT_STUB_LOG="$STUB_LOG" /bin/sh "$health_init"
+if grep -Eq 'msd-data-boot|commit|reboot' "$STUB_LOG"; then
+	fail 'normal boot performed tryboot commit checks'
 fi
-if grep -Eq '^(mkfs.ext4|mount) ' "$STUB_LOG"; then
-	fail 'unrecognized non-empty partition was formatted or mounted'
-fi
-if INIT_SCRIPT_CMP_STATUS=0 INIT_SCRIPT_MKFS_STATUS=1 run_data_init; then
-	fail 'failed format was accepted'
-fi
-if grep -Eq '^(fsck.ext4|mount) ' "$STUB_LOG"; then
-	fail 'failed format continued to fsck or mount'
-fi
-if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_FSCK_STATUS=2 run_data_init; then
-	fail 'failed fsck was accepted'
-fi
-if grep -Eq '^mount ' "$STUB_LOG"; then
-	fail 'failed fsck continued to mount'
-fi
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_MOUNT_STATUS=1 run_data_init
-if grep -Fq 'msd-data-grow' "$STUB_LOG"; then
-	fail 'failed mount continued to grow'
-fi
-grep -Fq "ext4 $mount_options" "$REPO_ROOT/board/cardputerzero/rootfs-overlay/etc/fstab" ||
-	grep -Fq "ext4 noauto,$mount_options" "$REPO_ROOT/board/cardputerzero/rootfs-overlay/etc/fstab" ||
-	fail 'fstab does not preserve the data mount options'
-printf 'ok - data startup initializes synchronously and rejects unsafe paths\n'
-
-grep_syncfs() {
-	grep -Fq 'msd-syncfs </data>' "$STUB_LOG"
-}
-INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'initial directory setup failed'
-grep_syncfs || fail 'initial directories were not synchronized'
-grep -Fxq 'msd-data: setup synchronized' "$CONSOLE" || fail 'syncfs success was not English-only'
-[ "$(tail -n 1 "$STUB_LOG")" = 'msd-syncfs </data>' ] || fail 'syncfs ran before setup finished'
-mkdir -p "$TEST_DIR/data/etc" "$TEST_DIR/data/msd-update"
-INIT_SCRIPT_MAGIC=53ef run_data_init || fail 'unchanged startup failed'
-if grep_syncfs; then fail 'unchanged startup unnecessarily synchronized'; fi
-[ "$(grep -c '^dumpe2fs <-h>' "$STUB_LOG")" -eq 2 ] || fail 'raw filesystem size was not checked'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_AFTER=200 run_data_init || fail 'grow startup failed'
-grep_syncfs || fail 'grow with existing directories was not synchronized'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_BEFORE='' run_data_init || fail 'unknown size startup failed'
-grep_syncfs || fail 'unknown size was treated as unchanged'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_AFTER=invalid run_data_init || fail 'invalid size startup failed'
-grep_syncfs || fail 'invalid size was treated as unchanged'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_DUMPE2FS_STATUS=1 run_data_init || fail 'size probe failure changed startup behavior'
-grep_syncfs || fail 'failed size probe was treated as unchanged'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_FSCK_STATUS=1 run_data_init || fail 'repaired startup failed'
-grep_syncfs || fail 'fsck repairs were not synchronized'
-INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_GROW_STATUS=1 run_data_init || fail 'grow error changed recovery behavior'
-grep_syncfs || fail 'partial grow was not synchronized'
-grep -Fq 'msd-data-grow failed' "$TEST_DIR/data.log" || fail 'grow error was hidden'
-if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_MKDIR_STATUS=8 run_data_init; then
-	fail 'mkdir failure was hidden'
-fi
-grep_syncfs || fail 'partial mkdir was not synchronized'
-if INIT_SCRIPT_MAGIC=53ef INIT_SCRIPT_BLOCKS_AFTER=200 INIT_SCRIPT_SYNCFS_STATUS=1 run_data_init; then
-	fail 'syncfs failure was hidden'
-fi
-grep -Fq 'setup syncfs failed' "$TEST_DIR/data.log" || fail 'syncfs failure was not logged'
-grep -Fxq 'msd-data: setup syncfs failed; keeping /data mounted.' "$TEST_DIR/data.log" || fail 'syncfs failure was not English-only'
-INIT_SCRIPT_CMP_STATUS=0 run_data_init || fail 'format synchronization failed'
-grep_syncfs || fail 'format was not synchronized'
-printf 'ok - setup syncfs follows writes, skips unchanged boots, and reports errors\n'
+printf 'ok - health gates tryboot commit on mapper/Btrfs and ready, and rejects commit errors\n'
 
 "${CC:-cc}" -Wall -Wextra -Werror \
 	"$REPO_ROOT/package/msd-syncfs/msd-syncfs.c" \
@@ -215,4 +199,5 @@ if "$TEST_DIR/msd-syncfs" "$TEST_DIR" extra >"$TEST_DIR/helper.log" 2>&1; then
 fi
 printf 'ok - syncfs helper validates input and reports writeback errors\n'
 
+python3 "$REPO_ROOT/tests/init-scripts/data-image.py"
 printf 'All init-script host tests passed.\n'

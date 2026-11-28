@@ -19,6 +19,13 @@ cc=${CC:-cc}
 "$cc" -std=c11 -Wall -Wextra -Werror -I"$src" \
 	"$src/unlock.c" "$root/tests/msd-data-unlock/core.c" -o "$work/core"
 "$work/core"
+# shellcheck source=/dev/null
+. "$root/board/cardputerzero/data-layout.conf"
+"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" \
+	-DMSD_DATA_INITIAL_BYTES="${MSD_DATA_INITIAL_BYTES}ULL" \
+	"$src/boot.c" "$root/tests/msd-data-unlock/boot-core.c" \
+	-Wl,--wrap=stat -o "$work/boot-core"
+"$work/boot-core"
 "$cc" -std=c11 -Wall -Wextra -Werror -I"$src" -Dmain=msd_helper_main \
 	-c "$src/main.c" -o "$work/main.o"
 "$cc" -std=c11 -Wall -Wextra -Werror -I"$src" "$work/main.o" \
@@ -30,6 +37,20 @@ cc=${CC:-cc}
 python3 "$root/tests/msd-data-unlock/terminal.py" "$work/terminal-driver"
 python3 "$root/tests/msd-data-unlock/requirements.py"
 if [ -f "$include/libcryptsetup.h" ]; then
+	"$cc" -std=c11 -Wall -Wextra -Werror -pthread -I"$src" -I"$include" \
+		-Dmain=msd_boot_main -c "$src/boot-main.c" -o "$work/boot-main.o"
+	"$cc" -std=c11 -Wall -Wextra -Werror -pthread -I"$src" -I"$include" \
+		-DMSD_DATA_INITIAL_BYTES="${MSD_DATA_INITIAL_BYTES}ULL" \
+		"$work/boot-main.o" "$src/boot.c" "$src/terminal.c" "$src/unlock.c" \
+		"$root/tests/msd-data-unlock/boot-driver.c" \
+		-Wl,--wrap=open,--wrap=crypt_init,--wrap=crypt_load,--wrap=crypt_get_label \
+		-Wl,--wrap=crypt_set_log_callback,--wrap=crypt_free,--wrap=stat,--wrap=fopen \
+		-Wl,--wrap=access,--wrap=execv,--wrap=execl,--wrap=tcsetattr -lcryptsetup -lutil -o "$work/boot-driver"
+	for scenario in empty pending ready unknown probe-error tty-missing unlock-fail \
+		helper-eof helper-bad grow-fail mkfs-fail mount-fail mkdir-fail sync-fail post-synced-fail \
+		ready-restore-fail prepare-restore-fail; do
+		"$work/boot-driver" "$scenario"
+	done
 	"$cc" -std=c11 -Wall -Wextra -Werror -I"$src" -I"$include" \
 		"$src/unlock.c" "$src/crypt-backend.c" "$root/tests/msd-data-unlock/real.c" \
 		-Wl,--wrap=fsync -Wl,-l:libcryptsetup.so.12 -o "$work/real"

@@ -40,13 +40,16 @@ fi
 "${BOARD_DIR}/tools/check-dt-overlays.sh" \
 	"${HOST_DIR:?}" "$BINARIES_DIR" "${BINARIES_DIR}/rpi-firmware/config.txt"
 cp "${BINARIES_DIR}/rootfs.squashfs" "$STAGE_DIR/"
+python3 "${BOARD_DIR}/data-image.py" prepare "$STAGE_DIR"
 
 genimage \
 	--rootpath "${ROOTPATH_TMP}" \
 	--tmppath "${GENIMAGE_TMP}" \
 	--inputpath "${STAGE_DIR}" \
 	--outputpath "${BINARIES_DIR}" \
-	--config "${BOARD_DIR}/genimage.cfg"
+	--config "${STAGE_DIR}/genimage.cfg"
+
+"${BOARD_DIR}/check-image-layout.sh" "${BINARIES_DIR}/sdcard.img"
 
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot.vfat" "$UPDATE_DIR/"
 (

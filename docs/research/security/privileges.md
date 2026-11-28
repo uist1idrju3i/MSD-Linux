@@ -8,8 +8,8 @@
 
 | 処理とソース | 現行の責務・入力 | 提案する最小境界と注意 |
 |---|---|---|
-| PID 1、[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)、[S03msd-etc-overlay](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay) | data deviceの識別、必要時のformat、fsck、mount、etc overlay | 初期化専用の信頼処理。device・partitionを固定して検査し、通常userやnetwork parserから任意mount・formatを要求できないようにする。CAP_SYS_ADMINを通常serviceへ広げない |
-| [msd-data-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | partition tableと容量を読み、最後のdata領域を拡張 | boot領域とdata領域の境界を認可側が検査する。全diskへの書き込み能力を持つため、一般アプリへ実行権限だけを無条件に委譲しない |
+| PID 1、[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)、[S03msd-etc-overlay](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay) | data deviceの識別、coordinatorによる初期設定・解錠・mount、etc overlay | 初期化専用の信頼処理。device・partitionを固定して検査し、通常userやnetwork parserから任意mount・formatを要求できないようにする。CAP_SYS_ADMINを通常serviceへ広げない |
+| [msd-data-partition-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-partition-grow) | partition tableと容量を読み、最後のdata領域を拡張 | boot領域とdata領域の境界を認可側が検査する。全diskへの書き込み能力を持つため、一般アプリへ実行権限だけを無条件に委譲しない |
 | [S10mdev](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S10mdev)、[post-build](../../../board/cardputerzero/post-build.sh) | mdevの起動、sysfs modaliasからmodule load、eventに応じたhook | device作成・module load・hookの信頼処理を分けて監査する。hotplug入力をshellコマンドとして評価しない。module署名はhookとdevice権限の認可を代替しない |
 | [keyboard helper](../../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/cardputer-keyboard) | tca8418cの名前を確認し、内蔵keyboardのsymlinkを管理 | input eventは現行root:root 0640のrule。一般アプリへ全input deviceの読み書きをまとめて与えない。読取りでも他の入力の観測、書込みやioctlでは操作の注入等を考慮し、必要nodeと操作を限定する |
 | [S01msd-watchdog](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S01msd-watchdog)、[powerfail helper](../../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/powerfail-notify) | watchdog deviceへの定期通知、powerfail時のlogとsync | watchdogはopenしたdevice FDと必要な操作へ限定する案。rootでしかできないかはdeviceのmode・driverごとに確認する。restartとFD closeがrebootを起こす条件も試験する |

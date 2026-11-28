@@ -11,7 +11,7 @@
 | 初回導入 | [genimage.cfg](../../../board/cardputerzero/genimage.cfg) がMBRの全SD imageを作る | kernel単体や更新tarの書き込みではない。再導入はp7のデータも消す |
 | CIからの入手 | [build.yml](../../../.github/workflows/build.yml) の `msd-cardputerzero-build` はSD image、DTB、kernel、構成、SBOM、legal-infoを保存する | build成功が保存条件であり、artifactの存在だけでQEMU検査の合格とはしない。文書変更だけならbuildを省く |
 | 更新tarの入手 | [post-image.sh](../../../board/cardputerzero/post-image.sh) は `msd-update-bundle.tar` を生成するが、上記artifactの保存対象ではない | READMEで「Releaseから更新tarを取得できる」とは案内しない。端末の自動取得も未実装 |
-| データ拡張 | [S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) は [msd-data-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) を呼ぶ | p4・p7の末尾拡張とext4の拡張は既存実装。失敗してもマウントを維持するため、ログと容量を確認する |
+| データ拡張 | [S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) は [msd-data-grow](https://github.com/uist1idrju3i/MSD-Linux/blob/0c781e3755aa7a4f52b2f299632e398cf3bd8e8c/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) を呼ぶ | p4・p7の末尾拡張とext4の拡張は既存実装。失敗してもマウントを維持するため、ログと容量を確認する |
 | install | [msd-update](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) は4ファイルのbundle、署名、hash、番号、サイズを検査し、非稼働slotへ書いて読み戻す | 失敗後にtryしない。稼働slotは保つが、共有データはA/Bで巻き戻らない。展開先の通常tmpfsにも容量が必要 |
 | try | 検証済みslotとp1のselectorが一致するかを検査し、`reboot '0 tryboot'` を呼ぶ | 既存のホスト試験はrebootをmockする。firmwareによる実機切替の確認ではない |
 | commit | [S99msd-health](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health) がSquashFS、ext4、ready markerを確認し、自動でcommitする | 利用者の承認や全周辺機能の確認を待たない。手動commitを通常の手順に足さない |

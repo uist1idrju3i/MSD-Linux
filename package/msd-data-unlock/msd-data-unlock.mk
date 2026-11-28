@@ -9,10 +9,16 @@ define MSD_DATA_UNLOCK_BUILD_CMDS
 	$(TARGET_CC) $(TARGET_CFLAGS) -Wall -Wextra -Werror -pthread $(TARGET_LDFLAGS) \
 		-o $(@D)/msd-data-unlock $(@D)/main.c $(@D)/unlock.c \
 		$(@D)/terminal.c $(@D)/crypt-backend.c -lcryptsetup
+	. "$(BR2_EXTERNAL_MSD_PATH)/board/cardputerzero/data-layout.conf" && \
+	$(TARGET_CC) $(TARGET_CFLAGS) -Wall -Wextra -Werror -pthread $(TARGET_LDFLAGS) \
+		-DMSD_DATA_INITIAL_BYTES=$${MSD_DATA_INITIAL_BYTES}ULL \
+		-o $(@D)/msd-data-boot $(@D)/boot-main.c $(@D)/boot.c \
+		$(@D)/terminal.c $(@D)/unlock.c -lcryptsetup
 endef
 
 define MSD_DATA_UNLOCK_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/msd-data-unlock $(TARGET_DIR)/usr/sbin/msd-data-unlock
+	$(INSTALL) -D -m 0755 $(@D)/msd-data-boot $(TARGET_DIR)/usr/sbin/msd-data-boot
 endef
 
 $(eval $(generic-package))

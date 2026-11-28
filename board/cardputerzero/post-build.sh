@@ -13,7 +13,6 @@ cat
 cmp
 dd
 find
-fsck.ext4
 fsync
 grep
 ir-ctl
@@ -22,15 +21,16 @@ ln
 loadkeys
 media-ctl
 mkdir
-mkfs.ext4
+mkfs.btrfs
 mkswap
 mount
 modprobe
-msd-data-grow
+msd-data-boot
+msd-data-unlock
+msd-data-partition-grow
 msd-console
 msd-hwinfo
 msd-syncfs
-dumpe2fs
 msd-update
 mktemp
 mv
@@ -39,7 +39,6 @@ openssl
 partx
 readlink
 reboot
-resize2fs
 rm
 rmdir
 sfdisk

@@ -2,6 +2,8 @@
 
 [保存領域の索引へ戻る](README.md)
 
+以下の製品設定はPR C段1前のext4経路の記録です。現在の接続は[書込み台帳](../../design/write-policy.md)を参照してください。
+
 ## 判断と範囲
 
 新規SDにはB1（`noinit_itable`でmountしてonline grow）とD（fallback mkfsのlazy初期化を無効化）を採用します。書き込みを消すのではなくformat・grow中へ移す変更です。progressはまだ実装しておらず、[AGENTS.md §10](../../../AGENTS.md)への適合は未達です。[書き込み台帳](../../design/write-policy.md)と[QEMU追試](../../experiments/2026-11-17-data-sync-itable.md)を参照してください。
@@ -12,7 +14,7 @@
 
 - [genimage.cfg](../../../board/cardputerzero/genimage.cfg)は64 MiBのext4を `use-mke2fs`、`-b 4096` で作ります。genimage v20自身が非lazyのextended optionを付けます（資料G）。
 - [S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)はext4 magicを調べ、認識できず先頭64 MiBがゼロの時だけfallback formatします。変更前は両lazy optionを明示していませんでした。変更後は `-E lazy_itable_init=0,lazy_journal_init=0` を指定します。
-- fsck後の明示mountに `noinit_itable` を追加し、[fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)にも同じ指定を残します。[msd-data-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow)はpartition 4・7、kernelへの通知、`resize2fs` の順で処理します。grow自身の処理は変えません。
+- fsck後の明示mountに `noinit_itable` を追加し、[fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)にも同じ指定を残します。[msd-data-grow](https://github.com/uist1idrju3i/MSD-Linux/blob/73b7f3d6db239186c617c713b36bad53494cb96b/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow)はpartition 4・7、kernelへの通知、`resize2fs` の順で処理します。grow自身の処理は変えません。
 - overlay内のmount・remountを検索し、通常の `/data` mountはS02だけでした。msd-updateの一時mountはFAT用で、`/data` のremountはありません。管理者が別のoptionで手動mountする経路まで禁止する変更ではありません。
 
 ## 固定版sourceの事実

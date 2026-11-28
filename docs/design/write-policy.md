@@ -4,7 +4,7 @@
 
 [AGENTS.md §10](../../AGENTS.md) の規則（利用者が意図しない時に書き込まない、2秒以上かかり得る処理ではprogressを表示する）について、現行の製品で永続storage（SDカード）に書き込む箇所と、その扱いを記録します。手順は「product-io-policy」スキル（`.agents/skills/product-io-policy/SKILL.md`）にあります。
 
-書き込みの経路を調べた過去の記録は、[書き込み経路・read-only policy案・S3](../research/storage/write-policy-and-s3.md) にあります。この台帳は、現在の規則に照らした判定だけを書きます。
+書き込みの経路を調べた過去の記録は、[書き込み経路・read-only policy案・S3](../research/storage/write-policy-and-s3.md) にあります。この台帳では、現行の扱いと置換前の記録を分けて示します。
 
 ## 状態の意味
 
@@ -20,13 +20,41 @@ AGENTS.md §10の英日併記について、利用者の判断で案C（英語�
 理由は、kernel fbconでは日本語を描けないためです。
 例外の範囲は、電源投入からinitの起動処理が終わるまでの自動表示と、起動失敗で待機している間の表示です。
 early-ioのmarker・progress・中断可否・成功失敗、S02の/data診断、slot・ready表示も英語だけにします。
-2026-11-26の決定で、起動中のPIN設定・解錠・recoveryの対話と警告もこの例外に含めます。[現行設計](data-unlock.md)は未実装です。
+2026-11-26の決定で、起動中のPIN設定・解錠・recoveryの対話と警告もこの例外に含めます。[現行設計](data-unlock.md)の起動接続はPR C段1で実装し、QEMUによる受入確認は未実施です。
 consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いです。実機LCDでの英語の可読性とprogressの見え方は未確認です。
 
 文書とマニュアルは引き続き日本語だけです。起動完了後の対話toolの画面はこの例外に含めず、英日併記を維持します。
 この決定は表示言語だけの例外であり、永続storageへの書込みやprogress・中断可否の表示義務を免除しません。
 
-## 現行の箇所
+## PR C段1の起動接続
+
+固定確認長は[data-layout.conf](../../board/cardputerzero/data-layout.conf)の536,870,912 bytesです。
+image生成と[boot coordinator](../../package/msd-data-unlock/boot-main.c)のbuildで共用します。
+`S02msd-data`がgate成功後にcoordinatorを呼び、失敗するとexitせず待機します。
+製品の対話先は`/dev/tty1`だけで、欠損時はconsoleとkernel logへの停止通知以外を代用しません。
+以下は実装した書込み区間であり、QEMU・実SDの書込み量、LCDの表示、実電源断の確認結果ではありません。
+
+| 操作 | 書込み先・時機 | progressと失敗時の動作 |
+|---|---|---|
+| LUKS2判定 | gateと固定端末の準備後。`crypt_load`は片側headerを修復して書く場合があります | metadata検査の前から経過秒と中断不可を表示。未知label、破損、I/O errorは初期化へ進めません |
+| 固定範囲zero確認 | headerが無い場合だけ先頭から固定長全体を読みます。書込みなし。通常のready起動では省略します | 読取り専用、電源を切ってよい旨、bytes/総bytesと経過秒を表示。後方の非zero、短い読取り、read error、表示失敗は停止します |
+| partition拡張 | PIN2回とrecovery照合又はskip再確認後の`grow`要求だけ。[partition専用helper](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-partition-grow)がp4/p7を拡張します | 経過秒と中断不可を表示。kernel反映まで成功した時だけ`grown`を返します。`resize2fs`と毎起動のgrowは廃止しました |
+| LUKS2初期化・slot操作 | 既存helperがpending format、slot 0/1追加、mapper openを実行します | 既存helperの経過秒・中断不可表示を維持。初期化中断のpendingは新しいPINとrecoveryでやり直します |
+| Btrfs作成・mount・directory作成 | `filesystem`要求後にmapper上でdata/metadata DUP、xxhashを指定して作成。`noatime,nodev,nosuid,compress=zstd:3`でmountし、`/data/etc`と`/data/msd-update`を作ります | 各処理の経過秒と中断不可を表示。失敗した段階で止め、後続を実行しません。ready起動ではmkfs・directory作成を行いません |
+| 同期・ready更新 | `msd-syncfs /data`成功後だけ`synced`を返し、helperがslot検査・ready更新・device同期を行います | 同期中も経過秒と中断不可を表示。`synced`後のhelper失敗も同じbootで再試行せず待機。次回は実際のlabelで判定します |
+| 通常解錠・recovery復旧 | readyから既存helperの認証・slot 0復旧を経てmountします。10回後のslot 0削除は下の設計時台帳の例外を維持します | helperとmountのprogressを表示。認証失敗以外のerrorを誤PINへまとめません |
+| mount同一性・tryboot | [health](../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health)はBtrfsのmount元と意図したmapperのblock major/minorを比較します | 正しいmountと既存ready条件を満たす時だけcommit。firmware trybootとcommit中の既存progress不足は未確認・未対応のままです |
+
+socket、診断、入力と進捗用の作業領域はRAMだけに置きます。
+新しいbackgroundのscrub・balanceは追加しません。
+mount後の遅延transaction、idle、shutdownの書込みは未確認で、表示区間だけで全書込みを覆ったとは扱いません。
+旧benchmarkの結果はlegacy条件の証拠として保持し、LUKS2+Btrfsの書込み量へ読み替えません。
+
+## 旧ext4経路と共通処理の台帳
+
+次の表はPR C段1より前のext4経路の記録を含みます。
+S02のext4 format・fsck・resize・毎起動mkdirは廃止し、現在の接続は上の表に示します。
+共通の更新・powerfail処理と過去の測定値は残します。
 
 2026-11-12に基準commit `d7d9d622eae2f5f78dc0b891203f3641f334123b` の外部tree、生成rootfs、BusyBox・kernelの生成configとsourceを棚卸ししました。[今回の実験](../experiments/2026-11-12-write-inventory.md)ではQEMUの起動後idleにもp7への書き込みがあり、規則への適合は未達です。実機、shutdown、tryboot、障害回復の量は未測定です。
 
@@ -35,7 +63,7 @@ consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いで�
 | [S02msd-data](../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data) の `mkfs.ext4` | 空の `/data`（p7）を初回起動でformatします。`lazy_itable_init=0,lazy_journal_init=0` でinode tableとjournalの初期化をformat中に行います | なし（未対応） | 未対応 | 同期化しても表示は未実装です。初期暗号化とともにprogressを表示する処理へ置き換えます |
 | S02msd-data の `fsck.ext4 -p` | `/data` に問題があれば、起動のたびに修復を書き込みます | なし | 未対応 | 電源断の後の回復は必要なので、例外にする案です。修復した時は、そのことを表示します |
 | S02msd-data の `mkdir -p` | `/data/etc`、`/data/msd-update` を、起動のたびに作ります（既にあれば書き込まない見込み、推測）。seed用directoryの作成は削除しました | なし | 未確認 | 残るdirectory作成の寄与は未分離です |
-| [msd-data-grow](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | 初回起動でpartition tableを書き換え、`resize2fs` で `/data` を広げます。S02の `noinit_itable` mountにより新規inode tableをgrow中に同期初期化します | なし（未対応） | 未対応 | 待ち時間と書き込みをgrow内へ移しましたが、利用者の操作やprogressはまだありません。初期暗号化と同じ処理で表示します |
+| [旧msd-data-grow](https://github.com/uist1idrju3i/MSD-Linux/blob/73b7f3d6db239186c617c713b36bad53494cb96b/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow) | 初回起動でpartition tableを書き換え、`resize2fs` で `/data` を広げます。S02の `noinit_itable` mountにより新規inode tableをgrow中に同期初期化します | なし（未対応） | 未対応 | 待ち時間と書き込みをgrow内へ移しましたが、利用者の操作やprogressはまだありません。初期暗号化と同じ処理で表示します |
 | seedrngの自動保存（旧`S05seedrng`） | post-buildでS01・S05のseed initと既定設定を除去し、S02の`/data/seedrng`作成も削除しました。起動・停止・reloadからseedrngを呼びません | なし | 対応済み | [QEMU記録](../experiments/2026-11-13-seedrng-zram.md)で新規imageのdirectory・init・設定の不在を確認しました。内蔵hwrngは維持しますが品質は未確認です。既存SDの古いseedは自動消去しません |
 | [msd-update](../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update) の `install` | 利用者が実行した時に、待機中のslot（p2/p3、p5/p6）へ `dd ... conv=fsync` で書き、`/data/msd-update` に状態を書きます | なし | 未対応 | RAUCかSWUpdateへ移る時に、progressを表示します。利用者の操作で始まる点は規則に合います |
 | [S99msd-health](../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health) からの `msd-update commit` | 試し起動（tryboot）の時だけ、`/data/msd-update` とFATの `autoboot.txt` を書きます | なし | 未対応 | 利用者が始めた更新の続きです。例外にする案で、起動の画面に更新中であることを表示します |
@@ -45,9 +73,9 @@ consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いで�
 | [powerfail-notify](../../board/cardputerzero/rootfs-overlay/usr/libexec/msd/powerfail-notify) | power-failのmdev eventでbackgroundの `sync` を呼び、既存のdirty dataをflushし得ます | なし | 未対応 | 従来の台帳の欠落です。緊急退避の例外候補ですが、許容時間・実機event・表示は未確認のままです |
 | `/data` の常時rw | アプリや利用者が `/data` に作ったfileの更新に加え、ext4のmetadata・journalも永続書き込みになります | なし | 未対応 | 書き込み窓、roへの切替、`commit=`、discard等を、この調査だけで変更しません |
 
-## LUKS2+Btrfsのdata初期設定と復旧で追加する計画
+## LUKS2+Btrfsの設計時台帳（2026-11-26）
 
-[現行設計](data-unlock.md)に対応する2026-11-26の台帳です。PR Bでは[helper単体](data-unlock-helper.md)のformat・slot操作・解錠・ready化を実装しました。以下の起動への接続はPR Cで行い、上のext4経路を置換済み、または書込みを測定済みとは扱いません。量はすべて未測定です。既存台帳が20,000 byteを超えるため分割を検討し、今回は現行ext4と置換計画を同じ台帳で比較できるよう、この主題の表を一つに保ちます。
+[現行設計](data-unlock.md)に対応する設計時の台帳を残します。PR Bでは[helper単体](data-unlock-helper.md)を実装し、PR C段1では上記の起動接続を実装しました。以下の「計画」は設計時の状態で、QEMUと実SDの受入確認・書込み量の測定は未実施です。既存台帳が20,000 byteを超えるため分割を検討し、今回は旧ext4経路・設計時の条件・現在の接続を比較できるよう一つに保ちます。
 
 | 操作 | 書込み先と時機・理由 | progress・中断可否 | 状態・受入条件 |
 |---|---|---|---|

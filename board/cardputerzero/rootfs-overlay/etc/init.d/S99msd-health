@@ -12,7 +12,7 @@ case "$status" in
 esac
 
 if ! awk '$2 == "/" && $3 == "squashfs" { found = 1 } END { exit !found }' /proc/mounts ||
-	! awk '$2 == "/data" && $3 == "ext4" { found = 1 } END { exit !found }' /proc/mounts ||
+	! /usr/sbin/msd-data-boot health ||
 	[ ! -f /run/msd-ready ]; then
 	reboot
 	exit 1

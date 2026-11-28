@@ -2,11 +2,12 @@
 set -eu
 
 repo_root="$(CDPATH='' cd "$(dirname "$0")/../.." && pwd)"
-grow="$repo_root/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow"
+grow="$repo_root/board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-partition-grow"
 test_root="$(mktemp -d)"
+original_path="$PATH"
 
 cleanup() {
-	rm -rf "$test_root"
+	PATH="$original_path" rm -rf "$test_root"
 }
 trap cleanup 0
 trap 'exit 1' HUP INT TERM
@@ -42,9 +43,8 @@ make_image() {
 run_grow() {
 	MSD_DATA_GROW_DISK="$1" \
 	MSD_DATA_GROW_PARTITION_PREFIX="$1" \
-	MSD_DATA_GROW_DATA_DEVICE="$2" \
-	MSD_DATA_GROW_SYSFS="$3" \
-	MSD_DATA_GROW_SKIP_KERNEL_NOTIFY=1 \
+	MSD_DATA_GROW_SYSFS="$2" \
+	MSD_DATA_GROW_SKIP_KERNEL_NOTIFY="${MSD_DATA_GROW_SKIP_KERNEL_NOTIFY:-1}" \
 	"$grow"
 }
 
@@ -58,7 +58,7 @@ make_sysfs() {
 
 statless_path="$test_root/statless-bin"
 mkdir -p "$statless_path"
-for tool in awk cat sfdisk resize2fs; do
+for tool in awk cat sfdisk; do
 	tool_path="$(command -v "$tool")" || fail "required host test command not found: $tool"
 	ln -s "$tool_path" "$statless_path/$tool"
 done
@@ -86,15 +86,18 @@ partition_value() {
 }
 
 image="$test_root/cardputerzero.img"
-data_fs="$test_root/data.ext4"
+data_fs="$test_root/data-sentinel"
 make_image "$image" 0
 disk_sectors=$((2 * 1024 * 1024 * 1024 / 512))
 sysfs_root="$test_root/sys"
 make_sysfs "$sysfs_root" "$image" "$disk_sectors"
-truncate -s 64M "$data_fs"
-mke2fs -q -F -t ext4 "$data_fs"
-truncate -s 96M "$data_fs"
-PATH="$statless_path" run_grow "$image" "$data_fs" "$sysfs_root"
+printf 'existing data must remain unchanged\n' >"$data_fs"
+dd if="$data_fs" of="$image" bs=512 seek=1351680 conv=notrunc status=none
+data_hash() {
+	dd if="$image" bs=512 skip=1351680 count=131072 status=none | sha256sum
+}
+sentinel_before="$(data_hash)"
+PATH="$statless_path" run_grow "$image" "$sysfs_root"
 
 p4_start="$(partition_value "$image" 4 start)"
 p7_start="$(partition_value "$image" 7 start)"
@@ -102,22 +105,34 @@ p4_size="$(partition_value "$image" 4 size)"
 p7_size="$(partition_value "$image" 7 size)"
 [ "$((p4_start + p4_size))" -eq "$disk_sectors" ] || fail "partition 4 did not reach the disk end"
 [ "$((p7_start + p7_size))" -eq "$disk_sectors" ] || fail "partition 7 did not reach the disk end"
-blocks="$(dumpe2fs -h "$data_fs" 2>/dev/null | awk -F: '$1 == "Block count" {gsub(/[[:space:]]/, "", $2); print $2}')"
-[ "$blocks" -gt 16384 ] || fail "ext4 filesystem was not grown beyond 64 MiB"
-printf 'ok - p4 and p7 grow to the disk end and ext4 grows offline\n'
+[ "$(data_hash)" = "$sentinel_before" ] || fail "partition grow modified data"
+printf 'ok - p4 and p7 grow to the disk end without filesystem operations\n'
 
 before="$(sha256sum "$image" | awk '{print $1}')"
-run_grow "$image" "$data_fs" "$sysfs_root"
+run_grow "$image" "$sysfs_root"
 after="$(sha256sum "$image" | awk '{print $1}')"
 [ "$before" = "$after" ] || fail "a second run changed the partition table"
 printf 'ok - a second run leaves the partition table unchanged\n'
+
+printf '#!/bin/sh\nexit 1\n' > "$statless_path/partx"
+chmod +x "$statless_path/partx"
+if PATH="$statless_path" MSD_DATA_GROW_SKIP_KERNEL_NOTIFY=0 \
+	run_grow "$image" "$sysfs_root" > "$test_root/notify.log" 2>&1; then
+	fail "growth succeeded when kernel notification failed"
+fi
+grep -Fq 'cannot notify the kernel' "$test_root/notify.log" ||
+	fail "kernel notification failure was not reported"
+printf '#!/bin/sh\nexit 0\n' > "$statless_path/partx"
+PATH="$statless_path" MSD_DATA_GROW_SKIP_KERNEL_NOTIFY=0 \
+	run_grow "$image" "$sysfs_root"
+printf 'ok - kernel notification failure stops; unchanged geometry can resume notification\n'
 
 nonlast="$test_root/nonlast.img"
 make_image "$nonlast" 1
 nonlast_sysfs="$test_root/nonlast-sys"
 make_sysfs "$nonlast_sysfs" "$nonlast" "$disk_sectors"
 sfdisk --dump "$nonlast" > "$test_root/nonlast.before"
-if run_grow "$nonlast" "$data_fs" "$nonlast_sysfs" > "$test_root/nonlast.log" 2>&1; then
+if run_grow "$nonlast" "$nonlast_sysfs" > "$test_root/nonlast.log" 2>&1; then
 	fail "growth succeeded when partition 7 was not last"
 fi
 sfdisk --dump "$nonlast" > "$test_root/nonlast.after"
@@ -128,7 +143,7 @@ printf 'ok - growth refuses when partition 7 is not last\n'
 missing_sysfs="$test_root/missing-sysfs"
 missing_disk="$test_root/cardputerzero.img"
 mkdir -p "$missing_sysfs/class/block/${missing_disk##*/}"
-if output="$(run_grow "$missing_disk" "$data_fs" "$missing_sysfs" 2>&1)"; then
+if output="$(run_grow "$missing_disk" "$missing_sysfs" 2>&1)"; then
 	fail "growth succeeded when the sysfs disk size was missing"
 fi
 if ! printf '%s\n' "$output" |

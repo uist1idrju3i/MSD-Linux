@@ -9,8 +9,8 @@
 | 対象 | コードで確認できる内容 | 確認の限界 |
 |---|---|---|
 | SDの配置 | [genimage.cfg](../../../board/cardputerzero/genimage.cfg)はMBR、`align = 4M`。p1 selector、p2/p3 boot、p4の中のp5/p6 rootfs、p7 dataを配置する。 | 指定だけでは実カードのerase/AU、FTL、速度改善を確認したことにはならない。 |
-| filesystem | rootfsはSquashFS。新規のdata imageはext4を`-b 4096`で作る。 | 既存カードの割当単位を変換する処理とは別。実カードの電断・耐久性は未確認。 |
-| 可変領域 | [fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)は`/data`をext4、`data=ordered`で定義する。[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)が検査・mountし、[msd-data-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-grow)が拡張を扱う。 | 通常起動で`/data`をread-onlyにするpolicyは未実装。手順を保存したことを実機試験としない。 |
+| filesystem | rootfsはSquashFS。新規のdata imageは固定長512 MiBのzero領域。初期設定でLUKS2上にBtrfsを作る。 | 既存カードの割当単位を変換する処理とは別。実カードの電断・耐久性は未確認。 |
+| 可変領域 | [fstab](../../../board/cardputerzero/rootfs-overlay/etc/fstab)は`/data`を定義せず、[S02msd-data](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data)がcoordinatorを通じて検査・mountする。[msd-data-partition-grow](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-data-partition-grow)は初期設定のpartition拡張だけを扱う。 | 通常起動で`/data`をread-onlyにするpolicyは未実装。手順を保存したことを実機試験としない。 |
 | 設定のoverlay | [S03msd-etc-overlay](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S03msd-etc-overlay)は`/data/etc`をlower、`/run/etc-overlay`をupper/workにする。 | 永続設定が新imageの既定値を隠す問題と信頼境界は[権限設計](../security/README.md)で扱う。 |
 | 更新 | [msd-update](../../../board/cardputerzero/rootfs-overlay/usr/sbin/msd-update)がinactiveなA/B payloadと`/data/msd-update`の状態を扱う。[S99msd-health](../../../board/cardputerzero/rootfs-overlay/etc/init.d/S99msd-health)が試行起動を自動commitする。 | GitHub Releasesの発見・TUF検証clientは未実装。firmwareのtryboot・電断からの復帰は実機未確認。 |
 
