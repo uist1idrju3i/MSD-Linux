@@ -25,8 +25,10 @@ description: MSD-Linux のCHANGELOG、公開版、Release台帳を準備・検�
 3. 利用者がそのコミットに署名なしの正式版タグ `vX.Y.Z` または RC タグ `vX.Y.Z-rc.N` を作成し、push します。署名ワークフローは `MSD_UPDATE_VERSION` を上書きせずに構築し、`production` の承認後に署名します。正式版は RC と同じコミットを使わず、内部更新番号が大きいコミットから構築します。
 4. Releaseをdraftで作成 → 全assetをupload → publishの順に進めます。Release immutabilityが有効なら、publishした時点でimmutableになります。
 5. follow-upの台帳PRでCSV行と `docs/releases/<tag>.sha256` を追加します。GitHub APIのasset `digest` と、downloadしたfileに対する `sha256sum` の値を照合し、一致を確認します。
-   tagを作ってから台帳PRがmergeされるまでの間は、`check-releases.py --require-tags` が未記録のtagとして全PRの `agent-docs` を失敗させます。台帳PRはtagの作成直後に出します。
+   公開済みの Release が台帳にないと `agent-docs` が失敗します。台帳 PR は公開直後に出します。公開していないタグや下書きだけのタグは、台帳への追加を求めません。
 6. 署名は [Releaseの保護と署名鍵の設定](../../../docs/RELEASE-SIGNING.md) に従います。
+
+RC の署名に失敗し、修正が必要な場合は、失敗したタグを削除したり付け替えたりしません。その RC は公開せず、修正を `main` へマージしてから RC 番号を一つ増やしたタグでやり直します。
 
 ## 禁止事項
 
@@ -40,10 +42,11 @@ description: MSD-Linux のCHANGELOG、公開版、Release台帳を準備・検�
 
 ```sh
 python3 .github/scripts/check-releases.py
-python3 .github/scripts/check-releases.py --require-tags
 tests/check-releases/run.sh
 python3 .github/scripts/check-links.py
 python3 .github/scripts/check-jisx0213.py
 ```
+
+全タグを台帳と照合する場合は `--require-tags` を付けます。CI と同じ範囲を調べる場合は、さらに `--published-tags` に公開済み Release のタグを1行ずつ書いたファイルを渡します。
 
 台帳の列と既存Releaseの値は [docs/releases/](../../../docs/releases/README.md) を参照します。
