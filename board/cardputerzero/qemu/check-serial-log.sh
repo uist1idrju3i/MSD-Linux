@@ -40,6 +40,13 @@ found_error=false
 pending_allowed_trace=false
 in_allowed_trace=false
 while IFS= read -r line || [ -n "$line" ]; do
+	if [[ "$line" == *"Boot stopped."* || "$line" == *"transcript withheld"* ||
+		"$line" =~ BTRFS.*(error|critical|corrupt) ||
+		"$line" =~ device-mapper:.*(error|failed) ]]; then
+		printf '%s\n' "$line"
+		found_error=true
+		continue
+	fi
 	if [ "$in_allowed_trace" = true ]; then
 		if [[ "$line" == *"---[ end trace "* ]]; then
 			in_allowed_trace=false

@@ -72,9 +72,10 @@ def fixture(directory, test="smoke", text=None, **overrides):
 
 
 class Judge(unittest.TestCase):
-    def test_grow_marker_matches_s02(self):
-        script = ROOT / "board/cardputerzero/rootfs-overlay/etc/init.d/S02msd-data"
-        self.assertIn(f"printf '{M.GROW_COMPLETE_MARKERS[0]}\\n' >/dev/console", script.read_text())
+    def test_legacy_grow_marker_is_retained_in_attempt_09_evidence(self):
+        payload = gzip.decompress(
+            (ROOT / "tests/fs-compare-v2/fixtures/attempt-09-e1-run.log.gz").read_bytes())
+        self.assertIn(M.GROW_COMPLETE_MARKERS[0], payload.decode().splitlines())
 
     def test_attempt_09_e1_log_passes_final_judge(self):
         payload = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/attempt-09-e1-run.log.gz").read_bytes())

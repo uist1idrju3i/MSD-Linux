@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
 
 
@@ -59,12 +60,14 @@ class BootTest(unittest.TestCase):
                             pass
             records = [line.removeprefix("QEMU process result: ") for line in output.splitlines()
                        if line.startswith("QEMU process result: ")]
-            record = json.loads(records[0]) if records else None
+            record = json.loads(records[-1]) if records else None
             if record:
                 self.assertTrue(record["reaped"], output)
                 if keep_log:
                     root = "mmcblk0p6" if entry == "test-ab.sh" else "mmcblk0p5"
                     saved = directory / "logs" / f"serial-{root}.process.json"
+                    if not saved.exists():
+                        saved = directory / "logs" / f"serial-{root}-fresh.process.json"
                     self.assertEqual(json.loads(saved.read_text()), record)
                 else:
                     state = json.loads(state_path.read_text())
@@ -151,11 +154,55 @@ class BootTest(unittest.TestCase):
                 self.assertEqual(code, 2, output)
                 self.assertIsNone(result)
 
+    def test_secret_disclosure_is_failure_and_transcript_is_withheld(self):
+        for mode in ("pin-echo", "recovery-echo", "recovery-stdout", "recovery-stderr"):
+            with self.subTest(mode=mode):
+                code, result, output = self.exercise(mode)
+                self.assertEqual(code, 1, output)
+                self.assertEqual(result["error"], "PrivacyError")
+                self.assertNotIn("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", output)
+                self.assertNotIn("ABCD-EFGH-IJKL-MNOP-QRST-UVWX-YZ23-4567", output)
+                self.assertIn("transcript withheld", output)
+
+    def test_exception_payload_cannot_leak_recovery(self):
+        code, result, output = self.exercise("secret-exception")
+        self.assertEqual(code, 1, output)
+        self.assertIsNotNone(result["error"])
+        self.assertNotIn("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", output)
+
+    def test_readiness_without_authentication_is_not_success(self):
+        code, result, output = self.exercise("unauthenticated")
+        self.assertEqual(code, 1, output)
+        self.assertFalse(result["qmp_quit"])
+        self.assertEqual(result["error"], "ValueError")
+
     def test_interactive_runner_does_not_add_qmp(self):
         code, result, output = self.exercise("inspect", entry="run-qemu.sh")
         self.assertEqual(code, 0, output)
         self.assertIsNone(result)
         self.assertNotIn('"-qmp"', output)
+
+
+class InspectionTest(unittest.TestCase):
+    def test_profiles_checksum_and_each_mount_option_are_required(self):
+        spec = importlib.util.spec_from_file_location("boot_inspection", QEMU / "boot-test.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        good = ("MSD_DATA_INSPECT_BEGIN\ncsum_type 1 (xxhash64)\n"
+                "Data,DUP:\nMetadata,DUP:\n"
+                "/dev/mapper/msd-data /data btrfs rw,noatime,nodev,nosuid,compress=zstd:3 0 0\n")
+        def inspect(text):
+            session = SimpleNamespace(send=lambda _: None, receive=lambda *_: None,
+                                      text=text.encode())
+            module.inspect_data(session, 1)
+        inspect(good)
+        for text in ("", good.replace("1 (xxhash64)", "0 (crc32c)"),
+                     good.replace("Data,DUP:", "Data,SINGLE:"),
+                     good.replace("Metadata,DUP:", "Metadata,SINGLE:"),
+                     *(good.replace(option, "") for option in
+                       ("noatime", "nodev", "nosuid", "compress=zstd:3"))):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                inspect(text)
 
 
 class CryptsetupVersionTest(unittest.TestCase):

@@ -20,7 +20,7 @@ AGENTS.md §10の英日併記について、利用者の判断で案C（英語�
 理由は、kernel fbconでは日本語を描けないためです。
 例外の範囲は、電源投入からinitの起動処理が終わるまでの自動表示と、起動失敗で待機している間の表示です。
 early-ioのmarker・progress・中断可否・成功失敗、S02の/data診断、slot・ready表示も英語だけにします。
-2026-11-26の決定で、起動中のPIN設定・解錠・recoveryの対話と警告もこの例外に含めます。[現行設計](data-unlock.md)の起動接続はPR C段1で実装し、QEMUによる受入確認は未実施です。
+2026-11-26の決定で、起動中のPIN設定・解錠・recoveryの対話と警告もこの例外に含めます。[現行設計](data-unlock.md)の起動接続はPR C段1で実装しました。段2の[QEMU確認記録](../experiments/2026-11-28-data-boot-qemu.md)では、fresh初期化とready再起動を区別します。中断matrixと実機確認は残件です。
 consoleへ届くkernel log、fbconとserial consoleの出力も同じ扱いです。実機LCDでの英語の可読性とprogressの見え方は未確認です。
 
 文書とマニュアルは引き続き日本語だけです。起動完了後の対話toolの画面はこの例外に含めず、英日併記を維持します。

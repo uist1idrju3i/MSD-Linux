@@ -276,11 +276,6 @@ jobs:
             output/host/sbin/mke2fs -V
             output/host/bin/mksquashfs -version
             output/host/bin/genimage --version
-            if ! dumpe2fs -h output/images/data.ext4 2>/dev/null |
-              grep -Eq "^Block size:[[:space:]]+4096$"; then
-              printf "%s\n" "data.ext4 must use 4096-byte blocks." >&2
-              exit 1
-            fi
           '
 
       - name: Generate SBOM
@@ -368,12 +363,12 @@ jobs:
       - name: Prepare QEMU serial log directory
         run: mkdir -p output/qemu-logs
 
-      - name: QEMU smoke test
+      - name: QEMU A-slot fresh initialization and ready restart
         env:
           QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
         run: docker/msd-dev board/cardputerzero/qemu/test-boot.sh
 
-      - name: QEMU B-slot smoke test
+      - name: QEMU B-slot fresh initialization and ready restart
         env:
           QEMU_LOG_DIR: ${{ github.workspace }}/output/qemu-logs
         run: docker/msd-dev board/cardputerzero/qemu/test-ab.sh

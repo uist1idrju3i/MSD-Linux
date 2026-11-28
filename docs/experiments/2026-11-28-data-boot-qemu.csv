@@ -1,0 +1,13 @@
+run_id,root,phase,status,seconds,returncode,qmp_quit,reaped,fallback,error
+a,mmcblk0p5,fresh,passed,409,0,true,true,none,none
+a,mmcblk0p5,ready,passed,46,0,true,true,none,none
+b,mmcblk0p6,fresh,passed,412,0,true,true,none,none
+b,mmcblk0p6,ready,passed,43,0,true,true,none,none
+gpio,mmcblk0p5,fresh,passed,413,0,true,true,none,none
+gpio,mmcblk0p5,ready-and-gpio,passed,51,0,true,true,none,none
+final-a,mmcblk0p5,fresh,passed,373,0,true,true,none,none
+final-a,mmcblk0p5,ready,passed,48,0,true,true,none,none
+final-b,mmcblk0p6,fresh,passed,415,0,true,true,none,none
+final-b,mmcblk0p6,ready,passed,50,0,true,true,none,none
+final-gpio,mmcblk0p5,fresh,passed,376,0,true,true,none,none
+final-gpio,mmcblk0p5,ready-and-gpio,passed,51,0,true,true,none,none

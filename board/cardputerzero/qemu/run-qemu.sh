@@ -103,6 +103,11 @@ if [ -n "$QEMU_EXTRA_APPEND" ]; then
 	append_args+=("${extra_append[@]}")
 fi
 qemu_args=()
+if [ -n "${QEMU_SERIAL_SOCKET:-}" ]; then
+	qemu_args+=(-serial "unix:${QEMU_SERIAL_SOCKET},server=on,wait=on")
+else
+	qemu_args+=(-serial stdio)
+fi
 if [ -n "$QEMU_ICOUNT" ]; then
 	qemu_args+=(-icount "$QEMU_ICOUNT")
 fi
@@ -140,4 +145,4 @@ exec "$QEMU" "${qemu_args[@]}" -M "$QEMU_MACHINE" -m "$QEMU_MEMORY" \
 	-dtb "$DTB" \
 	-drive "file=${QEMU_DRIVE_FILE:-${QEMU_IMAGE}},if=sd,format=${QEMU_DRIVE_FORMAT:-raw}" \
 	-append "${append_args[*]}" \
-	-nographic -serial mon:stdio
+	-nographic -monitor none

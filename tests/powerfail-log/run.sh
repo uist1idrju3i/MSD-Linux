@@ -62,3 +62,11 @@ expect 'e2fsck journal recovery' 'no no no no yes [] []'
 printf '%s\n' 'S3CUT_MARKER_PRESENT=0' >"$reboot"
 classify_trial_logs "$first" "$reboot"
 expect 'marker absent after reboot' 'no no no no no [] []'
+
+printf '%s\n' '[    3.100000] BTRFS info (device dm-0): start tree-log replay' >"$reboot"
+classify_trial_logs "$first" "$reboot"
+expect 'mapper Btrfs tree-log replay' 'no no no no yes [] []'
+printf '%s\n' \
+	'msd-data: /data btrfs noatime,nodev,nosuid,compress=zstd:3' >"$reboot"
+classify_trial_logs "$first" "$reboot"
+expect 'normal mapper Btrfs mount is not recovery' 'no no no no no [] []'

@@ -97,4 +97,19 @@ if ! output="$("$CHECKER" "$LOG_FILE" 2>&1)"; then
 	exit 1
 fi
 
+for diagnostic in \
+	'Boot stopped. Safe to power off.' \
+	'Boot stopped. LCD console unavailable. Safe to power off.' \
+	'harness: secret disclosure; transcript withheld' \
+	'BTRFS error (device dm-0): corrupt leaf' \
+	'device-mapper: table: failed to create target' \
+	'mount: mounting /dev/mapper/msd-data on /data failed'; do
+	printf '%s\n' "$diagnostic" >"$LOG_FILE"
+	if "$CHECKER" "$LOG_FILE" >/dev/null; then
+		printf 'Serial checker accepted a new boot failure.\n' >&2
+		exit 1
+	fi
+done
+printf '%s\n' 'msd-data: /data btrfs noatime,nodev,nosuid,compress=zstd:3' >"$LOG_FILE"
+"$CHECKER" "$LOG_FILE"
 printf 'QEMU serial-log negative test passed.\n'

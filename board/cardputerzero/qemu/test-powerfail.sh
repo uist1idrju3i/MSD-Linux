@@ -161,7 +161,7 @@ classify_trial_logs() {
 		marker=yes
 	fi
 	if [[ -f "$reboot_log" ]] &&
-		grep -Eiq 'EXT4-fs.*(recover|orphan)|recovering journal|recovery complete' \
+		grep -Eiq 'EXT4-fs.*(recover|orphan)|recovering journal|recovery complete|BTRFS.*(replay|recover)' \
 			"$reboot_log"; then
 		recovery=yes
 	fi
@@ -195,32 +195,15 @@ PY
 
 run_smoke() {
 	local run_id
-	local run_dir log qmp_socket
+	local run_dir
 
 	run_id="smoke-$(date -u +%Y%m%dT%H%M%SZ)"
 	run_dir="${LOG_DIR}/${run_id}"
-	log="${run_dir}/serial.log"
-	qmp_socket="${run_dir}/qmp.sock"
 	mkdir -p "$run_dir"
-	start_qemu "$POWERFAIL_IMAGE" "$log" "$qmp_socket" "" 1
-	if ! wait_for_text "$log" "MSD/Linux ready" "$CURRENT_PID" 180; then
-		return 1
-	fi
-	python3 "${SCRIPT_DIR}/qmp-set-gpio.py" "$qmp_socket" "$QEMU_GPIO_PATH" \
-		pin6 false >"${run_dir}/qmp-set.json"
-	if ! wait_for_text "$log" \
-		"msd-powerfail: power-fail event received" "$CURRENT_PID" 15; then
-		return 1
-	fi
-	if ! wait_for_text "$log" \
-		"SysRq U: emergency remount filesystems readonly" "$CURRENT_PID" 15; then
-		return 1
-	fi
-
-	terminate_qemu TERM
-	rm -f "$qmp_socket"
-	"${SCRIPT_DIR}/check-serial-log.sh" "$log"
-	printf 'PASS: GPIO6 event and emergency remount; log=%s\n' "$log"
+	QEMU_LOG_DIR="$run_dir" DTB_IMAGE="$COMPOSED_DTB" \
+		QEMU_MACHINE="$QEMU_MACHINE" QEMU_GPIO_PATH="$QEMU_GPIO_PATH" \
+		KERNEL_IMAGE="$KERNEL" OUTPUT_DIR="$OUTPUT_DIR" \
+		python3 "${SCRIPT_DIR}/boot-test.py" --gpio-smoke "$POWERFAIL_IMAGE"
 }
 
 prepare_integrity_template() {
@@ -602,10 +585,12 @@ case "$mode" in
 		run_smoke
 		;;
 	--integrity)
-		run_integrity
+		printf 'Legacy ext4 integrity measurements require the legacy image and harness; not supported by this LUKS2 harness.\n' >&2
+		exit 2
 		;;
 	--experiment)
-		run_experiment
+		printf 'Legacy ext4 measurements require the legacy image and harness; not supported by this LUKS2 harness.\n' >&2
+		exit 2
 		;;
 	*)
 		usage
