@@ -209,6 +209,37 @@ def boot_serial_lines(lines, enabled):
         yield origin, pending
 
 
+def t6_repaired_summaries(lines):
+    accepted = set()
+    btrfs = False
+    pending = None
+    for number, text in enumerate(lines, 1):
+        if text.startswith("msd.fscmp: mounted "):
+            btrfs = bool(re.fullmatch(
+                r"msd\.fscmp: mounted config=(B1|B2) base_config=\1 variant_id=\S+ test=T6", text))
+            pending = None
+        if text.startswith("msd.fscmp: expected_errors_begin "):
+            pending = [] if (btrfs and pending is None and
+                             text == "msd.fscmp: expected_errors_begin kind=T6_corruption") else None
+        elif text.startswith("msd.fscmp: expected_errors_end "):
+            if pending is not None and text == "msd.fscmp: expected_errors_end kind=T6_corruption":
+                results = [(n, re.fullmatch(
+                    r"msd\.fscmp: T6_SCRUB_RESULT corrected=([1-9][0-9]*) uncorrectable=0", line))
+                    for n, line in pending if line.startswith("msd.fscmp: T6_SCRUB_RESULT")]
+                metrics = [(n, re.fullmatch(
+                    r"msd\.fscmp: T6_SCRUB_METRICS corrected=([1-9][0-9]*) uncorrectable=0 repaired=yes", line))
+                    for n, line in pending if line.startswith("msd.fscmp: T6_SCRUB_METRICS")]
+                if (len(results) == len(metrics) == 1 and results[0][1] and metrics[0][1]
+                        and results[0][1][1] == metrics[0][1][1]
+                        and results[0][0] < metrics[0][0]):
+                    accepted.update(n for n, line in pending if n < results[0][0] and re.fullmatch(
+                        r"msd\.fscmp: T6_SCRUB Error summary:[ \t]+csum=[0-9]+", line))
+            pending = None
+        elif pending is not None:
+            pending.append((number, text))
+    return accepted
+
+
 def aggregate_errors(logs, test):
     records = []
     boot_rules = load_json(Path(__file__).with_name("boot-diagnostics.json"))
@@ -217,6 +248,9 @@ def aggregate_errors(logs, test):
     for phase, path in logs:
         context = None
         lines = Path(path).read_text(errors="replace").splitlines()
+        repaired_summaries = (t6_repaired_summaries(lines)
+                              if test == "T6" and phase == "run" and Path(path).name == "qemu-run.log"
+                              else set())
         qemu = machine = kernel = model = closed = False
         grow_pending = False
         grow_complete = any(marker in lines for marker in GROW_COMPLETE_MARKERS)
@@ -281,7 +315,8 @@ def aggregate_errors(logs, test):
                     re.search(r"T1_(?:MANIFEST_FAIL|MOUNT_ERR|FSCK_ERR)", text)
                     or re.search(r"EXT4-fs error|F2FS-fs.*error|BTRFS (?:error|warning)|checksum error|csum failed|device-mapper: integrity:", text, re.I)
                     or re.search(r"I/O error.*dev (?:dm-\d+|loop\d+)", text)
-                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)))))
+                    or re.search(r"T6_READCHECK exit=[23](?:\s|$)", text)
+                    or line_number in repaired_summaries))))
                 records.append(dict(file=Path(path).name, line=line_number, phase=phase,
                                     category=category, expected=expected, text=text,
                                     **({"known_boot": benign["id"], "reason": benign["reason"],

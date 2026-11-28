@@ -1,0 +1,13 @@
+kind,attempt,config,test,status,seconds,notes
+build,10,,,passed,3731.3450310230255,exit=0
+representative,10,,,passed,7568.663738965988,passed=21;failed=0
+smoke,10,,,failed,0.11519312858581543,host_exit=125;docker_image_missing;probes_started=0
+build,11,,,passed,3488.1633608341217,exit=0
+negative-final,11,E1,T1-negative-final,passed,371.40717673301697,exit=0
+negative-final,11,E2,T1-negative-final,passed,398.7296950817108,exit=0
+negative-final,11,F1,T1-negative-final,passed,345.07048630714417,exit=0
+representative,11,,,passed,7361.1178250312805,passed=21;failed=0
+smoke,11,B2,T6,failed,65696.03935909271,completed=191;passed=190;failed=1;excluded=0;host_exit=1
+probe,11,B2,T6,failed,311.347,included_in_smoke;guest_wall_seconds=225;QEMU_exit=0;initial_fatal=1;archived_fatal=2
+offline-old,11,B2,T6,failed,,driver_status=0;fatal_errors=1;CLI_exit=1;not_a_new_QEMU_run
+offline-new,11,B2,T6,ok,,driver_status=0;fatal_errors=0;CLI_exit=0;not_a_new_QEMU_run

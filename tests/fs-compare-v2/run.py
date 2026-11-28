@@ -31,6 +31,14 @@ P = importlib.util.module_from_spec(PREFLIGHT_SPEC)
 PREFLIGHT_SPEC.loader.exec_module(P)
 S = P.storage
 T7_BTRFS_OK = "msd.fscmp: T7_STEP command=btrfs found 147456 bytes used, no error found"
+T6_SCRUB_OK = """msd.fscmp: mounted config=B2 base_config=B2 variant_id=none test=T6
+msd.fscmp: expected_errors_begin kind=T6_corruption
+msd.fscmp: T6_SCRUB Error summary:    csum=1
+msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0
+msd.fscmp: T6_SCRUB_METRICS corrected=1 uncorrectable=0 repaired=yes
+msd.fscmp: expected_errors_end kind=T6_corruption
+msd.fscmp: finished
+"""
 
 
 def phase_result(test="smoke", phase="run", **overrides):
@@ -174,6 +182,99 @@ class Judge(unittest.TestCase):
                         stream.write("extra\n")
                 result = M.finalize(directory, "T1-negative-final", int(mutation == "driver-nonzero"))
                 self.assertEqual(result["status"], "fail:final_judge")
+
+    def test_t6_repaired_csum_summary_passes_final_judge(self):
+        for config in ("B1", "B2"):
+            for count in ("1", "12"):
+                with self.subTest(config=config, count=count), tempfile.TemporaryDirectory() as temporary:
+                    directory = Path(temporary) / "run"
+                    fixture(directory, "T6", text=T6_SCRUB_OK.replace("B2", config).replace("=1", "=" + count))
+                    result = M.finalize(directory, "T6", 0)
+                    self.assertEqual(result["status"], "ok")
+                    self.assertEqual(result["fatal_errors"], 0)
+                    records = [json.loads(line) for line in (directory / "errors.jsonl").read_text().splitlines()]
+                    self.assertEqual(len(records), 1)
+                    self.assertTrue(records[0]["expected"])
+
+    def test_saved_attempt_11_t6_log_passes_final_judge(self):
+        content = gzip.decompress((ROOT / "tests/fs-compare-v2/fixtures/attempt-11-b2-t6-run.log.gz").read_bytes())
+        self.assertIn(b"msd.fscmp: T6_SCRUB Error summary:    csum=1", content)
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "run"
+            fixture(directory, "T6", text=content.decode())
+            result = M.finalize(directory, "T6", 0)
+            self.assertEqual(result["status"], "ok")
+            self.assertEqual(result["fatal_errors"], 0)
+
+    def test_t6_repaired_csum_summary_is_fully_scoped(self):
+        mutations = {
+            "no-result": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n", ""),
+            "no-metrics": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_METRICS corrected=1 uncorrectable=0 repaired=yes\n", ""),
+            "uncorrectable": T6_SCRUB_OK.replace("uncorrectable=0", "uncorrectable=1"),
+            "result-uncorrectable": T6_SCRUB_OK.replace("RESULT corrected=1 uncorrectable=0", "RESULT corrected=1 uncorrectable=1"),
+            "metrics-uncorrectable": T6_SCRUB_OK.replace("METRICS corrected=1 uncorrectable=0", "METRICS corrected=1 uncorrectable=1"),
+            "no-correction": T6_SCRUB_OK.replace("corrected=1", "corrected=0"),
+            "mismatched-counts": T6_SCRUB_OK.replace("METRICS corrected=1", "METRICS corrected=2"),
+            "not-repaired": T6_SCRUB_OK.replace("repaired=yes", "repaired=no"),
+            "missing-context": T6_SCRUB_OK.replace("msd.fscmp: expected_errors_begin kind=T6_corruption\n", ""),
+            "unclosed-context": T6_SCRUB_OK.replace("msd.fscmp: expected_errors_end kind=T6_corruption\n", ""),
+            "other-context": T6_SCRUB_OK.replace("kind=T6_corruption", "kind=T1_replay"),
+            "no-config": "\n".join(T6_SCRUB_OK.splitlines()[1:]) + "\n",
+            "wrong-base": T6_SCRUB_OK.replace("base_config=B2", "base_config=E1"),
+            "trailing-error": T6_SCRUB_OK.replace("csum=1", "csum=1 ERROR: bad tree"),
+            "prefix": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB Error", "prefix msd.fscmp: T6_SCRUB Error"),
+            "duplicate-result": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT", "msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\nmsd.fscmp: T6_SCRUB_RESULT"),
+            "another-execution": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT",
+                "msd.fscmp: expected_errors_end kind=T6_corruption\n"
+                "msd.fscmp: expected_errors_begin kind=T6_corruption\nmsd.fscmp: T6_SCRUB_RESULT"),
+        }
+        for kind in ("read", "super", "verify", "malloc", "uncorrectable"):
+            mutations[kind] = T6_SCRUB_OK.replace("csum=1", kind + "=1")
+            mutations["mixed-" + kind] = T6_SCRUB_OK.replace("csum=1", "csum=1 " + kind + "=1")
+        for config in ("E1", "F1", "B3", "B4", "X1"):
+            mutations[config] = T6_SCRUB_OK.replace("B2", config)
+        for name, text in mutations.items():
+            with self.subTest(mutation=name), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / "qemu-run.log"
+                path.write_text(text)
+                records = M.aggregate_errors([("run", path)], "T6")
+                self.assertTrue(any(row["category"] == "diagnostic" and not row["expected"]
+                                    for row in records))
+        for test, phase, filename in (("T7", "run", "qemu-run.log"),
+                                      ("T6", "verify", "qemu-verify.log"),
+                                      ("T6", "host", "host.log"),
+                                      ("T6", "run", "other.log")):
+            with self.subTest(test=test, phase=phase), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / filename
+                path.write_text(T6_SCRUB_OK)
+                self.assertTrue(any(not row["expected"] for row in M.aggregate_errors([(phase, path)], test)))
+
+    def test_t6_repaired_summary_does_not_hide_failed_execution(self):
+        for mutation in ("guest-error", "missing-marker", "phase-nonzero", "driver-nonzero", "changed-hash", "empty-log"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / "run"
+                text = T6_SCRUB_OK
+                if mutation == "guest-error":
+                    text += "msd.fscmp: error=unrelated\n"
+                elif mutation == "missing-marker":
+                    text = text.replace("msd.fscmp: finished", "")
+                elif mutation == "empty-log":
+                    text = ""
+                fixture(directory, "T6", text=text, returncode=int(mutation == "phase-nonzero"))
+                if mutation == "changed-hash":
+                    with (directory / "qemu-run.log").open("a") as stream:
+                        stream.write("extra\n")
+                self.assertEqual(M.finalize(directory, "T6", int(mutation == "driver-nonzero"))["status"],
+                                 "fail:final_judge")
+
+    def test_t6_scrub_evidence_cannot_cross_log_files(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            first, second = directory / "qemu-run.log", directory / "host.log"
+            first.write_text(T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n", ""))
+            second.write_text("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n")
+            self.assertTrue(any(not row["expected"] for row in
+                                M.aggregate_errors([("run", first), ("host", second)], "T6")))
 
     def test_t7_btrfs_success_line_passes_final_judge(self):
         for count in ("147456", "0", "294912"):

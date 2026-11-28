@@ -14,6 +14,7 @@
 | [cryptsetup 2.8.9](2026-11-26-cryptsetup-2.8.9.md) | [CSV](2026-11-26-cryptsetup-2.8.9.csv) | 2026-11-26 | 新旧の製品build・target版・QEMU A/B・license照合 | 2.8.9を確認。kernel設定差0、rootfsは4,096 bytes増。既存のCVE・配布監査の残件は不変。`/data`の形式変更と実機検証は対象外 |
 | [v2 T7 Btrfs判定](2026-11-26-s04-fs-compare-v2-t7-btrfs.md) | [CSV](2026-11-26-s04-fs-compare-v2-t7-btrfs.csv) | 2026-11-26 | 試行07の中断と08の誤判定を区別・原logを別出力で再判定 | 07のB1/T6単独再実行は成功。08は正常行の限定許容で旧fatal 1から新0。原結果は失敗のまま保持。修正後のQEMU・全smokeは未実施 |
 | [v2 grow完了行判定](2026-11-26-s04-fs-compare-v2-grow-marker.md) | [CSV](2026-11-26-s04-fs-compare-v2-grow-marker.csv) | 2026-11-26 | 試行09のE1先行診断の誤判定・写しで再判定 | 完了行の表記不整合を修正し旧fatal 2から新0。原結果は失敗のまま保持。代表21件・851件は未開始 |
+| [v2 T6 scrub判定](2026-11-28-s04-fs-compare-v2-t6-scrub.md) | [CSV](2026-11-28-s04-fs-compare-v2-t6-scrub.csv) | 2026-11-28 | 試行10のimage消失と11の191件目B2/T6誤判定 | 同一contextの修復成功証拠に限定し、保存logの旧fatal 1から新0。原結果は失敗のまま保持。新QEMU・全smoke・mainは未実施 |
 | [早期I/Oのconsole出力](2026-11-25-early-io-console.md) | [CSV](2026-11-25-early-io-console.csv) | 2026-11-25 | host 24試験・再packのQEMU Aとmodule期限対照 | 追加したC helperから時刻prefixなしの4 markerとwaitingを確認。対照は/data・ready前で停止。実機・この条件のBは未確認 |
 | [S02前のI/O gate](2026-11-25-early-io.md) | [CSV](2026-11-25-early-io.csv) | 2026-11-25 | host 17試験・既存image再packのQEMU A/Bと失敗対照 | A/BはQMP timeout後の単独再試行で成功。4 marker、guestの3秒期限、/data前の停止を確認。製品full build・実機は未確認 |
 | [v2 Wi-Fi SDIO診断](2026-11-24-s04-fs-compare-v2-wifi-sdio.md) | [CSV](2026-11-24-s04-fs-compare-v2-wifi-sdio.csv) | 2026-11-24 | 試行06の誤分類を修正・別出力で再判定 | 原log 206/206に同じ診断。旧fatal 1から新0、原結果は失敗のまま保持。新しい代表21件・851件・mainは未実施 |
@@ -28,7 +29,7 @@
 | [RAUC streaming](2026-11-23-rauc-streaming-poc.md) | [CSV](2026-11-23-rauc-streaming-poc.csv) | 2026-11-23 | host metadata各5回・Phase A未完 | 206・302成功、200拒否、403/429/切断のretry観測。Retry-Afterは待たない。実Releaseはassetなし。install・QEMU・adaptive再利用は未実施 |
 | [deps一括更新](2026-11-22-deps-update.md) | [CSV](2026-11-22-deps-update.csv) | 2026-11-22 | build・icount gate・kernel .config差分確認 | snapshot不整合をsnapshot更新で解消。QEMU 11.1.3は現行11.1.2比1.09xでgate成立。kernel差分は新規moduleのみ。実機・bq27220未確認 |
 | [RAID6 PQ](2026-11-19-raid6-pq.md) | [CSV](2026-11-19-raid6-pq.csv) | 2026-11-19 | QEMU各5回とA/A完了 | PQ benchmarkだけを省略。Btrfs mount・scrub成功。実機時間・algorithm未確認 |
-| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 試行09はE1先行診断で停止 | 07のhost中断、08と09の誤分類は別記録。原結果は失敗のまま保持。09の代表21件・851件とmainは未実施 |
+| [v2第4段A](2026-11-19-s04-fs-compare-v2-stage4.md) | [CSV](2026-11-19-s04-fs-compare-v2-stage4.csv) | 2026-11-19 | 試行11は191件目B2/T6で停止 | 10はimage消失でsmoke未開始。11は190件成功後にscrub診断を誤分類。原結果を保持。全851件とmainは未完了 |
 | [v2負対照のsentinel](2026-11-23-s04-fs-compare-v2-negative-sentinel.md) | [CSV](2026-11-23-s04-fs-compare-v2-negative-sentinel.csv) | 2026-11-23 | 同期済みsentinelでF1・E1・E2の単独診断成功 | host 68試験成功。全smokeとmainは未実施。事前確認失敗3件も保全 |
 | [cnf](2026-11-18-openssl-cnf.md) | [CSV](2026-11-18-openssl-cnf.csv) | 2026-11-18 | QEMU各3回 | C1/C2成功・未適用 |
 | [syncfs](2026-11-18-data-syncfs.md) | [CSV](2026-11-18-data-syncfs.csv) | 2026-11-18 | QEMU各5回・完了 | idle 88から0。通常起動は同期省略 |
