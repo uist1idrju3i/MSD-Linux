@@ -1,13 +1,15 @@
 name: Security report
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "25 */2 * * *"
   workflow_dispatch:
   pull_request:
 
 concurrency:
-  group: security-report-${{ github.event_name == 'pull_request' && github.ref || 'monitor' }}
+  group: security-report-${{ github.event_name == 'push' && github.sha || github.event_name == 'pull_request' && github.ref || 'monitor' }}
   cancel-in-progress: false
 
 permissions: {}
@@ -222,7 +224,7 @@ jobs:
 
   report:
     needs: scan
-    if: always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
@@ -254,8 +256,9 @@ jobs:
           CURRENT_RUN: ${{ github.run_id }}
         run: |
           mkdir -p report/previous
-          runs="$(gh run list --workflow security.yml --branch main --status success --json databaseId -L 5)"
-          run_ids="$(printf '%s' "$runs" | python3 -c 'import json,sys; data=json.load(sys.stdin); assert isinstance(data,list); print("\n".join(str(x["databaseId"]) for x in data))')"
+          scheduled="$(gh run list --workflow security.yml --branch main --status success --event schedule --json databaseId,number -L 5)"
+          manual="$(gh run list --workflow security.yml --branch main --status success --event workflow_dispatch --json databaseId,number -L 5)"
+          run_ids="$(python3 -c 'import json,sys; scheduled,manual=map(json.loads,sys.argv[1:]); assert isinstance(scheduled,list) and isinstance(manual,list); print("\n".join(str(x["databaseId"]) for x in sorted(scheduled+manual,key=lambda x:x["number"],reverse=True)))' "$scheduled" "$manual")"
           while IFS= read -r run_id; do
             [[ -n "$run_id" && "$run_id" != "$CURRENT_RUN" ]] || continue
             gh run download "$run_id" -n product-cve-state --dir report/previous
