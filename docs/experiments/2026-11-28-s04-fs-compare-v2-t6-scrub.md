@@ -15,12 +15,19 @@
 |---|---|
 | 試行10 source | `9abf1683e32820334e18a898f2a8b351ba259322` |
 | 試行11 source | `2087ab7a105dc8949b07ac2b51f0de09bd1d9738` |
+| 試行10のBuildroot版（固定commit） | `bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`。保存した`original/smoke-src-9abf168-a10/rerun-9abf168-10/build/start.json`の`buildroot`欄 |
+| 試行11のBuildroot版（sourceの固定commit） | `bbbdab36565d4941b6b0449a0eedb5aac8a10c2e`。[固定sourceのgitlink](https://github.com/uist1idrju3i/MSD-Linux/tree/2087ab7a105dc8949b07ac2b51f0de09bd1d9738/vendor/buildroot)から確認。実行時checkoutの記録は今回の保存textにはない |
+| 試行10のbuild出力先 | checkout基準の`output-fscmp-v2-10`。上記`build/start.json`の`output`欄と`pipeline/plan-10.json` |
+| 試行11のbuild出力先 | checkout基準の`output-fscmp-v2-11`。`pipeline/plan-11.json`と`pipeline/build-11-host-start.json`の`OUTPUT_DIR`欄 |
 | 今回の独立cloneの起点 | `origin/main`の`2907e159e6173e2479f4785e6db49bcdf9d12309` |
 | 試行11の開発image | `msd-dev:fscmp-a11`、保存値`sha256:f31cdb6ee5180c308818d5cc73f6c6674a2e4b4834f158dd77db51364b89a3ce` |
 | 今回のhost試験image | `msd-dev:work-fscmp-fix`、`sha256:54109435d97055b0f1414d6262b32359797ee0c45c5fee924bef1f6b8530cdce` |
 | 原logのQEMU | 11.1.3、raspi3b、1 GiB、icount=off |
 | 原logのkernel・compiler | Linux `6.18.64-v8`、GCC `14.3.0`。compilerの自己申告は`Buildroot 2021.11-18033-g83947c7bb6` |
 | 今回の再判定host | Linux `7.0.0-44-generic`、Python `3.14.4` |
+
+Buildrootは固定commitを版として記録し、compilerが自己申告する版とは区別する。
+出力先は個人環境の絶対pathを転載せず、checkoutからの相対pathで示した。
 
 試行11のplanはfresh出力からのbuild、download cache再利用を指定していた。ccacheの実状態は不明。
 今回target build、reconfigure、QEMU再実行はしていない。保存logの再判定にはBuildroot出力を使わない。
