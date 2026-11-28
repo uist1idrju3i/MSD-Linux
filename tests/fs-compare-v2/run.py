@@ -184,7 +184,7 @@ class Judge(unittest.TestCase):
                 self.assertEqual(result["status"], "fail:final_judge")
 
     def test_t6_repaired_csum_summary_passes_final_judge(self):
-        for config in ("B1", "B2"):
+        for config in ("B2",):
             for count in ("1", "12"):
                 with self.subTest(config=config, count=count), tempfile.TemporaryDirectory() as temporary:
                     directory = Path(temporary) / "run"
@@ -264,7 +264,7 @@ class Judge(unittest.TestCase):
         for kind in ("read", "super", "verify", "malloc", "uncorrectable"):
             mutations[kind] = T6_SCRUB_OK.replace("csum=1", kind + "=1")
             mutations["mixed-" + kind] = T6_SCRUB_OK.replace("csum=1", "csum=1 " + kind + "=1")
-        for config in ("E1", "F1", "B3", "B4", "X1"):
+        for config in ("B1", "E1", "F1", "B3", "B4", "X1"):
             mutations[config] = T6_SCRUB_OK.replace("B2", config)
         for name, text in mutations.items():
             with self.subTest(mutation=name), tempfile.TemporaryDirectory() as temporary:
@@ -308,6 +308,26 @@ class Judge(unittest.TestCase):
             second.write_text("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n")
             self.assertTrue(any(not row["expected"] for row in
                                 M.aggregate_errors([("run", first), ("host", second)], "T6")))
+
+    def test_t6_guest_scrub_gate_matches_judge_scope(self):
+        guest = (V2 / "fs-compare-guest").read_text()
+        gate = '\tif [ "$FS_TYPE" = btrfs ] && [ "$BASE_CONFIG" = B2 ]; then\n'
+        block = gate + guest.split(gate, 1)[1].split("\n\tfi", 1)[0] + "\n\tfi\n"
+        stubs = """
+mount() { :; }
+mkdir() { :; }
+umount() { :; }
+btrfs() { printf 'corrected_errors 1\\nuncorrectable_errors 0\\n'; }
+console() { printf '%s\\n' "$*"; }
+fail() { exit 1; }
+"""
+        for base in ("B1", "B2", "E1"):
+            with self.subTest(base=base), tempfile.TemporaryDirectory() as temporary:
+                command = (stubs + f"\nFS_TYPE=btrfs\nBASE_CONFIG={base}\n"
+                           + 'RUN_PATH="$1"\nMOUNTPOINT=/test\n' + block)
+                result = subprocess.run(["sh", "-eu", "-c", command, "scrub-gate", temporary],
+                                        capture_output=True, text=True, check=True)
+                self.assertEqual("T6_SCRUB_RESULT" in result.stdout, base == "B2")
 
     def test_t7_btrfs_success_line_passes_final_judge(self):
         for count in ("147456", "0", "294912"):

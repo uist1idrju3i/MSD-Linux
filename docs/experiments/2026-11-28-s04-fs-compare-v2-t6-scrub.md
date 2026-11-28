@@ -79,13 +79,13 @@ phase結果は`returncode=0`、`qmp_quit=true`、`reaped=true`、`marker=true`�
 次の条件をすべて満たす`Error summary: csum=N`だけをexpectedにする。
 
 - test=T6、run phase、`qemu-run.log`だけ。
-- mounted行のconfigとbase_configが一致したB1またはB2だけ。
+- mounted行のbase_configがB2だけ。P080・P082等の派生構成も含み、config名だけでは判断しない。
 - 完結した同じ`T6_corruption` context内で、summary、RESULT、METRICSがこの順にある。
 - RESULTとMETRICSは各1行で、correctedが同じ正整数、uncorrectable=0、repaired=yes。
 - summaryの種類はcsumだけ。read、super、verify等との混在、前後の別診断は許容しない。
 
 修復証拠を別contextや別logから借りない。一般的なerror検出、boot allowlist、guestは変えない。
-[host試験](../../tests/fs-compare-v2/run.py)にはB1/B2の成功、RESULT/METRICS欠損、
+[host試験](../../tests/fs-compare-v2/run.py)にはB2と派生構成の成功、B1の拒否、RESULT/METRICS欠損、
 uncorrectable、修復なし、値不整合、別種類、混在、他config、他test/phase/log、
 context欠損・未完了・別実行を加えた。guest error、終了marker欠損、非zero終了、hash改変も引き続き拒否する。
 保存した実logをbyteのままgzip fixtureに追加し、既存fixtureは変更していない。
@@ -93,6 +93,12 @@ context欠損・未完了・別実行を加えた。guest error、終了marker�
 固定imageで84試験が成功した。最初のhost試験は修正中の括弧の不整合でSyntaxErrorとなり、
 修正後に全件実行した。その失敗logも証拠に残した。
 保存logのSHA-256は`b13187e14df44093288f6b9762360a9ebd764b06beda84676aeef486342c59a8`。
+
+Reviewで、guestの`run_t6()`が`FS_TYPE=btrfs`かつ`BASE_CONFIG=B2`のときだけ
+scrubを実行することを確認した。B1では実行しないため、当初のB1成功対照を拒否対照に変更した。
+guestの当該blockを抽出し、mount・btrfs等をstubにしたhost試験でもB1とB2の分岐を照合する。
+実guestの追加起動ではない。区間markerとkernel出力が連結した行は既存のserial分離処理で照合し、
+同じ物理行の別診断まで許容しないことも回帰試験に含めた。
 
 ### 同じ入力による再判定
 
