@@ -107,7 +107,7 @@ gh secret list --repo uist1idrju3i/MSD-Linux --env production
 4. Secretが空なら失敗します。鍵は`umask 077`でrunnerの一時領域へ書き、公開鍵との一致を確認してmanifestへraw Ed25519署名します。直後に公開鍵で署名を検証し、`msd-update-bundle.tar`を作ります。成功・失敗時とも後続のcleanup stepで鍵ファイルを削除し、公開候補と証拠のPEM・秘密鍵header検査後に`release-signed-<attempt>`を保存します。runnerの強制停止等ではstepの実行を保証できないため、使い捨てrunnerを前提にします。
 5. 署名済みtar、`COMMIT`、`SHA256SUMS`を取得し、hashと公開鍵による署名を再検証します。署名済みtarの4 memberと端末clientの形式は変更していません。workflowはtagやGitHub Releaseを作成せず、公開は管理者が行います。
 
-RC の署名に失敗して修正が必要な場合は、タグを削除したり付け替えたりせず、その RC は公開しません。修正を `main` にマージした後、例えば `-rc.1` の次は `-rc.2` のタグを作成します。未公開のタグは台帳への追記なしで修正 PR を出せます。
+RC の署名に失敗して修正が必要な場合は、そのタグを削除したり付け替えたりせず、公開もしません。修正 PR で `CHANGELOG.md` の版見出しを次の RC 番号に更新し、`main` にマージします。コミット時刻が台帳の内部更新番号より大きいことを確認してから、例えば `-rc.1` の次は `-rc.2` のタグを作成して push します。未公開のタグは台帳に追加しません。
 
 ローカルで同じ公開鍵buildを試す場合は、コンテナー内のパスを指定します。
 
