@@ -1,0 +1,627 @@
+{
+  "source_archives": {
+    "attempt-11-smoke-failure-B2-T6.tar.gz": "35e202d794161ae2ad27c060c2bd4477c80caf693aac75c3ceb843563c64833a"
+  },
+  "included": {
+    "original/probe-B2-T6/summary.csv": {
+      "size": 561,
+      "sha256": "1f73cf92166256d5f64fbcdfdc3d2a500286c8bff414697bcf6d7e5eb3fb63d7",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/summary.csv"
+    },
+    "original/probe-B2-T6/host.log": {
+      "size": 205,
+      "sha256": "be230fe1dcf49029bd6ee4b352cfd02b1c2d1d940b7c5b10243e8600de190092",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/host.log"
+    },
+    "original/probe-B2-T6/errors.jsonl": {
+      "size": 9096,
+      "sha256": "52e4297c8e4456eb41daab92746a2c5f24fcf7f2bae18a35e7263a2c6b8c23df",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/errors.jsonl"
+    },
+    "original/probe-B2-T6/run-meta.txt": {
+      "size": 1271,
+      "sha256": "a1ac4a9598ead78a4255ecc7e3f97b116417512901cb80942ffdd43ff48d2157",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/run-meta.txt"
+    },
+    "original/probe-B2-T6/qemu.log.sha256": {
+      "size": 144,
+      "sha256": "6218d97c873c2b2595f54abddea580ba911ff0d6dd8f2f3eabae6592f7505b66",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/qemu.log.sha256"
+    },
+    "original/probe-B2-T6/result.json": {
+      "size": 673,
+      "sha256": "2a8cb81ad90ab4f301fa4ee9fe21768755d50044fb09fe5fc5e415cb1f8fdcd5",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/result.json"
+    },
+    "original/probe-B2-T6/launcher.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/launcher.log"
+    },
+    "original/probe-B2-T6/request-run.json": {
+      "size": 23,
+      "sha256": "ccea7e652feb3f0b99abc17e7c7bec93d1f8faf4ab5d03ee09f492d6978eec7d",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/request-run.json"
+    },
+    "original/probe-B2-T6/supervisor-run.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/supervisor-run.log"
+    },
+    "original/probe-B2-T6/qemu.log": {
+      "size": 32598,
+      "sha256": "b13187e14df44093288f6b9762360a9ebd764b06beda84676aeef486342c59a8",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/qemu.log"
+    },
+    "original/probe-B2-T6/phase-run.json": {
+      "size": 343,
+      "sha256": "9bd6447a9ab0c92733544c5382e0c30ccc8af1221496f47fea22a4a924d66dc3",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/phase-run.json"
+    },
+    "original/probe-B2-T6/result-before-archive.json": {
+      "size": 673,
+      "sha256": "8d863c55a765aeb2413c7cd0df0c5a549aa23036a0eb578835aa91389b4517f1",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/result-before-archive.json"
+    },
+    "original/probe-B2-T6/summary.pending.csv": {
+      "size": 547,
+      "sha256": "d91ba3e9b2febb970408cf0aca553cde20eadd73b4f9c087cad86ef929da5c34",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/summary.pending.csv"
+    },
+    "original/probe-B2-T6/evidence/command.json": {
+      "size": 134,
+      "sha256": "93b5c9daaadd0c2652ea0aaf0e8c581ac77fd079244ec9006515ee758724da17",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/command.json"
+    },
+    "original/probe-B2-T6/evidence/capacity.json": {
+      "size": 32071,
+      "sha256": "5887376780d0ed041dd8362c9f2f7966c57fa567ddd567dfb357bd675b9c8457",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/capacity.json"
+    },
+    "original/probe-B2-T6/evidence/storage-settings.json": {
+      "size": 75,
+      "sha256": "94b46af111f3dfd5ba79dd562f1344edee7453d045220effe019a0e5f91b42ba",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/storage-settings.json"
+    },
+    "original/probe-B2-T6/evidence/environment.json": {
+      "size": 23971,
+      "sha256": "d60c5ad79420b3ff0c7405ee174f624e02ff3e3c7d73b1bf5e17a853ed531938",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/environment.json"
+    },
+    "original/probe-B2-T6/evidence/harness/boot-diagnostics.md": {
+      "size": 7476,
+      "sha256": "493a4227898e3a86c349ba309783813da226336aacee9244e636aa72d237e409",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/boot-diagnostics.md"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-probe": {
+      "size": 1530,
+      "sha256": "8d0f58a0aba4a19d819a6e28cf344e611a48558528cc450321babe72d16f1f32",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-probe"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-phase2-variants.tsv": {
+      "size": 11980,
+      "sha256": "d92bea9297155d4beece0f3ddcbb34934e11384dc134883373e6fdff9ac56827",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-phase2-variants.tsv"
+    },
+    "original/probe-B2-T6/evidence/harness/run-qemu.sh": {
+      "size": 4288,
+      "sha256": "a10b7f2f4777f755dc4d7c5762f78f1d64f3f10cfa869f906e6fc2c75ad52231",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/run-qemu.sh"
+    },
+    "original/probe-B2-T6/evidence/harness/smoke-profile.json": {
+      "size": 255,
+      "sha256": "60cbad7345b68d429e7abc9f840ad087b6ce3011c9a575a4bb700ebb8ed4ac4b",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/smoke-profile.json"
+    },
+    "original/probe-B2-T6/evidence/harness/preflight.py": {
+      "size": 27189,
+      "sha256": "6814e9ea01eaac1d96b46c5939bd3fd0b6b689474d1c27f1fbe4b01c18c91811",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/preflight.py"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-workload.c": {
+      "size": 24664,
+      "sha256": "d96571f5be907118e9132ba6fd80d0183bc83323091167129ba1c54ae3cebcd2",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-workload.c"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-configs.tsv": {
+      "size": 3703,
+      "sha256": "f5068e4580b3cfc8f654fccc2720a573e31fb83cb04fe5d22027cd0752629d9f",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-configs.tsv"
+    },
+    "original/probe-B2-T6/evidence/harness/paths.tsv": {
+      "size": 594,
+      "sha256": "af99321e47591ad5452a60ef314694473043618dda7fe97a61974ff750e4d6e4",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/paths.tsv"
+    },
+    "original/probe-B2-T6/evidence/harness/smoke_storage.py": {
+      "size": 6217,
+      "sha256": "746a89b480ab547f0eed46e0bdedd36d934de41aed763161a82d9a585f37d01d",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/smoke_storage.py"
+    },
+    "original/probe-B2-T6/evidence/harness/smoke_profile.py": {
+      "size": 2246,
+      "sha256": "be24097685dc24983bf7b81c41ac3e6ca122ddf5fc0025100fb54fdb7c88c3b3",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/smoke_profile.py"
+    },
+    "original/probe-B2-T6/evidence/harness/boot-diagnostics.json": {
+      "size": 4666,
+      "sha256": "a8b0997d2c65c412292a324449309f00bbd53a9e214a9077f9404bc5a558a1f5",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/boot-diagnostics.json"
+    },
+    "original/probe-B2-T6/evidence/harness/README.md": {
+      "size": 16936,
+      "sha256": "d7d3d0bb0bdaafdd2f61d7ffa54c0813ca956089ef37b41aee0dfac607f96d4a",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/README.md"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-matrix.sh": {
+      "size": 18266,
+      "sha256": "f6d47fe4b905c14468ded25b5d8cc7e7ead1da324dbe8c4aed994fc6a4398434",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-matrix.sh"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare.buildroot.fragment": {
+      "size": 458,
+      "sha256": "1ff8b24f96dbd0aa6c0752d8a163ddce83b332097917875b0045fdf715693681",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare.buildroot.fragment"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-build.sh": {
+      "size": 7379,
+      "sha256": "15b753b7ac5b52a1315778e5d331b5a70a2df019b44fa0da16324660cc65a8be",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-build.sh"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare.fragment": {
+      "size": 753,
+      "sha256": "3abbdc8c73770b12b089aaad465de136105ae0309c19d3259db3feaa9f7850a1",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare.fragment"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare-guest": {
+      "size": 78251,
+      "sha256": "7cc2f7ad6184135103a8802935eafd056f3d6279a924a516535469e6471dd3a2",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare-guest"
+    },
+    "original/probe-B2-T6/evidence/harness/S97zz-fs-compare": {
+      "size": 389,
+      "sha256": "8986e5bef44feac1962e4851cba5f5f7cc7361fadfc77bb5a3d866758aec5cd0",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/S97zz-fs-compare"
+    },
+    "original/probe-B2-T6/evidence/harness/fs-compare.sh": {
+      "size": 25856,
+      "sha256": "3befe8ad4a67af61676c52ecd7de69b68659b5f7be7d7754df610d727e7174e2",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/fs-compare.sh"
+    },
+    "original/probe-B2-T6/evidence/harness/stage4.py": {
+      "size": 5717,
+      "sha256": "4112414fdf70ac07af1478981cc1ea59e31e8d1c28885dcd5cb144faf27c1130",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/stage4.py"
+    },
+    "original/probe-B2-T6/evidence/harness/supervisor.py": {
+      "size": 22334,
+      "sha256": "0cb094a1f4727d865f868cc006ae2799a060295ee06ec6bc1d24d1b82a00e7e4",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/supervisor.py"
+    },
+    "original/probe-B2-T6/evidence/harness/storage.py": {
+      "size": 24223,
+      "sha256": "8fcb97af40e78e9fbb8d503023b86407d0fb01c7c587eb9650fd8d82d05441cf",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/harness/storage.py"
+    },
+    "original/probe-B2-T6/evidence/requested-plan.tsv": {
+      "size": 6180,
+      "sha256": "0292ad78ca6831dfa2c8cb449d9eb5d2ede046a4b5be8507940e3def99079d5a",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/requested-plan.tsv"
+    },
+    "original/probe-B2-T6/evidence/configs/13ed0fd8dc09d8ff180a032b214760fab408e1926c87c5d5172472434138d4cbkernel.release": {
+      "size": 11,
+      "sha256": "81ec304129a47049642eb69851f9a0a0275a8e3f063f06605b35d0ca4c108459",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/configs/13ed0fd8dc09d8ff180a032b214760fab408e1926c87c5d5172472434138d4cbkernel.release"
+    },
+    "original/probe-B2-T6/evidence/configs/b38fd01676687c9b36c030dbd929d8d599c58930aa2e5d4c2f81168f8d8e1424.config": {
+      "size": 134975,
+      "sha256": "e692bff4aa7ef1dd2f8293ba20a5c9e39acb5336288bcc7d0c5fd5250eedec59",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/configs/b38fd01676687c9b36c030dbd929d8d599c58930aa2e5d4c2f81168f8d8e1424.config"
+    },
+    "original/probe-B2-T6/evidence/configs/bf25ddae91d0d95e3b043709444de6f2596b4c6b55549063fcd870b21286e120.config": {
+      "size": 229431,
+      "sha256": "5ccd25656139b4fe25747454306b91227401336e0eac5ba65ad860a1f7ac5c27",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/configs/bf25ddae91d0d95e3b043709444de6f2596b4c6b55549063fcd870b21286e120.config"
+    },
+    "original/probe-B2-T6/evidence/configs/a98a9834c5d4e070fed4319584bbc462d4097d4bb6aea00672b6569935a790e5.config": {
+      "size": 33127,
+      "sha256": "68283a53c3a2634a988632712678bf5892ef6bc7b888e5e5a75b0ed4b0f76c55",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/evidence/configs/a98a9834c5d4e070fed4319584bbc462d4097d4bb6aea00672b6569935a790e5.config"
+    },
+    "original/probe-B2-T6/.storage.json": {
+      "size": 418,
+      "sha256": "e73bc777bd1577ed70c7592b386df9c943295c516faef5edfab5db6663f16103",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/.storage.json"
+    },
+    "original/probe-B2-T6/build/unsquashfs.log": {
+      "size": 385,
+      "sha256": "5f21d94aaf985587a06d431a881f8af334cba64218bfc04497d1208a23281f81",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/unsquashfs.log"
+    },
+    "original/probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43436s-sdio.nolpo.txt": {
+      "size": 1185,
+      "sha256": "f1c6b0c53fabaaa455be978bf80eff09c1438c84f8521b75fd8d414ba74b591c",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43436s-sdio.nolpo.txt"
+    },
+    "original/probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43436s-sdio.txt": {
+      "size": 1185,
+      "sha256": "37a8b85a5a9742761101b764a07bc4d0c8b09f2e180eaea3b503a834277ad595",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43436s-sdio.txt"
+    },
+    "original/probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43430-sdio.txt": {
+      "size": 1121,
+      "sha256": "fc3949a4c32f07c18308e7e145c7615be314158e7d714a80e04e4791f16495f9",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/rootfs/lib/firmware/brcm/brcmfmac43430-sdio.txt"
+    },
+    "original/probe-B2-T6/build/rootfs/lib/firmware/cypress/cyfmac43439-sdio.txt": {
+      "size": 1438,
+      "sha256": "ee72a1ab824f7850c655bbeb74c72592e8a6e7aea0359afe79f03f47c1709c28",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/rootfs/lib/firmware/cypress/cyfmac43439-sdio.txt"
+    },
+    "original/probe-B2-T6/build/mksquashfs.log": {
+      "size": 6282,
+      "sha256": "69c78881154208c78d86b575f86ee65ddd69f15d9f7f364561698910078ea6e7",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/build/mksquashfs.log"
+    },
+    "original/probe-B2-T6/errors.txt": {
+      "size": 2914,
+      "sha256": "8730ffede040f967f476610f4768a1d4fa4144995a7386c9f77fbc44712a0f94",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/errors.txt"
+    },
+    "original/probe-B2-T6/qemu-run.log": {
+      "size": 32598,
+      "sha256": "b13187e14df44093288f6b9762360a9ebd764b06beda84676aeef486342c59a8",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/qemu-run.log"
+    },
+    "original/probe-B2-T6/inputs.sha256": {
+      "size": 2521,
+      "sha256": "7a1255795c9dba5950d29839969e2cc4a9e17e982136b3af7e131372fd31d780",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/inputs.sha256"
+    },
+    "original/probe-B2-T6.launcher.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6.launcher.log"
+    },
+    "pipeline/adaptation.diff": {
+      "size": 17842,
+      "sha256": "3421250366272cee4b38d996ece0219754d7a32b03b634871a345d23ccb786f4",
+      "source": "pipeline/adaptation.diff"
+    },
+    "pipeline/build-11-host-result.json": {
+      "size": 240,
+      "sha256": "c961fe339be676ef0cf00885cc9a492f2c22a4f9a145c771f28021097b61f421",
+      "source": "pipeline/build-11-host-result.json"
+    },
+    "pipeline/build-11-host-start.json": {
+      "size": 1225,
+      "sha256": "627eae90c02731242aab715927444256553aa38706c610d6abb0468410d56282",
+      "source": "pipeline/build-11-host-start.json"
+    },
+    "pipeline/build-11-image-check.json": {
+      "size": 593,
+      "sha256": "b42f3d96d17a65bfc416bbc791683399133ff5a3b1bc06075481366b46d0166d",
+      "source": "pipeline/build-11-image-check.json"
+    },
+    "pipeline/controls-11.json": {
+      "size": 5455,
+      "sha256": "710af98b178799f6b93ff8ce856ae3217e31e0b30f89b65abee341e30e114abf",
+      "source": "pipeline/controls-11.json"
+    },
+    "pipeline/detach-11.json": {
+      "size": 1774,
+      "sha256": "90c771164d8626fc047b807c670a16602dcaaa4dc1bbe1d9da49d24ae0108ab2",
+      "source": "pipeline/detach-11.json"
+    },
+    "pipeline/e1-11-host-result.json": {
+      "size": 237,
+      "sha256": "ed2dacfc19ac62b2195c0870d197b47d3697d07cfa82b01e5fbb9967e37b3889",
+      "source": "pipeline/e1-11-host-result.json"
+    },
+    "pipeline/e1-11-host-start.json": {
+      "size": 1288,
+      "sha256": "b996b4732a5f48b12dfbb94b1b98d038a16fc05106d4d255d1223a191f9a8e92",
+      "source": "pipeline/e1-11-host-start.json"
+    },
+    "pipeline/e1-11-image-check.json": {
+      "size": 593,
+      "sha256": "4b0629f2c164e9119720517b8a85ddf7daa907e723d940f246039f21267c8bb7",
+      "source": "pipeline/e1-11-image-check.json"
+    },
+    "pipeline/e2-11-host-result.json": {
+      "size": 235,
+      "sha256": "26670abb67079094e383b3be2fcfc6864224f3fc022403fb176b42d7e183be96",
+      "source": "pipeline/e2-11-host-result.json"
+    },
+    "pipeline/e2-11-host-start.json": {
+      "size": 1287,
+      "sha256": "482d12bdf9460722c3861340c1835c1ee308209311777bd9d77ad71df7c6c08a",
+      "source": "pipeline/e2-11-host-start.json"
+    },
+    "pipeline/e2-11-image-check.json": {
+      "size": 593,
+      "sha256": "9d365043cb1a56d635da9634c91d418792489f7eacf8b064d95577e107517d6c",
+      "source": "pipeline/e2-11-image-check.json"
+    },
+    "pipeline/f1-11-host-result.json": {
+      "size": 236,
+      "sha256": "f2c7de5617eba8c936d50742f49ea0802129fc4d07004dae518b5320ce616bfd",
+      "source": "pipeline/f1-11-host-result.json"
+    },
+    "pipeline/f1-11-host-start.json": {
+      "size": 1287,
+      "sha256": "24ff4dc3d067835ac112a6038f9c30df5d6bc65c20ab4f01b1baced3d780bd87",
+      "source": "pipeline/f1-11-host-start.json"
+    },
+    "pipeline/f1-11-image-check.json": {
+      "size": 593,
+      "sha256": "aeca4a3d85bd4181b42cbe99e49a1733fa1d87ac991e43ed7923c40f90492b56",
+      "source": "pipeline/f1-11-image-check.json"
+    },
+    "pipeline/failure-11.json": {
+      "size": 525,
+      "sha256": "27b44fbd08626c6fdd079a29dc7bc35d1d5700ebfa936233a283317d2240d4e4",
+      "source": "pipeline/failure-11.json"
+    },
+    "pipeline/image-11.json": {
+      "size": 1330,
+      "sha256": "622e2141e5657cb273b1c3bd4f9f6b05d2f6f76fa3522afa7cb96c2122667140",
+      "source": "pipeline/image-11.json"
+    },
+    "pipeline/image-tools-11.log": {
+      "size": 518,
+      "sha256": "b120f65985a63eac14f79ac8e81465fb0f56dc5fc537d971d9e9db0a9007cbd4",
+      "source": "pipeline/image-tools-11.log"
+    },
+    "pipeline/launch-stage-11.py": {
+      "size": 4969,
+      "sha256": "7b45ef9751192ed6e0136d0805d5f31131440e4f2baa80f5745c1dab42ef5563",
+      "source": "pipeline/launch-stage-11.py"
+    },
+    "pipeline/pipeline-11-pid.json": {
+      "size": 366,
+      "sha256": "1337f67f46080e6f2d8754327d8ce97dd5be69e379094bffffbfcddbf409ddf3",
+      "source": "pipeline/pipeline-11-pid.json"
+    },
+    "pipeline/pipeline-11.log": {
+      "size": 2705,
+      "sha256": "9128b1c0e28787b98737b0a0ab35ea782bbbecab91da4daa73e8ec4dcce76025",
+      "source": "pipeline/pipeline-11.log"
+    },
+    "pipeline/plan-11.json": {
+      "size": 1035,
+      "sha256": "9f28ee13bb84d5e16d2e0f53f9ca1526467371efbb5ba6000fc57f120d1141d3",
+      "source": "pipeline/plan-11.json"
+    },
+    "pipeline/representative-11-host-result.json": {
+      "size": 248,
+      "sha256": "83d8e1d0a13fd1f1c129447768d0affa679ab6330795821ed101a4f9505fd443",
+      "source": "pipeline/representative-11-host-result.json"
+    },
+    "pipeline/representative-11-host-start.json": {
+      "size": 1260,
+      "sha256": "ce58b323a513ce43b126d673391c8d7920140604a1a8dd0bfe7a9ab51d6fd432",
+      "source": "pipeline/representative-11-host-start.json"
+    },
+    "pipeline/representative-11-image-check.json": {
+      "size": 593,
+      "sha256": "f06383330895f15c9d123964f95da41608b4f5d226ca433e5f9e5191350c5588",
+      "source": "pipeline/representative-11-image-check.json"
+    },
+    "pipeline/representative-11.log": {
+      "size": 3399,
+      "sha256": "63bce0aa9e2c8b5087e68876df408fbd3a8195b909573aabc1a26fbed21eb7ce",
+      "source": "pipeline/representative-11.log"
+    },
+    "pipeline/run-attempt-11.py": {
+      "size": 5771,
+      "sha256": "bc6e5eecb6176466eb1b13c66a9653b04c81db431b6417ce0964964d87aab764",
+      "source": "pipeline/run-attempt-11.py"
+    },
+    "pipeline/script-sha256.json": {
+      "size": 272,
+      "sha256": "f29887fc76fece3db6e0a0f52e5321799119b300735be6b46cb16d7856934bcf",
+      "source": "pipeline/script-sha256.json"
+    },
+    "pipeline/smoke-11-host-result.json": {
+      "size": 239,
+      "sha256": "d7dd48ff152c5969a30238766b74fa284ff375ddfcdd44a4a94c6eea37840474",
+      "source": "pipeline/smoke-11-host-result.json"
+    },
+    "pipeline/smoke-11-host-start.json": {
+      "size": 1244,
+      "sha256": "cbe67157bca911d291aed9be2d61aa592d391971658dfb7980499e7e300e9765",
+      "source": "pipeline/smoke-11-host-start.json"
+    },
+    "pipeline/smoke-11-image-check.json": {
+      "size": 593,
+      "sha256": "22980f7da2cf68ea2d9e0abefa8c0d3e1fc75301c100255908e1766d7d8e6474",
+      "source": "pipeline/smoke-11-image-check.json"
+    },
+    "pipeline/smoke-11-pid.json": {
+      "size": 429,
+      "sha256": "688d632af527295470d169c8b2e4dfc951fd6eb768e22f444a9e7253d0f91085",
+      "source": "pipeline/smoke-11-pid.json"
+    },
+    "pipeline/smoke-11.log": {
+      "size": 18109,
+      "sha256": "608112c8e73649d999630ae46a35f9d737505617266fe1a4189cdfe5c9ea76a6",
+      "source": "pipeline/smoke-11.log"
+    },
+    "pipeline/source-script-sha256.json": {
+      "size": 4690,
+      "sha256": "0840de46e70896894d3c1552e7c032d549d82f6899b33d1420b18aa04a73251a",
+      "source": "pipeline/source-script-sha256.json"
+    },
+    "pipeline/startup-11-verified.json": {
+      "size": 288,
+      "sha256": "5302be1b84a5020c2622dd7733716b0c3d5c9e1b0a9cc9c8f125e5695f692881",
+      "source": "pipeline/startup-11-verified.json"
+    },
+    "pipeline/verify-attempt-11.py": {
+      "size": 7484,
+      "sha256": "2af439396d37ce98cd702e5aec47e5f068648c8f6fd95c2536bf1bcff7363739",
+      "source": "pipeline/verify-attempt-11.py"
+    },
+    "rejudge/comparison.json": {
+      "size": 407,
+      "sha256": "bb23a8ebb79bcc43ae42eca8040f5ba337ea27212a06bd7c7d74e44aad46e0a6",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/errors.jsonl": {
+      "size": 8972,
+      "sha256": "4d6bb5e9e7606ed00a0c18525f19c58217c755f0a92d525a432a2133ce7353b0",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/errors.txt": {
+      "size": 2864,
+      "sha256": "b7b7b849ee4627c31be9bfc0fb93bcd0466990b365311ed5d2e3e80ea1528662",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/host.log": {
+      "size": 205,
+      "sha256": "be230fe1dcf49029bd6ee4b352cfd02b1c2d1d940b7c5b10243e8600de190092",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/launcher.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/phase-run.json": {
+      "size": 343,
+      "sha256": "9bd6447a9ab0c92733544c5382e0c30ccc8af1221496f47fea22a4a924d66dc3",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/qemu-run.log": {
+      "size": 32598,
+      "sha256": "b13187e14df44093288f6b9762360a9ebd764b06beda84676aeef486342c59a8",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/result.json": {
+      "size": 659,
+      "sha256": "100aed9f90535b261b3109d1c7db87411f936dc00a57823abfe7de71fa4d58fd",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/summary.csv": {
+      "size": 547,
+      "sha256": "d91ba3e9b2febb970408cf0aca553cde20eadd73b4f9c087cad86ef929da5c34",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/summary.pending.csv": {
+      "size": 547,
+      "sha256": "d91ba3e9b2febb970408cf0aca553cde20eadd73b4f9c087cad86ef929da5c34",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/probe-B2-T6/supervisor-run.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/stderr.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/new/stdout.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/errors.jsonl": {
+      "size": 8973,
+      "sha256": "eb6206b07852864a51bd2395d825d3bdc9a5bbf23670d36caca6468a456558de",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/errors.txt": {
+      "size": 2861,
+      "sha256": "f48e07cbc0743fe1aef8f61bc5f94f4308e7cbcf3705ee56e6d22cba74c0c881",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/host.log": {
+      "size": 205,
+      "sha256": "be230fe1dcf49029bd6ee4b352cfd02b1c2d1d940b7c5b10243e8600de190092",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/launcher.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/phase-run.json": {
+      "size": 343,
+      "sha256": "9bd6447a9ab0c92733544c5382e0c30ccc8af1221496f47fea22a4a924d66dc3",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/qemu-run.log": {
+      "size": 32598,
+      "sha256": "b13187e14df44093288f6b9762360a9ebd764b06beda84676aeef486342c59a8",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/result.json": {
+      "size": 673,
+      "sha256": "8d863c55a765aeb2413c7cd0df0c5a549aa23036a0eb578835aa91389b4517f1",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/summary.csv": {
+      "size": 561,
+      "sha256": "1f73cf92166256d5f64fbcdfdc3d2a500286c8bff414697bcf6d7e5eb3fb63d7",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/summary.pending.csv": {
+      "size": 547,
+      "sha256": "d91ba3e9b2febb970408cf0aca553cde20eadd73b4f9c087cad86ef929da5c34",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/probe-B2-T6/supervisor-run.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/stderr.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "rejudge/old/stdout.log": {
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "new offline replay; original inputs unchanged"
+    },
+    "investigation/supervisor.py": {
+      "size": 24358,
+      "sha256": "c632fd2d2d36edff587396cb9fc7195f08c69f2f4581618992010982ab59c349",
+      "source": "fix checkout"
+    },
+    "investigation/host-tests-02.log": {
+      "size": 12419,
+      "sha256": "d494970acc83d430439a6a4fcdda30e9415695b890274aa2270c3870bf50f7d0",
+      "source": "fix checkout"
+    },
+    "investigation/host-tests-01.log": {
+      "size": 669,
+      "sha256": "09989d997b465fd84bf08fcd0057cf3a33ffce9486495f28d05efd49e7e1aff2",
+      "source": "fix checkout"
+    },
+    "investigation/code.diff": {
+      "size": 11627,
+      "sha256": "800a6c22c298fff3bfb8966f55cdcc6a2eb51b2278a2e5449844ee9d126877f2",
+      "source": "fix checkout"
+    }
+  },
+  "excluded": {
+    "original/probe-B2-T6/qemu-run.dtb": {
+      "size": 34755,
+      "sha256": "34e25220ede1ddee97e2056a9019ab503a6dd200258b7a819b11f36b03af36c9",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6/qemu-run.dtb",
+      "reason": "binary or non-UTF-8"
+    },
+    "original/probe-B2-T6-26a545a40d034c6cb5fcf6fc566172b8.tar.gz": {
+      "size": 103267,
+      "sha256": "02c19c4b0c2d924da9aaa2d6d0c627b9526abd7ad37bc15b5231490b061590c2",
+      "source": "attempt-11-smoke-failure-B2-T6.tar.gz:probe-B2-T6-26a545a40d034c6cb5fcf6fc566172b8.tar.gz",
+      "reason": "binary or non-UTF-8"
+    }
+  },
+  "scope": "failed probe and pipeline text; not the complete smoke tree; binaries excluded"
+}
