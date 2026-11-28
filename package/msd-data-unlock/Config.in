@@ -1,0 +1,5 @@
+config BR2_PACKAGE_MSD_DATA_UNLOCK
+	bool "msd-data-unlock"
+	depends on BR2_PACKAGE_CRYPTSETUP
+	help
+	  PIN and recovery input with fixed LUKS2 keyslots using libcryptsetup.

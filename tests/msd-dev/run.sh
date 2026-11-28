@@ -107,6 +107,7 @@ covered_inputs = {*inputs, *patch_inputs}
 
 dockerfile = (root / "docker/msd-dev.Dockerfile").read_text()
 assert "ARG QEMU_VERSION=11.1.3" in dockerfile
+assert re.search(r"^\s+libcryptsetup-dev\s+\\$", dockerfile, re.MULTILINE)
 assert "/opt/qemu/bin/qemu-system-aarch64 -machine help" in dockerfile
 assert "raspi3ap" in dockerfile and "raspi3b" in dockerfile
 assert "libinsn.so" in dockerfile or "libhotblocks.so" in dockerfile

@@ -1,5 +1,9 @@
 # 開発環境とCIの依存監査
 
+## 2026-11-26のhost試験用header追加
+
+開発imageに`libcryptsetup-dev`を追加し、LUKS2 helperの実library試験をCIで必須にする。snapshotと製品用cryptsetupの版は変えない。[選択理由・設定・license・確認範囲](data-unlock-host.md)を別記し、以下の過去の監査とAPT一覧は保持する。
+
 ## 2026-11-26のsnapshot更新
 
 最新main `9abf168`から独立した変更で、開発用OCIの固定snapshotを`20261121T225354Z`から`20261124T215723Z`へ進めました。#309の`libcryptsetup-dev`追加は含めません。QEMU builderと最終stageはともに、Kerberosの4 library、zstdのruntime・development package、`linux-libc-dev`の計7 packageを更新します。各sourceの中間版を含むDebian changelogは1 entryずつで、全件を確認しました。7 packageのcopyrightは旧新・両stageでhashが一致します。

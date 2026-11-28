@@ -1,3 +1,4 @@
 source "$BR2_EXTERNAL_MSD_PATH/package/m5stack-cardputerzero/Config.in"
 source "$BR2_EXTERNAL_MSD_PATH/package/msd-syncfs/Config.in"
 source "$BR2_EXTERNAL_MSD_PATH/package/msd-console/Config.in"
+source "$BR2_EXTERNAL_MSD_PATH/package/msd-data-unlock/Config.in"
