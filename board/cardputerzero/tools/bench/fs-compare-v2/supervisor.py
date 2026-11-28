@@ -209,11 +209,11 @@ def boot_serial_lines(lines, enabled):
         yield origin, pending
 
 
-def t6_repaired_summaries(lines):
+def t6_repaired_summaries(serial_lines):
     accepted = set()
     btrfs = False
     pending = None
-    for number, text in boot_serial_lines(lines, lambda: True):
+    for number, text in serial_lines:
         if text.startswith("msd.fscmp: mounted "):
             btrfs = bool(re.fullmatch(
                 r"msd\.fscmp: mounted config=\S+ base_config=B2 variant_id=\S+ test=T6", text))
@@ -248,9 +248,10 @@ def aggregate_errors(logs, test):
     for phase, path in logs:
         context = None
         lines = Path(path).read_text(errors="replace").splitlines()
-        repaired_summaries = (t6_repaired_summaries(lines)
-                              if test == "T6" and phase == "run" and Path(path).name == "qemu-run.log"
-                              else set())
+        t6_lines = (list(boot_serial_lines(lines, lambda: True))
+                    if test == "T6" and phase == "run" and Path(path).name == "qemu-run.log"
+                    else None)
+        repaired_summaries = t6_repaired_summaries(t6_lines) if t6_lines is not None else set()
         qemu = machine = kernel = model = closed = False
         grow_pending = False
         grow_complete = any(marker in lines for marker in GROW_COMPLETE_MARKERS)
@@ -260,7 +261,8 @@ def aggregate_errors(logs, test):
             return (smoke and phase in ("run", "verify") and Path(path).name == f"qemu-{phase}.log"
                     and qemu and machine and kernel and model)
 
-        for line_number, text in boot_serial_lines(lines, known_environment):
+        serial_lines = t6_lines if t6_lines is not None else boot_serial_lines(lines, known_environment)
+        for line_number, text in serial_lines:
             normalized = re.sub(r"^\[\s*[0-9]+\.[0-9]+\] ", "", text)
             qemu |= text == "run-qemu: version=" + boot_rules["qemu"]
             machine |= text == boot_rules["machine"]

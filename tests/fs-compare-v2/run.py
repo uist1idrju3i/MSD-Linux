@@ -239,6 +239,22 @@ class Judge(unittest.TestCase):
             self.assertTrue(any(not row["expected"] and "unrelated error" in row["text"]
                                 for row in records))
 
+    def test_t6_normal_measurement_uses_same_split_for_evidence_and_classification(self):
+        for kernel in ("harmless kernel output", "unrelated error", "Kernel panic - test"):
+            with self.subTest(kernel=kernel), tempfile.TemporaryDirectory() as temporary:
+                text = T6_SCRUB_OK.replace("csum=1\n", f"csum=1[ 1.000000] {kernel}\n")
+                self.assertNotIn("SMOKE_PROFILE", text)
+                directory = Path(temporary) / "run"
+                fixture(directory, "T6", text=text)
+                result = M.finalize(directory, "T6", 0)
+                self.assertEqual(result["status"], "ok" if kernel == "harmless kernel output"
+                                 else "fail:final_judge")
+                records = [json.loads(line) for line in (directory / "errors.jsonl").read_text().splitlines()]
+                summary = next(row for row in records if "csum=1" in row["text"])
+                self.assertTrue(summary["expected"])
+                self.assertEqual(summary["text"], "msd.fscmp: T6_SCRUB Error summary:    csum=1")
+                self.assertEqual(result["fatal_errors"], int(kernel != "harmless kernel output"))
+
     def test_t6_repaired_csum_summary_is_fully_scoped(self):
         mutations = {
             "no-result": T6_SCRUB_OK.replace("msd.fscmp: T6_SCRUB_RESULT corrected=1 uncorrectable=0\n", ""),
